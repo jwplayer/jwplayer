@@ -13,8 +13,6 @@ import com.longtailvideo.jwplayer.view.View;
 import flash.display.Sprite;
 import flash.events.ErrorEvent;
 import flash.events.Event;
-import flash.events.ThrottleEvent;
-import flash.events.ThrottleType;
 import flash.geom.Rectangle;
 import flash.system.Security;
 
@@ -29,9 +27,6 @@ public class Player extends Sprite implements IPlayer {
     protected var _instream:InstreamPlayer;
 
     public function Player() {
-        // Send embedded event so we know flash isn't blocked
-        SwfEventRouter.triggerJsEvent('embedded');
-
         Security.allowDomain("*");
 
         // Send embedded event so we know flash isn't blocked
@@ -39,7 +34,6 @@ public class Player extends Sprite implements IPlayer {
 
         RootReference.init(this);
         this.addEventListener(Event.ADDED_TO_STAGE, stageReady);
-        this.addEventListener(ThrottleEvent.THROTTLE, flashThrottled);
 
         this.tabEnabled = false;
         this.tabChildren = false;
@@ -62,13 +56,23 @@ public class Player extends Sprite implements IPlayer {
         this.removeEventListener(Event.ADDED_TO_STAGE, stageReady);
         RootReference.init(this);
         _view.setupView();
+
+        // trigger throttling in Chrome before additional setup or loading occurs
+        this.addEventListener('throttle', flashThrottled);
+        _view.drawKeyframe();
     }
 
-    private function flashThrottled(e:ThrottleEvent):void {
+    private function flashThrottled(e:Event):void {
         // e.state can be ThrottleType.THROTTLE, ThrottleType.PAUSE, or ThrottleType.RESUME
         // in Chrome we only get 'throttle' and 'resume' for offscreen and power-save throttling
+        var state:String = e['state'] as String;
+        if (state === 'resume') {
+            // One resume indicates we're past Chrome Power Save
+            this.removeEventListener('throttle', flashThrottled);
+        }
+
         SwfEventRouter.triggerJsEvent('throttle', {
-            state: e.state
+            state: state
         });
     }
 
@@ -211,6 +215,8 @@ public class Player extends Sprite implements IPlayer {
 
     protected function setupPlayerCommandQueue(commands:Array):void {
         _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);
+
+        _view.clearKeyframe();
 
         // run this once setup is complete (plugins are loaded)
         for (var i:uint = 0; i < commands.length; i++) {

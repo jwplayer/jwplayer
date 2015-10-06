@@ -18,6 +18,7 @@ define([
         var _swf;
         var _item = null;
         var _flashBlockedTimeout = -1;
+        var _flashThrottledState = '';
         var _beforecompleted = false;
         var _currentQuality = -1;
         var _qualityLevels = null;
@@ -195,11 +196,11 @@ define([
                     // The browser may block the flash object until user enables it
                     var _this = this;
                     _flashBlockedTimeout = setTimeout(function() {
-                        _this.trigger('flashBlocked');
+                        Events.trigger.call(_this, 'flashBlocked');
                     }, 2000);
                     _swf.once('embedded', function() {
                         clearTimeout(_flashBlockedTimeout);
-                        this.trigger('flashUnblocked');
+                        Events.trigger.call(this, 'flashUnblocked');
                     }, this);
 
                     // listen to events sendEvented from flash
@@ -278,6 +279,10 @@ define([
                         if (state === states.IDLE) {
                             return;
                         }
+                        if (_flashThrottledState) {
+                            _flashThrottledState = e.newstate;
+                            return;
+                        }
                         this.setState(state);
                     }, this);
 
@@ -335,11 +340,16 @@ define([
                         clearTimeout(_flashBlockedTimeout);
 
                         if (e.state === 'resume') {
-                            _this.trigger('flashUnblocked');
+                            Events.trigger.call(_this, 'flashUnblocked');
+                            if (_flashThrottledState) {
+                                this.setState(_flashThrottledState);
+                                _flashThrottledState = '';
+                            }
                         } else {
+                            _flashThrottledState = this.state;
                             _flashBlockedTimeout = setTimeout(function () {
-                                _this.trigger('flashBlocked');
-                            }, 2000);
+                                Events.trigger.call(_this, 'flashBlocked');
+                            }, 350);
                         }
                     }
 

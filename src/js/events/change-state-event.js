@@ -11,7 +11,7 @@ define([
         return newstate;
     }
 
-    return function(model, newstate, oldstate) {
+    return function(model, newstate, oldstate, reason) {
         newstate = normalizeApiState(newstate);
         oldstate = normalizeApiState(oldstate);
         // do not dispatch idle a second time after complete
@@ -23,7 +23,7 @@ define([
                 type: eventType,
                 newstate: newstate,
                 oldstate: oldstate,
-                reason: model.mediaModel.get('state')
+                reason: reason || model.mediaModel.get('state')
             };
             this.trigger(eventType, evt);
         }
