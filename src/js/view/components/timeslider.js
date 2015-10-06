@@ -147,7 +147,7 @@ define([
         },
         showTimeTooltip: function(evt) {
             var duration = this._model.get('duration');
-            if (duration <= 0) {
+            if (duration === 0) {
                 return;
             }
 
@@ -157,11 +157,22 @@ define([
             var pct = position / _railBounds.width;
             var time = duration * pct;
 
+            // For DVR we need to swap it around
+            if (duration < 0) {
+                time = duration - time;
+            }
+
             var timetipText;
             if (this.activeCue) {
                 timetipText = this.activeCue.text;
             } else {
-                timetipText = utils.timeFormat(time);
+                var allowNegativeTime = true;
+                timetipText = utils.timeFormat(time, allowNegativeTime);
+
+                // If DVR and within one second of live
+                if (duration < 0 && (Math.abs(time) < 1) ) {
+                    timetipText = 'Live';
+                }
             }
             this.timeTip.update(timetipText);
             this.showThumbnail(time);
