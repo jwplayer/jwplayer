@@ -138,12 +138,12 @@ define([
         destroy : function() {
             if(this.el) {
                 this.hideMenu();
-                this.el = null;
+                //this.el = null;
             }
 
             if (this.playerElement) {
                 this.playerElement.oncontextmenu = null;
-                this.playerElement = null;
+                //this.playerElement = null;
             }
 
             if (this.model) {
