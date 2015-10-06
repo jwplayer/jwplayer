@@ -321,7 +321,7 @@ define([
                         } else {
                             _flashBlockedTimeout = setTimeout(function () {
                                 _this.trigger('flashBlocked');
-                            }, 2000);
+                            }, 250);
                         }
                     }
 
