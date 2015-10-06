@@ -135,6 +135,8 @@ public class MediaEvent extends PlayerEvent {
                 if (!isNaN(_position)) {
                     js.position = Math.round(_position * 1000) / 1000;
                 }
+            // fall through
+            case JWPLAYER_MEDIA_META:
                 if(_duration === Infinity) {
                     js.duration = 'Infinity';
                 } else if (!isNaN(_duration)) {
