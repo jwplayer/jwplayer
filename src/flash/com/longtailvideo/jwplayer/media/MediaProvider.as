@@ -302,7 +302,7 @@ public class MediaProvider extends Sprite implements IMediaProvider {
 
     /** Dispatches buffer change notifications **/
     protected function sendBufferEvent(bufferPercent:Number, offset:Number = 0, metadata:Object = null):void {
-        if ((_bufferPercent != bufferPercent || bufferPercent == 0) && 0 <= bufferPercent < 100) {
+        if (_bufferPercent !== bufferPercent && 0 <= bufferPercent < 100) {
             _bufferPercent = bufferPercent;
             var obj:Object = {
                 bufferPercent: _bufferPercent,

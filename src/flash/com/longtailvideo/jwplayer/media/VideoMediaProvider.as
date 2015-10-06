@@ -254,7 +254,7 @@ public class VideoMediaProvider extends MediaProvider {
             _buffered = Math.min(100, _buffered);
             sendBufferEvent(_buffered);
         }
-        if (state == PlayerState.PLAYING) {
+        if (state == PlayerState.PLAYING && _position !== pos) {
             _position = pos;
             if (_item.type == 'mp4') {
                 _position += _offset.time;

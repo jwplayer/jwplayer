@@ -87,8 +87,30 @@ define([
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
             _model.on('change:flashBlocked', function(model, isBlocked) {
+                var state = model.mediaModel.get('state');
                 if (isBlocked) {
-                    this.trigger(events.JWPLAYER_ERROR, { message: 'Flash plugin is blocked'});
+                    // reset the ad schedule
+                    if (this._instreamAdapter) {
+                        var vast = _api.getPlugin('vast');
+                        if (vast) {
+                            vast.destroy();
+                        }
+                        _view.destroyInstream();
+                    }
+
+                    // send a pause state event but do not change the model state
+                    changeStateEvent.call(this, model, states.PAUSED, state, 'flashBlocked');
+
+                    // show error state
+                    this.triggerError({ message: 'Flash plugin is blocked'});
+
+                } else {
+                    // send a state event to signal that the previous state was restored
+                    changeStateEvent.call(this, model, state, states.PAUSED, 'flashUnblocked');
+
+                    // reset error state
+                    this._model.set('state', state);
+                    this.play(true);
                 }
             }, this);
 

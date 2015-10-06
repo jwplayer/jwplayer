@@ -24,7 +24,9 @@ define([
 
         var _this = this;
         function _clickHandler(evt) {
-
+            if (_model.get('flashBlocked')) {
+                return;
+            }
             if (_alternateClickHandler) {
                 _alternateClickHandler(evt);
                 return;

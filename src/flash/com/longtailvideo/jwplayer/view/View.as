@@ -8,10 +8,12 @@ import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Stretcher;
 
 import flash.display.DisplayObject;
+import flash.display.GradientType;
 import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
 import flash.events.Event;
+import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
 public class View extends Sprite {
@@ -49,6 +51,24 @@ public class View extends Sprite {
         RootReference.stage.addEventListener('rightClick', rightClickHandler);
         RootReference.stage.addEventListener(Event.RESIZE, resizeHandler);
         redraw();
+    }
+
+
+    public function drawKeyframe():void {
+        var width:Number  = RootReference.stage.stageWidth;
+        var height:Number = RootReference.stage.stageHeight;
+        // this.graphics.beginFill(0xFF0000, 1);
+        this.graphics.beginGradientFill(GradientType.RADIAL,
+                [0x222222, 0x000000],
+                [1, 1],
+                [0, 255],
+                new Matrix(1, 0, 0, 1, width/2, height/2));
+        this.graphics.drawRect(0, 0, width, height);
+        this.graphics.endFill();
+    }
+
+    public function clearKeyframe():void {
+        this.graphics.clear();
     }
 
     public function getSafeRegion():Rectangle {
