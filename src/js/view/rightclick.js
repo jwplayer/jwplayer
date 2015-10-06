@@ -138,9 +138,6 @@ define([
         destroy : function() {
             if(this.el) {
                 this.hideMenu();
-                this.elementUI.off();
-                this.playerUI.off();
-                this.documentUI.off();
                 this.el = null;
             }
 
