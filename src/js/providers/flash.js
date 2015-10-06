@@ -186,11 +186,11 @@ define([
                     // The browser may block the flash object until user enables it
                     var _this = this;
                     _flashBlockedTimeout = setTimeout(function() {
-                        _this.trigger('flashBlocked');
+                        Events.trigger.call(_this, 'flashBlocked');
                     }, 2000);
                     _swf.once('embedded', function() {
                         clearTimeout(_flashBlockedTimeout);
-                        this.trigger('flashUnblocked');
+                        Events.trigger.call(_this, 'flashUnblocked');
                     }, this);
 
                     // listen to events sendEvented from flash
@@ -317,10 +317,10 @@ define([
                         clearTimeout(_flashBlockedTimeout);
 
                         if (e.state === 'resume') {
-                            _this.trigger('flashUnblocked');
+                            Events.trigger.call(_this, 'flashUnblocked');
                         } else {
                             _flashBlockedTimeout = setTimeout(function () {
-                                _this.trigger('flashBlocked');
+                                Events.trigger.call(_this, 'flashBlocked');
                             }, 250);
                         }
                     }
