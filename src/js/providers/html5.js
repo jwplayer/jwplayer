@@ -187,6 +187,8 @@ define([
 
             _setDuration(_videotag.duration);
             _setPosition(_videotag.currentTime);
+            // buffer ranges change during playback, not just on file progress
+            _setBuffered(_getBuffer(), _position, _duration);
 
             // send time events when playing
             if (_this.state === states.PLAYING) {
