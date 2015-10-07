@@ -213,7 +213,6 @@ define([
     }
 
     function _setupComponents(resolve, _model, _api, _view) {
-        _model.setItem(0);
         _view.setup();
         resolve();
     }

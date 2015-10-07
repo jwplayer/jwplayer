@@ -23,9 +23,10 @@ define([
 
         this.mediaController = _.extend({}, Events);
         this.mediaModel = new MediaModel();
-        this.set('mediaModel', this.mediaModel);
 
         QOE.model(this);
+
+        this.set('mediaModel', this.mediaModel);
 
         this.setup = function(config) {
             if (config.cookies) {
@@ -34,6 +35,8 @@ define([
             }
 
             _.extend(this.attributes, config, _cookies, {
+                // always start on first playlist item
+                item : 0,
                 // Initial state, upon setup
                 state: states.IDLE,
                 // Initially we don't assume Flash is needed
@@ -160,21 +163,28 @@ define([
             }
         };
 
+        this.onMediaContainer = function () {
+            var container = this.get('mediaContainer');
+            _currentProvider.setContainer(container);
+        };
+
         this.changeVideoProvider = function(Provider) {
-            var container;
+            this.off('change:mediaContainer', this.onMediaContainer);
 
             if (_provider) {
                 _provider.off(null, null, this);
-                container = _provider.getContainer();
-                if (container) {
+                if (_provider.getContainer()) {
                     _provider.remove();
                 }
             }
 
             _currentProvider = new Provider(_this.get('id'), _this.getConfiguration());
 
+            var container = this.get('mediaContainer');
             if (container) {
                 _currentProvider.setContainer(container);
+            } else {
+                this.once('change:mediaContainer', this.onMediaContainer);
             }
 
             this.set('provider', _currentProvider.getName());
@@ -240,6 +250,7 @@ define([
             // select provider based on item source (video, youtube...)
             var item = this.get('playlist')[newItem];
             this.set('playlistItem', item);
+
             var source = item && item.sources && item.sources[0];
             if (source === undefined) {
                 // source is undefined when resetting index with empty playlist
@@ -296,14 +307,17 @@ define([
 
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
+
             this.mediaModel.set('playAttempt', true);
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+
             if (!item) {
                 var idx = this.get('item');
                 item = this.get('playlist')[idx];
             }
             this.set('position', item.starttime || 0);
             this.set('duration', item.duration || 0);
+
             _provider.load(item);
         };
 

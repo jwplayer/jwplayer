@@ -50,9 +50,9 @@ define([
 
     function initModel(model) {
 
-        model.on('change:mediaModel', function(model, mediaModel, oldMediaModel) {
+        function onMediaModel(model, mediaModel, oldMediaModel) {
             // finish previous item
-            if (model._qoeItem) {
+            if (model._qoeItem && oldMediaModel) {
                 model._qoeItem.end(oldMediaModel.get('state'));
             }
             // reset item level qoe
@@ -62,11 +62,13 @@ define([
 
             trackFirstFrame(model);
 
-            mediaModel.on('change:state', function(mediaModel, newstate, oldstate) {
+            mediaModel.on('change:state', function (mediaModel, newstate, oldstate) {
                 model._qoeItem.end(oldstate);
                 model._qoeItem.start(newstate);
             });
-        });
+        }
+
+        model.on('change:mediaModel', onMediaModel);
     }
 
     return {
