@@ -105,7 +105,7 @@ define([
                 _setup = null;
 
                 // Set up provider and allow preload
-                _model.setItem(_model.get('item'));
+                _setItem(_model.get('item'));
 
                 _model.on('change:state', changeStateEvent, this);
 
@@ -230,10 +230,10 @@ define([
                         break;
                     case 'object':
                         _model.setPlaylist(item);
-                        _model.setItem(0);
+                        _setItem(0);
                         break;
                     case 'number':
-                        _model.setItem(item);
+                        _setItem(item);
                         break;
                 }
             }
@@ -273,7 +273,7 @@ define([
 
                 if (_model.get('state') === states.COMPLETE) {
                     _stop(true);
-                    _model.setItem(0);
+                    _setItem(0);
                 }
                 if (!_preplay) {
                     _preplay = true;
@@ -383,8 +383,19 @@ define([
 
             function _item(index) {
                 _stop(true);
-                _model.setItem(index);
+                _setItem(index);
                 _play();
+            }
+
+            function _setItem(index) {
+                var playlist = _model.get('playlist');
+
+                // If looping past the end, or before the beginning
+                index = (index + playlist.length) % playlist.length;
+
+                _model.set('item', index);
+                _model.set('playlistItem', playlist[index]);
+                _model.setActiveItem(playlist[index]);
             }
 
             function _prev() {
