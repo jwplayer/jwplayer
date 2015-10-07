@@ -49,9 +49,8 @@ define([
     }
 
     function initModel(model) {
-        var oldMediaModel = null;
 
-        function onMediaModel(model, mediaModel) {
+        function onMediaModel(model, mediaModel, oldMediaModel) {
             // finish previous item
             if (model._qoeItem && oldMediaModel) {
                 model._qoeItem.end(oldMediaModel.get('state'));
@@ -67,8 +66,6 @@ define([
                 model._qoeItem.end(oldstate);
                 model._qoeItem.start(newstate);
             });
-
-            oldMediaModel = model;
         }
 
         model.on('change:mediaModel', onMediaModel);
