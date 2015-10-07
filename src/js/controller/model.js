@@ -235,21 +235,13 @@ define([
             return _providers.choose(source).provider;
         };
 
-        this.setItem = function(index) {
-            var playlist = _this.get('playlist');
 
-            // If looping past the end, or before the beginning
-            var newItem = (index + playlist.length) % playlist.length;
+        this.setActiveItem = function(item) {
 
             // Item is actually changing
             this.mediaModel.off();
             this.mediaModel = new MediaModel();
             this.set('mediaModel', this.mediaModel);
-
-            this.set('item', newItem);
-            // select provider based on item source (video, youtube...)
-            var item = this.get('playlist')[newItem];
-            this.set('playlistItem', item);
 
             var source = item && item.sources && item.sources[0];
             if (source === undefined) {

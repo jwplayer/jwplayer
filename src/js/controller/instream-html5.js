@@ -39,7 +39,10 @@ define([
         _this.load = function(item) {
             // Make sure it chooses a provider
             _adModel.setPlaylist([item]);
-            _adModel.setItem(0);
+
+            _adModel.set('item', 0);
+            _adModel.set('playlistItem', item);
+            _adModel.setActiveItem(item);
 
             // check provider after item change
             _checkProvider();
