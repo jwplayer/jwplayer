@@ -4,6 +4,8 @@ define([
 
     var Title = function(_model) {
         this.model = _model;
+
+        this.model.on('change:playlistItem', this.playlistItem, this);
     };
 
     _.extend(Title.prototype, {
@@ -24,8 +26,9 @@ define([
             this.title = arr[0];
             this.description = arr[1];
 
-            this.model.on('change:playlistItem', this.playlistItem, this);
-            this.playlistItem(this.model, this.model.get('playlistItem'));
+            if (this.model.get('playlistItem')) {
+                this.playlistItem(this.model, this.model.get('playlistItem'));
+            }
         },
 
         playlistItem : function(model, item) {

@@ -355,7 +355,7 @@ define([
             _userActivity();
 
             // adds video tag to video layer
-            _model.getVideo().setContainer(_videoLayer);
+            _model.set('mediaContainer', _videoLayer);
 
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
@@ -511,8 +511,6 @@ define([
             } else {
                 utils.addClass(_playerElement, 'jw-flag-controls-disabled');
             }
-
-            model.getVideo().setControls(bool);
         };
 
         function _doubleClickFullscreen() {

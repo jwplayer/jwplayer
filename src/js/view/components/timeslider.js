@@ -59,7 +59,9 @@ define([
         setup : function() {
             Slider.prototype.setup.apply(this, arguments);
 
-            this.onPlaylistItem(this._model, this._model.get('playlistItem'));
+            if (this._model.get('playlistItem')) {
+                this.onPlaylistItem(this._model, this._model.get('playlistItem'));
+            }
 
             this.elementRail.appendChild(this.timeTip.element());
 

@@ -104,6 +104,9 @@ define([
             function _playerReady() {
                 _setup = null;
 
+                // Set up provider and allow preload
+                _model.setItem(_model.get('item'));
+
                 _model.on('change:state', changeStateEvent, this);
 
                 // For 'onCast' callback
@@ -628,6 +631,11 @@ define([
                     mode = ! _model.get('controls');
                 }
                 _model.set('controls', mode);
+
+                var provider = _model.getVideo();
+                if (provider) {
+                    provider.setControls(mode);
+                }
             };
 
             this.playerDestroy = function () {

@@ -12,7 +12,9 @@ define([
         setup: function(element) {
             this.el = element;
 
-            this.loadImage(this.model, this.model.get('playlistItem'));
+            if (this.model.get('playlistItem')) {
+                this.loadImage(this.model, this.model.get('playlistItem'));
+            }
         },
         loadImage: function(model, playlistItem) {
             var img = playlistItem.image;
