@@ -25,15 +25,15 @@ define([
             },
             LOAD_YOUTUBE : {
                 method: _loadYoutube,
-                depends: ['LOAD_PLAYLIST']
+                depends: ['LOAD_POLYFILLS']
             },
             LOAD_SKIN : {
                 method: _loadSkin,
-                depends: []
+                depends: ['LOAD_POLYFILLS']
             },
             LOAD_PLAYLIST : {
                 method: _loadPlaylist,
-                depends: ['LOAD_PLUGINS']
+                depends: ['LOAD_PLUGINS', 'LOAD_YOUTUBE']
             },
             SETUP_COMPONENTS : {
                 method: _setupComponents,
