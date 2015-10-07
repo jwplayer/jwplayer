@@ -19,9 +19,7 @@ define([
         edgeStyle: null,
         windowColor: '#FFF',
         windowOpacity: 0,
-        captionParser: function (input) {
-            return input;
-        }
+        preprocessor: _.identity
     };
 
     /** Component that renders the actual captions on screen. **/
@@ -140,7 +138,7 @@ define([
                 _render('');
             } else if (found !== _current) {
                 _current = found;
-                _render( _options.captionParser(data[_current].text) );
+                _render( _options.preprocessor(data[_current].text) );
             }
         }
 
