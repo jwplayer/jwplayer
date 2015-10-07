@@ -107,22 +107,23 @@ define([
         error(resolve, 'Could not load plugin', evt.message);
     }
 
-    function _loadPlaylist(resolve, _model) {
+    function _loadPlaylist(resolve, _model, _api) {
         var playlist = _model.get('playlist');
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
-                _completePlaylist(resolve, _model, data.playlist);
+                _completePlaylist(resolve, _model, _api, data.playlist);
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
             _playlistLoader.load(playlist);
         } else {
-            _completePlaylist(resolve, _model, playlist);
+            _completePlaylist(resolve, _model, _api, playlist);
         }
     }
 
-    function _completePlaylist(resolve, _model, playlist) {
-        _model.setPlaylist(playlist);
+    function _completePlaylist(resolve, _model, _api, playlist) {
+        _api.setPlaylist(playlist);
+
         var p = _model.get('playlist');
         if (!_.isArray(p) || p.length === 0) {
             _playlistError(resolve, 'Playlist type not supported');
