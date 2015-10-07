@@ -561,6 +561,9 @@ define([
             this.seek = _seek;
             this.stop = _stop;
             this.load = _load;
+            this.setPlaylist = function(p) {
+                _model.setPlaylist(p);
+            };
             this.playlistNext = _next;
             this.playlistPrev = _prev;
             this.playlistItem = _item;
