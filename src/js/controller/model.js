@@ -1,6 +1,5 @@
 define([
     'utils/helpers',
-    'playlist/playlist',
     'providers/providers',
     'controller/storage',
     'controller/qoe',
@@ -9,7 +8,7 @@ define([
     'utils/simplemodel',
     'events/events',
     'events/states'
-], function(utils, Playlist, Providers, storage, QOE, _, Events, SimpleModel, events, states) {
+], function(utils, Providers, storage, QOE, _, Events, SimpleModel, events, states) {
 
     // Represents the state of the player
     var Model = function() {
@@ -214,22 +213,6 @@ define([
             }
         };
 
-        this.setPlaylist = function(p) {
-            var playlist = Playlist(p);
-
-            playlist = Playlist.filterPlaylist(playlist, _providers, _this.get('androidhls'),
-                this.get('drm'), this.get('preload'));
-
-            this.set('playlist', playlist);
-
-            if (playlist.length === 0) {
-                this.mediaController.trigger(events.JWPLAYER_ERROR, {
-                    message: 'Error loading playlist: No playable sources found'
-                });
-                return;
-            }
-        };
-
         // Give the option for a provider to be forced
         this.chooseProvider = function(source) {
             return _providers.choose(source).provider;
@@ -265,6 +248,15 @@ define([
             }
 
             this.trigger('setItem');
+        };
+
+        this.getProviders = function() {
+            // When we call setPlaylist before the first setItem call
+            //if (!_providers) {
+                //this.updateProviders();
+            //}
+
+            return _providers;
         };
 
         this.resetProvider = function() {
