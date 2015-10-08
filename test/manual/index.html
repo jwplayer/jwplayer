@@ -79,7 +79,10 @@
                 file: 'not a playable option',
                 title: 'Filtered Out of Playlist'
             }
-        ]
+        ],
+        captions: {
+            preprocessor: function(rawText){ return rawText.replace(/e/g,'E') }
+        }
     };
 
     var jwp = jwplayer('video-container').setup(config);
