@@ -263,8 +263,6 @@ define([
             if (_currentProvider.init) {
                 _currentProvider.init(item);
             }
-
-            this.trigger('setItem');
         };
 
         this.resetProvider = function() {

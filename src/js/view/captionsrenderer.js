@@ -212,7 +212,7 @@ define([
             return _display;
         };
 
-        _model.on('change:item', function() {
+        _model.on('itemSet', function() {
             _timeEvent = null;
             _current = -1;
             _render('');
