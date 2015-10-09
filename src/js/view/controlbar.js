@@ -186,15 +186,15 @@ define([
             }
             this.onVolume(this._model, this._model.get('volume'));
             this.onPlaylist(this._model, this._model.get('playlist'));
-            this.onPlaylistItem(this._model, this._model.get('playlistItem'));
+            this.onItemSet(this._model, this._model.get('playlistItem'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
             this.onCaptionsList(this._model, this._model.get('captionsList'));
 
             // Listen for model changes
+            this._model.on('itemSet', this.onItemSet, this);
             this._model.on('change:volume', this.onVolume, this);
             this._model.on('change:mute', this.onMute, this);
             this._model.on('change:playlist', this.onPlaylist, this);
-            this._model.on('change:playlistItem', this.onPlaylistItem, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
@@ -289,7 +289,7 @@ define([
                 this.elements.playlist.setup(playlist, model.get('item'));
             }
         },
-        onPlaylistItem : function(model/*, item*/) {
+        onItemSet : function() {
             this.elements.time.updateBuffer(0);
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
@@ -297,7 +297,7 @@ define([
             
             this.clearCompactMode();
 
-            var itemIdx = model.get('item');
+            var itemIdx = this._model.get('item');
             if(this.elements.playlist) {
                 this.elements.playlist.selectItem(itemIdx);
             }

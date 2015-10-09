@@ -120,7 +120,7 @@ define([
                     });
                 });
                 // For onItem callback
-                _model.on('change:playlistItem', function(model, playlistItem) {
+                _model.on('itemSet', function(model, playlistItem) {
                     _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
                         index: model.get('item'),
                         item: playlistItem
@@ -396,6 +396,9 @@ define([
                 _model.set('item', index);
                 _model.set('playlistItem', playlist[index]);
                 _model.setActiveItem(playlist[index]);
+
+                // Listening for change:item won't suffice when loading the same index or file
+                _model.trigger('itemSet');
             }
 
             function _prev() {
