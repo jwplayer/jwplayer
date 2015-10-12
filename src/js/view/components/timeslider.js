@@ -66,8 +66,8 @@ define([
             this.elementRail.appendChild(this.timeTip.element());
 
             // mousemove/mouseout because this currently mouse specific functionality.
-            this.elementRail.addEventListener('mousemove', this.showTimeTooltip.bind(this), false);
-            this.elementRail.addEventListener('mouseout', this.hideTimeTooltip.bind(this), false);
+            this.el.addEventListener('mousemove', this.showTimeTooltip.bind(this), false);
+            this.el.addEventListener('mouseout', this.hideTimeTooltip.bind(this), false);
         },
         update: function(pct) {
             if (this.activeCue && _.isNumber(this.activeCue.pct)) {
