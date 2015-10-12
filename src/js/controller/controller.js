@@ -75,7 +75,7 @@ define([
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
-            _setup = new Setup(_api, _model, _view);
+            _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);

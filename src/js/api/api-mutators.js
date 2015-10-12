@@ -70,7 +70,6 @@ define([
             'setFullscreen',
             'setVolume',
             'setMute',
-            'setPlaylist',
             'setCues'
         ];
 

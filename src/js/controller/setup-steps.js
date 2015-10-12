@@ -23,9 +23,17 @@ define([
                 method: _loadPlugins,
                 depends: ['LOAD_POLYFILLS']
             },
+            INIT_PLUGINS : {
+                method: _initPlugins,
+                depends: [
+                    'LOAD_PLUGINS',
+                    // Init requires jw-overlays to be in the DOM
+                    'SETUP_VIEW'
+                ]
+            },
             LOAD_YOUTUBE : {
                 method: _loadYoutube,
-                depends: ['LOAD_POLYFILLS']
+                depends: ['FILTER_PLAYLIST']
             },
             LOAD_SKIN : {
                 method: _loadSkin,
@@ -33,22 +41,24 @@ define([
             },
             LOAD_PLAYLIST : {
                 method: _loadPlaylist,
-                depends: ['LOAD_PLUGINS', 'LOAD_YOUTUBE']
+                depends: ['LOAD_POLYFILLS']
             },
-            SETUP_COMPONENTS : {
-                method: _setupComponents,
+            FILTER_PLAYLIST: {
+                method: _filterPlaylist,
+                depends : ['LOAD_PLAYLIST']
+            },
+            SETUP_VIEW : {
+                method: _setupView,
                 depends: [
-                    // view controls require that a playlist item be set
-                    'LOAD_PLAYLIST',
-                    'LOAD_SKIN',
-                    'LOAD_YOUTUBE'
+                    'LOAD_SKIN'
                 ]
             },
             SEND_READY : {
                 method: _sendReady,
                 depends: [
-                    'LOAD_PLUGINS',
-                    'SETUP_COMPONENTS'
+                    'INIT_PLUGINS',
+                    'LOAD_YOUTUBE',
+                    'SETUP_VIEW'
                 ]
             }
         };
@@ -90,14 +100,14 @@ define([
         polyfillLoaded();
     }
 
-    function _loadPlugins(resolve, _model, _api) {
+    function _loadPlugins(resolve, _model) {
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-        _pluginLoader.on(events.COMPLETE, _.partial(_completePlugins, resolve, _model, _api));
+        _pluginLoader.on(events.COMPLETE, resolve);
         _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
         _pluginLoader.load();
     }
 
-    function _completePlugins(resolve, _model, _api) {
+    function _initPlugins(resolve, _model, _api) {
         _pluginLoader.setupPlugins(_api, _model);
         
         resolve();
@@ -107,28 +117,33 @@ define([
         error(resolve, 'Could not load plugin', evt.message);
     }
 
-    function _loadPlaylist(resolve, _model, _api) {
+    function _loadPlaylist(resolve, _model) {
         var playlist = _model.get('playlist');
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
-                _completePlaylist(resolve, _model, _api, data.playlist);
+                _model.set('playlist', data.playlist);
+                resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
             _playlistLoader.load(playlist);
         } else {
-            _completePlaylist(resolve, _model, _api, playlist);
+            resolve();
         }
     }
 
-    function _completePlaylist(resolve, _model, _api, playlist) {
-        _api.setPlaylist(playlist);
+    function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
+        var playlist = _model.get('playlist');
 
-        var p = _model.get('playlist');
-        if (!_.isArray(p) || p.length === 0) {
+        // Performs filtering
+        _setPlaylist(playlist);
+
+        playlist = _model.get('playlist');
+        if (!_.isArray(playlist) || playlist.length === 0) {
             _playlistError(resolve, 'Playlist type not supported');
             return;
         }
+
         resolve();
     }
 
@@ -213,7 +228,7 @@ define([
         }
     }
 
-    function _setupComponents(resolve, _model, _api, _view) {
+    function _setupView(resolve, _model, _api, _view) {
         _view.setup();
         resolve();
     }
