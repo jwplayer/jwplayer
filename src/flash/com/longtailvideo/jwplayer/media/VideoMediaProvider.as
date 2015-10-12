@@ -90,11 +90,8 @@ public class VideoMediaProvider extends MediaProvider {
 
     override public function init(itm:PlaylistItem):void {
         setupVideo(itm);
-        // start loading the content only if preload is 'auto'
-        if (itm.preload === "auto") {
-            loadQuality();
-            _stream.pause();
-        }
+        loadQuality();
+        _stream.pause();
     }
 
     /** Load new media file; only requested once per item. **/
@@ -103,9 +100,7 @@ public class VideoMediaProvider extends MediaProvider {
         if (_item !== itm) {
             setupVideo(itm);
             loadQuality();
-        } else if (itm.preload === "metadata") {
-            loadQuality();
-        } else {
+        } else if (itm.preload !== "none") {
             play();
         }
 
@@ -254,7 +249,7 @@ public class VideoMediaProvider extends MediaProvider {
             _buffered = Math.min(100, _buffered);
             sendBufferEvent(_buffered);
         }
-        if (state == PlayerState.PLAYING) {
+        if (state === PlayerState.PLAYING && _position !== pos) {
             _position = pos;
             if (_item.type == 'mp4') {
                 _position += _offset.time;

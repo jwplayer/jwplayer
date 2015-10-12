@@ -18,7 +18,8 @@ define([
         // otherwise it's 'none'
         edgeStyle: null,
         windowColor: '#FFF',
-        windowOpacity: 0
+        windowOpacity: 0,
+        preprocessor: _.identity
     };
 
     /** Component that renders the actual captions on screen. **/
@@ -137,7 +138,7 @@ define([
                 _render('');
             } else if (found !== _current) {
                 _current = found;
-                _render(data[_current].text);
+                _render( _options.preprocessor(data[_current].text) );
             }
         }
 

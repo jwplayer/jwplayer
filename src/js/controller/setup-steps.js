@@ -196,7 +196,6 @@ define([
                 _model.set('skin-loading', false);
             });
             loader.addEventListener(events.ERROR, function() {
-                console.log('The given skin failed to load : ', skinUrl);
                 _model.set('skin', 'seven'); // fall back to seven skin
                 _model.set('skin-loading', false);
             });

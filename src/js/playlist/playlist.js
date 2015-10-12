@@ -18,7 +18,8 @@ define([
 
         _.each(playlist, function(item) {
             item = _.extend({}, item);
-            item.sources = _filterSources(item.sources, providers, androidhls, item.drm || configDrm);
+            item.sources = _filterSources(item.sources, providers, androidhls,
+                item.drm || configDrm, item.preload || preload);
 
             if (!item.sources.length) {
                 return;
@@ -39,7 +40,7 @@ define([
     };
 
     // A playlist item may have multiple different sources, but we want to stick with one.
-    var _filterSources = function(sources, providers, androidhls, itemDrm) {
+    var _filterSources = function(sources, providers, androidhls, itemDrm, preload) {
 
         // legacy plugin support
         if (!providers || !providers.choose) {
@@ -56,6 +57,10 @@ define([
 
             if (originalSource.drm || itemDrm) {
                 originalSource.drm = originalSource.drm || itemDrm;
+            }
+
+            if (originalSource.preload || preload) {
+                originalSource.preload = originalSource.preload || preload;
             }
 
             return Source(originalSource);
