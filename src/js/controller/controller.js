@@ -6,6 +6,7 @@ define([
     'controller/Setup',
     'controller/captions',
     'controller/model',
+    'playlist/playlist',
     'playlist/loader',
     'utils/helpers',
     'view/view',
@@ -15,7 +16,7 @@ define([
     'events/events',
     'view/error'
 ], function(Config, deprecateInit, InstreamAdapter, _, Setup, Captions,
-            Model, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
+            Model, Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queue(command) {
         return function() {
@@ -74,7 +75,7 @@ define([
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
-            _setup = new Setup(_api, _model, _view);
+            _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);
@@ -229,7 +230,7 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                        _model.setPlaylist(item);
+                        _setPlaylist(item);
                         _setItem(0);
                         break;
                     case 'number':
@@ -385,6 +386,21 @@ define([
                 _stop(true);
                 _setItem(index);
                 _play();
+            }
+
+            function _setPlaylist(p) {
+                var playlist = Playlist(p);
+                playlist = Playlist.filterPlaylist(playlist, _model.getProviders(), _model.get('androidhls'),
+                    _model.get('drm'), _model.get('preload'));
+
+                _model.set('playlist', playlist);
+
+                if (playlist.length === 0) {
+                    _model.mediaController.trigger(events.JWPLAYER_ERROR, {
+                        message: 'Error loading playlist: No playable sources found'
+                    });
+                    return;
+                }
             }
 
             function _setItem(index) {

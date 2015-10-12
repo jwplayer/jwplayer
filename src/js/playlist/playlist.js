@@ -40,7 +40,7 @@ define([
     };
 
     // A playlist item may have multiple different sources, but we want to stick with one.
-    var _filterSources = Playlist.filterSources = function(sources, providers, androidhls, itemDrm, preload) {
+    var _filterSources = function(sources, providers, androidhls, itemDrm, preload) {
 
         // legacy plugin support
         if (!providers || !providers.choose) {
