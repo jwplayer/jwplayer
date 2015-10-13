@@ -212,7 +212,7 @@ define([
             return _display;
         };
 
-        _model.on('setItem', function() {
+        _model.on('change:playlistItem', function() {
             _timeEvent = null;
             _current = -1;
             _render('');
