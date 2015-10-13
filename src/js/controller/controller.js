@@ -121,10 +121,10 @@ define([
                     });
                 });
                 // For onItem callback
-                _model.on('change:playlistItem', function(model, playlistItem) {
+                _model.on('itemReady', function() {
                     _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                        index: model.get('item'),
-                        item: playlistItem
+                        index: _model.get('item'),
+                        item: _model.get('playlistItem')
                     });
                 });
                 // For onPlaylist callback
@@ -222,7 +222,7 @@ define([
                 _stop(true);
 
                 if (_model.get('autostart')) {
-                    _model.once('setItem', _play);
+                    _model.once('itemReady', _play);
                 }
 
                 switch (typeof item) {
@@ -311,7 +311,7 @@ define([
 
             function _stop(internal) {
                 // Reset the autostart play
-                _model.off('setItem', _play);
+                _model.off('itemReady', _play);
 
                 var fromApi = !internal;
 
