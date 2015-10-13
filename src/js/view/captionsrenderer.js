@@ -212,11 +212,12 @@ define([
             return _display;
         };
 
-        _model.on('change:item', function() {
+        _model.on('setItem', function() {
             _timeEvent = null;
             _current = -1;
             _render('');
         }, this);
+
         _model.on('change:captionsTrack', function(model, captionsTrack) {
             this.populate(captionsTrack);
         }, this);

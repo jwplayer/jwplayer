@@ -121,10 +121,10 @@ define([
                     });
                 });
                 // For onItem callback
-                _model.on('change:playlistItem', function(model, playlistItem) {
+                _model.on('setItem', function() {
                     _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                        index: model.get('item'),
-                        item: playlistItem
+                        index: _model.get('item'),
+                        item: _model.get('playlistItem')
                     });
                 });
                 // For onPlaylist callback

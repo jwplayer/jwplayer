@@ -187,6 +187,7 @@ define([
             this.onVolume(this._model, this._model.get('volume'));
             this.onPlaylist(this._model, this._model.get('playlist'));
             this.onPlaylistItem(this._model, this._model.get('playlistItem'));
+            this.onMediaModel(this._model, this._model.get('mediaModel'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
             this.onCaptionsList(this._model, this._model.get('captionsList'));
 
@@ -195,6 +196,7 @@ define([
             this._model.on('change:mute', this.onMute, this);
             this._model.on('change:playlist', this.onPlaylist, this);
             this._model.on('change:playlistItem', this.onPlaylistItem, this);
+            this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
@@ -294,32 +296,34 @@ define([
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
-            
+
             this.clearCompactMode();
 
             var itemIdx = model.get('item');
-            if(this.elements.playlist) {
+            if (this.elements.playlist) {
                 this.elements.playlist.selectItem(itemIdx);
             }
 
             this.elements.audiotracks.setup();
+        },
 
-            this._model.mediaModel.on('change:levels', function(model, levels) {
+        onMediaModel : function(model, mediaModel) {
+            mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));
                 this.clearCompactMode();
             }, this);
-            this._model.mediaModel.on('change:currentLevel', function(model, level) {
+            mediaModel.on('change:currentLevel', function(model, level) {
                 this.elements.hd.selectItem(level);
             }, this);
-            this._model.mediaModel.on('change:audioTracks', function(model, audioTracks) {
+            mediaModel.on('change:audioTracks', function(model, audioTracks) {
                 var list = _.map(audioTracks, function(track) { return { label : track.name }; });
                 this.elements.audiotracks.setup(list, model.get('currentAudioTrack'), {toggle: false});
                 this.clearCompactMode();
             }, this);
-            this._model.mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
+            mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);
             }, this);
-            this._model.mediaModel.on('change:state', function(model, state) {
+            mediaModel.on('change:state', function(model, state) {
                 if(state === 'complete') {
                     this.elements.drawer.closeTooltip();
                     utils.removeClass(this.el, 'jw-drawer-expanded');
