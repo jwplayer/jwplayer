@@ -410,12 +410,12 @@ define([
             }
 
             // This setTimeout allows the player to actually get embedded into the player
-            setTimeout(function() {
+            _api.on(events.JWPLAYER_READY, function() {
                 // Initialize values for containerWidth and containerHeight
                 _responsiveListener();
 
                 _resize(_model.get('width'), _model.get('height'));
-            }, 0);
+            });
         };
 
         function _onCastActive(model, val) {
