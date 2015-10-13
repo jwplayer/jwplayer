@@ -53,7 +53,7 @@ define([
             }, _this);
 
             // Load the instream item
-            _adModel.loadVideo();
+            _adModel.loadVideo(item);
         };
 
         /** Stop the instream playback and revert the main player back to its original state **/
