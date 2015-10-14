@@ -15,6 +15,7 @@ define([
 
         var _this = this;
         this.iconUI = new UI (this.el).on('click tap', function(evt){_this.trigger(evt.type);});
+
     };
 
     _.extend(DisplayIcon.prototype, {

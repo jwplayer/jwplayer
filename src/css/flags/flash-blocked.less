@@ -1,18 +1,11 @@
 // This has higher specificity to overwrite .jwplayer.jw-state-idle
 body .jwplayer.jw-flag-flash-blocked {
-    .jw-controls {
-        display: none;
-    }
-    
+
     .jw-title {
-        display: none;
+        display: block;
     }
 
-    .jw-overlays {
-        display: none;
-    }
-
-    .jw-preview {
+    .jw-controls, .jw-overlays, .jw-preview {
         display: none;
     }
 }

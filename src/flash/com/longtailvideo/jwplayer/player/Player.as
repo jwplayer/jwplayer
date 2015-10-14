@@ -27,9 +27,6 @@ public class Player extends Sprite implements IPlayer {
     protected var _instream:InstreamPlayer;
 
     public function Player() {
-        // Send embedded event so we know flash isn't blocked
-        SwfEventRouter.triggerJsEvent('embedded');
-
         Security.allowDomain("*");
 
         // Send embedded event so we know flash isn't blocked
@@ -66,6 +63,11 @@ public class Player extends Sprite implements IPlayer {
         // e.state can be ThrottleType.THROTTLE, ThrottleType.PAUSE, or ThrottleType.RESUME
         // in Chrome we only get 'throttle' and 'resume' for offscreen and power-save throttling
         var state:String = e['state'] as String;
+        if (state === 'resume') {
+            // After resume, we're past Chrome Power Save
+            // stop listening to the off-screen throttle events
+            this.removeEventListener('throttle', flashThrottled);
+        }
         SwfEventRouter.triggerJsEvent('throttle', {
             state: state
         });
