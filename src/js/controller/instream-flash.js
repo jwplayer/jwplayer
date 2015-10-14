@@ -4,8 +4,9 @@ define([
     'events/change-state-event',
     'events/events',
     'events/states',
+    'utils/helpers',
     'utils/underscore'
-], function(Events, Model, changeStateEvent, events, states, _) {
+], function(Events, Model, changeStateEvent, events, states, utils, _) {
 
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
@@ -21,11 +22,28 @@ define([
 
         var container = _controller.getContainer();
         this.swf = container.querySelector('object');
+
+        this.flashBlockedTimeout = -1;
     };
 
     InstreamFlash.prototype = _.extend({
 
         init: function() {
+            // We cannot rely on firefox to properly return results
+            if (utils.isChrome()) {
+                this.swf.on('throttle', function(e) {
+                    clearTimeout(this.flashBlockedTimeout);
+
+                    if (e.state === 'resume') {
+                        this.instreamPlay();
+                    } else {
+                        var _this = this;
+                        this.flashBlockedTimeout = setTimeout(function () {
+                            _this.instreamPause();
+                        }, 250);
+                    }
+                }, this);
+            }
 
             this.swf.on('instream:state', function(evt) {
                 switch (evt.newstate) {
