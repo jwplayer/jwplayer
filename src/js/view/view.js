@@ -371,6 +371,8 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
 
+            _model.on('change:errorEvent', _errorHandler);
+
             _model.on('change:controls', _onChangeControls);
             _onChangeControls(_model, _model.get('controls'));
             _model.on('change:state', _stateHandler);
@@ -862,10 +864,10 @@ define([
             _this.setAltText((live) ? 'Live Broadcast' : '');
         }
 
-        function _errorHandler() {
-            var evt = _model.get('errorEvent');
-
-            if (evt.name) {
+        function _errorHandler(model, evt) {
+            if (!evt) {
+                _title.updateText('', '');
+            } else if (evt.name) {
                 _title.updateText(evt.name, evt.message);
             } else {
                 _title.updateText(evt.message, '');
@@ -899,9 +901,6 @@ define([
                     break;
                 case states.PAUSED:
                     _userActivity();
-                    break;
-                case states.ERROR:
-                    _errorHandler();
                     break;
             }
         }
