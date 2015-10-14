@@ -3,8 +3,17 @@ define(['utils/underscore'], function(_) {
     // v2.1.0
 
     // Use polyfill for setImmediate for performance gains
-    var asap = _.defer;
-    var isArray = _.isArray;
+    var asap = (typeof setImmediate === 'function' && setImmediate) ||
+        function(fn) { setTimeout(fn, 1); };
+
+    // Polyfill for Function.prototype.bind
+    function bind(fn, thisArg) {
+        return function() {
+            fn.apply(thisArg, arguments);
+        }
+    }
+
+    var isArray = Array.isArray || function(value) { return Object.prototype.toString.call(value) === "[object Array]" };
 
     function Promise(fn) {
         if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new');
@@ -170,5 +179,4 @@ define(['utils/underscore'], function(_) {
     };
 
     window.Promise = Promise;
-
 });
