@@ -6,6 +6,7 @@ define([
     'controller/Setup',
     'controller/captions',
     'controller/model',
+    'playlist/playlist',
     'playlist/loader',
     'utils/helpers',
     'view/view',
@@ -15,7 +16,7 @@ define([
     'events/events',
     'view/error'
 ], function(Config, deprecateInit, InstreamAdapter, _, Setup, Captions,
-            Model, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
+            Model, Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queue(command) {
         return function() {
@@ -74,7 +75,7 @@ define([
             _model = this._model.setup(config);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
-            _setup = new Setup(_api, _model, _view);
+            _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);
@@ -88,13 +89,9 @@ define([
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
             _model.on('change:flashBlocked', function(model, isBlocked) {
                 if (isBlocked) {
-                    var evt = {
+                    this.trigger(events.JWPLAYER_ERROR, {
                         message: 'Flash plugin is blocked'
-                    };
-                    this._model.set('errorEvent', evt);
-                    this.trigger(events.JWPLAYER_ERROR, evt);
-                } else {
-                    this._model.set('errorEvent', undefined);
+                    });
                 }
             }, this);
 
@@ -126,10 +123,10 @@ define([
                     });
                 });
                 // For onItem callback
-                _model.on('change:playlistItem', function(model, playlistItem) {
+                _model.on('itemReady', function() {
                     _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                        index: model.get('item'),
-                        item: playlistItem
+                        index: _model.get('item'),
+                        item: _model.get('playlistItem')
                     });
                 });
                 // For onPlaylist callback
@@ -227,7 +224,7 @@ define([
                 _stop(true);
 
                 if (_model.get('autostart')) {
-                    _model.once('setItem', _play);
+                    _model.once('itemReady', _play);
                 }
 
                 switch (typeof item) {
@@ -235,7 +232,7 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                        _model.setPlaylist(item);
+                        _setPlaylist(item);
                         _setItem(0);
                         break;
                     case 'number':
@@ -316,7 +313,7 @@ define([
 
             function _stop(internal) {
                 // Reset the autostart play
-                _model.off('setItem', _play);
+                _model.off('itemReady', _play);
 
                 var fromApi = !internal;
 
@@ -391,6 +388,21 @@ define([
                 _stop(true);
                 _setItem(index);
                 _play();
+            }
+
+            function _setPlaylist(p) {
+                var playlist = Playlist(p);
+                playlist = Playlist.filterPlaylist(playlist, _model.getProviders(), _model.get('androidhls'),
+                    _model.get('drm'), _model.get('preload'));
+
+                _model.set('playlist', playlist);
+
+                if (playlist.length === 0) {
+                    _model.mediaController.trigger(events.JWPLAYER_ERROR, {
+                        message: 'Error loading playlist: No playable sources found'
+                    });
+                    return;
+                }
             }
 
             function _setItem(index) {

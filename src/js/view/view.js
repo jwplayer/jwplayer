@@ -373,6 +373,8 @@ define([
 
             _model.on('change:errorEvent', _errorHandler);
 
+            _model.on('change:flashBlocked', _flashBlockedHandler);
+
             _model.on('change:controls', _onChangeControls);
             _onChangeControls(_model, _model.get('controls'));
             _model.on('change:state', _stateHandler);
@@ -412,12 +414,12 @@ define([
             }
 
             // This setTimeout allows the player to actually get embedded into the player
-            setTimeout(function() {
+            _api.on(events.JWPLAYER_READY, function() {
                 // Initialize values for containerWidth and containerHeight
                 _responsiveListener();
 
                 _resize(_model.get('width'), _model.get('height'));
-            }, 0);
+            });
         };
 
         function _onCastActive(model, val) {
@@ -865,12 +867,18 @@ define([
         }
 
         function _errorHandler(model, evt) {
-            if (!evt) {
-                _title.updateText('', '');
-            } else if (evt.name) {
+            if (evt.name) {
                 _title.updateText(evt.name, evt.message);
             } else {
                 _title.updateText(evt.message, '');
+            }
+        }
+
+        function _flashBlockedHandler(model, isBlocked) {
+            if (isBlocked) {
+                _title.updateText('Flash plugin is blocked', '');
+            } else {
+                _title.playlistItem(model, model.get('playlistItem'));
             }
         }
 
