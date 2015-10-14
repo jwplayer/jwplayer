@@ -2,9 +2,11 @@ define(['utils/underscore'], function(_) {
     // https://github.com/taylorhakes/promise-polyfill
     // v2.1.0
 
+    // ** THIS POLYFILL BREAKS WEBPACK **
     // Use polyfill for setImmediate for performance gains
-    var asap = (typeof setImmediate === 'function' && setImmediate) ||
-        function(fn) { setTimeout(fn, 1); };
+    //var asap = (typeof setImmediate === 'function' && setImmediate) ||
+        //function(fn) { setTimeout(fn, 1); };
+    var asap = _.defer;
 
     // Polyfill for Function.prototype.bind
     function bind(fn, thisArg) {
@@ -179,4 +181,5 @@ define(['utils/underscore'], function(_) {
     };
 
     window.Promise = Promise;
+
 });
