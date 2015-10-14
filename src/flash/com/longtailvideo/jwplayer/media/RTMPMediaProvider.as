@@ -677,6 +677,9 @@ public class RTMPMediaProvider extends MediaProvider {
                     stop();
                 }
                 break;
+            case 'NetStream.Seek.Notify':
+                sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_SEEKED);
+                break;
         }
     }
 }
