@@ -231,6 +231,8 @@ define([
                     var forwardEventsWithData = [
                         events.JWPLAYER_MEDIA_META,
                         events.JWPLAYER_MEDIA_ERROR,
+                        events.JWPLAYER_MEDIA_SEEK,
+                        events.JWPLAYER_MEDIA_SEEKED,
                         'subtitlesTracks',
                         'subtitlesTrackChanged',
                         'subtitlesTrackData'
@@ -309,10 +311,6 @@ define([
                             this.setState(states.COMPLETE);
                             this.trigger(e.type);
                         }
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_MEDIA_SEEK, function(e) {
-                        this.trigger(events.JWPLAYER_MEDIA_SEEK, e);
                     }, this);
 
                     _swf.on('visualQuality', function(e) {

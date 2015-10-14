@@ -372,6 +372,9 @@ public class VideoMediaProvider extends MediaProvider {
             case "NetStream.Play.NoSupportedTrackFound":
                 error('Error loading media: File could not be played');
                 break;
+            case 'NetStream.Seek.Notify':
+                sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_SEEKED);
+                break;
         }
     }
 
