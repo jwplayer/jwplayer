@@ -11,29 +11,25 @@ define([
 ], function (_, helpers, aac, flv, mp4, playlists, playlist, Providers) {
     /* jshint qunit: true */
 
-    function sourcesMatch(arr) {
+    // Verify that for each playlist item, they only have a single type of source
+    function sourcesMatch(playlist) {
         var type;
 
-        var match = _.all(arr, function(a) {
-            type = type || a.type;
-            return type === a.type;
+        var match = _.all(playlist, function(playlistItem) {
+            // Each item can have it's own type
+            type = null;
+
+            return _.all(playlistItem.sources, function(a) {
+                type = type || a.type;
+                return type === a.type;
+            });
         });
 
-        return match ? type : undefined;
+        return match;
     }
 
-    var sources = {
-        flv_mp4 : [flv.tagged, mp4.tagged, flv.tagged, mp4.tagged],
-        mp4_flv : [mp4.tagged, flv.tagged, mp4.tagged, flv.tagged],
-        aac_mp4 : [aac.tagged, mp4.tagged, aac.tagged, mp4.tagged],
-        mp4_aac : [mp4.tagged, aac.tagged, mp4.tagged, aac.tagged],
-        invalid : [undefined, false, undefined],
-        empty   : [],
-        mixed   : [mp4.tagged, undefined, mp4.tagged]
-    };
 
     function testSource(assert, sourceName, desiredType, isFlash, isAndroidHls) {
-        var source = sources[sourceName];
 
         var primary = isFlash ? 'flash' : undefined;
 
@@ -42,10 +38,11 @@ define([
             return;
         }
 
-        var filtered = playlist.filterSources(source, new Providers({primary:primary}), !!isAndroidHls);
+        var pl = playlist(playlists[sourceName]);
+        var filtered = playlist.filterPlaylist(pl, new Providers({primary:primary}), !!isAndroidHls);
 
         var title = isFlash ? 'Flash only with ' : 'Html5 only with ';
-        assert.equal(sourcesMatch(filtered), desiredType, title + sourceName + ' results in ' + desiredType);
+        assert.ok(sourcesMatch(filtered), title + sourceName + ' has only matching sources');
     }
 
     module('playlist.filterSources');
@@ -73,15 +70,15 @@ define([
 
     module('playlist.filterPlaylist');
 
-    test('filterplaylist', function(assert) {
+    test('filterPlaylist', function(assert) {
         var pl;
         pl = playlist.filterPlaylist(playlists['webm_mp4'], new Providers());
-        assert.equal(sourcesMatch(pl[0].sources), 'webm', 'Webm mp4 first source is webm');
-        assert.equal(sourcesMatch(pl[1].sources), 'mp4', 'Webm mp4 second source is mp4');
+        assert.equal(pl[0].sources[0].type, 'webm', 'Webm mp4 first source is webm');
+        assert.equal(pl[1].sources[0].type, 'mp4', 'Webm mp4 second source is mp4');
 
         pl = playlist.filterPlaylist(playlists['mp4_webm'], new Providers());
-        assert.equal(sourcesMatch(pl[0].sources), 'mp4', 'Mp4 webm, first source is mp4');
-        assert.equal(sourcesMatch(pl[1].sources), 'webm', 'mp4 webm, second source is webm');
+        assert.equal(pl[0].sources[0].type, 'mp4', 'Mp4 webm, first source is mp4');
+        assert.equal(pl[1].sources[0].type, 'webm', 'mp4 webm, second source is webm');
 
         var androidhls = true;
         pl = playlist.filterPlaylist(playlists['mp4_webm'], new Providers(), androidhls);
