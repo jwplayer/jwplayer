@@ -365,7 +365,7 @@ define([
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
-                if (startTime === 0) {
+                if (startTime === 0 && _videotag.currentTime !== 0) {
                     // restart video without dispatching seek event
                     _delayedSeek = -1;
                     _this.seek(startTime);
