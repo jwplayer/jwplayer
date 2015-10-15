@@ -50,6 +50,7 @@ define([], function() {
 
         // Utility
         JWPLAYER_ERROR: 'error',
+        JWPLAYER_CLEAR_ERROR: 'clearError',
         JWPLAYER_PLAYER_STATE: 'state',
         JWPLAYER_CAST_AVAILABLE: 'castAvailable',
 
