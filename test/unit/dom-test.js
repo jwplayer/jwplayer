@@ -58,8 +58,7 @@ define([
 
     test('dom.classList', function(assert) {
         var elementA = document.createElement('div');
-        elementA.classList.add('class1');
-        elementA.classList.add('class2');
+        elementA.className = 'class1 class2';
 
         var elementB = document.createElement('div');
         dom.addClass(elementB, 'a b');
