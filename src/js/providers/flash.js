@@ -196,7 +196,7 @@ define([
                     var _this = this;
                     _flashBlockedTimeout = setTimeout(function() {
                         Events.trigger.call(_this, 'flashBlocked');
-                    }, 2000);
+                    }, 4000);
                     _swf.once('embedded', function() {
                         clearTimeout(_flashBlockedTimeout);
                         Events.trigger.call(_this, 'flashUnblocked');
