@@ -11,14 +11,14 @@ define([
         assert.equal(element.style.transform, '', 'no transform is done');
 
         stretching.scale(element, 2, 2, 0, 0);
-        assert.equal(element.style.transform, 'scale(2, 2)', 'transform with scale');
+        assert.ok(/^scale\(2(,\s?2)?\)$/.test(element.style.transform), 'transform with scale');
 
         stretching.scale(element, 0, 0, 2, 2);
-        assert.equal(element.style.transform, 'translate(2px, 2px)', 'transform with offset');
+        assert.ok(/^translate\(2px,\s?2px\)$/.test(element.style.transform), 'transform with offset');
 
         stretching.scale(element, 2, 2, 2, 2);
-        assert.equal(element.style.transform,
-            'scale(2, 2) translate(2px, 2px)', 'transform with scale and offset');
+        assert.ok(/^scale\(2(,\s?2)?\) translate\(2px,\s?2px\)$/.test(element.style.transform),
+            'transform with scale and offset');
     });
 
     test('stretching.stretch invalid test', function(assert) {
