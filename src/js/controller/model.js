@@ -157,6 +157,11 @@ define([
         this.setQualityLevel = function(quality, levels){
             if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
                 this.mediaModel.set('currentLevel', parseInt(quality));
+
+                // For storage
+                var currentLevel = levels[quality] || {};
+                var label = currentLevel.label;
+                this.set('qualityLabel', label);
             }
         };
 
