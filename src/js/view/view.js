@@ -470,7 +470,9 @@ define([
         function _logoClickHandler(evt){
             if (!evt.link) {
                 //_togglePlay();
-                _api.play();
+                if (_model.get('controls')) {
+                    _api.play();
+                }
             } else {
                 _api.pause(true);
                 _api.setFullscreen(false);
