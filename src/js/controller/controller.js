@@ -92,6 +92,10 @@ define([
                     this.trigger(events.JWPLAYER_ERROR, {
                         message: 'Flash plugin is blocked'
                     });
+                } else {
+                    this.trigger(events.JWPLAYER_CLEAR_ERROR, {
+                        message: 'Flash plugin is blocked'
+                    });
                 }
             }, this);
 
