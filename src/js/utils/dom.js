@@ -23,9 +23,8 @@ define([
     dom.classList = function (element) {
         if (element.classList) {
             return element.classList;
-        } else {
-            return element.className.split(' ');
         }
+        return element.className.split(' ');
     };
 
     dom.hasClass = jqueryfuncs.hasClass;
