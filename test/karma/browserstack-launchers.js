@@ -39,6 +39,13 @@ module.exports = {
         os: 'OS X',
         os_version: 'Yosemite'
     },
+    firefox_41: {
+        base: 'BrowserStack',
+        browser: 'firefox',
+        browser_version: '41.0',
+        os: 'OS X',
+        os_version: 'Yosemite'
+    },
 
     // Chrome
     chrome_24: {
@@ -59,6 +66,13 @@ module.exports = {
         base: 'BrowserStack',
         browser: 'chrome',
         browser_version: '44.0',
+        os: 'OS X',
+        os_version: 'Yosemite'
+    },
+    chrome_45: {
+        base: 'BrowserStack',
+        browser: 'chrome',
+        browser_version: '45.0',
         os: 'OS X',
         os_version: 'Yosemite'
     },
