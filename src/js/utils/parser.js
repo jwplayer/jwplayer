@@ -54,6 +54,12 @@ define([
         return '';
     });
 
+    function containsParserErrors(childNodes) {
+        return _.some(childNodes, function(node) {
+            return node.nodeName === 'parsererror';
+        });
+    }
+
     /** Takes an XML string and returns an XML object **/
     parser.parseXML = function (input) {
         var parsedXML = null;
@@ -61,9 +67,9 @@ define([
             // Parse XML in FF/Chrome/Safari/Opera
             if (window.DOMParser) {
                 parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
-                var childNodes = parsedXML.childNodes;
-                if (childNodes && childNodes.length && childNodes[0].firstChild &&
-                    childNodes[0].firstChild.nodeName === 'parsererror') {
+                // In Firefox the XML doc may contain the parsererror, other browsers it's further down
+                if (containsParserErrors(parsedXML.childNodes) ||
+                    (parsedXML.childNodes && containsParserErrors(parsedXML.childNodes[0].childNodes))) {
                     parsedXML = null;
                 }
             } else {
