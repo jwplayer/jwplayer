@@ -128,6 +128,10 @@ define([
         }
 
         function _instreamItemComplete(e) {
+            // if googima ad pod is not completed, do not destroy the instream
+            if (e.incompletePod) {
+                return;
+            }
 
             if (_array && _arrayIndex + 1 < _array.length) {
                 // We want a play event for the next item, so we ensure the state != playing
