@@ -12,7 +12,7 @@ define([
         var semver = version.split('+')[0];
         var repo = Constants.repo + semver + '/';
         if (validator.isHTTPS()) {
-            return repo.replace(/^http:/, 'https://ssl.');
+            return repo.replace(/^http:/, 'https:');
         }
         return repo;
     });
