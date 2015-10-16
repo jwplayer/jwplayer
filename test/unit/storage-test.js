@@ -1,27 +1,39 @@
 define([
     'controller/storage',
+    'utils/simplemodel',
     'test/underscore'
-], function(storage, _) {
+], function(Storage, SimpleModel, _) {
     /* jshint qunit: true */
 
 
     module('Storage');
 
+    function mockModel() {
+        _.extend(this, SimpleModel);
+
+    }
+
     test('provides persistent storage', function(assert) {
+        var PERSIST = [
+            'volume',
+            'mute'
+        ];
+
+        var model = new mockModel();
+        var storage = new Storage();
+        storage.track(PERSIST, model);
+
+        model.set('volume', 70);
+        data = storage.getAllItems();
+        assert.strictEqual(data.volume, 70, 'storage listens for changes to model');
 
         storage.clear();
         var data = storage.getAllItems();
         assert.strictEqual(_.size(data), 0, 'storage is empty after calling clear');
 
-        storage.setItem('alpha', 'beta');
+        model.set('mute', true);
         data = storage.getAllItems();
-        assert.strictEqual(_.size(data), 1, '1 item is added after calling setItem on a new item');
-
-        assert.strictEqual(data.alpha, 'beta', 'value stored and retrieved properly');
-        assert.strictEqual(storage.getItem('alpha'), 'beta', 'a single value can be retrieved wit getItem');
-
-        storage.removeItem('alpha');
-        data = storage.getAllItems();
-        assert.strictEqual(_.size(data), 0, 'storage is empty after removing last item');
+        assert.strictEqual(_.size(data), 1, 'storage has one item after change to model');
+        assert.strictEqual(data.mute, true, 'boolean value stored properly');
     });
 });

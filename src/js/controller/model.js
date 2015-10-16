@@ -8,7 +8,15 @@ define([
     'utils/simplemodel',
     'events/events',
     'events/states'
-], function(utils, Providers, storage, QOE, _, Events, SimpleModel, events, states) {
+], function(utils, Providers, Storage, QOE, _, Events, SimpleModel, events, states) {
+
+
+    var PERSIST_ITEMS = [
+        'volume',
+        'mute',
+        'captionLabel',
+        'qualityLabel'
+    ];
 
     // Represents the state of the player
     var Model = function() {
@@ -16,8 +24,6 @@ define([
             // Video provider
             _providers,
             _provider,
-            // Saved settings
-            _cookies = {},
             _currentProvider = utils.noop;
 
         this.mediaController = _.extend({}, Events);
@@ -28,12 +34,10 @@ define([
         this.set('mediaModel', this.mediaModel);
 
         this.setup = function(config) {
-            if (config.cookies) {
-                storage.model(this);
-                _cookies = storage.getAllItems();
-            }
+            var storage = new Storage();
+            storage.track(PERSIST_ITEMS, this);
 
-            _.extend(this.attributes, config, _cookies, {
+            _.extend(this.attributes, config, storage.getAllItems(), {
                 // always start on first playlist item
                 item : 0,
                 // Initial state, upon setup
@@ -153,6 +157,11 @@ define([
         this.setQualityLevel = function(quality, levels){
             if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
                 this.mediaModel.set('currentLevel', parseInt(quality));
+
+                // For storage
+                var currentLevel = levels[quality] || {};
+                var label = currentLevel.label;
+                this.set('qualityLabel', label);
             }
         };
 

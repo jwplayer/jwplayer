@@ -10,7 +10,6 @@ define([
         //androidhls: true,
         autostart: false,
         controls: true,
-        cookies: true,
         displaytitle : true,
         displaydescription: true,
         mobilecontrols: false,
