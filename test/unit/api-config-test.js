@@ -114,8 +114,8 @@ define([
     });
 
     test('updates base to cdn or script location', function(assert) {
-        var CDN_URL = 'http://p.jwpcdn.com/player/v/'+ window.__BUILD_VERSION__ +'/';
-        var CUSTOM_BASE = 'http://p.jwpcdn.com/player/v/7.0.1-beta.1/';
+        var CDN_URL = 'http://ssl.p.jwpcdn.com/player/v/'+ window.__BUILD_VERSION__ +'/';
+        var CUSTOM_BASE = 'http://ssl.p.jwpcdn.com/player/v/7.0.1-beta.1/';
 
         var x = testConfig(assert, {});
         assert.equal(x.base, CDN_URL,

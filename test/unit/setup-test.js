@@ -71,7 +71,7 @@ define([
         var model = {
             setupTimeout: 0.001,
             playlist: [{sources:[{file:'file.mp4'}]}],
-            skin: '//p.jwpcdn.com/player/v/7.0.0/skins/bekle.css'
+            skin: '//ssl.p.jwpcdn.com/player/v/7.0.0/skins/bekle.css'
         };
 
         testSetup(model, function() {
