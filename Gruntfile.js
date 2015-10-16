@@ -316,8 +316,11 @@ module.exports = function(grunt) {
                     username:  process.env.BS_USERNAME,
                     accessKey: process.env.BS_AUTHKEY,
                     name: 'Unit Tests',
-                    project: 'JW Player',
-                    build: buildVersion,
+                    project: 'jwplayer',
+                    build: '' + (env.JOB_NAME     || 'local' ) +' '+
+                                (env.BUILD_NUMBER || env.USER) +' '+
+                                (env.GIT_BRANCH   || ''      ) +' '+
+                                buildVersion.split('+')[0],
                     timeout: 600 // 10 min
                 }
             },
@@ -332,10 +335,10 @@ module.exports = function(grunt) {
             },
             // browserstack_all: { browsers: Object.keys( require( './test/qunit/karma/browserstack-launchers' ) ) },
             browserstack : {
-                browsers: ['chrome_44']
+                browsers: ['chrome_45']
             },
             browserstack_firefox : {
-                browsers: ['firefox_35']
+                browsers: ['firefox_41']
             },
             browserstack_ie11 : {
                 browsers: ['ie11_windows']
@@ -392,6 +395,14 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('karma:local', 'karma:phantomjs');
+
+    grunt.registerTask('karma:remote', [
+        'karma:browserstack',
+        'karma:browserstack_firefox',
+        'karma:browserstack_ie11',
+        'karma:browserstack_ie10',
+        'karma:browserstack_ie9'
+    ]);
 
     grunt.registerTask('test', [
         'karma'
