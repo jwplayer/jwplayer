@@ -316,9 +316,10 @@ module.exports = function(grunt) {
                     username:  process.env.BS_USERNAME,
                     accessKey: process.env.BS_AUTHKEY,
                     name: 'Unit Tests',
-                    project: (env.JOB_NAME || ('jwplayer:'+env.USER)),
-                    build: '' + (env.BUILD_NUMBER || 'local') +' '+
-                                (env.GIT_BRANCH || '') +' '+
+                    project: 'jwplayer',
+                    build: '' + (env.JOB_NAME     || 'local' ) +' '+
+                                (env.BUILD_NUMBER || env.USER) +' '+
+                                (env.GIT_BRANCH   || ''      ) +' '+
                                 buildVersion.split('+')[0],
                     timeout: 600 // 10 min
                 }
