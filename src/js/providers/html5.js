@@ -68,6 +68,13 @@ define([
             return Events.trigger.call(this, type, args);
         };
 
+        this.setState = function(state) {
+            if (!_attached) {
+                return;
+            }
+            return DefaultProvider.setState.call(this, state);
+        };
+
         var _this = this,
             _mediaEvents = {
                 //abort: _generalHandler,
@@ -86,7 +93,7 @@ define([
                 progress: _progressHandler,
                 //canplaythrough: _generalHandler,
 
-                //pause: _pauseHandler,
+                pause: _pauseHandler,
                 //ratechange: _generalHandler,
                 //readystatechange: _generalHandler,
                 seeked: _seekedHandler,
@@ -174,11 +181,11 @@ define([
         }
 
         function _timeUpdateHandler() {
+            clearTimeout(_playbackTimeout);
+            _canSeek = true;
             if (!_attached) {
                 return;
             }
-            _canSeek = true;
-            clearTimeout(_playbackTimeout);
             if (_this.state === states.STALLED) {
                 _this.setState(states.PLAYING);
             } else if (_this.state === states.PLAYING) {
@@ -260,18 +267,18 @@ define([
         }
 
         function _playingHandler() {
-            if (!_attached) {
-                return;
-            }
             _this.setState(states.PLAYING);
             _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
-        function _stalledHandler() {
-            if (!_attached) {
+        function _pauseHandler() {
+            if (_this.state === states.COMPLETE) {
                 return;
             }
+            _this.setState(states.PAUSED);
+        }
 
+        function _stalledHandler() {
             // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
             if (_isAndroidHLS) {
                 return;
@@ -402,11 +409,12 @@ define([
         }
 
         this.stop = function() {
+            clearTimeout(_playbackTimeout);
             if (!_attached) {
                 return;
             }
-            clearTimeout(_playbackTimeout);
             _videotag.removeAttribute('src');
+            // TODO: empty element
             if (!_isIE) {
                 _videotag.load();
             }
@@ -520,10 +528,6 @@ define([
         };
 
         function _checkPlaybackStalled() {
-            if (!_attached) {
-                return;
-            }
-
             // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
             if (_videotag.currentTime === _position) {
                 _stalledHandler();
