@@ -11,7 +11,7 @@ module.exports = function( config ) {
             'karma-coverage',
             'karma-requirejs',
             'karma-qunit',
-            'karma-jenkins-reporter',
+            'karma-junit-reporter',
             'karma-phantomjs-launcher',
             'karma-chrome-launcher',
             'karma-firefox-launcher',
@@ -75,6 +75,6 @@ module.exports = function( config ) {
 
     // Jenkins JUnit report
     if (isJenkins) {
-        config.reporters.push( 'jenkins' );
+        config.reporters.push( 'junit' );
     }
 };

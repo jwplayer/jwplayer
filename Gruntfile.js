@@ -307,9 +307,9 @@ module.exports = function(grunt) {
                     type : 'html',
                     dir: 'reports/coverage'
                 },
-                jenkinsReporter: {
-                    outputFile: 'reports/<%= grunt.task.current.target %>/junit.xml',
-                    classnameSuffix: 'unit'
+                junitReporter: {
+                    suite: '<%= grunt.task.current.target %>',
+                    outputDir: 'reports/junit'
                 },
                 customLaunchers: require( './test/karma/browserstack-launchers' ),
                 browserStack: {
