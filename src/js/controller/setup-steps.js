@@ -79,9 +79,17 @@ define([
             }
         }
 
+        // Increment needToLoad first, otherwise we may resolve before they're all ready.
         if (!window.Promise) {
             needToLoad++;
-            require.ensure(['polyfills/promise'], function(require) {
+        }
+
+        if (!window.btoa || !window.atob) {
+            needToLoad++;
+        }
+
+        if (!window.Promise) {
+            require.ensure(['polyfills/promise'], function (require) {
                 require('polyfills/promise');
                 loaded++;
                 polyfillLoaded();
@@ -89,7 +97,6 @@ define([
         }
 
         if (!window.btoa || !window.atob) {
-            needToLoad++;
             require.ensure(['polyfills/base64'], function(require) {
                 require('polyfills/base64');
                 loaded++;
