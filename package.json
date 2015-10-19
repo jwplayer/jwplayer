@@ -55,6 +55,6 @@
     "postinstall": "bower install"
   },
   "engines": {
-    "node": ">=0.10.20"
+    "node": ">=4.0.0"
   }
 }
