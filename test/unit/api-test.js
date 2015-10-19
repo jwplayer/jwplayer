@@ -103,7 +103,17 @@ define([
         var api = createApi('player');
 
         _.each(apiMethodsChainable, function(args, method) {
-            var result = api[method].apply(api, args);
+            var fn = api[method];
+            assert.ok(_.isFunction(fn), 'api.' + method + ' is defined');
+
+            var result;
+            try {
+                result = fn.apply(api, args);
+            } catch(e) {
+                var expectedMessage = method +' does not throw an error';
+                assert.equal(method +' threw an error', expectedMessage, expectedMessage +':'+ e.message);
+            }
+
             assert.strictEqual(result, api, 'api.' + method + ' returns an instance of itself');
         });
     });
