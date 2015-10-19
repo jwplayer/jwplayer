@@ -414,7 +414,6 @@ define([
                 return;
             }
             _videotag.removeAttribute('src');
-            // TODO: empty element
             if (!_isIE) {
                 _videotag.load();
             }
