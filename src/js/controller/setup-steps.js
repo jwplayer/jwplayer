@@ -15,13 +15,24 @@ define([
     function getQueue() {
 
         var Components = {
-            LOAD_POLYFILLS : {
-                method: _loadPolyfills,
+            LOAD_PROMISE_POLYFILL : {
+                method: _loadPromisePolyfill,
                 depends: []
+            },
+            LOAD_BASE64_POLYFILL : {
+                method: _loadBase64Polyfill,
+                depends: []
+            },
+            LOADED_POLYFILLS : {
+                method: _loadedPolyfills,
+                depends: [
+                    'LOAD_PROMISE_POLYFILL',
+                    'LOAD_BASE64_POLYFILL'
+                ]
             },
             LOAD_PLUGINS : {
                 method: _loadPlugins,
-                depends: ['LOAD_POLYFILLS']
+                depends: ['LOADED_POLYFILLS']
             },
             INIT_PLUGINS : {
                 method: _initPlugins,
@@ -37,11 +48,11 @@ define([
             },
             LOAD_SKIN : {
                 method: _loadSkin,
-                depends: ['LOAD_POLYFILLS']
+                depends: ['LOADED_POLYFILLS']
             },
             LOAD_PLAYLIST : {
                 method: _loadPlaylist,
-                depends: ['LOAD_POLYFILLS']
+                depends: ['LOADED_POLYFILLS']
             },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
@@ -66,45 +77,30 @@ define([
         return Components;
     }
 
-
-    function _loadPolyfills(resolve) {
-        // This method is a little obtuse because
-        //  webpack needs require.ensure calls to be statically analyzed
-        var needToLoad = 0;
-        var loaded = 0;
-
-        function polyfillLoaded() {
-            if (needToLoad === loaded) {
-                resolve();
-            }
-        }
-
-        // Increment needToLoad first, otherwise we may resolve before they're all ready.
-        if (!window.Promise) {
-            needToLoad++;
-        }
-
-        if (!window.btoa || !window.atob) {
-            needToLoad++;
-        }
-
+    function _loadPromisePolyfill(resolve) {
         if (!window.Promise) {
             require.ensure(['polyfills/promise'], function (require) {
                 require('polyfills/promise');
-                loaded++;
-                polyfillLoaded();
+                resolve();
             }, 'polyfills.promise');
+        } else {
+            resolve();
         }
+    }
 
+    function _loadBase64Polyfill(resolve) {
         if (!window.btoa || !window.atob) {
             require.ensure(['polyfills/base64'], function(require) {
                 require('polyfills/base64');
-                loaded++;
-                polyfillLoaded();
+                resolve();
             }, 'polyfills.base64');
+        } else {
+            resolve();
         }
+    }
 
-        polyfillLoaded();
+    function _loadedPolyfills(resolve){
+        resolve();
     }
 
     function _loadPlugins(resolve, _model) {
