@@ -62,7 +62,7 @@ define([
 
     test('replaces and restores container', function(assert) {
         var originalContainer = createContainer('player');
-        var api = new Api(originalContainer, noop);
+        var api = new Api(originalContainer, _.noop);
 
         var elementInDom = document.getElementById('player');
         assert.strictEqual(elementInDom, originalContainer, 'container is not replaced before setup');
@@ -249,7 +249,7 @@ define([
 
     function createApi(id, globalRemoveCallback) {
         var container = createContainer(id);
-        return new Api(container, globalRemoveCallback || noop);
+        return new Api(container, globalRemoveCallback || _.noop);
     }
 
     function createContainer(id) {
@@ -258,5 +258,4 @@ define([
         return container;
     }
 
-    function noop() {}
 });

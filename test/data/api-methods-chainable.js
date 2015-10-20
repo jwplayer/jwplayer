@@ -20,8 +20,8 @@ define({
     setMute: [false],
     setCues: [[]],
     resize: [100, 75],
-    on: [''],
-    once: [''],
+    on: ['', function() {}],
+    once: ['', function() {}],
     trigger: [''],
     off: void 0,
     remove: void 0
