@@ -2,11 +2,12 @@ define([
     'test/underscore',
     'jquery',
     'api/api',
+    'data/api-members',
     'data/api-methods',
     'data/api-methods-chainable',
     'data/config-small',
     'utils/backbone.events'
-], function (_, $, Api, apiMethods, apiMethodsChainable, configSmall, Events) {
+], function (_, $, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events) {
     /* jshint qunit: true */
 
     var vid = document.createElement('video');
@@ -91,12 +92,48 @@ define([
         assert.equal(originalEvent.type, 'original', 'original event.type is not modified');
     });
 
-    test('defines methods', function(assert) {
+    test('defines expected methods', function(assert) {
         var api = createApi('player');
 
         _.each(apiMethods, function(args, method) {
             assert.ok(_.isFunction(api[method]), 'api.' + method + ' is defined');
         });
+
+    });
+
+    test('defines expected members', function(assert) {
+        var api = createApi('player');
+
+        _.each(apiMembers, function(value, member) {
+            var actualType = (typeof api[member]);
+            var expectedType = (typeof value);
+            assert.equal(actualType, expectedType, 'api.' + member + ' is a '+ expectedType);
+        });
+
+    });
+
+    test('does not contain unexpected members or methods', function(assert) {
+        var api = createApi('player');
+
+        _.each(api, function(args, property) {
+            var isApiMethod = apiMethods.hasOwnProperty(property);
+            var isApiMember = apiMembers.hasOwnProperty(property);
+
+            var message = '"'+ property +'" is XXX of api';
+
+            if (isApiMethod) {
+                assert.ok(true, message.replace('XXX', 'a method'));
+            } else if (isApiMember) {
+                assert.ok(true, message.replace('XXX', 'a member'));
+            } else {
+                var expectedMessage = 'api.'+ property +' is undefined';
+                var actualdMessage = 'api.'+ property +' is a '+ (typeof api[property]);
+                assert.equal(actualdMessage, expectedMessage, message.replace('XXX', 'not part') +
+                    '. Is this a new API method or member?');
+            }
+
+        });
+
     });
 
     test('has chainable methods', function(assert) {

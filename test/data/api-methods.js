@@ -1,13 +1,19 @@
 define({
-    // COMMENTED OUT UNTIL FIXED:
-    // (deprecated methods are added after setup)
-    //callInternal: null,
-    //getPlaylistIndex: null,
+
+    // These are added by api-deprecate on setup
+    // They are not core API methods
+    //   callInternal: null,
+    //   getPlaylistIndex: null,
+    //   jw...: null,
+
     dispatchEvent: null,
     removeEventListener: null,
     addButton: null,
+    addPlugin: null,
+    getPlugin: null,
     castToggle: null,
     createInstream: null,
+    attachMedia: null,
     detachMedia: null,
     getAudioTracks: null,
     getBuffer: null,
@@ -21,7 +27,7 @@ define({
     getDuration: null,
     getFullscreen: null,
     getHeight: null,
-    getItem: null, // aliased by getPlaylistIndex
+    getItem: null,
     getItemMeta: null,
     getMeta: null,
     getMute: null,
@@ -66,6 +72,7 @@ define({
     off: null,
     on: null,
     once: null,
+    skipAd: null,
     trigger: null,
     onAdClick: null,
     onAdCompanions: null,
