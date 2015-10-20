@@ -247,6 +247,10 @@ define([
             switch (_youtubeState) {
 
                 case youtubeStates.UNSTARTED: // -1: //unstarted
+                    // play video on android to avoid being stuck in this state
+                    if (utils.isAndroid()) {
+                        _youtubePlayer.playVideo();
+                    }
                     return;
 
                 case youtubeStates.ENDED: // 0: //ended (idle after playback)
@@ -289,6 +293,10 @@ define([
 
                 case youtubeStates.CUED: // 5: //video cued (idle before playback)
                     _this.setState(states.IDLE);
+                    // play video on android to avoid being stuck in this state
+                    if (utils.isAndroid()) {
+                        _youtubePlayer.playVideo();
+                    }
                     return;
             }
         }
