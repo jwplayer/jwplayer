@@ -48,10 +48,11 @@ define([
         };
 
         this.on = function(name, callback) {
-            if (_.isString(callback)) {
-                throw new TypeError('eval callbacks depricated');
-            }
             if (!_.isFunction(callback)) {
+                if (_.isString(callback)) {
+                    throw new TypeError('eval callbacks depricated');
+                }
+                utils.log('Expected a function', name, callback);
                 return this;
             }
 
