@@ -4,6 +4,7 @@ define([
     'utils/backbone.events',
     'utils/helpers',
     'utils/timer',
+    'utils/trycatch',
     'utils/underscore',
     'controller/controller',
     'api/api-actions',
@@ -11,7 +12,7 @@ define([
     'api/callbacks-deprecate',
     'version'
 ], function(events, states,
-            Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
+            Events, utils, Timer, trycatch, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     function addFocusBorder(container) {
         utils.addClass(container, 'jw-tab-focus');
@@ -47,16 +48,20 @@ define([
         };
 
         this.on = function(name, callback) {
-            if (_.isString(callback)) {
-                throw new TypeError('eval callbacks depricated');
+            if (!_.isFunction(callback)) {
+                if (_.isString(callback)) {
+                    throw new TypeError('eval callbacks depricated');
+                }
+                utils.log('Expected a function', name, callback);
+                return this;
             }
 
             var safeCallback = function() {
-                try {
-                    callback.apply(this, arguments);
-                } catch(e) {
+                var status = trycatch.tryCatch(callback, this, arguments);
+
+                if (status instanceof trycatch.Error) {
                     utils.log('There was an error calling back an event handler for "'+
-                        name+'". Error: '+ e.message);
+                        name+'". Error: '+ status.message);
                 }
             };
 
