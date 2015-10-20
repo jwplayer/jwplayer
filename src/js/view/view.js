@@ -552,6 +552,18 @@ define([
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 _touchHandler();
             });
+
+            // make displayIcon clickthrough on chrome for flash to avoid power safe throttle
+            if (utils.isChrome()) {
+                var resetPointerEvents = function() {
+                    document.removeEventListener('mouseup', resetPointerEvents);
+                    displayIcon.el.style.pointerEvents = 'auto';
+                };
+                displayIcon.el.addEventListener('mousedown', function() {
+                    this.style.pointerEvents = 'none';
+                    document.addEventListener('mouseup', resetPointerEvents);
+                });
+            }
             _controlsLayer.appendChild(displayIcon.element());
 
             _dock = new Dock(_model);
