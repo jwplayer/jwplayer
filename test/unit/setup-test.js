@@ -1,11 +1,8 @@
 define([
     'test/underscore',
     'api/api',
-    'api/config',
-    'controller/Setup',
-    'controller/model',
     'events/events'
-], function (_, Api, Config, Setup, Model, events) {
+], function (_, Api, events) {
     /* jshint qunit:true */
 
     module('Setup');
@@ -151,7 +148,7 @@ define([
     });
 
     function testSetup(model, success, error, done) {
-        var api = new Api(document.createElement('div'));
+        var api = new Api(document.createElement('div'), _.noop);
         api.setup(model);
 
         api.on(events.JWPLAYER_READY, function() {
