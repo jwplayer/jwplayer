@@ -148,6 +148,10 @@ define([
                     var visualQuality = _.extend({}, data);
                     this.mediaModel.set('visualQuality', visualQuality);
                     break;
+
+                case 'imageChange':
+                    this.trigger('imageChange');
+                    return;
             }
 
             var evt = _.extend({}, data, {type: type});

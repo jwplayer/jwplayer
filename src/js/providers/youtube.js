@@ -374,6 +374,7 @@ define([
 
             if (!item.image) {
                 item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
+                _this.trigger('imageChange');
             }
 
             _this.volume(_playerConfig.volume);

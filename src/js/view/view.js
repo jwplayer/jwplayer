@@ -344,6 +344,9 @@ define([
             var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
             _preview = new Preview(_model);
             _preview.setup(previewElem);
+            _model.on('imageChange', function() {
+                _preview.loadImage(_model, _model.get('playlistItem'));
+            });
 
             var _titleElement = _playerElement.getElementsByClassName('jw-title')[0];
             _title = new Title(_model);
