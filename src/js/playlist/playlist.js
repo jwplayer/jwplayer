@@ -51,7 +51,7 @@ define([
             if (! _.isObject(originalSource)) {
                 return;
             }
-            if (androidhls) {
+            if (androidhls !== undefined && androidhls !== null) {
                 originalSource.androidhls =  androidhls;
             }
 
