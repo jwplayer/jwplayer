@@ -83,6 +83,7 @@ define([
             _playerElement.requestFullscreen ||
             _playerElement.webkitRequestFullscreen ||
             _playerElement.webkitRequestFullScreen ||
+            _playerElement.webkitEnterFullscreen || // iOS and Android 4.2.x
             _playerElement.mozRequestFullScreen ||
             _playerElement.msRequestFullscreen;
         _exitFullscreen =
@@ -91,7 +92,10 @@ define([
             document.webkitCancelFullScreen ||
             document.mozCancelFullScreen ||
             document.msExitFullscreen;
-        _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
+            
+        // Android 4.2.x allows only for request to go fullscreen
+        // and opens up fullscreen player
+        _elementSupportsFullscreen = _requestFullscreen; 
 
         function adjustSeek(amount) {
             var newSeek = utils.between(_model.get('position') + amount, 0, _model.get('duration'));
