@@ -372,10 +372,6 @@ define([
             var url = item.sources[0].file;
             var videoId = utils.youTubeID(url);
 
-            if (!item.image) {
-                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
-            }
-
             _this.volume(_playerConfig.volume);
             _this.mute(_playerConfig.mute);
             _this.setVisibility(true);

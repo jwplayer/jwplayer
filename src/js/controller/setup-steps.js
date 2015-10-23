@@ -216,7 +216,13 @@ define([
         var p = _model.get('playlist');
 
         var hasYoutube = _.some(p, function(item) {
-            return utils.isYouTube(item.file, item.type);
+            var itemYoutube = utils.isYouTube(item.file, item.type);
+            if (itemYoutube && !item.image) {
+                var url = item.file;
+                var videoId = utils.youTubeID(url);
+                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
+            }
+            return itemYoutube;
         });
 
         if (hasYoutube) {
