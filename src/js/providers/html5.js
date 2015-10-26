@@ -377,8 +377,7 @@ define([
                     _delayedSeek = -1;
                     _this.seek(startTime);
                 }
-                // meta event is usually triggered by load, and is needed for googima to work on replay
-                _sendMetaEvent();
+
                 _videotag.play();
             }
 
@@ -736,12 +735,12 @@ define([
                         levels: _getPublicLevels(_levels)
                     });
                     var time = _videotag.currentTime || 0;
-                    var duration = _videotag.duration;
+                    var duration = _videotag.duration || 0;
                     if (duration <= 0) {
                         duration = _duration;
                     }
                     _this.setState(states.LOADING);
-                    _completeLoad(time, duration || 0);
+                    _completeLoad(time, duration);
                 }
             }
         };
