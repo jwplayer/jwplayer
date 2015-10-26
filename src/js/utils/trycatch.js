@@ -22,7 +22,7 @@ define([
 
     var jwError = function (name, error) {
         this.name = name;
-        this.message = error.message || error.toString();
+        //this.message = error.message || error.toString();
         this.error = error;
     };
 
