@@ -12,7 +12,7 @@ define([
 
         var _queue = SetupSteps.getQueue();
 
-        var _errorTimeoutSeconds = 10;
+        var _errorTimeoutSeconds = 30;
 
 
         this.start = function () {
