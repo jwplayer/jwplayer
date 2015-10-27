@@ -183,10 +183,11 @@ define([
 
             this.addClickHandler();
 
-            if (_options.skipoffset) {
+            var skipoffset = item.skipoffset || _options.skipoffset;
+            if (skipoffset) {
                 _instream._adModel.set('skipMessage', _options.skipMessage);
                 _instream._adModel.set('skipText', _options.skipText);
-                _instream._adModel.set('skipOffset', _options.skipoffset);
+                _instream._adModel.set('skipOffset', skipoffset);
 
                 _model.set('skipButton', true);
             }
