@@ -1,7 +1,6 @@
 define([
-    'utils/underscore',
-    'utils/trycatch'
-], function(_, trycatch) {
+    'utils/underscore'
+], function(_) {
     var validator = {};
 
     /**
@@ -56,16 +55,12 @@ define([
      *  - YE7VzlLtp-4
      **/
     validator.youTubeID = function (path) {
-        var status = trycatch.tryCatch(function() {
-            // Left as a dense regular expression for brevity.
-            return (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path).slice(1).join('').replace('?', '');
-        });
-
-        if (status instanceof trycatch.Error) {
+        // Left as a dense regular expression for brevity.
+        var matches = (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path);
+        if (!matches) {
             return '';
         }
-
-        return status;
+        return matches.slice(1).join('').replace('?', '');
     };
 
 
