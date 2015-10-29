@@ -3,13 +3,18 @@ define([
     'utils/helpers'
 ], function(_, utils) {
 
+    var jwplayer = window.jwplayer;
+    var storage = window.localStorage || {
+            removeItem: utils.noop
+        };
+
     function jwPrefix(str) {
         return 'jwplayer.' + str;
     }
 
     function getAllItems() {
         return _.reduce(this.persistItems, function(memo, key) {
-            var val = window.localStorage[jwPrefix(key)];
+            var val = storage[jwPrefix(key)];
             if (val) {
                 memo[key] = utils.serialize(val);
             }
@@ -18,12 +23,19 @@ define([
     }
 
     function setItem(name, value) {
-        window.localStorage[jwPrefix(name)] = value;
+        try {
+            storage[jwPrefix(name)] = value;
+        } catch(e) {
+            // ignore QuotaExceededError unless debugging
+            if (jwplayer && jwplayer.debug) {
+                console.error(e);
+            }
+        }
     }
 
     function clear() {
         _.each(this.persistItems, function(val) {
-            window.localStorage.removeItem(jwPrefix(val));
+            storage.removeItem(jwPrefix(val));
         });
     }
 
