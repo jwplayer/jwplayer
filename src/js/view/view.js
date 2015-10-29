@@ -883,6 +883,7 @@ define([
         function _errorHandler(model, evt) {
             if (!evt) {
                 _title.playlistItem(model, model.get('playlistItem'));
+                return;
             }
             if (evt.name) {
                 _title.updateText(evt.name, evt.message);
