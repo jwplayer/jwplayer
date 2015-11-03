@@ -42,6 +42,7 @@ define([], function() {
         JWPLAYER_MEDIA_ERROR: 'mediaError',
         JWPLAYER_MEDIA_FIRST_FRAME: 'firstFrame',
         JWPLAYER_MEDIA_PLAY_ATTEMPT: 'playAttempt',
+        JWPLAYER_MEDIA_PRELOAD_ATTEMPT: 'preloadAttempt',
         JWPLAYER_MEDIA_LOADED: 'loaded',
         JWPLAYER_MEDIA_SEEKED: 'seeked',
 

@@ -170,6 +170,9 @@ define([
 
             var setupTime = _qoe.between('setup', 'ready');
             var firstFrame = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            if (firstFrame < 0) {
+                firstFrame = qoeItem.between(events.JWPLAYER_MEDIA_PRELOAD_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            }
 
             return {
                 setupTime : setupTime,
