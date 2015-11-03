@@ -619,7 +619,7 @@ define([
                 }
 
                 _model.set('fullscreen', state);
-                if (this._instreamAdapter) {
+                if (this._instreamAdapter && this._instreamAdapter._adModel) {
                     this._instreamAdapter._adModel.set('fullscreen', state);
                 }
             };
