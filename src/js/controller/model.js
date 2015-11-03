@@ -254,6 +254,7 @@ define([
             // this allows the providers to preload
             if (_currentProvider.init) {
                 _currentProvider.init(item);
+                this.mediaController.trigger(events.JWPLAYER_MEDIA_PRELOAD_ATTEMPT);
             }
 
             // Listening for change:item won't suffice when loading the same index or file

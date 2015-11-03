@@ -20,6 +20,8 @@ define([
 
     function unbindFirstFrameEvents(model) {
         model.mediaController.off(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+        model.mediaController.off(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPreloadPlayAttempt);
+        model.mediaController.off(events.JWPLAYER_MEDIA_PRELOAD_ATTEMPT, model._onPreloadAttempt);
         model.mediaController.off(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.off(events.JWPLAYER_MEDIA_TIME, model._onTime);
     }
@@ -33,6 +35,10 @@ define([
             qoeItem.tick(events.JWPLAYER_MEDIA_FIRST_FRAME);
 
             var time = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            if (time < 0) {
+                model.mediaController.once(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPreloadPlayAttempt);
+                return;
+            }
             model.mediaController.trigger(events.JWPLAYER_MEDIA_FIRST_FRAME, {loadTime : time});
             unbindFirstFrameEvents(model);
         });
@@ -43,7 +49,19 @@ define([
             model._qoeItem.tick(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         };
 
+        model._onPreloadAttempt = function() {
+            model._qoeItem.tick(events.JWPLAYER_MEDIA_PRELOAD_ATTEMPT);
+        };
+
+        model._onPreloadPlayAttempt = function() {
+            var qoeItem = model._qoeItem;
+            var time = qoeItem.between(events.JWPLAYER_MEDIA_PRELOAD_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            model.mediaController.trigger(events.JWPLAYER_MEDIA_FIRST_FRAME, {loadTime : time});
+            unbindFirstFrameEvents(model);
+        };
+
         model.mediaController.once(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+        model.mediaController.once(events.JWPLAYER_MEDIA_PRELOAD_ATTEMPT, model._onPreloadAttempt);
         model.mediaController.once(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.on(events.JWPLAYER_MEDIA_TIME, model._onTime);
     }
