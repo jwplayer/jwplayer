@@ -135,6 +135,7 @@ define([
                     break;
                 case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
                     this.setQualityLevel(data.currentQuality, data.levels);
+                    this.persistQualityLevel(data.currentQuality, data.levels);
                     break;
                 case events.JWPLAYER_AUDIO_TRACKS:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
@@ -158,11 +159,14 @@ define([
             if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
                 this.mediaModel.set('currentLevel', parseInt(quality));
 
-                // For storage
-                var currentLevel = levels[quality] || {};
-                var label = currentLevel.label;
-                this.set('qualityLabel', label);
             }
+        };
+
+        this.persistQualityLevel = function(quality, levels) {
+            // For storage
+            var currentLevel = levels[quality] || {};
+            var label = currentLevel.label;
+            this.set('qualityLabel', label);
         };
 
         this.setCurrentAudioTrack = function(currentTrack, tracks) {
@@ -317,12 +321,26 @@ define([
                 _provider.stop();
             }
         };
+
         this.playVideo = function() {
             _provider.play();
         };
 
+        this.persistCaptionsTrack = function() {
+            var track = this.get('captionsTrack');
+
+            if (track) {
+                // update preference if an option was selected
+                this.set('captionLabel', track.label);
+            } else {
+                this.set('captionLabel', 'Off');
+            }
+        };
+
+
         this.setVideoSubtitleTrack = function(trackIndex) {
             this.set('captionsIndex', trackIndex);
+            this.persistCaptionsTrack();
 
             if (_provider.setSubtitlesTrack) {
                 _provider.setSubtitlesTrack(trackIndex);
