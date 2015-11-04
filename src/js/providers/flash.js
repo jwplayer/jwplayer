@@ -316,7 +316,9 @@ define([
                     _swf.on('visualQuality', function(e) {
                         e.reason = e.reason || 'api'; // or 'user selected';
                         this.trigger('visualQuality', e);
-                        this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+                        if (_item.preload !== 'auto' || _playerConfig.autostart) {
+                            this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+                        }
                     }, this);
 
                     _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
