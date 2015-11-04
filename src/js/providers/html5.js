@@ -272,9 +272,16 @@ define([
         }
 
         function _pauseHandler() {
+            // Sometimes the browser will fire "complete" and then a "pause" event
             if (_this.state === states.COMPLETE) {
                 return;
             }
+
+            // If "pause" fires before "complete", we still don't want to propagate it
+            if (_videotag.currentTime === _videotag.duration) {
+                return;
+            }
+
             _this.setState(states.PAUSED);
         }
 
