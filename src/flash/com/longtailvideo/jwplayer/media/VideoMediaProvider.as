@@ -364,7 +364,8 @@ public class VideoMediaProvider extends MediaProvider {
     protected function statusHandler(evt:NetStatusEvent):void {
         switch (evt.info.code) {
             case "NetStream.Play.Stop":
-                complete();
+                sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
+                clearInterval(_interval);
                 break;
             case "NetStream.Play.StreamNotFound":
                 error('Error loading media: File not found');
