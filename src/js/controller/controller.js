@@ -630,7 +630,7 @@ define([
                     tooltip : tooltip,
                     callback : callback,
                     id : id,
-                    class : btnClass
+                    btnClass : btnClass
                 };
 
                 var dock = _model.get('dock');

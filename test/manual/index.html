@@ -88,17 +88,8 @@
     var jwp = jwplayer('video-container').setup(config);
 
     jwp.addButton(
-            'css-skins/icons/both.png',
-            'TEST',
-            function() {
-                console.log('first');
-            },
-            'first'
-    );
-
-    jwp.addButton(
         'css-skins/icons/both.png',
-        '',
+        'TEST',
         function() {
             console.log('first');
         },
@@ -107,11 +98,22 @@
 
     jwp.addButton(
         'css-skins/icons/both.png',
+        '',
+        function() {
+            console.log('first');
+        },
+        'first',
+        'custom-class-1'
+    );
+
+    jwp.addButton(
+        'css-skins/icons/both.png',
         'Click to delete me!',
         function() {
             jwp.removeButton('second');
         },
-        'second'
+        'second',
+        'custom-class-2'
     );
 
 })(window.jwplayer);

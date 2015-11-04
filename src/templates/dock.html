@@ -1,6 +1,6 @@
 <div class="jw-dock jw-reset">
     {{#each this}}
-    <div class="jw-dock-button jw-background-color {{#if class}}{{class}}{{/if}} jw-reset" button="{{id}}">
+    <div class="jw-dock-button jw-background-color jw-reset{{#if btnClass}} {{btnClass}}{{/if}}" button="{{id}}">
         <div class="jw-icon jw-dock-image jw-reset" {{#if img}}style='background-image: url("{{img}}")'{{/if}}></div>
         <div class="jw-arrow jw-reset"></div>
         {{#if tooltip}}
