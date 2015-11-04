@@ -189,6 +189,7 @@ define([
             this.onPlaylistItem(this._model, this._model.get('playlistItem'));
             this.onMediaModel(this._model, this._model.get('mediaModel'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
+            this.onCastActive(this._model, this._model.get('castActive'));
             this.onCaptionsList(this._model, this._model.get('captionsList'));
 
             // Listen for model changes
@@ -198,6 +199,7 @@ define([
             this._model.on('change:playlistItem', this.onPlaylistItem, this);
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
+            this._model.on('change:castActive', this.onCastActive, this);
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
             this._model.on('change:fullscreen', this.onFullscreen, this);
@@ -352,6 +354,9 @@ define([
         onCastAvailable : function(model, val) {
             this.elements.cast.toggle(val);
             this.clearCompactMode();
+        },
+        onCastActive : function(model, val) {
+            utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
         },
         onElapsed : function(model, val) {
             var elapsedTime;
