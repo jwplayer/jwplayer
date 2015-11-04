@@ -4,7 +4,7 @@ define([
     /* jshint qunit: true */
 
     test('defines util functions ', function (assert) {
-        assert.expect(54);
+        assert.expect(55);
 
         // functions in helpers
         assert.equal(typeof utils.log, 'function', 'log function is defined');
@@ -32,6 +32,7 @@ define([
         assert.equal(typeof utils.isFlashSupported, 'function', 'isFlashSupported function is defined');
         assert.equal(typeof utils.isFF, 'function', 'isFF function is defined');
         assert.equal(typeof utils.isChrome, 'function', 'isChrome function is defined');
+        assert.equal(typeof utils.isEdge, 'function', 'isEdge function is defined');
         assert.equal(typeof utils.isIPod, 'function', 'isIPod function is defined');
         assert.equal(typeof utils.isIPad, 'function', 'isIPad function is defined');
         assert.equal(typeof utils.isSafari602, 'function', 'isSafari602 function is defined');
