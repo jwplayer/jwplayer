@@ -17,10 +17,11 @@ define([
             if (this.time.toString().slice(-1) === '%') {
                 this.pct = this.time;
             } else {
-                this.pct = (this.time/duration) * 100;
+                var percentage = (this.time/duration) * 100;
+                this.pct = percentage + '%';
             }
 
-            this.el.style.left = this.pct + '%';
+            this.el.style.left = this.pct;
         }
     });
 
