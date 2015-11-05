@@ -163,7 +163,6 @@ define([
         };
 
         this.persistQualityLevel = function(quality, levels) {
-            // For storage
             var currentLevel = levels[quality] || {};
             var label = currentLevel.label;
             this.set('qualityLabel', label);
