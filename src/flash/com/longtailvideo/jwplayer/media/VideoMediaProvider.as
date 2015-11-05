@@ -50,6 +50,8 @@ public class VideoMediaProvider extends MediaProvider {
     /** Is buffering due to load/seek or underflow? **/
     private var seeking:Boolean;
 
+    private var _forceReload:Boolean;
+
     /** Set the current quality level. **/
     override public function set currentQuality(quality:Number):void {
         if (!_item) return;
@@ -97,9 +99,10 @@ public class VideoMediaProvider extends MediaProvider {
     /** Load new media file; only requested once per item. **/
     override public function load(itm:PlaylistItem):void {
         setState(PlayerState.LOADING);
-        if (_item !== itm) {
+        if (_item !== itm || _forceReload) {
             setupVideo(itm);
             loadQuality();
+            _forceReload = false;
         } else if (itm.preload !== "none") {
             play();
         }
@@ -364,8 +367,8 @@ public class VideoMediaProvider extends MediaProvider {
     protected function statusHandler(evt:NetStatusEvent):void {
         switch (evt.info.code) {
             case "NetStream.Play.Stop":
-                sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_COMPLETE);
-                clearInterval(_interval);
+                complete();
+                _forceReload = true;
                 break;
             case "NetStream.Play.StreamNotFound":
                 error('Error loading media: File not found');
