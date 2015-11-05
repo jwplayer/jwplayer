@@ -627,6 +627,9 @@ define([
                 _canSeek = false;
             }
 
+            // If we were mid-seek when detached, we want to allow it to resume
+            this.seeking = false;
+
             // In case the video tag was modified while we shared it
             _videotag.loop = false;
 
