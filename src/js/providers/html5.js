@@ -148,7 +148,6 @@ define([
 
         _setupListeners(_mediaEvents, _videotag);
 
-
         // Workaround for a Safari bug where video disappears on switch to fullscreen
         if (!_isIOS7) {
             _videotag.controls = true;
@@ -590,11 +589,6 @@ define([
             _sendFullscreen(e);
             if (utils.isIOS()) {
                 _videotag.controls = false;
-                // iOS may pause the video after exiting fullscreen
-                //  when using the "Done" button
-                if (_videotag.paused) {
-                    _this.setState(states.PAUSED);
-                }
             }
         }
 
