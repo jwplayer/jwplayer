@@ -28,7 +28,7 @@ define([
     browser.isIPod = _browserCheck(/iP(hone|od)/i);
     browser.isIPad = _browserCheck(/iPad/i);
     browser.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
-    browser.isEdge = _browserCheck(/edge/i);
+    browser.isEdge = _browserCheck(/\sedge\/\d+/i);
 
     var _isIETrident = browser.isIETrident = function(browserVersion) {
         if(browser.isEdge()){
