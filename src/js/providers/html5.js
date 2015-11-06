@@ -11,7 +11,7 @@ define([
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
-        _isIE = utils.isMSIE(),
+        _isMSIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
         _isAndroid = utils.isAndroidNative(),
@@ -376,6 +376,7 @@ define([
                 _duration = duration;
                 _setVideotagSource();
                 _videotag.load();
+                //_videotag.currentTime = 0;
             } else {
                 // Load event is from the same video as before
                 if (startTime === 0 && _videotag.currentTime !== 0) {
@@ -419,8 +420,12 @@ define([
                 return;
             }
             _videotag.removeAttribute('src');
-            if (!_isIE) {
+            if (!_isMSIE) {
                 _videotag.load();
+            }
+            // IE may continue to play a video after changing source and loading a new media file.  JW7-1705
+            if(utils.isIETrident()) {
+                _videotag.pause();
             }
             _currentQuality = -1;
             this.setState(states.IDLE);
@@ -646,7 +651,7 @@ define([
             // stop video silently
             if (_videotag) {
                 _videotag.removeAttribute('src');
-                if (!_isIE) {
+                if (!_isMSIE) {
                     _videotag.load();
                 }
             }
