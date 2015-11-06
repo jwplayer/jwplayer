@@ -137,11 +137,12 @@ define([
         }
 
         function _captionsIndexHandler(model, captionsMenuIndex) {
-            if (captionsMenuIndex === 0) {
-                _setCaptionsTrack(model, null);
-                return;
+            var track = null;
+            if (captionsMenuIndex !== 0) {
+                track = _tracks[captionsMenuIndex-1];
             }
-            _setCaptionsTrack(model, _tracks[captionsMenuIndex-1]);
+
+            model.set('captionsTrack', track);
         }
 
         function _addTrack(track) {
@@ -198,17 +199,6 @@ define([
             _errorHandler(message);
         }
 
-        function _setCaptionsTrack(model, track) {
-            model.set('captionsTrack', track);
-
-            if (track) {
-                // update preference if an option was selected
-                model.set('captionLabel', track.label);
-            } else {
-                model.set('captionLabel', 'Off');
-            }
-        }
-
         function _captionsMenu() {
             var list = [{
                 id: 'off',
@@ -248,10 +238,6 @@ define([
 
         this.getCaptionsList = function() {
             return _model.get('captionsList');
-        };
-
-        this.setCurrentIndex = function(captionsMenuIndex) {
-            _api.setCurrentCaptions(captionsMenuIndex);
         };
 
         this.setCaptionsList = function(captionsMenu) {

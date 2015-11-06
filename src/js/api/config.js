@@ -22,6 +22,8 @@ define([
         volume: 90,
         width: 480,
         height: 270
+        //qualityLabel: '480p',     // specify a default quality
+        //captionLabel: 'English',  // specify a default Caption
     };
 
     function _deserialize(options) {
