@@ -303,6 +303,7 @@ module.exports = function(grunt) {
         karma: {
             options: {
                 configFile: './test/karma/karma.conf.js',
+                port: env.KARMA_PORT || 9876,
                 coverageReporter: {
                     type : 'html',
                     dir: 'reports/coverage'
