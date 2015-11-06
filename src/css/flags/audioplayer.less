@@ -3,6 +3,12 @@
 
     .jw-media {
         visibility: hidden;
+
+        // small object tag prevents chrome Power Save throttle
+        object {
+            width: 1px;
+            height: 1px;
+        }
     }
 
     .jw-controlbar {
