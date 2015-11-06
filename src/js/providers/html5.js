@@ -392,6 +392,10 @@ define([
             if (_isMobile) {
                 // results in html5.controller calling video.play()
                 _sendBufferFull();
+                // If we're still paused, then the tag isn't loading yet due to mobile interaction restrictions.
+                if(!_videotag.paused && _this.state !== states.PLAYING){
+                    _this.setState(states.LOADING);
+                }
             }
 
             //in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
