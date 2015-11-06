@@ -50,8 +50,10 @@ define([
         return _userAgentMatch(/msie/i);
     };
 
+    var _isChrome = _browserCheck(/chrome/i);
+
     browser.isChrome = function(){
-        return _browserCheck(/chrome/i) && !browser.isEdge();
+        return _isChrome() && !browser.isEdge();
     };
 
     browser.isIE = function(browserVersion) {
