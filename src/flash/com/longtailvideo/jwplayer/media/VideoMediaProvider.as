@@ -323,6 +323,11 @@ public class VideoMediaProvider extends MediaProvider {
         if (_item.type == 'mp4') {
             prm = _offset.time;
         }
+        
+        // set complete to false before _stream.play is called
+        _complete = false;
+        _buffered = 0;
+        
         //  need to call stream.play even when preloading, because this is how stream starts to load the content
         if (!_startparam || _offset.time == 0) {
             _stream.play(url);
@@ -331,17 +336,13 @@ public class VideoMediaProvider extends MediaProvider {
         } else {
             _stream.play(url + '?' + _startparam + '=' + prm);
         }
-        _buffered = 0;
-
+        
         sendBufferEvent(0);
 
         // TODO: do this on enter frame like HLS
         clearInterval(_interval);
         this.seeking = true;
         _interval = setInterval(positionHandler, 100);
-
-        // set complete to false because a new stream starts
-        _complete = false;
     }
 
     /** Return the seek offset based upon a position. **/
