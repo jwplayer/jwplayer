@@ -50,6 +50,8 @@ public class VideoMediaProvider extends MediaProvider {
     /** Is buffering due to load/seek or underflow? **/
     private var seeking:Boolean;
 
+    private var _complete:Boolean;
+
     /** Set the current quality level. **/
     override public function set currentQuality(quality:Number):void {
         if (!_item) return;
@@ -97,7 +99,7 @@ public class VideoMediaProvider extends MediaProvider {
     /** Load new media file; only requested once per item. **/
     override public function load(itm:PlaylistItem):void {
         setState(PlayerState.LOADING);
-        if (_item !== itm) {
+        if (_item !== itm || _complete) {
             setupVideo(itm);
             loadQuality();
         } else if (itm.preload !== "none") {
@@ -321,6 +323,11 @@ public class VideoMediaProvider extends MediaProvider {
         if (_item.type == 'mp4') {
             prm = _offset.time;
         }
+        
+        // set complete to false before _stream.play is called
+        _complete = false;
+        _buffered = 0;
+        
         //  need to call stream.play even when preloading, because this is how stream starts to load the content
         if (!_startparam || _offset.time == 0) {
             _stream.play(url);
@@ -329,8 +336,7 @@ public class VideoMediaProvider extends MediaProvider {
         } else {
             _stream.play(url + '?' + _startparam + '=' + prm);
         }
-        _buffered = 0;
-
+        
         sendBufferEvent(0);
 
         // TODO: do this on enter frame like HLS
@@ -365,6 +371,7 @@ public class VideoMediaProvider extends MediaProvider {
         switch (evt.info.code) {
             case "NetStream.Play.Stop":
                 complete();
+                _complete = true;
                 break;
             case "NetStream.Play.StreamNotFound":
                 error('Error loading media: File not found');
