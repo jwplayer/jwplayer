@@ -738,6 +738,11 @@ define([
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
                     });
+
+                    // The playerConfig is not updated automatically, because it is a clone
+                    // from when the provider was first initialized
+                    _playerConfig.qualityLabel = _levels[quality].label;
+
                     var time = _videotag.currentTime || 0;
                     var duration = _videotag.duration || 0;
                     if (duration <= 0) {
