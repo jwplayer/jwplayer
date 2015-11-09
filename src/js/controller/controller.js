@@ -90,7 +90,7 @@ define([
             _model.on('change:flashBlocked', function(model, isBlocked) {
                 if (isBlocked) {
                     this.trigger(events.JWPLAYER_ERROR, {
-                        message: 'Flash plugin is blocked'
+                        message: 'Flash plugin failed to load'
                     });
                 }
             }, this);
