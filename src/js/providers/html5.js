@@ -423,7 +423,8 @@ define([
             if (!_isMSIE) {
                 _videotag.load();
             }
-            // IE may continue to play a video after changing source and loading a new media file.  JW7-1705
+            // IE may continue to play a video after changing source and loading a new media file.
+            // https://connect.microsoft.com/IE/feedbackdetail/view/2000141/htmlmediaelement-autoplays-after-src-is-changed-and-load-is-called
             if(utils.isIETrident()) {
                 _videotag.pause();
             }
