@@ -18,7 +18,9 @@ define([
 
         _.each(playlist, function(item) {
             item = _.extend({}, item);
-            item.sources = _filterSources(item.sources, providers, androidhls,
+            item.allSources = _formatSources(item.sources, androidhls,
+                item.drm || configDrm, item.preload || preload);
+            item.sources = _filterSources(item.allSources, providers, androidhls,
                 item.drm || configDrm, item.preload || preload);
 
             if (!item.sources.length) {
@@ -39,15 +41,8 @@ define([
         return list;
     };
 
-    // A playlist item may have multiple different sources, but we want to stick with one.
-    var _filterSources = function(sources, providers, androidhls, itemDrm, preload) {
-
-        // legacy plugin support
-        if (!providers || !providers.choose) {
-            providers = new Providers({primary : providers ? 'flash' : null});
-        }
-
-        sources = _.compact(_.map(sources, function(originalSource) {
+    var _formatSources = function(sources, androidhls, itemDrm, preload) {
+        return _.compact(_.map(sources, function(originalSource) {
             if (! _.isObject(originalSource)) {
                 return;
             }
@@ -65,6 +60,15 @@ define([
 
             return Source(originalSource);
         }));
+    };
+
+    // A playlist item may have multiple different sources, but we want to stick with one.
+    var _filterSources = function(sources, providers) {
+
+        // legacy plugin support
+        if (!providers || !providers.choose) {
+            providers = new Providers({primary : providers ? 'flash' : null});
+        }
 
         var bestType = _chooseType(sources, providers);
 
