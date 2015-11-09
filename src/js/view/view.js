@@ -555,11 +555,19 @@ define([
 
             // make displayIcon clickthrough on chrome for flash to avoid power safe throttle
             if (utils.isChrome()) {
-                var resetPointerEvents = function() {
-                    document.removeEventListener('mouseup', resetPointerEvents);
-                    displayIcon.el.style.pointerEvents = 'auto';
-                };
                 displayIcon.el.addEventListener('mousedown', function() {
+                    var provider = _model.getVideo();
+                    var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+
+                    if (!isFlash) {
+                        return;
+                    }
+
+                    var resetPointerEvents = function() {
+                        document.removeEventListener('mouseup', resetPointerEvents);
+                        displayIcon.el.style.pointerEvents = 'auto';
+                    };
+
                     this.style.pointerEvents = 'none';
                     document.addEventListener('mouseup', resetPointerEvents);
                 });
