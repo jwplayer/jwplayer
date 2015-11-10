@@ -6,22 +6,18 @@ import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.utils.NetClient;
-import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Strings;
 import com.longtailvideo.jwplayer.utils.Utils;
 
 import flash.events.AsyncErrorEvent;
 import flash.events.ErrorEvent;
-import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.NetStatusEvent;
-import flash.geom.Rectangle;
 import flash.media.Video;
 import flash.net.NetConnection;
 import flash.net.NetStream;
 import flash.utils.clearInterval;
 import flash.utils.setInterval;
-import flash.utils.setTimeout;
 
 /**
  * Wrapper for playback of progressively downloaded MP4, FLV and AAC.
@@ -48,8 +44,8 @@ public class VideoMediaProvider extends MediaProvider {
     /** Video object to be instantiated. **/
     private var _video:Video;
     /** Is buffering due to load/seek or underflow? **/
-    private var seeking:Boolean;
-
+    private var _seeking:Boolean;
+    /** Netstream stopped state **/
     private var _complete:Boolean;
 
     /** Set the current quality level. **/
@@ -61,6 +57,7 @@ public class VideoMediaProvider extends MediaProvider {
             _starttime = _position;
             _config.qualitylabel = _item.levels[_currentQuality].label;
             sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
+            setState(PlayerState.LOADING);
             loadQuality();
         }
     }
@@ -119,7 +116,7 @@ public class VideoMediaProvider extends MediaProvider {
     /** Resume playing. **/
     override public function play():void {
         clearInterval(_interval);
-        this.seeking = false;
+        this._seeking = false;
         _interval = setInterval(positionHandler, 100);
         _video.attachNetStream(_stream);
         _stream.resume();
@@ -128,8 +125,11 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Seek to a new position. **/
     override public function seek(pos:Number):void {
+        _seekInternal(pos);
+    }
+
+    private function _seekInternal(pos:Number, extendRangePastBuffer:Number = 5):void {
         var range:Number = _item.duration * _buffered / 100;
-        clearInterval(_interval);
         // Pseudo: seek on first load in range, request when outside
         if (_startparam) {
             if (_offset.time < pos && pos < range) {
@@ -139,26 +139,28 @@ public class VideoMediaProvider extends MediaProvider {
                 } else {
                     _stream.seek(_position - _offset.time);
                 }
-            } else {
-                if (_keyframes) {
-                    _position = pos;
-                    _offset = seekOffset(pos);
-                    _stream.seek(_position);
-                } else {
-                    // Delay the seek if no keyframes yet
-                    _starttime = pos;
-                    return;
-                }
-            }
-            // Progressive: only seek when in range
-        } else {
-            if (pos < range) {
+            } else if (_keyframes) {
                 _position = pos;
+                _offset = seekOffset(pos);
                 _stream.seek(_position);
+            } else {
+                // Delay the seek if no keyframes yet
+                _starttime = pos;
+                return;
             }
+
+        } else {
+            // Progressive file playback - exit if trying to seek past 5 seconds after buffer
+            range = Math.min(range + extendRangePastBuffer, _item.duration);
+            if (pos > range) {
+                return;
+            }
+            // seek immediately if in range
+            _position = pos;
+            _stream.seek(pos);
         }
         clearInterval(_interval);
-        this.seeking = true;
+        this._seeking = true;
         _interval = setInterval(positionHandler, 100);
     }
 
@@ -223,9 +225,9 @@ public class VideoMediaProvider extends MediaProvider {
             } else {
                 _keyframes = data.keyframes;
             }
-            // Do a seek, with small delay to prevent misses
+            // Do a seek, allowing progressive download to starttime
             if (_starttime) {
-                setTimeout(seek, 20, _starttime);
+                _seekInternal(_starttime, _starttime);
             }
         }
         sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
@@ -236,8 +238,8 @@ public class VideoMediaProvider extends MediaProvider {
         var pos:Number = Math.round(Math.min(_stream.time, Math.max(item.duration, 0)) * 100) / 100;
         // Toggle state between buffering and playing.
         if (_stream.bufferLength < 1 && state == PlayerState.PLAYING && _buffered < 100) {
-            if (this.seeking) {
-                setState(PlayerState.LOADING)
+            if (this._seeking) {
+                setState(PlayerState.LOADING);
             } else {
                 setState(PlayerState.STALLED);
             }
@@ -307,11 +309,7 @@ public class VideoMediaProvider extends MediaProvider {
     private function loadQuality():void {
         _keyframes = undefined;
         _offset = {time: 0, byte: 0};
-        loadStream();
-    }
 
-    /** Load the actual stream; requested with every HTTP seek. **/
-    private function loadStream():void {
         var levels:Array = item.levels;
         if (_currentQuality >= levels.length) {
             error('no playable source');
@@ -341,7 +339,7 @@ public class VideoMediaProvider extends MediaProvider {
 
         // TODO: do this on enter frame like HLS
         clearInterval(_interval);
-        this.seeking = true;
+        this._seeking = true;
         _interval = setInterval(positionHandler, 100);
     }
 
