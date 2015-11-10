@@ -55,7 +55,7 @@ public class VideoMediaProvider extends MediaProvider {
             _item.setLevel(quality);
             _currentQuality = quality;
             _starttime = _position;
-            _config.qualitylabel = _item.levels[_currentQuality].label;
+            _config.qualityLabel = _item.levels[_currentQuality].label;
             sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
             setState(PlayerState.LOADING);
             loadQuality();
@@ -286,9 +286,9 @@ public class VideoMediaProvider extends MediaProvider {
             }
         }
 
-        if (config.qualitylabel) {
+        if (config.qualityLabel) {
             for (i = 0; i < _item.levels.length; i++) {
-                if (_item.levels[i].label == config.qualitylabel) {
+                if (_item.levels[i].label == config.qualityLabel) {
                     _currentQuality = i;
                     break;
                 }
