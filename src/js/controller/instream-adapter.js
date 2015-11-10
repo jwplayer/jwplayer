@@ -260,6 +260,9 @@ define([
                         item.starttime = _oldpos;
                         _model.loadVideo(item);
 
+                        // we need this because oldProvder and mediaModel has different states,
+                        // so change in mediaModel's state does not change provider state if newState === providerState
+                        _oldProvider.setState(_model.mediaModel.get('state'));
                         _oldProvider.play();
                         break;
                     case 'instream-postroll':
