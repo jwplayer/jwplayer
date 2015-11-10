@@ -1,5 +1,6 @@
 ﻿package com.longtailvideo.jwplayer.player {
 import com.longtailvideo.jwplayer.controller.Controller;
+import com.longtailvideo.jwplayer.events.MediaEvent;
 import com.longtailvideo.jwplayer.events.PlayerEvent;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.model.PlayerConfig;
@@ -34,7 +35,6 @@ public class Player extends Sprite implements IPlayer {
 
         RootReference.init(this);
         this.addEventListener(Event.ADDED_TO_STAGE, stageReady);
-        this.addEventListener('throttle', flashThrottled);
 
         this.tabEnabled = false;
         this.tabChildren = false;
@@ -55,6 +55,7 @@ public class Player extends Sprite implements IPlayer {
 
     private function stageReady(e:Event):void {
         this.removeEventListener(Event.ADDED_TO_STAGE, stageReady);
+        this.addEventListener('throttle', flashThrottled);
         RootReference.init(this);
         _view.setupView();
     }
@@ -63,14 +64,34 @@ public class Player extends Sprite implements IPlayer {
         // e.state can be ThrottleType.THROTTLE, ThrottleType.PAUSE, or ThrottleType.RESUME
         // in Chrome we only get 'throttle' and 'resume' for offscreen and power-save throttling
         var state:String = e['state'] as String;
-        if (state === 'resume') {
-            // After resume, we're past Chrome Power Save
-            // stop listening to the off-screen throttle events
-            this.removeEventListener('throttle', flashThrottled);
+
+        if (state !== 'resume') {
+            _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
+            _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
+
+            // Ignore throttle events for players ignored by Chrome's heuristics
+            var audioPlayer:Boolean = RootReference.stage.stageWidth < 6 && RootReference.stage.stageHeight < 6;
+            var contentPlayer:Boolean = RootReference.stage.stageWidth > 400 && RootReference.stage.stageHeight > 300;
+            if (audioPlayer || contentPlayer) {
+                return;
+            }
         }
+
         SwfEventRouter.triggerJsEvent('throttle', {
             state: state
         });
+    }
+
+    private function removeThrottleListener(e:MediaEvent):void {
+        // After a time event has been received, we're past Chrome Power Save
+        // stop listening to the off-screen throttle events
+        if (e.position) {
+            _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
+            this.removeEventListener('throttle', flashThrottled);
+            SwfEventRouter.triggerJsEvent('throttle', {
+                state: 'resume'
+            });
+        }
     }
 
     public function get version():String {
