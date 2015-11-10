@@ -7,6 +7,7 @@ define([
     var _usePointerEvents = !_.isUndefined(window.PointerEvent);
     var _useTouchEvents = !_usePointerEvents && utils.isMobile();
     var _useMouseEvents = !_usePointerEvents && ! _useTouchEvents;
+    var _isOSXFirefox = utils.isFF() && utils.isOSX();
 
     function getCoord(e, c) {
         return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
@@ -131,7 +132,13 @@ define([
                     }
                 } else if(_useMouseEvents){
                     document.addEventListener('mousemove', interactDragHandler);
-                    document.addEventListener('mouseup', interactEndHandler);
+
+                    // Handle clicks in OSX Firefox over Flash 'object'
+                    if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
+                        elem.addEventListener('click', interactEndHandler);
+                    } else {
+                        document.addEventListener('mouseup', interactEndHandler);
+                    }
                 }
 
                 _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
@@ -248,6 +255,7 @@ define([
                 elem.removeEventListener('pointerup', interactEndHandler);
             }
 
+            elem.removeEventListener('click', interactEndHandler);
             document.removeEventListener('mousemove', interactDragHandler);
             document.removeEventListener('mouseup', interactEndHandler);
         };

@@ -109,8 +109,9 @@ define([
 
             this.layer.appendChild(this.el);
 
-            this.playerUI = new UI(this.playerElement).on('click tap', this.hideMenu, this);
-            this.documentUI = new UI(document).on('click tap', this.hideMenu, this);
+            this.hideMenuHandler = this.hideMenu.bind(this);
+            this.addOffListener(this.playerElement);
+            this.addOffListener(document);
 
             // Update the menu if the provider changes
             this.model.on('change:provider', this.updateHtml, this);
@@ -131,12 +132,25 @@ define([
             _playerElement.oncontextmenu = this.rightClick.bind(this);
         },
 
+        addOffListener : function(element) {
+            element.addEventListener('mousedown', this.hideMenuHandler);
+            element.addEventListener('touchstart', this.hideMenuHandler);
+            element.addEventListener('pointerdown', this.hideMenuHandler);
+        },
+
+        removeOffListener : function(element) {
+            element.removeEventListener('mousedown', this.hideMenuHandler);
+            element.removeEventListener('touchstart', this.hideMenuHandler);
+            element.removeEventListener('pointerdown', this.hideMenuHandler);
+        },
+
         destroy : function() {
             if(this.el) {
                 this.hideMenu();
                 this.elementUI.off();
-                this.playerUI.off();
-                this.documentUI.off();
+                this.removeOffListener(this.playerElement);
+                this.removeOffListener(document);
+                this.hideMenuHandler = null;
                 this.el = null;
             }
 
