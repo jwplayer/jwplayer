@@ -65,7 +65,6 @@ define([
         this._api = _api;
         this._model = _model;
         this._isMobile = utils.isMobile();
-        this._containerWidth = -1;
         this._compactModeMaxSize = 400;
         this._maxCompactWidth = -1;
 
@@ -430,7 +429,7 @@ define([
         clearCompactMode : function() {
             this._maxCompactWidth = -1;
             this._model.set('compactUI', false);
-            if(this._containerWidth !== 0) {
+            if(this._containerWidth) {
                 this.checkCompactMode(this._containerWidth);
             }
         },
@@ -455,6 +454,8 @@ define([
             if(this._maxCompactWidth === -1){
                 this.setCompactModeBounds();
             }
+
+            this._containerWidth = containerWidth;
 
             // If the _maxCompactWidth is set (which it may or may not be above)
             if(this._maxCompactWidth !== -1) {
