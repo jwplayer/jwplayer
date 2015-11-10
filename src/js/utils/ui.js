@@ -88,7 +88,14 @@ define([
                 elem.addEventListener('pointerout', outHandler);
             }
         } else if(_useMouseEvents){
-            elem.addEventListener('mousedown', interactStartHandler);
+            // This is a special case handler for OSX Firefox in Flash where it will not dispatch regular UI clicks
+            if(options.enableFlashClick){
+                elem.addEventListener('click', function(evt){
+                    triggerEvent('flash_click', evt);
+                });
+            } else {
+                elem.addEventListener('mousedown', interactStartHandler);
+            }
             if(options.useHover) {
                 elem.addEventListener('mouseover', overHandler);
                 elem.addEventListener('mouseout', outHandler);
