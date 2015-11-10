@@ -19,7 +19,6 @@ define([
         var userInteract = new UI(_display, {enableDoubleTap: true});
         userInteract.on('click tap', _clickHandler);
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
-        userInteract.on('flash_click', _flashClickHandler);
 
         this.clickHandler = _clickHandler;
 
@@ -56,13 +55,6 @@ define([
             _alternateClickHandler = null;
             _alternateDoubleClickHandler = null;
         };
-
-        function _flashClickHandler(evt) {
-            var newEvent = _.extend(evt, {
-                type: events.touchEvents.CLICK
-            });
-            _clickHandler(newEvent);
-        }
     };
 
 

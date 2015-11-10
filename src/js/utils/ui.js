@@ -135,7 +135,7 @@ define([
 
                     // Handle clicks in OSX Firefox over Flash 'object'
                     if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
-                        elem.addEventListener('click', interactFlashClickHandler);
+                        elem.addEventListener('click', interactEndHandler);
                     } else {
                         document.addEventListener('mouseup', interactEndHandler);
                     }
@@ -169,10 +169,6 @@ define([
             if (options.preventScrolling) {
                 preventDefault(evt);
             }
-        }
-
-        function interactFlashClickHandler(evt) {
-            triggerEvent('flash_click', evt);
         }
 
         function interactEndHandler(evt) {
@@ -259,7 +255,7 @@ define([
                 elem.removeEventListener('pointerup', interactEndHandler);
             }
 
-            elem.removeEventListener('click', interactFlashClickHandler);
+            elem.removeEventListener('click', interactEndHandler);
             document.removeEventListener('mousemove', interactDragHandler);
             document.removeEventListener('mouseup', interactEndHandler);
         };
