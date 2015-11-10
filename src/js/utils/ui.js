@@ -7,6 +7,7 @@ define([
     var _usePointerEvents = !_.isUndefined(window.PointerEvent);
     var _useTouchEvents = !_usePointerEvents && utils.isMobile();
     var _useMouseEvents = !_usePointerEvents && ! _useTouchEvents;
+    var _isOSXFirefox = utils.isFF() && utils.isOSX();
 
     function getCoord(e, c) {
         return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
@@ -88,14 +89,7 @@ define([
                 elem.addEventListener('pointerout', outHandler);
             }
         } else if(_useMouseEvents){
-            // This is a special case handler for OSX Firefox in Flash where it will not dispatch regular UI clicks
-            if(options.enableFlashClick){
-                elem.addEventListener('click', function(evt){
-                    triggerEvent('flash_click', evt);
-                });
-            } else {
-                elem.addEventListener('mousedown', interactStartHandler);
-            }
+            elem.addEventListener('mousedown', interactStartHandler);
             if(options.useHover) {
                 elem.addEventListener('mouseover', overHandler);
                 elem.addEventListener('mouseout', outHandler);
@@ -138,7 +132,13 @@ define([
                     }
                 } else if(_useMouseEvents){
                     document.addEventListener('mousemove', interactDragHandler);
-                    document.addEventListener('mouseup', interactEndHandler);
+
+                    // Handle clicks in OSX Firefox over Flash 'object'
+                    if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
+                        elem.addEventListener('click', interactFlashClickHandler);
+                    } else {
+                        document.addEventListener('mouseup', interactEndHandler);
+                    }
                 }
 
                 _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
@@ -169,6 +169,10 @@ define([
             if (options.preventScrolling) {
                 preventDefault(evt);
             }
+        }
+
+        function interactFlashClickHandler(evt) {
+            triggerEvent('flash_click', evt);
         }
 
         function interactEndHandler(evt) {
@@ -255,6 +259,7 @@ define([
                 elem.removeEventListener('pointerup', interactEndHandler);
             }
 
+            elem.removeEventListener('click', interactFlashClickHandler);
             document.removeEventListener('mousemove', interactDragHandler);
             document.removeEventListener('mouseup', interactEndHandler);
         };

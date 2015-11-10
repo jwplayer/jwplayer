@@ -2,15 +2,13 @@ define([
     'utils/ui',
     'events/events',
     'utils/backbone.events',
-    'utils/underscore',
-    'utils/helpers'
-], function(UI, events, Events, _, utils) {
+    'utils/underscore'
+], function(UI, events, Events, _) {
 
     var ClickHandler = function(_model, _ele) {
         var _display,
             _alternateClickHandler,
-            _alternateDoubleClickHandler,
-            _isOSXFirefox = utils.isFF() && utils.isOSX();
+            _alternateDoubleClickHandler;
 
         _.extend(this, Events);
 
@@ -18,7 +16,7 @@ define([
 
         this.element = function() { return _display; };
 
-        var userInteract = new UI(_display, {enableDoubleTap: true, enableFlashClick: _isOSXFirefox});
+        var userInteract = new UI(_display, {enableDoubleTap: true});
         userInteract.on('click tap', _clickHandler);
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
         userInteract.on('flash_click', _flashClickHandler);
@@ -60,11 +58,10 @@ define([
         };
 
         function _flashClickHandler(evt) {
-            if(evt.type === 'flash_click' && _isOSXFirefox && _model.getVideo() &&
-                _model.getVideo().getName().name.indexOf('flash') > -1) {
-                var newEvent = _.extend(evt, {type:events.touchEvents.CLICK});
-                _clickHandler(newEvent);
-            }
+            var newEvent = _.extend(evt, {
+                type: events.touchEvents.CLICK
+            });
+            _clickHandler(newEvent);
         }
     };
 
