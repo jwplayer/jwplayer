@@ -260,6 +260,11 @@ define([
                         item.starttime = _oldpos;
                         _model.loadVideo(item);
 
+                        // On error, mediaModel has buffering states in mobile, but oldProvider's state is playing.
+                        // So, changing mediaModel's state to playing does not change provider state unless we do this
+                        if (utils.isMobile() && (_model.mediaModel.get('state') === states.BUFFERING)) {
+                            _oldProvider.setState(states.BUFFERING);
+                        }
                         _oldProvider.play();
                         break;
                     case 'instream-postroll':
