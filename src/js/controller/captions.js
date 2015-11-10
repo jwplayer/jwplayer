@@ -216,6 +216,14 @@ define([
         function _selectDefaultIndex() {
             var captionsMenuIndex = 0;
             var label = _model.get('captionLabel');
+
+            // Because there is no explicit track for "Off"
+            //  it is the implied zeroth track
+            if (label === 'Off') {
+                _model.set('captionsIndex', 0);
+                return;
+            }
+
             for (var i = 0; i < _tracks.length; i++) {
                 var track = _tracks[i];
                 if (label && label === track.label) {
