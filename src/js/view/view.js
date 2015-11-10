@@ -373,8 +373,6 @@ define([
 
             _model.on('change:errorEvent', _errorHandler);
 
-            _model.on('change:flashBlocked', _flashBlockedHandler);
-
             _model.on('change:controls', _onChangeControls);
             _onChangeControls(_model, _model.get('controls'));
             _model.on('change:state', _stateHandler);
@@ -897,14 +895,6 @@ define([
                 _title.updateText(evt.name, evt.message);
             } else {
                 _title.updateText(evt.message, '');
-            }
-        }
-
-        function _flashBlockedHandler(model, isBlocked) {
-            if (isBlocked) {
-                _title.updateText('Flash plugin is blocked', '');
-            } else {
-                _title.playlistItem(model, model.get('playlistItem'));
             }
         }
 

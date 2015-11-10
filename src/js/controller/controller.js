@@ -88,11 +88,17 @@ define([
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
             _model.on('change:flashBlocked', function(model, isBlocked) {
-                if (isBlocked) {
-                    this.trigger(events.JWPLAYER_ERROR, {
-                        message: 'Flash plugin failed to load'
-                    });
+                if (!isBlocked) {
+                    this._model.set('errorEvent', undefined);
+                    return;
                 }
+
+                var throttled = !!model.get('flashThrottle');
+                var errorEvent  = {
+                    message: throttled ? 'Click to run Flash' : 'Flash plugin failed to load'
+                };
+                this.trigger(events.JWPLAYER_ERROR, errorEvent);
+                this._model.set('errorEvent', errorEvent);
             }, this);
 
             function initMediaModel() {

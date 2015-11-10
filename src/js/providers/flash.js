@@ -213,7 +213,9 @@ define([
                         });
 
                         // setup flash player
-                        var config = _.extend({}, _playerConfig);
+                        var config = _.extend({
+                            watchThrottle: utils.isChrome()
+                        }, _playerConfig);
                         var result = _swf.triggerFlash('setup', config);
                         if (result === _swf) {
                         _swf.__ready = true;
@@ -329,23 +331,20 @@ define([
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
 
-                    function onThrottle(e) {
-                        clearTimeout(_flashBlockedTimeout);
-
-                        if (e.state === 'resume') {
-                            Events.trigger.call(_this, 'flashUnblocked');
-                        } else {
-                            _flashBlockedTimeout = setTimeout(function () {
-                                Events.trigger.call(_this, 'flashBlocked');
-                            }, 250);
-                        }
-                    }
-
                     // We cannot rely on firefox to properly return results
                     if (utils.isChrome()) {
-                        _swf.on('throttle', onThrottle, this);
-                    }
+                        _swf.on('throttle', function(e) {
+                            clearTimeout(_flashBlockedTimeout);
 
+                            if (e.state === 'resume') {
+                                Events.trigger.call(_this, 'flashThrottle', e);
+                            } else {
+                                _flashBlockedTimeout = setTimeout(function () {
+                                    Events.trigger.call(_this, 'flashThrottle', e);
+                                }, 250);
+                            }
+                        }, this);
+                    }
                 },
                 remove: function() {
                     _currentQuality = -1;

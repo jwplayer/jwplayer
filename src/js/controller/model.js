@@ -72,6 +72,12 @@ define([
 
         function _videoEventHandler(type, data) {
             switch (type) {
+                case 'flashThrottle':
+                    var throttled = (data.state !== 'resume');
+                    this.set('flashThrottle', throttled);
+                    this.set('flashBlocked', throttled);
+                    break;
+
                 case 'flashBlocked':
                     this.set('flashBlocked', true);
                     return;
@@ -199,6 +205,11 @@ define([
             }
 
             this.set('provider', _currentProvider.getName());
+
+            if (_currentProvider.getName().name.indexOf('flash') === -1) {
+                this.set('flashThrottle', undefined);
+                this.set('flashBlocked', false);
+            }
 
             _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
