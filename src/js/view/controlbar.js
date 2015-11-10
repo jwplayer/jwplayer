@@ -65,6 +65,7 @@ define([
         this._api = _api;
         this._model = _model;
         this._isMobile = utils.isMobile();
+        this._containerWidth = -1;
         this._compactModeMaxSize = 400;
         this._maxCompactWidth = -1;
 
@@ -429,6 +430,9 @@ define([
         clearCompactMode : function() {
             this._maxCompactWidth = -1;
             this._model.set('compactUI', false);
+            if(this._containerWidth !== 0) {
+                this.checkCompactMode(this._containerWidth);
+            }
         },
         // Sets this._maxCompactWidth so we calculate less per call of isCompactMode
         setCompactModeBounds : function(){
@@ -440,7 +444,7 @@ define([
                 } else {
                     var containerRequiredSize = nonCenterExpandedSize +
                             (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth),
-                        timeSliderBreakpoint = 0.25;
+                        timeSliderBreakpoint = 0.20;
                     this._maxCompactWidth = containerRequiredSize / (1-timeSliderBreakpoint);
                 }
 
@@ -454,16 +458,14 @@ define([
 
             // If the _maxCompactWidth is set (which it may or may not be above)
             if(this._maxCompactWidth !== -1) {
-                if(this._model.get('compactUI')){
-                    // If we're in compact mode and we have enough space to exit it, then do so
-                    if( containerWidth > this._compactModeMaxSize && containerWidth > this._maxCompactWidth) {
-                        this._model.set('compactUI', false);
-                    }
-                } else {
-                    // Enter if we're in a small player or our timeslider is too small.
-                    if( containerWidth <= this._compactModeMaxSize || containerWidth <= this._maxCompactWidth ){
-                        this._model.set('compactUI', true);
-                    }
+
+                // If we're in compact mode and we have enough space to exit it, then do so
+                if( containerWidth >= this._compactModeMaxSize && containerWidth > this._maxCompactWidth) {
+                    this._model.set('compactUI', false);
+                }
+                // Enter if we're in a small player or our timeslider is too small.
+                else if( containerWidth < this._compactModeMaxSize || containerWidth <= this._maxCompactWidth ){
+                    this._model.set('compactUI', true);
                 }
             }
         },
