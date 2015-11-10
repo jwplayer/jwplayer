@@ -51,6 +51,9 @@ define([
     });
 
     test('bad events don\'t break player', function(assert) {
+        window.jwplayer = window.jwplayer || {};
+        delete window.jwplayer.debug;
+
         var api = createApi('player');
         var check = false;
         function update() {
@@ -67,6 +70,25 @@ define([
         api.trigger('x');
 
         assert.ok(check, 'When events blow up, handler continues');
+    });
+
+    test('throws exceptions when debug is true', function(assert) {
+        window.jwplayer = window.jwplayer || {};
+        window.jwplayer.debug = true;
+
+        var api = createApi('player');
+
+        function bad() {
+            throw TypeError('blah');
+        }
+
+        api.on('x', bad);
+
+        assert.throws(function() {
+            api.trigger('x');
+        }, TypeError, 'exceptions are not caught when jwplayer.debug = true');
+
+        delete window.jwplayer.debug;
     });
 
     test('rendering mode is html5', function(assert) {
