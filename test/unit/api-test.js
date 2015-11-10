@@ -25,14 +25,70 @@ define([
         });
     });
 
-    test('deprecates eval callbacks', function(assert) {
+    test('api.trigger works', function(assert) {
+        var api = createApi('player');
+        var check = false;
+        function update() {
+            check = true;
+        }
+        api.on('x', update);
+        api.trigger('x');
+
+        assert.ok(check, 'api.trigger works');
+    });
+
+    test('api.off works', function(assert) {
+        var api = createApi('player');
+        var check = false;
+        function update() {
+            check = true;
+        }
+        api.on('x', update);
+        api.off('x', update);
+        api.trigger('x');
+
+        assert.equal(check, false, 'api.off works');
+    });
+
+    test('bad events don\'t break player', function(assert) {
+        window.jwplayer = window.jwplayer || {};
+        delete window.jwplayer.debug;
+
+        var api = createApi('player');
+        var check = false;
+        function update() {
+            check = true;
+        }
+        function bad() {
+            throw TypeError('blah');
+        }
+
+        api.on('x', bad);
+        api.on('x', update);
+        api.on('x', bad);
+
+        api.trigger('x');
+
+        assert.ok(check, 'When events blow up, handler continues');
+    });
+
+    test('throws exceptions when debug is true', function(assert) {
+        window.jwplayer = window.jwplayer || {};
+        window.jwplayer.debug = true;
+
         var api = createApi('player');
 
-        var addListenerWithStringCallback = function() {
-            api.on('play', 'function() {}');
-        };
+        function bad() {
+            throw TypeError('blah');
+        }
 
-        assert.throws(addListenerWithStringCallback, TypeError, 'passing a string as a callback throws a TypeError');
+        api.on('x', bad);
+
+        assert.throws(function() {
+            api.trigger('x');
+        }, TypeError, 'exceptions are not caught when jwplayer.debug = true');
+
+        delete window.jwplayer.debug;
     });
 
     test('rendering mode is html5', function(assert) {
