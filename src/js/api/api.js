@@ -44,28 +44,7 @@ define([
                 args = {};
             }
             args.type = type;
-            return Events.trigger.call(_this, type, args);
-        };
-
-        this.on = function(name, callback) {
-            if (!_.isFunction(callback)) {
-                if (_.isString(callback)) {
-                    throw new TypeError('eval callbacks depricated');
-                }
-                utils.log('Expected a function', name, callback);
-                return this;
-            }
-
-            var safeCallback = function() {
-                var status = trycatch.tryCatch(callback, this, arguments);
-
-                if (status instanceof trycatch.Error) {
-                    utils.log('There was an error calling back an event handler for "'+
-                        name+'". Error: '+ status.message);
-                }
-            };
-
-            return Events.on.call(_this, name, safeCallback);
+            return Events.triggerSafe.call(_this, type, args);
         };
 
         // Required by vast
