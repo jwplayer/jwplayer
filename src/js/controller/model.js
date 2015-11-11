@@ -53,7 +53,8 @@ define([
             });
 
             // Mobile doesn't support autostart
-            if (utils.isMobile()) {
+            // This check should be replaced with something that detects whether the current system requires a user interaction to start playback
+            if (utils.isMobile() && !config.mobileSdk) {
                 this.set('autostart', false);
             }
 
