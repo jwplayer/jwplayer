@@ -238,8 +238,10 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                        _setPlaylist(item);
-                        _setItem(0);
+                        var success = _setPlaylist(item);
+                        if (success) {
+                            _setItem(0);
+                        }
                         break;
                     case 'number':
                         _setItem(item);
@@ -403,12 +405,14 @@ define([
 
                 _model.set('playlist', playlist);
 
-                if (playlist.length === 0) {
-                    _model.mediaController.trigger(events.JWPLAYER_ERROR, {
+                if (!_.isArray(playlist) || playlist.length === 0) {
+                    _this.triggerError({
                         message: 'Error loading playlist: No playable sources found'
                     });
-                    return;
+                    return false;
                 }
+
+                return true;
             }
 
             function _setItem(index) {

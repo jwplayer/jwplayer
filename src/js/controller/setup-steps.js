@@ -139,15 +139,13 @@ define([
         var playlist = _model.get('playlist');
 
         // Performs filtering
-        _setPlaylist(playlist);
+        var success = _setPlaylist(playlist);
 
-        playlist = _model.get('playlist');
-        if (!_.isArray(playlist) || playlist.length === 0) {
-            _playlistError(resolve, 'Playlist type not supported');
-            return;
+        if (success) {
+            resolve();
+        } else {
+            _playlistError(resolve);
         }
-
-        resolve();
     }
 
     function _playlistError(resolve, evt) {
