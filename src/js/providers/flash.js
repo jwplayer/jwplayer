@@ -204,7 +204,7 @@ define([
 
                     // listen to events sendEvented from flash
                     _swf.once('ready', function() {
-
+                        clearTimeout(_flashBlockedTimeout);
                         // After plugins load, then execute commandqueue
                         _swf.once('pluginsLoaded', function() {
                             _swf.queueCommands = false;
