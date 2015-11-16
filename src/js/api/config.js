@@ -14,7 +14,6 @@ define([
         displaydescription: true,
         mobilecontrols: false,
         repeat: false,
-        preload: 'metadata',
         castAvailable: false,
         skin: 'seven',
         stretching: stretchUtils.UNIFORM,
