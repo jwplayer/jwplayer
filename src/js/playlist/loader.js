@@ -24,6 +24,7 @@ define([
             var status = utils.tryCatch(function() {
                 var childNodes = loadedEvent.responseXML.childNodes;
                 var rss = '';
+                var pl;
                 for (var i = 0; i < childNodes.length; i++) {
                     rss = childNodes[i];
                     if (rss.nodeType !== 8) { // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
@@ -35,12 +36,21 @@ define([
                     rss = rss.nextSibling;
                 }
 
-                if (parsers.localName(rss) !== 'rss') {
-                    _playlistError('Not a valid RSS feed');
-                    return;
+                // If the response is not a valid RSS, check if it is a JSON
+                if (parsers.localName(rss) === 'rss') {
+                    pl = rssParser.parse(rss);
+                } else {
+                    try {
+                        pl = JSON.parse(loadedEvent.responseText);
+                        // If the response is not a JSON array, try to read playlist of the response
+                        if (!Array.isArray(pl)) {
+                            pl = pl.playlist;
+                        }
+                    } catch (e) {
+                        _playlistError('Not a valid RSS/JSON feed');
+                        return;
+                    }
                 }
-
-                var pl = rssParser.parse(rss);
                 _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: pl
                 });
