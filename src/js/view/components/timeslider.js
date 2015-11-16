@@ -42,6 +42,7 @@ define([
             this.timeTip = new TimeTip('jw-tooltip-time');
             this.timeTip.setup();
 
+            this.cues = [];
 
             // Store the attempted seek, until the previous one completes
             this.seekThrottled = _.throttle(this.performSeek, 400);
