@@ -88,9 +88,11 @@ public class VideoMediaProvider extends MediaProvider {
     }
 
     override public function init(itm:PlaylistItem):void {
-        setupVideo(itm);
-        loadQuality();
-        _stream.pause();
+        if (itm.preload === "auto") {
+            setupVideo(itm);
+            loadQuality();
+            _stream.pause();
+        }
     }
 
     /** Load new media file; only requested once per item. **/
@@ -99,7 +101,7 @@ public class VideoMediaProvider extends MediaProvider {
         if (_item !== itm || _complete) {
             setupVideo(itm);
             loadQuality();
-        } else if (itm.preload !== "none") {
+        } else if (itm.preload === "auto") {
             play();
         }
 

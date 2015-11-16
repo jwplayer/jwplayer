@@ -104,8 +104,8 @@ define([
 
         _.extend(this, Events, {
                 init: function(item) {
-                    // if preload is none or autostart is true, do nothing
-                    if (item.preload === 'none' || _playerConfig.autostart) {
+                    // if not preloading or autostart is true, do nothing
+                    if (!item.preload || item.preload === 'none' || _playerConfig.autostart) {
                         return;
                     } else {
                         _item = item;
