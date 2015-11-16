@@ -108,7 +108,7 @@ define([
                     xml = xmlhttp.responseXML;
                     if (xml) {
                         firstChild = xml.firstChild;
-                        if (xml.lastChild && xml.lastChild.nodeName === 'parsererror') {
+                        if (xml.lastChild && xml.lastChild.nodeName === 'parsererror' && !xmlhttp.responseText) {
                             if (errorcallback) {
                                 errorcallback('Invalid XML', xmldocpath, xmlhttp);
                             }
@@ -125,9 +125,9 @@ define([
                     xmlhttp = _.extend({}, xmlhttp, {
                         responseXML: parsedXML
                     });
-                } else {
+                } else if (!xmlhttp.responseText) {
                     if (errorcallback) {
-                        errorcallback(xmlhttp.responseText ? 'Invalid XML' : xmldocpath, xmldocpath, xmlhttp);
+                        errorcallback(xmldocpath, xmldocpath, xmlhttp);
                     }
                     return;
                 }
