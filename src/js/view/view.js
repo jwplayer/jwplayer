@@ -399,10 +399,6 @@ define([
             _stateHandler(_model, states.IDLE);
             _model.on('change:fullscreen', _fullscreen);
 
-            if (!_isMobile) {
-                _displayClickHandler.element().addEventListener('mouseout', _userActivity, false);
-                _displayClickHandler.element().addEventListener('mousemove', _userActivity, false);
-            }
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
 
@@ -539,6 +535,7 @@ define([
                 _touchHandler();
             });
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
+            _displayClickHandler.on('move', _userActivity);
             
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
@@ -1026,10 +1023,6 @@ define([
                 _model.off('change:state', _castDisplay.statusDelegate);
                 _castDisplay.destroy();
                 _castDisplay = null;
-            }
-            if (_controlsLayer) {
-                _displayClickHandler.element().removeEventListener('mousemove', _userActivity);
-                _displayClickHandler.element().removeEventListener('mouseout', _userActivity);
             }
             if (_instreamMode) {
                 this.destroyInstream();

@@ -16,9 +16,10 @@ define([
 
         this.element = function() { return _display; };
 
-        var userInteract = new UI(_display, {enableDoubleTap: true});
+        var userInteract = new UI(_display, {enableDoubleTap: true, useMove: true});
         userInteract.on('click tap', _clickHandler);
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
+        userInteract.on('move', function(){ _this.trigger('move'); });
 
         this.clickHandler = _clickHandler;
 
