@@ -118,7 +118,7 @@ public class VideoMediaProvider extends MediaProvider {
     /** Resume playing. **/
     override public function play():void {
         clearInterval(_interval);
-        this._seeking = false;
+        _seeking = false;
         _interval = setInterval(positionHandler, 100);
         _video.attachNetStream(_stream);
         _stream.resume();
@@ -162,7 +162,7 @@ public class VideoMediaProvider extends MediaProvider {
             _stream.seek(pos);
         }
         clearInterval(_interval);
-        this._seeking = true;
+        _seeking = true;
         _interval = setInterval(positionHandler, 100);
     }
 
@@ -240,7 +240,7 @@ public class VideoMediaProvider extends MediaProvider {
         var pos:Number = Math.round(Math.min(_stream.time, Math.max(item.duration, 0)) * 100) / 100;
         // Toggle state between buffering and playing.
         if (_stream.bufferLength < 1 && state == PlayerState.PLAYING && _buffered < 100) {
-            if (this._seeking) {
+            if (_seeking) {
                 setState(PlayerState.LOADING);
             } else {
                 setState(PlayerState.STALLED);
@@ -341,7 +341,7 @@ public class VideoMediaProvider extends MediaProvider {
 
         // TODO: do this on enter frame like HLS
         clearInterval(_interval);
-        this._seeking = true;
+        _seeking = true;
         _interval = setInterval(positionHandler, 100);
     }
 
@@ -372,6 +372,7 @@ public class VideoMediaProvider extends MediaProvider {
             case "NetStream.Play.Stop":
                 complete();
                 _complete = true;
+                _seeking = false;
                 break;
             case "NetStream.Play.StreamNotFound":
                 error('Error loading media: File not found');
@@ -381,6 +382,7 @@ public class VideoMediaProvider extends MediaProvider {
                 break;
             case 'NetStream.Seek.Notify':
                 sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_SEEKED);
+                _seeking = false;
                 break;
         }
     }
