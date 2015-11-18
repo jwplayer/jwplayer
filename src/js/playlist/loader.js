@@ -25,7 +25,7 @@ define([
                 var childNodes = loadedEvent.responseXML ? loadedEvent.responseXML.childNodes : null;
                 var rss = '';
                 var pl;
-                if (childNodes && childNodes.length) {
+                if (childNodes) {
                     for (var i = 0; i < childNodes.length; i++) {
                         rss = childNodes[i];
                         // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
