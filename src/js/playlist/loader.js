@@ -42,7 +42,7 @@ define([
                 }
 
                 // If the response is not valid RSS, check if it is JSON
-                if (!_.isArray(pl)) {
+                if (!pl) {
                     try {
                         pl = JSON.parse(loadedEvent.responseText);
                         // If the response is not a JSON array, try to read playlist of the response
