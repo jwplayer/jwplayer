@@ -33,20 +33,20 @@ define([
                             break;
                         }
                     }
+                    if (parsers.localName(rss) === 'xml') {
+                        rss = rss.nextSibling;
+                    }
+                    if (parsers.localName(rss) === 'rss') {
+                        pl = rssParser.parse(rss);
+                    }
                 }
 
-                if (parsers.localName(rss) === 'xml') {
-                    rss = rss.nextSibling;
-                }
-
-                // If the response is not a valid RSS, check if it is a JSON
-                if (parsers.localName(rss) === 'rss') {
-                    pl = rssParser.parse(rss);
-                } else {
+                // If the response is not valid RSS, check if it is JSON
+                if (!_.isArray(pl)) {
                     try {
                         pl = JSON.parse(loadedEvent.responseText);
                         // If the response is not a JSON array, try to read playlist of the response
-                        if (!Array.isArray(pl)) {
+                        if (!_.isArray(pl)) {
                             pl = pl.playlist;
                         }
                     } catch (e) {
