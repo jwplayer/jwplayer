@@ -60,6 +60,7 @@ module.exports = function( config ) {
 
             // Tests
             {pattern: 'test/data/*.js', included: false},
+            {pattern: 'test/data/*.json', included: false},
             {pattern: 'test/mock/*.js', included: false},
             {pattern: 'test/unit/*.js', included: false}
         ],

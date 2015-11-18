@@ -22,25 +22,38 @@ define([
 
         function _playlistLoaded(loadedEvent) {
             var status = utils.tryCatch(function() {
-                var childNodes = loadedEvent.responseXML.childNodes;
+                var childNodes = loadedEvent.responseXML ? loadedEvent.responseXML.childNodes : null;
                 var rss = '';
-                for (var i = 0; i < childNodes.length; i++) {
-                    rss = childNodes[i];
-                    if (rss.nodeType !== 8) { // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
-                        break;
+                var pl;
+                if (childNodes) {
+                    for (var i = 0; i < childNodes.length; i++) {
+                        rss = childNodes[i];
+                        // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
+                        if (rss.nodeType !== 8) {
+                            break;
+                        }
+                    }
+                    if (parsers.localName(rss) === 'xml') {
+                        rss = rss.nextSibling;
+                    }
+                    if (parsers.localName(rss) === 'rss') {
+                        pl = rssParser.parse(rss);
                     }
                 }
 
-                if (parsers.localName(rss) === 'xml') {
-                    rss = rss.nextSibling;
+                // If the response is not valid RSS, check if it is JSON
+                if (!pl) {
+                    try {
+                        pl = JSON.parse(loadedEvent.responseText);
+                        // If the response is not a JSON array, try to read playlist of the response
+                        if (!_.isArray(pl)) {
+                            pl = pl.playlist;
+                        }
+                    } catch (e) {
+                        _playlistError('Not a valid RSS/JSON feed');
+                        return;
+                    }
                 }
-
-                if (parsers.localName(rss) !== 'rss') {
-                    _playlistError('Not a valid RSS feed');
-                    return;
-                }
-
-                var pl = rssParser.parse(rss);
                 _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
                     playlist: pl
                 });
@@ -52,7 +65,7 @@ define([
         }
 
         function _playlistLoadError(err) {
-            _playlistError(err.match(/invalid/i) ? 'Not a valid RSS feed' : '');
+            _playlistError('Playlist load error: ' + err);
         }
 
         function _playlistError(msg) {

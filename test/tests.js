@@ -28,5 +28,6 @@ define([
     'unit/trycatch-test',
     'unit/utils-defs-test',
     'unit/utils-test',
-    'unit/validator-test'
+    'unit/validator-test',
+    'unit/playlist-loader-test'
 ]);
