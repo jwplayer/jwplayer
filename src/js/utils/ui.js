@@ -88,11 +88,17 @@ define([
                 elem.addEventListener('pointerover', overHandler);
                 elem.addEventListener('pointerout', outHandler);
             }
+            if(options.useMove){
+                elem.addEventListener('pointermove', moveHandler);
+            }
         } else if(_useMouseEvents){
             elem.addEventListener('mousedown', interactStartHandler);
             if(options.useHover) {
                 elem.addEventListener('mouseover', overHandler);
                 elem.addEventListener('mouseout', outHandler);
+            }
+            if(options.useMove) {
+                elem.addEventListener('mousemove', moveHandler);
             }
         }
 
@@ -103,6 +109,12 @@ define([
         function overHandler(evt){
             if (_useMouseEvents || (_usePointerEvents && evt.pointerType !== 'touch')) {
                 triggerEvent(events.touchEvents.OVER, evt);
+            }
+        }
+
+        function moveHandler(evt){
+            if (_useMouseEvents || (_usePointerEvents && evt.pointerType !== 'touch')) {
+                triggerEvent(events.touchEvents.MOVE, evt);
             }
         }
 
@@ -127,8 +139,8 @@ define([
                             elem.setPointerCapture(_pointerId);
                         }
                         elem.addEventListener('pointermove', interactDragHandler);
-                        elem.addEventListener('pointerup', interactEndHandler);
                         elem.addEventListener('pointercancel', interactEndHandler);
+                        elem.addEventListener('pointerup', interactEndHandler);
                     }
                 } else if(_useMouseEvents){
                     document.addEventListener('mousemove', interactDragHandler);
@@ -142,8 +154,8 @@ define([
                 }
 
                 _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
-                _touchListenerTarget.addEventListener('touchend', interactEndHandler);
                 _touchListenerTarget.addEventListener('touchcancel', interactEndHandler);
+                _touchListenerTarget.addEventListener('touchend', interactEndHandler);
             }
         }
 
@@ -193,7 +205,8 @@ define([
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG_END, evt);
             } else {
-                if(!options.directSelect || evt.target === elem) {
+                // Skip if we're not directly selecting the target and if its a cancel
+                if((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
                     if (_usePointerEvents && evt instanceof window.PointerEvent) {
                         if (evt.pointerType === 'touch') {
                             triggerEvent(touchEvents.TAP, evt);
@@ -249,13 +262,19 @@ define([
                 if (options.preventScrolling) {
                     elem.releasePointerCapture(_pointerId);
                 }
+                elem.removeEventListener('pointerover', overHandler);
                 elem.removeEventListener('pointerdown', interactStartHandler);
                 elem.removeEventListener('pointermove', interactDragHandler);
+                elem.removeEventListener('pointermove', moveHandler);
                 elem.removeEventListener('pointercancel', interactEndHandler);
+                elem.removeEventListener('pointerout', outHandler);
                 elem.removeEventListener('pointerup', interactEndHandler);
             }
 
             elem.removeEventListener('click', interactEndHandler);
+            elem.removeEventListener('mouseover', overHandler);
+            elem.removeEventListener('mousemove', moveHandler);
+            elem.removeEventListener('mouseout', outHandler);
             document.removeEventListener('mousemove', interactDragHandler);
             document.removeEventListener('mouseup', interactEndHandler);
         };
