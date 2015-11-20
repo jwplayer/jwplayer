@@ -193,6 +193,12 @@ define([
             }
         };
 
+        this.applyProviderListeners = function(provider){
+            _instream.applyProviderListeners(provider);
+
+            this.addClickHandler();
+        };
+
         this.play = function() {
             _instream.instreamPlay();
         };

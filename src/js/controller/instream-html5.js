@@ -56,6 +56,23 @@ define([
             _adModel.loadVideo(item);
         };
 
+        _this.applyProviderListeners = function(provider){
+            // check provider after item change
+            _checkProvider(provider);
+
+            // Match the main player's controls state
+            provider.off(events.JWPLAYER_ERROR);
+            provider.on(events.JWPLAYER_ERROR, function(data) {
+                this.trigger(events.JWPLAYER_ERROR, data);
+            }, _this);
+            _model.on('change:volume', function(data, value) {
+                _currentProvider.volume(value);
+            }, _this);
+            _model.on('change:mute', function(data, value) {
+                _currentProvider.mute(value);
+            }, _this);
+        };
+
         /** Stop the instream playback and revert the main player back to its original state **/
         this.instreamDestroy = function() {
             if (!_adModel) {
@@ -69,7 +86,9 @@ define([
             if (_currentProvider) {
                 _currentProvider.detachMedia();
                 _currentProvider.off();
-                _currentProvider.destroy();
+                if(_adModel.getVideo()){
+                    _currentProvider.destroy();
+                }
             }
 
             // Return the view to its normal state
@@ -101,8 +120,8 @@ define([
          ****** Private methods ******
          *****************************/
 
-        function _checkProvider() {
-            var provider = _adModel.getVideo();
+        function _checkProvider(pseduoProvider) {
+            var provider = pseduoProvider || _adModel.getVideo();
 
             if (_currentProvider !== provider) {
                 _currentProvider = provider;

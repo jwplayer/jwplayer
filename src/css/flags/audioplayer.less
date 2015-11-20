@@ -11,6 +11,13 @@
         }
     }
 
+    &.jw-state-paused,
+    &.jw-state-complete {
+        .jw-display-icon-container{
+            display: none;
+        }
+    }
+
     .jw-controlbar {
         display: table;  // This overwrites 'none' from jw-states-idle
         bottom: 0;
