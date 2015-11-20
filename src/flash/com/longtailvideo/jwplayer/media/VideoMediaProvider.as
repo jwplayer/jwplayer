@@ -144,7 +144,7 @@ public class VideoMediaProvider extends MediaProvider {
             } else if (_keyframes) {
                 _position = pos;
                 _offset = seekOffset(pos);
-                _stream.seek(_position);
+                loadStream();
             } else {
                 // Delay the seek if no keyframes yet
                 _starttime = pos;
@@ -317,17 +317,21 @@ public class VideoMediaProvider extends MediaProvider {
             error('no playable source');
             return;
         }
+        loadStream();
+    }
 
+    private function loadStream():void {
+        var levels:Array = item.levels;
         var url:String = Strings.getAbsolutePath(levels[_currentQuality].file);
         var prm:Number = _offset.byte;
         if (_item.type == 'mp4') {
             prm = _offset.time;
         }
-        
+
         // set complete to false before _stream.play is called
         _complete = false;
         _buffered = 0;
-        
+
         //  need to call stream.play even when preloading, because this is how stream starts to load the content
         if (!_startparam || _offset.time == 0) {
             _stream.play(url);
@@ -339,7 +343,6 @@ public class VideoMediaProvider extends MediaProvider {
         
         sendBufferEvent(0);
 
-        // TODO: do this on enter frame like HLS
         clearInterval(_interval);
         _seeking = true;
         _interval = setInterval(positionHandler, 100);
@@ -347,18 +350,17 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Return the seek offset based upon a position. **/
     private function seekOffset(position:Number):Object {
-        if (!_keyframes || !_startparam || position == 0) {
-            return {byte: 0, time: 0};
-        }
-        for (var i:Number = 0; i < _keyframes.times.length - 1; i++) {
-            if (_keyframes.times[i] <= position && _keyframes.times[i + 1] >= position) {
-                break;
+        if (_keyframes && _startparam && position > 0) {
+            for (var i:uint = _keyframes.times.length-1; i--;) {
+                if (_keyframes.times[i] <= position && _keyframes.times[i + 1] >= position) {
+                    return {
+                        byte: _keyframes.filepositions[i],
+                        time: _keyframes.times[i]
+                    }
+                }
             }
         }
-        return {
-            byte: _keyframes.filepositions[i],
-            time: _keyframes.times[i]
-        }
+        return {byte: 0, time: 0};
     }
 
     /** Catch security errors. **/
