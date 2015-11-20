@@ -512,11 +512,7 @@ define([
                 _stateHandler(model, state);
             }
 
-            if (bool) {
-                utils.removeClass(_playerElement, 'jw-flag-controls-disabled');
-            } else {
-                utils.addClass(_playerElement, 'jw-flag-controls-disabled');
-            }
+            utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
         };
 
         function _doubleClickFullscreen() {
