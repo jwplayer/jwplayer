@@ -68,6 +68,7 @@ define([
             }, this);
 
             this.swf.triggerFlash('instream:init');
+            this.applyProviderListeners = function(){};
         },
 
         instreamDestroy: function() {
