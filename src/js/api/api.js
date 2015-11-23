@@ -199,9 +199,15 @@ define([
             return _this;
         };
 
-        this.play = function (state) {
+        this.play = function (state, meta) {
+            if (!_.isBoolean(state)) {
+                meta = state;
+            }
+            if (!meta) {
+                meta = {reason: 'external'};
+            }
             if (state === true) {
-                _controller.play();
+                _controller.play(meta);
                 return _this;
             } else if (state === false) {
                 _controller.pause();
@@ -215,7 +221,7 @@ define([
                     _controller.pause();
                     break;
                 default:
-                    _controller.play();
+                    _controller.play(meta);
             }
 
             return _this;
