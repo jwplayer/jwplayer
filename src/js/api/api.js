@@ -36,8 +36,13 @@ define([
         this._ = _;
         this.Events = Events;
         this.version = version;
+        this.playReason = 'unknown';
 
         this.trigger = function(type, args) {
+            if (type === 'play') {
+                args.playReason = _this.playReason;
+                _this.playReason = 'unknown';
+            }
             if (_.isObject(args)) {
                 args = _.extend({}, args);
             } else {
@@ -200,6 +205,9 @@ define([
         };
 
         this.play = function (state) {
+            if (this.playReason === 'unknown') {
+                this.playReason = 'external';
+            }
             if (state === true) {
                 _controller.play();
                 return _this;
