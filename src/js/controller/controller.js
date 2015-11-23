@@ -92,12 +92,15 @@ define([
                     this._model.set('errorEvent', undefined);
                     return;
                 }
-
+                // flashThrottle indicates whether this is a throttled event or plugin blocked event
                 var throttled = !!model.get('flashThrottle');
                 var errorEvent  = {
                     message: throttled ? 'Click to run Flash' : 'Flash plugin failed to load'
                 };
-                this.trigger(events.JWPLAYER_ERROR, errorEvent);
+                // Only dispatch an error for Flash blocked, not throttled events
+                if (!throttled) {
+                    this.trigger(events.JWPLAYER_ERROR, errorEvent);
+                }
                 this._model.set('errorEvent', errorEvent);
             }, this);
 
