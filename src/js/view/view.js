@@ -133,7 +133,7 @@ define([
                     break;
                 case 13: // enter
                 case 32: // space
-                    _api.play();
+                    _api.play({reason: 'interaction'});
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!_instreamMode) {
@@ -450,7 +450,7 @@ define([
                 _model.get('state') === states.COMPLETE ||
                 _model.get('state') === states.PAUSED) &&
                 _model.get('controls')) {
-                _api.play();
+                _api.play({reason: 'interaction'});
             }
 
             // Toggle visibility of the controls when clicking the media or play icon
@@ -465,7 +465,7 @@ define([
             if (!evt.link) {
                 //_togglePlay();
                 if (_model.get('controls')) {
-                    _api.play();
+                    _api.play({reason: 'interaction'});
                 }
             } else {
                 _api.pause(true);
@@ -523,7 +523,7 @@ define([
             _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 if(_model.get('controls')) {
-                    _api.play();
+                    _api.play({reason: 'interaction'});
                 }
             });
             _displayClickHandler.on('tap', function() {
@@ -537,7 +537,7 @@ define([
             //toggle playback
             displayIcon.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _api.play();
+                _api.play({reason: 'interaction'});
             });
             displayIcon.on('tap', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});

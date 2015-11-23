@@ -215,7 +215,7 @@ define([
                 });
 
                 if (_model.get('autostart')) {
-                    _play();
+                    _play({reason: 'autostart'});
                 }
 
                 while (_this.eventsQueue.length > 0) {
@@ -272,8 +272,12 @@ define([
                 return _model.get('state');
             }
 
-            function _play() {
+            function _play(meta) {
                 var status;
+
+                if (meta) {
+                    _model.set('playReason', meta.reason);
+                }
 
                 if(_model.get('state') === states.ERROR) {
                     return;
@@ -395,10 +399,10 @@ define([
                 _video().seek(pos);
             }
 
-            function _item(index) {
+            function _item(index, meta) {
                 _stop(true);
                 _setItem(index);
-                _play();
+                _play(meta);
             }
 
             function _setPlaylist(p) {
@@ -429,12 +433,12 @@ define([
                 _model.setActiveItem(playlist[index]);
             }
 
-            function _prev() {
-                _item(_model.get('item') - 1);
+            function _prev(meta) {
+                _item(_model.get('item') - 1, meta || {reason: 'external'});
             }
 
-            function _next() {
-                _item(_model.get('item') + 1);
+            function _next(meta) {
+                _item(_model.get('item') + 1, meta || {reason: 'external'});
             }
 
             function _completeHandler() {
@@ -453,7 +457,7 @@ define([
                 if (idx === _model.get('playlist').length - 1) {
                     // If it's the last item in the playlist
                     if (_model.get('repeat')) {
-                        _next();
+                        _next({reason: 'repeat'});
                     } else {
                         _model.set('state', states.COMPLETE);
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
@@ -463,7 +467,7 @@ define([
 
                 // It wasn't the last item in the playlist,
                 //  so go to the next one
-                _next();
+                _next({reason: 'playlist'});
             }
 
             function _setCurrentQuality(quality) {

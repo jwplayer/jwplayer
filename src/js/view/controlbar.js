@@ -101,8 +101,8 @@ define([
             this.elements = {
                 alt: text('jw-text-alt'),
                 play: button('jw-icon-playback', this._api.play),
-                prev: button('jw-icon-prev', this._api.playlistPrev),
-                next: button('jw-icon-next', this._api.playlistNext),
+                prev: button('jw-icon-prev', this._api.playlistPrev.bind(this, {reason: 'interaction'})),
+                next: button('jw-icon-next', this._api.playlistNext.bind(this, {reason: 'interaction'})),
                 playlist : playlistTooltip,
                 elapsed: text('jw-text-elapsed'),
                 time: timeSlider,
