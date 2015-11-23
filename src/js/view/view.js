@@ -133,6 +133,7 @@ define([
                     break;
                 case 13: // enter
                 case 32: // space
+                    _api.playReason = 'interaction';
                     _api.play();
                     break;
                 case 37: // left-arrow, if not adMode
@@ -450,6 +451,7 @@ define([
                 _model.get('state') === states.COMPLETE ||
                 _model.get('state') === states.PAUSED) &&
                 _model.get('controls')) {
+                _api.playReason = 'interaction';
                 _api.play();
             }
 
@@ -465,6 +467,7 @@ define([
             if (!evt.link) {
                 //_togglePlay();
                 if (_model.get('controls')) {
+                    _api.playReason = 'interaction';
                     _api.play();
                 }
             } else {
@@ -527,6 +530,7 @@ define([
             _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 if(_model.get('controls')) {
+                    _api.playReason = 'interaction';
                     _api.play();
                 }
             });
@@ -541,6 +545,7 @@ define([
             //toggle playback
             displayIcon.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
+                _api.playReason = 'interaction';
                 _api.play();
             });
             displayIcon.on('tap', function() {

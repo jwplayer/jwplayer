@@ -212,6 +212,7 @@ define([
                 });
 
                 if (_model.get('autostart')) {
+                    _api.playReason = 'autostart';
                     _play();
                 }
 
@@ -450,6 +451,7 @@ define([
                 if (idx === _model.get('playlist').length - 1) {
                     // If it's the last item in the playlist
                     if (_model.get('repeat')) {
+                        _api.playReason = 'repeat';
                         _next();
                     } else {
                         _model.set('state', states.COMPLETE);
@@ -460,6 +462,8 @@ define([
 
                 // It wasn't the last item in the playlist,
                 //  so go to the next one
+                console.log('here');
+                _api.playReason = 'playlist';
                 _next();
             }
 
