@@ -12,6 +12,12 @@ define([
         return playerId + '_swf_' + (_providerId++);
     }
 
+    function flashThrottleTarget(config) {
+        var sameHost = ((new URL(config.flashplayer).host) === window.location.host);
+
+        return utils.isChrome() && !sameHost;
+    }
+
     function FlashProvider(_playerId, _playerConfig) {
         // private properties
         var _container;
@@ -213,9 +219,7 @@ define([
                         });
 
                         // setup flash player
-                        var config = _.extend({
-                            watchThrottle: utils.isChrome()
-                        }, _playerConfig);
+                        var config = _.extend({}, _playerConfig);
                         var result = _swf.triggerFlash('setup', config);
                         if (result === _swf) {
                         _swf.__ready = true;
@@ -331,8 +335,7 @@ define([
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
 
-                    // We cannot rely on firefox to properly return results
-                    if (utils.isChrome()) {
+                    if (flashThrottleTarget(_playerConfig)) {
                         _swf.on('throttle', function(e) {
                             clearTimeout(_flashBlockedTimeout);
 

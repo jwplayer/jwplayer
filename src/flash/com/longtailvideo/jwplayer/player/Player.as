@@ -53,14 +53,27 @@ public class Player extends Sprite implements IPlayer {
         _controller.runSetupInterface();
     }
 
+    private function pluginPowerSaveTarget():Boolean {
+        var audioPlayer:Boolean = RootReference.stage.stageWidth < 6 && RootReference.stage.stageHeight < 6;
+        var contentPlayer:Boolean = RootReference.stage.stageWidth > 400 && RootReference.stage.stageHeight > 300;
+        if (audioPlayer || contentPlayer) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function stageReady(e:Event):void {
         this.removeEventListener(Event.ADDED_TO_STAGE, stageReady);
-        this.addEventListener('throttle', flashThrottled);
+
+        this.addEventListener('throttle', onThrottleEvent);
+
         RootReference.init(this);
         _view.setupView();
     }
 
-    private function flashThrottled(e:Event):void {
+    private function onThrottleEvent(e:Event):void {
+
         // e.state can be ThrottleType.THROTTLE, ThrottleType.PAUSE, or ThrottleType.RESUME
         // in Chrome we only get 'throttle' and 'resume' for offscreen and power-save throttling
         var state:String = e['state'] as String;
@@ -70,9 +83,7 @@ public class Player extends Sprite implements IPlayer {
             _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
 
             // Ignore throttle events for players ignored by Chrome's heuristics
-            var audioPlayer:Boolean = RootReference.stage.stageWidth < 6 && RootReference.stage.stageHeight < 6;
-            var contentPlayer:Boolean = RootReference.stage.stageWidth > 400 && RootReference.stage.stageHeight > 300;
-            if (audioPlayer || contentPlayer) {
+            if (! pluginPowerSaveTarget() ) {
                 return;
             }
         }
@@ -87,7 +98,7 @@ public class Player extends Sprite implements IPlayer {
         // stop listening to the off-screen throttle events
         if (e.position) {
             _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
-            this.removeEventListener('throttle', flashThrottled);
+            this.removeEventListener('throttle', onThrottleEvent);
             SwfEventRouter.triggerJsEvent('throttle', {
                 state: 'resume'
             });
