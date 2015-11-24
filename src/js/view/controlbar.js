@@ -100,7 +100,7 @@ define([
 
             this.elements = {
                 alt: text('jw-text-alt'),
-                play: button('jw-icon-playback', this._api.play),
+                play: button('jw-icon-playback', this._api.play.bind(this, {reason: 'interaction'})),
                 prev: button('jw-icon-prev', this._api.playlistPrev.bind(this, {reason: 'interaction'})),
                 next: button('jw-icon-next', this._api.playlistNext.bind(this, {reason: 'interaction'})),
                 playlist : playlistTooltip,
@@ -229,7 +229,7 @@ define([
             if(this.elements.playlist) {
                 this.elements.playlist.on('select', function (value) {
                     this._model.once('itemReady', function () {
-                        this._api.play();
+                        this._api.play({reason: 'interaction'});
                     }, this);
                     this._api.load(value);
                 }, this);
