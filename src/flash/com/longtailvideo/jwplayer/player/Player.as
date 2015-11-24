@@ -67,6 +67,7 @@ public class Player extends Sprite implements IPlayer {
         this.removeEventListener(Event.ADDED_TO_STAGE, stageReady);
 
         this.addEventListener('throttle', onThrottleEvent);
+        _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
 
         RootReference.init(this);
         _view.setupView();
@@ -79,9 +80,6 @@ public class Player extends Sprite implements IPlayer {
         var state:String = e['state'] as String;
 
         if (state !== 'resume') {
-            _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
-            _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
-
             // Ignore throttle events for players ignored by Chrome's heuristics
             if (! pluginPowerSaveTarget() ) {
                 return;
@@ -98,6 +96,9 @@ public class Player extends Sprite implements IPlayer {
         // stop listening to the off-screen throttle events
         if (e.position) {
             _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
+            if (_instream) {
+                _instream.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
+            }
             this.removeEventListener('throttle', onThrottleEvent);
             SwfEventRouter.triggerJsEvent('throttle', {
                 state: 'resume'
@@ -312,6 +313,7 @@ public class Player extends Sprite implements IPlayer {
     protected function initInstream():void {
         var lockPlugin:IPlugin = new AbstractPlugin();
         _instream = new InstreamPlayer(lockPlugin, _model, _view, _controller);
+        _instream.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener, false, 0, true);
     }
 
     protected function loadInstream(item:Object):void {
