@@ -514,6 +514,10 @@ define([
                 }
             } else {
                 _delayedSeek = seekPos;
+                // Some browsers won't fire canplay event in a paused state (Firefox)
+                if (_videotag.paused) {
+                    _videotag.play();
+                }
             }
         };
 
