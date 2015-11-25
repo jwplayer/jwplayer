@@ -22,24 +22,30 @@ define([
 
         var container = _controller.getContainer();
         this.swf = container.querySelector('object');
-
-        this.flashBlockedTimeout = -1;
     };
 
     InstreamFlash.prototype = _.extend({
 
         init: function() {
-            // We cannot rely on firefox to properly return results
+            // Pause playback when throttled, and only resume is paused here
             if (utils.isChrome()) {
+                var _throttleTimeout = -1;
+                var _throttlePaused = false;
                 this.swf.on('throttle', function(e) {
-                    clearTimeout(this.flashBlockedTimeout);
+                    clearTimeout(_throttleTimeout);
 
                     if (e.state === 'resume') {
-                        this.instreamPlay();
+                        if (_throttlePaused) {
+                            _throttlePaused = false;
+                            this.instreamPlay();
+                        }
                     } else {
                         var _this = this;
-                        this.flashBlockedTimeout = setTimeout(function () {
-                            _this.instreamPause();
+                        _throttleTimeout = setTimeout(function () {
+                            if (_this._adModel.get('state') === states.PLAYING) {
+                                _throttlePaused = true;
+                                _this.instreamPause();
+                            }
                         }, 250);
                     }
                 }, this);
