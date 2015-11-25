@@ -52,6 +52,11 @@ You also have the power to programatically set any configuration within the play
  1. Install [Java](https://java.com/en/download/)
  1. Download [player.swc 11.2](http://fpdownload.macromedia.com/get/flashplayer/installers/archive/playerglobal/playerglobal11_2.swc)
  1. Rename and move the .swc file to ```{AIRSDK_Compiler}/frameworks/libs/player/11.2/playerglobal.swc```
+ 1. Set your Adobe AIR SDK environment variable (where {AIRSDK_Compiler} is the location of the Adobe AIR SDK directory)
+
+```sh
+    export AIR_HOME={AIRSDK_Compiler}
+```
 
 ```sh
     # First time set up
