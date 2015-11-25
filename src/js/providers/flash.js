@@ -13,7 +13,10 @@ define([
     }
 
     function flashThrottleTarget(config) {
-        var sameHost = ((new URL(config.flashplayer).host) === window.location.host);
+        var a = document.createElement('a');
+        a.href = config.flashplayer;
+
+        var sameHost = (a.hostname === window.location.host);
 
         return utils.isChrome() && !sameHost;
     }
