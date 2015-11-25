@@ -95,7 +95,7 @@ define([
 
                 pause: _pauseHandler,
                 //ratechange: _generalHandler,
-                //readystatechange: _generalHandler,
+                readystatechange: _readyStateHandler,
                 seeked: _seekedHandler,
                 //seeking: _seekingHandler,
                 //stalled: _stalledHandler,
@@ -160,6 +160,14 @@ define([
 
         function _clickHandler(evt) {
             _this.trigger('click', evt);
+        }
+
+        function _readyStateHandler() {
+            if (_videotag.readyState === 4) {
+                if (_delayedSeek > 0 && _duration > _delayedSeek) {
+                    _this.seek(_delayedSeek);
+                }
+            }
         }
 
         function _durationChangeHandler() {
@@ -502,14 +510,20 @@ define([
                 });
             }
 
+            if (_videotag.seekable && _videotag.seekable.length &&
+                _videotag.seekable.end(_videotag.seekable.length - 1) >= seekPos) {
+                // We can seek if the end seekable range is at or past the seek position
+                _canSeek = true;
+            }
+
             if (_canSeek) {
                 _delayedSeek = 0;
-                // handle readystate issue
-                var status = utils.tryCatch(function() {
+                // setting currentTime can throw an exception if video.readyState != 4
+                try {
                     _this.seeking = true;
                     _videotag.currentTime = seekPos;
-                });
-                if (status instanceof utils.Error) {
+                } catch(e) {
+                    _this.seeking = false;
                     _delayedSeek = seekPos;
                 }
             } else {
@@ -626,11 +640,9 @@ define([
         /**
          * Begin listening to events again
          */
-        this.attachMedia = function(seekable) {
+        this.attachMedia = function() {
             _attached = true;
-            if (!seekable) {
-                _canSeek = false;
-            }
+            _canSeek = false;
 
             // If we were mid-seek when detached, we want to allow it to resume
             this.seeking = false;
