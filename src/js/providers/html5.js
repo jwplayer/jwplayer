@@ -14,6 +14,7 @@ define([
         _isMSIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
+        _isFirefox = utils.isFF(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
         _name = 'html5';
@@ -514,8 +515,9 @@ define([
                 }
             } else {
                 _delayedSeek = seekPos;
-                // Some browsers won't fire canplay event in a paused state (Firefox)
-                if (_videotag.paused) {
+                // Firefox isn't firing canplay event when in a paused state
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=1194624
+                if (_isFirefox && _videotag.paused) {
                     _videotag.play();
                 }
             }
