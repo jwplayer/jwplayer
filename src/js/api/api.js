@@ -14,14 +14,6 @@ define([
 ], function(events, states,
             Events, utils, Timer, trycatch, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
-    function addFocusBorder(container) {
-        utils.addClass(container, 'jw-tab-focus');
-    }
-
-    function removeFocusBorder(container) {
-        utils.removeClass(container, 'jw-tab-focus');
-    }
-
     var Api = function (container, globalRemovePlayer) {
         var _this = this,
             _controller,
@@ -68,13 +60,7 @@ define([
             _controller.on(events.JWPLAYER_MEDIA_META, function (data) {
                 _.extend(_itemMeta, data.metadata);
             });
-            _controller.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
-                if (data.hasFocus === true) {
-                    addFocusBorder(this.getContainer());
-                } else {
-                    removeFocusBorder(this.getContainer());
-                }
-            });
+
             // capture the ready event and add setup time to it
             _controller.on(events.JWPLAYER_READY, function(event) {
                 _playerReady = true;
