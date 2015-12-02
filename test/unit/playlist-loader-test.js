@@ -29,7 +29,27 @@ define([
             done();
         });
 
-        loader.load(require.toUrl('./data/playlist-json.json'));
+        loader.load(require.toUrl('./data/playlist.json'));
+    });
+
+    test('Test XML feed', function(assert) {
+        var done = assert.async();
+        var loadedPlaylist;
+        var loader = new PlaylistLoader();
+        var mediaid = 'TQjoCPTk';
+        loader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
+            loadedPlaylist = data.playlist;
+            assert.ok(data.playlist.length > 0,'Playlist has at least 1 item.');
+            assert.equal(data.playlist[0].mediaid, mediaid, 'Playlist item contains a mediaid.');
+            assert.ok(data.playlist[0].sources.length > 0, 'Playlist item has at least one video source.');
+            done();
+        });
+
+        loader.on(events.JWPLAYER_ERROR, function(e) {
+            assert.ok(false, e.message);
+            done();
+        });
+        loader.load(require.toUrl('./data/playlist.xml'));
     });
 
     test('Test invalid feed', function (assert) {
@@ -41,7 +61,7 @@ define([
             done();
         });
 
-        loader.on(events.JWPLAYER_ERROR, function(e) {
+        loader.on(events.JWPLAYER_ERROR, function() {
             assert.ok(true, 'Invalid JSON feed successfully fired error');
             done();
         });
