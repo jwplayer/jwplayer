@@ -9,7 +9,6 @@ define([
 
     test('Test JSON feed', function (assert) {
         var done = assert.async();
-        var loadedPlaylist;
         var loader = new PlaylistLoader();
         var expectedJSON = [{
             'file': 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
@@ -18,7 +17,6 @@ define([
         }];
 
         loader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
-            loadedPlaylist = data.playlist;
             assert.equal(data.playlist[0].file, expectedJSON[0].file, 'JSON successfully loaded as a playlist');
             assert.equal(data.playlist[1].file, expectedJSON[1].file, 'JSON successfully loaded as a playlist');
             done();
@@ -34,11 +32,9 @@ define([
 
     test('Test XML feed', function(assert) {
         var done = assert.async();
-        var loadedPlaylist;
         var loader = new PlaylistLoader();
         var mediaid = 'TQjoCPTk';
         loader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
-            loadedPlaylist = data.playlist;
             assert.ok(data.playlist.length > 0,'Playlist has at least 1 item.');
             assert.equal(data.playlist[0].mediaid, mediaid, 'Playlist item contains a mediaid.');
             assert.ok(data.playlist[0].sources.length > 0, 'Playlist item has at least one video source.');
