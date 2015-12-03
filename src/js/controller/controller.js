@@ -574,10 +574,10 @@ define([
                 return false;
             }
 
-            function _attachMedia(seekable) {
+            function _attachMedia() {
                 // Called after instream ends
                 var status = utils.tryCatch(function() {
-                    _model.getVideo().attachMedia(seekable);
+                    _model.getVideo().attachMedia();
                 });
 
                 if (status instanceof utils.Error) {
