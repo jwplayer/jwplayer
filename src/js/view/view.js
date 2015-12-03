@@ -69,6 +69,9 @@ define([
         this.api = _api;
 
         _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
+        if (utils.isIE()) {
+            utils.addClass(_playerElement, 'jw-ie');
+        }
 
         var width = _model.get('width'),
             height = _model.get('height');
