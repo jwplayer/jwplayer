@@ -163,7 +163,7 @@ define([
         }
 
         function _durationChangeHandler() {
-            if (!_attached) {
+            if (!_attached || _isAndroidHLS) {
                 return;
             }
 
@@ -222,10 +222,11 @@ define([
 
         function _updateDuration() {
             var duration = _videotag.duration;
-            if (duration === Infinity && _videotag.seekable && _videotag.seekable.length) {
-                var seekableDuration =
-                    _videotag.seekable.end(_videotag.seekable.length - 1) - _videotag.seekable.start(0);
-                if (seekableDuration > 120) {
+            var end = _getSeekableEnd();
+            if (duration === Infinity && end) {
+                var seekableDuration = end - _videotag.seekable.start(0);
+                if (seekableDuration !== Infinity && seekableDuration > 120) {
+                    // Player interprets negative duration as DVR
                     duration = -seekableDuration;
                 }
             }
@@ -236,12 +237,19 @@ define([
         }
 
         function _sendMetaEvent() {
+            var duration = _videotag.duration;
+            if (_isAndroidHLS && duration === Infinity) {
+                duration = 0;
+            }
             _this.trigger(events.JWPLAYER_MEDIA_META, {
-                duration: _videotag.duration,
+                duration: duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
             });
-            _updateDuration();
+            // Do not update duration on androidHLS before time event
+            if (!_isAndroidHLS) {
+                _updateDuration();
+            }
         }
 
         function _canPlayHandler() {
@@ -427,6 +435,20 @@ define([
             }
         }
 
+        function _getSeekableEnd() {
+            var index = _videotag.seekable ? _videotag.seekable.length : 0;
+            var end = 0;
+            if (index) {
+                index--;
+                end = _videotag.seekable.end(index);
+                while(index--) {
+                    end = Math.max(end, _videotag.seeakble.end(index));
+                }
+                _canSeek = true;
+            }
+            return end;
+        }
+
         this.stop = function() {
             clearTimeout(_playbackTimeout);
             if (!_attached) {
@@ -510,15 +532,9 @@ define([
                 });
             }
 
-            if (_videotag.seekable && _videotag.seekable.length &&
-                _videotag.seekable.end(_videotag.seekable.length - 1) >= seekPos) {
-                // We can seek if the end seekable range is at or past the seek position
-                _canSeek = true;
-            }
-
             if (_canSeek) {
                 _delayedSeek = 0;
-                // setting currentTime can throw an exception if video.readyState != 4
+                // setting currentTime can throw an invalid DOM state exception if the video is not ready
                 try {
                     _this.seeking = true;
                     _videotag.currentTime = seekPos;
