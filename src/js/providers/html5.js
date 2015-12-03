@@ -163,7 +163,7 @@ define([
         }
 
         function _durationChangeHandler() {
-            if (!_attached) {
+            if (!_attached || _isAndroidHLS) {
                 return;
             }
 
@@ -225,7 +225,7 @@ define([
             if (duration === Infinity && _videotag.seekable && _videotag.seekable.length) {
                 var seekableDuration =
                     _videotag.seekable.end(_videotag.seekable.length - 1) - _videotag.seekable.start(0);
-                if (seekableDuration > 120) {
+                if (seekableDuration !== Infinity && seekableDuration > 120) {
                     duration = -seekableDuration;
                 }
             }
@@ -236,6 +236,9 @@ define([
         }
 
         function _sendMetaEvent() {
+            if (_isAndroidHLS) {
+                return;
+            }
             _this.trigger(events.JWPLAYER_MEDIA_META, {
                 duration: _videotag.duration,
                 height: _videotag.videoHeight,
