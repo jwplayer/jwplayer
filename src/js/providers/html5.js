@@ -95,7 +95,7 @@ define([
 
                 pause: _pauseHandler,
                 //ratechange: _generalHandler,
-                readystatechange: _readyStateHandler,
+                //readystatechange: _readyStateHandler,
                 seeked: _seekedHandler,
                 //seeking: _seekingHandler,
                 //stalled: _stalledHandler,
@@ -162,21 +162,13 @@ define([
             _this.trigger('click', evt);
         }
 
-        function _readyStateHandler() {
-            if (_videotag.readyState === 4) {
-                if (_delayedSeek > 0 && _duration > _delayedSeek) {
-                    _this.seek(_delayedSeek);
-                }
-            }
-        }
-
         function _durationChangeHandler() {
             if (!_attached) {
                 return;
             }
 
             _setBuffered(_getBuffer(), _position, _videotag.duration);
-            _setDuration(_videotag.duration);
+            _updateDuration();
         }
 
         function _progressHandler() {
@@ -199,7 +191,7 @@ define([
                 _playbackTimeout = setTimeout(_checkPlaybackStalled, STALL_DELAY);
             }
 
-            _setDuration(_videotag.duration);
+            _updateDuration();
             _setPosition(_videotag.currentTime);
             // buffer ranges change during playback, not just on file progress
             _setBuffered(_getBuffer(), _position, _duration);
@@ -228,7 +220,15 @@ define([
             _position = currentTime;
         }
 
-        function _setDuration(duration) {
+        function _updateDuration() {
+            var duration = _videotag.duration;
+            if (duration === Infinity && _videotag.seekable && _videotag.seekable.length) {
+                var seekableDuration =
+                    _videotag.seekable.end(_videotag.seekable.length - 1) - _videotag.seekable.start(0);
+                if (seekableDuration > 120) {
+                    duration = -seekableDuration;
+                }
+            }
             _duration = duration;
             if (_delayedSeek > 0 && _duration > _delayedSeek) {
                 _this.seek(_delayedSeek);
@@ -241,7 +241,7 @@ define([
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
             });
-            _setDuration(_videotag.duration);
+            _updateDuration();
         }
 
         function _canPlayHandler() {
