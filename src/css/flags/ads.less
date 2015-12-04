@@ -42,6 +42,21 @@
 .jwplayer.jw-flag-ads-googleima {
     .jw-controlbar {
         display: table;
+        bottom: 0;
+    }
+
+    &.jw-flag-touch {
+        .jw-controlbar {
+            font-size: 1em;
+        }
+
+        &.jw-state-paused .jw-display-icon-container {
+            display: none;
+        }
+    }
+
+    &.jw-skin-seven .jw-controlbar {
+        font-size: 0.9em;
     }
 }
 
