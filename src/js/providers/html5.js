@@ -96,7 +96,7 @@ define([
 
                 pause: _pauseHandler,
                 //ratechange: _generalHandler,
-                //readystatechange: _generalHandler,
+                //readystatechange: _readyStateHandler,
                 seeked: _seekedHandler,
                 //seeking: _seekingHandler,
                 //stalled: _stalledHandler,
@@ -164,12 +164,12 @@ define([
         }
 
         function _durationChangeHandler() {
-            if (!_attached) {
+            if (!_attached || _isAndroidHLS) {
                 return;
             }
 
             _setBuffered(_getBuffer(), _position, _videotag.duration);
-            _setDuration(_videotag.duration);
+            _updateDuration();
         }
 
         function _progressHandler() {
@@ -192,7 +192,7 @@ define([
                 _playbackTimeout = setTimeout(_checkPlaybackStalled, STALL_DELAY);
             }
 
-            _setDuration(_videotag.duration);
+            _updateDuration();
             _setPosition(_videotag.currentTime);
             // buffer ranges change during playback, not just on file progress
             _setBuffered(_getBuffer(), _position, _duration);
@@ -221,20 +221,36 @@ define([
             _position = currentTime;
         }
 
-        function _setDuration(duration) {
+        function _updateDuration() {
+            var duration = _videotag.duration;
+            var end = _getSeekableEnd();
+            if (duration === Infinity && end) {
+                var seekableDuration = end - _videotag.seekable.start(0);
+                if (seekableDuration !== Infinity && seekableDuration > 120) {
+                    // Player interprets negative duration as DVR
+                    duration = -seekableDuration;
+                }
+            }
             _duration = duration;
-            if (_delayedSeek > 0 && _duration > _delayedSeek) {
+            if (_delayedSeek && duration) {
                 _this.seek(_delayedSeek);
             }
         }
 
         function _sendMetaEvent() {
+            var duration = _videotag.duration;
+            if (_isAndroidHLS && duration === Infinity) {
+                duration = 0;
+            }
             _this.trigger(events.JWPLAYER_MEDIA_META, {
-                duration: _videotag.duration,
+                duration: duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
             });
-            _setDuration(_videotag.duration);
+            // Do not update duration on androidHLS before time event
+            if (!_isAndroidHLS) {
+                _updateDuration();
+            }
         }
 
         function _canPlayHandler() {
@@ -420,6 +436,19 @@ define([
             }
         }
 
+        function _getSeekableEnd() {
+            var index = _videotag.seekable ? _videotag.seekable.length : 0;
+            var end = 0;
+            if (index) {
+                index--;
+                end = _videotag.seekable.end(index);
+                while(index--) {
+                    end = Math.max(end, _videotag.seeakble.end(index));
+                }
+            }
+            return end;
+        }
+
         this.stop = function() {
             clearTimeout(_playbackTimeout);
             if (!_attached) {
@@ -502,15 +531,17 @@ define([
                     offset: seekPos
                 });
             }
-
+            if (!_canSeek) {
+                _canSeek = !!_getSeekableEnd();
+            }
             if (_canSeek) {
                 _delayedSeek = 0;
-                // handle readystate issue
-                var status = utils.tryCatch(function() {
+                // setting currentTime can throw an invalid DOM state exception if the video is not ready
+                try {
                     _this.seeking = true;
                     _videotag.currentTime = seekPos;
-                });
-                if (status instanceof utils.Error) {
+                } catch(e) {
+                    _this.seeking = false;
                     _delayedSeek = seekPos;
                 }
             } else {
@@ -632,11 +663,9 @@ define([
         /**
          * Begin listening to events again
          */
-        this.attachMedia = function(seekable) {
+        this.attachMedia = function() {
             _attached = true;
-            if (!seekable) {
-                _canSeek = false;
-            }
+            _canSeek = false;
 
             // If we were mid-seek when detached, we want to allow it to resume
             this.seeking = false;
