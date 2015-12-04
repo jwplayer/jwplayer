@@ -87,7 +87,7 @@ define([
 
                 //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
-                //loadeddata: _onLoadedData, // we have duration
+                loadeddata: _onLoadedData, // we have duration
                 loadedmetadata: _loadedMetadataHandler, // we have video dimensions
                 canplay: _canPlayHandler,
                 playing: _playingHandler,
@@ -159,6 +159,10 @@ define([
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
 
+        // Enable CC on iPad
+        function _onLoadedData() {
+            _setAudioTracks(_videotag.audioTracks);
+        }
         function _clickHandler(evt) {
             _this.trigger('click', evt);
         }
