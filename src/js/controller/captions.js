@@ -37,7 +37,7 @@ define([
             }
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
-            _selectDefaultIndex(true);
+            _selectDefaultIndex();
         }, this);
 
         // Append data to subtitle tracks
@@ -212,14 +212,14 @@ define([
             return list;
         }
 
-        function _selectDefaultIndex(tracksAvailable) {
+        function _selectDefaultIndex() {
             var captionsMenuIndex = 0;
             var label = _model.get('captionLabel');
 
             // Because there is no explicit track for "Off"
             //  it is the implied zeroth track
             if (label === 'Off') {
-                _model.set('captionsIndex', captionsMenuIndex);
+                _model.set('captionsIndex', 0);
                 return;
             }
 
@@ -236,7 +236,7 @@ define([
             }
 
             // set the index without the side effect of storing the Off label in _selectCaptions
-            if(tracksAvailable) {
+            if(_tracks.length > 0) {
                 _model.setVideoSubtitleTrack(captionsMenuIndex);
             } else {
                 _model.set('captionsIndex', captionsMenuIndex);
