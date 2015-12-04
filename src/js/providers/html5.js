@@ -139,7 +139,10 @@ define([
             // post roll support
             _beforecompleted = false,
 
-            _fullscreenState = false;
+            _fullscreenState = false,
+
+            _audioTracks,
+            _currentAudioTrackIndex;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -786,6 +789,39 @@ define([
         this.getName = function() {
             return { name : _name };
         };
+
+        //model expects setSubtitlesTrack when changing subtitle track
+        this.setAudioTrack = _setAudioTrack;
+
+        function _setAudioTracks(tracks) {
+            //filter for tracks where kind = 'subtitles'
+
+            if(tracks && tracks.length > 0) {
+                _audioTracks = _.filter(tracks, function(track) {
+                    return track.kind === 'subtitles';
+                });
+                _this.trigger('audioTracks',{tracks: _audioTracks});
+            }
+        }
+
+        function _setAudioTrack(index) {
+            //index off by 1 because of 'off' option
+            if(_currentAudioTrackIndex !== undefined) {
+                _audioTracks[_currentAudioTrackIndex].mode = 'disabled';
+            } else {
+                _.each(_audioTracks, function (track) {
+                    track.mode = 'disabled';
+                });
+            }
+            if(index > 0 && index <= _audioTracks.length) {
+
+                _currentAudioTrackIndex = index-1;
+                _textTracks[_currentAudioTrackIndex].mode = 'showing';
+
+            } else {
+                _currentAudioTrackIndex = undefined;
+            }
+        }
     }
 
     // Register provider
