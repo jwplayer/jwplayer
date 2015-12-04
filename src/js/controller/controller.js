@@ -518,6 +518,7 @@ define([
             }
 
             function _setCurrentAudioTrack(index) {
+                console.log('setting current audio track from controller');
                 _video().setCurrentAudioTrack(index);
             }
 

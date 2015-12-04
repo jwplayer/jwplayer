@@ -251,6 +251,7 @@ define([
             }, this);
 
             this.elements.audiotracks.on('select', function(value){
+                console.log('selected audio track', value);
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
 
@@ -323,6 +324,7 @@ define([
                 this.clearCompactMode();
             }, this);
             mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
+                console.log('audio track changed', currentAudioTrack);
                 this.elements.audiotracks.selectItem(currentAudioTrack);
             }, this);
             mediaModel.on('change:state', function(model, state) {
