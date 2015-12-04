@@ -17,7 +17,6 @@ define([
         _isFirefox = utils.isFF(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
-        _isIPad = utils.isIPad(),
         _name = 'html5';
 
 
@@ -794,8 +793,6 @@ define([
 
         this.getTextTracks = _getTextTracks;
 
-        this.getCurrentTextTrack = _getCurrentTextTrack;
-
         //model expects setSubtitlesTrack when changing subtitle track
         this.setSubtitlesTrack = _setSubtitlesTrack;
 
@@ -818,6 +815,10 @@ define([
             //index off by 1 because of 'off' option
             if(_currentTextTrackIndex !== undefined) {
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
+            } else {
+                _.each(_textTracks, function (track) {
+                   track.mode = 'disabled';
+                });
             }
             if(index > 0 && index <= _videotag.textTracks.length) {
 
@@ -827,11 +828,6 @@ define([
             } else {
                 _currentTextTrackIndex = undefined;
             }
-
-        }
-
-        function _getCurrentTextTrack() {
-            //return _currentTextTrack;
         }
     }
 
