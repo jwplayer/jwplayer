@@ -820,7 +820,7 @@ define([
                    track.mode = 'disabled';
                 });
             }
-            if(index > 0 && index <= _videotag.textTracks.length) {
+            if(index > 0 && index <= _textTracks.length) {
 
                 _currentTextTrackIndex = index-1;
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
