@@ -230,6 +230,7 @@ define([
                     duration = -seekableDuration;
                 }
             }
+            _canSeek = !!end;
             _duration = duration;
             if (_delayedSeek > 0 && _duration > _delayedSeek) {
                 _this.seek(_delayedSeek);
@@ -444,7 +445,6 @@ define([
                 while(index--) {
                     end = Math.max(end, _videotag.seeakble.end(index));
                 }
-                _canSeek = true;
             }
             return end;
         }
@@ -531,7 +531,9 @@ define([
                     offset: seekPos
                 });
             }
-
+            if (!_canSeek) {
+                _canSeek = !!_getSeekableEnd();
+            }
             if (_canSeek) {
                 _delayedSeek = 0;
                 // setting currentTime can throw an invalid DOM state exception if the video is not ready
