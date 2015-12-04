@@ -2,6 +2,7 @@ define([
     // List all files to run tests from here
     'unit/api-config-test',
     'unit/api-test',
+    'unit/ajax-test',
     'unit/browser-test',
     'unit/constants-test',
     'unit/css-test',

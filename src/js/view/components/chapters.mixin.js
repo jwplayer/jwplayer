@@ -28,7 +28,9 @@ define([
     var ChaptersMixin = {
 
         loadChapters: function (file) {
-            utils.ajax(file, this.chaptersLoaded.bind(this), this.chaptersFailed, true);
+            utils.ajax(file, this.chaptersLoaded.bind(this), this.chaptersFailed, {
+                plainText: true
+            });
         },
 
         chaptersLoaded: function (evt) {
