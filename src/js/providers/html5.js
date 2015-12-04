@@ -230,9 +230,8 @@ define([
                     duration = -seekableDuration;
                 }
             }
-            _canSeek = !!end;
             _duration = duration;
-            if (_delayedSeek > 0 && _duration > _delayedSeek) {
+            if (_delayedSeek && duration) {
                 _this.seek(_delayedSeek);
             }
         }
