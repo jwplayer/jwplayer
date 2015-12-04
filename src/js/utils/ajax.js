@@ -2,11 +2,10 @@ define([
     'utils/underscore',
     'utils/parser'
 ], function(_, parser) {
-    var exports = {};
     var noop = function(){};
     var useDomParser = false;
 
-    var crossdomain = exports.crossdomain = function(uri) {
+    var crossdomain = function(uri) {
         var a = document.createElement('a');
         var b = document.createElement('a');
         a.href = location.href;
@@ -18,7 +17,7 @@ define([
         return true;
     };
 
-    var ajax = exports.ajax = function (url, completeCallback, errorCallback, args) {
+    var ajax = function (url, completeCallback, errorCallback, args) {
         if (_.isObject(url)) {
             args = url;
             url = args.url;
@@ -216,5 +215,8 @@ define([
         return options.oncomplete(xhr);
     }
 
-    return exports;
+    return {
+        ajax: ajax,
+        crossdomain: crossdomain
+    };
 });
