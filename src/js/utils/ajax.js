@@ -4,6 +4,7 @@ define([
 ], function(_, parser) {
     var exports = {};
     var noop = function(){};
+    var useDomParser = false;
 
     var crossdomain = exports.crossdomain = function(uri) {
         var a = document.createElement('a');
@@ -42,6 +43,7 @@ define([
             xhr = options.xhr = new window.XDomainRequest();
             xhr.onload = _ajaxComplete(options);
             xhr.ontimeout = xhr.onprogress = noop;
+            useDomParser = true;
         } else if ('XMLHttpRequest' in window) {
             // Firefox, Chrome, Opera, Safari
             xhr = options.xhr = new window.XMLHttpRequest();
@@ -54,8 +56,12 @@ define([
         var requestError = _requestError('Error loading file', options);
         xhr.onerror = requestError;
 
-        if ('overrideMimeType' in xhr && options.mimeType) {
-            xhr.overrideMimeType(options.mimeType);
+        if ('overrideMimeType' in xhr) {
+            if (options.mimeType) {
+                xhr.overrideMimeType(options.mimeType);
+            }
+        } else {
+            useDomParser = true;
         }
 
         try {
@@ -162,7 +168,7 @@ define([
                     return _xmlResponse(xhr, xml, options);
                 }
                 // IE9
-                if (xhr.responseText && !xml) {
+                if (useDomParser && xhr.responseText && !xml) {
                     xml = parser.parseXML(xhr.responseText);
                     if (xml && xml.firstChild) {
                         return _xmlResponse(xhr, xml, options);
