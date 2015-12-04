@@ -164,7 +164,9 @@ define([
         function _load(track) {
             utils.ajax(track.file, function(xmlEvent) {
                 _xmlReadHandler(xmlEvent, track);
-            }, _xmlFailedHandler, true);
+            }, _xmlFailedHandler, {
+                plainText: true
+            });
         }
 
         function _xmlReadHandler(xmlEvent, track) {
