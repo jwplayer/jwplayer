@@ -74,7 +74,15 @@ define([
             }, this);
 
             this.swf.triggerFlash('instream:init');
-            this.applyProviderListeners = function(){};
+
+            this.applyProviderListeners = function(provider){
+                this.model.on('change:volume', function(data, value) {
+                    provider.volume(value);
+                }, this);
+                this.model.on('change:mute', function(data, value) {
+                    provider.mute(value);
+                }, this);
+            };
         },
 
         instreamDestroy: function() {

@@ -60,8 +60,7 @@ define([
             _exitFullscreen,
             _elementSupportsFullscreen = false,
 
-            // Used to differentiate tab focus events from click events, because when
-            //  it is a click, the mouseDown event will occur immediately prior
+            // Used to differentiate tab focus events from click events
             _focusFromClick = false,
 
             _this = _.extend(this, Events);
@@ -70,6 +69,9 @@ define([
         this.api = _api;
 
         _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
+        if (utils.isIE()) {
+            utils.addClass(_playerElement, 'jw-ie');
+        }
 
         var width = _model.get('width'),
             height = _model.get('height');
@@ -174,36 +176,25 @@ define([
             }
         }
 
+        function handleBlur() {
+            _focusFromClick = false;
+            utils.removeClass(_playerElement, 'jw-no-focus');
+        }
+
         function handleMouseDown() {
             _focusFromClick = true;
-
-            // After a click it no longer has 'tab-focus'
-            _this.trigger(events.JWPLAYER_VIEW_TAB_FOCUS, {
-                hasFocus: false
-            });
+            utils.addClass(_playerElement, 'jw-no-focus');
         }
 
         function handleFocus() {
-            var wasTabEvent = !_focusFromClick;
-            _focusFromClick = false;
-
-            if (wasTabEvent) {
-                _this.trigger(events.JWPLAYER_VIEW_TAB_FOCUS, {
-                    hasFocus: true
-                });
+            if (!_focusFromClick) {
+                handleBlur();
             }
 
             // On tab-focus, show the control bar for a few seconds
             if (!_instreamMode) {
                 _userActivity();
             }
-        }
-
-        function handleBlur() {
-            _focusFromClick = false;
-            _this.trigger(events.JWPLAYER_VIEW_TAB_FOCUS, {
-                hasFocus: false
-            });
         }
 
         function _responsiveListener() {
@@ -601,8 +592,6 @@ define([
 
             _controlsLayer.appendChild(_controlbar.element());
 
-            _playerElement.onfocusin = handleFocus;
-            _playerElement.onfocusout = handleBlur;
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
