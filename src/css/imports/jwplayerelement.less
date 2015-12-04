@@ -38,8 +38,12 @@
         display: none;
     }
 
-    &.jw-no-focus, .jw-swf {
+    &.jw-no-focus:focus, .jw-swf {
         outline: none;
+    }
+
+    &.jw-ie:focus {
+        outline: #585858 dotted 1px;
     }
 
     &:hover {
