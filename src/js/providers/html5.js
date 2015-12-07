@@ -168,8 +168,8 @@ define([
                 return;
             }
 
-            _setBuffered(_getBuffer(), _position, _videotag.duration);
             _updateDuration();
+            _setBuffered(_getBuffer(), _position, _duration);
         }
 
         function _progressHandler() {
@@ -218,6 +218,9 @@ define([
         }
 
         function _setPosition(currentTime) {
+            if (_duration < 0) {
+                currentTime = -(_getSeekableEnd() - currentTime);
+            }
             _position = currentTime;
         }
 
@@ -436,15 +439,22 @@ define([
             }
         }
 
+        function _getSeekableStart() {
+            var index = _videotag.seekable ? _videotag.seekable.length : 0;
+            var start = Infinity;
+
+            while(index--) {
+                start = Math.min(start, _videotag.seeakble.start(index));
+            }
+            return start;
+        }
+
         function _getSeekableEnd() {
             var index = _videotag.seekable ? _videotag.seekable.length : 0;
             var end = 0;
-            if (index) {
-                index--;
-                end = _videotag.seekable.end(index);
-                while(index--) {
-                    end = Math.max(end, _videotag.seeakble.end(index));
-                }
+
+            while(index--) {
+                end = Math.max(end, _videotag.seeakble.end(index));
             }
             return end;
         }
@@ -523,6 +533,10 @@ define([
         this.seek = function(seekPos) {
             if (!_attached) {
                 return;
+            }
+
+            if (seekPos < 0) {
+                seekPos += _getSeekableStart() + _getSeekableEnd();
             }
 
             if (_delayedSeek === 0) {
