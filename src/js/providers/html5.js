@@ -87,7 +87,7 @@ define([
 
                 //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
-                loadeddata: _onLoadedData, // we have duration
+                loadeddata: _onLoadedData, // we have video tracks (text, audio, metadata)
                 loadedmetadata: _loadedMetadataHandler, // we have video dimensions
                 canplay: _canPlayHandler,
                 playing: _playingHandler,
@@ -143,7 +143,7 @@ define([
 
             // Video Text Tracks
             _textTracks,
-            _currentTextTrackIndex;
+            _currentTextTrackIndex = -1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -842,7 +842,7 @@ define([
 
         function _setSubtitlesTrack(index) {
             //index off by 1 because of 'off' option
-            if(_currentTextTrackIndex !== undefined) {
+            if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
             } else {
                 _.each(_textTracks, function (track) {
@@ -855,7 +855,7 @@ define([
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
 
             } else {
-                _currentTextTrackIndex = undefined;
+                _currentTextTrackIndex = -1;
             }
         }
     }
