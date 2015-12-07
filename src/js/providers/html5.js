@@ -191,6 +191,10 @@ define([
             } else if (_this.state === states.PLAYING) {
                 _playbackTimeout = setTimeout(_checkPlaybackStalled, STALL_DELAY);
             }
+            // When video has not yet started playing for androidHLS, we cannot get the correct duration
+            if (_isAndroidHLS && (_videotag.duration === Infinity) && (_videotag.currentTime === 0)) {
+                return;
+            }
 
             _updateDuration();
             _setPosition(_videotag.currentTime);
