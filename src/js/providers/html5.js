@@ -87,7 +87,7 @@ define([
 
                 //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
-                //loadeddata: _onLoadedData, // we have duration
+                loadeddata: _onLoadedData, // we have video tracks (text, audio, metadata)
                 loadedmetadata: _loadedMetadataHandler, // we have video dimensions
                 canplay: _canPlayHandler,
                 playing: _playingHandler,
@@ -139,7 +139,11 @@ define([
             // post roll support
             _beforecompleted = false,
 
-            _fullscreenState = false;
+            _fullscreenState = false,
+
+            // Video Text Tracks
+            _textTracks,
+            _currentTextTrackIndex = -1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -159,6 +163,10 @@ define([
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
 
+        // Enable CC on iPad
+        function _onLoadedData() {
+            _setTextTracks(_videotag.textTracks);
+        }
         function _clickHandler(evt) {
             _this.trigger('click', evt);
         }
@@ -815,6 +823,45 @@ define([
         this.getName = function() {
             return { name : _name };
         };
+
+        this.getTextTracks = _getTextTracks;
+
+        //model expects setSubtitlesTrack when changing subtitle track
+        this.setSubtitlesTrack = _setSubtitlesTrack;
+
+        function _setTextTracks(tracks) {
+            //filter for tracks where kind = 'subtitles'
+
+            if(tracks && tracks.length > 0) {
+                _textTracks = _.filter(tracks, function(track) {
+                    return track.kind === 'subtitles';
+                });
+                _this.trigger('subtitlesTracks',{tracks: _textTracks});
+            }
+        }
+
+        function _getTextTracks() {
+            return _textTracks;
+        }
+
+        function _setSubtitlesTrack(index) {
+            //index off by 1 because of 'off' option
+            if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
+                _textTracks[_currentTextTrackIndex].mode = 'disabled';
+            } else {
+                _.each(_textTracks, function (track) {
+                   track.mode = 'disabled';
+                });
+            }
+            if(index > 0 && index <= _textTracks.length) {
+
+                _currentTextTrackIndex = index-1;
+                _textTracks[_currentTextTrackIndex].mode = 'showing';
+
+            } else {
+                _currentTextTrackIndex = -1;
+            }
+        }
     }
 
     // Register provider

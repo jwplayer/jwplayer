@@ -35,7 +35,6 @@ define([
                 track.label = track.name || track.language;
                 _addTrack(track);
             }
-
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
@@ -233,7 +232,12 @@ define([
             }
 
             // set the index without the side effect of storing the Off label in _selectCaptions
-            _model.set('captionsIndex', captionsMenuIndex);
+            if(_tracks.length > 0) {
+                _model.setVideoSubtitleTrack(captionsMenuIndex);
+            } else {
+                _model.set('captionsIndex', captionsMenuIndex);
+            }
+
         }
 
         this.getCurrentIndex = function() {
