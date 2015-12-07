@@ -4,9 +4,13 @@ define([
 ], function(_, utils) {
 
     var jwplayer = window.jwplayer;
-    var storage = window.localStorage || {
-            removeItem: utils.noop
-        };
+    var storage = {
+        removeItem: utils.noop
+    };
+
+    try {
+        storage = window.localStorage;
+    } catch(e) {/* ignore */}
 
     function jwPrefix(str) {
         return 'jwplayer.' + str;
