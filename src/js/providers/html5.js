@@ -853,6 +853,8 @@ define([
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
                 _currentAudioTrackIndex = index;
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = true;
+                _this.trigger('audioTrackChanged',{currentTrack: _currentAudioTrackIndex,
+                    tracks: _videotag.audioTracks});
             }
         }
         this.getTextTracks = _getTextTracks;
