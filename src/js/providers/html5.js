@@ -456,7 +456,7 @@ define([
             var start = Infinity;
 
             while(index--) {
-                start = Math.min(start, _videotag.seeakble.start(index));
+                start = Math.min(start, _videotag.seekable.start(index));
             }
             return start;
         }
@@ -466,7 +466,7 @@ define([
             var end = 0;
 
             while(index--) {
-                end = Math.max(end, _videotag.seeakble.end(index));
+                end = Math.max(end, _videotag.seekable.end(index));
             }
             return end;
         }
