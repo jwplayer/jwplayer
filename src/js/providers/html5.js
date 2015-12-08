@@ -87,7 +87,7 @@ define([
 
                 //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 //loadstart: _generalHandler,
-                loadeddata: _onLoadedData, // we have duration
+                loadeddata: _onLoadedData, // we have video tracks (text, audio, metadata)
                 loadedmetadata: _loadedMetadataHandler, // we have video dimensions
                 canplay: _canPlayHandler,
                 playing: _playingHandler,
@@ -96,7 +96,7 @@ define([
 
                 pause: _pauseHandler,
                 //ratechange: _generalHandler,
-                //readystatechange: _generalHandler,
+                //readystatechange: _readyStateHandler,
                 seeked: _seekedHandler,
                 //seeking: _seekingHandler,
                 //stalled: _stalledHandler,
@@ -140,8 +140,10 @@ define([
             _beforecompleted = false,
 
             _fullscreenState = false,
-
-            _currentAudioTrackIndex;
+            // Video Tracks
+            _textTracks,
+            _currentTextTrackIndex = -1,
+            _currentAudioTrackIndex = -1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -161,21 +163,22 @@ define([
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
 
-        // Enable CC on iPad
+        // Enable tracks support for HLS videos
         function _onLoadedData() {
             _setAudioTracks(_videotag.audioTracks);
+            _setTextTracks(_videotag.textTracks);
         }
         function _clickHandler(evt) {
             _this.trigger('click', evt);
         }
 
         function _durationChangeHandler() {
-            if (!_attached) {
+            if (!_attached || _isAndroidHLS) {
                 return;
             }
 
-            _setBuffered(_getBuffer(), _position, _videotag.duration);
-            _setDuration(_videotag.duration);
+            _updateDuration();
+            _setBuffered(_getBuffer(), _position, _duration);
         }
 
         function _progressHandler() {
@@ -197,8 +200,12 @@ define([
             } else if (_this.state === states.PLAYING) {
                 _playbackTimeout = setTimeout(_checkPlaybackStalled, STALL_DELAY);
             }
+            // When video has not yet started playing for androidHLS, we cannot get the correct duration
+            if (_isAndroidHLS && (_videotag.duration === Infinity) && (_videotag.currentTime === 0)) {
+                return;
+            }
 
-            _setDuration(_videotag.duration);
+            _updateDuration();
             _setPosition(_videotag.currentTime);
             // buffer ranges change during playback, not just on file progress
             _setBuffered(_getBuffer(), _position, _duration);
@@ -224,23 +231,42 @@ define([
         }
 
         function _setPosition(currentTime) {
+            if (_duration < 0) {
+                currentTime = -(_getSeekableEnd() - currentTime);
+            }
             _position = currentTime;
         }
 
-        function _setDuration(duration) {
+        function _updateDuration() {
+            var duration = _videotag.duration;
+            var end = _getSeekableEnd();
+            if (duration === Infinity && end) {
+                var seekableDuration = end - _videotag.seekable.start(0);
+                if (seekableDuration !== Infinity && seekableDuration > 120) {
+                    // Player interprets negative duration as DVR
+                    duration = -seekableDuration;
+                }
+            }
             _duration = duration;
-            if (_delayedSeek > 0 && _duration > _delayedSeek) {
+            if (_delayedSeek && duration) {
                 _this.seek(_delayedSeek);
             }
         }
 
         function _sendMetaEvent() {
+            var duration = _videotag.duration;
+            if (_isAndroidHLS && duration === Infinity) {
+                duration = 0;
+            }
             _this.trigger(events.JWPLAYER_MEDIA_META, {
-                duration: _videotag.duration,
+                duration: duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
             });
-            _setDuration(_videotag.duration);
+            // Do not update duration on androidHLS before time event
+            if (!_isAndroidHLS) {
+                _updateDuration();
+            }
         }
 
         function _canPlayHandler() {
@@ -426,6 +452,26 @@ define([
             }
         }
 
+        function _getSeekableStart() {
+            var index = _videotag.seekable ? _videotag.seekable.length : 0;
+            var start = Infinity;
+
+            while(index--) {
+                start = Math.min(start, _videotag.seekable.start(index));
+            }
+            return start;
+        }
+
+        function _getSeekableEnd() {
+            var index = _videotag.seekable ? _videotag.seekable.length : 0;
+            var end = 0;
+
+            while(index--) {
+                end = Math.max(end, _videotag.seekable.end(index));
+            }
+            return end;
+        }
+
         this.stop = function() {
             clearTimeout(_playbackTimeout);
             if (!_attached) {
@@ -502,21 +548,27 @@ define([
                 return;
             }
 
+            if (seekPos < 0) {
+                seekPos += _getSeekableStart() + _getSeekableEnd();
+            }
+
             if (_delayedSeek === 0) {
                 this.trigger(events.JWPLAYER_MEDIA_SEEK, {
                     position: _videotag.currentTime,
                     offset: seekPos
                 });
             }
-
+            if (!_canSeek) {
+                _canSeek = !!_getSeekableEnd();
+            }
             if (_canSeek) {
                 _delayedSeek = 0;
-                // handle readystate issue
-                var status = utils.tryCatch(function() {
+                // setting currentTime can throw an invalid DOM state exception if the video is not ready
+                try {
                     _this.seeking = true;
                     _videotag.currentTime = seekPos;
-                });
-                if (status instanceof utils.Error) {
+                } catch(e) {
+                    _this.seeking = false;
                     _delayedSeek = seekPos;
                 }
             } else {
@@ -638,11 +690,9 @@ define([
         /**
          * Begin listening to events again
          */
-        this.attachMedia = function(seekable) {
+        this.attachMedia = function() {
             _attached = true;
-            if (!seekable) {
-                _canSeek = false;
-            }
+            _canSeek = false;
 
             // If we were mid-seek when detached, we want to allow it to resume
             this.seeking = false;
@@ -799,12 +849,49 @@ define([
         }
 
         function _setCurrentAudioTrack(index) {
-            if(index > -1 && index < _videotag.audioTracks.length) {
+            if (index > -1 && index < _videotag.audioTracks.length) {
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
                 _currentAudioTrackIndex = index;
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = true;
             }
+        }
+        this.getTextTracks = _getTextTracks;
 
+        //model expects setSubtitlesTrack when changing subtitle track
+        this.setSubtitlesTrack = _setSubtitlesTrack;
+
+        function _setTextTracks(tracks) {
+            //filter for tracks where kind = 'subtitles'
+
+            if(tracks && tracks.length > 0) {
+                _textTracks = _.filter(tracks, function(track) {
+                    return track.kind === 'subtitles';
+                });
+                _this.trigger('subtitlesTracks',{tracks: _textTracks});
+            }
+        }
+
+        function _getTextTracks() {
+            return _textTracks;
+        }
+
+        function _setSubtitlesTrack(index) {
+            //index off by 1 because of 'off' option
+            if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
+                _textTracks[_currentTextTrackIndex].mode = 'disabled';
+            } else {
+                _.each(_textTracks, function (track) {
+                   track.mode = 'disabled';
+                });
+            }
+            if(index > 0 && index <= _textTracks.length) {
+
+                _currentTextTrackIndex = index-1;
+                _textTracks[_currentTextTrackIndex].mode = 'showing';
+
+            } else {
+                _currentTextTrackIndex = -1;
+            }
         }
     }
 

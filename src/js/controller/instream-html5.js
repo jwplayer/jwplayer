@@ -141,8 +141,8 @@ define([
 
                 provider.on(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.attachMedia();
-                provider.mute(_model.get('mute'));
                 provider.volume(_model.get('volume'));
+                provider.mute(_model.get('mute'));
 
                 _adModel.on('change:state', changeStateEvent, _this);
             }

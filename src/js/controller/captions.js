@@ -35,7 +35,6 @@ define([
                 track.label = track.name || track.language;
                 _addTrack(track);
             }
-
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
@@ -162,13 +161,13 @@ define([
         }
 
         function _load(track) {
-            utils.ajax(track.file, function(xmlEvent) {
-                _xmlReadHandler(xmlEvent, track);
-            }, _xmlFailedHandler, true);
+            utils.ajax(track.file, function(xhr) {
+                _xhrSuccess(xhr, track);
+            }, _errorHandler);
         }
 
-        function _xmlReadHandler(xmlEvent, track) {
-            var rss = xmlEvent.responseXML ? xmlEvent.responseXML.firstChild : null,
+        function _xhrSuccess(xhr, track) {
+            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null,
                 status;
 
             // IE9 sets the firstChild element to the root <xml> tag
@@ -183,20 +182,16 @@ define([
             }
             if (rss && parsers.localName(rss) === 'tt') {
                 status = utils.tryCatch(function() {
-                    track.data = dfxp(xmlEvent.responseXML);
+                    track.data = dfxp(xhr.responseXML);
                 });
             } else {
                 status = utils.tryCatch(function() {
-                    track.data = srt(xmlEvent.responseText);
+                    track.data = srt(xhr.responseText);
                 });
             }
             if (status instanceof utils.Error) {
                 _errorHandler(status.message + ': ' + track.file);
             }
-        }
-
-        function _xmlFailedHandler(message) {
-            _errorHandler(message);
         }
 
         function _captionsMenu() {
@@ -237,7 +232,12 @@ define([
             }
 
             // set the index without the side effect of storing the Off label in _selectCaptions
-            _model.set('captionsIndex', captionsMenuIndex);
+            if(_tracks.length > 0) {
+                _model.setVideoSubtitleTrack(captionsMenuIndex);
+            } else {
+                _model.set('captionsIndex', captionsMenuIndex);
+            }
+
         }
 
         this.getCurrentIndex = function() {
