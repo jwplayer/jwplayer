@@ -838,7 +838,6 @@ define([
             return { name : _name };
         };
 
-        this.getTextTracks = _getTextTracks;
 
         //model expects setSubtitlesTrack when changing subtitle track
         this.setSubtitlesTrack = _setSubtitlesTrack;
@@ -854,11 +853,10 @@ define([
             }
         }
 
-        function _getTextTracks() {
-            return _textTracks;
-        }
-
         function _setSubtitlesTrack(index) {
+            if(!_textTracks) {
+                return;
+            }
             //index off by 1 because of 'off' option
             if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
