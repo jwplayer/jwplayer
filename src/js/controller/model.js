@@ -354,7 +354,7 @@ define([
             this.set('captionsIndex', trackIndex);
             this.persistCaptionsTrack();
 
-            if (_provider.setSubtitlesTrack) {
+            if (_provider && _provider.setSubtitlesTrack) {
                 _provider.setSubtitlesTrack(trackIndex);
             }
         };
