@@ -859,6 +859,9 @@ define([
         }
 
         function _setSubtitlesTrack(index) {
+            if(!_textTracks) {
+                return;
+            }
             //index off by 1 because of 'off' option
             if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
