@@ -838,7 +838,6 @@ define([
             return { name : _name };
         };
 
-        this.getTextTracks = _getTextTracks;
 
         //model expects setSubtitlesTrack when changing subtitle track
         this.setSubtitlesTrack = _setSubtitlesTrack;
@@ -852,10 +851,6 @@ define([
                 });
                 _this.trigger('subtitlesTracks',{tracks: _textTracks});
             }
-        }
-
-        function _getTextTracks() {
-            return _textTracks;
         }
 
         function _setSubtitlesTrack(index) {
