@@ -847,12 +847,10 @@ define([
                 for (var i = 0; i < tracks.length; i++) {
                     if (tracks[i].enabled) {
                         _currentAudioTrackIndex = i;
-                        console.log('got current audio track: ', i);
                         break;
                     }
                 }
                 if(_currentAudioTrackIndex === -1) {
-                    console.log('setting default track: ', _currentAudioTrackIndex);
                     _currentAudioTrackIndex = 0;
                     tracks[_currentAudioTrackIndex].enabled = true;
                 }
@@ -889,8 +887,9 @@ define([
         }
 
         function _setSubtitlesTrack(index) {
-            //index off by 1 because of 'Off' option
-            console.log('current track: ', _currentTextTrackIndex, ' and new index: ', index);
+            if(!_textTracks) {
+                return;
+            }
             if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
 
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
@@ -899,9 +898,9 @@ define([
                    track.mode = 'disabled';
                 });
             }
+            //index off by 1 because of 'Off' option in controlbar
             if(index > 0 && index <= _textTracks.length) {
                 _currentTextTrackIndex = index-1;
-                console.log('new index: ',_currentTextTrackIndex);
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
 
             } else {
