@@ -511,6 +511,8 @@ define([
             _position = item.starttime || 0;
             _duration = item.duration || 0;
             _setVideotagSource(item);
+            _currentAudioTrackIndex = -1;
+            _currentTextTrackIndex = -1;
         };
 
         this.load = function(item) {
@@ -842,8 +844,18 @@ define([
 
         function _setAudioTracks(tracks) {
             if(tracks && tracks.length > 0) {
-                _currentAudioTrackIndex = 0;
-                tracks[_currentAudioTrackIndex].enabled = true;
+                for (var i = 0; i < tracks.length; i++) {
+                    if (tracks[i].enabled) {
+                        _currentAudioTrackIndex = i;
+                        console.log('got current audio track: ', i);
+                        break;
+                    }
+                }
+                if(_currentAudioTrackIndex === -1) {
+                    console.log('setting default track: ', _currentAudioTrackIndex);
+                    _currentAudioTrackIndex = 0;
+                    tracks[_currentAudioTrackIndex].enabled = true;
+                }
                 _this.trigger('audioTracks',{currentTrack: _currentAudioTrackIndex, tracks: tracks});
             }
         }
@@ -857,29 +869,30 @@ define([
                     tracks: _videotag.audioTracks});
             }
         }
-        this.getTextTracks = _getTextTracks;
 
         //model expects setSubtitlesTrack when changing subtitle track
         this.setSubtitlesTrack = _setSubtitlesTrack;
 
         function _setTextTracks(tracks) {
             //filter for tracks where kind = 'subtitles'
-
             if(tracks && tracks.length > 0) {
+
                 _textTracks = _.filter(tracks, function(track) {
                     return track.kind === 'subtitles';
+                });
+                //set subtitles Off by default
+                _.each(_textTracks, function(track) {
+                    track.mode = 'disabled';
                 });
                 _this.trigger('subtitlesTracks',{tracks: _textTracks});
             }
         }
 
-        function _getTextTracks() {
-            return _textTracks;
-        }
-
         function _setSubtitlesTrack(index) {
-            //index off by 1 because of 'off' option
+            //index off by 1 because of 'Off' option
+            console.log('current track: ', _currentTextTrackIndex, ' and new index: ', index);
             if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
+
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
             } else {
                 _.each(_textTracks, function (track) {
@@ -887,8 +900,8 @@ define([
                 });
             }
             if(index > 0 && index <= _textTracks.length) {
-
                 _currentTextTrackIndex = index-1;
+                console.log('new index: ',_currentTextTrackIndex);
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
 
             } else {

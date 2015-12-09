@@ -305,7 +305,6 @@ define([
             if (this.elements.playlist) {
                 this.elements.playlist.selectItem(itemIdx);
             }
-            //TO-DO: determine if this is the best spot for audio tracks setup
             this.elements.audiotracks.setup();
         },
 
