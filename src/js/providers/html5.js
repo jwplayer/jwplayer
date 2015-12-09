@@ -140,10 +140,10 @@ define([
             _beforecompleted = false,
 
             _fullscreenState = false,
-
-            // Video Text Tracks
-            _textTracks,
-            _currentTextTrackIndex = -1;
+            // MediaElement Tracks
+            _textTracks = null,
+            _currentTextTrackIndex = -1,
+            _currentAudioTrackIndex = -1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -163,8 +163,9 @@ define([
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
 
-        // Enable CC on iPad
+        // Enable tracks support for HLS videos
         function _onLoadedData() {
+            _setAudioTracks(_videotag.audioTracks);
             _setTextTracks(_videotag.textTracks);
         }
         function _clickHandler(evt) {
@@ -442,6 +443,9 @@ define([
         }
 
         function _setVideotagSource() {
+            _textTracks = null;
+            _currentAudioTrackIndex = -1;
+            _currentTextTrackIndex = -1;
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
@@ -837,19 +841,49 @@ define([
         this.getName = function() {
             return { name : _name };
         };
+        this.setCurrentAudioTrack = _setCurrentAudioTrack;
 
+        function _setAudioTracks(tracks) {
+            if(tracks && tracks.length > 0) {
+                for (var i = 0; i < tracks.length; i++) {
+                    if (tracks[i].enabled) {
+                        _currentAudioTrackIndex = i;
+                        break;
+                    }
+                }
+                if(_currentAudioTrackIndex === -1) {
+                    _currentAudioTrackIndex = 0;
+                    tracks[_currentAudioTrackIndex].enabled = true;
+                }
+                _this.trigger('audioTracks',{currentTrack: _currentAudioTrackIndex, tracks: tracks});
+            }
+        }
+
+        function _setCurrentAudioTrack(index) {
+            if (index > -1 && index < _videotag.audioTracks.length) {
+                _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
+                _currentAudioTrackIndex = index;
+                _videotag.audioTracks[_currentAudioTrackIndex].enabled = true;
+                _this.trigger('audioTrackChanged',{currentTrack: _currentAudioTrackIndex,
+                    tracks: _videotag.audioTracks});
+            }
+        }
 
         //model expects setSubtitlesTrack when changing subtitle track
         this.setSubtitlesTrack = _setSubtitlesTrack;
 
         function _setTextTracks(tracks) {
             //filter for tracks where kind = 'subtitles'
-
             if(tracks && tracks.length > 0) {
+
                 _textTracks = _.filter(tracks, function(track) {
                     return track.kind === 'subtitles';
                 });
-                _this.trigger('subtitlesTracks',{tracks: _textTracks});
+                //set subtitles Off by default
+                _.each(_textTracks, function(track) {
+                    track.mode = 'disabled';
+                });
+                _this.trigger('subtitlesTracks', {tracks: _textTracks});
             }
         }
 
@@ -857,7 +891,6 @@ define([
             if(!_textTracks) {
                 return;
             }
-            //index off by 1 because of 'off' option
             if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
             } else {
@@ -865,8 +898,8 @@ define([
                    track.mode = 'disabled';
                 });
             }
+            //index off by 1 because of 'Off' option in controlbar
             if(index > 0 && index <= _textTracks.length) {
-
                 _currentTextTrackIndex = index-1;
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
 

@@ -177,7 +177,7 @@ define([
         };
 
         this.setCurrentAudioTrack = function(currentTrack, tracks) {
-            if (currentTrack > -1 && tracks.length > 1) {
+            if (currentTrack > -1 && tracks.length > 0 && currentTrack < tracks.length) {
                 this.mediaModel.set('currentAudioTrack', parseInt(currentTrack));
             }
         };

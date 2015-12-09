@@ -518,7 +518,9 @@ define([
             }
 
             function _setCurrentAudioTrack(index) {
-                _video().setCurrentAudioTrack(index);
+                if(_video()) {
+                    _video().setCurrentAudioTrack(index);
+                }
             }
 
             function _getCurrentAudioTrack() {

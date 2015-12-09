@@ -305,7 +305,6 @@ define([
             if (this.elements.playlist) {
                 this.elements.playlist.selectItem(itemIdx);
             }
-
             this.elements.audiotracks.setup();
         },
 
@@ -318,7 +317,7 @@ define([
                 this.elements.hd.selectItem(level);
             }, this);
             mediaModel.on('change:audioTracks', function(model, audioTracks) {
-                var list = _.map(audioTracks, function(track) { return { label : track.name }; });
+                var list = _.map(audioTracks, function(track) { return { label : track.label || track.name }; });
                 this.elements.audiotracks.setup(list, model.get('currentAudioTrack'), {toggle: false});
                 this.clearCompactMode();
             }, this);
