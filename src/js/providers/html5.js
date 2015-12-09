@@ -140,8 +140,8 @@ define([
             _beforecompleted = false,
 
             _fullscreenState = false,
-            // Video Tracks
-            _textTracks,
+            // MediaElement Tracks
+            _textTracks = null,
             _currentTextTrackIndex = -1,
             _currentAudioTrackIndex = -1;
 
@@ -443,6 +443,9 @@ define([
         }
 
         function _setVideotagSource() {
+            _textTracks = null;
+            _currentAudioTrackIndex = -1;
+            _currentTextTrackIndex = -1;
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
@@ -511,8 +514,6 @@ define([
             _position = item.starttime || 0;
             _duration = item.duration || 0;
             _setVideotagSource(item);
-            _currentAudioTrackIndex = -1;
-            _currentTextTrackIndex = -1;
         };
 
         this.load = function(item) {
@@ -882,7 +883,7 @@ define([
                 _.each(_textTracks, function(track) {
                     track.mode = 'disabled';
                 });
-                _this.trigger('subtitlesTracks',{tracks: _textTracks});
+                _this.trigger('subtitlesTracks', {tracks: _textTracks});
             }
         }
 
@@ -891,7 +892,6 @@ define([
                 return;
             }
             if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
-
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
             } else {
                 _.each(_textTracks, function (track) {
