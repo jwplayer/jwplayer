@@ -142,6 +142,7 @@ define([
             _fullscreenState = false,
             // MediaElement Tracks
             _textTracks = null,
+            _audioTracks = null,
             _currentTextTrackIndex = -1,
             _currentAudioTrackIndex = -1;
 
@@ -444,6 +445,7 @@ define([
 
         function _setVideotagSource() {
             _textTracks = null;
+            _audioTracks = null;
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
             _canSeek = false;
@@ -843,6 +845,10 @@ define([
         };
         this.setCurrentAudioTrack = _setCurrentAudioTrack;
 
+        this.getAudioTracks = _getAudioTracks;
+
+        this.getCurrentAudioTrack = _getCurrentAudioTrack;
+
         function _setAudioTracks(tracks) {
             if(tracks && tracks.length > 0) {
                 for (var i = 0; i < tracks.length; i++) {
@@ -855,18 +861,34 @@ define([
                     _currentAudioTrackIndex = 0;
                     tracks[_currentAudioTrackIndex].enabled = true;
                 }
-                _this.trigger('audioTracks',{currentTrack: _currentAudioTrackIndex, tracks: tracks});
+                _audioTracks = _.map(tracks, function(track) {
+                    var _track = {
+                        name: track.label,
+                        language: track.language
+                    };
+                    return _track;
+                });
+                _this.trigger('audioTracks',{currentTrack: _currentAudioTrackIndex, tracks: _audioTracks});
             }
         }
 
         function _setCurrentAudioTrack(index) {
-            if (index > -1 && index < _videotag.audioTracks.length) {
+            if (_videotag && _videotag.audioTracks && _audioTracks &&
+                index > -1 && index < _videotag.audioTracks.length) {
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
                 _currentAudioTrackIndex = index;
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = true;
                 _this.trigger('audioTrackChanged',{currentTrack: _currentAudioTrackIndex,
-                    tracks: _videotag.audioTracks});
+                    tracks: _audioTracks});
             }
+        }
+
+        function _getAudioTracks() {
+            return _audioTracks || [];
+        }
+
+        function _getCurrentAudioTrack() {
+            return _currentAudioTrackIndex;
         }
 
         //model expects setSubtitlesTrack when changing subtitle track
