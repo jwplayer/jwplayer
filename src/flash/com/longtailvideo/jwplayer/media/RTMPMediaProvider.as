@@ -209,6 +209,7 @@ public class RTMPMediaProvider extends MediaProvider {
             // Resume VOD and restart live stream
             if (isVOD(_item.duration)) {
                 _stream.resume();
+                setState(PlayerState.PLAYING);
             } else {
                 _stream.play(_levels[_level].id);
                 setState(PlayerState.BUFFERING);
