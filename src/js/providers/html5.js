@@ -669,6 +669,8 @@ define([
             _sendFullscreen(e);
             if (utils.isIOS()) {
                 _videotag.controls = false;
+                _updateSelectedAudioTrack();
+                _updateSelectedTextTrack();
             }
         }
 
@@ -677,6 +679,43 @@ define([
                 target: e.target,
                 jwstate: _fullscreenState
             });
+        }
+
+        function _updateSelectedAudioTrack () {
+            if(_videotag.audioTracks) {
+                var _selectedAudioTrackIndex = -1;
+                for (var i = 0; i < _videotag.audioTracks.length; i++) {
+                    if (_videotag.audioTracks[i].enabled) {
+                        _selectedAudioTrackIndex = i;
+                        break;
+                    }
+                }
+                _setCurrentAudioTrack(_selectedAudioTrackIndex);
+            }
+        }
+        function _updateSelectedTextTrack() {
+            if(_videotag.textTracks) {
+                var _selectedTextTrack = null;
+                var _selectedTextTrackIndex = -1, i = 0;
+                for (i; i < _videotag.textTracks.length; i++) {
+                    if (_videotag.textTracks[i].mode === 'showing') {
+                        _selectedTextTrack = _videotag.textTracks[i];
+                        break;
+                    }
+                }
+                if(_selectedTextTrack) {
+                    for (i = 0; i < _textTracks.length; i++) {
+                        if (_textTracks[i].label === _selectedTextTrack.label) {
+                            _selectedTextTrackIndex = i;
+                            break;
+                        }
+                    }
+                }
+                if (_selectedTextTrackIndex !== _currentTextTrackIndex) {
+                    //update track index in the captions controller, offsetting by 1 to account for 'Off'
+                    _this.trigger('subtitlesTrackChangedInFullScreen', { index: _selectedTextTrackIndex + 1 });
+                }
+            }
         }
 
         this.checkComplete = function() {
@@ -874,7 +913,7 @@ define([
 
         function _setCurrentAudioTrack(index) {
             if (_videotag && _videotag.audioTracks && _audioTracks &&
-                index > -1 && index < _videotag.audioTracks.length) {
+                index > -1 && index < _videotag.audioTracks.length && index !== _currentAudioTrackIndex) {
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
                 _currentAudioTrackIndex = index;
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = true;
@@ -893,6 +932,8 @@ define([
 
         //model expects setSubtitlesTrack when changing subtitle track
         this.setSubtitlesTrack = _setSubtitlesTrack;
+
+        this.getSubtitlesTrack = _getSubtitlesTrack;
 
         function _setTextTracks(tracks) {
             //filter for tracks where kind = 'subtitles'
@@ -928,6 +969,10 @@ define([
             } else {
                 _currentTextTrackIndex = -1;
             }
+        }
+
+        function _getSubtitlesTrack() {
+            return _currentTextTrackIndex;
         }
     }
 

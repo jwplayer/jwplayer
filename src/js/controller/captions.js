@@ -39,6 +39,10 @@ define([
             this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
         }, this);
+        // Notified by provider if track changed while in fullscreen mode
+        _model.mediaController.on('subtitlesTrackChangedInFullScreen', function(e) {
+            _setCurrentIndex(e.index);
+        }, this);
 
         // Append data to subtitle tracks
         _model.mediaController.on('subtitlesTrackData', function(e) {
@@ -232,12 +236,15 @@ define([
             }
 
             // set the index without the side effect of storing the Off label in _selectCaptions
-            if(_tracks.length > 0) {
-                _model.setVideoSubtitleTrack(captionsMenuIndex);
-            } else {
-                _model.set('captionsIndex', captionsMenuIndex);
-            }
+            _setCurrentIndex(captionsMenuIndex);
+        }
 
+        function _setCurrentIndex (index) {
+            if(_tracks.length > 0) {
+                _model.setVideoSubtitleTrack(index);
+            } else {
+                _model.set('captionsIndex', index);
+            }
         }
 
         this.getCurrentIndex = function() {
