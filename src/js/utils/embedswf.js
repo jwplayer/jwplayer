@@ -90,6 +90,13 @@ define([
             var args = Array.prototype.slice.call(arguments, 1);
             var status = utils.tryCatch(function() {
                 if (args.length) {
+                    // remove any nodes from arguments
+                    // cyclical structures cannot be converted to JSON
+                    for (var i=args.length; i--;) {
+                        if (typeof args[i] === 'object') {
+                            _.each(args[i], deleteHTMLElement);
+                        }
+                    }
                     var json = JSON.stringify(args);
                     swfInstance.__externalCall(name, json);
                 } else {
@@ -117,6 +124,12 @@ define([
         if (swf && swf.parentNode) {
             swf.style.display = 'none';
             swf.parentNode.removeChild(swf);
+        }
+    }
+
+    function deleteHTMLElement(value, prop, object) {
+        if (value instanceof window.HTMLElement) {
+            delete object[prop];
         }
     }
 
