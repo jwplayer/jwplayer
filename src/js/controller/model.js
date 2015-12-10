@@ -316,7 +316,7 @@ define([
         this.loadVideo = function(item) {
 
             this.mediaModel.set('playAttempt', true);
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
 
             if (!item) {
                 var idx = this.get('item');

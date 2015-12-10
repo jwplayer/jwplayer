@@ -25,7 +25,7 @@ define([
                 oldstate: oldstate,
                 reason: model.mediaModel.get('state')
             };
-            // add reason for play of the event type is play
+            // add reason for play if the event type is play
             if (eventType === 'play') {
                 evt.playReason = model.get('playReason');
             }
