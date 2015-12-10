@@ -1,7 +1,6 @@
 define([
-    'utils/underscore',
-    'utils/trycatch'
-], function(_, trycatch) {
+    'utils/underscore'
+], function(_) {
     var browser = {};
 
     var _userAgentMatch = _.memoize(function (regex) {
@@ -130,18 +129,16 @@ define([
         }
 
         if (typeof window.ActiveXObject !== 'undefined') {
-            var status = trycatch.tryCatch(function() {
+            try {
                 flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 if (flash) {
                     return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
-            });
-
-            if (status instanceof trycatch.Error) {
+            } catch(e) {
                 return 0;
             }
 
-            return status;
+            return flash;
         }
         return 0;
     };
