@@ -205,10 +205,14 @@ public class RTMPMediaProvider extends MediaProvider {
             return;
         }
         _video.attachNetStream(_stream);
+        clearInterval(_interval);
+        _interval = setInterval(positionInterval, 100);
         if (_isPaused) {
+            _isPaused = false;
             // Resume VOD and restart live stream
             if (isVOD(_item.duration)) {
                 _stream.resume();
+                setState(PlayerState.PLAYING);
             } else {
                 _stream.play(_levels[_level].id);
                 setState(PlayerState.BUFFERING);
@@ -217,9 +221,6 @@ public class RTMPMediaProvider extends MediaProvider {
             // Start stream.
             _stream.play(_levels[_level].id);
         }
-        _isPaused = false;
-        clearInterval(_interval);
-        _interval = setInterval(positionInterval, 100);
     }
 
     /** Resize the Video and possible StageVideo. **/
