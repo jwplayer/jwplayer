@@ -168,6 +168,8 @@ define([
         function _onLoadedData() {
             _setAudioTracks(_videotag.audioTracks);
             _setTextTracks(_videotag.textTracks);
+            _videotag.audioTracks.onchange = _audioTrackChangeHandler;
+            _videotag.textTracks.onchange = _textTrackChangeHandler;
         }
         function _clickHandler(evt) {
             _this.trigger('click', evt);
@@ -498,7 +500,12 @@ define([
 
         this.destroy = function() {
              _removeListeners(_mediaEvents, _videotag);
-
+            if(_videotag.audioTracks) {
+                _videotag.audioTracks.onchange = null;
+            }
+            if(_videotag.textTracks) {
+                _videotag.textTracks.onchange = null;
+            }
             this.remove();
             this.off();
         };
@@ -664,13 +671,42 @@ define([
             }
         }
 
+        function _textTrackChangeHandler() {
+            var _selectedTextTrack = null;
+            var _selectedTextTrackIndex = -1, i = 0;
+            for (i; i < _videotag.textTracks.length; i++) {
+                if (_videotag.textTracks[i].mode === 'showing') {
+                    _selectedTextTrack = _videotag.textTracks[i];
+                    break;
+                }
+            }
+            if(_selectedTextTrack) {
+                for (i = 0; i < _textTracks.length; i++) {
+                    if (_textTracks[i].label === _selectedTextTrack.label) {
+                        _selectedTextTrackIndex = i;
+                        break;
+                    }
+                }
+            }
+            _setSubtitlesTrack(_selectedTextTrackIndex + 1);
+        }
+
+        function _audioTrackChangeHandler() {
+            var _selectedAudioTrackIndex = -1;
+            for (var i = 0; i < _videotag.audioTracks.length; i++) {
+                if (_videotag.audioTracks[i].enabled) {
+                    _selectedAudioTrackIndex = i;
+                    break;
+                }
+            }
+            _setCurrentAudioTrack(_selectedAudioTrackIndex);
+        }
+
         function _fullscreenEndHandler(e) {
             _fullscreenState = false;
             _sendFullscreen(e);
             if (utils.isIOS()) {
                 _videotag.controls = false;
-                _updateSelectedAudioTrack();
-                _updateSelectedTextTrack();
             }
         }
 
@@ -679,43 +715,6 @@ define([
                 target: e.target,
                 jwstate: _fullscreenState
             });
-        }
-
-        function _updateSelectedAudioTrack () {
-            if(_videotag.audioTracks) {
-                var _selectedAudioTrackIndex = -1;
-                for (var i = 0; i < _videotag.audioTracks.length; i++) {
-                    if (_videotag.audioTracks[i].enabled) {
-                        _selectedAudioTrackIndex = i;
-                        break;
-                    }
-                }
-                _setCurrentAudioTrack(_selectedAudioTrackIndex);
-            }
-        }
-        function _updateSelectedTextTrack() {
-            if(_videotag.textTracks) {
-                var _selectedTextTrack = null;
-                var _selectedTextTrackIndex = -1, i = 0;
-                for (i; i < _videotag.textTracks.length; i++) {
-                    if (_videotag.textTracks[i].mode === 'showing') {
-                        _selectedTextTrack = _videotag.textTracks[i];
-                        break;
-                    }
-                }
-                if(_selectedTextTrack) {
-                    for (i = 0; i < _textTracks.length; i++) {
-                        if (_textTracks[i].label === _selectedTextTrack.label) {
-                            _selectedTextTrackIndex = i;
-                            break;
-                        }
-                    }
-                }
-                if (_selectedTextTrackIndex !== _currentTextTrackIndex) {
-                    //update track index in the captions controller, offsetting by 1 to account for 'Off'
-                    _this.trigger('subtitlesTrackChangedInFullScreen', { index: _selectedTextTrackIndex + 1 });
-                }
-            }
         }
 
         this.checkComplete = function() {
@@ -808,7 +807,7 @@ define([
             state = !!state;
 
             // This implementation is for iOS and Android WebKit only
-            // This won't get called if the player contain can go fullscreen
+            // This won't get called if the player container can go fullscreen
             if (state) {
                 var status = utils.tryCatch(function() {
                     var enterFullscreen =
@@ -907,7 +906,7 @@ define([
                     };
                     return _track;
                 });
-                _this.trigger('audioTracks',{currentTrack: _currentAudioTrackIndex, tracks: _audioTracks});
+                _this.trigger('audioTracks', { currentTrack: _currentAudioTrackIndex, tracks: _audioTracks });
             }
         }
 
@@ -917,8 +916,8 @@ define([
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
                 _currentAudioTrackIndex = index;
                 _videotag.audioTracks[_currentAudioTrackIndex].enabled = true;
-                _this.trigger('audioTrackChanged',{currentTrack: _currentAudioTrackIndex,
-                    tracks: _audioTracks});
+                _this.trigger('audioTrackChanged', { currentTrack: _currentAudioTrackIndex,
+                    tracks: _audioTracks });
             }
         }
 
@@ -936,9 +935,8 @@ define([
         this.getSubtitlesTrack = _getSubtitlesTrack;
 
         function _setTextTracks(tracks) {
-            //filter for tracks where kind = 'subtitles'
+            //filter for 'subtitles' tracks
             if(tracks && tracks.length > 0) {
-
                 _textTracks = _.filter(tracks, function(track) {
                     return track.kind === 'subtitles';
                 });
@@ -946,12 +944,16 @@ define([
                 _.each(_textTracks, function(track) {
                     track.mode = 'disabled';
                 });
-                _this.trigger('subtitlesTracks', {tracks: _textTracks});
+                _this.trigger('subtitlesTracks', { tracks: _textTracks });
             }
         }
 
         function _setSubtitlesTrack(index) {
             if(!_textTracks) {
+                return;
+            }
+            // _currentTextTrackIndex = index - 1 ('Off' = 0 in controlbar)
+            if(_currentTextTrackIndex === index - 1) {
                 return;
             }
             if(_currentTextTrackIndex > -1 && _currentTextTrackIndex < _textTracks.length) {
@@ -961,14 +963,15 @@ define([
                    track.mode = 'disabled';
                 });
             }
-            //index off by 1 because of 'Off' option in controlbar
             if(index > 0 && index <= _textTracks.length) {
-                _currentTextTrackIndex = index-1;
+                _currentTextTrackIndex = index - 1;
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
 
             } else {
                 _currentTextTrackIndex = -1;
             }
+            // update the model index if change did not originate from controlbar or api
+            _this.trigger('subtitlesTrackChanged', { currentTrack: _currentTextTrackIndex + 1 });
         }
 
         function _getSubtitlesTrack() {
