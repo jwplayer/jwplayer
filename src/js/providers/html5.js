@@ -166,10 +166,14 @@ define([
 
         // Enable tracks support for HLS videos
         function _onLoadedData() {
-            _setAudioTracks(_videotag.audioTracks);
-            _setTextTracks(_videotag.textTracks);
-            _videotag.audioTracks.onchange = _audioTrackChangeHandler;
-            _videotag.textTracks.onchange = _textTrackChangeHandler;
+            if(_videotag.audioTracks) {
+                _setAudioTracks(_videotag.audioTracks);
+                _videotag.audioTracks.onchange = _audioTrackChangeHandler;
+            }
+            if(_videotag.textTracks) {
+                _setTextTracks(_videotag.textTracks);
+                _videotag.textTracks.onchange = _textTrackChangeHandler;
+            }
         }
         function _clickHandler(evt) {
             _this.trigger('click', evt);
@@ -500,10 +504,10 @@ define([
 
         this.destroy = function() {
              _removeListeners(_mediaEvents, _videotag);
-            if(_videotag.audioTracks) {
+            if (_videotag.audioTracks) {
                 _videotag.audioTracks.onchange = null;
             }
-            if(_videotag.textTracks) {
+            if (_videotag.textTracks) {
                 _videotag.textTracks.onchange = null;
             }
             this.remove();
