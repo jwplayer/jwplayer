@@ -39,10 +39,6 @@ define([
             this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
         }, this);
-        // Notified by provider if track changed while in fullscreen mode
-        _model.mediaController.on('subtitlesTrackChangedInFullScreen', function(e) {
-            _setCurrentIndex(e.index);
-        }, this);
 
         // Append data to subtitle tracks
         _model.mediaController.on('subtitlesTrackData', function(e) {
