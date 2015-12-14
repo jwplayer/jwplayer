@@ -7,11 +7,17 @@
 
     var base = '';
     var deps = [
-        // Add polyfills for phantomjs 1.x and IE9
-        'bind-polyfill',
-        'polyfills/base64',
-        'polyfills/promise'
+        'bind-polyfill'
     ];
+
+    // Add polyfills for phantomjs 1.x and IE9
+    if (!('atob' in window)) {
+        deps.push('polyfills/base64');
+    }
+    if (!('Promise' in window)) {
+        deps.push('polyfills/promise');
+    }
+
     var callback;
 
     if (!window.__karma__) {

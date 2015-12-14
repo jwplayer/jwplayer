@@ -180,6 +180,6 @@ define(['utils/underscore'], function(_) {
         asap = fn;
     };
 
-    window.Promise = Promise;
+    window.Promise || (window.Promise = Promise);
 
 });
