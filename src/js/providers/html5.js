@@ -903,7 +903,7 @@ define([
                 }
                 _audioTracks = _.map(tracks, function(track) {
                     var _track = {
-                        name: track.label,
+                        name: track.label || track.language,
                         language: track.language
                     };
                     return _track;
