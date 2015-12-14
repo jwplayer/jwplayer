@@ -152,6 +152,9 @@ define([
                 case events.JWPLAYER_AUDIO_TRACK_CHANGED:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
+                case 'subtitlesTrackChanged':
+                    this.setVideoSubtitleTrack(data.currentTrack);
+                    break;
 
                 case 'visualQuality':
                     var visualQuality = _.extend({}, data);

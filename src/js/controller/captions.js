@@ -232,12 +232,15 @@ define([
             }
 
             // set the index without the side effect of storing the Off label in _selectCaptions
-            if(_tracks.length > 0) {
-                _model.setVideoSubtitleTrack(captionsMenuIndex);
-            } else {
-                _model.set('captionsIndex', captionsMenuIndex);
-            }
+            _setCurrentIndex(captionsMenuIndex);
+        }
 
+        function _setCurrentIndex (index) {
+            if(_tracks.length > 0) {
+                _model.setVideoSubtitleTrack(index);
+            } else {
+                _model.set('captionsIndex', index);
+            }
         }
 
         this.getCurrentIndex = function() {
