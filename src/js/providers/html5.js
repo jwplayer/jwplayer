@@ -166,14 +166,8 @@ define([
 
         // Enable tracks support for HLS videos
         function _onLoadedData() {
-            if(_videotag.audioTracks) {
-                _setAudioTracks(_videotag.audioTracks);
-                _videotag.audioTracks.onchange = _audioTrackChangeHandler;
-            }
-            if(_videotag.textTracks) {
-                _setTextTracks(_videotag.textTracks);
-                _videotag.textTracks.onchange = _textTrackChangeHandler;
-            }
+            _setAudioTracks(_videotag.audioTracks);
+            _setTextTracks(_videotag.textTracks);
         }
         function _clickHandler(evt) {
             _this.trigger('click', evt);
@@ -892,7 +886,11 @@ define([
         this.getCurrentAudioTrack = _getCurrentAudioTrack;
 
         function _setAudioTracks(tracks) {
-            if(tracks && tracks.length > 0) {
+            _audioTracks = null;
+            if (!tracks) {
+                return;
+            }
+            if (tracks.length) {
                 for (var i = 0; i < tracks.length; i++) {
                     if (tracks[i].enabled) {
                         _currentAudioTrackIndex = i;
@@ -910,6 +908,9 @@ define([
                     };
                     return _track;
                 });
+            }
+            tracks.onchange = _audioTrackChangeHandler;
+            if (_audioTracks) {
                 _this.trigger('audioTracks', { currentTrack: _currentAudioTrackIndex, tracks: _audioTracks });
             }
         }
@@ -939,8 +940,12 @@ define([
         this.getSubtitlesTrack = _getSubtitlesTrack;
 
         function _setTextTracks(tracks) {
+            _textTracks = null; 
+            if(!tracks) {
+                return;
+            }
             //filter for 'subtitles' tracks
-            if(tracks && tracks.length > 0) {
+            if (tracks.length) {
                 _textTracks = _.filter(tracks, function(track) {
                     return track.kind === 'subtitles';
                 });
@@ -948,6 +953,9 @@ define([
                 _.each(_textTracks, function(track) {
                     track.mode = 'disabled';
                 });
+            }
+            tracks.onchange = _textTrackChangeHandler;
+            if (_textTracks && _textTracks.length) {
                 _this.trigger('subtitlesTracks', { tracks: _textTracks });
             }
         }
