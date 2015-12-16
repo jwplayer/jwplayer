@@ -458,7 +458,7 @@ define([
             }
 
             // if playlist item contains .vtt tracks, load them
-            if (_itemTracks) {
+            if (utils.isIOS() && _itemTracks) {
                 _setupSideloadedTracks();
             }
         }
