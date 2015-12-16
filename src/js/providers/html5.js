@@ -1,13 +1,12 @@
 define([
     'utils/css',
     'utils/helpers',
-    'utils/stretching',
     'utils/underscore',
     'events/events',
     'events/states',
     'providers/default',
     'utils/backbone.events'
-], function(cssUtils, utils, stretchUtils, _, events, states, DefaultProvider, Events) {
+], function(cssUtils, utils, _, events, states, DefaultProvider, Events) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -795,10 +794,22 @@ define([
         };
 
         this.resize = function(width, height, stretching) {
-            return stretchUtils.stretch(stretching,
-                _videotag,
-                width, height,
-                _videotag.videoWidth, _videotag.videoHeight);
+            if (!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) {
+                return false;
+            }
+            var style = {
+                objectFit: ''
+            };
+            if (stretching === 'uniform') {
+                // snap video to edges when the difference in aspect ratio is less than 9%
+                var playerAspectRatio = width / height;
+                var videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
+                if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
+                    style.objectFit = 'fill';
+                }
+            }
+            cssUtils.style(_videotag, style);
+            return false;
         };
 
         this.setFullscreen = function(state) {
