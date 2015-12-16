@@ -20,8 +20,6 @@ define([
             var img = playlistItem.image;
 
             if (_.isString(img)) {
-                // encode special characters into URL
-                img = encodeURI(img);
                 this.el.style.backgroundImage = 'url("' + img + '")';
             } else {
                 this.el.style.backgroundImage = '';
