@@ -144,7 +144,8 @@ define([
             _textTracks = null,
             _audioTracks = null,
             _currentTextTrackIndex = -1,
-            _currentAudioTrackIndex = -1;
+            _currentAudioTrackIndex = -1,
+            _itemTracks = null;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -455,6 +456,41 @@ define([
             if (_source.preload) {
                 _videotag.setAttribute('preload', _source.preload);
             }
+
+            // if playlist item contains .vtt tracks, load them
+            if (_itemTracks) {
+                _setupSideloadedTracks();
+            }
+        }
+
+        function _setupSideloadedTracks() {
+            // cleanup dom
+            if (_videotag.childNodes) {
+                while (_videotag.firstChild) {
+                    _videotag.removeChild(_videotag.firstChild);
+                }
+            }
+            _addTracksToVideoTag(_itemTracks);
+        }
+
+        function _addTracksToVideoTag(tracks) {
+            // Adding .vtt tracks to the DOM lets the tracks API handle CC/Subtitle rendering
+            if (!tracks) {
+                return;
+            }
+            for (var i = 0; i < tracks.length; i++) {
+                // only add .vtt tracks
+                if(tracks[i].file.indexOf('.vtt') === -1) {
+                    break;
+                }
+                var track = document.createElement('track');
+                track.src = tracks[i].file;
+                track.kind = tracks[i].kind;
+                track.srclang = tracks[i].language || '';
+                track.label = tracks[i].label;
+                track.mode = 'disabled';
+                _videotag.appendChild(track);
+            }
         }
 
         function _getSeekableStart() {
@@ -504,6 +540,7 @@ define([
             if (_videotag.textTracks) {
                 _videotag.textTracks.onchange = null;
             }
+            _itemTracks = null;
             this.remove();
             this.off();
         };
@@ -520,6 +557,7 @@ define([
             _source = _levels[_currentQuality];
             _position = item.starttime || 0;
             _duration = item.duration || 0;
+            _itemTracks = item.tracks;
             _setVideotagSource(item);
         };
 
@@ -678,7 +716,7 @@ define([
                     break;
                 }
             }
-            if(_selectedTextTrack) {
+            if(_selectedTextTrack && _textTracks) {
                 for (i = 0; i < _textTracks.length; i++) {
                     if (_textTracks[i].label === _selectedTextTrack.label) {
                         _selectedTextTrackIndex = i;
@@ -944,10 +982,10 @@ define([
             if(!tracks) {
                 return;
             }
-            //filter for 'subtitles' tracks
+            //filter for 'subtitles' or 'captions' tracks
             if (tracks.length) {
                 _textTracks = _.filter(tracks, function(track) {
-                    return track.kind === 'subtitles';
+                    return track.kind === 'subtitles' || track.kind === 'captions';
                 });
                 //set subtitles Off by default
                 _.each(_textTracks, function(track) {
@@ -983,7 +1021,7 @@ define([
                 _currentTextTrackIndex = -1;
             }
             // update the model index if change did not originate from controlbar or api
-            _this.trigger('subtitlesTrackChanged', { currentTrack: _currentTextTrackIndex + 1 });
+            _this.trigger('subtitlesTrackChanged', { currentTrack: _currentTextTrackIndex + 1, tracks: _textTracks });
         }
 
         function _getSubtitlesTrack() {
