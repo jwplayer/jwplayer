@@ -1,13 +1,12 @@
 define([
     'utils/css',
     'utils/helpers',
-    'utils/stretching',
     'utils/underscore',
     'events/events',
     'events/states',
     'providers/default',
     'utils/backbone.events'
-], function(cssUtils, utils, stretchUtils, _, events, states, DefaultProvider, Events) {
+], function(cssUtils, utils, _, events, states, DefaultProvider, Events) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -17,6 +16,7 @@ define([
         _isFirefox = utils.isFF(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
+        _isIOS8 = utils.isIOS(8),
         _name = 'html5';
 
 
@@ -795,10 +795,39 @@ define([
         };
 
         this.resize = function(width, height, stretching) {
-            return stretchUtils.stretch(stretching,
-                _videotag,
-                width, height,
-                _videotag.videoWidth, _videotag.videoHeight);
+            if (!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) {
+                return false;
+            }
+            var style = {
+                objectFit: ''
+            };
+            if (stretching === 'uniform') {
+                // snap video to edges when the difference in aspect ratio is less than 9%
+                var playerAspectRatio = width / height;
+                var videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
+                if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
+                    style.objectFit = 'fill';
+                }
+            }
+            if (_isIOS7 || _isIOS8) {
+                // Prior to iOS 9, object-fit worked poorly. These additional styles to make it fit correctly.
+                style.maxHeight = '100%';
+                style.maxWidth =  '100%';
+                if (style.objectFit !== 'fill' && stretching !== 'fill' && stretching !== 'exactfit') {
+                    // margins will be used to center video in container
+                    style.width = 'auto';
+                    style.height = 'auto';
+                    if (stretching === 'uniform') {
+                        if (width / _videotag.videoWidth > height / _videotag.videoHeight) {
+                            style.height = '100%';
+                        } else {
+                            style.width = '100%';
+                        }
+                    }
+                }
+            }
+            cssUtils.style(_videotag, style);
+            return false;
         };
 
         this.setFullscreen = function(state) {
