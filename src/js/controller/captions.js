@@ -20,7 +20,6 @@ define([
             if(! e.tracks.length) {
                 return;
             }
-
             // If we get webvtt captions, do not override with metadata captions
             _model.mediaController.off('meta');
 
@@ -116,7 +115,6 @@ define([
 
             var tracks = item.tracks,
                 track, kind, i;
-
             for (i = 0; i < tracks.length; i++) {
                 track = tracks[i];
                 kind = track.kind.toLowerCase();
@@ -140,7 +138,6 @@ define([
             if (captionsMenuIndex !== 0) {
                 track = _tracks[captionsMenuIndex-1];
             }
-
             model.set('captionsTrack', track);
         }
 
@@ -230,13 +227,12 @@ define([
                     // TODO: auto select track by comparing track.language to system lang
                 }
             }
-
             // set the index without the side effect of storing the Off label in _selectCaptions
             _setCurrentIndex(captionsMenuIndex);
         }
 
         function _setCurrentIndex (index) {
-            if(_tracks.length > 0) {
+            if(_tracks.length) {
                 _model.setVideoSubtitleTrack(index);
             } else {
                 _model.set('captionsIndex', index);
