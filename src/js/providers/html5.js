@@ -144,8 +144,7 @@ define([
             _textTracks = null,
             _audioTracks = null,
             _currentTextTrackIndex = -1,
-            _currentAudioTrackIndex = -1,
-            _itemTracks = null;
+            _currentAudioTrackIndex = -1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -458,19 +457,17 @@ define([
             }
 
             // if playlist item contains .vtt tracks, load them
-            if (utils.isIOS() && _itemTracks) {
-                _setupSideloadedTracks();
+            if (utils.isIOS() && arguments.length) {
+                _setupSideloadedTracks(arguments[0].tracks);
             }
         }
 
-        function _setupSideloadedTracks() {
+        function _setupSideloadedTracks(tracks) {
             // cleanup dom
-            if (_videotag.childNodes) {
-                while (_videotag.firstChild) {
-                    _videotag.removeChild(_videotag.firstChild);
-                }
+            while (_videotag.firstChild) {
+                _videotag.removeChild(_videotag.firstChild);
             }
-            _addTracksToVideoTag(_itemTracks);
+            _addTracksToVideoTag(tracks);
         }
 
         function _addTracksToVideoTag(tracks) {
@@ -540,7 +537,6 @@ define([
             if (_videotag.textTracks) {
                 _videotag.textTracks.onchange = null;
             }
-            _itemTracks = null;
             this.remove();
             this.off();
         };
@@ -557,7 +553,6 @@ define([
             _source = _levels[_currentQuality];
             _position = item.starttime || 0;
             _duration = item.duration || 0;
-            _itemTracks = item.tracks;
             _setVideotagSource(item);
         };
 
