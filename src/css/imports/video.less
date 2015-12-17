@@ -17,12 +17,36 @@
     }
 
     video::-webkit-media-text-track-display {
-        transform: translateY(-2.0em);
+        transform: translateY(-1.5em);
     }
 
     &.jw-flag-user-inactive.jw-state-playing {
         video::-webkit-media-text-track-display {
-            transform: translateY(-1.0em);
+            transform: translateY(0);
+        }
+    }
+
+    &.jw-stretch-uniform {
+        video {
+            object-fit: contain;
+        }
+    }
+
+    &.jw-stretch-none {
+        video {
+            object-fit: none;
+        }
+    }
+
+    &.jw-stretch-fill {
+        video {
+            object-fit: cover;
+        }
+    }
+
+    &.jw-stretch-exactfit {
+        video {
+            object-fit: fill;
         }
     }
 }

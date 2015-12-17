@@ -1,13 +1,12 @@
 define([
     'utils/css',
     'utils/helpers',
-    'utils/stretching',
     'utils/underscore',
     'events/events',
     'events/states',
     'providers/default',
     'utils/backbone.events'
-], function(cssUtils, utils, stretchUtils, _, events, states, DefaultProvider, Events) {
+], function(cssUtils, utils, _, events, states, DefaultProvider, Events) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -17,6 +16,7 @@ define([
         _isFirefox = utils.isFF(),
         _isAndroid = utils.isAndroidNative(),
         _isIOS7 = utils.isIOS(7),
+        _isIOS8 = utils.isIOS(8),
         _name = 'html5';
 
 
@@ -443,7 +443,7 @@ define([
             }
         }
 
-        function _setVideotagSource() {
+        function _setVideotagSource(item) {
             _textTracks = null;
             _audioTracks = null;
             _currentAudioTrackIndex = -1;
@@ -454,6 +454,39 @@ define([
             _videotag.src = _source.file;
             if (_source.preload) {
                 _videotag.setAttribute('preload', _source.preload);
+            }
+
+            // if playlist item contains .vtt tracks, load them
+            if (utils.isIOS() && item) {
+                _setupSideloadedTracks(item.tracks);
+            }
+        }
+
+        function _setupSideloadedTracks(tracks) {
+            // cleanup dom
+            while (_videotag.firstChild) {
+                _videotag.removeChild(_videotag.firstChild);
+            }
+            _addTracksToVideoTag(tracks);
+        }
+
+        function _addTracksToVideoTag(tracks) {
+            // Adding .vtt tracks to the DOM lets the tracks API handle CC/Subtitle rendering
+            if (!tracks) {
+                return;
+            }
+            for (var i = 0; i < tracks.length; i++) {
+                // only add .vtt tracks
+                if(tracks[i].file.indexOf('.vtt') === -1) {
+                    break;
+                }
+                var track = document.createElement('track');
+                track.src = tracks[i].file;
+                track.kind = tracks[i].kind;
+                track.srclang = tracks[i].language || '';
+                track.label = tracks[i].label;
+                track.mode = 'disabled';
+                _videotag.appendChild(track);
             }
         }
 
@@ -678,7 +711,7 @@ define([
                     break;
                 }
             }
-            if(_selectedTextTrack) {
+            if(_selectedTextTrack && _textTracks) {
                 for (i = 0; i < _textTracks.length; i++) {
                     if (_textTracks[i].label === _selectedTextTrack.label) {
                         _selectedTextTrackIndex = i;
@@ -795,10 +828,39 @@ define([
         };
 
         this.resize = function(width, height, stretching) {
-            return stretchUtils.stretch(stretching,
-                _videotag,
-                width, height,
-                _videotag.videoWidth, _videotag.videoHeight);
+            if (!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) {
+                return false;
+            }
+            var style = {
+                objectFit: ''
+            };
+            if (stretching === 'uniform') {
+                // snap video to edges when the difference in aspect ratio is less than 9%
+                var playerAspectRatio = width / height;
+                var videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
+                if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
+                    style.objectFit = 'fill';
+                }
+            }
+            if (_isIOS7 || _isIOS8) {
+                // Prior to iOS 9, object-fit worked poorly. These additional styles to make it fit correctly.
+                style.maxHeight = '100%';
+                style.maxWidth =  '100%';
+                if (style.objectFit !== 'fill' && stretching !== 'fill' && stretching !== 'exactfit') {
+                    // margins will be used to center video in container
+                    style.width = 'auto';
+                    style.height = 'auto';
+                    if (stretching === 'uniform') {
+                        if (width / _videotag.videoWidth > height / _videotag.videoHeight) {
+                            style.height = '100%';
+                        } else {
+                            style.width = '100%';
+                        }
+                    }
+                }
+            }
+            cssUtils.style(_videotag, style);
+            return false;
         };
 
         this.setFullscreen = function(state) {
@@ -944,10 +1006,10 @@ define([
             if(!tracks) {
                 return;
             }
-            //filter for 'subtitles' tracks
+            //filter for 'subtitles' or 'captions' tracks
             if (tracks.length) {
                 _textTracks = _.filter(tracks, function(track) {
-                    return track.kind === 'subtitles';
+                    return track.kind === 'subtitles' || track.kind === 'captions';
                 });
                 //set subtitles Off by default
                 _.each(_textTracks, function(track) {
@@ -983,7 +1045,7 @@ define([
                 _currentTextTrackIndex = -1;
             }
             // update the model index if change did not originate from controlbar or api
-            _this.trigger('subtitlesTrackChanged', { currentTrack: _currentTextTrackIndex + 1 });
+            _this.trigger('subtitlesTrackChanged', { currentTrack: _currentTextTrackIndex + 1, tracks: _textTracks });
         }
 
         function _getSubtitlesTrack() {

@@ -153,7 +153,7 @@ define([
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
                 case 'subtitlesTrackChanged':
-                    this.setVideoSubtitleTrack(data.currentTrack);
+                    this.setVideoSubtitleTrack(data.currentTrack, data.tracks);
                     break;
 
                 case 'visualQuality':
@@ -353,8 +353,12 @@ define([
         };
 
 
-        this.setVideoSubtitleTrack = function(trackIndex) {
+        this.setVideoSubtitleTrack = function(trackIndex, tracks) {
             this.set('captionsIndex', trackIndex);
+            // tracks could have changed even if the index hasn't
+            if(trackIndex && tracks) {
+                this.set('captionsTrack', tracks[trackIndex-1]);
+            }
             this.persistCaptionsTrack();
 
             if (_provider && _provider.setSubtitlesTrack) {
