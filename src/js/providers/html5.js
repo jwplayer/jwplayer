@@ -443,7 +443,7 @@ define([
             }
         }
 
-        function _setVideotagSource() {
+        function _setVideotagSource(item) {
             _textTracks = null;
             _audioTracks = null;
             _currentAudioTrackIndex = -1;
@@ -457,8 +457,8 @@ define([
             }
 
             // if playlist item contains .vtt tracks, load them
-            if (utils.isIOS() && arguments.length) {
-                _setupSideloadedTracks(arguments[0].tracks);
+            if (utils.isIOS() && item) {
+                _setupSideloadedTracks(item.tracks);
             }
         }
 
