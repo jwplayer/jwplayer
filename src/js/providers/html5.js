@@ -1024,7 +1024,6 @@ define([
             //filter for 'subtitles' or 'captions' tracks
             if (tracks.length) {
                 var i = 0, len = tracks.length;
-                _textTracks = [];
                 for (i; i < len; i++) {
                     if (tracks[i].kind === 'metadata') {
                         tracks[i].mode = 'showing';
@@ -1033,6 +1032,9 @@ define([
                     else if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
                         // set subtitles Off by default
                         tracks[i].mode = 'disabled';
+                        if(!_textTracks) {
+                            _textTracks = [];
+                        }
                         _textTracks.push(tracks[i]);
                     }
                 }
