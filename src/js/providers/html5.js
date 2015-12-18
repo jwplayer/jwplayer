@@ -700,6 +700,21 @@ define([
             _setCurrentAudioTrack(_selectedAudioTrackIndex);
         }
 
+        function _cueChangeHandler (e) {
+            var cueValues = _.map(e.currentTarget.activeCues, function(cue) {
+                return cue.value || cue.data;
+            });
+            var metaData = {
+                position: e.currentTarget.activeCues[0].startTime,
+                metadata: {
+                    type: 'metadata',
+                    provider: 'hls',
+                    data: cueValues
+                }
+            };
+            _this.trigger('meta', metaData);
+        }
+
         function _fullscreenEndHandler(e) {
             _fullscreenState = false;
             _sendFullscreen(e);
@@ -946,13 +961,19 @@ define([
             }
             //filter for 'subtitles' tracks
             if (tracks.length) {
-                _textTracks = _.filter(tracks, function(track) {
-                    return track.kind === 'subtitles';
-                });
-                //set subtitles Off by default
-                _.each(_textTracks, function(track) {
-                    track.mode = 'disabled';
-                });
+                var i = 0, len = tracks.length;
+                _textTracks = [];
+                for (i; i < len; i++) {
+                    if (tracks[i].kind === 'metadata') {
+                        tracks[i].mode = 'showing';
+                        tracks[i].oncuechange = _cueChangeHandler;
+                    }
+                    else if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
+                        // set subtitles Off by default
+                        tracks[i].mode = 'disabled';
+                        _textTracks.push(tracks[i]);
+                    }
+                }
             }
             tracks.onchange = _textTrackChangeHandler;
             if (_textTracks && _textTracks.length) {
