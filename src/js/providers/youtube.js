@@ -1,14 +1,13 @@
 define([
     'utils/helpers',
     'utils/css',
-    'utils/stretching',
     'utils/underscore',
     'events/events',
     'events/states',
     'utils/scriptloader',
     'providers/default',
     'utils/backbone.events'
-], function(utils, cssUtils, stretchUtils, _, events, states, scriptloader, DefaultProvider, Events) {
+], function(utils, cssUtils, _, events, states, scriptloader, DefaultProvider, Events) {
     var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
         _isMobile = utils.isMobile();
 
@@ -544,11 +543,8 @@ define([
             }
         };
 
-        this.resize = function(width, height, stretching) {
-            return stretchUtils.stretch(stretching,
-                _element,
-                width, height,
-                _element.clientWidth, _element.clientHeight);
+        this.resize = function(/* width, height, stretching */) {
+            return false;
         };
 
         this.checkComplete = function() {

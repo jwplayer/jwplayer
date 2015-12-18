@@ -76,7 +76,9 @@ define([
     /** Matches iOS devices **/
     var _isIOS = browser.isIOS = function(osVersion) {
         if (osVersion) {
-            return _userAgentMatch(new RegExp('iP(hone|ad|od).+\\sOS\\s' + osVersion, 'i'));
+            return _userAgentMatch(
+                new RegExp('iP(hone|ad|od).+\\s(OS\\s'+osVersion+'|.*\\sVersion/'+osVersion+')', 'i')
+            );
         }
         return _userAgentMatch(/iP(hone|ad|od)/i);
     };

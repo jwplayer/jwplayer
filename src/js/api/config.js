@@ -1,8 +1,7 @@
 define([
     'utils/helpers',
-    'utils/stretching',
     'utils/underscore'
-], function(utils, stretchUtils, _) {
+], function(utils, _) {
     /*global __webpack_public_path__:true*/
 
     // Defaults
@@ -16,7 +15,7 @@ define([
         repeat: false,
         castAvailable: false,
         skin: 'seven',
-        stretching: stretchUtils.UNIFORM,
+        stretching: 'uniform',
         mute: false,
         volume: 90,
         width: 480,
