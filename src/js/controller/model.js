@@ -129,9 +129,11 @@ define([
 
                 case events.JWPLAYER_MEDIA_TIME:
                     this.mediaModel.set('position', data.position);
-                    this.mediaModel.set('duration', data.duration);
                     this.set('position', data.position);
-                    this.set('duration', data.duration);
+                    if (_.isNumber(data.duration)) {
+                        this.mediaModel.set('duration', data.duration);
+                        this.set('duration', data.duration);
+                    }
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
