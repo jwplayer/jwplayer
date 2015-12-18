@@ -295,7 +295,7 @@ define([
                 }
                 if (!_preplay) {
                     _preplay = true;
-                    _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY, {});
+                    _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY, {'playReason': _model.get('playReason')});
                     _preplay = false;
                     if (_interruptPlay) {
                         _interruptPlay = false;
