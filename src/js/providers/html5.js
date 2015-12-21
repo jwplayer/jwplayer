@@ -144,7 +144,8 @@ define([
             _textTracks = null,
             _audioTracks = null,
             _currentTextTrackIndex = -1,
-            _currentAudioTrackIndex = -1;
+            _currentAudioTrackIndex = -1,
+            _activeCuePosition = -1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -448,6 +449,7 @@ define([
             _audioTracks = null;
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
+            _activeCuePosition = -1;
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
@@ -734,17 +736,22 @@ define([
         }
 
         function _cueChangeHandler (e) {
+            if(_activeCuePosition === e.currentTarget.activeCues[0].startTime) {
+                return;
+            }
             var cueValues = _.map(e.currentTarget.activeCues, function(cue) {
                 return cue.value || cue.data;
             });
             var metaData = {
-                position: e.currentTarget.activeCues[0].startTime,
+                position: _position,
                 metadata: {
+                    startTime: e.currentTarget.activeCues[0].startTime,
                     type: 'metadata',
                     provider: 'hls',
                     data: cueValues
                 }
             };
+            _activeCuePosition = e.currentTarget.activeCues[0].startTime;
             _this.trigger('meta', metaData);
         }
 
