@@ -707,6 +707,7 @@ define([
         function _textTrackChangeHandler() {
             var _selectedTextTrack = null;
             var _selectedTextTrackIndex = -1, i = 0;
+            _activeCuePosition = -1;
             for (i; i < _videotag.textTracks.length; i++) {
                 if (_videotag.textTracks[i].mode === 'showing') {
                     _selectedTextTrack = _videotag.textTracks[i];
@@ -736,22 +737,45 @@ define([
         }
 
         function _cueChangeHandler (e) {
-            if(_activeCuePosition === e.currentTarget.activeCues[0].startTime) {
+            if(!e.currentTarget.activeCues.length || _activeCuePosition === e.currentTarget.activeCues[0].startTime) {
                 return;
             }
-            var cueValues = _.map(e.currentTarget.activeCues, function(cue) {
-                return cue.value || cue.data;
-            });
+            _parseID3(e.currentTarget.activeCues);
+        }
+
+        function _parseID3 (activeCues) {
+            var friendlyNames = {
+                TIT1: 'group',
+                TIT2: 'title',
+                TT2: 'title',
+                WXXX: 'url',
+                TPE1: 'artist',
+                TP1: 'artist',
+                TALB: 'album',
+                TAL: 'album',
+                TCOM: 'composer',
+                TFLT: 'filetype',
+                TLEN: 'length',
+                TIT3: 'subtitle'
+            };
+            var id3Data = _.reduce(activeCues, function(data, cue) {
+                if(friendlyNames.hasOwnProperty(cue.value.key)) {
+                    data[friendlyNames[cue.value.key]] = cue.value.data;
+                } else {
+                    data[cue.value.info || cue.value.key] = cue.value.data;
+                }
+                return data;
+            }, {});
             var metaData = {
                 position: _position,
                 metadata: {
-                    startTime: e.currentTarget.activeCues[0].startTime,
+                    startTime: activeCues[0].startTime,
                     type: 'metadata',
-                    provider: 'hls',
-                    data: cueValues
+                    provider: 'html5',
+                    data: id3Data
                 }
             };
-            _activeCuePosition = e.currentTarget.activeCues[0].startTime;
+            _activeCuePosition = activeCues[0].startTime;
             _this.trigger('meta', metaData);
         }
 
