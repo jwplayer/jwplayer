@@ -10,6 +10,7 @@ define([
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
+        _isIE = utils.isIE(),
         _isMSIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isSafari = utils.isSafari(),
@@ -840,24 +841,33 @@ define([
                 var videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
                 if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
                     style.objectFit = 'fill';
+                    stretching = 'exactfit';
                 }
             }
-            if (_isIOS7 || _isIOS8) {
-                // Prior to iOS 9, object-fit worked poorly. These additional styles to make it fit correctly.
-                style.maxHeight = '100%';
-                style.maxWidth =  '100%';
-                if (style.objectFit !== 'fill' && stretching !== 'fill' && stretching !== 'exactfit') {
-                    // margins will be used to center video in container
-                    style.width = 'auto';
-                    style.height = 'auto';
-                    if (stretching === 'uniform') {
-                        if (width / _videotag.videoWidth > height / _videotag.videoHeight) {
-                            style.height = '100%';
-                        } else {
-                            style.width = '100%';
-                        }
-                    }
+            // Prior to iOS 9, object-fit worked poorly
+            // object-fit is not implemented in IE or Android Browser in 4.4 and lower
+            // http://caniuse.com/#feat=object-fit
+            // feature detection may work for IE but not for browsers where object-fit works for images only
+            var fitVideoUsingTransforms = _isIE || _isAndroid || _isIOS7 || _isIOS8;
+            if (fitVideoUsingTransforms) {
+                // Use transforms to center and scale video in container
+                var x = - Math.floor(_videotag.videoWidth  / 2 + 1);
+                var y = - Math.floor(_videotag.videoHeight / 2 + 1);
+                var scaleX = Math.ceil(width  * 100 / _videotag.videoWidth)  / 100;
+                var scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
+                if (stretching === 'none') {
+                    scaleX = scaleY = 1;
+                } else if (stretching === 'fill') {
+                    scaleX = scaleY = Math.max(scaleX, scaleY);
+                } else if (stretching === 'uniform') {
+                    scaleX = scaleY = Math.min(scaleX, scaleY);
                 }
+                style.width  = _videotag.videoWidth;
+                style.height = _videotag.videoHeight;
+                style.top = style.left = '50%';
+                style.margin  = 0;
+                cssUtils.transform(_videotag,
+                    'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
             }
             cssUtils.style(_videotag, style);
             return false;
