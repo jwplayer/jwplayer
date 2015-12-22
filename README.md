@@ -4,7 +4,7 @@
 
 > Plays everywhere, every time.
 > 
-> JW Player is -the- open source solution for making video playback seamless across browsers and file types. 
+> JW Player is -the- solution for making video playback seamless across browsers and file types. 
 > It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
  
 [Code Examples](http://support.jwplayer.com/customer/portal/topics/564475-javascript-api/articles)
