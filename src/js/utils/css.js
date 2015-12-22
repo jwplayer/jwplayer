@@ -92,15 +92,13 @@ define([
     };
 
     var transform = function (element, value) {
-        var transform = 'transform',
-            style = {};
-        value = value || '';
-        style[transform] = value;
-        style['-webkit-' + transform] = value;
-        style['-ms-' + transform] = value;
-        style['-moz-' + transform] = value;
-        style['-o-' + transform] = value;
-        _style(element, style);
+        _style(element, {
+            transform: value,
+            webkitTransform: value,
+            msTransform: value,
+            mozTransform: value,
+            oTransform: value
+        });
     };
 
     var hexToRgba = function (hexColor, opacity) {

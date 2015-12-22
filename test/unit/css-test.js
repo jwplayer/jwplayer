@@ -80,16 +80,16 @@ define([
         css.transform(element, 'none');
 
         assert.equal(element.style.transform, 'none', 'css transform');
-        assert.equal(element.style.MsTransform, 'none', 'css transform ms');
-        assert.equal(element.style.MozTransform, 'none', 'css transform moz');
-        assert.equal(element.style.OTransform, 'none', 'css transform o');
+        assert.equal(element.style.msTransform, 'none', 'css transform ms');
+        assert.equal(element.style.mozTransform, 'none', 'css transform moz');
+        assert.equal(element.style.oTransform, 'none', 'css transform o');
 
         css.transform(element, '');
 
         assert.equal(element.style.transform, '', 'css transform');
-        assert.equal(element.style.MsTransform, '', 'css transform ms');
-        assert.equal(element.style.MozTransform, '', 'css transform moz');
-        assert.equal(element.style.OTransform, '', 'css transform o');
+        assert.equal(element.style.msTransform, '', 'css transform ms');
+        assert.equal(element.style.mozTransform, '', 'css transform moz');
+        assert.equal(element.style.oTransform, '', 'css transform o');
     });
 
     test('css.hexToRgba', function(assert) {
