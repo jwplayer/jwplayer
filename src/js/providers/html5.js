@@ -145,7 +145,8 @@ define([
             _textTracks = null,
             _audioTracks = null,
             _currentTextTrackIndex = -1,
-            _currentAudioTrackIndex = -1;
+            _currentAudioTrackIndex = -1,
+            _activeCuePosition = -1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -449,6 +450,7 @@ define([
             _audioTracks = null;
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
+            _activeCuePosition = -1;
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
@@ -706,6 +708,7 @@ define([
         function _textTrackChangeHandler() {
             var _selectedTextTrack = null;
             var _selectedTextTrackIndex = -1, i = 0;
+            _activeCuePosition = -1;
             for (i; i < _videotag.textTracks.length; i++) {
                 if (_videotag.textTracks[i].mode === 'showing') {
                     _selectedTextTrack = _videotag.textTracks[i];
@@ -732,6 +735,49 @@ define([
                 }
             }
             _setCurrentAudioTrack(_selectedAudioTrackIndex);
+        }
+
+        function _cueChangeHandler (e) {
+            if(!e.currentTarget.activeCues.length || _activeCuePosition === e.currentTarget.activeCues[0].startTime) {
+                return;
+            }
+            _parseID3(e.currentTarget.activeCues);
+        }
+
+        function _parseID3 (activeCues) {
+            var friendlyNames = {
+                TIT1: 'group',
+                TIT2: 'title',
+                TT2: 'title',
+                WXXX: 'url',
+                TPE1: 'artist',
+                TP1: 'artist',
+                TALB: 'album',
+                TAL: 'album',
+                TCOM: 'composer',
+                TFLT: 'filetype',
+                TLEN: 'length',
+                TIT3: 'subtitle'
+            };
+            var id3Data = _.reduce(activeCues, function(data, cue) {
+                if(friendlyNames.hasOwnProperty(cue.value.key)) {
+                    data[friendlyNames[cue.value.key]] = cue.value.data;
+                } else {
+                    data[cue.value.info || cue.value.key] = cue.value.data;
+                }
+                return data;
+            }, {});
+            var metaData = {
+                position: _position,
+                metadata: {
+                    startTime: activeCues[0].startTime,
+                    type: 'metadata',
+                    provider: 'html5',
+                    data: id3Data
+                }
+            };
+            _activeCuePosition = activeCues[0].startTime;
+            _this.trigger('meta', metaData);
         }
 
         function _fullscreenEndHandler(e) {
@@ -1018,13 +1064,21 @@ define([
             }
             //filter for 'subtitles' or 'captions' tracks
             if (tracks.length) {
-                _textTracks = _.filter(tracks, function(track) {
-                    return track.kind === 'subtitles' || track.kind === 'captions';
-                });
-                //set subtitles Off by default
-                _.each(_textTracks, function(track) {
-                    track.mode = 'disabled';
-                });
+                var i = 0, len = tracks.length;
+                for (i; i < len; i++) {
+                    if (tracks[i].kind === 'metadata') {
+                        tracks[i].mode = 'showing';
+                        tracks[i].oncuechange = _cueChangeHandler;
+                    }
+                    else if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
+                        // set subtitles Off by default
+                        tracks[i].mode = 'disabled';
+                        if(!_textTracks) {
+                            _textTracks = [];
+                        }
+                        _textTracks.push(tracks[i]);
+                    }
+                }
             }
             tracks.onchange = _textTrackChangeHandler;
             if (_textTracks && _textTracks.length) {
