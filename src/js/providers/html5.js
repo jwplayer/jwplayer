@@ -165,6 +165,7 @@ define([
         // Enable AirPlay
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
+        _videotag.setAttribute('crossorigin', 'anonymous');
 
         // Enable tracks support for HLS videos
         function _onLoadedData() {
