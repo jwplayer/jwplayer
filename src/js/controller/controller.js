@@ -539,7 +539,7 @@ define([
 
             function _setCurrentCaptions(index) {
                 // update provider subtitle track
-                _model.setVideoSubtitleTrack(index);
+                _model.persistVideoSubtitleTrack(index);
 
                 _this.trigger(events.JWPLAYER_CAPTIONS_CHANGED, {
                     tracks: _getCaptionsList(),
