@@ -225,6 +225,7 @@ define([
         };
 
         this.destroy = function() {
+            this.off();
             if (_provider) {
                 _provider.off(null, null, this);
                 _provider.destroy();
