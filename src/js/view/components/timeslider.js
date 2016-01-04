@@ -1,11 +1,12 @@
 define([
     'utils/underscore',
-    'view/components/slider',
     'utils/helpers',
+    'utils/constants',
+    'view/components/slider',
     'view/components/tooltip',
     'view/components/chapters.mixin',
     'view/components/thumbnails.mixin'
-], function(_, Slider, utils, Tooltip, ChaptersMixin, ThumbnailsMixin) {
+], function(_, utils, Constants, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
 
     var TimeTip = Tooltip.extend({
         setup : function() {
@@ -70,12 +71,23 @@ define([
             this.el.addEventListener('mousemove', this.showTimeTooltip.bind(this), false);
             this.el.addEventListener('mouseout', this.hideTimeTooltip.bind(this), false);
         },
-        update: function(pct) {
+        limit: function(percent) {
             if (this.activeCue && _.isNumber(this.activeCue.pct)) {
-                this.seekTo = this.activeCue.pct;
-            } else {
-                this.seekTo = pct;
+                return this.activeCue.pct;
             }
+            var duration = this._model.get('duration');
+            var adaptiveType = utils.adaptiveType(duration);
+            if (adaptiveType === 'DVR') {
+                var position = (1 - (percent / 100)) * duration;
+                var currentPosition = this._model.get('position');
+                var updatedPosition = Math.min(position, Math.max(Constants.dvrSeekLimit, currentPosition));
+                var updatedPercent = updatedPosition * 100 / duration;
+                return 100 - updatedPercent;
+            }
+            return percent;
+        },
+        update: function(percent) {
+            this.seekTo = percent;
             this.seekThrottled();
             Slider.prototype.update.apply(this, arguments);
         },
@@ -133,18 +145,18 @@ define([
             }, this);
         },
 
-        // These are new methods
-        performSeek : function () {
+        performSeek : function() {
+            var percent = this.seekTo;
             var duration = this._model.get('duration');
             var adaptiveType = utils.adaptiveType(duration);
             var position;
-            if (adaptiveType === 'LIVE' || duration === 0) {
+            if (duration === 0) {
                 this._api.play();
             } else if (adaptiveType === 'DVR') {
-                position = (1 - (this.seekTo / 100)) * duration;
-                this._api.seek(Math.min(position, -0.25));
+                position = (100 - percent) / 100 * duration;
+                this._api.seek(position);
             } else {
-                position = this.seekTo / 100 * duration;
+                position = percent / 100 * duration;
                 this._api.seek(Math.min(position, duration - 0.25));
             }
         },
@@ -172,8 +184,8 @@ define([
                 var allowNegativeTime = true;
                 timetipText = utils.timeFormat(time, allowNegativeTime);
 
-                // If DVR and within one second of live
-                if (duration < 0 && (Math.abs(time) < 1) ) {
+                // If DVR and within live buffer
+                if (duration < 0 && time > Constants.dvrSeekLimit) {
                     timetipText = 'Live';
                 }
             }
