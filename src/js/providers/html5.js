@@ -165,7 +165,6 @@ define([
         // Enable AirPlay
         _videotag.setAttribute('x-webkit-airplay', 'allow');
         _videotag.setAttribute('webkit-playsinline', '');
-        _videotag.setAttribute('crossorigin', 'anonymous');
 
         // Enable tracks support for HLS videos
         function _onLoadedData() {
@@ -479,6 +478,8 @@ define([
             if (!tracks) {
                 return;
             }
+            // CORS applies to track loading and requires the crossorigin attribute
+            _videotag.setAttribute('crossorigin', 'anonymous');
             for (var i = 0; i < tracks.length; i++) {
                 // only add .vtt tracks
                 if(tracks[i].file.indexOf('.vtt') === -1) {
