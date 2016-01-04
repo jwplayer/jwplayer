@@ -755,17 +755,15 @@ define([
                 TAL: 'album'
             };
             var id3Data = _.reduce(activeCues, function(data, cue) {
-                // These frienly name mapping provide compatibility with our Flash implementation
+                // These friendly names mapping provides compatibility with our Flash implementation prior to 7.3
                 if(friendlyNames.hasOwnProperty(cue.value.key)) {
                     data[friendlyNames[cue.value.key]] = cue.value.data;
                 }
-                /* Flatten the data by using the info value as the key if available
-                 * And provide a collection for keys with info values
-                 *   TLEN: 03:50
-                 *   artworkURL: http://domain.com/cover.jpg
-                 *   WXXX: {"artworkURL":"http://domain.com/cover.jpg"}
+                /* The meta event includes a metadata object with flattened cue key/data pairs
+                 * If a cue also includes an info field, then create a collection of info/data pairs for the cue key
+                 *   TLEN: 03:50                                        // key: "TLEN", data: "03:50"
+                 *   WXXX: {"artworkURL":"http://domain.com/cover.jpg"} // key: "WXXX", info: "artworkURL" ...
                  */
-                data[cue.value.info || cue.value.key] = cue.value.data;
                 if(cue.value.info) {
                     var collection = data[cue.value.key];
                     if (!_.isObject(collection)) {
@@ -773,6 +771,8 @@ define([
                         data[cue.value.key] = collection;
                     }
                     collection[cue.value.info] = cue.value.data;
+                } else {
+                    data[cue.value.key] = cue.value.data;
                 }
                 return data;
             }, {});
