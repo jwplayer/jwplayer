@@ -397,7 +397,7 @@ define([
 
         function _forceVideoLoad() {
             // These browsers will not replay videos without reloading them
-            return (_isMobile || _isSafari);
+            return (_isMobile || _isSafari) && _videotag.ended;
         }
 
         function _completeLoad(startTime, duration) {
@@ -407,12 +407,14 @@ define([
             _delayedSeek = 0;
             clearTimeout(_playbackTimeout);
 
-            var sourceChanged = (_videotag.src !== _source.file);
+            var sourceElement = document.createElement('source');
+            sourceElement.src = _source.file;
+
+            var sourceChanged = (_videotag.src !== sourceElement.src);
             if (sourceChanged || _forceVideoLoad()) {
                 _duration = duration;
                 _setVideotagSource();
                 _videotag.load();
-                //_videotag.currentTime = 0;
             } else {
                 // Load event is from the same video as before
                 if (startTime === 0 && _videotag.currentTime !== 0) {
