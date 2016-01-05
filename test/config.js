@@ -1,7 +1,7 @@
 (function () {
 
     // This allows us to test modules without loading full player
-    window.__BUILD_VERSION__ = '7.2.0';
+    window.__BUILD_VERSION__ = '7.3.0';
     window.__FLASH_VERSION__ = 11.2;
     window.__DEBUG__ = false;
 
@@ -50,8 +50,10 @@
 
     window.require.config({
 
+        autostart: false,
+
         // Browserstack is very slow.
-        waitSeconds: 60,
+        waitSeconds: 120,
 
         // Go to open source root url
         baseUrl: base + 'src/js',
