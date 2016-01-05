@@ -225,6 +225,7 @@ define([
         };
 
         this.destroy = function() {
+            this.off();
             if (_provider) {
                 _provider.off(null, null, this);
                 _provider.destroy();
@@ -358,14 +359,19 @@ define([
         this.setVideoSubtitleTrack = function(trackIndex, tracks) {
             this.set('captionsIndex', trackIndex);
             // tracks could have changed even if the index hasn't
-            if(trackIndex && tracks) {
+            if(trackIndex && tracks && trackIndex < tracks.length) {
                 this.set('captionsTrack', tracks[trackIndex-1]);
             }
-            this.persistCaptionsTrack();
 
             if (_provider && _provider.setSubtitlesTrack) {
                 _provider.setSubtitlesTrack(trackIndex);
             }
+
+        };
+
+        this.persistVideoSubtitleTrack = function(trackIndex) {
+            this.setVideoSubtitleTrack(trackIndex);
+            this.persistCaptionsTrack();
         };
     };
 

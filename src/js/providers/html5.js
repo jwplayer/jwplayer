@@ -5,8 +5,9 @@ define([
     'events/events',
     'events/states',
     'providers/default',
-    'utils/backbone.events'
-], function(cssUtils, utils, _, events, states, DefaultProvider, Events) {
+    'utils/backbone.events',
+    'utils/video'
+], function(cssUtils, utils, _, events, states, DefaultProvider, Events, defaultVideoTag) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -151,7 +152,7 @@ define([
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
-        _videotag = _videotag || document.createElement('video');
+        _videotag = _videotag || defaultVideoTag;
         _videotag.className = 'jw-video jw-reset';
 
         _setupListeners(_mediaEvents, _videotag);
@@ -397,7 +398,7 @@ define([
 
         function _forceVideoLoad() {
             // These browsers will not replay videos without reloading them
-            return (_isMobile || _isSafari);
+            return (_isMobile || _isSafari) && _videotag.ended;
         }
 
         function _completeLoad(startTime, duration) {
@@ -407,12 +408,14 @@ define([
             _delayedSeek = 0;
             clearTimeout(_playbackTimeout);
 
-            var sourceChanged = (_videotag.src !== _source.file);
+            var sourceElement = document.createElement('source');
+            sourceElement.src = _source.file;
+
+            var sourceChanged = (_videotag.src !== sourceElement.src);
             if (sourceChanged || _forceVideoLoad()) {
                 _duration = duration;
                 _setVideotagSource();
                 _videotag.load();
-                //_videotag.currentTime = 0;
             } else {
                 // Load event is from the same video as before
                 if (startTime === 0 && _videotag.currentTime !== 0) {
@@ -478,6 +481,8 @@ define([
             if (!tracks) {
                 return;
             }
+            // CORS applies to track loading and requires the crossorigin attribute
+            _videotag.setAttribute('crossorigin', 'anonymous');
             for (var i = 0; i < tracks.length; i++) {
                 // only add .vtt tracks
                 if(tracks[i].file.indexOf('.vtt') === -1) {

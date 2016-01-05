@@ -185,8 +185,11 @@ define([
 
                 // prevent video error in display on window close
                 window.addEventListener('beforeunload', function() {
-                    if (!_isCasting()) { // don't call stop while casting
-                        _stop(true);
+                    if (_setup) {
+                        _setup.destroy();
+                    }
+                    if (_model) {
+                        _model.destroy();
                     }
                 });
 
@@ -539,7 +542,7 @@ define([
 
             function _setCurrentCaptions(index) {
                 // update provider subtitle track
-                _model.setVideoSubtitleTrack(index);
+                _model.persistVideoSubtitleTrack(index);
 
                 _this.trigger(events.JWPLAYER_CAPTIONS_CHANGED, {
                     tracks: _getCaptionsList(),
@@ -566,14 +569,6 @@ define([
                     }
                 }
                 return null;
-            }
-
-            function _isCasting() {
-                var provider = _model.getVideo();
-                if (provider) {
-                    return provider.isCaster;
-                }
-                return false;
             }
 
             function _attachMedia() {

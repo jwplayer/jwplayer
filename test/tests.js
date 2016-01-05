@@ -24,7 +24,6 @@ define([
     'unit/setup-test',
     'unit/simplemodel-test',
     'unit/storage-test',
-    'unit/stretching-test',
     'unit/strings-test',
     'unit/timer-test',
     'unit/trycatch-test',

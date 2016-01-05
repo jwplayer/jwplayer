@@ -127,7 +127,6 @@ define([
                     }
                 }
             }
-
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
@@ -233,7 +232,7 @@ define([
 
         function _setCurrentIndex (index) {
             if(_tracks.length) {
-                _model.setVideoSubtitleTrack(index);
+                _model.setVideoSubtitleTrack(index, _tracks);
             } else {
                 _model.set('captionsIndex', index);
             }
