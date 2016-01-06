@@ -742,47 +742,50 @@ define([
             _setCurrentAudioTrack(_selectedAudioTrackIndex);
         }
 
-        function _cueChangeHandler (e) {
-            if(!e.currentTarget.activeCues.length || _activeCuePosition === e.currentTarget.activeCues[0].startTime) {
-                return;
-            }
+        function _cueChangeHandler(e) {
             _parseID3(e.currentTarget.activeCues);
         }
 
-        function _parseID3 (activeCues) {
+        function _parseID3(activeCues) {
+            if (!activeCues || !activeCues.length || _activeCuePosition === activeCues[0].startTime) {
+                return;
+            }
             var friendlyNames = {
-                TIT1: 'group',
                 TIT2: 'title',
                 TT2: 'title',
                 WXXX: 'url',
                 TPE1: 'artist',
                 TP1: 'artist',
                 TALB: 'album',
-                TAL: 'album',
-                TCOM: 'composer',
-                TFLT: 'filetype',
-                TLEN: 'length',
-                TIT3: 'subtitle'
+                TAL: 'album'
             };
             var id3Data = _.reduce(activeCues, function(data, cue) {
+                // These friendly names mapping provides compatibility with our Flash implementation prior to 7.3
                 if(friendlyNames.hasOwnProperty(cue.value.key)) {
                     data[friendlyNames[cue.value.key]] = cue.value.data;
+                }
+                /* The meta event includes a metadata object with flattened cue key/data pairs
+                 * If a cue also includes an info field, then create a collection of info/data pairs for the cue key
+                 *   TLEN: 03:50                                        // key: "TLEN", data: "03:50"
+                 *   WXXX: {"artworkURL":"http://domain.com/cover.jpg"} // key: "WXXX", info: "artworkURL" ...
+                 */
+                if(cue.value.info) {
+                    var collection = data[cue.value.key];
+                    if (!_.isObject(collection)) {
+                        collection = {};
+                        data[cue.value.key] = collection;
+                    }
+                    collection[cue.value.info] = cue.value.data;
                 } else {
-                    data[cue.value.info || cue.value.key] = cue.value.data;
+                    data[cue.value.key] = cue.value.data;
                 }
                 return data;
             }, {});
-            var metaData = {
-                position: _position,
-                metadata: {
-                    startTime: activeCues[0].startTime,
-                    type: 'metadata',
-                    provider: 'html5',
-                    data: id3Data
-                }
-            };
             _activeCuePosition = activeCues[0].startTime;
-            _this.trigger('meta', metaData);
+            _this.trigger('meta', {
+                metadataTime: _activeCuePosition,
+                metadata: id3Data
+            });
         }
 
         function _fullscreenEndHandler(e) {
@@ -1072,8 +1075,8 @@ define([
                 var i = 0, len = tracks.length;
                 for (i; i < len; i++) {
                     if (tracks[i].kind === 'metadata') {
-                        tracks[i].mode = 'showing';
                         tracks[i].oncuechange = _cueChangeHandler;
+                        tracks[i].mode = 'showing';
                     }
                     else if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
                         // set subtitles Off by default
