@@ -5,9 +5,8 @@ define([
     'events/events',
     'events/states',
     'providers/default',
-    'utils/backbone.events',
-    'utils/video'
-], function(cssUtils, utils, _, events, states, DefaultProvider, Events, defaultVideoTag) {
+    'utils/backbone.events'
+], function(cssUtils, utils, _, events, states, DefaultProvider, Events) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -152,7 +151,7 @@ define([
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
-        _videotag = _videotag || defaultVideoTag;
+        _videotag = _videotag || document.createElement('video');
         _videotag.className = 'jw-video jw-reset';
 
         _setupListeners(_mediaEvents, _videotag);
@@ -524,7 +523,7 @@ define([
                 return;
             }
             _videotag.removeAttribute('src');
-            if (!_isMSIE) {
+            if (!_isMSIE && _videotag.load) {
                 _videotag.load();
             }
             // IE may continue to play a video after changing source and loading a new media file.
