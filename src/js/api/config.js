@@ -105,6 +105,9 @@ define([
         if (typeof ar !== 'string' || !utils.exists(ar)) {
             return 0;
         }
+        if (/^\d*\.?\d+%$/.test(ar)) {
+            return ar;
+        }
         var index = ar.indexOf(':');
         if (index === -1) {
             return 0;

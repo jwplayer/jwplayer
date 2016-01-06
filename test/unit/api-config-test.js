@@ -82,9 +82,21 @@ define([
             width:'10%',
             aspectratio : '4:3'
         });
-
         // 4:3 is 75% because of 3/4
         assert.equal(x.aspectratio, '75%', 'integer aspect ratio');
+
+        x = testConfig(assert, {
+            width : '100%',
+            aspectratio : '58.25%'
+        });
+        assert.strictEqual(x.aspectratio, '58.25%', 'percentage aspect ratio is passed through');
+
+        x = testConfig(assert, {
+            width : '100%',
+            aspectratio : '75%'
+        });
+        assert.strictEqual(x.aspectratio, '75%', 'percentage aspect ratio is passed through');
+
 
         x = testConfig(assert, {
             width : '200',
