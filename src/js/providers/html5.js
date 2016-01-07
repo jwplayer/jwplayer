@@ -1077,7 +1077,8 @@ define([
                         tracks[i].oncuechange = _cueChangeHandler;
                         tracks[i].mode = 'showing';
                     }
-                    else if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
+                    else if ((tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') &&
+                        (tracks[i].label || tracks[i].language)) {
                         // set subtitles Off by default
                         tracks[i].mode = 'disabled';
                         if(!_textTracks) {
