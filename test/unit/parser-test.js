@@ -102,8 +102,8 @@ define([
     });
 
     test('parser.adaptiveType', function(assert) {
-        var type = parser.adaptiveType(-1);
-        assert.equal(type, 'VOD', 'adaptiveType with -1');
+        var type = parser.adaptiveType(0);
+        assert.equal(type, 'VOD', 'adaptiveType with 0');
 
         type = parser.adaptiveType(10);
         assert.equal(type, 'VOD', 'adaptiveType with 10');
@@ -113,6 +113,9 @@ define([
 
         type = parser.adaptiveType(-20);
         assert.equal(type, 'LIVE', 'adaptiveType with -20');
+
+        type = parser.adaptiveType(-1);
+        assert.equal(type, 'LIVE', 'adaptiveType with -1');
 
         type = parser.adaptiveType(Infinity);
         assert.equal(type, 'LIVE', 'adaptiveType with Infinity');

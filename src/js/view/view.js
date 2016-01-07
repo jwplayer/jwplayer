@@ -2,6 +2,7 @@ define([
     'utils/helpers',
     'events/events',
     'utils/backbone.events',
+    'utils/constants',
     'events/states',
     'view/captionsrenderer',
     'view/clickhandler',
@@ -14,7 +15,7 @@ define([
     'view/title',
     'utils/underscore',
     'handlebars-loader!templates/player.html'
-], function(utils, events, Events, states,
+], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, _, playerTemplate) {
 
@@ -96,7 +97,14 @@ define([
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
         function adjustSeek(amount) {
-            var newSeek = utils.between(_model.get('position') + amount, 0, _model.get('duration'));
+            var min = 0;
+            var max = _model.get('duration');
+            var position = _model.get('position');
+            if (utils.adaptiveType(max) === 'DVR') {
+                min = max;
+                max = Math.max(position, Constants.dvrSeekLimit);
+            }
+            var newSeek = utils.between(position + amount, min, max);
             _api.seek(newSeek);
         }
 

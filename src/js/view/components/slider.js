@@ -72,8 +72,10 @@ define([
                 }
             }
 
-            this.render(percentage);
-            this.update(percentage);
+            var updatedPercent = this.limit(percentage);
+            this.render(updatedPercent);
+            this.update(updatedPercent);
+
 
             return false;
         },
@@ -82,6 +84,10 @@ define([
             this.dragMove(evt);
         },
 
+        limit : function(percentage) {
+            // modules that extend Slider can set limits on the percentage (TimeSlider)
+            return percentage;
+        },
         update : function(percentage) {
             this.trigger('update', { percentage : percentage });
         },

@@ -142,9 +142,9 @@ define([
      * Determine the adaptive type
      */
     parser.adaptiveType = function(duration) {
-        if (duration !== -1) {
+        if (duration !== 0) {
             var MIN_DVR_DURATION = -120;
-            if(duration <= MIN_DVR_DURATION) {
+            if (duration <= MIN_DVR_DURATION) {
                 return 'DVR';
             }
             if (duration < 0 || duration === Infinity) {
