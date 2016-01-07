@@ -180,7 +180,7 @@ define([
                 return;
             }
 
-            _updateDuration();
+            _updateDuration(_getDuration());
             _setBuffered(_getBuffer(), _position, _duration);
         }
 
@@ -207,7 +207,7 @@ define([
             if (_isAndroidHLS && (_videotag.duration === Infinity) && (_videotag.currentTime === 0)) {
                 return;
             }
-            _updateDuration();
+            _updateDuration(_getDuration());
             _setPosition(_videotag.currentTime);
             // buffer ranges change during playback, not just on file progress
             _setBuffered(_getBuffer(), _position, _duration);
@@ -252,9 +252,9 @@ define([
             return duration;
         }
         
-        function _updateDuration() {
-            _duration = _getDuration();
-            if (_delayedSeek && _duration && _duration !== Infinity) {
+        function _updateDuration(duration) {
+            _duration = duration;
+            if (_delayedSeek && duration && duration !== Infinity) {
                 _this.seek(_delayedSeek);
             }
         }
@@ -269,6 +269,7 @@ define([
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
             });
+            _updateDuration(duration);
         }
 
         function _canPlayHandler() {
