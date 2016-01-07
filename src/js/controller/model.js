@@ -358,8 +358,11 @@ define([
 
         this.setVideoSubtitleTrack = function(trackIndex, tracks) {
             this.set('captionsIndex', trackIndex);
-            // tracks could have changed even if the index hasn't
-            if(trackIndex && tracks && trackIndex < tracks.length) {
+            /*
+             * Tracks could have changed even if the index hasn't.
+             * Need to ensure track has data for captionsrenderer.
+             */
+            if(trackIndex && tracks && trackIndex < tracks.length && tracks[trackIndex-1].data) {
                 this.set('captionsTrack', tracks[trackIndex-1]);
             }
 
