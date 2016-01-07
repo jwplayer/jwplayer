@@ -238,8 +238,8 @@ define([
             }
             _position = currentTime;
         }
-
-        function _updateDuration() {
+        
+        function _getDuration() {
             var duration = _videotag.duration;
             var end = _getSeekableEnd();
             if (duration === Infinity && end) {
@@ -249,15 +249,18 @@ define([
                     duration = -seekableDuration;
                 }
             }
-            _duration = duration;
-            if (_delayedSeek && duration && duration !== Infinity) {
+            return duration;
+        }
+        
+        function _updateDuration() {
+            _duration = _getDuration();
+            if (_delayedSeek && _duration && _duration !== Infinity) {
                 _this.seek(_delayedSeek);
             }
         }
 
         function _sendMetaEvent() {
-            _updateDuration();
-            var duration = _duration;
+            var duration = _getDuration();
             if (_isAndroidHLS && duration === Infinity) {
                 duration = 0;
             }
