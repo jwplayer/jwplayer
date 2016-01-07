@@ -36,7 +36,6 @@ define([
             _timeoutDuration = _isMobile ? 4000 : 2000,
             _controlBarOnlyHeight = 40,
             _videoLayer,
-            _aspectRatioContainer,
             _lastWidth,
             _lastHeight,
             _instreamModel,
@@ -338,7 +337,6 @@ define([
             _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
 
             _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
-            _aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
 
             var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
             _preview = new Preview(_model);
@@ -401,9 +399,13 @@ define([
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
 
-            if (_model.get('aspectratio')) {
+            var aspectratio = _model.get('aspectratio');
+            if (aspectratio) {
                 utils.addClass(_playerElement, 'jw-flag-aspect-mode');
-                utils.style(_aspectRatioContainer, { 'padding-top': _model.get('aspectratio') });
+                var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
+                _styles(aspectRatioContainer, {
+                    paddingTop: aspectratio
+                });
             }
 
             // This setTimeout allows the player to actually get embedded into the player
@@ -571,9 +573,7 @@ define([
 
             var rightside = document.createElement('div');
             rightside.className = 'jw-controls-right jw-reset';
-            if (_model.get('logo')) {
-                rightside.appendChild(_logo.element());
-            }
+            _logo.setup(rightside);
             rightside.appendChild(_dock.element());
             _controlsLayer.appendChild(rightside);
 
@@ -674,7 +674,7 @@ define([
                 if (_playerElement.className !== className) {
                     _playerElement.className = className;
                 }
-                utils.style(_playerElement, {
+                _styles(_playerElement, {
                     display: 'block'
                 }, resetAspectMode);
             }
@@ -691,11 +691,6 @@ define([
                 playerStyle.height = height;
             }
             _styles(_playerElement, playerStyle, true);
-
-            if (_logo) {
-                _logo.offset(_controlbar && _logo.position().indexOf('bottom') >= 0 ?
-                    _controlbar.element().clientHeight : 0);
-            }
 
             _checkAudioMode(height);
 
@@ -1019,6 +1014,9 @@ define([
             }
             if (_instreamMode) {
                 this.destroyInstream();
+            }
+            if (_logo) {
+                _logo.destroy();
             }
             utils.clearCss('#'+_model.get('id'));
         };
