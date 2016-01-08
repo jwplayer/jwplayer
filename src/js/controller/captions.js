@@ -198,7 +198,7 @@ define([
             for (var i = 0; i < _tracks.length; i++) {
                 list.push({
                     id: _tracks[i].id,
-                    label: _tracks[i].label
+                    label: _tracks[i].label || 'Unknown CC'
                 });
             }
             return list;
