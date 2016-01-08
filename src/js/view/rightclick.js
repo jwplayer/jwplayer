@@ -18,7 +18,7 @@ define([
                     title: 'Powered by JW Player ' + majorMinorPatchPre,
                     featured : true,
                     showLogo : true,
-                    link: '//jwplayer.com/learn-more/?m=h&e=o&v=' + version
+                    link: 'https://jwplayer.com/learn-more/?m=h&e=o&v=' + version
                 }]
             };
 
