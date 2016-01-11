@@ -60,7 +60,7 @@ define([
 
     test('parser.getScriptPath', function(assert) {
         var path = parser.getScriptPath(null);
-        assert.notOk(path);
+        assert.equal(path, '', 'returns an empty string when no file name is provided');
 
         var scriptPath = parser.getScriptPath('parser-test.js');
         assert.ok(/\S+\:\/\/.+\/$/.test(scriptPath),
