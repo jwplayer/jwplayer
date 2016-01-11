@@ -10,6 +10,7 @@ define([
         assert.equal(typeof browser.isIETrident(), 'boolean');
         assert.equal(typeof browser.isMSIE(), 'boolean');
         assert.equal(typeof browser.isIE(), 'boolean');
+        assert.equal(typeof browser.isEdge(), 'boolean');
         assert.equal(typeof browser.isSafari(), 'boolean');
         assert.equal(typeof browser.isIOS(), 'boolean');
         assert.equal(typeof browser.isAndroidNative(), 'boolean');
