@@ -467,6 +467,15 @@ define([
             }
         }
 
+        function _clearVideotagSource() {
+            if (_videotag) {
+                _videotag.removeAttribute('src');
+                if (!_isMSIE && _videotag.load) {
+                    _videotag.load();
+                }
+            }
+        }
+
         function _setupSideloadedTracks(tracks) {
             // cleanup dom
             while (_videotag.firstChild) {
@@ -522,10 +531,7 @@ define([
             if (!_attached) {
                 return;
             }
-            _videotag.removeAttribute('src');
-            if (!_isMSIE && _videotag.load) {
-                _videotag.load();
-            }
+            _clearVideotagSource()
             // IE may continue to play a video after changing source and loading a new media file.
             // https://connect.microsoft.com/IE/feedbackdetail/view/2000141/htmlmediaelement-autoplays-after-src-is-changed-and-load-is-called
             if(utils.isIETrident()) {
@@ -845,13 +851,7 @@ define([
 
         this.remove = function() {
             // stop video silently
-            if (_videotag) {
-                _videotag.removeAttribute('src');
-                if (!_isMSIE) {
-                    _videotag.load();
-                }
-            }
-
+            _clearVideotagSource();
             clearTimeout(_playbackTimeout);
 
             _currentQuality = -1;
