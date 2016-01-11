@@ -531,7 +531,7 @@ define([
             if (!_attached) {
                 return;
             }
-            _clearVideotagSource()
+            _clearVideotagSource();
             // IE may continue to play a video after changing source and loading a new media file.
             // https://connect.microsoft.com/IE/feedbackdetail/view/2000141/htmlmediaelement-autoplays-after-src-is-changed-and-load-is-called
             if(utils.isIETrident()) {
