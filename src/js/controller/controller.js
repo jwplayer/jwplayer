@@ -410,7 +410,14 @@ define([
 
             function _setPlaylist(p) {
                 var playlist = Playlist(p);
-                playlist = Playlist.filterPlaylist(playlist, _model.getProviders(), _model.get('androidhls'),
+                var primary = _model.get('primary');
+                var providers = _model.getProviders();
+                if (!!primary) {
+                    providers.providers = _.filter(providers.providers, function(p) {
+                        return p.name === primary;
+                    });
+                }
+                playlist = Playlist.filterPlaylist(playlist, providers, _model.get('androidhls'),
                     _model.get('drm'), _model.get('preload'));
 
                 _model.set('playlist', playlist);
