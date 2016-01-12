@@ -24,22 +24,21 @@ define([
         // normalize for odd strings
         _source.file = strings.trim('' + _source.file);
 
-        // if type is given as a mimetype
+        // regex to check if mimetype is given
         var mimetypeRegEx = /^[^\/]+\/(?:x-)?([^\/]+)$/;
-        if (mimetypeRegEx.test(_source.type)) {
-            _source.type = _source.type.replace(mimetypeRegEx, '$1');
-        }
 
-        // If type not included, we infer it from extension
-        if (! _source.type) {
-            if (utils.isYouTube(_source.file)) {
-                _source.type = 'youtube';
-            } else if (utils.isRtmp(_source.file)) {
-                _source.type = 'rtmp';
-            } else {
-                var extension = strings.extension(_source.file);
-                _source.type = extension;
-            }
+        // check if the source is youtube or rtmp
+        if (utils.isYouTube(_source.file)) {
+            _source.type = 'youtube';
+        } else if (utils.isRtmp(_source.file)) {
+            _source.type = 'rtmp';
+        } else if (mimetypeRegEx.test(_source.type)) {
+            // if type is given as a mimetype
+            _source.type = _source.type.replace(mimetypeRegEx, '$1');
+        } else {
+            // get type from extension if type is not yet determined
+            var extension = strings.extension(_source.file);
+            _source.type = extension;
         }
 
         if (!_source.type) {
