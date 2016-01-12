@@ -1,6 +1,7 @@
 define([
-    'utils/underscore'
-], function(_) {
+    'utils/underscore',
+    'utils/helpers'
+], function(_, util) {
 
     var Preview = function(_model) {
         this.model = _model;
@@ -18,6 +19,10 @@ define([
         },
         loadImage: function(model, playlistItem) {
             var img = playlistItem.image;
+
+            // hide the preview in idle state if autostart is true and not mobile to prevent preview flashing
+            var hidePreview = model.get('autostart') && !util.isMobile();
+            util.toggleClass(this.el, 'jw-autostart', hidePreview);
 
             if (_.isString(img)) {
                 this.el.style.backgroundImage = 'url("' + img + '")';
