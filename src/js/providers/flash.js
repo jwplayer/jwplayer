@@ -338,6 +338,10 @@ define([
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
 
+                    _swf.on('adaptiveEventAudio', function() {
+                        this.trigger('mediaType', {mediaType: 'audio'});
+                    }, this);
+
                     if (flashThrottleTarget(_playerConfig)) {
                         _swf.on('throttle', function(e) {
                             clearTimeout(_flashBlockedTimeout);
