@@ -103,6 +103,8 @@ public class VideoMediaProvider extends MediaProvider {
             loadQuality();
         } else if (itm.preload === "auto") {
             play();
+        } else {
+            loadQuality();
         }
 
         // need to call this every time we load, but after setupVideo has been called
