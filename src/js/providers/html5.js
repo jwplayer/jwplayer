@@ -146,8 +146,7 @@ define([
             _audioTracks = null,
             _currentTextTrackIndex = -1,
             _currentAudioTrackIndex = -1,
-            _activeCuePosition = -1,
-            _mediaType = 'video';
+            _activeCuePosition = -1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -453,7 +452,6 @@ define([
         function _setVideotagSource(item) {
             _textTracks = null;
             _audioTracks = null;
-            _mediaType = 'video';
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
             _activeCuePosition = -1;
@@ -580,7 +578,7 @@ define([
 
             _setLevels(item.sources);
 
-            if(!item.sources.length || item.sources[0].type !== 'hls') {
+            if(item.sources.length && item.sources[0].type !== 'hls') {
                 this.sendMediaType(item.sources);
             }
 
@@ -1071,8 +1069,6 @@ define([
 
         this.getSubtitlesTrack = _getSubtitlesTrack;
 
-        this.getMediaType = _getMediaType;
-
         function _setTextTracks(tracks) {
             _textTracks = null; 
             if(!tracks) {
@@ -1133,12 +1129,8 @@ define([
         }
 
         function _setMediaType(videoTracks) {
-            _mediaType = videoTracks && videoTracks.length ? 'video' : 'audio';
-            _this.trigger('mediaType', {mediaType: _mediaType});
-        }
-
-        function _getMediaType() {
-            return _mediaType;
+            var mediaType = videoTracks && videoTracks.length ? 'video' : 'audio';
+            _this.trigger('mediaType', {mediaType: mediaType});
         }
     }
 
