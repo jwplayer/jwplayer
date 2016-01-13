@@ -563,7 +563,10 @@ define([
 
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
-            this.sendMediaType(item.sources);
+            // the loadeddata event determines the mediaType for HLS sources
+            if(item.sources.length && item.sources[0].type !== 'hls') {
+                this.sendMediaType(item.sources);
+            }
 
             _source = _levels[_currentQuality];
             _position = item.starttime || 0;

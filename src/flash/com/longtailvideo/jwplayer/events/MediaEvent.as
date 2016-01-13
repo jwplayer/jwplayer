@@ -31,12 +31,14 @@ public class MediaEvent extends PlayerEvent {
     // Total number of seconds in the currently loaded media
     public static const JWPLAYER_MEDIA_LEVELS:String = "levels";
     public static const JWPLAYER_MEDIA_LEVEL_CHANGED:String = "levelsChanged";
+    public static const JWPLAYER_MEDIA_TYPE:String = "mediaType";
 
     private var _currentQuality:Number;
     private var _bufferPercent:Number;
     private var _position:Number;
     private var _duration:Number;
     private var _volume:Number;
+    private var _mediaType:String;
 
     public var levels:Array = null;
     public var metadata:Object = null;
@@ -110,6 +112,14 @@ public class MediaEvent extends PlayerEvent {
         _volume = value;
     }
 
+    public function get mediaType():String {
+        return _mediaType;
+    }
+
+    public function set mediaType(value:String):void {
+        _mediaType = value;
+    }
+
     public override function clone():Event {
         // the class must be dynamic to make the properties enumerable
         return new MediaEvent(type, {
@@ -121,7 +131,8 @@ public class MediaEvent extends PlayerEvent {
             volume: _volume,
             mute: mute,
             levels: levels,
-            currentQuality: _currentQuality
+            currentQuality: _currentQuality,
+            mediaType: _mediaType
         });
     }
 
@@ -158,6 +169,9 @@ public class MediaEvent extends PlayerEvent {
                 break;
             case JWPLAYER_MEDIA_MUTE:
                 js.mute = mute;
+                break;
+            case JWPLAYER_MEDIA_TYPE:
+                js.mediaType = _mediaType;
                 break;
         }
 
