@@ -35,10 +35,8 @@ define([
         } else if (mimetypeRegEx.test(_source.type)) {
             // if type is given as a mimetype
             _source.type = _source.type.replace(mimetypeRegEx, '$1');
-        } else {
-            // get type from extension if type is not yet determined
-            var extension = strings.extension(_source.file);
-            _source.type = extension;
+        } else if (!_source.type) {
+            _source.type = strings.extension(_source.file);
         }
 
         if (!_source.type) {
