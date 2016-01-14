@@ -168,9 +168,11 @@ define([
 
         // Enable tracks support for HLS videos
         function _onLoadedData() {
+            _setMediaType(_videotag.videoTracks);
             _setAudioTracks(_videotag.audioTracks);
             _setTextTracks(_videotag.textTracks);
         }
+
         function _clickHandler(evt) {
             _this.trigger('click', evt);
         }
@@ -561,7 +563,10 @@ define([
 
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
-            this.sendMediaType(item.sources);
+            // the loadeddata event determines the mediaType for HLS sources
+            if(item.sources.length && item.sources[0].type !== 'hls') {
+                this.sendMediaType(item.sources);
+            }
 
             _source = _levels[_currentQuality];
             _position = item.starttime || 0;
@@ -575,7 +580,10 @@ define([
             }
 
             _setLevels(item.sources);
-            this.sendMediaType(item.sources);
+
+            if(item.sources.length && item.sources[0].type !== 'hls') {
+                this.sendMediaType(item.sources);
+            }
 
             if (!_isMobile) {
                 // don't change state on mobile because a touch event may be required to start playback
@@ -1121,6 +1129,11 @@ define([
 
         function _getSubtitlesTrack() {
             return _currentTextTrackIndex;
+        }
+
+        function _setMediaType(videoTracks) {
+            var mediaType = videoTracks && videoTracks.length ? 'video' : 'audio';
+            _this.trigger('mediaType', {mediaType: mediaType});
         }
     }
 

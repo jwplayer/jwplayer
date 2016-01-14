@@ -125,7 +125,10 @@ define([
                     _beforecompleted = false;
                     this.setState(states.LOADING);
                     _flashCommand('load', item);
-                    this.sendMediaType(item.sources);
+                    // HLS mediaType comes from the AdaptiveProvider
+                    if(item.sources.length && item.sources[0].type !== 'hls') {
+                        this.sendMediaType(item.sources);
+                    }
                 },
                 play: function() {
                     _flashCommand('play');
@@ -244,7 +247,8 @@ define([
                         events.JWPLAYER_MEDIA_SEEKED,
                         'subtitlesTracks',
                         'subtitlesTrackChanged',
-                        'subtitlesTrackData'
+                        'subtitlesTrackData',
+                        'mediaType'
                     ];
 
                     var forwardEventsWithDataDuration = [
