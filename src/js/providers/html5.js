@@ -1132,8 +1132,10 @@ define([
         }
 
         function _setMediaType(videoTracks) {
-            if(_levels && _levels.length && _levels[0].type === 'hls') {
-                var mediaType = videoTracks && videoTracks.length ? 'video' : 'audio';
+            // set mediaType only for HLS in Safari since the model is notified
+            // of the mediaType earlier for other formats.
+            if(videoTracks && _levels[0].type === 'hls') {
+                var mediaType = videoTracks.length ? 'video' : 'audio';
                 _this.trigger('mediaType', {mediaType: mediaType});
             }
         }
