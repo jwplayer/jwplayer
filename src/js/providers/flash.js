@@ -247,7 +247,8 @@ define([
                         events.JWPLAYER_MEDIA_SEEKED,
                         'subtitlesTracks',
                         'subtitlesTrackChanged',
-                        'subtitlesTrackData'
+                        'subtitlesTrackData',
+                        'mediaType'
                     ];
 
                     var forwardEventsWithDataDuration = [
@@ -339,10 +340,6 @@ define([
                     _swf.on(events.JWPLAYER_ERROR, function(event) {
                         utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
-                    }, this);
-
-                    _swf.on('mediaType', function(e) {
-                        this.trigger('mediaType', {mediaType: e.mediaType});
                     }, this);
 
                     if (flashThrottleTarget(_playerConfig)) {
