@@ -1,14 +1,22 @@
-.jw-flag-user-inactive.jw-state-playing {
-      .jw-controlbar,
-      .jw-dock {
-          display : none;
-      }
+.jw-flag-user-inactive {
+    &.jw-state-playing {
+        .jw-controlbar,
+        .jw-dock {
+            display: none;
+        }
 
-      .jw-logo.jw-hide {
-          display : none;
-      }
+        .jw-logo.jw-hide {
+            display: none;
+        }
 
-      .jw-plugin, .jw-captions{
-          bottom: 0.5em;
-      }
+        .jw-plugin, .jw-captions {
+            bottom: 0.5em;
+        }
+    }
+
+    &.jw-state-buffering {
+        .jw-controlbar {
+            display: none;
+        }
+    }
 }
