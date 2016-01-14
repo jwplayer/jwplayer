@@ -1132,8 +1132,10 @@ define([
         }
 
         function _setMediaType(videoTracks) {
-            var mediaType = videoTracks && videoTracks.length ? 'video' : 'audio';
-            _this.trigger('mediaType', {mediaType: mediaType});
+            if(_levels && _levels.length && _levels[0].type === 'hls') {
+                var mediaType = videoTracks && videoTracks.length ? 'video' : 'audio';
+                _this.trigger('mediaType', {mediaType: mediaType});
+            }
         }
     }
 
