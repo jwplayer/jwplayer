@@ -43,7 +43,7 @@ define([
             model._qoeItem.tick(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         };
 
-        model.mediaController.once(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+        model.mediaController.on(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
         model.mediaController.once(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.on(events.JWPLAYER_MEDIA_TIME, model._onTime);
     }
