@@ -1,12 +1,48 @@
 define([
-    'utils/underscore'
-], function(_) {
+    'utils/underscore',
+    'utils/helpers'
+], function(_, utils) {
 
     var Preview = function(_model) {
         this.model = _model;
 
-        this.model.on('change:playlistItem', this.loadImage, this);
+        this.model.on('change:playlistItem', onPlaylistItem, this);
+        this.model.on('change:mediaModel', onMediaModel, this);
+        this.model.on('change:state', onChangeState, this);
     };
+
+    function onChangeState(model, state) {
+        var endOfPlaylist = (this.model.get('item') === (this.model.get('playlist').length - 1));
+        if ((state === 'complete') && (!model.get('repeat')) && endOfPlaylist) {
+            this.loadImage(model, model.get('playlistItem').image);
+        }
+    }
+
+    function onMediaModel() {
+        this.model.mediaModel.off('change:mediaType', onMediaType);
+        this.model.mediaModel.on('change:mediaType', onMediaType, this);
+    }
+
+    function onMediaType(mediaModel, mediaType) {
+        var audio = (mediaType === 'audio');
+        if (audio) {
+            this.loadImage(this.model, this.model.get('playlistItem').image);
+        } else {
+            // clear image
+            this.loadImage(this.model, null);
+        }
+    }
+
+    function onPlaylistItem(model, playlistItem) {
+        var loadImage = (this.model.get('state') === 'idle') && (this.model.get('item') === 0) &&
+            (!this.model.get('autostart') || utils.isMobile());
+
+        if (loadImage) {
+            this.loadImage(model, playlistItem.image);
+        } else {
+            this.loadImage(model, null);
+        }
+    }
 
     _.extend(Preview.prototype, {
         setup: function(element) {
@@ -16,13 +52,15 @@ define([
                 this.loadImage(this.model, this.model.get('playlistItem'));
             }
         },
-        loadImage: function(model, playlistItem) {
-            var img = playlistItem.image;
-
+        loadImage: function(model, img) {
             if (_.isString(img)) {
-                this.el.style.backgroundImage = 'url("' + img + '")';
+                utils.style(this.el, {
+                    backgroundImage: 'url("' + img + '")'
+                });
             } else {
-                this.el.style.backgroundImage = '';
+                utils.style(this.el, {
+                    backgroundImage: ''
+                });
             }
         },
         element : function() {
