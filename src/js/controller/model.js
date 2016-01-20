@@ -37,7 +37,7 @@ define([
             var storage = new Storage();
             storage.track(PERSIST_ITEMS, this);
 
-            _.extend(this.attributes, config, storage.getAllItems(), {
+            _.extend(this.attributes, storage.getAllItems(), config, {
                 // always start on first playlist item
                 item : 0,
                 // Initial state, upon setup
