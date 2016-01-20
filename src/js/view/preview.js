@@ -53,15 +53,13 @@ define([
             }
         },
         loadImage: function(model, img) {
+            var backgroundImage = '';
             if (_.isString(img)) {
-                utils.style(this.el, {
-                    backgroundImage: 'url("' + img + '")'
-                });
-            } else {
-                utils.style(this.el, {
-                    backgroundImage: ''
-                });
+                backgroundImage = 'url("' + img + '")';
             }
+            utils.style(this.el, {
+                backgroundImage: backgroundImage
+            });
         },
         element : function() {
             return this.el;
