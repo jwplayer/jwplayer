@@ -111,6 +111,23 @@ define([
             };
         }
 
+        function checkFlashBlocked() {
+            var _this = this;
+            _flashBlockedTimeout = setTimeout(function() {
+                Events.trigger.call(_this, 'flashBlocked');
+            }, 4000);
+            _swf.once('embedded', function() {
+                clearTimeout(_flashBlockedTimeout);
+                window.removeEventListener('focus', onFocus);
+                Events.trigger.call(_this, 'flashUnblocked');
+            }, this);
+        }
+
+        function onFocus() {
+            checkFlashBlocked();
+            window.removeEventListener('focus', onFocus);
+        }
+
         _.extend(this, Events, {
                 init: function(item) {
                     // if not preloading or autostart is true, do nothing
@@ -206,17 +223,18 @@ define([
 
                     // The browser may block the flash object until user enables it
                     var _this = this;
-                    _flashBlockedTimeout = setTimeout(function() {
-                        Events.trigger.call(_this, 'flashBlocked');
-                    }, 4000);
-                    _swf.once('embedded', function() {
-                        clearTimeout(_flashBlockedTimeout);
-                        Events.trigger.call(_this, 'flashUnblocked');
-                    }, this);
+
+                    // Wait until the window gets focus to see check flash is blocked
+                    if (document.hasFocus()) {
+                        checkFlashBlocked();
+                    } else {
+                        window.addEventListener('focus', onFocus);
+                    }
 
                     // listen to events sendEvented from flash
                     _swf.once('ready', function() {
                         clearTimeout(_flashBlockedTimeout);
+                        window.removeEventListener('focus', onFocus);
                         // After plugins load, then execute commandqueue
                         _swf.once('pluginsLoaded', function() {
                             _swf.queueCommands = false;
@@ -345,6 +363,7 @@ define([
                     if (flashThrottleTarget(_playerConfig)) {
                         _swf.on('throttle', function(e) {
                             clearTimeout(_flashBlockedTimeout);
+                            window.removeEventListener('focus', onFocus);
 
                             if (e.state === 'resume') {
                                 Events.trigger.call(_this, 'flashThrottle', e);
@@ -416,6 +435,7 @@ define([
                     _container = null;
                     _item = null;
                     this.off();
+                    window.removeEventListener('focus', onFocus);
                 }
         });
 
