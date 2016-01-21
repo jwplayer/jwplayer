@@ -24,12 +24,8 @@ define([
     }
 
     function onMediaType(mediaModel, mediaType) {
-        var audio = (mediaType === 'audio');
-        if (audio) {
+        if (mediaType === 'audio') {
             this.loadImage(this.model, this.model.get('playlistItem').image);
-        } else {
-            // clear image
-            this.loadImage(this.model, null);
         }
     }
 
