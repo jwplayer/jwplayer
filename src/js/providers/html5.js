@@ -305,6 +305,9 @@ define([
 
         function _playingHandler() {
             _this.setState(states.PLAYING);
+            if(!_videotag.hasAttribute('hasplayed')) {
+                _videotag.setAttribute('hasplayed','');
+            }
             _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
@@ -584,9 +587,8 @@ define([
             if(item.sources.length && item.sources[0].type !== 'hls') {
                 this.sendMediaType(item.sources);
             }
-
-            if (!_isMobile) {
-                // don't change state on mobile because a touch event may be required to start playback
+            if (!_isMobile || _videotag.hasAttribute('hasplayed')) {
+                // don't change state on mobile before user initiates playback
                 _this.setState(states.LOADING);
             }
             _completeLoad(item.starttime || 0, item.duration || 0);
