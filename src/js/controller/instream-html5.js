@@ -145,10 +145,6 @@ define([
                 provider.mute(_model.get('mute'));
 
                 _adModel.on('change:state', changeStateEvent, _this);
-            } else if(provider.state === 'playing') {
-                // state is still 'playing' after an ad is skipped. Need to update it here
-                // so the model gets the new play event when the next ad in an ad pod plays
-                provider.setState('loading');
             }
         }
 
