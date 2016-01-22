@@ -519,6 +519,8 @@ define([
         }
 
         function _setupControls() {
+            var overlaysElement = _playerElement.getElementsByClassName('jw-overlays')[0];
+            overlaysElement.addEventListener('mousemove', _userActivity);
 
             _displayClickHandler = new ClickHandler(_model, _videoLayer);
             _displayClickHandler.on('click', function() {
