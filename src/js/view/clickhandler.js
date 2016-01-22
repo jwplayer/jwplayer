@@ -22,6 +22,7 @@ define([
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
         userInteract.on('move', function(){ _this.trigger('move'); });
         userInteract.on('over', function(){ _this.trigger('over'); });
+        userInteract.on('out', function(){ _this.trigger('out'); });
 
         this.clickHandler = _clickHandler;
 
