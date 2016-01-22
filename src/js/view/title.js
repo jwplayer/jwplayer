@@ -44,7 +44,9 @@ define([
             var dockButtons = model.get('dock');
             var logo = model.get('logo');
             if (logo) {
-                var padding = model.get('logoWidth') + (isNaN(1*logo.margin) ? 0 : logo.margin);
+                // Only use Numeric or pixel ("Npx") margin values
+                var margin = 1*(''+logo.margin).replace('px', '');
+                var padding = model.get('logoWidth') + (isNaN(margin) ? 0 : margin);
                 if (logo.position ===  'top-left') {
                     titleStyle.paddingLeft = padding;
                 } else if (logo.position ===  'top-right') {
