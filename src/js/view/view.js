@@ -522,7 +522,7 @@ define([
             var overlaysElement = _playerElement.getElementsByClassName('jw-overlays')[0];
             overlaysElement.addEventListener('mousemove', _userActivity);
 
-            _displayClickHandler = new ClickHandler(_model, _videoLayer);
+            _displayClickHandler = new ClickHandler(_model, _videoLayer, {useHover: true});
             _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 if(_model.get('controls')) {
@@ -535,6 +535,8 @@ define([
             });
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
             _displayClickHandler.on('move', _userActivity);
+            _displayClickHandler.on('over', _userActivity);
+            _displayClickHandler.on('out', _userActivity);
             
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
