@@ -35,6 +35,7 @@ define([
         var _flashProviderType;
         var _attached = true;
         var _fullscreen = false;
+        var _this = this;
 
         var _ready = function() {
             return _swf && _swf.__ready;
@@ -109,6 +110,26 @@ define([
                 labels: labels,
                 bitrates: bitrates
             };
+        }
+
+        function checkFlashBlocked() {
+            _flashBlockedTimeout = setTimeout(function() {
+                Events.trigger.call(_this, 'flashBlocked');
+            }, 4000);
+            _swf.once('embedded', function() {
+                removeBlockedCheck();
+                Events.trigger.call(_this, 'flashUnblocked');
+            }, _this);
+        }
+
+        function onFocus() {
+            removeBlockedCheck();
+            checkFlashBlocked();
+        }
+        
+        function removeBlockedCheck() {
+            clearTimeout(_flashBlockedTimeout);
+            window.removeEventListener('focus', onFocus);
         }
 
         _.extend(this, Events, {
@@ -204,19 +225,16 @@ define([
 
                     _swf = this.getSwfObject(parent);
 
-                    // The browser may block the flash object until user enables it
-                    var _this = this;
-                    _flashBlockedTimeout = setTimeout(function() {
-                        Events.trigger.call(_this, 'flashBlocked');
-                    }, 4000);
-                    _swf.once('embedded', function() {
-                        clearTimeout(_flashBlockedTimeout);
-                        Events.trigger.call(_this, 'flashUnblocked');
-                    }, this);
+                    // Wait until the window gets focus to see check flash is blocked
+                    if (document.hasFocus()) {
+                        checkFlashBlocked();
+                    } else {
+                        window.addEventListener('focus', onFocus);
+                    }
 
                     // listen to events sendEvented from flash
                     _swf.once('ready', function() {
-                        clearTimeout(_flashBlockedTimeout);
+                        removeBlockedCheck();
                         // After plugins load, then execute commandqueue
                         _swf.once('pluginsLoaded', function() {
                             _swf.queueCommands = false;
@@ -344,7 +362,7 @@ define([
 
                     if (flashThrottleTarget(_playerConfig)) {
                         _swf.on('throttle', function(e) {
-                            clearTimeout(_flashBlockedTimeout);
+                            removeBlockedCheck();
 
                             if (e.state === 'resume') {
                                 Events.trigger.call(_this, 'flashThrottle', e);
@@ -408,6 +426,7 @@ define([
                     _flashCommand('setCurrentAudioTrack', audioTrack);
                 },
                 destroy: function() {
+                    removeBlockedCheck();
                     this.remove();
                     if (_swf) {
                         _swf.off();
