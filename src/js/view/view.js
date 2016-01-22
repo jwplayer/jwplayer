@@ -536,7 +536,6 @@ define([
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
             _displayClickHandler.on('move', _userActivity);
             _displayClickHandler.on('over', _userActivity);
-            _displayClickHandler.on('out', _userActivity);
             
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
