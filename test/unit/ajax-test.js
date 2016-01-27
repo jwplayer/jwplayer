@@ -98,8 +98,9 @@ define([
                 assert.ok(false, 'expected request to timeout immediately');
                 done();
             },
-            onerror: function() {
-                assert.ok(true, 'request timed out right away');
+            onerror: function(message) {
+                assert.equal(message, 'Timeout',
+                    '"Timeout" error message');
                 done();
             },
             timeout: 0.0001,
