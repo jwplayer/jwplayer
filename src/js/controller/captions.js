@@ -17,11 +17,12 @@ define([
         // Listen for provider subtitle tracks
         //   ignoring provider "subtitlesTrackChanged" since index should be managed here
         _model.mediaController.on('subtitlesTracks', function(e) {
+            _model.mediaController.off('meta');
             if(! e.tracks.length) {
+                // If we don't get WebVTT captions, listen for metadata captions
+                _model.mediaController.on('meta',_metaHandler, this);
                 return;
             }
-            // If we get webvtt captions, do not override with metadata captions
-            _model.mediaController.off('meta');
 
             _tracks = [];
             _tracksById = {};
@@ -66,7 +67,14 @@ define([
         }, this);
 
         // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
-        _model.mediaController.on('meta', function(e) {
+        _model.mediaController.on('meta', _metaHandler, this);
+
+        var _tracks = [],
+            _tracksById = {},
+            _metaCuesByTextTime = {},
+            _unknownCount = 0;
+
+        function _metaHandler (e) {
             var metadata = e.metadata;
             if (!metadata) {
                 return;
@@ -95,13 +103,7 @@ define([
                     track.data.push(cue);
                 }
             }
-        }, this);
-
-        var _tracks = [],
-            _tracksById = {},
-            _metaCuesByTextTime = {},
-            _unknownCount = 0;
-
+        }
         function _errorHandler(error) {
             utils.log('CAPTIONS(' + error + ')');
         }
