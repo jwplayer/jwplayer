@@ -17,12 +17,11 @@ define([
         // Listen for provider subtitle tracks
         //   ignoring provider "subtitlesTrackChanged" since index should be managed here
         _model.mediaController.on('subtitlesTracks', function(e) {
-            _model.mediaController.off('meta');
             if(! e.tracks.length) {
-                // If we don't get WebVTT captions, listen for metadata captions
-                _model.mediaController.on('meta',_metaHandler, this);
                 return;
             }
+            // If we get webvtt captions, do not override with metadata captions
+            _model.mediaController.off('meta', _metaHandler);
 
             _tracks = [];
             _tracksById = {};
@@ -114,6 +113,10 @@ define([
             _tracksById = {};
             _metaCuesByTextTime = {};
             _unknownCount = 0;
+
+            // meta event listener may have been turned off in subtitlesTracks event
+            _model.mediaController.off('meta', _metaHandler);
+            _model.mediaController.on('meta', _metaHandler, this);
 
             var tracks = item.tracks,
                 track, kind, i;
