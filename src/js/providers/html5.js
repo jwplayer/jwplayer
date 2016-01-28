@@ -775,6 +775,37 @@ define([
                 TAL: 'album'
             };
             var id3Data = _.reduce(activeCues, function(data, cue) {
+                if (!('value' in cue)) {
+                    // Cue is not in Safari's key/data format
+                    if ('data' in cue && cue.data instanceof ArrayBuffer) {
+                        // EdgeHTML 13.10586 cue point format - contains raw data in an ArrayBuffer.
+                        
+                        var oldCue = cue;
+                        var array = new Uint8Array(oldCue.data);
+                        
+                        cue = { value: { key: '', data: '' } };
+                        
+                        var i = 10;
+                        while (i < 14 && i < array.length) {
+                            if (array[i] === 0) {
+                                break;
+                            }
+                            cue.value.key += String.fromCharCode(array[i]);
+                            i++;
+                        }
+                        
+                        i = 20;
+                        while (i < array.length) {
+                            if (array[i] === 0) {
+                                break;
+                            }
+                            if (array[i] >= 32) {
+                                cue.value.data += String.fromCharCode(array[i]);
+                            }
+                            i++;
+                        }
+                    }
+                }
                 // These friendly names mapping provides compatibility with our Flash implementation prior to 7.3
                 if(friendlyNames.hasOwnProperty(cue.value.key)) {
                     data[friendlyNames[cue.value.key]] = cue.value.data;
