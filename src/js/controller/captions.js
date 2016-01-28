@@ -21,7 +21,7 @@ define([
                 return;
             }
             // If we get webvtt captions, do not override with metadata captions
-            _model.mediaController.off('meta');
+            _model.mediaController.off('meta', _metaHandler);
 
             _tracks = [];
             _tracksById = {};
@@ -66,7 +66,14 @@ define([
         }, this);
 
         // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
-        _model.mediaController.on('meta', function(e) {
+        _model.mediaController.on('meta', _metaHandler, this);
+
+        var _tracks = [],
+            _tracksById = {},
+            _metaCuesByTextTime = {},
+            _unknownCount = 0;
+
+        function _metaHandler (e) {
             var metadata = e.metadata;
             if (!metadata) {
                 return;
@@ -95,13 +102,7 @@ define([
                     track.data.push(cue);
                 }
             }
-        }, this);
-
-        var _tracks = [],
-            _tracksById = {},
-            _metaCuesByTextTime = {},
-            _unknownCount = 0;
-
+        }
         function _errorHandler(error) {
             utils.log('CAPTIONS(' + error + ')');
         }
@@ -112,6 +113,10 @@ define([
             _tracksById = {};
             _metaCuesByTextTime = {};
             _unknownCount = 0;
+
+            // meta event listener may have been turned off in subtitlesTracks event
+            _model.mediaController.off('meta', _metaHandler);
+            _model.mediaController.on('meta', _metaHandler, this);
 
             var tracks = item.tracks,
                 track, kind, i;
