@@ -1134,11 +1134,10 @@ define([
         }
 
         function _setMediaType(videoTracks, audioTracks) {
-            // set mediaType only for HLS in Safari since the model is notified
-            // of the mediaType earlier for other formats.
-            if(videoTracks && _levels[0].type === 'hls') {
-                // track count in iOS 8.4 is always 0, so this ensures we
-                // default to video if length === 0 for both audio & video
+            // Only send mediaType when:
+            // - format is HLS, since other types are handled earlier by default.js
+            // - # of audio or video tracks > 0 to avoid false positive in iOS 8.4
+            if(_levels[0].type === 'hls' && videoTracks && audioTracks && (videoTracks.length || audioTracks.length)) {
                 var mediaType = audioTracks.length && !videoTracks.length ? 'audio' : 'video';
                 _this.trigger('mediaType', {mediaType: mediaType});
             }
