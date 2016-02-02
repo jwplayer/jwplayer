@@ -54,6 +54,12 @@ define([
         return '';
     });
 
+    parser.getMediaId = function(url) {
+        var regex = /.*\/(?:manifests|videos)\/([a-zA-Z0-9]{8})[\.-].*/;
+        var mediaId = regex.exec(url);
+        return (mediaId && (mediaId.length === 2)) ? mediaId[1] : null;
+    };
+
     function containsParserErrors(childNodes) {
         return _.some(childNodes, function(node) {
             return node.nodeName === 'parsererror';
