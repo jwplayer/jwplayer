@@ -67,23 +67,6 @@ define([
             'returns a directory url ending with a forward slash "'+ scriptPath +'"');
     });
 
-    test('parser.getMediaId', function(assert) {
-        var path = parser.getMediaId(null);
-        assert.equal(path, null, 'returns null when no file name is provided');
-
-        var mediaId = parser.getMediaId('/test/with/manifests/mediaid.js');
-        assert.equal(mediaId, null, 'returns null when media is not 8 characters long');
-
-        mediaId = parser.getMediaId('http://content.jwplatform.com/manifests/xYU9MZhO.m3u8');
-        assert.equal(mediaId, 'xYU9MZhO', 'returns media id correctly for manifests');
-
-        mediaId = parser.getMediaId('https://content.jwplatform.com/videos/IMUjQRAB-injeKYZS.mp4');
-        assert.equal(mediaId, 'IMUjQRAB', 'returns media id correctly with dash');
-
-        mediaId = parser.getMediaId('http://jwpsrv.a.ssl.fastly.net/content/conversions/zWLy8Jer/videos/TwYS9seF-364765.mp4?token=0_56b131af_0x06f6f154c730a714e1707c208f6d5457fafcd496');
-        assert.equal(mediaId, 'TwYS9seF', 'returns media id correctly with very long url');
-    });
-
     test('parser.parseXML', function(assert) {
         var xml = parser.parseXML('<input>');
         assert.notOk(xml);
