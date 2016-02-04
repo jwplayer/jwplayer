@@ -44,9 +44,16 @@
     }
 }
 // This has higher specificity to overwrite jw-flag-user-inactive
-.jwplayer.jw-flag-audio-player .jw-controlbar {
-    display: table;
-    left: 0;
+.jwplayer.jw-flag-audio-player {
+    .jw-controlbar {
+        display: table;
+        left: 0;
+    }
+    &.jw-flag-user-inactive {
+        .jw-controlbar {
+            display: table;
+        }
+    }
 }
 // This has higher specificity to overwrite skins setting height
 .jwplayer.jw-flag-audio-player .jw-controlbar {
