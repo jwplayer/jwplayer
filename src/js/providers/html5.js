@@ -756,7 +756,8 @@ define([
             var _selectedTextTrackIndex = -1, i = 0;
             _activeCuePosition = -1;
             for (i; i < _videotag.textTracks.length; i++) {
-                if (_videotag.textTracks[i].mode === 'showing') {
+                if ((_videotag.textTracks[i].kind === 'subtitles' || _videotag.textTracks[i].kind === 'captions')
+                    && _videotag.textTracks[i].mode === 'showing') {
                     _selectedTextTrack = _videotag.textTracks[i];
                     break;
                 }
