@@ -1,4 +1,4 @@
-.jw-flag-audio-player {
+.jwplayer.jw-flag-audio-player {
     background-color: transparent;
 
     .jw-media {
@@ -11,25 +11,23 @@
         }
     }
 
-    &.jw-state-paused,
-    &.jw-state-complete {
-        .jw-display-icon-container{
-            display: none;
-        }
+
+    .jw-preview, // overrides 'block' from .jw-state-idle
+    .jw-display-icon-container { // overrides 'block' from .jw-flag-touch.jw-state-paused
+        display: none;
     }
 
     .jw-controlbar {
-        display: table;  // This overwrites 'none' from jw-states-idle
+        display: table;  // This overrides 'none' from jw-state-idle
+        height: auto;
+        left: 0;
         bottom: 0;
         margin: 0;
         width: 100%;
         min-width: 100%;
         opacity: 1;
 
-        .jw-icon-fullscreen {
-            display: none;
-        }
-
+        .jw-icon-fullscreen,
         .jw-icon-tooltip {
             display: none;
         }
@@ -42,21 +40,9 @@
             display : none;
         }
     }
-}
-// This has higher specificity to overwrite jw-flag-user-inactive
-.jwplayer.jw-flag-audio-player .jw-controlbar {
-    display: table;
-    left: 0;
-}
-// This has higher specificity to overwrite skins setting height
-.jwplayer.jw-flag-audio-player .jw-controlbar {
-    height: auto;
-}
-// This has higher specificity to overwrite jw-state-idle
-.jwplayer.jw-flag-audio-player .jw-preview {
-    display: none;
-}
-// This has higher specificity to overwrite .jw-flag-touch.jw-state-paused
-.jwplayer.jw-flag-audio-player .jw-display-icon-container {
-    display: none;
+    &.jw-flag-user-inactive {
+        .jw-controlbar {
+            display: table; // overrides 'none' from jw-flag-user-inactive
+        }
+    }
 }
