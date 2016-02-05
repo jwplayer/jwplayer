@@ -752,19 +752,11 @@ define([
         }
 
         function _textTrackChangeHandler() {
-            var _selectedTextTrack = null;
             var _selectedTextTrackIndex = -1, i = 0;
-            _activeCuePosition = -1;
-            for (i; i < _videotag.textTracks.length; i++) {
-                if ((_videotag.textTracks[i].kind === 'subtitles' || _videotag.textTracks[i].kind === 'captions')
-                    && _videotag.textTracks[i].mode === 'showing') {
-                    _selectedTextTrack = _videotag.textTracks[i];
-                    break;
-                }
-            }
-            if(_selectedTextTrack && _textTracks) {
-                for (i = 0; i < _textTracks.length; i++) {
-                    if (_textTracks[i].label === _selectedTextTrack.label) {
+            // if a caption/subtitle track is showing, find its index
+            if(_textTracks) {
+                for (i; i < _textTracks.length; i++) {
+                    if (_textTracks[i].mode === 'showing') {
                         _selectedTextTrackIndex = i;
                         break;
                     }
