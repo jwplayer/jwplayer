@@ -79,6 +79,9 @@ define([
                 return;
             }
             if (metadata.type === 'textdata') {
+                if (!metadata.text) {
+                    return;
+                }
                 var track = _tracksById[metadata.trackid];
                 if (!track) {
                     track = {
