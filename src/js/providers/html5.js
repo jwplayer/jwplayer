@@ -795,7 +795,7 @@ define([
             };
             var utf8ArrayToStr = function (array, startingIndex) {
                 // Based on code by Masanao Izumo <iz@onicos.co.jp>
-				// posted at http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
+                // posted at http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
                 
                 var out, i, len, c;
                 var char2, char3;
