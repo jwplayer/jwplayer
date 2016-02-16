@@ -28,6 +28,8 @@
       "define",
       "module",
       "__DEBUG__",
+      "__REPO__",
+      "__SELF_HOSTED__",
       "__BUILD_VERSION__",
       "__FLASH_VERSION__"
     ]

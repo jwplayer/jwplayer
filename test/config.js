@@ -3,6 +3,8 @@
     // This allows us to test modules without loading full player
     window.__BUILD_VERSION__ = '7.3.0';
     window.__FLASH_VERSION__ = 11.2;
+    window.__REPO__ = '';
+    window.__SELF_HOSTED__ = true;
     window.__DEBUG__ = false;
 
     var base = '';
@@ -16,6 +18,11 @@
     }
     if (!('Promise' in window)) {
         deps.push('polyfills/promise');
+    }
+    if (!('console' in window) || !('log' in window.console) ) {
+        window.console = {
+            log: function() {}
+        };
     }
 
     var callback;

@@ -79,6 +79,9 @@ define([
                 return;
             }
             if (metadata.type === 'textdata') {
+                if (!metadata.text) {
+                    return;
+                }
                 var track = _tracksById[metadata.trackid];
                 if (!track) {
                     track = {
@@ -90,14 +93,31 @@ define([
                     var captionsMenu = _captionsMenu();
                     this.setCaptionsList(captionsMenu);
                 }
-                var time = e.position || _model.get('position');
-                var cueId = '' + Math.round(time * 10) + '_' + metadata.text;
+
+                var time, cueId;
+
+                if (metadata.useDTS) {
+                    // There may not be any 608 captions when the track is first created
+                    // Need to set the source so position is determined from metadata
+                    if(!track.source) {
+                        track.source = metadata.source || 'mpegts';
+                    }
+                    time = metadata.begin;
+                    cueId = metadata.begin + '_' + metadata.text;
+                } else {
+                    time = e.position || _model.get('position');
+                    cueId = '' + Math.round(time * 10) + '_' + metadata.text;
+                }
+
                 var cue = _metaCuesByTextTime[cueId];
                 if (!cue) {
                     cue = {
                         begin: time,
                         text: metadata.text
                     };
+                    if(metadata.end) {
+                        cue.end = metadata.end;
+                    }
                     _metaCuesByTextTime[cueId] = cue;
                     track.data.push(cue);
                 }

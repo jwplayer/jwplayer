@@ -126,23 +126,29 @@ define([
     });
 
     test('updates base to cdn or script location', function(assert) {
-        var CDN_URL = 'http://ssl.p.jwpcdn.com/player/v/'+ window.__BUILD_VERSION__ +'/';
-        var CUSTOM_BASE = 'http://ssl.p.jwpcdn.com/player/v/7.0.1-beta.1/';
+        var CUSTOM_BASE = 'http://mywebsite.com/jwplayer/';
+        var apiConfig;
 
-        var x = testConfig(assert, {});
-        assert.equal(x.base, CDN_URL,
-            'Config sets base to the CDN url when no base is specified');
 
-        x = testConfig(assert, {
+        apiConfig = testConfig(assert, {});
+        if (window.__SELF_HOSTED__) {
+            assert.ok(/.+\//.test(apiConfig.base),
+                'Config sets base to the jwplayer script location in self-hosted builds');
+        } else {
+            assert.ok(/.+\//.test(apiConfig.base),
+                'Config sets base to the repo');
+        }
+
+        apiConfig = testConfig(assert, {
             base: '.'
         });
-        assert.ok(/.+\//.test(x.base) && x.base !== CDN_URL,
-            'Config replaces a base of "." with the jwplayer script location (not the CDN path)');
+        assert.ok(/.+\//.test(apiConfig.base),
+            'Config replaces a base of "." with the jwplayer script location');
 
-        x = testConfig(assert, {
+        apiConfig = testConfig(assert, {
             base: CUSTOM_BASE
         });
-        assert.equal(x.base, CUSTOM_BASE,
+        assert.equal(apiConfig.base, CUSTOM_BASE,
             'Config does not replace base when a custom value other than "." is specified');
     });
 

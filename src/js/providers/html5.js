@@ -146,7 +146,8 @@ define([
             _audioTracks = null,
             _currentTextTrackIndex = -1,
             _currentAudioTrackIndex = -1,
-            _activeCuePosition = -1;
+            _activeCuePosition = -1,
+            _visualQuality = {};
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -220,6 +221,24 @@ define([
                     position: _position,
                     duration: _duration
                 });
+
+                _checkVisualQuality();
+            }
+        }
+
+        function _checkVisualQuality() {
+            if (_visualQuality.width !== _videotag.videoWidth || _visualQuality.height !== _videotag.videoHeight) {
+                _visualQuality.width = _videotag.videoWidth;
+                _visualQuality.height = _videotag.videoHeight;
+                if (!_visualQuality.width || !_visualQuality.height) {
+                    return;
+                }
+                var visualQuality = {
+                    level: _.extend({}, _visualQuality),
+                    reason: '',
+                    mode: 'auto'
+                };
+                _this.trigger('visualQuality', visualQuality);
             }
         }
 
@@ -458,6 +477,13 @@ define([
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
             _activeCuePosition = -1;
+            _visualQuality = {
+                index: 0,
+                label: '',
+                width: 0,
+                height: 0,
+                bitrate: 0
+            };
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
@@ -726,18 +752,11 @@ define([
         }
 
         function _textTrackChangeHandler() {
-            var _selectedTextTrack = null;
             var _selectedTextTrackIndex = -1, i = 0;
-            _activeCuePosition = -1;
-            for (i; i < _videotag.textTracks.length; i++) {
-                if (_videotag.textTracks[i].mode === 'showing') {
-                    _selectedTextTrack = _videotag.textTracks[i];
-                    break;
-                }
-            }
-            if(_selectedTextTrack && _textTracks) {
-                for (i = 0; i < _textTracks.length; i++) {
-                    if (_textTracks[i].label === _selectedTextTrack.label) {
+            // if a caption/subtitle track is showing, find its index
+            if(_textTracks) {
+                for (i; i < _textTracks.length; i++) {
+                    if (_textTracks[i].mode === 'showing') {
                         _selectedTextTrackIndex = i;
                         break;
                     }
