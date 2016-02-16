@@ -793,6 +793,57 @@ define([
                 TALB: 'album',
                 TAL: 'album'
             };
+            var utf8ArrayToStr = function (array, startingIndex) {
+                // Based on code by Masanao Izumo <iz@onicos.co.jp>
+				// posted at http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
+                
+                var out, i, len, c;
+                var char2, char3;
+
+                out = '';
+                len = array.length;
+                i = startingIndex || 0;
+                while (i < len) {
+                    c = array[i++];
+                    switch (c >> 4) { 
+                      case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+                        // 0xxxxxxx
+                        out += String.fromCharCode(c);
+                        break;
+                      case 12: case 13:
+                        // 110x xxxx   10xx xxxx
+                        char2 = array[i++];
+                        out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                        break;
+                      case 14:
+                        // 1110 xxxx  10xx xxxx  10xx xxxx
+                        char2 = array[i++];
+                        char3 = array[i++];
+                        out += String.fromCharCode(((c & 0x0F) << 12) |
+                                       ((char2 & 0x3F) << 6) |
+                                       ((char3 & 0x3F) << 0));
+                        break;
+                    }
+                }
+
+                return out;
+            };
+            var utf16BigEndianArrayToStr = function (array, startingIndex) {
+                var out, i, len;
+
+                out = '';
+                len = array.length;
+                i = startingIndex || 0;
+                while (i < len) {
+                    if (array[i] === 254 && array[i+1] === 255) {
+                        // Byte order mark
+                    } else {
+                        out += String.fromCharCode((array[i] << 8) + array[i+1]);
+                    }
+                    i += 2;
+                }
+                return out;
+            };
             var id3Data = _.reduce(activeCues, function(data, cue) {
                 if (!('value' in cue)) {
                     // Cue is not in Safari's key/data format
@@ -813,15 +864,11 @@ define([
                             i++;
                         }
                         
-                        i = 20;
-                        while (i < array.length) {
-                            if (array[i] === 0) {
-                                break;
-                            }
-                            if (array[i] >= 32) {
-                                cue.value.data += String.fromCharCode(array[i]);
-                            }
-                            i++;
+                        var encoding = array[20];
+                        if (encoding === 1 || encoding === 2) {
+                            cue.value.data = utf16BigEndianArrayToStr(array, 21);
+                        } else {
+                            cue.value.data = utf8ArrayToStr(array, 21);
                         }
                     }
                 }
