@@ -19,12 +19,22 @@ define([
         return dimension + (dimension.toString().indexOf('%') > 0 ? '' : 'px');
     };
 
+    var classNameArray = function(element) {
+        return _.isString(element.className) ? element.className.split(' ') : [];
+    };
+
+    var setClassName = function(element, className) {
+        className = strings.trim(className);
+        if (element.className !== className) {
+            element.className = className;
+        }
+    };
 
     dom.classList = function (element) {
         if (element.classList) {
             return element.classList;
         }
-        return element.className.split(' ');
+        return classNameArray(element);
     };
 
     dom.hasClass = jqueryfuncs.hasClass;
@@ -32,7 +42,7 @@ define([
     dom.addClass = function (element, classes) {
         // TODO:: use _.union on the two arrays
 
-        var originalClasses = _.isString(element.className) ? element.className.split(' ') : [];
+        var originalClasses = classNameArray(element);
         var addClasses = _.isArray(classes) ? classes : classes.split(' ');
 
         _.each(addClasses, function (c) {
@@ -41,14 +51,24 @@ define([
             }
         });
 
-        element.className = strings.trim(originalClasses.join(' '));
+        setClassName(element, originalClasses.join(' '));
     };
 
     dom.removeClass = function (element, c) {
-        var originalClasses = _.isString(element.className) ? element.className.split(' ') : [];
+        var originalClasses = classNameArray(element);
         var removeClasses = _.isArray(c) ? c : c.split(' ');
 
-        element.className = strings.trim(_.difference(originalClasses, removeClasses).join(' '));
+        setClassName(element, _.difference(originalClasses, removeClasses).join(' '));
+    };
+
+    dom.replaceClass = function (element, pattern, replaceWith) {
+        var classes = (element.className || '');
+        if (pattern.test(classes)) {
+            classes = classes.replace(pattern, replaceWith);
+        } else if (replaceWith) {
+            classes += ' ' + replaceWith;
+        }
+        setClassName(element, classes);
     };
 
     dom.toggleClass = function (element, c, toggleTo) {
