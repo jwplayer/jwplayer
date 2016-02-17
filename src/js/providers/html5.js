@@ -233,11 +233,16 @@ define([
                 if (!_visualQuality.width || !_visualQuality.height) {
                     return;
                 }
+                var reason = _visualQuality.reason || 'auto';
+                delete _visualQuality.reason;
                 var visualQuality = {
                     level: _.extend({}, _visualQuality),
-                    reason: '',
-                    mode: 'auto'
+                    reason: reason,
+                    mode: _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual',
+                    bitrate: 0
                 };
+                visualQuality.level.index = _currentQuality;
+                visualQuality.level.label = _levels[_currentQuality].label;
                 _this.trigger('visualQuality', visualQuality);
             }
         }
@@ -416,6 +421,9 @@ define([
                     }
                 }
             }
+            _visualQuality = {
+                reason: 'initial choice'
+            };
             return currentQuality;
         }
 
@@ -477,13 +485,11 @@ define([
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
             _activeCuePosition = -1;
-            _visualQuality = {
-                index: 0,
-                label: '',
-                width: 0,
-                height: 0,
-                bitrate: 0
-            };
+            if(!_visualQuality.reason) {
+                _visualQuality = {
+                    reason: 'initial choice'
+                };
+            }
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
@@ -1002,6 +1008,9 @@ define([
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
+                    _visualQuality = {
+                        reason:  'manual'
+                    };
                     this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
