@@ -227,23 +227,19 @@ define([
         }
 
         function _checkVisualQuality() {
-            if (_visualQuality.width !== _videotag.videoWidth || _visualQuality.height !== _videotag.videoHeight) {
-                _visualQuality.width = _videotag.videoWidth;
-                _visualQuality.height = _videotag.videoHeight;
-                if (!_visualQuality.width || !_visualQuality.height) {
+            if (_visualQuality.level.width !== _videotag.videoWidth ||
+                _visualQuality.level.height !== _videotag.videoHeight) {
+                _visualQuality.level.width = _videotag.videoWidth;
+                _visualQuality.level.height = _videotag.videoHeight;
+                if (!_visualQuality.level.width || !_visualQuality.level.height) {
                     return;
                 }
-                var reason = _visualQuality.reason || 'auto';
-                delete _visualQuality.reason;
-                var visualQuality = {
-                    level: _.extend({}, _visualQuality),
-                    reason: reason,
-                    mode: _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual',
-                    bitrate: 0
-                };
-                visualQuality.level.index = _currentQuality;
-                visualQuality.level.label = _levels[_currentQuality].label;
-                _this.trigger('visualQuality', visualQuality);
+                _visualQuality.reason = _visualQuality.reason || 'auto';
+                _visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
+                _visualQuality.bitrate = 0;
+                _visualQuality.level.index = _currentQuality;
+                _visualQuality.level.label = _levels[_currentQuality].label;
+                _this.trigger('visualQuality', _visualQuality);
             }
         }
 
@@ -421,8 +417,10 @@ define([
                     }
                 }
             }
-            _visualQuality = {
-                reason: 'initial choice'
+            _visualQuality.reason = 'initial choice';
+            _visualQuality.level = {
+                width: 0,
+                height: 0
             };
             return currentQuality;
         }
@@ -486,8 +484,10 @@ define([
             _currentTextTrackIndex = -1;
             _activeCuePosition = -1;
             if(!_visualQuality.reason) {
-                _visualQuality = {
-                    reason: 'initial choice'
+                _visualQuality.reason = 'initial choice';
+                _visualQuality.level = {
+                    width: 0,
+                    height: 0
                 };
             }
             _canSeek = false;
@@ -1008,8 +1008,10 @@ define([
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
-                    _visualQuality = {
-                        reason:  'manual'
+                    _visualQuality.reason = 'manual';
+                    _visualQuality.level = {
+                        width: 0,
+                        height: 0
                     };
                     this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
