@@ -147,7 +147,7 @@ define([
             _currentTextTrackIndex = -1,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _visualQuality = {};
+            _visualQuality = { level: {} };
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
