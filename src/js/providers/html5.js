@@ -227,18 +227,19 @@ define([
         }
 
         function _checkVisualQuality() {
-            if (_visualQuality.level.width !== _videotag.videoWidth ||
-                _visualQuality.level.height !== _videotag.videoHeight) {
-                _visualQuality.level.width = _videotag.videoWidth;
-                _visualQuality.level.height = _videotag.videoHeight;
-                if (!_visualQuality.level.width || !_visualQuality.level.height) {
+            var level = _visualQuality.level;
+            if (level.width !== _videotag.videoWidth ||
+                level.height !== _videotag.videoHeight) {
+                level.width = _videotag.videoWidth;
+                level.height = _videotag.videoHeight;
+                if (!level.width || !level.height) {
                     return;
                 }
                 _visualQuality.reason = _visualQuality.reason || 'auto';
                 _visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
                 _visualQuality.bitrate = 0;
-                _visualQuality.level.index = _currentQuality;
-                _visualQuality.level.label = _levels[_currentQuality].label;
+                level.index = _currentQuality;
+                level.label = _levels[_currentQuality].label;
                 _this.trigger('visualQuality', _visualQuality);
             }
         }
@@ -606,6 +607,7 @@ define([
             _source = _levels[_currentQuality];
             _position = item.starttime || 0;
             _duration = item.duration || 0;
+            _visualQuality.reason = '';
             _setVideotagSource(item);
         };
 
