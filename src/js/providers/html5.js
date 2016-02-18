@@ -147,7 +147,7 @@ define([
             _currentTextTrackIndex = -1,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _visualQuality = {};
+            _visualQuality = { level: {} };
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -227,18 +227,20 @@ define([
         }
 
         function _checkVisualQuality() {
-            if (_visualQuality.width !== _videotag.videoWidth || _visualQuality.height !== _videotag.videoHeight) {
-                _visualQuality.width = _videotag.videoWidth;
-                _visualQuality.height = _videotag.videoHeight;
-                if (!_visualQuality.width || !_visualQuality.height) {
+            var level = _visualQuality.level;
+            if (level.width !== _videotag.videoWidth ||
+                level.height !== _videotag.videoHeight) {
+                level.width = _videotag.videoWidth;
+                level.height = _videotag.videoHeight;
+                if (!level.width || !level.height) {
                     return;
                 }
-                var visualQuality = {
-                    level: _.extend({}, _visualQuality),
-                    reason: '',
-                    mode: 'auto'
-                };
-                _this.trigger('visualQuality', visualQuality);
+                _visualQuality.reason = _visualQuality.reason || 'auto';
+                _visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
+                _visualQuality.bitrate = 0;
+                level.index = _currentQuality;
+                level.label = _levels[_currentQuality].label;
+                _this.trigger('visualQuality', _visualQuality);
             }
         }
 
@@ -416,6 +418,11 @@ define([
                     }
                 }
             }
+            _visualQuality.reason = 'initial choice';
+            _visualQuality.level = {
+                width: 0,
+                height: 0
+            };
             return currentQuality;
         }
 
@@ -477,13 +484,13 @@ define([
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
             _activeCuePosition = -1;
-            _visualQuality = {
-                index: 0,
-                label: '',
-                width: 0,
-                height: 0,
-                bitrate: 0
-            };
+            if(!_visualQuality.reason) {
+                _visualQuality.reason = 'initial choice';
+                _visualQuality.level = {
+                    width: 0,
+                    height: 0
+                };
+            }
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(_source);
@@ -600,6 +607,7 @@ define([
             _source = _levels[_currentQuality];
             _position = item.starttime || 0;
             _duration = item.duration || 0;
+            _visualQuality.reason = '';
             _setVideotagSource(item);
         };
 
@@ -1002,6 +1010,11 @@ define([
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
+                    _visualQuality.reason = 'manual';
+                    _visualQuality.level = {
+                        width: 0,
+                        height: 0
+                    };
                     this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
