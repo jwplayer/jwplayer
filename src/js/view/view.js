@@ -52,6 +52,7 @@ define([
             _showing = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
+            _previewDisplayStateTimeout = -1,
             _currentState,
             _originalContainer,
 
@@ -233,13 +234,8 @@ define([
         }
 
 
-        this.onChangeSkin = function(model, newSkin, oldSkin) {
-            if (oldSkin) {
-                utils.removeClass(_playerElement, 'jw-skin-'+oldSkin);
-            }
-            if (newSkin) {
-                utils.addClass(_playerElement, 'jw-skin-'+newSkin);
-            }
+        this.onChangeSkin = function(model, newSkin) {
+            utils.replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-'+newSkin) : '');
         };
 
 
@@ -428,11 +424,8 @@ define([
             utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
         }
 
-        function _onStretchChange(model, newVal, oldVal) {
-            if(oldVal){
-                utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
-            }
-            utils.addClass(_playerElement, 'jw-stretch-' + newVal);
+        function _onStretchChange(model, newVal) {
+            utils.replaceClass(_playerElement, /jw-stretch-\S+/, 'jw-stretch-' + newVal);
         }
 
         function _onCompactUIChange(model, newVal) {
@@ -812,7 +805,6 @@ define([
         }
 
         function _toggleDOMFullscreen(playerElement, fullscreenState) {
-            utils.removeClass(playerElement, 'jw-flag-fullscreen');
             if (fullscreenState) {
                 utils.addClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
@@ -822,6 +814,7 @@ define([
                 // On going fullscreen we want the control bar to fade after a few seconds
                 _userActivity();
             } else {
+                utils.removeClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
                     'overflow-y': ''
                 });
@@ -894,11 +887,20 @@ define([
             return false;
         }
 
+        function _updateStateClass() {
+            utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _currentState);
+        }
 
         function _stateHandler(model, state) {
-            utils.removeClass(_playerElement, 'jw-state-' + _currentState);
-            utils.addClass(_playerElement, 'jw-state-' + state);
             _currentState = state;
+
+            clearTimeout(_previewDisplayStateTimeout);
+            if (state === states.COMPLETE || state === states.IDLE) {
+                _previewDisplayStateTimeout = setTimeout(_updateStateClass, 100);
+            } else {
+                _updateStateClass();
+            }
+
             // cast.display
             if (_isCasting()) {
                 // TODO: needs to be done in the provider.setVisibility
