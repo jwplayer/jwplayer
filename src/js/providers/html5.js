@@ -241,6 +241,7 @@ define([
                 level.index = _currentQuality;
                 level.label = _levels[_currentQuality].label;
                 _this.trigger('visualQuality', _visualQuality);
+                _visualQuality.reason = '';
             }
         }
 
