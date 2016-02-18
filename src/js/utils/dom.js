@@ -34,6 +34,7 @@ define([
         if (element.classList) {
             return element.classList;
         }
+        /* ie9 does not support classList http://caniuse.com/#search=classList */
         return classNameArray(element);
     };
 
