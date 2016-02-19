@@ -56,8 +56,8 @@ define([
                     var level = levels[i];
                     if (level.bitrate) {
                         // get label with nearest rate match
-                        var sourceKBps = Math.round(level.bitrate / 1024);
-                        level.label = _getNearestCustomLabel(sourceKBps);
+                        var sourceKbps = Math.round(level.bitrate / 1000);
+                        level.label = _getNearestCustomLabel(sourceKbps);
                     }
                 }
             }
