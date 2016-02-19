@@ -1089,7 +1089,7 @@ define([
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
-                    _visualQuality.reason = 'manual';
+                    _visualQuality.reason = 'api';
                     _visualQuality.level = {
                         width: 0,
                         height: 0
