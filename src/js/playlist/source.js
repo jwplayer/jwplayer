@@ -44,7 +44,7 @@ define([
         }
 
         // normalize types
-        if (_source.type === 'm3u8') {
+        if (_source.type === 'm3u8' || _source.type === 'vnd.apple.mpegurl') {
             _source.type = 'hls';
         }
         if (_source.type === 'smil') {
