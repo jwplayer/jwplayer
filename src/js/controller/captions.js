@@ -16,7 +16,9 @@ define([
 
         // Listen for provider subtitle tracks
         //   ignoring provider "subtitlesTrackChanged" since index should be managed here
-        _model.mediaController.on('subtitlesTracks', function(e) {
+        _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
+
+        function _subtitlesTracksHandler(e) {
             if(! e.tracks.length) {
                 return;
             }
@@ -37,7 +39,7 @@ define([
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
-        }, this);
+        }
 
         // Append data to subtitle tracks
         _model.mediaController.on('subtitlesTrackData', function(e) {
@@ -46,6 +48,7 @@ define([
                 // Player expects that tracks were received in 'subtitlesTracks' event
                 return;
             }
+
             track.source = e.source;
             var cues = e.captions || [];
             var sort = false;
@@ -68,7 +71,8 @@ define([
         // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
         _model.mediaController.on('meta', _metaHandler, this);
 
-        var _tracks = [],
+        var _item = {},
+            _tracks = [],
             _tracksById = {},
             _metaCuesByTextTime = {},
             _unknownCount = 0;
@@ -129,6 +133,7 @@ define([
 
         /** Listen to playlist item updates. **/
         function _itemHandler(model, item) {
+            _item = item;
             _tracks = [];
             _tracksById = {};
             _metaCuesByTextTime = {};
@@ -136,21 +141,29 @@ define([
 
             // meta event listener may have been turned off in subtitlesTracks event
             _model.mediaController.off('meta', _metaHandler);
-            _model.mediaController.on('meta', _metaHandler, this);
+            _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
-            var tracks = item.tracks,
-                track, kind, i;
-            for (i = 0; i < tracks.length; i++) {
-                track = tracks[i];
-                kind = track.kind.toLowerCase();
-                if (kind === 'captions' || kind === 'subtitles') {
-                    if (track.file) {
-                        _addTrack(track);
-                        _load(track);
-                    } else if (track.data) {
-                        _addTrack(track);
+            if (!utils.isIOS()) {
+                var tracks = item.tracks,
+                    track, kind, i;
+                for (i = 0; i < tracks.length; i++) {
+                    track = tracks[i];
+                    kind = track.kind.toLowerCase();
+                    if (kind === 'captions' || kind === 'subtitles') {
+                        if (track.file) {
+                            _addTrack(track);
+                            _load(track);
+                        } else if (track.data) {
+                            _addTrack(track);
+                        }
                     }
                 }
+            }
+
+            // only listen for other captions if there are no side loaded captions
+            if (_tracks.length === 0) {
+                _model.mediaController.on('meta', _metaHandler, this);
+                _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
             }
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);

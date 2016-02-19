@@ -432,7 +432,7 @@ define([
             return (_isMobile || _isSafari) && _videotag.ended;
         }
 
-        function _completeLoad(startTime, duration) {
+        function _completeLoad(startTime, duration, item) {
 
             _source = _levels[_currentQuality];
 
@@ -445,7 +445,7 @@ define([
             var sourceChanged = (_videotag.src !== sourceElement.src);
             if (sourceChanged || _forceVideoLoad()) {
                 _duration = duration;
-                _setVideotagSource();
+                _setVideotagSource(item);
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
@@ -584,10 +584,10 @@ define([
         this.destroy = function() {
              _removeListeners(_mediaEvents, _videotag);
             if (_videotag.audioTracks) {
-                _videotag.audioTracks.onchange = null;
+                _videotag.audioTracks.removeEventListener('change', _audioTrackChangeHandler);
             }
             if (_videotag.textTracks) {
-                _videotag.textTracks.onchange = null;
+                _videotag.textTracks.removeEventListener('change', _textTrackChangeHandler);
             }
             this.remove();
             this.off();
@@ -626,7 +626,7 @@ define([
                 // don't change state on mobile before user initiates playback
                 _this.setState(states.LOADING);
             }
-            _completeLoad(item.starttime || 0, item.duration || 0);
+            _completeLoad(item.starttime || 0, item.duration || 0, item);
         };
 
         this.play = function() {
@@ -1155,7 +1155,7 @@ define([
                     return _track;
                 });
             }
-            tracks.onchange = _audioTrackChangeHandler;
+            tracks.addEventListener('change', _audioTrackChangeHandler);
             if (_audioTracks) {
                 _this.trigger('audioTracks', { currentTrack: _currentAudioTrackIndex, tracks: _audioTracks });
             }
@@ -1208,7 +1208,7 @@ define([
                     }
                 }
             }
-            tracks.onchange = _textTrackChangeHandler;
+            tracks.addEventListener('change', _textTrackChangeHandler);
             if (_textTracks && _textTracks.length) {
                 _this.trigger('subtitlesTracks', { tracks: _textTracks });
             }
