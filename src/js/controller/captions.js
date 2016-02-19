@@ -132,7 +132,7 @@ define([
         }
 
         /** Listen to playlist item updates. **/
-        function _itemHandler(model, item) {
+        function _itemHandler(item) {
             _item = item;
             _tracks = [];
             _tracksById = {};
@@ -143,7 +143,11 @@ define([
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
-            if (!utils.isIOS()) {
+            _model.on('itemReady', _itemReadyHandler, this);
+        }
+
+        function _itemReadyHandler(item) {
+            if (_model.get('provider').name === 'flash') {
                 var tracks = item.tracks,
                     track, kind, i;
                 for (i = 0; i < tracks.length; i++) {
