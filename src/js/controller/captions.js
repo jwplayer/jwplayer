@@ -139,14 +139,13 @@ define([
             _metaCuesByTextTime = {};
             _unknownCount = 0;
 
-            // meta event listener may have been turned off in subtitlesTracks event
-            _model.mediaController.off('meta', _metaHandler);
-            _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
-
             _model.on('itemReady', _itemReadyHandler, this);
         }
 
         function _itemReadyHandler(item) {
+            _model.mediaController.off('meta', _metaHandler);
+            _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
+
             if (_model.get('provider').name === 'flash') {
                 var tracks = item.tracks,
                     track, kind, i;
@@ -165,7 +164,7 @@ define([
             }
 
             // only listen for other captions if there are no side loaded captions
-            if (_tracks.length === 0) {
+            if (!_tracks.length) {
                 _model.mediaController.on('meta', _metaHandler, this);
                 _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
             }
