@@ -480,6 +480,10 @@ define([
         }
 
         function _setVideotagSource(item) {
+            if(!item) {
+                return;
+            }
+
             _textTracks = null;
             _audioTracks = null;
             _currentAudioTrackIndex = -1;
@@ -500,10 +504,7 @@ define([
                 _videotag.setAttribute('preload', _source.preload);
             }
 
-            // if playlist item contains .vtt tracks, load them
-            if (item) {
-                _setupSideloadedTracks(item.tracks);
-            }
+            _setupSideloadedTracks(item.tracks);
         }
 
         function _clearVideotagSource() {

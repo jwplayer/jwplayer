@@ -14,6 +14,9 @@ define([
         // Listen for captions menu index changes from the view
         _model.on('change:captionsIndex', _captionsIndexHandler, this);
 
+        // Listen for item ready to determine which provider is in use
+        _model.on('itemReady', _itemReadyHandler, this);
+
         // Listen for provider subtitle tracks
         //   ignoring provider "subtitlesTrackChanged" since index should be managed here
         _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
@@ -138,8 +141,6 @@ define([
             _tracksById = {};
             _metaCuesByTextTime = {};
             _unknownCount = 0;
-
-            _model.on('itemReady', _itemReadyHandler, this);
         }
 
         function _itemReadyHandler(item) {
