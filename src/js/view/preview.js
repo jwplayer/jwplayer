@@ -27,7 +27,7 @@ define([
             this.setImage(null);
             model.off('change:state', null, this);
             model.on('change:state', function(model, state) {
-                if (state === 'complete' || state === 'idle') {
+                if (state === 'complete' || state === 'idle' || state === 'error') {
                     this.setImage(playlistItem.image);
                 }
             }, this);
