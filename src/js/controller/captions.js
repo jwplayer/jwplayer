@@ -147,7 +147,7 @@ define([
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
-            if (_model.get('provider').name === 'flash') {
+            if (_model.get('provider').name !== 'html5') {
                 var tracks = item.tracks,
                     track, kind, i;
                 for (i = 0; i < tracks.length; i++) {
