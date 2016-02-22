@@ -33,6 +33,25 @@ define([
         });
     }
 
+    function _addTracksListener(tracks, eventType, handler) {
+        if ('addEventListener' in tracks) {
+            tracks.addEventListener(eventType, handler);
+        } else {
+            tracks['on' + eventType] = handler;
+        }
+    }
+
+    function _removeTracksListener(tracks, eventType, handler) {
+        if (!tracks) {
+            return;
+        }
+        if ('removeEventListener' in tracks) {
+            tracks.removeEventListener(eventType, handler);
+        } else {
+            tracks['on' + eventType] = null;
+        }
+    }
+
     function _useAndroidHLS(source) {
         if (source.type === 'hls') {
             //when androidhls is not set to false, allow HLS playback on Android 4.1 and up
@@ -583,12 +602,8 @@ define([
 
         this.destroy = function() {
              _removeListeners(_mediaEvents, _videotag);
-            if (_videotag.audioTracks) {
-                _videotag.audioTracks.removeEventListener('change', _audioTrackChangeHandler);
-            }
-            if (_videotag.textTracks) {
-                _videotag.textTracks.removeEventListener('change', _textTrackChangeHandler);
-            }
+            _removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
+            _removeTracksListener(_videotag.textTracks, 'change', _textTrackChangeHandler);
             this.remove();
             this.off();
         };
@@ -1155,7 +1170,7 @@ define([
                     return _track;
                 });
             }
-            tracks.addEventListener('change', _audioTrackChangeHandler);
+            _addTracksListener(tracks, 'change', _audioTrackChangeHandler);
             if (_audioTracks) {
                 _this.trigger('audioTracks', { currentTrack: _currentAudioTrackIndex, tracks: _audioTracks });
             }
@@ -1208,7 +1223,7 @@ define([
                     }
                 }
             }
-            tracks.addEventListener('change', _textTrackChangeHandler);
+            _addTracksListener(tracks, 'change', _textTrackChangeHandler);
             if (_textTracks && _textTracks.length) {
                 _this.trigger('subtitlesTracks', { tracks: _textTracks });
             }
