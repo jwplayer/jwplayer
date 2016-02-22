@@ -135,7 +135,7 @@ define([
         }
 
         /** Listen to playlist item updates. **/
-        function _itemHandler(item) {
+        function _itemHandler(model, item) {
             _item = item;
             _tracks = [];
             _tracksById = {};
