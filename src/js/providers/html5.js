@@ -948,6 +948,7 @@ define([
          */
         this.detachMedia = function() {
             clearTimeout(_playbackTimeout);
+            disableTextTrack();
             _attached = false;
             return _videotag;
         };
@@ -1269,6 +1270,12 @@ define([
                     mediaType = 'audio';
                 }
                 _this.trigger('mediaType', {mediaType: mediaType});
+            }
+        }
+
+        function disableTextTrack() {
+            if(_textTracks && _textTracks[_currentTextTrackIndex]) {
+                _textTracks[_currentTextTrackIndex].mode = 'disabled';
             }
         }
     }
