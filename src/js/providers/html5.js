@@ -480,10 +480,6 @@ define([
         }
 
         function _setVideotagSource(item) {
-            if(!item) {
-                return;
-            }
-
             _textTracks = null;
             _audioTracks = null;
             _currentAudioTrackIndex = -1;
