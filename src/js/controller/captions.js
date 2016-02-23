@@ -14,6 +14,9 @@ define([
         // Listen for captions menu index changes from the view
         _model.on('change:captionsIndex', _captionsIndexHandler, this);
 
+        // Listen for item ready to determine which provider is in use
+        _model.on('itemReady', _itemReadyHandler, this);
+
         // Listen for provider subtitle tracks
         //   ignoring provider "subtitlesTrackChanged" since index should be managed here
         _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
@@ -138,12 +141,13 @@ define([
             _tracksById = {};
             _metaCuesByTextTime = {};
             _unknownCount = 0;
+        }
 
-            // meta event listener may have been turned off in subtitlesTracks event
+        function _itemReadyHandler(item) {
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
-            if (!utils.isIOS()) {
+            if (_model.get('provider').name !== 'html5') {
                 var tracks = item.tracks,
                     track, kind, i;
                 for (i = 0; i < tracks.length; i++) {
@@ -161,7 +165,7 @@ define([
             }
 
             // only listen for other captions if there are no side loaded captions
-            if (_tracks.length === 0) {
+            if (!_tracks.length) {
                 _model.mediaController.on('meta', _metaHandler, this);
                 _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
             }

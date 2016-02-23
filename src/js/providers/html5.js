@@ -519,10 +519,7 @@ define([
                 _videotag.setAttribute('preload', _source.preload);
             }
 
-            // if playlist item contains .vtt tracks, load them
-            if (utils.isIOS() && item) {
-                _setupSideloadedTracks(item.tracks);
-            }
+            _setupSideloadedTracks(item.tracks);
         }
 
         function _clearVideotagSource() {
