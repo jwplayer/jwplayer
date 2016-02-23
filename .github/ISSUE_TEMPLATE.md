@@ -12,7 +12,7 @@
 2.
 3.
 
-### Environement
+### Environment
 
 - *hardware | device*
 - *operating system | version*
