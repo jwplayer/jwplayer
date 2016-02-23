@@ -18,9 +18,8 @@
 - *operating system | version*
 - *JW Player version | url*
 
-------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 
-This template is provided as a guide to filing bugs and feature requests.
-Please replace all text *in italics* with details describing your issue.
-When submitting a feature request, "Steps to reproduce" can be substituted
-with a user story or list of acceptance criteria.
+This template is provided as a guide to filing bugs and feature requests. Please replace 
+all text *in italics* with details describing your issue. When submitting a feature request, 
+"Steps to reproduce" can be substituted with a user story or list of acceptance criteria.
