@@ -147,19 +147,27 @@ define([
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
-            if (_model.get('provider').name !== 'html5') {
-                var tracks = item.tracks,
-                    track, kind, i;
-                for (i = 0; i < tracks.length; i++) {
-                    track = tracks[i];
-                    kind = track.kind.toLowerCase();
-                    if (kind === 'captions' || kind === 'subtitles') {
-                        if (track.file) {
-                            _addTrack(track);
-                            _load(track);
-                        } else if (track.data) {
-                            _addTrack(track);
-                        }
+            var tracks = item.tracks,
+                track, kind, isVTT, i;
+            var isHTML5 = _model.get('provider').name === 'html5';
+
+            for (i = 0; i < tracks.length; i++) {
+                track = tracks[i];
+                isVTT = track.file && (/vtt/i.test(track.file));
+
+                //let the browser handle rendering sideloaded VTT tracks in the HTML5 provider
+                if(isHTML5 && isVTT) {
+                    continue;
+                }
+
+                kind = track.kind.toLowerCase();
+
+                if (kind === 'captions' || kind === 'subtitles') {
+                    if (track.file) {
+                        _addTrack(track);
+                        _load(track);
+                    } else if (track.data) {
+                        _addTrack(track);
                     }
                 }
             }
