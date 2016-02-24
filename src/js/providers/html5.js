@@ -448,7 +448,7 @@ define([
 
         function _forceVideoLoad() {
             // These browsers will not replay videos without reloading them
-            return (_isMobile || _isSafari) && _videotag.ended;
+            return _isMobile || _isSafari;
         }
 
         function _completeLoad(startTime, duration, item) {
