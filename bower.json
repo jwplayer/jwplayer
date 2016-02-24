@@ -15,5 +15,8 @@
     "require-less": "~0.1.5",
     "jquery": "~2.1.3",
     "bind-polyfill": "~1.0.0"
-  }
+  },
+  "main": [
+    "./src/js/jwplayer.js"
+  ]
 }
