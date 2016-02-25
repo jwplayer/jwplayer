@@ -550,8 +550,13 @@ define([
             for (var i = 0; i < tracks.length; i++) {
                 // only add .vtt tracks
                 if(tracks[i].file.indexOf('.vtt') === -1) {
-                    break;
+                    continue;
                 }
+                // only add valid kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
+                if (!/subtitles|captions|descriptions|chapters|metadata/.test(tracks[i].kind)) {
+                    continue;
+                }
+                
                 var track = document.createElement('track');
                 track.src = tracks[i].file;
                 track.kind = tracks[i].kind;
