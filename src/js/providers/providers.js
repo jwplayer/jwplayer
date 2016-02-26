@@ -9,8 +9,12 @@ define([
         this.providers = ProvidersSupported.slice();
         this.config = config || {};
 
+        // Remove the flash provider, and add it in front of the html5 provider
         if (this.config.primary === 'flash') {
-            swap(this.providers, 'html5', 'flash');
+            var flashIdx = getIndex(this.providers, 'flash');
+            var flashProvider = this.providers.splice(flashIdx, 1)[0];
+            var html5Idx = getIndex(this.providers, 'html5');
+            this.providers.splice(html5Idx, 0, flashProvider);
         }
     }
 
@@ -53,15 +57,6 @@ define([
             }
         }
         return -1;
-    }
-
-    function swap(arr, left, right) {
-        var l = getIndex(arr, left);
-        var r = getIndex(arr, right);
-
-        var temp = arr[l];
-        arr[l] = arr[r];
-        arr[r] = temp;
     }
 
     return Providers;
