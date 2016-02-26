@@ -153,7 +153,7 @@ define([
 
             for (i = 0; i < tracks.length; i++) {
                 track = tracks[i];
-                isVTT = track.file && (/\.vtt$/i.test(track.file));
+                isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
 
                 //let the browser handle rendering sideloaded VTT tracks in the HTML5 provider
                 if(isHTML5 && isVTT) {
