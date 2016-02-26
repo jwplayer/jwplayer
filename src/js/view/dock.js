@@ -1,5 +1,5 @@
 define([
-    'handlebars-loader!templates/dock.html',
+    'templates/dock.html',
     'utils/helpers',
     'utils/underscore',
     'utils/ui'

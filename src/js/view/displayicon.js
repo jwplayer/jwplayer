@@ -2,7 +2,7 @@ define([
     'utils/helpers',
     'utils/backbone.events',
     'utils/ui',
-    'handlebars-loader!templates/displayicon.html',
+    'templates/displayicon.html',
     'utils/underscore'
 ], function(utils, Events, UI, Template, _) {
 

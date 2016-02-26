@@ -200,6 +200,10 @@ module.exports = function(grunt) {
                                     '!less?compress'
                         },
                         {
+                            test: /\.html$/,
+                            loader: 'handlebars-loader'
+                        },
+                        {
                             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
                             loader: 'url?limit=10000&mimetype=application/font-woff'
                         },
