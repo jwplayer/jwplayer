@@ -3,7 +3,7 @@ define([
     'utils/underscore',
     'view/components/tooltip',
     'utils/ui',
-    'handlebars-loader!templates/playlist.html'
+    'templates/playlist.html'
 ], function(utils, _, Tooltip, UI, PlaylistTemplate) {
 
     var Playlist = Tooltip.extend({

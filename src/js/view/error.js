@@ -1,5 +1,5 @@
 define([
-    'handlebars-loader!templates/error.html'
+    'templates/error.html'
 ], function(error) {
 
     function make(id, skin, title, body) {

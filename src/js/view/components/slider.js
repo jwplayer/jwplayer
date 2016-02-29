@@ -1,7 +1,7 @@
 define([
     'utils/extendable',
     'utils/ui',
-    'handlebars-loader!templates/slider.html',
+    'templates/slider.html',
     'utils/helpers'
 ], function(Extendable, UI, SliderTemplate, utils) {
 

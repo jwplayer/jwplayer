@@ -14,7 +14,7 @@ define([
     'view/rightclick',
     'view/title',
     'utils/underscore',
-    'handlebars-loader!templates/player.html'
+    'templates/player.html'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, _, playerTemplate) {
