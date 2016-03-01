@@ -52,9 +52,10 @@
     "webpack": "^1.10.1"
   },
   "scripts": {
-    "postinstall": "bower install"
+    "postinstall": "bower install",
+    "postupdate": "bower update"
   },
   "engines": {
-    "node": ">=0.10.20"
+    "node": ">=4.3.1"
   }
 }
