@@ -364,14 +364,14 @@ module.exports = function(grunt) {
         },
 
         clean: {
+            options: {
+                force: true
+            },
             dist: {
-                files: [{
-                    dot: true,
-                    src: [
-                        'bin-debug',
-                        'bin-release'
-                    ]
-                }]
+                src: [
+                    'bin-debug/',
+                    'bin-release/'
+                ]
             }
         }
     });
