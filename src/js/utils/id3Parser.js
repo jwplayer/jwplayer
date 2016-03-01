@@ -123,15 +123,19 @@ define([
                     if (infoDelimiterPosition > 0) {
                         var info = id3Parser.utf8ArrayToStr(
                             array.subarray(startPos, startPos += infoDelimiterPosition), 0);
-                        if (cue.value.key === 'PRIV' && info === 'com.apple.streaming.transportStreamTimestamp') {
-                            var pts_33_bit =  id3Parser.syncSafeInt(
-                                    array.subarray(startPos, startPos += 4)) & 0x00000001;
-                            var transportStreamTimestamp =  id3Parser.syncSafeInt(
-                                array.subarray(startPos, startPos += 4));
-                            if (pts_33_bit) {
-                                transportStreamTimestamp += 0x100000000;
+                        if (cue.value.key === 'PRIV') {
+                            if (info === 'com.apple.streaming.transportStreamTimestamp') {
+                                var pts_33_bit =  id3Parser.syncSafeInt(
+                                        array.subarray(startPos, startPos += 4)) & 0x00000001;
+                                var transportStreamTimestamp =  id3Parser.syncSafeInt(
+                                    array.subarray(startPos, startPos += 4));
+                                if (pts_33_bit) {
+                                    transportStreamTimestamp += 0x100000000;
+                                }
+                                cue.value.data = transportStreamTimestamp;
+                            } else {
+                                cue.value.data = id3Parser.utf8ArrayToStr(array, startPos + 1);
                             }
-                            cue.value.data = transportStreamTimestamp;
                             cue.value.info = info;
                         } else {
                             cue.value.data = id3Parser.utf8ArrayToStr(array, startPos+1);
