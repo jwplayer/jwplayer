@@ -138,6 +138,7 @@ define([
                             }
                             cue.value.info = info;
                         } else {
+                            cue.value.info = info;
                             cue.value.data = id3Parser.utf8ArrayToStr(array, startPos+1);
                         }
                     } else{
