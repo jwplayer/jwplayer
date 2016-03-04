@@ -27,7 +27,6 @@ define([
             };
         });
 
-
         var passthroughs = [
             'getAudioTracks',
             'getCaptionsList',
@@ -89,5 +88,8 @@ define([
                 return _api;
             };
         });
+
+        // This is here because it binds to the methods declared above
+        _api.getPlaylistIndex = _api.getItem;
     };
 });
