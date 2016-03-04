@@ -274,8 +274,8 @@ define([
             assert.strictEqual( api.getPlaylistIndex(), 0,
                 'getPlaylistIndex aliases getItem after setup');
 
-            assert.strictEqual( api.callInternal('jwSetCues'), undefined,
-                'deprecated method callInternal is added after setup');
+            assert.strictEqual( api.callInternal, undefined,
+                'deprecated method callInternal has been removed');
 
             assert.ok(typeof api.createInstream() === 'object',
                 'createInstream returns an object after setup');

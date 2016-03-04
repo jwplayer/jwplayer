@@ -1,6 +1,5 @@
 define([
     'api/config',
-    'api/api-deprecate',
     'controller/instream-adapter',
     'utils/underscore',
     'controller/Setup',
@@ -15,7 +14,7 @@ define([
     'events/states',
     'events/events',
     'view/error'
-], function(Config, deprecateInit, InstreamAdapter, _, Setup, Captions,
+], function(Config, InstreamAdapter, _, Setup, Captions,
             Model, Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queue(command) {
@@ -721,9 +720,6 @@ define([
                     _this._instreamAdapter.destroy();
                 }
             };
-
-            // This is here because it binds to the methods declared above
-            deprecateInit(_api, this);
 
             _setup.start();
         },
