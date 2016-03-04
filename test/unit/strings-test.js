@@ -17,8 +17,11 @@ define([
         var ext = strings.extension('invalid');
         assert.equal(ext, undefined, 'invalid path extension returns undefined');
 
-        ext = strings.extension('(format=m3u8-');
-        assert.equal(ext, 'm3u8', 'azureFile extension');
+        ext = strings.extension('Manifest(format=m3u8-aapl-v3)"');
+        assert.equal(ext, 'm3u8', 'Azure file extension master');
+
+        ext = strings.extension('/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio)');
+        assert.equal(ext, 'm3u8', 'Azure file extension playlist');
 
         ext = strings.extension(null);
         assert.equal(ext, '', 'no path extension');
