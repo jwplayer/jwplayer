@@ -57,9 +57,9 @@ define([
             return azureFormat;
         }
 
-        path = path.substring(path.lastIndexOf('/') + 1, path.length).split('?')[0].split('#')[0];
+        path = path.substring(path.lastIndexOf('.')).split('?')[0].split('#')[0];
         if (path.lastIndexOf('.') > -1) {
-            return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
+          return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
         }
     };
 
