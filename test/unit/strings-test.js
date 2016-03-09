@@ -28,6 +28,10 @@ define([
 
         ext = strings.extension('hello.jpg');
         assert.equal(ext,'jpg', 'extension correctly received');
+
+        // akamai url's
+        ext = strings.extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345')
+        assert.equal(ext, 'm3u8', 'Akamai Tokenized Url\'s')
     });
 
     test('strings.seconds', function(assert) {
