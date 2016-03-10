@@ -15,7 +15,10 @@ define([
 
     test('strings.extension', function(assert) {
         var ext = strings.extension('invalid');
-        assert.equal(ext, undefined, 'invalid path extension returns undefined');
+        assert.strictEqual(ext, undefined, 'invalid path extension returns undefined');
+
+        ext = strings.extension(null);
+        assert.strictEqual(ext, '', 'null path extension');
 
         ext = strings.extension('Manifest(format=m3u8-aapl-v3)"');
         assert.equal(ext, 'm3u8', 'Azure file extension master');
@@ -23,11 +26,18 @@ define([
         ext = strings.extension('/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio)');
         assert.equal(ext, 'm3u8', 'Azure file extension playlist');
 
-        ext = strings.extension(null);
-        assert.equal(ext, '', 'no path extension');
-
         ext = strings.extension('hello.jpg');
         assert.equal(ext,'jpg', 'extension correctly received');
+
+        // akamai url's
+        ext = strings.extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345')
+        assert.equal(ext, 'm3u8', 'Akamai Tokenized Url\'s');
+
+        ext = strings.extension('https://domain.net/master.m3u8?dot=.');
+        assert.equal(ext, 'm3u8', 'Dot in the search param');
+
+        ext = strings.extension('https://domain.net/master.file.m3u8?dot=.#id.1');
+        assert.equal(ext, 'm3u8', 'Dot in the search and hash portions of the url');
     });
 
     test('strings.seconds', function(assert) {
