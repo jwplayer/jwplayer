@@ -1203,6 +1203,14 @@ define([
     F.prototype = DefaultProvider;
     VideoProvider.prototype = new F();
 
+    VideoProvider.getName = function() {
+        return { name : 'html5' };
+    };
+
+    VideoProvider.register = function(jwplayer) {
+        jwplayer.api.registerProvider(VideoProvider);
+    };
+
     return VideoProvider;
 
 });
