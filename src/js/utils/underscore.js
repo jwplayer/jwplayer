@@ -263,6 +263,11 @@ define([], function() {
         return _.indexOf(obj, target) >= 0;
     };
 
+    // Convenience version of a common use case of `map`: fetching a property.
+    _.pluck = function(obj, key) {
+        return _.map(obj, _.property(key));
+    };
+
     // Convenience version of a common use case of `filter`: selecting only objects
     // containing specific `key:value` pairs.
     _.where = function (obj, attrs) {
