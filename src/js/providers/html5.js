@@ -150,13 +150,13 @@ define([
             _levels,
             // Current quality level index
             _currentQuality = -1,
-
             // android hls doesn't update currentTime so we want to skip the stall check since it always fails
             _isAndroidHLS = null,
-
+            // mobile sdk configuration
+            _isSDK = !!_playerConfig.sdkplatform,
             // post roll support
             _beforecompleted = false,
-
+            // webkit fullscreen media element state
             _fullscreenState = false,
             // MediaElement Tracks
             _textTracks = null,
@@ -551,10 +551,12 @@ define([
         }
 
         function _setupSideloadedTracks(tracks) {
+            if (_isSDK) {
+                return;
+            }
             if (tracks !== _itemTracks) {
                 disableTextTrack();
                 dom.emptyElement(_videotag);
-                _currentQuality = -1;
                 _itemTracks = tracks;
                 _addTracksToVideoTag(tracks);
             }

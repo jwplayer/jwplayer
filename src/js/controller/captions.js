@@ -74,7 +74,8 @@ define([
         // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
         _model.mediaController.on('meta', _metaHandler, this);
 
-        var _item = {},
+        var _isSDK = !!_model.get('sdkplatform'),
+            _item = {},
             _tracks = [],
             _tracksById = {},
             _metaCuesByTextTime = {},
@@ -156,7 +157,7 @@ define([
                 isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
 
                 //let the browser handle rendering sideloaded VTT tracks in the HTML5 provider
-                if(isHTML5 && isVTT) {
+                if(isHTML5 && isVTT && !_isSDK) {
                     continue;
                 }
 
