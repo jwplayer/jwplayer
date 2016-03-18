@@ -143,19 +143,22 @@ define([
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
-            if (!utils.isIOS()) {
-                var tracks = item.tracks,
-                    track, kind, i;
-                for (i = 0; i < tracks.length; i++) {
-                    track = tracks[i];
-                    kind = track.kind.toLowerCase();
-                    if (kind === 'captions' || kind === 'subtitles') {
-                        if (track.file) {
+            var tracks = item.tracks,
+                track, kind, i;
+            for (i = 0; i < tracks.length; i++) {
+                track = tracks[i];
+                kind = track.kind.toLowerCase();
+                if (kind === 'captions' || kind === 'subtitles') {
+                    if (track.file) {
+                        // HTML5 provider will add VTT tracks in iOS when not in mobile SDK
+                        var useHtml5TextTracks = utils.isIOS() && !utils.isSDK(_model.getConfiguration()) &&
+                            (track.file).indexOf('.vtt') !== -1;
+                        if (!useHtml5TextTracks) {
                             _addTrack(track);
                             _load(track);
-                        } else if (track.data) {
-                            _addTrack(track);
                         }
+                    } else if (track.data) {
+                        _addTrack(track);
                     }
                 }
             }

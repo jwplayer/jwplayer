@@ -37,6 +37,9 @@ define([
         return true;
     };
 
+    playerUtils.isSDK = function(config) {
+        return !!(config.analytics && config.analytics.sdkplatform);
+    };
 
     playerUtils.loadFrom = function () {
         if (__DEBUG__ || __SELF_HOSTED__) {

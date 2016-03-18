@@ -521,8 +521,11 @@ define([
             }
 
             // if playlist item contains .vtt tracks, load them
-            if (utils.isIOS() && item) {
-                _setupSideloadedTracks(item.tracks);
+            if (item && item.tracks) {
+                var useHtml5TextTracks = utils.isIOS() && !utils.isSDK(_playerConfig);
+                if (useHtml5TextTracks) {
+                    _setupSideloadedTracks(item.tracks);
+                }
             }
         }
 
