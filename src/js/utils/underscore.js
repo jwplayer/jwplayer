@@ -173,6 +173,19 @@ define([], function() {
     };
 
 
+    // Array Functions
+    // ---------------
+
+
+    // Get the last element of an array. Passing **n** will return the last N
+    // values in the array. The **guard** check allows it to work with `_.map`.
+    _.last = function(array, n, guard) {
+        if (array == null) return void 0;
+        if ((n == null) || guard) return array[array.length - 1];
+        return slice.call(array, Math.max(array.length - n, 0));
+    };
+
+
     // Returns a function that will only be executed after being called N times.
     _.after = function (times, func) {
         return function () {
