@@ -23,7 +23,7 @@ define([
         // Set up event handling
         _.extend(this, Events);
 
-        // This helps plugins, particularly analytics
+        // Provide module access to plugins from the player instance
         this.utils = utils;
         this._ = _;
         this.Events = Events;
