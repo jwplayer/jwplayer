@@ -454,5 +454,13 @@ define([
     F.prototype = DefaultProvider;
     FlashProvider.prototype = new F();
 
+    FlashProvider.getName = function() {
+        return { name : 'flash' };
+    };
+
+    FlashProvider.register = function(jwplayer) {
+        jwplayer.api.registerProvider(FlashProvider);
+    };
+
     return FlashProvider;
 });
