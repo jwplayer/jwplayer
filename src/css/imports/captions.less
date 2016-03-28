@@ -1,3 +1,5 @@
+@import "vars";
+
 .jw-captions {
     position: absolute;
     display: none;
@@ -36,4 +38,17 @@
     text-decoration: none;
     line-height: 1.3em;
     padding: 0.1em 0.8em;
+}
+
+.jwplayer {
+    video::-webkit-media-text-track-container {
+        bottom: @controlbar-height * 0.75;
+
+    }
+    &.jw-flag-compact-player {
+        video::-webkit-media-text-track-container {
+            bottom: @controlbar-height * 1.25;
+
+        }
+    }
 }
