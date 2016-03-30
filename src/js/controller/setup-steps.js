@@ -8,7 +8,6 @@ define([
     'utils/helpers',
     'events/events'
 ], function(Providers, plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
-    /*global Promise:true*/
 
     var _pluginLoader,
         _playlistLoader;
@@ -213,59 +212,12 @@ define([
     }
 
     function _loadProviders(resolve, model) {
-        var providers = model.getProviders().providers;
-
         var playlist = model.get('playlist').slice();
 
-        var providersToLoad = _.compact(_.map(providers, function(provider) {
-            // remove items from copied playlist that can be played by provider
-            // remaining providers will be checked against any remaining items
-            // provider will be loaded if there are matches
-            var loadProvider = false;
-            for (var i = playlist.length; i--;) {
-                var item = playlist[i];
-                var supported = provider.supports(item.sources[0]);
-                if (supported) {
-                    playlist.splice(i);
-                }
-                loadProvider = loadProvider || supported;
-            }
-            if (loadProvider) {
-                return provider;
-            }
-        }));
+        var providersToLoad = model.getProviders().required(playlist);
 
-        _loadProvidersByName(providersToLoad)
+        Providers.load(providersToLoad)
             .then(resolve);
-    }
-
-    function _loadProvidersByName(providersToLoad) {
-
-        return Promise.all(_.map(providersToLoad, function(provider) {
-            return new Promise(function(resolvePromise) {
-                switch (provider.name) {
-                    case 'html5':
-                        require.ensure(['providers/html5'], function(require) {
-                            resolvePromise(require('providers/html5'));
-                        }, 'provider.html5');
-                        break;
-                    case 'flash':
-                        require.ensure(['providers/flash'], function(require) {
-                            resolvePromise(require('providers/flash'));
-                        }, 'provider.flash');
-                        break;
-                    case 'youtube':
-                        require.ensure(['providers/youtube'], function(require) {
-                            resolvePromise(require('providers/youtube'));
-                        }, 'provider.youtube');
-                        break;
-                    default:
-                        resolvePromise();
-                }
-            }).then(function(providerResult) {
-                Providers.registerProvider(providerResult);
-            });
-        }));
     }
 
     function _setupView(resolve, _model, _api, _view) {
