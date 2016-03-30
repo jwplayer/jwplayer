@@ -87,6 +87,7 @@ define([
         },
 
         required: function(playlist, args) {
+            playlist = playlist.slice();
             return _.compact(_.map(this.providers, function(provider) {
                 // remove items from copied playlist that can be played by provider
                 // remaining providers will be checked against any remaining items

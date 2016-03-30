@@ -212,11 +212,12 @@ define([
     }
 
     function _loadProviders(resolve, model) {
-        var playlist = model.get('playlist').slice();
+        var providersManager = model.getProviders();
+        var playlist = model.get('playlist');
 
-        var providersToLoad = model.getProviders().required(playlist);
+        var providersNeeded = providersManager.required(playlist);
 
-        Providers.load(providersToLoad)
+        Providers.load(providersNeeded)
             .then(resolve);
     }
 
