@@ -1,4 +1,5 @@
 define([
+    'providers/providers',
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
@@ -6,7 +7,8 @@ define([
     'utils/underscore',
     'utils/helpers',
     'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
+], function(Providers, plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
+    /*global Promise:true*/
 
     var _pluginLoader,
         _playlistLoader;
@@ -42,8 +44,8 @@ define([
                     'SETUP_VIEW'
                 ]
             },
-            LOAD_YOUTUBE : {
-                method: _loadYoutube,
+            LOAD_PROVIDERS : {
+                method: _loadProviders,
                 depends: ['FILTER_PLAYLIST']
             },
             LOAD_SKIN : {
@@ -68,7 +70,7 @@ define([
                 method: _sendReady,
                 depends: [
                     'INIT_PLUGINS',
-                    'LOAD_YOUTUBE',
+                    'LOAD_PROVIDERS',
                     'SETUP_VIEW'
                 ]
             }
@@ -210,28 +212,60 @@ define([
         });
     }
 
-    function _loadYoutube(resolve, _model) {
-        var p = _model.get('playlist');
+    function _loadProviders(resolve, model) {
+        var providers = model.getProviders().providers;
 
-        var hasYoutube = _.some(p, function(item) {
-            var itemYoutube = utils.isYouTube(item.file, item.type);
-            if (itemYoutube && !item.image) {
-                var url = item.file;
-                var videoId = utils.youTubeID(url);
-                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
+        var playlist = model.get('playlist').slice();
+
+        var providersToLoad = _.compact(_.map(providers, function(provider) {
+            // remove items from copied playlist that can be played by provider
+            // remaining providers will be checked against any remaining items
+            // provider will be loaded if there are matches
+            var loadProvider = false;
+            for (var i = playlist.length; i--;) {
+                var item = playlist[i];
+                var supported = provider.supports(item.sources[0]);
+                if (supported) {
+                    playlist.splice(i);
+                }
+                loadProvider = loadProvider || supported;
             }
-            return itemYoutube;
-        });
+            if (loadProvider) {
+                return provider;
+            }
+        }));
 
-        if (hasYoutube) {
-            require.ensure(['providers/youtube'], function(require) {
-                var youtube = require('providers/youtube');
-                youtube.register(window.jwplayer);
-                resolve();
-            }, 'provider.youtube');
-        } else {
-            resolve();
-        }
+        _loadProvidersByName(providersToLoad)
+            .then(resolve);
+    }
+
+    function _loadProvidersByName(providersToLoad) {
+
+        return Promise.all(_.map(providersToLoad, function(provider) {
+            return new Promise(function(resolvePromise) {
+                switch (provider.name) {
+                    case 'html5':
+                        require.ensure(['providers/html5'], function(require) {
+                            resolvePromise(require('providers/html5'));
+                        }, 'provider.html5');
+                        break;
+                    case 'flash':
+                        require.ensure(['providers/flash'], function(require) {
+                            resolvePromise(require('providers/flash'));
+                        }, 'provider.flash');
+                        break;
+                    case 'youtube':
+                        require.ensure(['providers/youtube'], function(require) {
+                            resolvePromise(require('providers/youtube'));
+                        }, 'provider.youtube');
+                        break;
+                    default:
+                        resolvePromise();
+                }
+            }).then(function(providerResult) {
+                Providers.registerProvider(providerResult);
+            });
+        }));
     }
 
     function _setupView(resolve, _model, _api, _view) {
