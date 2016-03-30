@@ -72,10 +72,13 @@ define([
                         }, 'provider.youtube');
                         break;
                     default:
-                        resolvePromise();
+                        resolvePromise(/* unknown registered module */);
                 }
-            }).then(function(providerResult) {
-                Providers.registerProvider(providerResult);
+            }).then(function(providerModule) {
+                if (!providerModule) {
+                    return;
+                }
+                Providers.registerProvider(providerModule);
             });
         }));
     };
