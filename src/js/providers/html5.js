@@ -1209,10 +1209,5 @@ define([
         return { name : 'html5' };
     };
 
-    VideoProvider.register = function(jwplayer) {
-        jwplayer.api.registerProvider(VideoProvider);
-    };
-
     return VideoProvider;
-
 });

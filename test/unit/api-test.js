@@ -6,9 +6,24 @@ define([
     'data/api-methods',
     'data/api-methods-chainable',
     'data/config-small',
-    'utils/backbone.events'
-], function (_, $, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events) {
+    'utils/backbone.events',
+    'providers/html5',
+    'providers/flash'
+], function (_, $, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events,
+             providerHtml5, providerFlash) {
     /* jshint qunit: true */
+
+    // polyfill webpack require.ensure
+    //window.jwplayer.api = Api;
+    require.ensure = function(array, callback, moduleName) {
+        console.log('Unit test polyfill for webpack require.ensure', '"'+ moduleName + '"');
+        callback(function webpackRequire(modulePath) {
+            return ({
+                'providers/html5': providerHtml5,
+                'providers/flash': providerFlash
+            })[modulePath];
+        });
+    };
 
     var vid = document.createElement('video');
     var BROWSER_SUPPORTS_VIDEO = (!!vid.load);
