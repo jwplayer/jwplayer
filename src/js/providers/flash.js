@@ -458,5 +458,9 @@ define([
         return { name : 'flash' };
     };
 
+    FlashProvider.register = function(jwplayer) {
+        jwplayer.api.registerProvider(FlashProvider);
+    };
+
     return FlashProvider;
 });

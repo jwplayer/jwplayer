@@ -1,5 +1,4 @@
 define([
-    'providers/providers',
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
@@ -7,7 +6,7 @@ define([
     'utils/underscore',
     'utils/helpers',
     'events/events'
-], function(Providers, plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
 
     var _pluginLoader,
         _playlistLoader;
@@ -43,8 +42,8 @@ define([
                     'SETUP_VIEW'
                 ]
             },
-            LOAD_PROVIDERS : {
-                method: _loadProviders,
+            LOAD_YOUTUBE : {
+                method: _loadYoutube,
                 depends: ['FILTER_PLAYLIST']
             },
             LOAD_SKIN : {
@@ -69,7 +68,7 @@ define([
                 method: _sendReady,
                 depends: [
                     'INIT_PLUGINS',
-                    'LOAD_PROVIDERS',
+                    'LOAD_YOUTUBE',
                     'SETUP_VIEW'
                 ]
             }
@@ -113,7 +112,7 @@ define([
 
     function _initPlugins(resolve, _model, _api) {
         _pluginLoader.setupPlugins(_api, _model);
-        
+
         resolve();
     }
 
@@ -211,14 +210,28 @@ define([
         });
     }
 
-    function _loadProviders(resolve, model) {
-        var providersManager = model.getProviders();
-        var playlist = model.get('playlist');
+    function _loadYoutube(resolve, _model) {
+        var p = _model.get('playlist');
 
-        var providersNeeded = providersManager.required(playlist);
+        var hasYoutube = _.some(p, function(item) {
+            var itemYoutube = utils.isYouTube(item.file, item.type);
+            if (itemYoutube && !item.image) {
+                var url = item.file;
+                var videoId = utils.youTubeID(url);
+                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
+            }
+            return itemYoutube;
+        });
 
-        Providers.load(providersNeeded)
-            .then(resolve);
+        if (hasYoutube) {
+            require.ensure(['providers/youtube'], function(require) {
+                var youtube = require('providers/youtube');
+                youtube.register(window.jwplayer);
+                resolve();
+            }, 'provider.youtube');
+        } else {
+            resolve();
+        }
     }
 
     function _setupView(resolve, _model, _api, _view) {

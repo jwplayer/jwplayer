@@ -1,11 +1,11 @@
 define([
     'api/api',
     'utils/underscore',
-    'providers/providers',
+    'providers/default',
     'providers/providers-loaded',
     'providers/providers-supported',
     'plugins/plugins'
-], function(Api, _, Providers, ProvidersLoaded, ProvidersSupported, plugins) {
+], function(Api, _, Default, ProvidersLoaded, ProvidersSupported, plugins) {
 
     var _instances = [],
         _uniqueIndex = 0;
@@ -69,9 +69,41 @@ define([
         }
     };
 
+    function registerProvider(provider) {
+        var name = provider.getName().name;
+
+        // Only register the provider if it isn't registered already.  This is an issue on pages with multiple embeds.
+        if (ProvidersLoaded[name]) {
+            return;
+        }
+
+        // If there isn't a "supports" val for this guy
+        if (! _.find(ProvidersSupported, _.matches({name : name}))) {
+            if (!_.isFunction(provider.supports)) {
+                throw {
+                    message: 'Tried to register a provider with an invalid object'
+                };
+            }
+
+            // The most recent provider will be in the front of the array, and chosen first
+            ProvidersSupported.unshift({
+                name : name,
+                supports : provider.supports
+            });
+        }
+
+        var F = function(){};
+        F.prototype = Default;
+        provider.prototype = new F();
+
+        // After registration, it is loaded
+        ProvidersLoaded[name] = provider;
+    }
+
+
     var api = {
         selectPlayer : selectPlayer,
-        registerProvider: Providers.registerProvider,
+        registerProvider: registerProvider,
         availableProviders: ProvidersSupported,
         registerPlugin : plugins.registerPlugin
     };
