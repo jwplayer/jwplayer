@@ -551,7 +551,8 @@ define([
         }
 
         function _setupSideloadedTracks(tracks) {
-            if (_isSDK) {
+            var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
+            if (_isSDK || !canRenderNatively) {
                 return;
             }
             if (tracks !== _itemTracks) {
