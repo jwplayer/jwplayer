@@ -347,10 +347,13 @@ module.exports = function(grunt) {
             },
             // browserstack_all: { browsers: Object.keys( require( './test/qunit/karma/browserstack-launchers' ) ) },
             browserstack : {
-                browsers: ['chrome_45']
+                browsers: ['chrome']
             },
             browserstack_firefox : {
-                browsers: ['firefox_41']
+                browsers: ['firefox']
+            },
+            browserstack_edge : {
+                browsers: ['edge']
             },
             browserstack_ie11 : {
                 browsers: ['ie11_windows']
