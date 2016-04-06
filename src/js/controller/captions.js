@@ -145,6 +145,9 @@ define([
         }
 
         function _itemReadyHandler(item) {
+            // Clean up in case we're replaying
+            _itemHandler(_model,item);
+
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
@@ -154,14 +157,12 @@ define([
 
             var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
 
-            var hasVTT = false;
             for (i = 0; i < tracks.length; i++) {
                 track = tracks[i];
                 isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
 
                 //let the browser handle rendering sideloaded VTT tracks in the HTML5 provider
                 if(isHTML5 && isVTT && !_isSDK && canRenderNatively) {
-                    hasVTT = true;
                     continue;
                 }
 
@@ -177,8 +178,8 @@ define([
                 }
             }
 
-            // turn on listeners if there are no side-loaded captions or when there are VTT captions
-            if (!_tracks.length || hasVTT) {
+            // only listen for other captions if there are no side loaded captions
+            if (!_tracks.length) {
                 _model.mediaController.on('meta', _metaHandler, this);
                 _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
             }
@@ -198,11 +199,6 @@ define([
         function _addTrack(track) {
             if(typeof track.id !== 'number') {
                 track.id = track.name || track.file || ('cc' + _tracks.length);
-            }
-
-            //don't add tracks that already exist
-            if(_tracksById[track.id]) {
-                return;
             }
             track.data = track.data || [];
             if (!track.label) {
