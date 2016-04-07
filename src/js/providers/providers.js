@@ -100,7 +100,7 @@ define([
                     var item = playlist[i];
                     var supported = provider.supports(item.sources[0], args);
                     if (supported) {
-                        playlist.splice(i);
+                        playlist.splice(i, 1);
                     }
                     loadProvider = loadProvider || supported;
                 }
