@@ -145,6 +145,9 @@ define([
         }
 
         function _itemReadyHandler(item) {
+            // Clean up in case we're replaying
+            _itemHandler(_model,item);
+
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
