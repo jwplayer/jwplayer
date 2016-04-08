@@ -472,8 +472,11 @@ define([
                 _next({reason: 'playlist'});
             }
 
-            function _setCurrentQuality(quality) {
-                _video().setCurrentQuality(quality);
+            function _setCurrentQuality(index) {
+                if (_video()) {
+                    index = parseInt(index, 10) || 0;
+                    _video().setCurrentQuality(index);
+                }
             }
 
             function _getCurrentQuality() {
@@ -521,6 +524,7 @@ define([
 
             function _setCurrentAudioTrack(index) {
                 if(_video()) {
+                    index = parseInt(index, 10) || 0;
                     _video().setCurrentAudioTrack(index);
                 }
             }
