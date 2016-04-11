@@ -1021,7 +1021,6 @@ define([
             if (_currentQuality === quality) {
                 return;
             }
-            quality = parseInt(quality, 10);
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;

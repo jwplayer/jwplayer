@@ -428,6 +428,7 @@ define([
                 var playlist = _model.get('playlist');
 
                 // If looping past the end, or before the beginning
+                index = parseInt(index, 10) || 0;
                 index = (index + playlist.length) % playlist.length;
 
                 _model.set('item', index);
@@ -472,8 +473,11 @@ define([
                 _next({reason: 'playlist'});
             }
 
-            function _setCurrentQuality(quality) {
-                _video().setCurrentQuality(quality);
+            function _setCurrentQuality(index) {
+                if (_video()) {
+                    index = parseInt(index, 10) || 0;
+                    _video().setCurrentQuality(index);
+                }
             }
 
             function _getCurrentQuality() {
@@ -521,6 +525,7 @@ define([
 
             function _setCurrentAudioTrack(index) {
                 if(_video()) {
+                    index = parseInt(index, 10) || 0;
                     _video().setCurrentAudioTrack(index);
                 }
             }
@@ -540,6 +545,8 @@ define([
             }
 
             function _setCurrentCaptions(index) {
+                index = parseInt(index, 10) || 0;
+
                 // update provider subtitle track
                 _model.persistVideoSubtitleTrack(index);
 
