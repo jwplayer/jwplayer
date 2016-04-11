@@ -24,6 +24,9 @@ define([
         i = startingIndex || 0;
         while (i < len) {
             c = array[i++];
+            if (c === 0x03 || c === 0x00) {
+                continue;
+            }
             switch (c >> 4) {
                 case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
                 // 0xxxxxxx
@@ -134,26 +137,26 @@ define([
                                 }
                                 cue.value.data = transportStreamTimestamp;
                             } else {
-                                cue.value.data = id3Parser.utf8ArrayToStr(array, startPos + 1);
+                                cue.value.data = id3Parser.utf8ArrayToStr(array, startPos += 1);
                             }
                             cue.value.info = info;
                         } else {
                             cue.value.info = info;
-                            cue.value.data = id3Parser.utf8ArrayToStr(array, startPos+1);
+                            cue.value.data = id3Parser.utf8ArrayToStr(array, startPos += 1);
                         }
-                    } else{
+                    } else {
                         var encoding = array[startPos];
                         if (encoding === 1 || encoding === 2) {
-                            cue.value.data = id3Parser.utf16BigEndianArrayToStr(array, startPos+1);
+                            cue.value.data = id3Parser.utf16BigEndianArrayToStr(array, startPos += 1);
                         } else {
-                            cue.value.data = id3Parser.utf8ArrayToStr(array, startPos+1);
+                            cue.value.data = id3Parser.utf8ArrayToStr(array, startPos += 1);
                         }
                     }
                 }
             }
     
             // These friendly names mapping provides compatibility with our Flash implementation prior to 7.3
-            if(friendlyNames.hasOwnProperty(cue.value.key)) {
+            if (friendlyNames.hasOwnProperty(cue.value.key)) {
                 data[friendlyNames[cue.value.key]] = cue.value.data;
             }
             /* The meta event includes a metadata object with flattened cue key/data pairs
@@ -161,7 +164,7 @@ define([
              *   TLEN: 03:50                                        // key: "TLEN", data: "03:50"
              *   WXXX: {"artworkURL":"http://domain.com/cover.jpg"} // key: "WXXX", info: "artworkURL" ...
              */
-            if(cue.value.info) {
+            if (cue.value.info) {
                 var collection = data[cue.value.key];
                 if (!_.isObject(collection)) {
                     collection = {};
