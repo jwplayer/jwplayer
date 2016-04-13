@@ -330,6 +330,7 @@ define([
             }
 
             _canSeek = true;
+            _setMediaType();
             _sendBufferFull();
         }
 
@@ -344,7 +345,6 @@ define([
                 _videotag.muted = true;
             }
             _videotag.setAttribute('jw-loaded', 'meta');
-            _setMediaType();
             _sendMetaEvent();
         }
 
@@ -450,10 +450,7 @@ define([
                 }
             }
             _visualQuality.reason = 'initial choice';
-            _visualQuality.level = {
-                width: 0,
-                height: 0
-            };
+            _visualQuality.level = {};
             return currentQuality;
         }
 
@@ -515,10 +512,7 @@ define([
             _activeCuePosition = -1;
             if(!_visualQuality.reason) {
                 _visualQuality.reason = 'initial choice';
-                _visualQuality.level = {
-                    width: 0,
-                    height: 0
-                };
+                _visualQuality.level = {};
             }
             _canSeek = false;
             _bufferFull = false;
@@ -1025,10 +1019,7 @@ define([
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
                     _visualQuality.reason = 'api';
-                    _visualQuality.level = {
-                        width: 0,
-                        height: 0
-                    };
+                    _visualQuality.level = {};
                     this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
@@ -1186,7 +1177,7 @@ define([
             // Send mediaType when format is HLS. Other types are handled earlier by default.js.
             if(_levels[0].type === 'hls') {
                 var mediaType = 'video';
-                if(_videotag.videoWidth === 0) {
+                if (_videotag.videoHeight === 0) {
                     mediaType = 'audio';
                 }
                 _this.trigger('mediaType', {mediaType: mediaType});
