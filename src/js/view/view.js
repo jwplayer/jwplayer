@@ -859,17 +859,15 @@ define([
         function _onMediaTypeChange(model, val) {
             var isAudioFile = (val ==='audio');
             var provider = _model.getVideo();
-            var isNotFlash = (provider && provider.getName().name.indexOf('flash') !== 0);
-            var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
-            var mediaElem = _playerElement.getElementsByClassName('jw-media')[0];
+            var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
 
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-            if(isAudioFile && isNotFlash) {
-                // Put the preview element before media in order to display browser captions
-                _playerElement.insertBefore(previewElem, mediaElem);
+            if (isAudioFile && !isFlash) {
+                // Put the preview element before the media element in order to display browser captions
+                _playerElement.insertBefore(_preview.el, _videoLayer);
             } else {
-                _playerElement.insertBefore(mediaElem, previewElem);
+                _playerElement.insertBefore(_videoLayer, _preview.el);
             }
         }
 
