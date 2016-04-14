@@ -330,7 +330,9 @@ define([
             }
 
             _canSeek = true;
-            _setMediaType();
+            if (!_isAndroidHLS) {
+                _setMediaType();
+            }
             _sendBufferFull();
         }
 
