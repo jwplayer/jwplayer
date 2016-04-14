@@ -858,7 +858,17 @@ define([
 
         function _onMediaTypeChange(model, val) {
             var isAudioFile = (val ==='audio');
+            var provider = _model.getVideo();
+            var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
+
+            if (isAudioFile && !isFlash) {
+                // Put the preview element before the media element in order to display browser captions
+                _playerElement.insertBefore(_preview.el, _videoLayer);
+            } else {
+                _playerElement.insertBefore(_videoLayer, _preview.el);
+            }
         }
 
         function _setLiveMode(model, duration){
