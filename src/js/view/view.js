@@ -867,7 +867,7 @@ define([
                 // Put the preview element before the media element in order to display browser captions
                 _playerElement.insertBefore(_preview.el, _videoLayer);
             } else {
-                _playerElement.insertBefore(_videoLayer, _preview.el);
+                _playerElement.insertBefore(_preview.el, _title.element());
             }
         }
 
