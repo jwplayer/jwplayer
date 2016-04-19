@@ -46,7 +46,7 @@ define([
                 return {
                     active : (idx === selectedIndex),
                     label : (idx+1)+ '.',
-                    title : item.title
+                    title : utils.createElement(item.title).textContent
                 };
             });
             return PlaylistTemplate(newList);
