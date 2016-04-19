@@ -173,6 +173,10 @@ define([
         _videotag = _videotag || document.createElement('video');
         _videotag.className = 'jw-video jw-reset';
 
+        // prevent browser from showing second cast icon, using presentation-api
+        //  https://developers.google.com/web/updates/2015/11/presentation-api
+        _videotag.setAttribute('disableRemotePlayback', '');
+
         _setupListeners(_mediaEvents, _videotag);
 
         // Workaround for a Safari bug where video disappears on switch to fullscreen
