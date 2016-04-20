@@ -173,6 +173,12 @@ define([
         _videotag = _videotag || document.createElement('video');
         _videotag.className = 'jw-video jw-reset';
 
+        // prevent browser from showing second cast icon
+        // https://w3c.github.io/remote-playback/
+        if (_.isObject(_playerConfig.cast) && _playerConfig.cast.appid) {
+            _videotag.setAttribute('disableRemotePlayback', '');
+        }
+
         _setupListeners(_mediaEvents, _videotag);
 
         // Workaround for a Safari bug where video disappears on switch to fullscreen
