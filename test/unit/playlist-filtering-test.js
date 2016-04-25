@@ -45,7 +45,8 @@ define([
         assert.ok(sourcesMatch(filtered), title + sourceName + ' has only matching sources');
     }
 
-    module('playlist.filterSources');
+    QUnit.module('playlist.filterSources');
+    var test = QUnit.test.bind(QUnit);
 
     test('flash primary', function(assert) {
         testSource(assert, 'flv_mp4', 'flv', true);
@@ -68,7 +69,7 @@ define([
     });
 
 
-    module('playlist.filterPlaylist');
+    QUnit.module('playlist.filterPlaylist');
 
     test('filterPlaylist', function(assert) {
         var pl;

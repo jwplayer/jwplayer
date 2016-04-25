@@ -4,9 +4,9 @@ define([
 ], function (dfxp) {
     /* jshint qunit: true, maxlen: 1000 */
 
-    module('dfxp');
+    QUnit.module('dfxp');
 
-    test('exceptions', function(assert) {
+    QUnit.test('exceptions', function(assert) {
         assert.equal(typeof dfxp, 'function', 'dfxp is a function');
 
         assert.throws(function() {

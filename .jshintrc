@@ -26,7 +26,6 @@
       //"jwplayer",
       "require",
       "define",
-      "module",
       "__DEBUG__",
       "__REPO__",
       "__SELF_HOSTED__",

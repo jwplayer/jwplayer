@@ -3,7 +3,8 @@ define([
 ], function (css) {
     /* jshint qunit: true */
 
-    module('css');
+    QUnit.module('css');
+    var test = QUnit.test.bind(QUnit);
 
     test('css.css and css.clearCss', function(assert) {
         var count = document.getElementsByTagName('style').length;

@@ -3,9 +3,9 @@ define([
 ], function (extendable) {
     /* jshint qunit: true */
 
-    module('extendable');
+    QUnit.module('extendable');
 
-    test('extendable.extend', function(assert) {
+    QUnit.test('extendable.extend', function(assert) {
         extendable();
 
         var static = {'test': 'staticTest'};

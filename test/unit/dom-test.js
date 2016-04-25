@@ -3,7 +3,8 @@ define([
 ], function (dom) {
     /* jshint qunit: true */
 
-    module('dom');
+    QUnit.module('dom');
+    var test = QUnit.test.bind(QUnit);
 
     test('dom.addClass', function (assert) {
         var element = document.createElement('div');

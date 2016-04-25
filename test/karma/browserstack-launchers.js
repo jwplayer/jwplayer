@@ -1,3 +1,5 @@
+/* jshint node: true */
+
 module.exports = {
 
     // To view a list of currently available configurations run this command :

@@ -4,7 +4,8 @@ define([
 ], function (scriptloader, parser) {
     /* jshint qunit: true */
 
-    module('scriptloader');
+    QUnit.module('scriptloader');
+    var test = QUnit.test.bind(QUnit);
 
     var STATUS = {
         NEW: 0,

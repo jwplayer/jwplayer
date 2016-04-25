@@ -5,7 +5,8 @@ define([
 ], function (_, Api, events) {
     /* jshint qunit:true */
 
-    module('Setup');
+    QUnit.module('Setup');
+    var test = QUnit.test.bind(QUnit);
 
     test('fails when playlist is not an array', function(assert) {
 
