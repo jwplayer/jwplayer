@@ -3,7 +3,8 @@ define([
 ], function (utils) {
     /* jshint qunit: true */
 
-    module('helpers');
+    QUnit.module('helpers');
+    var test = QUnit.test.bind(QUnit);
 
     test('helpers foreach test', function(assert) {
         var aData = {'hello': 'hi'};

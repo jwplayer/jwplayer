@@ -28,7 +28,8 @@ define([
     var vid = document.createElement('video');
     var BROWSER_SUPPORTS_VIDEO = (!!vid.load);
 
-    module('Api');
+    QUnit.module('Api');
+    var test = QUnit.test.bind(QUnit);
 
     test('extends Events', function(assert) {
         var api = createApi('player');

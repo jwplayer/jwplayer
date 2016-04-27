@@ -3,7 +3,8 @@ define([
 ], function (parser) {
     /* jshint qunit: true */
 
-    module('parser');
+    QUnit.module('parser');
+    var test = QUnit.test.bind(QUnit);
 
     var testerGenerator = function (assert, method) {
         return function (left, right, message) {
