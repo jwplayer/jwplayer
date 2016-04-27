@@ -111,16 +111,19 @@ define([
                     var startPos = 19;
                     var firstByte = array[startPos];
                     if (firstByte === 0x03 || firstByte === 0x00) {
-                        startPos++;
+                        firstByte = array[++startPos];
                         arrayLength--;
                     }
-    
-                    // find info/value pair delimiter if present
+
                     var infoDelimiterPosition = 0;
-                    for (var j = startPos + 1; j < arrayLength; j++) {
-                        if (array[j] === 0x00) {
-                            infoDelimiterPosition = j - startPos;
-                            break;
+                    // Find info/value pair delimiter if present.
+                    // If first byte shows theres utf 16 encoding, there is no info since info cannot be utf 16 encoded
+                    if (firstByte !== 0x01 && firstByte !== 0x02) {
+                        for (var j = startPos + 1; j < arrayLength; j++) {
+                            if (array[j] === 0x00) {
+                                infoDelimiterPosition = j - startPos;
+                                break;
+                            }
                         }
                     }
     
