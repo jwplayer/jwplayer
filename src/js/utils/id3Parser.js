@@ -53,12 +53,12 @@ define([
     };
     
     id3Parser.utf16BigEndianArrayToStr = function (array, startingIndex) {
-        var out, i, len;
+        var out, i, lastDoubleByte;
     
         out = '';
-        len = array.length;
+        lastDoubleByte = array.length - 1;
         i = startingIndex || 0;
-        while (i < len) {
+        while (i < lastDoubleByte) {
             if (array[i] === 254 && array[i + 1] === 255) {
                 // Byte order mark
             } else {
