@@ -33,9 +33,13 @@
         }
     }
 
-    .jw-logo,
-    .jw-captions, video::-webkit-media-text-track-container {
+    .jw-logo, video::-webkit-media-text-track-container {
         display: none;
+    }
+    .jw-captions {
+        &.jw-captions-enabled {
+            display: none;
+        }
     }
 }
 
