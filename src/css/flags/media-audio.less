@@ -11,7 +11,9 @@
     // This has higher specificity to overwrite caption position when user inactive in playing state
     &.jw-flag-user-inactive.jw-state-playing {
         .jw-plugin,
-        .jw-captions,
+        .jw-captions {
+            bottom: 3em;
+        }
         video::-webkit-media-text-track-container {
             bottom: 3em;
         }
