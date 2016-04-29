@@ -583,8 +583,10 @@ define([
                     continue;
                 }
                 if (!crossoriginAnonymous) {
-                    // CORS applies to track loading and requires the crossorigin attribute
-                    _videotag.setAttribute('crossorigin', 'anonymous');
+                    // CORS applies to track loading and requires the crossorigin attribute in IOS
+                    if (utils.isIOS()) {
+                        _videotag.setAttribute('crossorigin', 'anonymous');
+                    }
                     crossoriginAnonymous = true;
                 }
                 var track = document.createElement('track');
