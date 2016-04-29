@@ -239,11 +239,20 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Interval for the position progress **/
     protected function positionHandler():void {
+        var pos:Number = _stream.time;
         var duration:Number = _item.duration;
-        if (duration <= 0) {
+        if (duration <= 0 && pos === 0) {
+            // don't send time or buffer event until duration or position is known
             return;
         }
-        var position:Number = Math.round(Math.min(_stream.time, duration) * 1000) / 1000;
+        if (duration > 0) {
+            // VOD
+            pos = Math.min(pos, duration);
+        } else if (pos > 0) {
+            // Live Stream
+            duration = _item.duration = -1;
+        }
+        pos = Math.round(pos * 1000) / 1000;
         // Toggle state between buffering and playing.
         if (_stream.bufferLength < 1 && state == PlayerState.PLAYING && _buffered < 100) {
             if (_seeking) {
@@ -257,18 +266,24 @@ public class VideoMediaProvider extends MediaProvider {
         }
         // Send out buffer percentage.
         if (_buffered < 100) {
-            var startOffset:Number = _offset.time / duration;
+            var startOffset:Number = 0;
+            if (duration > 0) {
+                startOffset = _offset.time / duration;
+            }
             var buffered:Number = _stream.bytesLoaded / _stream.bytesTotal;
             _buffered = Math.floor(100 * (startOffset + buffered));
             sendBufferEvent(_buffered);
         }
-        if (state === PlayerState.PLAYING && _position !== position) {
-            _position = position;
+        if (state === PlayerState.PLAYING && _position !== pos) {
+            _position = pos;
             if (_item.type == 'mp4') {
                 _position += _offset.time;
             }
+            if (duration < 0) {
+                duration = Infinity;
+            }
             sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {
-                position: _position,
+                position: pos,
                 duration: duration
             });
         }
