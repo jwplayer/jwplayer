@@ -23,6 +23,7 @@ define([
                 var childNodes = loadedEvent.responseXML ? loadedEvent.responseXML.childNodes : null;
                 var rss = '';
                 var pl;
+                var jsonObj;
                 if (childNodes) {
                     for (var i = 0; i < childNodes.length; i++) {
                         rss = childNodes[i];
@@ -45,16 +46,15 @@ define([
                         pl = JSON.parse(loadedEvent.responseText);
                         // If the response is not a JSON array, try to read playlist of the response
                         if (!_.isArray(pl)) {
-                            pl = pl.playlist;
+                            jsonObj = pl;
                         }
                     } catch (e) {
                         _playlistError('Not a valid RSS/JSON feed');
                         return;
                     }
                 }
-                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: pl
-                });
+                jsonObj = jsonObj || { playlist: pl };
+                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, jsonObj);
             });
 
             if (status instanceof utils.Error) {

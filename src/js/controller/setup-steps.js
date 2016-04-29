@@ -126,7 +126,9 @@ define([
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
-                _model.set('playlist', data.playlist);
+                for (var key in data) {
+                    _model.set(key, data[key]);
+                }
                 resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
