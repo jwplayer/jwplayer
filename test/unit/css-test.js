@@ -26,17 +26,17 @@ define([
 
         // check that style sheet is correctly included to the end of head
         var styleSheet = document.getElementsByTagName('head')[0].lastChild;
-        assert.ok(styleSheet.innerHTML.indexOf('test-selector{background-color:blue}') >=0 , 'css correctly included');
+        assert.ok(styleSheet.innerHTML.indexOf('test-selector{background-color: blue;}') >=0 , 'css correctly included');
 
         // check that css will be replaced
         css.css(testSelector, stylesRed);
-        assert.ok(styleSheet.innerHTML.indexOf('test-selector{background-color:blue}') < 0, 'css correctly replaced');
-        assert.ok(styleSheet.innerHTML.indexOf('test-selector{background-color:red}') >= 0, 'css correctly replaced');
+        assert.ok(styleSheet.innerHTML.indexOf('test-selector{background-color: blue;}') < 0, 'css correctly replaced');
+        assert.ok(styleSheet.innerHTML.indexOf('test-selector{background-color: red;}') >= 0, 'css correctly replaced');
 
         css.clearCss('test-selector');
 
         // check clearCss works correctly
-        assert.ok(styleSheet.innerHTML.indexOf('test-selector{background-color:red}') < 0, 'css correctly removed');
+        assert.ok(styleSheet.innerHTML.indexOf('test-selector{background-color: red;}') < 0, 'css correctly removed');
     });
 
     test('css.style', function(assert) {
