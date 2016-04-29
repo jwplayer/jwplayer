@@ -575,7 +575,7 @@ define([
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_model.get('captions'));
+            _captionsRenderer.setup(_playerElement, _model.get('captions'));
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());

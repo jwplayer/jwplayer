@@ -148,7 +148,7 @@ define([
         }
 
         /** Constructor for the renderer. **/
-        this.setup = function(options) {
+        this.setup = function(playerElement, options) {
             _captionsWindow = document.createElement('div');
             _textContainer = document.createElement('span');
             _captionsWindow.className = 'jw-captions-window jw-reset';
@@ -184,6 +184,7 @@ define([
 
                 _style(_captionsWindow, windowStyle);
                 _style(_textContainer, textStyle);
+                setupShadowDOMStyles(playerElement, windowStyle, textStyle);
             }
 
             _captionsWindow.appendChild(_textContainer);
@@ -192,7 +193,57 @@ define([
             this.populate(_model.get('captionsTrack'));
         };
 
-        function addEdgeStyle(option, style, fontOpacity) {
+        function setupShadowDOMStyles(playerElement, windowStyle, textStyle) {
+            // We have to use a style element to apply captions styles to user-agent Shadow DOM nodes.
+
+            // Caption window styles
+            var windowStyleText = '#' + playerElement.id + ' .jw-video::-webkit-media-text-track-display {';
+            if (windowStyle.backgroundColor) {
+                windowStyleText += ' background-color: ' + windowStyle.backgroundColor + ';';
+            }
+            windowStyleText += '}';
+
+            // Caption text styles
+            // The cue element is a div in Chrome
+            var textStyleText = '#' + playerElement.id + ' .jw-video::cue {';
+
+            // In Safari, the cue element is a span and has a parent backdrop div
+            var backdropStyleText =  '#' + playerElement.id + ' .jw-video::-webkit-media-text-track-display-backdrop {';
+
+            if (textStyle.color) {
+                textStyleText += ' color: ' + textStyle.color + ';';
+            }
+
+            if (textStyle.fontFamily) {
+                textStyleText += ' font-family: "' + textStyle.fontFamily + '";';
+            }
+
+            if (textStyle.fontStyle) {
+                textStyleText += ' font-style: ' + textStyle.fontStyle + ';';
+            }
+
+            if (textStyle.fontWeight) {
+                textStyleText += ' font-weight: ' + textStyle.fontWeight + ';';
+            }
+
+            if (textStyle.backgroundColor) {
+                textStyleText += ' background-color: ' + textStyle.backgroundColor + ';';
+                // Style text background in Safari. Needs to be !important to override browser style
+                backdropStyleText += ' background-color: ' + textStyle.backgroundColor + ' !important;';
+            } else if (textStyle.textShadow) {
+                textStyleText += ' text-shadow: ' + textStyle.textShadow + ';';
+            }
+            textStyleText += '}';
+            backdropStyleText += '}';
+
+
+
+            var style = document.createElement('style');
+            style.textContent = windowStyleText + textStyleText + backdropStyleText;
+            playerElement.appendChild(style);
+        }
+
+        function addEdgeStyle(option, style, fontOpacity, useHexVal) {
             var color = cssUtils.hexToRgba('#000000', fontOpacity);
             if (option === 'dropshadow') { // small drop shadow
                 style.textShadow = '0 2px 1px ' + color;
