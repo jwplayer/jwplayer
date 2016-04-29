@@ -198,6 +198,9 @@ define([
             }
             _setAudioTracks(_videotag.audioTracks);
             _setTextTracks(_videotag.textTracks);
+            if (_videotag.textTracks.length) {
+                _videotag.setAttribute('crossorigin', 'anonymous');
+            }
             _videotag.setAttribute('jw-loaded', 'data');
         }
 
@@ -571,7 +574,6 @@ define([
             if (!tracks) {
                 return;
             }
-            var crossoriginAnonymous = false;
             for (var i = 0; i < tracks.length; i++) {
                 var itemTrack = tracks[i];
                 // only add .vtt or .webvtt files
@@ -581,11 +583,6 @@ define([
                 // only add valid kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
                 if (!(/subtitles|captions|descriptions|chapters|metadata/i).test(itemTrack.kind)) {
                     continue;
-                }
-                if (!crossoriginAnonymous) {
-                    // CORS applies to track loading and requires the crossorigin attribute
-                    _videotag.setAttribute('crossorigin', 'anonymous');
-                    crossoriginAnonymous = true;
                 }
                 var track = document.createElement('track');
                 track.src     = itemTrack.file;
