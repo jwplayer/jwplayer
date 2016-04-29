@@ -14,7 +14,8 @@ define([
     'view/rightclick',
     'view/title',
     'utils/underscore',
-    'templates/player.html'
+    'templates/player.html',
+    'css/jwplayer.less'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, _, playerTemplate) {
@@ -65,6 +66,12 @@ define([
             _focusFromClick = false,
 
             _this = _.extend(this, Events);
+
+        // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
+        // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
+        if (window.webpackJsonpjwplayer) {
+            require('css/icon-fonts.less');
+        }
 
         this.model = _model;
         this.api = _api;
