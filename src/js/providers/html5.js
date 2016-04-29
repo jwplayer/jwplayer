@@ -518,7 +518,8 @@ define([
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
             _activeCuePosition = -1;
-            if(!_visualQuality.reason) {
+            _videotag.removeAttribute('crossorigin');
+            if (!_visualQuality.reason) {
                 _visualQuality.reason = 'initial choice';
                 _visualQuality.level = {};
             }
@@ -541,6 +542,7 @@ define([
         function _clearVideotagSource() {
             if (_videotag) {
                 disableTextTrack();
+                _videotag.removeAttribute('crossorigin');
                 _videotag.removeAttribute('src');
                 dom.emptyElement(_videotag);
                 _currentQuality = -1;
@@ -571,7 +573,6 @@ define([
             if (!tracks) {
                 return;
             }
-            var crossoriginAnonymous = false;
             for (var i = 0; i < tracks.length; i++) {
                 var itemTrack = tracks[i];
                 // only add .vtt or .webvtt files
@@ -581,11 +582,6 @@ define([
                 // only add valid kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
                 if (!(/subtitles|captions|descriptions|chapters|metadata/i).test(itemTrack.kind)) {
                     continue;
-                }
-                if (!crossoriginAnonymous) {
-                    // CORS applies to track loading and requires the crossorigin attribute
-                    _videotag.setAttribute('crossorigin', 'anonymous');
-                    crossoriginAnonymous = true;
                 }
                 var track = document.createElement('track');
                 track.src     = itemTrack.file;
@@ -1136,7 +1132,7 @@ define([
                     else if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
                         // set subtitles Off by default
                         tracks[i].mode = 'disabled';
-                        if(!_textTracks) {
+                        if (!_textTracks) {
                             _textTracks = [];
                         }
                         _textTracks.push(tracks[i]);
@@ -1164,10 +1160,10 @@ define([
                    track.mode = 'disabled';
                 });
             }
-            if(index > 0 && index <= _textTracks.length) {
+            if (index > 0 && index <= _textTracks.length) {
                 _currentTextTrackIndex = index - 1;
+                _videotag.setAttribute('crossorigin', 'anonymous');
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
-
             } else {
                 _currentTextTrackIndex = -1;
             }
