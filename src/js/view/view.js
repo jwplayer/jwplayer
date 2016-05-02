@@ -66,6 +66,12 @@ define([
 
             _this = _.extend(this, Events);
 
+        // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
+        // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
+        if (window.webpackJsonpjwplayer) {
+            require('css/jwplayer.less');
+        }
+
         this.model = _model;
         this.api = _api;
 
