@@ -206,6 +206,7 @@ define([
                 return;
             }
             _videotag.setAttribute('jw-loaded', 'started');
+            _setupSideloadedTracks(_itemTracks);
         }
 
         function _clickHandler(evt) {
@@ -478,7 +479,6 @@ define([
             if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
-                _setupSideloadedTracks(_itemTracks);
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
@@ -518,7 +518,7 @@ define([
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
             _activeCuePosition = -1;
-            if(!_visualQuality.reason) {
+            if (!_visualQuality.reason) {
                 _visualQuality.reason = 'initial choice';
                 _visualQuality.level = {};
             }
@@ -541,7 +541,12 @@ define([
         function _clearVideotagSource() {
             if (_videotag) {
                 disableTextTrack();
+                _videotag.removeAttribute('crossorigin');
+                _videotag.removeAttribute('preload');
                 _videotag.removeAttribute('src');
+                _videotag.removeAttribute('jw-loaded');
+                _videotag.removeAttribute('jw-played');
+
                 dom.emptyElement(_videotag);
                 _currentQuality = -1;
                 _itemTracks = null;
@@ -557,11 +562,8 @@ define([
             if (_isSDK || !canRenderNatively) {
                 return;
             }
-            // Add tracks if we're playing the item for the first time or resuming playback after a midroll
-            if (tracks !== _itemTracks || tracks.length && !_videotag.textTracks.length) {
-                disableTextTrack();
+            if (tracks && tracks.length) {
                 dom.emptyElement(_videotag);
-                _itemTracks = tracks;
                 _addTracksToVideoTag(tracks);
             }
         }
@@ -571,7 +573,6 @@ define([
             if (!tracks) {
                 return;
             }
-            var crossoriginAnonymous = false;
             for (var i = 0; i < tracks.length; i++) {
                 var itemTrack = tracks[i];
                 // only add .vtt or .webvtt files
@@ -582,10 +583,10 @@ define([
                 if (!(/subtitles|captions|descriptions|chapters|metadata/i).test(itemTrack.kind)) {
                     continue;
                 }
-                if (!crossoriginAnonymous) {
+                var requiresCorsAttribute = !_videotag.hasAttribute('crossorigin') && utils.crossdomain(itemTrack.file);
+                if (requiresCorsAttribute) {
                     // CORS applies to track loading and requires the crossorigin attribute
                     _videotag.setAttribute('crossorigin', 'anonymous');
-                    crossoriginAnonymous = true;
                 }
                 var track = document.createElement('track');
                 track.src     = itemTrack.file;
@@ -644,7 +645,6 @@ define([
             if (!_attached) {
                 return;
             }
-            _itemTracks = null;
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
             // the loadeddata event determines the mediaType for HLS sources
@@ -654,9 +654,9 @@ define([
 
             _position = item.starttime || 0;
             _duration = item.duration || 0;
+            _itemTracks = item.tracks;
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
-            _setupSideloadedTracks(item.tracks);
         };
 
         this.load = function(item) {
@@ -673,6 +673,7 @@ define([
                 // don't change state on mobile before user initiates playback
                 _this.setState(states.LOADING);
             }
+            _itemTracks = item.tracks;
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
@@ -1136,7 +1137,7 @@ define([
                     else if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
                         // set subtitles Off by default
                         tracks[i].mode = 'disabled';
-                        if(!_textTracks) {
+                        if (!_textTracks) {
                             _textTracks = [];
                         }
                         _textTracks.push(tracks[i]);
@@ -1164,10 +1165,9 @@ define([
                    track.mode = 'disabled';
                 });
             }
-            if(index > 0 && index <= _textTracks.length) {
+            if (index > 0 && index <= _textTracks.length) {
                 _currentTextTrackIndex = index - 1;
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
-
             } else {
                 _currentTextTrackIndex = -1;
             }
