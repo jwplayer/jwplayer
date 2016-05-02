@@ -15,7 +15,7 @@ define([
         };
 
         var stylesRed = {
-            'background-color': 'red'
+            backgroundColor: 'red'
         };
 
         css.css(testSelector, stylesBlue);
