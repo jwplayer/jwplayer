@@ -127,6 +127,7 @@ define([
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
                 _model.set('playlist', data.playlist);
+                _model.set('feedid', data.feedid);
                 resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
