@@ -11,8 +11,15 @@ define([
             _styleSheet.type = 'text/css';
             document.getElementsByTagName('head')[0].appendChild(_styleSheet);
         }
-        var cssText = selector + JSON.stringify(styles).replace(/"/g, '');
-        var node = document.createTextNode(cssText);
+        var cssText = '';
+        if (typeof styles === 'object') {
+            var el = document.createElement('div');
+            _style(el,styles);
+            cssText = '{' + el.style.cssText + '}';
+        } else if (typeof styles === 'string') {
+            cssText = styles;
+        }
+        var node = document.createTextNode(selector + cssText);
         if (_styleRules[selector]) {
             _styleSheet.removeChild(_styleRules[selector]);
         }
