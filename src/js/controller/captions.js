@@ -41,7 +41,7 @@ define([
             }
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
-            _selectDefaultIndex();
+            _selectDefaultIndex(e.defaultIndex);
         }
 
         // Append data to subtitle tracks
@@ -260,8 +260,8 @@ define([
             return list;
         }
 
-        function _selectDefaultIndex() {
-            var captionsMenuIndex = 0;
+        function _selectDefaultIndex(index) {
+            var captionsMenuIndex = index || 0;
             var label = _model.get('captionLabel');
 
             // Because there is no explicit track for "Off"
