@@ -102,7 +102,7 @@
                 'templates/slider.html': 'handlebars-loader!templates/slider.html',
                 'templates/menu.html': 'handlebars-loader!templates/menu.html',
                 'templates/playlist.html': 'handlebars-loader!templates/playlist.html',
-                '../css/jwplayer.less': 'less!css/jwplayer',
+                'css/jwplayer.less': 'less!css/jwplayer',
                 'utils/video': mock + '/video.js'
             }
         },
