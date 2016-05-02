@@ -162,7 +162,6 @@ define([
             _textTracks = null,
             _audioTracks = null,
             _currentTextTrackIndex = -1,
-            _defaultTextTrackIndex = -1,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
             _itemTracks = null,
@@ -518,7 +517,6 @@ define([
             _audioTracks = null;
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
-            _defaultTextTrackIndex = -1;
             _activeCuePosition = -1;
             if (!_visualQuality.reason) {
                 _visualQuality.reason = 'initial choice';
@@ -596,9 +594,7 @@ define([
                 track.srclang = itemTrack.language || '';
                 track.label   = itemTrack.label;
                 track.mode    = 'disabled';
-                if(itemTrack.default || itemTrack.defaulttrack) {
-                    _defaultTextTrackIndex = i;
-                }
+                track.id = itemTrack.default || itemTrack.defaulttrack ? 'default' : '';
                 _videotag.appendChild(track);
             }
         }
@@ -1151,11 +1147,7 @@ define([
             }
             _addTracksListener(tracks, 'change', _textTrackChangeHandler);
             if (_textTracks && _textTracks.length) {
-                var subtitlesTracks =  { tracks: _textTracks };
-                if (_defaultTextTrackIndex > -1) {
-                    subtitlesTracks.defaultIndex = _defaultTextTrackIndex + 1;
-                }
-                _this.trigger('subtitlesTracks', subtitlesTracks);
+                _this.trigger('subtitlesTracks', { tracks: _textTracks });
             }
         }
 

@@ -41,7 +41,7 @@ define([
             }
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
-            _selectDefaultIndex(e.defaultIndex);
+            _selectDefaultIndex();
         }
 
         // Append data to subtitle tracks
@@ -260,8 +260,8 @@ define([
             return list;
         }
 
-        function _selectDefaultIndex(index) {
-            var captionsMenuIndex = index || 0;
+        function _selectDefaultIndex() {
+            var captionsMenuIndex = 0;
             var label = _model.get('captionLabel');
 
             // Because there is no explicit track for "Off"
@@ -276,7 +276,7 @@ define([
                 if (label && label === track.label) {
                     captionsMenuIndex = i + 1;
                     break;
-                } else if (track['default'] || track.defaulttrack) {
+                } else if (track['default'] || track.defaulttrack || track.id === 'default') {
                     captionsMenuIndex = i + 1;
                 } else if (track.autoselect) {
                     // TODO: auto select track by comparing track.language to system lang
