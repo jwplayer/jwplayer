@@ -196,8 +196,14 @@ module.exports = function(grunt) {
                     loaders: [
                         {
                             test: /\.less$/,
-                            loader: 'style!css!autoprefixer?browsers=' + autoprefixBrowsers +
-                                    '!less?compress'
+                            loaders: [
+                                // custom style-loader in src/js/view/ removes source maps with base64 url
+                                // TODO: optimize by using jwplayer utils.css() (may require updates to util)
+                                './style-loader',
+                                'css',
+                                'autoprefixer?browsers=' + autoprefixBrowsers,
+                                'less?compress'
+                            ]
                         },
                         {
                             test: /\.html$/,
