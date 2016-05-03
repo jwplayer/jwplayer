@@ -276,7 +276,7 @@ define([
                 if (label && label === track.label) {
                     captionsMenuIndex = i + 1;
                     break;
-                } else if (track['default'] || track.defaulttrack) {
+                } else if (track['default'] || track.defaulttrack || track.id === 'default') {
                     captionsMenuIndex = i + 1;
                 } else if (track.autoselect) {
                     // TODO: auto select track by comparing track.language to system lang

@@ -594,6 +594,7 @@ define([
                 track.srclang = itemTrack.language || '';
                 track.label   = itemTrack.label;
                 track.mode    = 'disabled';
+                track.id = itemTrack.default || itemTrack.defaulttrack ? 'default' : '';
                 _videotag.appendChild(track);
             }
         }
