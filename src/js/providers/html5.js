@@ -585,11 +585,12 @@ define([
                 if (!(/subtitles|captions|descriptions|chapters|metadata/i).test(itemTrack.kind)) {
                     continue;
                 }
-                var requiresCorsAttribute = !_videotag.hasAttribute('crossorigin') && utils.crossdomain(itemTrack.file);
-                if (requiresCorsAttribute && !crossoriginAnonymous) {
+                if (!crossoriginAnonymous) {
                     // CORS applies to track loading and requires the crossorigin attribute
-                    _videotag.setAttribute('crossorigin', 'anonymous');
-                    crossoriginAnonymous = true;
+                    if (!_videotag.hasAttribute('crossorigin') && utils.crossdomain(itemTrack.file)) {
+                        _videotag.setAttribute('crossorigin', 'anonymous');
+                        crossoriginAnonymous = true;
+                    }
                 }
                 var track = document.createElement('track');
                 track.src     = itemTrack.file;
