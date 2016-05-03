@@ -206,7 +206,6 @@ define([
                 return;
             }
             _videotag.setAttribute('jw-loaded', 'started');
-            _setupSideloadedTracks(_itemTracks);
         }
 
         function _clickHandler(evt) {
@@ -479,6 +478,7 @@ define([
             if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
+                _setupSideloadedTracks(_itemTracks);
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
@@ -563,6 +563,7 @@ define([
                 return;
             }
             if (tracks && tracks.length) {
+                disableTextTrack();
                 dom.emptyElement(_videotag);
                 _addTracksToVideoTag(tracks);
             }
@@ -573,6 +574,7 @@ define([
             if (!tracks) {
                 return;
             }
+            var crossoriginAnonymous = false;
             for (var i = 0; i < tracks.length; i++) {
                 var itemTrack = tracks[i];
                 // only add .vtt or .webvtt files
@@ -584,9 +586,10 @@ define([
                     continue;
                 }
                 var requiresCorsAttribute = !_videotag.hasAttribute('crossorigin') && utils.crossdomain(itemTrack.file);
-                if (requiresCorsAttribute) {
+                if (requiresCorsAttribute && !crossoriginAnonymous) {
                     // CORS applies to track loading and requires the crossorigin attribute
                     _videotag.setAttribute('crossorigin', 'anonymous');
+                    crossoriginAnonymous = true;
                 }
                 var track = document.createElement('track');
                 track.src     = itemTrack.file;
@@ -658,6 +661,7 @@ define([
             _itemTracks = item.tracks;
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
+            _setupSideloadedTracks(item.tracks);
         };
 
         this.load = function(item) {
@@ -1195,7 +1199,7 @@ define([
         }
 
         function disableTextTrack() {
-            if(_textTracks && _textTracks[_currentTextTrackIndex]) {
+            if (_textTracks && _textTracks[_currentTextTrackIndex]) {
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
             }
         }
