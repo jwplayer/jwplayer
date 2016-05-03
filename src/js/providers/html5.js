@@ -562,9 +562,11 @@ define([
             if (_isSDK || !canRenderNatively) {
                 return;
             }
-            if (tracks && tracks.length) {
+            // Add tracks if we're playing the item for the first time or resuming playback after a midroll
+            if (tracks !== _itemTracks || (tracks.length && !_videotag.textTracks.length)) {
                 disableTextTrack();
                 dom.emptyElement(_videotag);
+                _itemTracks = tracks;
                 _addTracksToVideoTag(tracks);
             }
         }
@@ -650,6 +652,7 @@ define([
             if (!_attached) {
                 return;
             }
+            _itemTracks = null;
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
             // the loadeddata event determines the mediaType for HLS sources
@@ -659,7 +662,6 @@ define([
 
             _position = item.starttime || 0;
             _duration = item.duration || 0;
-            _itemTracks = item.tracks;
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
             _setupSideloadedTracks(item.tracks);
@@ -679,7 +681,6 @@ define([
                 // don't change state on mobile before user initiates playback
                 _this.setState(states.LOADING);
             }
-            _itemTracks = item.tracks;
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
