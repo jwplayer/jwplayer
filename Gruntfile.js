@@ -199,7 +199,7 @@ module.exports = function(grunt) {
                             loaders: [
                                 // custom style-loader in src/js/view/ removes source maps with base64 url
                                 // TODO: optimize by using jwplayer utils.css() (may require updates to util)
-                                './style-loader',
+                                'simple-style-loader',
                                 'css',
                                 'autoprefixer?browsers=' + autoprefixBrowsers,
                                 'less?compress'
