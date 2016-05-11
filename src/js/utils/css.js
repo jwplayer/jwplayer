@@ -9,6 +9,7 @@ define([
         if (!_styleSheet) {
             _styleSheet = document.createElement('style');
             _styleSheet.type = 'text/css';
+            _styleSheet.id = 'jwplayer-styles';
             document.getElementsByTagName('head')[0].appendChild(_styleSheet);
         }
         var cssText = '';
