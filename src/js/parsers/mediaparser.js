@@ -74,7 +74,7 @@ define([
 
                             var mediaTypes = findMediaTypes(node);
                             if (mediaTypes.length) {
-                                sources['mediaTypes'] = mediaTypes;
+                                sources.mediaTypes = mediaTypes;
                             }
 
                             itm.sources.push(sources);
@@ -126,7 +126,7 @@ define([
     };
 
     function findMediaTypes (contentNode) {
-        const mediaTypes = [];
+        var mediaTypes = [];
 
         for (var i = 0; i < _numChildren(contentNode); i++) {
             var node = contentNode.childNodes[i];
