@@ -21,10 +21,12 @@ define([
      * The 'content' and 'group' elements can nest other MediaRSS elements.
      * @param    {XML}        obj        The entire MRSS XML object.
      * @param    {Object}    itm        The playlistentry to amend the object to.
-     * @return    {Object}            The playlistentry, amended with the MRSS info.
+     * @return    {Object}            The playl
+     * istentry, amended with the MRSS info.
      **/
     // formally known as parseGroup
     var mediaparser = function (obj, itm) {
+
         var node,
             i,
             tracks = 'tracks',
@@ -49,7 +51,6 @@ define([
             }
             return code;
         }
-
         for (i = 0; i < _numChildren(obj); i++) {
             node = obj.childNodes[i];
             if (node.prefix === PREFIX) {
@@ -58,23 +59,29 @@ define([
                 }
                 switch (_localName(node).toLowerCase()) {
                     case 'content':
-                        //itm['file'] = _xmlAttribute(node, 'url');
                         if (_xmlAttribute(node, 'duration')) {
                             itm.duration = utils.seconds(_xmlAttribute(node, 'duration'));
-                        }
-                        if (_numChildren(node) > 0) {
-                            itm = mediaparser(node, itm);
                         }
                         if (_xmlAttribute(node, 'url')) {
                             if (!itm.sources) {
                                 itm.sources = [];
                             }
-                            itm.sources.push({
+                            var sources = {
                                 file: _xmlAttribute(node, 'url'),
                                 type: _xmlAttribute(node, 'type'),
                                 width: _xmlAttribute(node, 'width'),
                                 label: _xmlAttribute(node, 'label')
-                            });
+                            };
+
+                            var mediaTypes = findMediaTypes(node, itm);
+                            if (mediaTypes.length) {
+                                sources['mediaTypes'] = mediaTypes;
+                            }
+
+                            itm.sources.push(sources);
+                        }
+                        if (_numChildren(node) > 0) {
+                            itm = mediaparser(node, itm);
                         }
                         break;
                     case 'title':
@@ -116,9 +123,21 @@ define([
         for (i = 0; i < captions.length; i++) {
             itm[tracks].push(captions[i]);
         }
-
         return itm;
     };
+
+    function findMediaTypes (contentNode) {
+        const mediaTypes = [];
+
+        for (var i = 0; i < _numChildren(contentNode); i++) {
+            var node = contentNode.childNodes[i];
+            if (_localName(node).toLowerCase() === 'mediatypes') {
+                mediaTypes.push(_textContent(node));
+            }
+        }
+
+        return mediaTypes;
+    }
 
     return mediaparser;
 });
