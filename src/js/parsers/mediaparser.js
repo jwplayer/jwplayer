@@ -72,7 +72,7 @@ define([
                                 label: _xmlAttribute(node, 'label')
                             };
 
-                            var mediaTypes = findMediaTypes(node, itm);
+                            var mediaTypes = findMediaTypes(node);
                             if (mediaTypes.length) {
                                 sources['mediaTypes'] = mediaTypes;
                             }
