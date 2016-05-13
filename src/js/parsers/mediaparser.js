@@ -130,7 +130,7 @@ define([
 
         for (var i = 0; i < _numChildren(contentNode); i++) {
             var node = contentNode.childNodes[i];
-            if (_localName(node).toLowerCase() === 'mediatypes') {
+            if (node.prefix === 'jwplayer' && _localName(node).toLowerCase() === 'mediatypes') {
                 mediaTypes.push(_textContent(node));
             }
         }
