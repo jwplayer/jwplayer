@@ -21,8 +21,7 @@ define([
      * The 'content' and 'group' elements can nest other MediaRSS elements.
      * @param    {XML}        obj        The entire MRSS XML object.
      * @param    {Object}    itm        The playlistentry to amend the object to.
-     * @return    {Object}            The playl
-     * istentry, amended with the MRSS info.
+     * @return    {Object}            The playlistentry, amended with the MRSS info.
      **/
     // formally known as parseGroup
     var mediaparser = function (obj, itm) {
