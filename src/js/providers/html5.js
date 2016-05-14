@@ -563,7 +563,7 @@ define([
                 return;
             }
             // Add tracks if we're playing the item for the first time or resuming playback after a midroll
-            if (tracks !== _itemTracks || (tracks.length && !_videotag.textTracks.length)) {
+            if (tracks !== _itemTracks || (tracks && tracks.length && !_videotag.textTracks.length)) {
                 disableTextTrack();
                 dom.emptyElement(_videotag);
                 _itemTracks = tracks;
