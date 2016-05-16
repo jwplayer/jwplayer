@@ -114,8 +114,4 @@
         // start test run, once Require.js is done
         callback: callback
     });
-
-    define('simple-style-loader', function () {
-        return require('simple-style-loader');
-    });
 })();

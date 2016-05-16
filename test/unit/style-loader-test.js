@@ -27,6 +27,14 @@ define([
         assert.notEqual(actual[0].innerHTML.indexOf('foo{color: red;}'), -1);
     });
 
+    test('cssUtils.styleLoader() functionality', function (assert) {
+        expect(2);
+        cssUtils.styleLoader(['foo', 'color: red']);
+        var actual = document.getElementsByTagName('style');
+        assert.ok(actual[0]);
+        assert.notEqual(actual[0].innerHTML.indexOf('foo{color: red;}'), -1);
+    });
+
     test('cssUtils performance', function (assert) {
         expect(0);
         var start, end;

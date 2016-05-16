@@ -1,6 +1,7 @@
 define([
-    'utils/strings'
-], function(Strings) {
+    'utils/strings',
+    'simple-style-loader/addStyles'
+], function(Strings, styleLoader) {
 
     var _styleRules = {},
         _styleSheet;
@@ -135,6 +136,7 @@ define([
         style : _style,
         clearCss : _clearCss,
         transform : transform,
-        hexToRgba : hexToRgba
+        hexToRgba : hexToRgba,
+        styleLoader: styleLoader
     };
 });
