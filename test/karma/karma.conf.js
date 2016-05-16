@@ -50,6 +50,7 @@ module.exports = function( config ) {
             //3rd Party Code
             {pattern: 'bower_components/requirejs/require.js', included: true},
             {pattern: 'bower_components/**/*.js', included: false},
+            {pattern: 'foo/addStyles.js', included: false},
 
             // Require Config
             {pattern: 'test/config.js', included: true},
@@ -64,7 +65,7 @@ module.exports = function( config ) {
             {pattern: 'test/data/*.json', included: false},
             {pattern: 'test/data/*.xml', included: false},
             {pattern: 'test/mock/*.js', included: false},
-            {pattern: 'test/unit/*.js', included: false}
+            {pattern: 'test/unit/*.js', included: false},
         ],
 
         // preprocess matching files before serving them to the browser

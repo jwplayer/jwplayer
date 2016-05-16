@@ -1,0 +1,72 @@
+{
+  "_args": [
+    [
+      "simple-style-loader@~0.1.0",
+      "/Users/jbartos/code/jwplayer"
+    ]
+  ],
+  "_from": "simple-style-loader@>=0.1.0 <0.2.0",
+  "_id": "simple-style-loader@0.1.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/simple-style-loader",
+  "_nodeVersion": "0.12.2",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/simple-style-loader-0.1.0.tgz_1462482636626_0.6193332974798977"
+  },
+  "_npmUser": {
+    "email": "kyle@jwplayer.com",
+    "name": "kaurand"
+  },
+  "_npmVersion": "2.7.4",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "simple-style-loader",
+    "raw": "simple-style-loader@~0.1.0",
+    "rawSpec": "~0.1.0",
+    "scope": null,
+    "spec": ">=0.1.0 <0.2.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/simple-style-loader/-/simple-style-loader-0.1.0.tgz",
+  "_shasum": "f5fa723283f9eb01d43d98e9fbb6c68e33c248df",
+  "_shrinkwrap": null,
+  "_spec": "simple-style-loader@~0.1.0",
+  "_where": "/Users/jbartos/code/jwplayer",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/jwplayer/simple-style-loader/issues"
+  },
+  "dependencies": {
+    "loader-utils": "^0.2.7"
+  },
+  "description": "simplified style loader module for webpack based on style-loader by Tobias Koppers @sokra",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "f5fa723283f9eb01d43d98e9fbb6c68e33c248df",
+    "tarball": "https://registry.npmjs.org/simple-style-loader/-/simple-style-loader-0.1.0.tgz"
+  },
+  "gitHead": "13c6a940bebbcdd95ec7ccc688498228286dd5d8",
+  "homepage": "https://github.com/jwplayer/simple-style-loader",
+  "license": "MIT",
+  "maintainers": [
+    {
+      "email": "kyle@jwplayer.com",
+      "name": "kaurand"
+    }
+  ],
+  "name": "simple-style-loader",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jwplayer/simple-style-loader.git"
+  },
+  "scripts": {},
+  "version": "0.1.0"
+}
