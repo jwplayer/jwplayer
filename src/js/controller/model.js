@@ -202,6 +202,12 @@ define([
                 }
             }
 
+            if (!Provider) {
+                _provider = _currentProvider = Provider;
+                this.set('provider', undefined);
+                return;
+            }
+
             _currentProvider = new Provider(_this.get('id'), _this.getConfiguration());
 
             var container = this.get('mediaContainer');
@@ -251,26 +257,29 @@ define([
 
 
         this.setActiveItem = function(item) {
-
             // Item is actually changing
             this.mediaModel.off();
             this.mediaModel = new MediaModel();
             this.set('mediaModel', this.mediaModel);
 
+            this.setProvider(item);
+        };
+
+        this.setProvider = function(item) {
             var source = item && item.sources && item.sources[0];
             if (source === undefined) {
                 // source is undefined when resetting index with empty playlist
                 return;
             }
 
-            var Provider = this.chooseProvider(source);
-            if (!Provider) {
-                throw new Error('No suitable provider found');
+            var provider = this.chooseProvider(source);
+            // If we are changing video providers
+            if (!provider || !(_currentProvider instanceof provider)) {
+                _this.changeVideoProvider(provider);
             }
 
-            // If we are changing video providers
-            if (!(_currentProvider instanceof Provider)) {
-                _this.changeVideoProvider(Provider);
+            if (!_currentProvider) {
+                return;
             }
 
             // this allows the providers to preload
