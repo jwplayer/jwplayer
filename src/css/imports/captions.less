@@ -45,6 +45,7 @@
     video::-webkit-media-text-track-container {
         // With 16 lines of captions, 1em ~= 6.25% of height
         max-height: calc(100% - 6.25 * (@controlbar-height));
+        line-height: 1.3em;
     }
     // Safari's coordinate system is at the bottom left, so we have to shift
     // captions up after adjusting the height to be above the controlbar.
