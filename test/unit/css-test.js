@@ -40,7 +40,7 @@ define([
         assert.ok(/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML),
             'css object correctly replaced');
 
-        css.clearCss('test-selector');
+        css.clearCss(playerId);
 
         // check clearCss works correctly
         assert.ok(!/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML), 'css correctly removed');

@@ -3,7 +3,6 @@ define(function (require, exports, module) {/*
  Author Tobias Koppers @sokra
  */
 
-// Styles added across all instances of style-loader
     var stylesInDom = {},
         playerStyleElements = {},
         memoize = function(fn) {
@@ -15,37 +14,33 @@ define(function (require, exports, module) {/*
         },
         getHeadElement = memoize(function () {
             return document.head || document.getElementsByTagName("head")[0];
-        }),
-        styleElementsInsertedAtTop = [];
+        });
 
-// Calling the exported function results in the creation of a new style tag
-// Calling the update function returned from the exported function updates the style tag
-    module.exports = function(list, options, playerId) {
-        console.log('yer using the new loader')
-        if(typeof DEBUG !== "undefined" && DEBUG) {
-            if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-        }
-
-        options = options || {};
-        // Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-        // tags it will allow on a page
-        if (typeof options.singleton === "undefined") options.singleton = true;
-
-        // By default, add <style> tags to the bottom of <head>.
-        if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-
-        var styles = listToStyles(list);
-        addStylesToDom(playerId, styles, options);
-
-        return function update(newList) {
-            if(newList) {
-                var newStyles = listToStyles(newList);
-                addStylesToDom(playerId, newStyles, options);
-            }
-        };
+    module.exports = {
+        style: style,
+        clear: clear
     };
 
-    function addStylesToDom(id, styles, options) {
+     function style (playerId, list) {
+        addStylesToDom(playerId, listToStyles(list));
+    }
+
+    function clear (playerId) {
+        var playerStyles = stylesInDom[playerId];
+        if (!playerStyles) {
+            return;
+        }
+        var styleKeys = Object.keys(playerStyles);
+        for (var i = 0; i < styleKeys.length; i += 1) {
+            var styleObj = playerStyles[styleKeys[i]];
+            for (var j = 0; j < styleObj.parts.length; j += 1) {
+                styleObj.parts[j]();
+            }
+        }
+        delete stylesInDom[playerId];
+    }
+
+    function addStylesToDom(id, styles) {
         for(var i = 0; i < styles.length; i++) {
             var item = styles[i];
             var domStyle = (stylesInDom[id] || {})[item.id];
@@ -55,12 +50,12 @@ define(function (require, exports, module) {/*
                     domStyle.parts[j](item.parts[j]);
                 }
                 for(; j < item.parts.length; j++) {
-                    domStyle.parts.push(addStyle(id, item.parts[j], options));
+                    domStyle.parts.push(addStyle(id, item.parts[j]));
                 }
             } else {
                 var parts = [];
                 for(var j = 0; j < item.parts.length; j++) {
-                    parts.push(addStyle(id, item.parts[j], options));
+                    parts.push(addStyle(id, item.parts[j]));
                 }
                 stylesInDom[id] = stylesInDom[id] || {};
                 stylesInDom[id][item.id] = {id: item.id, refs: 1, parts: parts};
@@ -86,47 +81,24 @@ define(function (require, exports, module) {/*
         return styles;
     }
 
-    function insertStyleElement(options, styleElement) {
-        var head = getHeadElement();
-        var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-        if (options.insertAt === "top") {
-            if(!lastStyleElementInsertedAtTop) {
-                head.insertBefore(styleElement, head.firstChild);
-            } else if(lastStyleElementInsertedAtTop.nextSibling) {
-                head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-            } else {
-                head.appendChild(styleElement);
-            }
-            styleElementsInsertedAtTop.push(styleElement);
-        } else if (options.insertAt === "bottom") {
-            head.appendChild(styleElement);
-        } else {
-            throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-        }
+    function insertStyleElement(styleElement) {
+        getHeadElement().appendChild(styleElement);
     }
 
-    function removeStyleElement(styleElement) {
-        styleElement.parentNode.removeChild(styleElement);
-        var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-        if(idx >= 0) {
-            styleElementsInsertedAtTop.splice(idx, 1);
-        }
-    }
-
-    function createStyleElement(options) {
+    function createStyleElement() {
         var styleElement = document.createElement("style");
         styleElement.type = "text/css";
-        insertStyleElement(options, styleElement);
+        insertStyleElement(styleElement);
         return styleElement;
     }
 
-    function addStyle(id, obj, options) {
+    function addStyle(id, obj) {
         var styleElement, update, remove;
         var singleton = playerStyleElements[id];
 
         if (!singleton) {
             singleton = playerStyleElements[id] = {
-                element: createStyleElement(options),
+                element: createStyleElement(),
                 counter: 0
             };
         }

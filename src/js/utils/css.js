@@ -12,12 +12,11 @@ define([
         } else if (typeof styles === 'string') {
             cssText = styles;
         }
-        styleLoader([[selector, selector + cssText]], {}, playerId);
+        styleLoader.style(playerId, [[selector, selector + cssText]]);
     };
 
     var _style = function (elements, styles) {
         if (elements === undefined || elements === null) {
-            //utils.log('css.style invalid elements: '+ elements +' '+ JSON.stringify(styles) +' '+ immediate);
             return;
         }
         if (elements.length === undefined) {
@@ -76,11 +75,6 @@ define([
         return Math.ceil(value) + 'px' + importantString;
     }
 
-    // Removes all css elements which match a particular style
-    var _clearCss = function(filter) {
-        
-    };
-
     var transform = function (element, value) {
         _style(element, {
             transform: value,
@@ -116,7 +110,7 @@ define([
     return {
         css : _css,
         style : _style,
-        clearCss : _clearCss,
+        clearCss : styleLoader.clear,
         transform : transform,
         hexToRgba : hexToRgba,
         styleLoader: styleLoader
