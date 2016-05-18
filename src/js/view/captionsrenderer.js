@@ -195,15 +195,15 @@ define([
 
         function setupShadowDOMStyles(playerElementId, windowStyle, textStyle) {
             // Caption window styles
-            cssUtils.css('#' + playerElementId + ' .jw-video::-webkit-media-text-track-display', windowStyle);
+            cssUtils.css(playerElementId, '#' + playerElementId + ' .jw-video::-webkit-media-text-track-display', windowStyle);
 
             // Caption text styles
-            cssUtils.css('#' + playerElementId + ' .jw-video::cue', textStyle);
+            cssUtils.css(playerElementId, '#' + playerElementId + ' .jw-video::cue', textStyle);
 
             // Caption text background style in Safari needs to be important to override browser style
             if (textStyle.backgroundColor) {
                 var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
-                cssUtils.css('#' + playerElementId + ' .jw-video::-webkit-media-text-track-display-backdrop',
+                cssUtils.css(playerElementId, '#' + playerElementId + ' .jw-video::-webkit-media-text-track-display-backdrop',
                     backdropStyle);
             }
         }

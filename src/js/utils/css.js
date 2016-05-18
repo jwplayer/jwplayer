@@ -78,12 +78,7 @@ define([
 
     // Removes all css elements which match a particular style
     var _clearCss = function(filter) {
-        // for (var selector in _styleRules) {
-        //     if (selector.indexOf(filter) >= 0) {
-        //         _styleSheet.removeChild(_styleRules[selector]);
-        //         delete _styleRules[selector];
-        //     }
-        // }
+        
     };
 
     var transform = function (element, value) {
