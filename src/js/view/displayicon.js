@@ -11,11 +11,37 @@ define([
 
         this.model = _model;
 
-        this.el = utils.createElement(Template({}));
+        this.el = utils.createElement(Template({ariaLabel: this.model.get('aria')['jw-icon-playback']}));
 
         var _this = this;
         this.iconUI = new UI (this.el).on('click tap', function(evt){_this.trigger(evt.type);});
 
+        this.model.on('change:state', function(model, newstate) {
+            var iconDisplay = _this.el.getElementsByClassName('jw-icon-display');
+            if (iconDisplay.length) {
+                var aria = _this.model.get('aria');
+                var newstateLabel = aria['jw-icon-playback'];
+                switch (newstate) {
+                    case 'buffering':
+                        newstateLabel = aria['jw-icon-buffering'];
+                        break;
+                    case 'playing':
+                        newstateLabel = aria['jw-icon-pause'];
+                        break;
+                    case 'complete':
+                        newstateLabel = aria['jw-icon-replay'];
+                        break;
+                    case 'error':
+                        newstateLabel = '';
+                        break;
+                }
+                if (newstateLabel ==='') {
+                    iconDisplay[0].removeAttribute('aria-label');
+                } else {
+                    iconDisplay[0].setAttribute('aria-label', newstateLabel);
+                }
+            }
+        });
     };
 
     _.extend(DisplayIcon.prototype, {
