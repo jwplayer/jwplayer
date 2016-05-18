@@ -3,15 +3,7 @@ define([
     'simple-style-loader/addStyles'
 ], function(Strings, styleLoader) {
 
-    var _styleRules = {},
-        _styleSheet;
-
     var _css = function(selector, styles) {
-        if (!_styleSheet) {
-            _styleSheet = document.createElement('style');
-            _styleSheet.type = 'text/css';
-            document.getElementsByTagName('head')[0].appendChild(_styleSheet);
-        }
         var cssText = '';
         if (typeof styles === 'object') {
             var el = document.createElement('div');
@@ -20,10 +12,13 @@ define([
         } else if (typeof styles === 'string') {
             cssText = styles;
         }
+        console.log(selector + ' ' + cssText);
         var node = document.createTextNode(selector + cssText);
         if (_styleRules[selector]) {
             _styleSheet.removeChild(_styleRules[selector]);
         }
+        // styleLoader([[selector, cssText]]);
+
         _styleRules[selector] = node;
         _styleSheet.appendChild(node);
     };

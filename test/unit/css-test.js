@@ -7,6 +7,7 @@ define([
     var test = QUnit.test.bind(QUnit);
 
     test('css.css and css.clearCss', function(assert) {
+        console.log(document.getElementsByTagName('style'))
         var count = document.getElementsByTagName('style').length;
 
         var testSelector = 'test-selector';
