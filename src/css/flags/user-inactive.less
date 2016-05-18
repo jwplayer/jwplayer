@@ -1,5 +1,3 @@
-@import "../imports/mixins";
-
 .jwplayer.jw-flag-user-inactive {
     &.jw-state-playing {
         .jw-controlbar,
@@ -20,9 +18,8 @@
             -webkit-cursor-visibility: auto-hide;
         }
         video::-webkit-media-text-track-container {
-            max-height: 100%;
+            max-height: none;
         }
-        .safari-only-captions-position(0, 0);
     }
 
     &.jw-state-buffering {

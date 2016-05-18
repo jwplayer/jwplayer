@@ -58,22 +58,6 @@
     }
 }
 
-.safari-only-captions-position(@margin, @translation) {
-
-    // this detects Safari 9+
-    // http://browserstrangeness.bitbucket.org/css_hacks.html#webkit
-
-    @supports ((overflow:-webkit-marquee) and (justify-content:inherit)) or (hanging-punctuation:allow-end) {
-        video::-webkit-media-text-track-container {
-            top: @margin;
-        }
-
-        video::-webkit-media-text-track-display {
-            transform: translateY(@translation);
-        }
-    }
-}
-
 // Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316
 
 /* Mixin for common skin styles with variable colors */
