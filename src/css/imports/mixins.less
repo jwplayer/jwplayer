@@ -63,14 +63,13 @@
     // this detects Safari 9+
     // http://browserstrangeness.bitbucket.org/css_hacks.html#webkit
 
-    @supports (overflow:-webkit-marquee) {
-        @supports (justify-content:inherit) {
-            video::-webkit-media-text-track-container {
-                top: @margin;
-            }
-            video::-webkit-media-text-track-display {
-                transform: translateY(@translation);
-            }
+    @supports ((overflow:-webkit-marquee) and (justify-content:inherit)) or (hanging-punctuation:allow-end) {
+        video::-webkit-media-text-track-container {
+            top: @margin;
+        }
+
+        video::-webkit-media-text-track-display {
+            transform: translateY(@translation);
         }
     }
 }
