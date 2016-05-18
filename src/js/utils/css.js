@@ -3,7 +3,7 @@ define([
     'simple-style-loader/addStyles'
 ], function(Strings, styleLoader) {
 
-    var _css = function(selector, styles) {
+    var _css = function(playerId, selector, styles) {
         var cssText = '';
         if (typeof styles === 'object') {
             var el = document.createElement('div');
@@ -12,15 +12,7 @@ define([
         } else if (typeof styles === 'string') {
             cssText = styles;
         }
-        console.log(selector + ' ' + cssText);
-        var node = document.createTextNode(selector + cssText);
-        if (_styleRules[selector]) {
-            _styleSheet.removeChild(_styleRules[selector]);
-        }
-        // styleLoader([[selector, cssText]]);
-
-        _styleRules[selector] = node;
-        _styleSheet.appendChild(node);
+        styleLoader([[selector, selector + cssText]], {}, playerId);
     };
 
     var _style = function (elements, styles) {
@@ -86,12 +78,12 @@ define([
 
     // Removes all css elements which match a particular style
     var _clearCss = function(filter) {
-        for (var selector in _styleRules) {
-            if (selector.indexOf(filter) >= 0) {
-                _styleSheet.removeChild(_styleRules[selector]);
-                delete _styleRules[selector];
-            }
-        }
+        // for (var selector in _styleRules) {
+        //     if (selector.indexOf(filter) >= 0) {
+        //         _styleSheet.removeChild(_styleRules[selector]);
+        //         delete _styleRules[selector];
+        //     }
+        // }
     };
 
     var transform = function (element, value) {

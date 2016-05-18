@@ -13,19 +13,15 @@ define(function (require, exports, module) {/*
                 return memo;
             };
         },
-        isOldIE = memoize(function() {
-            return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-        }),
         getHeadElement = memoize(function () {
             return document.head || document.getElementsByTagName("head")[0];
         }),
-        singletonElement = null,
-        singletonCounter = 0,
         styleElementsInsertedAtTop = [];
 
 // Calling the exported function results in the creation of a new style tag
 // Calling the update function returned from the exported function updates the style tag
     module.exports = function(list, options, playerId) {
+        console.log('yer using the new loader')
         if(typeof DEBUG !== "undefined" && DEBUG) {
             if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
         }
@@ -38,40 +34,16 @@ define(function (require, exports, module) {/*
         // By default, add <style> tags to the bottom of <head>.
         if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
 
-        // playerStyleElements[playerId] = {
-        //     element: createStyleElement(options),
-        //     counter: 0
-        // };
-
         var styles = listToStyles(list);
         addStylesToDom(playerId, styles, options);
 
         return function update(newList) {
-            // Decrement the reference count of added styles
-            var mayRemove = [];
-            for(var i = 0; i < styles.length; i++) {
-                var item = styles[i];
-                var domStyle = stylesInDom[playerId][item.id];
-                domStyle.refs--;
-                mayRemove.push(domStyle);
-            }
-            // Reference counts will be incremented if an element with the same id is added
             if(newList) {
                 var newStyles = listToStyles(newList);
                 addStylesToDom(playerId, newStyles, options);
             }
-            // Remove dereferenced elements from dom & cache
-            // Doesn't remove style tag if no elements remaining
-            for(var i = 0; i < mayRemove.length; i++) {
-                var domStyle = mayRemove[i];
-                if(domStyle.refs === 0) {
-                    for(var j = 0; j < domStyle.parts.length; j++)
-                        domStyle.parts[j]();
-                    delete stylesInDom[playerId][domStyle.id];
-                }
-            }
         };
-    }
+    };
 
     function addStylesToDom(id, styles, options) {
         for(var i = 0; i < styles.length; i++) {
@@ -201,23 +173,4 @@ define(function (require, exports, module) {/*
             }
         }
     }
-
-    function applyToTag(styleElement, obj) {
-        var css = obj.css;
-        var media = obj.media;
-
-        if(media) {
-            styleElement.setAttribute("media", media)
-        }
-
-        if(styleElement.styleSheet) {
-            styleElement.styleSheet.cssText = css;
-        } else {
-            while(styleElement.firstChild) {
-                styleElement.removeChild(styleElement.firstChild);
-            }
-            styleElement.appendChild(document.createTextNode(css));
-        }
-    }
-
 });
