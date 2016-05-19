@@ -2,10 +2,9 @@ define([
     'api/api',
     'utils/underscore',
     'providers/providers',
-    'providers/providers-loaded',
     'providers/providers-supported',
     'plugins/plugins'
-], function(Api, _, Providers, ProvidersLoaded, ProvidersSupported, plugins) {
+], function(Api, _, Providers, ProvidersSupported, plugins) {
 
     var _instances = [],
         _uniqueIndex = 0;

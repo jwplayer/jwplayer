@@ -219,7 +219,7 @@ define([
                     index: _model.get('item'),
                     item: _model.get('playlistItem')
                 });
-                
+
                 _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
                     tracks: _model.get('captionsList'),
                     track: _model.get('captionsIndex')
@@ -636,9 +636,9 @@ define([
             this._seek = _seek;
             this._stop = _stop;
             this._load = _load;
-            this._playlistNext = _next;
-            this._playlistPrev = _prev;
-            this._playlistItem = _item;
+            this._next = _next;
+            this._prev = _prev;
+            this._item = _item;
             this._setCurrentCaptions = _setCurrentCaptions;
             this._setCurrentQuality = _setCurrentQuality;
 
@@ -649,7 +649,6 @@ define([
             this.setCurrentAudioTrack = _setCurrentAudioTrack;
             this.getCurrentAudioTrack = _getCurrentAudioTrack;
             this.getAudioTracks = _getAudioTracks;
-            this._getCurrentQuality = _getCurrentQuality;
             this.getCaptionsList = _getCaptionsList;
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
@@ -810,4 +809,3 @@ define([
 
     return Controller;
 });
-
