@@ -7,7 +7,6 @@ define([
     var test = QUnit.test.bind(QUnit);
 
     test('css.css and css.clearCss', function(assert) {
-        console.log(document.getElementsByTagName('style'))
         var playerId = 'css-testplayer';
         var count = document.getElementsByTagName('style').length;
 
@@ -21,7 +20,6 @@ define([
         };
 
         css.css(playerId, testSelector, stylesBlue);
-        console.log(document.getElementsByTagName('style'));
 
         // check that css.css accepts a style object and that a new style sheet has been added since
         // this is the first time calling css.css.
