@@ -73,6 +73,7 @@ define([
         };
 
         function _videoEventHandler(type, data) {
+            var evt = _.extend({}, data, {type: type});
             switch (type) {
                 case 'flashThrottle':
                     var throttled = (data.state !== 'resume');
@@ -93,8 +94,11 @@ define([
                     return;
 
                 case events.JWPLAYER_MEDIA_TYPE:
-                    this.mediaModel.set('mediaType', data.mediaType);
-                    break;
+                    if (this.mediaModel.get('mediaType') !== data.mediaType) {
+                        this.mediaModel.set('mediaType', data.mediaType);
+                        this.mediaController.trigger(type, evt);
+                    }
+                    return;
 
                 case events.JWPLAYER_PLAYER_STATE:
                     this.mediaModel.set('state', data.newstate);
@@ -164,7 +168,6 @@ define([
                     break;
             }
 
-            var evt = _.extend({}, data, {type: type});
             this.mediaController.trigger(type, evt);
         }
 
