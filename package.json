@@ -47,7 +47,7 @@
     "qunitjs": "^1.23.0",
     "raw-loader": "^0.5.1",
     "requirejs": "^2.2.0",
-    "simple-style-loader": "file:foo",
+    "simple-style-loader": "file:../simple-style-loader",
     "source-map": "^0.5.4",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.0"

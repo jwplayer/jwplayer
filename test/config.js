@@ -84,7 +84,7 @@
             'data': data,
             'mock': mock,
             'unit': unit,
-            'simple-style-loader': base + 'foo'
+            'simple-style-loader': base + 'node_modules/simple-style-loader'
         },
         shim: {
             'test/underscore': {

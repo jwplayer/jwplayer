@@ -50,7 +50,7 @@ module.exports = function( config ) {
             //3rd Party Code
             {pattern: 'bower_components/requirejs/require.js', included: true},
             {pattern: 'bower_components/**/*.js', included: false},
-            {pattern: 'foo/addStyles.js', included: false},
+            {pattern: 'node_modules/simple-style-loader/addStyles.js', included: false},
 
             // Require Config
             {pattern: 'test/config.js', included: true},
