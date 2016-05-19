@@ -1,8 +1,8 @@
 @import "../imports/mixins";
 
 .jw-skin-seven {
-    @active-color: #FF0046;
-    @inactive-color: #fff;
+    @active-color: #ffffff;
+    @inactive-color: rgb(153, 153, 153);
     
     @cc-inactive: @inactive-color;
     @cc-active: @active-color;
@@ -10,12 +10,11 @@
     @rail-height: .2em;
 
     .jw-background-color {
-        background: #000;
+        background: rgba(37, 37, 37, 0.7); 
     }
     
     /* Controlbar styles */
     .jw-controlbar {
-        border-top: #333 1px solid;
         height: 2.5em;
     }
 
@@ -91,7 +90,7 @@
     .jw-controlbar .jw-icon:before,
     .jw-text-elapsed,
     .jw-text-duration {
-        padding: 0 .7em;
+        padding: 0 .35em;
     }
 
     // Styling for the playlist, next and previous icons so it looks correct if the playlist icon is disabled
@@ -110,16 +109,9 @@
         font-size: .7em;
     }
 
-    .jw-icon-prev:before {
-        border-left: 1px solid #666;
-    }
-
-    .jw-icon-next:before {
-        border-right: 1px solid #666;
-    }
-
+ 
     .jw-icon-display {
-        color: #fff;
+        color: @inactive-color;
         
         &:before {
             padding-left: 0;
@@ -129,17 +121,21 @@
     /* Styles for play button on idle */
     .jw-display-icon-container {
         border-radius: 50%;
-        border: 1px solid #333;
+        width: 4.5em;
+        height: 4.5em;
+        margin: -2.25em auto 0;
+        
     }
     
     /* Rail/slider styles */
     .jw-rail {
-        background-color: #384154;
+        background-color: rgb(65, 74, 76);
         box-shadow: none;
     }
 
     .jw-buffer {
-        background-color: #666F82;
+        background-color: #757575;
+
     }
 
     .jw-progress {
@@ -147,37 +143,41 @@
     }
 
     .jw-knob {
-        width: .6em;
-        height: .6em;
-        background-color: #fff;
-        box-shadow: 0px 0px 0px 1px rgba(0,0,0,1);
-        border-radius: 1em;
+          width: .7em;
+          height: .7em;
+          background-color: #fff;
+          border:1 px solid black;
+          box-shadow: 0px 0px 0px 1px #000000;
+          border-radius: 1em;
     }
 
     /* Timeline and horizontal volume slider */
+    .jw-background-color.jw-slider-horizontal 
+        { 
+            background-color:transparent;
+        }
     .jw-slider-horizontal {
 
         .jw-slider-container {
             height: 0.95em;
         }
 
+
         .jw-rail,
         .jw-buffer,
         .jw-progress {
             height: .2em;
-            border-radius: 0;
         }
 
         .jw-knob {
-            .vertically-centered-rail-element(.2em, .6em);
+            .vertically-centered-rail-element(.2em, .7em);
         }
 
         .jw-cue {
-            .vertically-centered-rail-element(.2em, .3em);
-
-            width: .3em;
-            height: .3em;
-            background-color: #fff;
+            .vertically-centered-rail-element(.2em, .4em);
+            width: .4em;
+            height: .4em;
+            background-color: #FAFAFA;
             border-radius: 50%;
         }
     }
@@ -203,15 +203,11 @@
 
     /* Color of video's duration time */
     .jw-text-duration {
-        color: #666F82;
+        color: @active-color;
     }
     
     /* Icon borders on the right side of the controlbar */
     .jw-controlbar-right-group {
-        .jw-icon-tooltip:before,
-        .jw-icon-inline:before {
-            border-left: 1px solid #666;
-        }
 
         .jw-icon-inline:first-child:before {
             border: none;
@@ -222,7 +218,6 @@
     .jw-dock {
         .jw-dock-button {
             border-radius: 50%;
-            border: 1px solid #333;
         }
         .jw-overlay {
             border-radius: 2.5em;
@@ -233,27 +228,29 @@
     .jw-icon-tooltip {
         .jw-active-option {
             background-color: @active-color;
-            color: #fff;
+             color: #424242;
+             font-weight: 600;
         }
     }
     
     /* A min-width on the volume icon to keep the width from collapsing on toggle */
     .jw-icon-volume {
-        min-width: 2.6em;
+          padding-bottom: .7em;
     }
     
-    /* For the overlay containers */
+    
     .jw-time-tip,
     .jw-menu,
     .jw-volume-tip,
-    .jw-skip {
-        border: 1px solid #333;
+         {
+        border: none;
     }
     
     /* Position and padding of slider thumbnail */
     .jw-time-tip {
-        padding: 0.2em;
+        padding: 0.3em;
         bottom: 1.3em;
+        border:0px;
     }
 
     /* Position of remaining overlay containers */
