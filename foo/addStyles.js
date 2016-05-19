@@ -21,7 +21,7 @@ define(function (require, exports, module) {/*
         clear: clear
     };
 
-     function style (playerId, list) {
+    function style (playerId, list) {
         addStylesToDom(playerId, listToStyles(list));
     }
 
@@ -40,25 +40,24 @@ define(function (require, exports, module) {/*
         delete stylesInDom[playerId];
     }
 
-    function addStylesToDom(id, styles) {
+    function addStylesToDom(playerId, styles) {
         for(var i = 0; i < styles.length; i++) {
             var item = styles[i];
-            var domStyle = (stylesInDom[id] || {})[item.id];
+            var domStyle = (stylesInDom[playerId] || {})[item.id];
             if(domStyle) {
-                domStyle.refs++;
                 for(var j = 0; j < domStyle.parts.length; j++) {
                     domStyle.parts[j](item.parts[j]);
                 }
                 for(; j < item.parts.length; j++) {
-                    domStyle.parts.push(addStyle(id, item.parts[j]));
+                    domStyle.parts.push(addStyle(playerId, item.parts[j]));
                 }
             } else {
                 var parts = [];
                 for(var j = 0; j < item.parts.length; j++) {
-                    parts.push(addStyle(id, item.parts[j]));
+                    parts.push(addStyle(playerId, item.parts[j]));
                 }
-                stylesInDom[id] = stylesInDom[id] || {};
-                stylesInDom[id][item.id] = {id: item.id, refs: 1, parts: parts};
+                stylesInDom[playerId] = stylesInDom[playerId] || {};
+                stylesInDom[playerId][item.id] = {id: item.id, parts: parts};
             }
         }
     }
@@ -85,20 +84,21 @@ define(function (require, exports, module) {/*
         getHeadElement().appendChild(styleElement);
     }
 
-    function createStyleElement() {
+    function createStyleElement(playerId) {
         var styleElement = document.createElement("style");
         styleElement.type = "text/css";
+        styleElement.setAttribute('data-player-id', playerId);
         insertStyleElement(styleElement);
         return styleElement;
     }
 
-    function addStyle(id, obj) {
+    function addStyle(playerId, obj) {
         var styleElement, update, remove;
-        var singleton = playerStyleElements[id];
+        var singleton = playerStyleElements[playerId];
 
         if (!singleton) {
-            singleton = playerStyleElements[id] = {
-                element: createStyleElement(),
+            singleton = playerStyleElements[playerId] = {
+                element: createStyleElement(playerId),
                 counter: 0
             };
         }

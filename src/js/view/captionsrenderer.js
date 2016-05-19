@@ -193,17 +193,17 @@ define([
             this.populate(_model.get('captionsTrack'));
         };
 
-        function setupShadowDOMStyles(playerElementId, windowStyle, textStyle) {
+        function setupShadowDOMStyles(playerId, windowStyle, textStyle) {
             // Caption window styles
-            cssUtils.css(playerElementId, '#' + playerElementId + ' .jw-video::-webkit-media-text-track-display', windowStyle);
+            cssUtils.css(playerId, '#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle);
 
             // Caption text styles
-            cssUtils.css(playerElementId, '#' + playerElementId + ' .jw-video::cue', textStyle);
+            cssUtils.css(playerId, '#' + playerId + ' .jw-video::cue', textStyle);
 
             // Caption text background style in Safari needs to be important to override browser style
             if (textStyle.backgroundColor) {
                 var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
-                cssUtils.css(playerElementId, '#' + playerElementId + ' .jw-video::-webkit-media-text-track-display-backdrop',
+                cssUtils.css(playerId, '#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
                     backdropStyle);
             }
         }
