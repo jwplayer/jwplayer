@@ -187,8 +187,7 @@ module.exports = function(grunt) {
                 resolve: {
                     modulesDirectories: [
                         'src/js/',
-                        'src',
-                        'node_modules'
+                        'src'
                     ]
                 },
                 devtool: 'cheap-source-map',
