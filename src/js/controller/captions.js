@@ -170,7 +170,6 @@ define([
 
                 if (kind === 'captions' || kind === 'subtitles') {
                     if (track.file) {
-                        _addTrack(track);
                         _load(track);
                     } else if (track.data) {
                         _addTrack(track);
@@ -239,6 +238,9 @@ define([
             } else {
                 status = utils.tryCatch(function() {
                     track.data = srt(xhr.responseText);
+                    if (track.data) {
+                        _addTrack(track);
+                    }
                 });
             }
             if (status instanceof utils.Error) {
