@@ -1,6 +1,8 @@
 /* jshint node: true */
 
+var path = require('path');
 var webpack = require('webpack');
+var parallelWebpack = require('parallel-webpack');
 var env = process.env;
 
 function getBuildVersion(packageInfo) {
@@ -29,9 +31,6 @@ module.exports = function(grunt) {
     var buildVersion = getBuildVersion(packageInfo);
     // both flashVersion and swfTarget are needed to force flex to build using the right version
     var flashVersion = 11.2;
-
-    var webpackCompilers = {};
-    var autoprefixBrowsers = encodeURIComponent('> 1%');
 
     // For task testing
     // grunt.loadTasks('../grunt-flash-compiler/tasks');
@@ -175,96 +174,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-
-        webpack : {
-            options: {
-                entry: {
-                    jwplayer : ['./src/js/jwplayer.js']
-                },
-                stats: {
-                    timings: true
-                },
-                resolve: {
-                    modulesDirectories: [
-                        'src/js/',
-                        'src'
-                    ]
-                },
-                devtool: 'cheap-source-map',
-                //devtool: 'cheap-eval-source-map',
-                module: {
-                    loaders: [
-                        {
-                            test: /\.less$/,
-                            loaders: [
-                                // custom style-loader in src/js/view/ removes source maps with base64 url
-                                // TODO: optimize by using jwplayer utils.css() (may require updates to util)
-                                'simple-style-loader',
-                                'css',
-                                'autoprefixer?browsers=' + autoprefixBrowsers,
-                                'less?compress'
-                            ]
-                        },
-                        {
-                            test: /\.html$/,
-                            loader: 'handlebars-loader'
-                        },
-                        {
-                            test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'file-loader?name=[name].[ext]'
-                        },
-                        {
-                            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'file-loader?name=[name].[ext]'
-                        }
-                    ]
-                }
-            },
-            debug : {
-                options: {
-                    debug: true,
-                    output: {
-                        path: 'bin-debug/',
-                        filename: '[name].js',
-                        chunkFilename:'[name].js',
-                        sourceMapFilename : '[name].[hash].map',
-                        library: 'jwplayer',
-                        libraryTarget: 'umd',
-                        pathinfo: true
-                    },
-                    plugins: [
-                        new webpack.DefinePlugin({
-                            __SELF_HOSTED__ : true,
-                            __REPO__ : '\'\'',
-                            __DEBUG__ : true,
-                            __BUILD_VERSION__: '\'' + buildVersion + '\'',
-                            __FLASH_VERSION__: flashVersion
-                        })
-                    ]
-                }
-            },
-            release : {
-                options: {
-                    output: {
-                        path: 'bin-release/',
-                        filename: '[name].js',
-                        chunkFilename: '[name].js',
-                        sourceMapFilename : '[name].[hash].map',
-                        library: 'jwplayer',
-                        libraryTarget: 'umd'
-                    },
-                    plugins: [
-                        new webpack.DefinePlugin({
-                            __SELF_HOSTED__ : true,
-                            __REPO__ : '\'\'',
-                            __DEBUG__ : false,
-                            __BUILD_VERSION__: '\'' + buildVersion + '\'',
-                            __FLASH_VERSION__: flashVersion
-                        })
-                    ]
-                }
-            }
-        },
         uglify: {
             options: {
                 // screwIE8: true,
@@ -385,33 +294,29 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerMultiTask('webpack', 'Spawn a webpack compiler', function() {
+    grunt.registerTask('webpack-watch', 'Spawn a webpack watch task', function() {
         var done = this.async();
-        var target = this.target;
-        var compiler = webpackCompilers[target];
-        if (!compiler) {
-            compiler = webpackCompilers[target] = webpack( this.options() );
-        }
-        compiler.run(function(err, stats) {
-            var fail = false;
+        parallelWebpack.run(path.resolve('./webpack.config.js'), {
+            watch: true
+        }).then(done).catch(function(err) {
+            grunt.log.error(err.toString());
+            done(false);
+        });
+    });
+
+    grunt.registerTask('webpack', 'Run webpack compiler', function() {
+        var done = this.async();
+        parallelWebpack.run(path.resolve('./webpack.config.js'), {}).then(function(err, res) {
             if (err) {
-                fail = true;
-                grunt.log.writeln(err.toString());
-            } else {
-                // Fail build when errors are found
-                if (stats.compilation.errors.length) {
-                    fail = true;
-                }
-                grunt.log.writeln(stats.toString({
-                    chunks: false
-                }));
+                grunt.log.error(err.toString());
             }
-            if (fail) {
-                webpackCompilers[target] = null;
-                done(false);
-                return;
+            if (res) {
+                grunt.log.writeln(res.toString());
             }
             done();
+        }).catch(function(err) {
+            grunt.log.error(err.toString());
+            done(false);
         });
     });
 
