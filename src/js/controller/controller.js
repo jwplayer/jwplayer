@@ -644,7 +644,7 @@ define([
 
             this.detachMedia = _detachMedia;
             this.attachMedia = _attachMedia;
-            this._getCurrentQuality = _getCurrentQuality;
+            this.getCurrentQuality = _getCurrentQuality;
             this.getQualityLevels = _getQualityLevels;
             this.setCurrentAudioTrack = _setCurrentAudioTrack;
             this.getCurrentAudioTrack = _getCurrentAudioTrack;
