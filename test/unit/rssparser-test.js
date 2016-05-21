@@ -1,14 +1,14 @@
 define([
     'parsers/rssparser'
 ], function (rssparser) {
-    /* jshint qunit: true */
+    /* jshint qunit: true, maxlen: 1000 */
 
     QUnit.module('rssparser');
     var test = QUnit.test.bind(QUnit);
 
     test('adds mediaTypes array to source object when at least one jwplayer:mediaTypes element is present', function (assert) {
         expect(2);
-        const data =
+        var data =
             '<rss xmlns:jwplayer="http://rss.jwpcdn.com/" xmlns:media="http://search.yahoo.com/mrss">' +
                 '<media:channel>' +
                     '<item>' +
@@ -22,20 +22,20 @@ define([
                 '</media:channel>' +
             '</rss>';
 
-        const expectedMediaTypes = [
+        var expectedMediaTypes = [
             'video/webm; codecs="vp9"',
             'audio/webm; codecs="vorbis"'
         ];
         // Skip the first node since the parser alone can't handle it
-        const actual = rssparser.parse(parseXML(data).childNodes[0]);
-        const actualMediaTypes = actual[0].sources[0].mediaTypes;
+        var actual = rssparser.parse(parseXML(data).childNodes[0]);
+        var actualMediaTypes = actual[0].sources[0].mediaTypes;
         assert.ok(actualMediaTypes);
         assert.deepEqual(actualMediaTypes, expectedMediaTypes);
     });
 
     test('does not add a mediaTypes array to source object when no jwplayer:mediaTypes elements are present', function (assert) {
         expect(1);
-        const data =
+        var data =
             '<rss xmlns:jwplayer="http://rss.jwpcdn.com/" xmlns:media="http://search.yahoo.com/mrss">' +
                 '<media:channel>' +
                     '<item>' +
@@ -47,7 +47,7 @@ define([
                 '</media:channel>' +
             '</rss>';
 
-        const actual = rssparser.parse(parseXML(data).childNodes[0]);
+        var actual = rssparser.parse(parseXML(data).childNodes[0]);
         assert.notOk(actual[0].sources[0].mediaTypes);
     });
 
