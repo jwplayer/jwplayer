@@ -173,6 +173,12 @@ define([
         _videotag = _videotag || document.createElement('video');
         _videotag.className = 'jw-video jw-reset';
 
+        // prevent browser from showing second cast icon
+        // https://w3c.github.io/remote-playback/
+        if (_.isObject(_playerConfig.cast) && _playerConfig.cast.appid) {
+            _videotag.setAttribute('disableRemotePlayback', '');
+        }
+
         _setupListeners(_mediaEvents, _videotag);
 
         // Workaround for a Safari bug where video disappears on switch to fullscreen
@@ -330,6 +336,9 @@ define([
             }
 
             _canSeek = true;
+            if (!_isAndroidHLS) {
+                _setMediaType();
+            }
             _sendBufferFull();
         }
 
@@ -344,7 +353,6 @@ define([
                 _videotag.muted = true;
             }
             _videotag.setAttribute('jw-loaded', 'meta');
-            _setMediaType();
             _sendMetaEvent();
         }
 
@@ -450,10 +458,7 @@ define([
                 }
             }
             _visualQuality.reason = 'initial choice';
-            _visualQuality.level = {
-                width: 0,
-                height: 0
-            };
+            _visualQuality.level = {};
             return currentQuality;
         }
 
@@ -513,12 +518,9 @@ define([
             _currentAudioTrackIndex = -1;
             _currentTextTrackIndex = -1;
             _activeCuePosition = -1;
-            if(!_visualQuality.reason) {
+            if (!_visualQuality.reason) {
                 _visualQuality.reason = 'initial choice';
-                _visualQuality.level = {
-                    width: 0,
-                    height: 0
-                };
+                _visualQuality.level = {};
             }
             _canSeek = false;
             _bufferFull = false;
@@ -539,7 +541,12 @@ define([
         function _clearVideotagSource() {
             if (_videotag) {
                 disableTextTrack();
+                _videotag.removeAttribute('crossorigin');
+                _videotag.removeAttribute('preload');
                 _videotag.removeAttribute('src');
+                _videotag.removeAttribute('jw-loaded');
+                _videotag.removeAttribute('jw-played');
+
                 dom.emptyElement(_videotag);
                 _currentQuality = -1;
                 _itemTracks = null;
@@ -551,10 +558,12 @@ define([
         }
 
         function _setupSideloadedTracks(tracks) {
-            if (_isSDK) {
+            var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
+            if (_isSDK || !canRenderNatively) {
                 return;
             }
-            if (tracks !== _itemTracks) {
+            // Add tracks if we're playing the item for the first time or resuming playback after a midroll
+            if (tracks !== _itemTracks || (tracks && tracks.length && !_videotag.textTracks.length)) {
                 disableTextTrack();
                 dom.emptyElement(_videotag);
                 _itemTracks = tracks;
@@ -580,8 +589,10 @@ define([
                 }
                 if (!crossoriginAnonymous) {
                     // CORS applies to track loading and requires the crossorigin attribute
-                    _videotag.setAttribute('crossorigin', 'anonymous');
-                    crossoriginAnonymous = true;
+                    if (!_videotag.hasAttribute('crossorigin') && utils.crossdomain(itemTrack.file)) {
+                        _videotag.setAttribute('crossorigin', 'anonymous');
+                        crossoriginAnonymous = true;
+                    }
                 }
                 var track = document.createElement('track');
                 track.src     = itemTrack.file;
@@ -589,6 +600,7 @@ define([
                 track.srclang = itemTrack.language || '';
                 track.label   = itemTrack.label;
                 track.mode    = 'disabled';
+                track.id = itemTrack.default || itemTrack.defaulttrack ? 'default' : '';
                 _videotag.appendChild(track);
             }
         }
@@ -1020,15 +1032,11 @@ define([
             if (_currentQuality === quality) {
                 return;
             }
-            quality = parseInt(quality, 10);
             if (quality >= 0) {
                 if (_levels && _levels.length > quality) {
                     _currentQuality = quality;
                     _visualQuality.reason = 'api';
-                    _visualQuality.level = {
-                        width: 0,
-                        height: 0
-                    };
+                    _visualQuality.level = {};
                     this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
@@ -1136,7 +1144,7 @@ define([
                     else if (tracks[i].kind === 'subtitles' || tracks[i].kind === 'captions') {
                         // set subtitles Off by default
                         tracks[i].mode = 'disabled';
-                        if(!_textTracks) {
+                        if (!_textTracks) {
                             _textTracks = [];
                         }
                         _textTracks.push(tracks[i]);
@@ -1164,10 +1172,9 @@ define([
                    track.mode = 'disabled';
                 });
             }
-            if(index > 0 && index <= _textTracks.length) {
+            if (index > 0 && index <= _textTracks.length) {
                 _currentTextTrackIndex = index - 1;
                 _textTracks[_currentTextTrackIndex].mode = 'showing';
-
             } else {
                 _currentTextTrackIndex = -1;
             }
@@ -1186,7 +1193,7 @@ define([
             // Send mediaType when format is HLS. Other types are handled earlier by default.js.
             if(_levels[0].type === 'hls') {
                 var mediaType = 'video';
-                if(_videotag.videoWidth === 0) {
+                if (_videotag.videoHeight === 0) {
                     mediaType = 'audio';
                 }
                 _this.trigger('mediaType', {mediaType: mediaType});
@@ -1194,7 +1201,7 @@ define([
         }
 
         function disableTextTrack() {
-            if(_textTracks && _textTracks[_currentTextTrackIndex]) {
+            if (_textTracks && _textTracks[_currentTextTrackIndex]) {
                 _textTracks[_currentTextTrackIndex].mode = 'disabled';
             }
         }
@@ -1209,10 +1216,5 @@ define([
         return { name : 'html5' };
     };
 
-    VideoProvider.register = function(jwplayer) {
-        jwplayer.api.registerProvider(VideoProvider);
-    };
-
     return VideoProvider;
-
 });

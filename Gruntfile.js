@@ -196,8 +196,14 @@ module.exports = function(grunt) {
                     loaders: [
                         {
                             test: /\.less$/,
-                            loader: 'style!css!autoprefixer?browsers=' + autoprefixBrowsers +
-                                    '!less?compress'
+                            loaders: [
+                                // custom style-loader in src/js/view/ removes source maps with base64 url
+                                // TODO: optimize by using jwplayer utils.css() (may require updates to util)
+                                'simple-style-loader',
+                                'css',
+                                'autoprefixer?browsers=' + autoprefixBrowsers,
+                                'less?compress'
+                            ]
                         },
                         {
                             test: /\.html$/,
@@ -205,11 +211,11 @@ module.exports = function(grunt) {
                         },
                         {
                             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?limit=10000&mimetype=application/font-woff'
+                            loader: 'file-loader?name=[name].[ext]'
                         },
                         {
                             test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-                            loader: 'url?limit=10000&mimetype=application/octet-stream'
+                            loader: 'file-loader?name=[name].[ext]'
                         }
                     ]
                 }
@@ -347,10 +353,13 @@ module.exports = function(grunt) {
             },
             // browserstack_all: { browsers: Object.keys( require( './test/qunit/karma/browserstack-launchers' ) ) },
             browserstack : {
-                browsers: ['chrome_45']
+                browsers: ['chrome']
             },
             browserstack_firefox : {
-                browsers: ['firefox_41']
+                browsers: ['firefox']
+            },
+            browserstack_edge : {
+                browsers: ['edge']
             },
             browserstack_ie11 : {
                 browsers: ['ie11_windows']

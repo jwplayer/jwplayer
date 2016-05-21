@@ -73,6 +73,7 @@ define([
         };
 
         function _videoEventHandler(type, data) {
+            var evt = _.extend({}, data, {type: type});
             switch (type) {
                 case 'flashThrottle':
                     var throttled = (data.state !== 'resume');
@@ -93,8 +94,11 @@ define([
                     return;
 
                 case events.JWPLAYER_MEDIA_TYPE:
-                    this.mediaModel.set('mediaType', data.mediaType);
-                    break;
+                    if (this.mediaModel.get('mediaType') !== data.mediaType) {
+                        this.mediaModel.set('mediaType', data.mediaType);
+                        this.mediaController.trigger(type, evt);
+                    }
+                    return;
 
                 case events.JWPLAYER_PLAYER_STATE:
                     this.mediaModel.set('state', data.newstate);
@@ -164,7 +168,6 @@ define([
                     break;
             }
 
-            var evt = _.extend({}, data, {type: type});
             this.mediaController.trigger(type, evt);
         }
 
@@ -200,6 +203,12 @@ define([
                 if (_provider.getContainer()) {
                     _provider.remove();
                 }
+            }
+
+            if (!Provider) {
+                _provider = _currentProvider = Provider;
+                this.set('provider', undefined);
+                return;
             }
 
             _currentProvider = new Provider(_this.get('id'), _this.getConfiguration());
@@ -251,26 +260,29 @@ define([
 
 
         this.setActiveItem = function(item) {
-
             // Item is actually changing
             this.mediaModel.off();
             this.mediaModel = new MediaModel();
             this.set('mediaModel', this.mediaModel);
 
+            this.setProvider(item);
+        };
+
+        this.setProvider = function(item) {
             var source = item && item.sources && item.sources[0];
             if (source === undefined) {
                 // source is undefined when resetting index with empty playlist
                 return;
             }
 
-            var Provider = this.chooseProvider(source);
-            if (!Provider) {
-                throw new Error('No suitable provider found');
+            var provider = this.chooseProvider(source);
+            // If we are changing video providers
+            if (!provider || !(_currentProvider instanceof provider)) {
+                _this.changeVideoProvider(provider);
             }
 
-            // If we are changing video providers
-            if (!(_currentProvider instanceof Provider)) {
-                _this.changeVideoProvider(Provider);
+            if (!_currentProvider) {
+                return;
             }
 
             // this allows the providers to preload

@@ -13,7 +13,7 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm, preload) {
+    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm, preload, feedid) {
         var list = [];
 
         _.each(playlist, function(item) {
@@ -32,6 +32,11 @@ define([
             // set preload for the item, if it is defined
             if (item.preload || preload) {
                 item.preload = item.preload || preload;
+            }
+
+            // set feedid for the item, if it is defined
+            if (item.feedid || feedid) {
+                item.feedid = item.feedid || feedid;
             }
 
             list.push(item);

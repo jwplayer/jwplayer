@@ -43,10 +43,11 @@ define([
 
         menuTemplate : function(list, selectedIndex) {
             var newList = _.map(list, function(item, idx) {
+                var title = item.title ? utils.createElement(item.title).textContent : '';
                 return {
                     active : (idx === selectedIndex),
                     label : (idx+1)+ '.',
-                    title : item.title
+                    title : title
                 };
             });
             return PlaylistTemplate(newList);

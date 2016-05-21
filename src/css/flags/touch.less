@@ -9,6 +9,11 @@
         // control bar is (1.5*2.5 = 3.75)em for mobile, so bottom should be 0.5 above that
         bottom: 4.25em;
     }
+    video::-webkit-media-text-track-container {
+        // need to compensate for the control bar being 3.75em on mobile
+        // 97% - 6.25 * 4.25em
+        max-height: 70%;
+    }
 
     .jw-icon-tooltip.jw-open-drawer {
         &:before {

@@ -1,3 +1,5 @@
+@import "vars";
+
 .jw-captions {
     position: absolute;
     display: none;
@@ -36,4 +38,21 @@
     text-decoration: none;
     line-height: 1.3em;
     padding: 0.1em 0.8em;
+}
+
+.jwplayer {
+    video::-webkit-media-controls {
+        justify-content: flex-start;
+    }
+    video::-webkit-media-text-track-container {
+        // With 16 lines of captions, 1em ~= 6.25% of height
+        max-height: calc(97% - 6.25 * (@controlbar-height));
+        line-height: 1.3em;
+    }
+
+    &.jw-flag-compact-player {
+        video::-webkit-media-text-track-container {
+            max-height: calc(97% - 7.5 * (@controlbar-height));
+        }
+    }
 }

@@ -145,6 +145,9 @@ define([
         }
 
         function _itemReadyHandler(item) {
+            // Clean up in case we're replaying
+            _itemHandler(_model,item);
+
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
@@ -152,12 +155,14 @@ define([
                 track, kind, isVTT, i;
             var isHTML5 = _model.get('provider').name === 'html5';
 
+            var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
+
             for (i = 0; i < tracks.length; i++) {
                 track = tracks[i];
                 isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
 
                 //let the browser handle rendering sideloaded VTT tracks in the HTML5 provider
-                if(isHTML5 && isVTT && !_isSDK) {
+                if(isHTML5 && isVTT && !_isSDK && canRenderNatively) {
                     continue;
                 }
 
@@ -271,7 +276,7 @@ define([
                 if (label && label === track.label) {
                     captionsMenuIndex = i + 1;
                     break;
-                } else if (track['default'] || track.defaulttrack) {
+                } else if (track['default'] || track.defaulttrack || track.id === 'default') {
                     captionsMenuIndex = i + 1;
                 } else if (track.autoselect) {
                     // TODO: auto select track by comparing track.language to system lang

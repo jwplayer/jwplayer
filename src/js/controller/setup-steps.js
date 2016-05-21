@@ -1,4 +1,5 @@
 define([
+    'providers/providers',
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
@@ -6,7 +7,7 @@ define([
     'utils/underscore',
     'utils/helpers',
     'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
+], function(Providers, plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
 
     var _pluginLoader,
         _playlistLoader;
@@ -42,8 +43,8 @@ define([
                     'SETUP_VIEW'
                 ]
             },
-            LOAD_YOUTUBE : {
-                method: _loadYoutube,
+            LOAD_PROVIDERS : {
+                method: _loadProviders,
                 depends: ['FILTER_PLAYLIST']
             },
             LOAD_SKIN : {
@@ -68,7 +69,7 @@ define([
                 method: _sendReady,
                 depends: [
                     'INIT_PLUGINS',
-                    'LOAD_YOUTUBE',
+                    'LOAD_PROVIDERS',
                     'SETUP_VIEW'
                 ]
             }
@@ -126,6 +127,7 @@ define([
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
                 _model.set('playlist', data.playlist);
+                _model.set('feedid', data.feedid);
                 resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
@@ -210,28 +212,14 @@ define([
         });
     }
 
-    function _loadYoutube(resolve, _model) {
-        var p = _model.get('playlist');
+    function _loadProviders(resolve, model) {
+        var providersManager = model.getProviders();
+        var playlist = model.get('playlist');
 
-        var hasYoutube = _.some(p, function(item) {
-            var itemYoutube = utils.isYouTube(item.file, item.type);
-            if (itemYoutube && !item.image) {
-                var url = item.file;
-                var videoId = utils.youTubeID(url);
-                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
-            }
-            return itemYoutube;
-        });
+        var providersNeeded = providersManager.required(playlist);
 
-        if (hasYoutube) {
-            require.ensure(['providers/youtube'], function(require) {
-                var youtube = require('providers/youtube');
-                youtube.register(window.jwplayer);
-                resolve();
-            }, 'provider.youtube');
-        } else {
-            resolve();
-        }
+        Providers.load(providersNeeded)
+            .then(resolve);
     }
 
     function _setupView(resolve, _model, _api, _view) {

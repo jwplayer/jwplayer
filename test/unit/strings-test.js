@@ -1,9 +1,10 @@
 define([
     'utils/strings'
 ], function (strings) {
-    /* jshint qunit: true */
+    /* jshint qunit: true, maxlen: 1000 */
 
-    module('strings');
+    QUnit.module('strings');
+    var test = QUnit.test.bind(QUnit);
 
     test('strings.pad', function(assert) {
         var str = strings.pad('test', 7, '1');
@@ -30,7 +31,7 @@ define([
         assert.equal(ext,'jpg', 'extension correctly received');
 
         // akamai url's
-        ext = strings.extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345')
+        ext = strings.extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345');
         assert.equal(ext, 'm3u8', 'Akamai Tokenized Url\'s');
 
         ext = strings.extension('https://domain.net/master.m3u8?dot=.');

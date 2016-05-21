@@ -5,7 +5,8 @@ define([
     /* jshint qunit: true */
     /* global Promise */
 
-    module('utils.fetch');
+    QUnit.module('utils.fetch');
+    var test = QUnit.test.bind(QUnit);
 
     function errorHandler(assert, done) {
         return function(error) {

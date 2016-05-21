@@ -66,6 +66,12 @@ define([
 
             _this = _.extend(this, Events);
 
+        // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
+        // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
+        if (window.webpackJsonpjwplayer) {
+            require('css/jwplayer.less');
+        }
+
         this.model = _model;
         this.api = _api;
 
@@ -575,7 +581,7 @@ define([
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_model.get('captions'));
+            _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
@@ -858,7 +864,18 @@ define([
 
         function _onMediaTypeChange(model, val) {
             var isAudioFile = (val ==='audio');
+            var provider = _model.getVideo();
+            var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
+
+            if (isAudioFile && !isFlash) {
+                // Put the preview element before the media element in order to display browser captions
+                _playerElement.insertBefore(_preview.el, _videoLayer);
+            } else {
+                // Put the preview element before the captions element to display captions with the captions renderer
+                _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
+            }
         }
 
         function _setLiveMode(model, duration){

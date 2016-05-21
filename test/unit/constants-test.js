@@ -3,9 +3,9 @@ define([
 ], function (constants) {
     /* jshint qunit: true */
 
-    module('constants');
+    QUnit.module('constants');
 
-    test('constants', function(assert) {
+    QUnit.test('constants', function(assert) {
         assert.equal(typeof constants.repo, 'string', 'constants.repo is a string');
 
         for (var i = 0; i < constants.SkinsIncluded.length; i++) {

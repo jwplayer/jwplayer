@@ -3,7 +3,9 @@ define([
     'api/config'
 ], function (_, config) {
     /* jshint qunit: true */
-    module('API config');
+
+    QUnit.module('API config');
+    var test = QUnit.test.bind(QUnit);
 
     function validWidth(val) {
 
