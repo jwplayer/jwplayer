@@ -1,7 +1,7 @@
 define([
     'test/underscore',
     'api/config'
-], function (_, config) {
+], function (_, Config) {
     /* jshint qunit: true */
 
     QUnit.module('API config');
@@ -19,7 +19,7 @@ define([
     }
 
     function testConfig(assert, obj) {
-        var x = config(obj);
+        var x = new Config(obj);
 
 
         var attrs = ['width', 'height', 'base'];
