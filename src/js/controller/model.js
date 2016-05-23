@@ -264,6 +264,8 @@ define([
             this.mediaModel.off();
             this.mediaModel = new MediaModel();
             this.set('mediaModel', this.mediaModel);
+            this.set('position', item.starttime || 0);
+            this.set('duration', item.duration || 0);
 
             this.setProvider(item);
         };
@@ -332,16 +334,14 @@ define([
 
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
-
-            this.mediaModel.set('playAttempt', true);
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
-
             if (!item) {
                 var idx = this.get('item');
                 item = this.get('playlist')[idx];
             }
             this.set('position', item.starttime || 0);
             this.set('duration', item.duration || 0);
+            this.mediaModel.set('playAttempt', true);
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
 
             _provider.load(item);
         };
