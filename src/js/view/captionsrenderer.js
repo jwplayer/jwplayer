@@ -193,6 +193,12 @@ define([
             this.populate(_model.get('captionsTrack'));
         };
 
+        this.clear = function () {
+          while(_display.firstChild) {
+              _display.removeChild(_display.firstChild);
+          }
+        };
+
         function setupShadowDOMStyles(playerElementId, windowStyle, textStyle) {
             // Caption window styles
             cssUtils.css('#' + playerElementId + ' .jw-video::-webkit-media-text-track-display', windowStyle);

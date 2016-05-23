@@ -653,6 +653,7 @@ define([
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
             this.getState = _getState;
+            this._setFullscreen = _setFullscreen;
 
             // Model passthroughs
             this._setVolume = _model.setVolume;
@@ -668,7 +669,8 @@ define([
             //this.forceState = _view.forceState;
             //this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
-            this._setFullscreen = _setFullscreen;
+            this.setCaptions = _view.setCaptions;
+
 
             this.addButton = function(img, tooltip, callback, id, btnClass) {
                 var btn = {

@@ -1016,6 +1016,11 @@ define([
             return bounds;
         };
 
+        this.setCaptions = function() {
+            _captionsRenderer.clear();
+            _captionsRenderer.setup(_model.get('id'), {});
+        };
+
         this.destroy = function() {
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
