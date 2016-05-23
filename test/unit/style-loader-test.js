@@ -13,31 +13,31 @@ define([
     test('cssUtils.css creates a new style tag if one for the playerId does not exist', function (assert) {
         expect(1);
         var countBeforeCall = document.getElementsByTagName('style').length;
-        styleLoader.style('style-loader-test-1', [['#div1', '#div1{color: cyan;}']]);
+        styleLoader.style([['#div1', '#div1{color: cyan;}']], 'style-loader-test-1');
         var countAfterCall = document.getElementsByTagName('style').length;
         assert.equal(countBeforeCall + 1, countAfterCall);
     });
 
     test('cssUtils.css adds player styles to style element unique to the playerId', function (assert) {
         expect(3);
-        styleLoader.style('style-loader-test-2', [['#div1', '#div1{color: red;}']]);
+        styleLoader.style([['#div1', '#div1{color: red;}']], 'style-loader-test-2');
         var actual = getLastInsertedElement();
         assert.ok(actual);
         assert.notEqual(actual.innerHTML.indexOf('#div1{color: red;}'), -1);
 
-        styleLoader.style('style-loader-test-2',[['#div2', '#div2{color: blue;}']]);
+        styleLoader.style([['#div2', '#div2{color: blue;}']], 'style-loader-test-2');
         assert.notEqual(actual.innerHTML.indexOf('#div2{color: blue;}'), -1, 'adds to existing style tag');
     });
 
     test('cssUtils.css replaces styles of the selector when it already exists', function (assert) {
         expect(4);
-        styleLoader.style('style-loader-test-3',[['#div1', '#div1{color: green;}']]);
+        styleLoader.style([['#div1', '#div1{color: green;}']], 'style-loader-test-3');
 
         var actual = getLastInsertedElement();
         assert.ok(actual);
         assert.notEqual(actual.innerHTML.indexOf('#div1{color: green;}'), -1);
 
-        styleLoader.style('style-loader-test-3',[['#div1', '#div1{color: rebeccapurple;}']]);
+        styleLoader.style([['#div1', '#div1{color: rebeccapurple;}']], 'style-loader-test-3');
 
         assert.equal(actual.innerHTML.indexOf('#div1{color: green;}'), -1);
         assert.notEqual(actual.innerHTML.indexOf('#div1{color: rebeccapurple;}'), -1);
@@ -45,7 +45,7 @@ define([
 
     test('cssUtils.clear clears the style tag but does not remove it', function (assert) {
         expect(4);
-        styleLoader.style('style-loader-test-4',[['#div1', '#div1{color: magenta;}']]);
+        styleLoader.style([['#div1', '#div1{color: magenta;}']], 'style-loader-test-4');
 
         var actual = getLastInsertedElement();
         assert.ok(actual);
