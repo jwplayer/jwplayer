@@ -3,7 +3,8 @@ define([
     'simple-style-loader/addStyles'
 ], function(Strings, styleLoader) {
 
-    var _css = function(playerId, selector, styles) {
+    var _css = function(selector, styles, playerId) {
+        playerId = playerId || 'jwplayer-global';
         var cssText = '';
         if (typeof styles === 'object') {
             var el = document.createElement('div');
