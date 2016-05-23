@@ -67,7 +67,7 @@ define([
 
         setup : function(options, _api) {
 
-            var _model,
+            var _model = this._model,
                 _view,
                 _captions,
                 _setup,
@@ -80,9 +80,10 @@ define([
             var _video = function() { return _model.getVideo(); };
 
             var storage = new Storage();
+            storage.track(_model);
             var config = new Config(options, storage);
 
-            _model = this._model.setup(config, storage);
+            _model.setup(config, storage);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view, _setPlaylist);

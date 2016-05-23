@@ -24,15 +24,7 @@ define([
 
         this.set('mediaModel', this.mediaModel);
 
-        this.setup = function(config, storage) {
-            if (storage) {
-                storage.track([
-                    'volume',
-                    'mute',
-                    'captionLabel',
-                    'qualityLabel'
-                ], this);
-            }
+        this.setup = function(config) {
 
             _.extend(this.attributes, config, {
                 // always start on first playlist item

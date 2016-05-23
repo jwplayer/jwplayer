@@ -66,16 +66,17 @@ define([
 
             _this = _.extend(this, Events);
 
-        // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
-        // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
-        if (window.webpackJsonpjwplayer) {
-            require('css/jwplayer.less');
-        }
-
         this.model = _model;
         this.api = _api;
 
         _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
+
+        // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
+        // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
+        if (window.webpackJsonpjwplayer) {
+            _applyStyles();
+        }
+
         if (utils.isIE()) {
             utils.addClass(_playerElement, 'jw-ie');
         }
@@ -101,6 +102,41 @@ define([
             document.mozCancelFullScreen ||
             document.msExitFullscreen;
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
+
+        function _applyStyles() {
+            var pollTarget = utils.createElement(
+                '<span ' +
+                    'class="jw-font-load-detect jw-reset" ' +
+                    'style="position: absolute; visibility: hidden; display: inline-block"' +
+                '>' +
+                    '&#xe614&#xe614&#xe614' +
+                '</span>'
+            );
+            _playerElement.appendChild(pollTarget);
+
+            require('css/jwplayer.less');
+
+            var iconSize = 0;
+            var startTime = Date.now();
+
+            // Polls the width of the poll target to see when its size increases because its using the wider font glyphs
+            var fontRenderedPoll = function() {
+                var pollTargetWidth = pollTarget.offsetWidth;
+
+                if (!iconSize && pollTargetWidth) {
+                    iconSize = pollTargetWidth;
+                    utils.addClass(pollTarget, 'jw-icon-inline');
+                } else if (Date.now() - startTime > 5000 || (iconSize && iconSize !== pollTargetWidth)) {
+                    _playerElement.removeChild(pollTarget);
+                    utils.addClass(_playerElement, 'jw-flag-icons-ready');
+                    return;
+                }
+
+                setTimeout(fontRenderedPoll, 50);
+            };
+
+            setTimeout(fontRenderedPoll, 1);
+        }
 
         function adjustSeek(amount) {
             var min = 0;
@@ -257,7 +293,7 @@ define([
 
                 var o = {};
                 o[attr] = value;
-                utils.css(elements.join(', '), o);
+                utils.css(elements.join(', '), o, id);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
@@ -1048,7 +1084,7 @@ define([
             if (_logo) {
                 _logo.destroy();
             }
-            utils.clearCss('#'+_model.get('id'));
+            utils.clearCss(_model.get('id'));
         };
     };
 
