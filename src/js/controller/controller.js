@@ -651,6 +651,7 @@ define([
             this.setCurrentAudioTrack = _setCurrentAudioTrack;
             this.getCurrentAudioTrack = _getCurrentAudioTrack;
             this.getAudioTracks = _getAudioTracks;
+            this.getCurrentCaptions = _getCurrentCaptions;
             this.getCaptionsList = _getCaptionsList;
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
