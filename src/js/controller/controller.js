@@ -96,7 +96,6 @@ define([
                 _.defer(_completeHandler);
             });
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, this.triggerError, this);
-            _model.mediaController.on('all', _this.trigger.bind(_this));
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
             _model.on('change:flashBlocked', function(model, isBlocked) {
@@ -190,6 +189,10 @@ define([
                     });
                 });
 
+                // Reset mediaType so that we get a change mediaType event
+                _model.mediaModel.set('mediaType', null);
+
+                _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.on('all', _this.trigger.bind(_this));
 
                 this.showView(_view.element());
