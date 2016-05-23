@@ -5,6 +5,7 @@ define({
     //   setCurrentCaptions: [{}],
     //   setCurrentQuality: [0],
     //   setCurrentAudioTrack: [0],
+    //   setCaptions: [{}],
 
     seek: [0],
     playlistNext: void 0,
