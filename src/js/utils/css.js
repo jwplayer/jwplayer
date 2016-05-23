@@ -13,7 +13,7 @@ define([
         } else if (typeof styles === 'string') {
             cssText = styles;
         }
-        styleLoader.style(playerId, [[selector, selector + cssText]]);
+        styleLoader.style([[selector, selector + cssText]], playerId);
     };
 
     var _style = function (elements, styles) {
