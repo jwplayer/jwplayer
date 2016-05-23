@@ -4,7 +4,7 @@ define([
 ], function(Strings, styleLoader) {
 
     var _css = function(selector, styles, playerId) {
-        playerId = playerId || 'jwplayer-global';
+        playerId = playerId || 'all-players';
         var cssText = '';
         if (typeof styles === 'object') {
             var el = document.createElement('div');
@@ -113,7 +113,6 @@ define([
         style : _style,
         clearCss : styleLoader.clear,
         transform : transform,
-        hexToRgba : hexToRgba,
-        styleLoader: styleLoader
+        hexToRgba : hexToRgba
     };
 });
