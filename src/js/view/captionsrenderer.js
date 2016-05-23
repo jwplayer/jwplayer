@@ -199,6 +199,10 @@ define([
           }
         };
 
+        this.getStyles = function () {
+            return _options;
+        };
+
         function setupShadowDOMStyles(playerElementId, windowStyle, textStyle) {
             // Caption window styles
             cssUtils.css('#' + playerElementId + ' .jw-video::-webkit-media-text-track-display', windowStyle);
