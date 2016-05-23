@@ -5,6 +5,7 @@ define([
     'controller/Setup',
     'controller/captions',
     'controller/model',
+    'controller/storage',
     'playlist/playlist',
     'playlist/loader',
     'utils/helpers',
@@ -15,8 +16,8 @@ define([
     'events/states',
     'events/events',
     'view/error'
-], function(Config, InstreamAdapter, _, Setup, Captions,
-            Model, Playlist, PlaylistLoader, utils, View, Providers, Events, changeStateEvent, states, events, error) {
+], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
+            Playlist, PlaylistLoader, utils, View, Providers, Events, changeStateEvent, states, events, error) {
 
     function _queueCommand(command) {
         return function(){
@@ -78,9 +79,10 @@ define([
 
             var _video = function() { return _model.getVideo(); };
 
-            var config = new Config(options);
+            var storage = new Storage();
+            var config = new Config(options, storage);
 
-            _model = this._model.setup(config);
+            _model = this._model.setup(config, storage);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view, _setPlaylist);
@@ -93,6 +95,7 @@ define([
                 _.defer(_completeHandler);
             });
             _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, this.triggerError, this);
+            _model.mediaController.on('all', _this.trigger.bind(_this));
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
             _model.on('change:flashBlocked', function(model, isBlocked) {
@@ -186,7 +189,6 @@ define([
                     });
                 });
 
-                _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.on('all', _this.trigger.bind(_this));
 
                 this.showView(_view.element());
@@ -649,6 +651,7 @@ define([
             this.setCurrentAudioTrack = _setCurrentAudioTrack;
             this.getCurrentAudioTrack = _getCurrentAudioTrack;
             this.getAudioTracks = _getAudioTracks;
+            this.getCurrentCaptions = _getCurrentCaptions;
             this.getCaptionsList = _getCaptionsList;
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
