@@ -1016,9 +1016,9 @@ define([
             return bounds;
         };
 
-        this.setCaptions = function() {
+        this.setCaptions = function(captionsStyle) {
             _captionsRenderer.clear();
-            _captionsRenderer.setup(_model.get('id'), {});
+            _captionsRenderer.setup(_model.get('id'), captionsStyle);
         };
 
         this.destroy = function() {
