@@ -16,8 +16,6 @@ define([
         castAvailable: false,
         skin: 'seven',
         stretching: 'uniform',
-        mute: false,
-        volume: 90,
         width: 480,
         height: 270
         //qualityLabel: '480p',     // specify a default quality
