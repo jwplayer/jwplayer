@@ -10,4 +10,14 @@
     .jw-media {
         cursor: auto;
     }
+
+    // Ensure that icons are not displayed when we have controls set to false.
+    &.jw-flag-icons-ready {
+        .jw-icon-inline,
+        .jw-icon-tooltip,
+        .jw-icon-display,
+        .jw-controlbar .jw-menu .jw-option:before {
+            visibility: hidden;
+        }
+    }
 }
