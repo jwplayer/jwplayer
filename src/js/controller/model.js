@@ -1,22 +1,13 @@
 define([
     'utils/helpers',
     'providers/providers',
-    'controller/storage',
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
     'utils/simplemodel',
     'events/events',
     'events/states'
-], function(utils, Providers, Storage, QOE, _, Events, SimpleModel, events, states) {
-
-
-    var PERSIST_ITEMS = [
-        'volume',
-        'mute',
-        'captionLabel',
-        'qualityLabel'
-    ];
+], function(utils, Providers, QOE, _, Events, SimpleModel, events, states) {
 
     // Represents the state of the player
     var Model = function() {
@@ -33,11 +24,17 @@ define([
 
         this.set('mediaModel', this.mediaModel);
 
-        this.setup = function(config) {
-            var storage = new Storage();
-            storage.track(PERSIST_ITEMS, this);
+        this.setup = function(config, storage) {
+            if (storage) {
+                storage.track([
+                    'volume',
+                    'mute',
+                    'captionLabel',
+                    'qualityLabel'
+                ], this);
+            }
 
-            _.extend(this.attributes, storage.getAllItems(), config, {
+            _.extend(this.attributes, config, {
                 // always start on first playlist item
                 item : 0,
                 // Initial state, upon setup
