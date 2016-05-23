@@ -7,6 +7,7 @@ define([
     var test = QUnit.test.bind(QUnit);
 
     test('css.css and css.clearCss', function(assert) {
+        var playerId = 'css-testplayer';
         var count = document.getElementsByTagName('style').length;
 
         var testSelector = 'test-selector';
@@ -18,7 +19,7 @@ define([
             backgroundColor: 'red'
         };
 
-        css.css(testSelector, stylesBlue);
+        css.css(testSelector, stylesBlue, playerId);
 
         // check that css.css accepts a style object and that a new style sheet has been added since
         // this is the first time calling css.css.
@@ -31,19 +32,19 @@ define([
             'css object correctly included');
 
         // check that css.css accepts a style object and css will be replaced
-        css.css(testSelector, stylesRed);
+        css.css(testSelector, stylesRed, playerId);
         assert.ok(!/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),
             'css object correctly replaced');
         assert.ok(/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML),
             'css object correctly replaced');
 
-        css.clearCss('test-selector');
+        css.clearCss(playerId);
 
         // check clearCss works correctly
         assert.ok(!/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML), 'css correctly removed');
 
         // check that css.css accepts css style as a string
-        css.css(testSelector, '{test-selector{background-color: blue}');
+        css.css(testSelector, '{test-selector{background-color: blue}', playerId);
         assert.ok(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),
             'css text correctly inserted');
     });
