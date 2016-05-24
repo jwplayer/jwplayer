@@ -15,7 +15,6 @@ define([
         if (list.length === 1) {
             list = data.split('\n\n');
         }
-
         for (var i = 0; i < list.length; i++) {
             if (list[i] === 'WEBVTT') {
                 continue;
@@ -26,7 +25,9 @@ define([
                 _captions.push(entry);
             }
         }
-
+        if (!_captions.length) {
+            throw new Error('Invalid SRT file');
+        }
         return _captions;
     };
 

@@ -32,6 +32,9 @@ body .jw-error, .jwplayer.jw-state-error {
         .jw-icon;
         .jw-icon-error;
 
+        // Force error icon to display on error screen.  This circumvents issues with detecting font loading.
+        visibility: visible;
+
         &:hover {
             color: #fff;
         }
