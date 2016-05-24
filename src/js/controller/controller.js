@@ -263,10 +263,12 @@ define([
                         break;
                     case 'object':
                         var playlist = Playlist(item);
+                        // TODO: edition logic only belongs in the commercial edition of the player
+                        var edition = _model.get('edition');
                         var providersManager = _model.getProviders();
-                        var providersNeeded = providersManager.required(playlist, _model.get('edition'));
+                        var providersNeeded = providersManager.required(playlist, edition);
 
-                        Providers.load(providersNeeded)
+                        Providers.load(providersNeeded, edition)
                             .then(function() {
                                 if (!_this.getProvider()) {
                                     _model.setProvider(_model.get('playlistItem'));
