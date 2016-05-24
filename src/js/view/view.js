@@ -105,14 +105,14 @@ define([
 
         function _applyStyles() {
             var pollTarget = utils.createElement(
-                '<span ' +
-                    'class="jw-font-load-detect jw-reset" ' +
-                    'style="position: absolute; visibility: hidden; display: inline-block"' +
-                '>' +
-                    '&#xe614&#xe614&#xe614' +
-                '</span>'
+                '<span class="jw-font-load-detect jw-reset">&#xe614&#xe614&#xe614</span>'
             );
             _playerElement.appendChild(pollTarget);
+            utils.css(pollTarget, {
+                position: 'absolute',
+                visibility: 'hidden',
+                display: 'inline-block'
+            });
 
             require('css/jwplayer.less');
 
