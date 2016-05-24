@@ -170,7 +170,7 @@ define([
 
                 if (kind === 'captions' || kind === 'subtitles') {
                     if (track.file) {
-                        _load.call(this, track);
+                        _load(track);
                     } else if (track.data) {
                         _addTrack(track);
                     }
@@ -212,13 +212,12 @@ define([
         }
 
         function _load(track) {
-            var _this = this;
             utils.ajax(track.file, function(xhr) {
-                _xhrSuccess(xhr, track, _this);
+                _xhrSuccess(xhr, track);
             }, _errorHandler);
         }
 
-        function _xhrSuccess(xhr, track, _this) {
+        function _xhrSuccess(xhr, track) {
             var rss = xhr.responseXML ? xhr.responseXML.firstChild : null,
                 status;
 
@@ -238,11 +237,9 @@ define([
                 });
             } else {
                 status = utils.tryCatch(function() {
-                    // If no valid captions were found, an empty array is returned
                     track.data = srt(xhr.responseText);
-                    if (track.data.length) {
+                    if (track.data) {
                         _addTrack(track);
-                        _this.setCaptionsList(_captionsMenu());
                     }
                 });
             }
