@@ -25,6 +25,7 @@ define([
     'unit/simplemodel-test',
     'unit/storage-test',
     'unit/strings-test',
+    'unit/style-loader-test',
     'unit/timer-test',
     'unit/trycatch-test',
     'unit/utils-defs-test',

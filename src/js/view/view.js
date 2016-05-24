@@ -257,7 +257,7 @@ define([
 
                 var o = {};
                 o[attr] = value;
-                utils.css(elements.join(', '), o);
+                utils.css(elements.join(', '), o, id);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
@@ -1040,7 +1040,7 @@ define([
             if (_logo) {
                 _logo.destroy();
             }
-            utils.clearCss('#'+_model.get('id'));
+            utils.clearCss(_model.get('id'));
         };
     };
 

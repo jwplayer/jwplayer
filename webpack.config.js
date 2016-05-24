@@ -112,7 +112,8 @@ var multiConfig = _.compact(_.map([
         resolve: {
             modulesDirectories: [
                 'src/js/',
-                'src'
+                'src',
+                'node_modules'
             ]
         },
         module: {

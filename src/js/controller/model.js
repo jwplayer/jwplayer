@@ -1,22 +1,13 @@
 define([
     'utils/helpers',
     'providers/providers',
-    'controller/storage',
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
     'utils/simplemodel',
     'events/events',
     'events/states'
-], function(utils, Providers, Storage, QOE, _, Events, SimpleModel, events, states) {
-
-
-    var PERSIST_ITEMS = [
-        'volume',
-        'mute',
-        'captionLabel',
-        'qualityLabel'
-    ];
+], function(utils, Providers, QOE, _, Events, SimpleModel, events, states) {
 
     // Represents the state of the player
     var Model = function() {
@@ -34,10 +25,8 @@ define([
         this.set('mediaModel', this.mediaModel);
 
         this.setup = function(config) {
-            var storage = new Storage();
-            storage.track(PERSIST_ITEMS, this);
 
-            _.extend(this.attributes, storage.getAllItems(), config, {
+            _.extend(this.attributes, config, {
                 // always start on first playlist item
                 item : 0,
                 // Initial state, upon setup
@@ -264,6 +253,8 @@ define([
             this.mediaModel.off();
             this.mediaModel = new MediaModel();
             this.set('mediaModel', this.mediaModel);
+            this.set('position', item.starttime || 0);
+            this.set('duration', item.duration || 0);
 
             this.setProvider(item);
         };
@@ -332,16 +323,14 @@ define([
 
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
-
-            this.mediaModel.set('playAttempt', true);
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
-
             if (!item) {
                 var idx = this.get('item');
                 item = this.get('playlist')[idx];
             }
             this.set('position', item.starttime || 0);
             this.set('duration', item.duration || 0);
+            this.mediaModel.set('playAttempt', true);
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
 
             _provider.load(item);
         };

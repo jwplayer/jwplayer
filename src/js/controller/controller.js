@@ -5,6 +5,7 @@ define([
     'controller/Setup',
     'controller/captions',
     'controller/model',
+    'controller/storage',
     'playlist/playlist',
     'playlist/loader',
     'utils/helpers',
@@ -15,8 +16,8 @@ define([
     'events/states',
     'events/events',
     'view/error'
-], function(Config, InstreamAdapter, _, Setup, Captions,
-            Model, Playlist, PlaylistLoader, utils, View, Providers, Events, changeStateEvent, states, events, error) {
+], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
+            Playlist, PlaylistLoader, utils, View, Providers, Events, changeStateEvent, states, events, error) {
 
     function _queueCommand(command) {
         return function(){
@@ -66,7 +67,7 @@ define([
 
         setup : function(options, _api) {
 
-            var _model,
+            var _model = this._model,
                 _view,
                 _captions,
                 _setup,
@@ -78,9 +79,11 @@ define([
 
             var _video = function() { return _model.getVideo(); };
 
-            var config = new Config(options);
+            var storage = new Storage();
+            storage.track(_model);
+            var config = new Config(options, storage);
 
-            _model = this._model.setup(config);
+            _model.setup(config, storage);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view, _setPlaylist);
@@ -186,6 +189,9 @@ define([
                     });
                 });
 
+                // Reset mediaType so that we get a change mediaType event
+                _model.mediaModel.set('mediaType', null);
+
                 _model.mediaController.on('all', _this.trigger.bind(_this));
                 _view.on('all', _this.trigger.bind(_this));
 
@@ -257,10 +263,12 @@ define([
                         break;
                     case 'object':
                         var playlist = Playlist(item);
+                        // TODO: edition logic only belongs in the commercial edition of the player
+                        var edition = _model.get('edition');
                         var providersManager = _model.getProviders();
-                        var providersNeeded = providersManager.required(playlist, _model.get('edition'));
+                        var providersNeeded = providersManager.required(playlist, edition);
 
-                        Providers.load(providersNeeded)
+                        Providers.load(providersNeeded, edition)
                             .then(function() {
                                 if (!_this.getProvider()) {
                                     _model.setProvider(_model.get('playlistItem'));
@@ -649,6 +657,7 @@ define([
             this.setCurrentAudioTrack = _setCurrentAudioTrack;
             this.getCurrentAudioTrack = _getCurrentAudioTrack;
             this.getAudioTracks = _getAudioTracks;
+            this.getCurrentCaptions = _getCurrentCaptions;
             this.getCaptionsList = _getCaptionsList;
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
