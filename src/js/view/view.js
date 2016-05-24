@@ -108,11 +108,6 @@ define([
                 '<span class="jw-font-load-detect jw-reset">&#xe614&#xe614&#xe614</span>'
             );
             _playerElement.appendChild(pollTarget);
-            utils.css(pollTarget, {
-                position: 'absolute',
-                visibility: 'hidden',
-                display: 'inline-block'
-            });
 
             require('css/jwplayer.less');
 
