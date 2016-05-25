@@ -194,9 +194,7 @@ define([
         };
 
         this.clear = function () {
-            while(_display.firstChild) {
-                _display.removeChild(_display.firstChild);
-            }
+            utils.empty(_display);
         };
 
         this.getStyles = function () {
