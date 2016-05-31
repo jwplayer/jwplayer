@@ -2,9 +2,9 @@ define([
     'utils/underscore',
     'utils/helpers'
 ], function(_, utils) {
-
     var Preview = function(_model) {
         this.model = _model;
+        this.aspectRatioPromise = Promise.resolve(0);
 
         _model.on('change:playlistItem', onPlaylistItem, this);
         _model.on('change:mediaModel', onMediaModel, this);
@@ -46,10 +46,25 @@ define([
             }
         },
         setImage: function(img) {
+            // Remove onload function from previous image
+            if (this.image) {
+                this.image.onload = null;
+            }
             this.model.off('change:state', null, this);
             var backgroundImage = '';
             if (_.isString(img)) {
                 backgroundImage = 'url("' + img + '")';
+
+                // Save the background image's width and height for resize check in view.js
+                this.image = new Image();
+                this.aspectRatioPromise = new Promise(function(resolve) {
+                    this.image.onload = function() {
+                        resolve(this.width / this.height);
+                    };
+                    this.image.src = img;
+                }.bind(this));
+            } else {
+                this.aspectRatioPromise = Promise.resolve(0);
             }
             utils.style(this.el, {
                 backgroundImage: backgroundImage
