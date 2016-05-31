@@ -197,16 +197,6 @@ define([
 
                 this.showView(_view.element());
 
-                // prevent video error in display on window close
-                window.addEventListener('beforeunload', function() {
-                    if (_setup) {
-                        _setup.destroy();
-                    }
-                    if (_model) {
-                        _model.destroy();
-                    }
-                });
-
                 // Defer triggering of events until they can be registered
                 _.defer(_playerReadyNotify);
             }
