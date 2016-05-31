@@ -42,6 +42,7 @@
     "less-loader": "^2.2.3",
     "load-grunt-tasks": "^3.5.0",
     "loader-utils": "^0.2.14",
+    "lodash": "^4.11.1",
     "node-libs-browser": "^1.0.0",
     "parallel-webpack": "^1.4.0",
     "phantomjs-prebuilt": "2.1.7",
