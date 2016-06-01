@@ -191,14 +191,11 @@ define([
             _display.appendChild(_captionsWindow);
 
             this.populate(_model.get('captionsTrack'));
+            _model.set('captions', _options);
         };
 
         this.clear = function () {
             utils.empty(_display);
-        };
-
-        this.getStyles = function () {
-            return _options;
         };
 
         function setupShadowDOMStyles(playerId, windowStyle, textStyle) {

@@ -1021,7 +1021,6 @@ define([
             _captionsRenderer.clear();
             _captionsRenderer.setup(_model.get('id'), captionsStyle);
             _captionsRenderer.resize();
-            _model.set('captions', _captionsRenderer.getStyles());
         };
 
         this.destroy = function() {
