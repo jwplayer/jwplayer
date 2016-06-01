@@ -169,11 +169,7 @@ define([
                 kind = track.kind.toLowerCase();
 
                 if (kind === 'captions' || kind === 'subtitles') {
-                    if (track.file) {
-                        _load.call(this, track);
-                    } else if (track.data) {
-                        _addTrack(track);
-                    }
+                    _addTrack(track);
                 }
             }
 
@@ -192,6 +188,10 @@ define([
             if (captionsMenuIndex !== 0) {
                 track = _tracks[captionsMenuIndex-1];
             }
+            if (track && track.shouldLoad) {
+                _load(track);
+                track.shouldLoad = false;
+            }
             model.set('captionsTrack', track);
         }
 
@@ -199,7 +199,11 @@ define([
             if(typeof track.id !== 'number') {
                 track.id = track.name || track.file || ('cc' + _tracks.length);
             }
+
             track.data = track.data || [];
+            // If there's no data and the track has a file, it needs to be loaded when selected
+            track.shouldLoad = !track.data.length && track.file;
+
             if (!track.label) {
                 track.label = 'Unknown CC';
                 _unknownCount++;
@@ -212,13 +216,12 @@ define([
         }
 
         function _load(track) {
-            var _this = this;
             utils.ajax(track.file, function(xhr) {
-                _xhrSuccess(xhr, track, _this);
+                _xhrSuccess(xhr, track);
             }, _errorHandler);
         }
 
-        function _xhrSuccess(xhr, track, _this) {
+        function _xhrSuccess(xhr, track) {
             var rss = xhr.responseXML ? xhr.responseXML.firstChild : null,
                 status;
 
@@ -242,8 +245,8 @@ define([
                     track.data = srt(xhr.responseText);
                     if (track.data.length) {
                         _addTrack(track);
-                        _this.setCaptionsList(_captionsMenu());
-                        _selectDefaultIndex();
+                        // _this.setCaptionsList(_captionsMenu());
+                        // _selectDefaultIndex();
                     }
                 });
             }
