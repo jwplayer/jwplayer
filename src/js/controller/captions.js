@@ -190,6 +190,7 @@ define([
             }
             if (track && track.shouldLoad) {
                 _load(track);
+                // Don't try to load again, even if there was an error
                 track.shouldLoad = false;
             }
             model.set('captionsTrack', track);
