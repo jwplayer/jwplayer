@@ -169,7 +169,12 @@ define([
                 kind = track.kind.toLowerCase();
 
                 if (kind === 'captions' || kind === 'subtitles') {
-                    _addTrack(track);
+                    if (track.file) {
+                        _addTrack(track);
+                        _load(track);
+                    } else if (track.data) {
+                        _addTrack(track);
+                    }
                 }
             }
 
@@ -188,11 +193,6 @@ define([
             if (captionsMenuIndex !== 0) {
                 track = _tracks[captionsMenuIndex-1];
             }
-            if (track && track.shouldLoad) {
-                _load(track);
-                // Don't try to load again, even if there was an error
-                track.shouldLoad = false;
-            }
             model.set('captionsTrack', track);
         }
 
@@ -202,8 +202,6 @@ define([
             }
 
             track.data = track.data || [];
-            // If there's no data and the track has a file, it needs to be loaded when selected
-            track.shouldLoad = !track.data.length && track.file;
 
             if (!track.label) {
                 track.label = 'Unknown CC';
