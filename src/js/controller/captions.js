@@ -242,13 +242,7 @@ define([
                 });
             } else {
                 status = utils.tryCatch(function() {
-                    // If no valid captions were found, an empty array is returned
                     track.data = srt(xhr.responseText);
-                    if (track.data.length) {
-                        _addTrack(track);
-                        // _this.setCaptionsList(_captionsMenu());
-                        // _selectDefaultIndex();
-                    }
                 });
             }
             if (status instanceof utils.Error) {
