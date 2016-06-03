@@ -80,7 +80,7 @@ define([
 
         if (options.timeout) {
             options.timeoutId = setTimeout(function() {
-                _abortAjax(xhr);
+                abortAjax(xhr);
                 options.onerror('Timeout', url, xhr);
             }, options.timeout);
             xhr.onabort = function() {
@@ -101,7 +101,7 @@ define([
         return xhr;
     };
 
-    function _abortAjax(xhr) {
+    function abortAjax(xhr) {
         xhr.onload = null;
         xhr.onprogress = null;
         xhr.onreadystatechange = null;
@@ -117,7 +117,7 @@ define([
             clearTimeout(options.timeoutId);
             // Handle Access-Control-Allow-Origin wildcard error when using withCredentials to send cookies
             if (options.retryWithoutCredentials && options.xhr.withCredentials) {
-                _abortAjax(xhr);
+                abortAjax(xhr);
                 var args = _.extend({}, options, {
                     xhr: null,
                     withCredentials: false,
@@ -226,6 +226,7 @@ define([
 
     return {
         ajax: ajax,
+        abortAjax: abortAjax,
         crossdomain: crossdomain
     };
 });
