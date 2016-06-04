@@ -221,8 +221,7 @@ define([
         }
 
         function _xhrSuccess(xhr, track) {
-            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null,
-                status;
+            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null;
 
             // IE9 sets the firstChild element to the root <xml> tag
             if (rss) {
