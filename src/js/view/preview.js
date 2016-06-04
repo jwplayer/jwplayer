@@ -4,7 +4,6 @@ define([
 ], function(_, utils) {
     var Preview = function(_model) {
         this.model = _model;
-        this.loadImage = Promise.resolve(null);
 
         _model.on('change:playlistItem', onPlaylistItem, this);
         _model.on('change:mediaModel', onMediaModel, this);
@@ -47,25 +46,17 @@ define([
         },
         setImage: function(img) {
             // Remove onload function from previous image
-            if (this.image) {
-                this.image.onload = null;
+            var image = this.image;
+            if (image) {
+                image.onload = null;
+                this.image = null;
             }
             this.model.off('change:state', null, this);
             var backgroundImage = '';
             if (_.isString(img)) {
                 backgroundImage = 'url("' + img + '")';
-
-                // Save the background image's width and height for resize check in view.js
-                this.image = new Image();
-                this.loadImage = new Promise(function(resolve) {
-                    this.image.onload = function() {
-                        resolve(this);
-                    };
-                    this.image.src = img;
-                }.bind(this));
-            } else {
-                this.image = null;
-                this.loadImage = Promise.resolve(null);
+                image = this.image = new Image();
+                image.src = img;
             }
             utils.style(this.el, {
                 backgroundImage: backgroundImage
@@ -75,18 +66,23 @@ define([
             if (stretching === 'uniform') {
                 var playerAspectRatio = width / height;
                 // snap image to edges when the difference in aspect ratio is less than 9%
-                var _this = this;
-                this.loadImage.then(function(image) {
-                    var backgroundSize = null;
-                    if (image) {
-                        var imageAspectRatio = image.width / image.height;
-                        if (Math.abs(playerAspectRatio - imageAspectRatio) < 0.09) {
-                            backgroundSize = 'cover';
-                        }
+                var image = this.image;
+                var backgroundSize = null;
+                if (image) {
+                    if (image.width === 0) {
+                        var _this = this;
+                        image.onload = function() {
+                            _this.resize(width, height, stretching);
+                        };
+                        return;
                     }
-                    utils.css.style(_this.el, {
-                        backgroundSize: backgroundSize
-                    });
+                    var imageAspectRatio = image.width / image.height;
+                    if (Math.abs(playerAspectRatio - imageAspectRatio) < 0.09) {
+                        backgroundSize = 'cover';
+                    }
+                }
+                utils.css.style(this.el, {
+                    backgroundSize: backgroundSize
                 });
             }
         },
