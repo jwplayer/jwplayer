@@ -698,20 +698,6 @@ define([
 
             // pass width, height from jwResize if present
             _resizeMedia(width, height);
-
-            if (_this.model.get('stretching') === 'uniform' && _preview) {
-                var playerAspectRatio = _playerElement.clientWidth / _playerElement.clientHeight;
-                // snap image to edges when the difference in aspect ratio is less than 9%
-                var backgroundSize = null;
-                _preview.aspectRatioPromise.then(function(imageAspectRatio) {
-                    if (Math.abs(playerAspectRatio - imageAspectRatio) < 0.09) {
-                        backgroundSize = 'cover';
-                    }
-                    utils.css.style(_preview.el, {
-                        backgroundSize: backgroundSize
-                    });
-                });
-            }
         }
 
         function _checkAudioMode(height) {
@@ -756,6 +742,10 @@ define([
                     return;
                 }
                 height = _videoLayer.clientHeight;
+            }
+
+            if (_preview) {
+                _preview.resize(width, height, _model.get('stretching'));
             }
 
             //IE9 Fake Full Screen Fix
