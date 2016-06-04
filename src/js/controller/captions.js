@@ -170,7 +170,8 @@ define([
 
                 if (kind === 'captions' || kind === 'subtitles') {
                     if (track.file) {
-                        _load.call(this, track);
+                        _addTrack(track);
+                        _load(track);
                     } else if (track.data) {
                         _addTrack(track);
                     }
@@ -199,7 +200,9 @@ define([
             if(typeof track.id !== 'number') {
                 track.id = track.name || track.file || ('cc' + _tracks.length);
             }
+
             track.data = track.data || [];
+
             if (!track.label) {
                 track.label = 'Unknown CC';
                 _unknownCount++;
@@ -212,15 +215,13 @@ define([
         }
 
         function _load(track) {
-            var _this = this;
             utils.ajax(track.file, function(xhr) {
-                _xhrSuccess(xhr, track, _this);
+                _xhrSuccess(xhr, track);
             }, _errorHandler);
         }
 
-        function _xhrSuccess(xhr, track, _this) {
-            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null,
-                status;
+        function _xhrSuccess(xhr, track) {
+            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null;
 
             // IE9 sets the firstChild element to the root <xml> tag
             if (rss) {
@@ -232,23 +233,14 @@ define([
                     rss = rss.nextSibling;
                 }
             }
-            if (rss && parsers.localName(rss) === 'tt') {
-                status = utils.tryCatch(function() {
+            try {
+                if (rss && parsers.localName(rss) === 'tt') {
                     track.data = dfxp(xhr.responseXML);
-                });
-            } else {
-                status = utils.tryCatch(function() {
-                    // If no valid captions were found, an empty array is returned
+                } else {
                     track.data = srt(xhr.responseText);
-                    if (track.data.length) {
-                        _addTrack(track);
-                        _this.setCaptionsList(_captionsMenu());
-                        _selectDefaultIndex();
-                    }
-                });
-            }
-            if (status instanceof utils.Error) {
-                _errorHandler(status.message + ': ' + track.file);
+                }
+            } catch(error) {
+                _errorHandler(error.message + ': ' + track.file);
             }
         }
 
