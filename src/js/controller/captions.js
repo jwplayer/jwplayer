@@ -234,17 +234,14 @@ define([
                     rss = rss.nextSibling;
                 }
             }
-            if (rss && parsers.localName(rss) === 'tt') {
-                status = utils.tryCatch(function() {
+            try {
+                if (rss && parsers.localName(rss) === 'tt') {
                     track.data = dfxp(xhr.responseXML);
-                });
-            } else {
-                status = utils.tryCatch(function() {
+                } else {
                     track.data = srt(xhr.responseText);
-                });
-            }
-            if (status instanceof utils.Error) {
-                _errorHandler(status.message + ': ' + track.file);
+                }
+            } catch(error) {
+                _errorHandler(error.message + ': ' + track.file);
             }
         }
 
