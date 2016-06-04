@@ -81,7 +81,7 @@ define([
                         backgroundSize = 'cover';
                     }
                 }
-                utils.css.style(this.el, {
+                utils.style(this.el, {
                     backgroundSize: backgroundSize
                 });
             }
