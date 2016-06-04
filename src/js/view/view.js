@@ -744,6 +744,10 @@ define([
                 height = _videoLayer.clientHeight;
             }
 
+            if (_preview) {
+                _preview.resize(width, height, _model.get('stretching'));
+            }
+
             //IE9 Fake Full Screen Fix
             if (utils.isMSIE(9) && document.all && !window.atob) {
                 width = height = '100%';
