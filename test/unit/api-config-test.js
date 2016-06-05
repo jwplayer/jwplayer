@@ -134,24 +134,24 @@ define([
 
         apiConfig = testConfig(assert, {});
         if (window.__SELF_HOSTED__) {
-            assert.ok(/.+\//.test(apiConfig.base),
-                'Config sets base to the jwplayer script location in self-hosted builds');
+            assert.ok(/.*\//.test(apiConfig.base),
+                'config.base is set to the jwplayer script location in self-hosted builds: '+apiConfig.base);
         } else {
-            assert.ok(/.+\//.test(apiConfig.base),
-                'Config sets base to the repo');
+            assert.ok(/.*\//.test(apiConfig.base),
+                'config.base is set to the repo locations: '+apiConfig.base);
         }
 
         apiConfig = testConfig(assert, {
             base: '.'
         });
-        assert.ok(/.+\//.test(apiConfig.base),
-            'Config replaces a base of "." with the jwplayer script location');
+        assert.ok(/.*\//.test(apiConfig.base),
+            'config.base of "." is replaced with the jwplayer script locations: '+apiConfig.base);
 
         apiConfig = testConfig(assert, {
             base: CUSTOM_BASE
         });
         assert.equal(apiConfig.base, CUSTOM_BASE,
-            'Config does not replace base when a custom value other than "." is specified');
+            'config.base is not replaced when a custom value other than "." is specified');
     });
 
     test('flattens skin object', function(assert) {
