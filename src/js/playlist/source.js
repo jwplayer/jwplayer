@@ -44,16 +44,22 @@ define([
         }
 
         // normalize types
-        if (_source.type === 'm3u8') {
-            _source.type = 'hls';
-        }
-        if (_source.type === 'smil') {
-            _source.type = 'rtmp';
-        }
-        // Although m4a is a container format, it is most often used for aac files
-        // http://en.wikipedia.org/w/index.php?title=MPEG-4_Part_14
-        if (_source.type === 'm4a') {
-            _source.type = 'aac';
+        switch (_source.type) {
+            case 'm3u8':
+            case 'vnd.apple.mpegurl':
+                _source.type = 'hls';
+                break;
+            case 'dash+xml':
+                _source.type = 'dash';
+                break;
+            case 'smil':
+                _source.type = 'rtmp';
+                break;
+            // Although m4a is a container format, it is most often used for aac files
+            // http://en.wikipedia.org/w/index.php?title=MPEG-4_Part_14
+            case 'm4a':
+                _source.type = 'aac';
+                break;
         }
 
         // remove empty strings

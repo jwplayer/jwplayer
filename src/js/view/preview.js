@@ -6,49 +6,47 @@ define([
     var Preview = function(_model) {
         this.model = _model;
 
-        this.model.on('change:playlistItem', onPlaylistItem, this);
-        this.model.on('change:mediaModel', onMediaModel, this);
-        this.model.on('change:state', onChangeState, this);
+        _model.on('change:playlistItem', onPlaylistItem, this);
+        _model.on('change:mediaModel', onMediaModel, this);
     };
 
-    function onChangeState(model, state) {
-        var endOfPlaylist = (this.model.get('item') === (this.model.get('playlist').length - 1));
-        if ((state === 'complete') && (!model.get('repeat')) && endOfPlaylist) {
-            this.loadImage(model, model.get('playlistItem').image);
-        }
-    }
-
-    function onMediaModel() {
-        this.model.mediaModel.off('change:mediaType', onMediaType);
-        this.model.mediaModel.on('change:mediaType', onMediaType, this);
-    }
-
-    function onMediaType(mediaModel, mediaType) {
-        if (mediaType === 'audio') {
-            this.loadImage(this.model, this.model.get('playlistItem').image);
-        }
+    function onMediaModel(model, mediaModel) {
+        mediaModel.off('change:mediaType', null, this);
+        mediaModel.on('change:mediaType', function(mediaModel, mediaType) {
+            if (mediaType === 'audio') {
+                this.setImage(model.get('playlistItem').image);
+            }
+        }, this);
     }
 
     function onPlaylistItem(model, playlistItem) {
-        var loadImage = (this.model.get('state') === 'idle') && (this.model.get('item') === 0) &&
-            (!this.model.get('autostart') || utils.isMobile());
+        var delayPosterLoad = (model.get('autostart') && !utils.isMobile()) ||
+            (model.get('item') > 0);
 
-        if (loadImage) {
-            this.loadImage(model, playlistItem.image);
-        } else {
-            this.loadImage(model, null);
+        if (delayPosterLoad) {
+            this.setImage(null);
+            model.off('change:state', null, this);
+            model.on('change:state', function(model, state) {
+                if (state === 'complete' || state === 'idle' || state === 'error') {
+                    this.setImage(playlistItem.image);
+                }
+            }, this);
+            return;
         }
+
+        this.setImage(playlistItem.image);
     }
 
     _.extend(Preview.prototype, {
         setup: function(element) {
             this.el = element;
-
-            if (this.model.get('playlistItem')) {
-                this.loadImage(this.model, this.model.get('playlistItem'));
+            var playlistItem = this.model.get('playlistItem');
+            if (playlistItem) {
+                this.setImage(playlistItem.image);
             }
         },
-        loadImage: function(model, img) {
+        setImage: function(img) {
+            this.model.off('change:state', null, this);
             var backgroundImage = '';
             if (_.isString(img)) {
                 backgroundImage = 'url("' + img + '")';

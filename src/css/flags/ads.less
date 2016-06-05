@@ -1,7 +1,12 @@
 .jwplayer.jw-flag-ads {
 
     .jw-preview,
-    .jw-dock {
+    .jw-dock,
+    .jw-logo,
+    .jw-captions.jw-captions-enabled {
+        display: none;
+    }
+    video::-webkit-media-text-track-container {
         display: none;
     }
 
@@ -31,11 +36,6 @@
         .jw-icon-tooltip.jw-icon-volume {
             display : none;
         }
-    }
-
-    .jw-logo,
-    .jw-captions {
-        display: none;
     }
 }
 

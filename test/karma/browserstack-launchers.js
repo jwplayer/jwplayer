@@ -1,3 +1,5 @@
+/* jshint node: true */
+
 module.exports = {
 
     // To view a list of currently available configurations run this command :
@@ -25,13 +27,6 @@ module.exports = {
         os: 'OS X',
         os_version: 'Mavericks'
     },
-    firefox_34: {
-        base: 'BrowserStack',
-        browser: 'firefox',
-        browser_version: '34.0',
-        os: 'OS X',
-        os_version: 'Yosemite'
-    },
     firefox_35: {
         base: 'BrowserStack',
         browser: 'firefox',
@@ -43,6 +38,12 @@ module.exports = {
         base: 'BrowserStack',
         browser: 'firefox',
         browser_version: '41.0',
+        os: 'OS X',
+        os_version: 'Yosemite'
+    },
+    firefox: {
+        base: 'BrowserStack',
+        browser: 'firefox',
         os: 'OS X',
         os_version: 'Yosemite'
     },
@@ -62,17 +63,16 @@ module.exports = {
         os: 'OS X',
         os_version: 'Yosemite'
     },
-    chrome_44: {
-        base: 'BrowserStack',
-        browser: 'chrome',
-        browser_version: '44.0',
-        os: 'OS X',
-        os_version: 'Yosemite'
-    },
     chrome_45: {
         base: 'BrowserStack',
         browser: 'chrome',
         browser_version: '45.0',
+        os: 'OS X',
+        os_version: 'Yosemite'
+    },
+    chrome: {
+        base: 'BrowserStack',
+        browser: 'chrome',
         os: 'OS X',
         os_version: 'Yosemite'
     },
@@ -105,6 +105,12 @@ module.exports = {
         browser_version: '11.0',
         os: 'Windows',
         os_version: '7'
+    },
+    edge: {
+        base: 'BrowserStack',
+        browser: 'edge',
+        os: 'Windows',
+        os_version: '10'
     },
 
     // Opera

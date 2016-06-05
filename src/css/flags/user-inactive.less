@@ -9,8 +9,16 @@
             display: none;
         }
 
-        .jw-plugin, .jw-captions {
+        .jw-plugin,
+        .jw-captions {
             bottom: 0.5em;
+        }
+        .jw-media {
+            cursor: none;
+            -webkit-cursor-visibility: auto-hide;
+        }
+        video::-webkit-media-text-track-container {
+            max-height: none;
         }
     }
 

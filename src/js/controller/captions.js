@@ -14,9 +14,14 @@ define([
         // Listen for captions menu index changes from the view
         _model.on('change:captionsIndex', _captionsIndexHandler, this);
 
+        // Listen for item ready to determine which provider is in use
+        _model.on('itemReady', _itemReadyHandler, this);
+
         // Listen for provider subtitle tracks
         //   ignoring provider "subtitlesTrackChanged" since index should be managed here
-        _model.mediaController.on('subtitlesTracks', function(e) {
+        _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
+
+        function _subtitlesTracksHandler(e) {
             if(! e.tracks.length) {
                 return;
             }
@@ -37,7 +42,7 @@ define([
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
-        }, this);
+        }
 
         // Append data to subtitle tracks
         _model.mediaController.on('subtitlesTrackData', function(e) {
@@ -46,6 +51,7 @@ define([
                 // Player expects that tracks were received in 'subtitlesTracks' event
                 return;
             }
+
             track.source = e.source;
             var cues = e.captions || [];
             var sort = false;
@@ -68,7 +74,9 @@ define([
         // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
         _model.mediaController.on('meta', _metaHandler, this);
 
-        var _tracks = [],
+        var _isSDK = !!_model.get('sdkplatform'),
+            _item = {},
+            _tracks = [],
             _tracksById = {},
             _metaCuesByTextTime = {},
             _unknownCount = 0;
@@ -79,6 +87,9 @@ define([
                 return;
             }
             if (metadata.type === 'textdata') {
+                if (!metadata.text) {
+                    return;
+                }
                 var track = _tracksById[metadata.trackid];
                 if (!track) {
                     track = {
@@ -126,20 +137,37 @@ define([
 
         /** Listen to playlist item updates. **/
         function _itemHandler(model, item) {
+            _item = item;
             _tracks = [];
             _tracksById = {};
             _metaCuesByTextTime = {};
             _unknownCount = 0;
+        }
 
-            // meta event listener may have been turned off in subtitlesTracks event
+        function _itemReadyHandler(item) {
+            // Clean up in case we're replaying
+            _itemHandler(_model,item);
+
             _model.mediaController.off('meta', _metaHandler);
-            _model.mediaController.on('meta', _metaHandler, this);
+            _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
             var tracks = item.tracks,
-                track, kind, i;
+                track, kind, isVTT, i;
+            var isHTML5 = _model.get('provider').name === 'html5';
+
+            var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
+
             for (i = 0; i < tracks.length; i++) {
                 track = tracks[i];
+                isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
+
+                //let the browser handle rendering sideloaded VTT tracks in the HTML5 provider
+                if(isHTML5 && isVTT && !_isSDK && canRenderNatively) {
+                    continue;
+                }
+
                 kind = track.kind.toLowerCase();
+
                 if (kind === 'captions' || kind === 'subtitles') {
                     if (track.file) {
                         _addTrack(track);
@@ -148,6 +176,12 @@ define([
                         _addTrack(track);
                     }
                 }
+            }
+
+            // only listen for other captions if there are no side loaded captions
+            if (!_tracks.length) {
+                _model.mediaController.on('meta', _metaHandler, this);
+                _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
             }
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
@@ -242,7 +276,7 @@ define([
                 if (label && label === track.label) {
                     captionsMenuIndex = i + 1;
                     break;
-                } else if (track['default'] || track.defaulttrack) {
+                } else if (track['default'] || track.defaulttrack || track.id === 'default') {
                     captionsMenuIndex = i + 1;
                 } else if (track.autoselect) {
                     // TODO: auto select track by comparing track.language to system lang

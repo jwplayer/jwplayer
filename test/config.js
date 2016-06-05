@@ -83,7 +83,8 @@
 
             'data': data,
             'mock': mock,
-            'unit': unit
+            'unit': unit,
+            'simple-style-loader': base + 'node_modules/simple-style-loader'
         },
         shim: {
             'test/underscore': {
@@ -93,7 +94,16 @@
         map: {
             // make sure the text plugin is used to load templates
             '*': {
-                '../css/jwplayer.less': 'less!css/jwplayer',
+                'templates/displayicon.html': 'handlebars-loader!templates/displayicon.html',
+                'templates/dock.html': 'handlebars-loader!templates/dock.html',
+                'templates/logo.html': 'handlebars-loader!templates/logo.html',
+                'templates/player.html': 'handlebars-loader!templates/player.html',
+                'templates/error.html': 'handlebars-loader!templates/error.html',
+                'templates/rightclick.html': 'handlebars-loader!templates/rightclick.html',
+                'templates/slider.html': 'handlebars-loader!templates/slider.html',
+                'templates/menu.html': 'handlebars-loader!templates/menu.html',
+                'templates/playlist.html': 'handlebars-loader!templates/playlist.html',
+                'css/jwplayer.less': 'less!css/jwplayer',
                 'utils/video': mock + '/video.js'
             }
         },

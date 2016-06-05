@@ -3,7 +3,7 @@ define([
 ], function (utils) {
     /* jshint qunit: true */
 
-    test('defines util functions ', function (assert) {
+    QUnit.test('defines util functions ', function (assert) {
         assert.expect(55);
 
         // functions in helpers

@@ -148,7 +148,7 @@ define([
         }
 
         /** Constructor for the renderer. **/
-        this.setup = function(options) {
+        this.setup = function(playerElementId, options) {
             _captionsWindow = document.createElement('div');
             _textContainer = document.createElement('span');
             _captionsWindow.className = 'jw-captions-window jw-reset';
@@ -184,6 +184,7 @@ define([
 
                 _style(_captionsWindow, windowStyle);
                 _style(_textContainer, textStyle);
+                setupShadowDOMStyles(playerElementId, windowStyle, textStyle);
             }
 
             _captionsWindow.appendChild(_textContainer);
@@ -191,6 +192,21 @@ define([
 
             this.populate(_model.get('captionsTrack'));
         };
+
+        function setupShadowDOMStyles(playerId, windowStyle, textStyle) {
+            // Caption window styles
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
+
+            // Caption text styles
+            cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
+
+            // Caption text background style in Safari needs to be important to override browser style
+            if (textStyle.backgroundColor) {
+                var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
+                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
+                    backdropStyle, playerId);
+            }
+        }
 
         function addEdgeStyle(option, style, fontOpacity) {
             var color = cssUtils.hexToRgba('#000000', fontOpacity);

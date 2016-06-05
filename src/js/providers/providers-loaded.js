@@ -1,6 +1,6 @@
 define([
     'providers/html5',
-    'providers/flash',
+    'providers/flash'
 ], function(html5, flash) {
 
     var Store = {

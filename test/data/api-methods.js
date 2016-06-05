@@ -32,6 +32,7 @@ define({
     getMeta: null,
     getMute: null,
     getPlaylist: null,
+    getPlaylistIndex: null,
     getPlaylistItem: null,
     getPosition: null,
     getProvider: null,

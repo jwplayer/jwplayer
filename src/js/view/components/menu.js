@@ -3,7 +3,7 @@ define([
     'utils/helpers',
     'utils/underscore',
     'utils/ui',
-    'handlebars-loader!templates/menu.html'
+    'templates/menu.html'
 ], function(Tooltip, utils, _, UI, menuTemplate) {
     var Menu = Tooltip.extend({
         setup : function (list, selectedIndex, options) {

@@ -3,7 +3,8 @@ define([
 ], function (dom) {
     /* jshint qunit: true */
 
-    module('dom');
+    QUnit.module('dom');
+    var test = QUnit.test.bind(QUnit);
 
     test('dom.addClass', function (assert) {
         var element = document.createElement('div');
@@ -39,6 +40,27 @@ define([
 
         dom.removeClass(element, 'class1');
         assert.equal(element.className, '', 'Removed lass class from element');
+    });
+
+
+    test('dom.replaceClass', function (assert) {
+        var element = document.createElement('div');
+
+        dom.replaceClass(element, /class0/, 'class1');
+        assert.equal(element.className, 'class1', 'Adds class to element when pattern is not matched');
+
+        element.className = 'class0';
+        dom.replaceClass(element, /class0/, 'class2');
+        assert.equal(element.className, 'class2', 'Replaces class when pattern matches only class');
+
+
+        element.className = 'class1 class2 class3';
+        dom.replaceClass(element, /class3/, 'class4');
+        assert.equal(element.className, 'class1 class2 class4', 'Replaces classes when pattern matches any class');
+
+        element.className = 'class1 class2 classB';
+        dom.replaceClass(element, /class\d/g, '');
+        assert.equal(element.className, 'classB', 'Replaces classes when pattern matches any class');
     });
 
     test('dom.createElement', function(assert) {
@@ -126,21 +148,21 @@ define([
     test('bounds test', function(assert) {
         var element = document.createElement('div');
         var emptyBound = {left: 0, right: 0, width: 0, height: 0 , top: 0, bottom: 0};
-        var bound = dom.bounds(element);
-
-        assert.ok(_checkEqualBound(bound, emptyBound), 'bounds should be empty bounds');
 
         // check null bounds does not break
-        dom.bounds(null);
+        assert.propEqual(dom.bounds(null), emptyBound, 'bounds should be empty when element is not defined');
 
-        function _checkEqualBound(bound, checkBound) {
-            return bound.left === checkBound.left &&
-                    bound.right === checkBound.right &&
-                    bound.width === checkBound.width &&
-                    bound.height === checkBound.height &&
-                    bound.top === checkBound.top &&
-                    bound.bottom === checkBound.bottom;
-        }
+
+        assert.propEqual(dom.bounds(element), emptyBound, 'bounds should be empty when element is not in DOM');
+
+        element.style.display = 'none';
+        window.document.body.appendChild(element);
+        assert.propEqual(dom.bounds(element), emptyBound, 'bounds should be empty when element has no layout');
+
+        element.style.display = 'block';
+        element.style.width = '400px';
+        element.style.height = '400px';
+        assert.notPropEqual(dom.bounds(element), emptyBound, 'bounds should not be empty when element has layout');
     });
 
 });

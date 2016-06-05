@@ -681,6 +681,16 @@ public class RTMPMediaProvider extends MediaProvider {
             case 'NetStream.Seek.Notify':
                 sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_SEEKED);
                 break;
+            case 'NetStream.Buffer.Empty':
+                sendBufferEvent(0);
+                break;
+            case 'NetStream.Buffer.Full':
+                var bufferPercent:Number = 100;
+                if (_item.duration > 0) {
+                    bufferPercent = 100 * (_stream.time + _stream.bufferLength) / _item.duration;
+                }
+                sendBufferEvent(bufferPercent);
+                break;
         }
     }
 }

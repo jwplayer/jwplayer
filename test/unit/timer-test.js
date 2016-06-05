@@ -3,8 +3,8 @@ define([
 ], function (timer) {
     /* jshint qunit: true */
 
-    module('timer');
-
+    QUnit.module('timer');
+    var test = QUnit.test.bind(QUnit);
 
     test('timer start/end test', function(assert) {
         var time = new timer();
