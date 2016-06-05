@@ -29,8 +29,6 @@ module.exports = function(grunt) {
 
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
-    // both flashVersion and swfTarget are needed to force flex to build using the right version
-    var flashVersion = 11.2;
 
     // For task testing
     // grunt.loadTasks('../grunt-flash-compiler/tasks');
@@ -225,28 +223,12 @@ module.exports = function(grunt) {
 
         karma: {
             options: {
-                configFile: './test/karma/karma.conf.js',
-                port: env.KARMA_PORT || 9876,
-                coverageReporter: {
-                    type : 'html',
-                    dir: 'reports/coverage'
-                },
+                configFile: './karma.conf.js',
                 junitReporter: {
                     suite: '<%= grunt.task.current.target %>',
                     outputDir: 'reports/junit'
                 },
-                customLaunchers: require( './test/karma/browserstack-launchers' ),
-                browserStack: {
-                    username:  process.env.BS_USERNAME,
-                    accessKey: process.env.BS_AUTHKEY,
-                    name: 'Unit Tests',
-                    project: 'jwplayer',
-                    build: '' + (env.JOB_NAME     || 'local' ) +' '+
-                                (env.BUILD_NUMBER || env.USER) +' '+
-                                (env.GIT_BRANCH   || ''      ) +' '+
-                                buildVersion.split('+')[0],
-                    timeout: 600 // 10 min
-                }
+                concurrency: 1
             },
             phantomjs : {
                 browsers: ['PhantomJS']
