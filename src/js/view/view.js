@@ -167,6 +167,14 @@ define([
                 case 40: // down-arrow
                     adjustVolume(-10);
                     break;
+                case 67: // c-key
+                    var captionsList = _api.getCaptionsList();
+                    var listLength = captionsList.length;
+                    if (listLength) {
+                        var nextIndex = (_api.getCurrentCaptions() + 1) % listLength;
+                        _api.setCurrentCaptions(nextIndex);
+                    }
+                    break;
                 case 77: // m-key
                     _api.setMute();
                     break;
