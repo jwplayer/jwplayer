@@ -1,5 +1,4 @@
 define([
-    'providers/providers',
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
@@ -7,7 +6,7 @@ define([
     'utils/underscore',
     'utils/helpers',
     'events/events'
-], function(Providers, plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
 
     var _pluginLoader,
         _playlistLoader;
@@ -48,10 +47,6 @@ define([
                     'SETUP_VIEW'
                 ]
             },
-            LOAD_PROVIDERS : {
-                method: _loadProviders,
-                depends: ['FILTER_PLAYLIST']
-            },
             LOAD_SKIN : {
                 method: _loadSkin,
                 depends: ['LOADED_POLYFILLS']
@@ -74,7 +69,7 @@ define([
                 method: _sendReady,
                 depends: [
                     'INIT_PLUGINS',
-                    'LOAD_PROVIDERS',
+                    'FILTER_PLAYLIST',
                     'SETUP_VIEW'
                 ]
             }
@@ -228,15 +223,6 @@ define([
         });
     }
 
-    function _loadProviders(resolve, model) {
-        var providersManager = model.getProviders();
-        var playlist = model.get('playlist');
-
-        var providersNeeded = providersManager.required(playlist);
-
-        Providers.load(providersNeeded)
-            .then(resolve);
-    }
 
     function _setupView(resolve, _model, _api, _view) {
         _view.setup();

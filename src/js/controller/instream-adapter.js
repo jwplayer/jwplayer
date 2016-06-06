@@ -9,7 +9,11 @@ define([
 ], function(InstreamHtml5, InstreamFlash, events, states, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
-        var providerName = _model.get('provider').name || '';
+        var providerName = '';
+        var provider = _model.get('provider');
+        if (provider) {
+            providerName = provider.name;
+        }
         if (providerName.indexOf('flash') >= 0) {
             return InstreamFlash;
         }

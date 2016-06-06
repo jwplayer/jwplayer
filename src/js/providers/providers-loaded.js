@@ -1,12 +1,11 @@
 define([
-    'providers/html5',
-    'providers/flash'
-], function(html5, flash) {
+    //'providers/html5',
+    //'providers/flash'
+], function() {
 
-    var Store = {
-        html5: html5,
-        flash: flash
+    // Include providers to be bundled in player embed
+    return {
+        //html5: html5,
+        //flash: flash
     };
-
-    return Store;
 });
