@@ -29,8 +29,11 @@ define([
         // array of cues
             _captionsTrack,
 
-        // current cue
+        // current cue index
             _current,
+
+        // current cues
+            _currentCues,
 
         // last time/seek event
             _timeEvent,
@@ -55,6 +58,7 @@ define([
         /** Assign list of captions to the renderer. **/
         this.populate = function(captions) {
             _current = -1;
+            _currentCues = [];
             _captionsTrack = captions;
             if (!captions) {
                 _render('');
@@ -77,6 +81,7 @@ define([
         }
 
         this.resize = function () {
+            this.repositionCues();
             var width = _display.clientWidth,
                 scale = Math.pow(width / 400, 0.6);
             if (scale) {
@@ -84,6 +89,13 @@ define([
                 _style(_display, {
                     fontSize: Math.round(size) + 'px'
                 });
+            }
+
+        };
+
+        this.repositionCues = function () {
+            if(window.WebVTT) {
+                window.WebVTT.processCues(window, _currentCues,_display);
             }
         };
 
@@ -138,13 +150,24 @@ define([
                 _render('');
             } else if (found !== _current) {
                 _current = found;
-                _render( _options.preprocessor(data[_current].text) );
+                //_render( _options.preprocessor(data[_current].text) );
+                //render with vtt.js
+                if(window.WebVTT) {
+                    //render captions w/ vtt.js
+                    _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
+                    _currentCues = [data[_current]];
+                    window.WebVTT.processCues(window, _currentCues,_display);
+                    //window.WebVTT.processCues(window, [data[_current]],
+                        //document.getElementById('overlay'));
+                } else {
+                    console.log('vtt.js not found');
+                }
             }
         }
 
         function _intersects(data, i, pos) {
-            return (data[i].begin <= pos && (!data[i].end || data[i].end >= pos) &&
-            (i === data.length - 1 || data[i + 1].begin >= pos));
+            return (data[i].startTime <= pos && (!data[i].endTime || data[i].endTime >= pos) &&
+            (i === data.length - 1 || data[i + 1].startTime >= pos));
         }
 
         /** Constructor for the renderer. **/
@@ -184,7 +207,7 @@ define([
 
                 _style(_captionsWindow, windowStyle);
                 _style(_textContainer, textStyle);
-                setupShadowDOMStyles(playerElementId, windowStyle, textStyle);
+                setupCaptionStyles(playerElementId, windowStyle, textStyle);
             }
 
             _captionsWindow.appendChild(_textContainer);
@@ -198,14 +221,19 @@ define([
             utils.empty(_display);
         };
 
-        function setupShadowDOMStyles(playerId, windowStyle, textStyle) {
-            // Caption window styles
+        function setupCaptionStyles(playerId, windowStyle, textStyle) {
+            // VTT.js DOM window styles
+            cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
+            // VTT.js DOM text styles
+            cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+
+            // Shadow DOM window styles
             cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
 
-            // Caption text styles
+            // Shadow DOM text styles
             cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
 
-            // Caption text background style in Safari needs to be important to override browser style
+            // Shadow DOM text background style in Safari needs to be important to override browser style
             if (textStyle.backgroundColor) {
                 var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
@@ -236,14 +264,17 @@ define([
         _model.on('change:playlistItem', function() {
             _timeEvent = null;
             _current = -1;
+            _currentCues = [];
             _render('');
         }, this);
 
         _model.on('change:captionsTrack', function(model, captionsTrack) {
             this.populate(captionsTrack);
+            // TODO: handle with VTT.js
         }, this);
         _model.mediaController.on('seek', function() {
             _current = -1;
+            _currentCues = [];
         }, this);
         _model.mediaController.on('time seek', _timeChange, this);
         _model.mediaController.on('subtitlesTrackData', function() {

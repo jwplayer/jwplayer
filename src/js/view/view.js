@@ -592,7 +592,9 @@ define([
             _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
             // captions should be place behind controls, and not hidden when controls are hidden
-            _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
+            //_controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
+
+            _videoLayer.appendChild(_captionsRenderer.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             var height = _model.get('height');
@@ -847,12 +849,14 @@ define([
             clearTimeout(_controlsTimeout);
             _controlbar.hideComponents();
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
+            _captionsRenderer.repositionCues();
         }
 
         function _userActivity() {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _controlbar.checkCompactMode(_videoLayer.clientWidth);
+                _captionsRenderer.repositionCues();
             }
 
             _showing = true;
