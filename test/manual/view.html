@@ -2,124 +2,52 @@
 <html>
 <head>
     <title>JW7 View Demo</title>
-    <script type="text/javascript" src="../../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/beelden.css"  media="all" />
+    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/bekle.css"  media="all" />
+    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/five.css"  media="all" />
+    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/glow.css"  media="all" />
+    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/roundster.css"  media="all" />
+    <!--<link type="text/css" rel="stylesheet" href="../../bin-debug/skins/seven.css"  media="all" />-->
+    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/six.css"  media="all" />
+    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/stormtrooper.css"  media="all" />
+    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/vapor.css"  media="all" />
+    <style>
+        .wrapper {
+            float:left;
+            width: 450px;
+        }
 
+        .jwplayer .jw-preview {
+            background-color: aquamarine;
+        }
+        .jwplayer .jw-video {
+            background-color: blueviolet;
+        }
+    </style>
+
+    <!--<script src="../../bin-debug/jwplayer.js"></script>-->
     <script src="../../bower_components/jquery/dist/jquery.js"></script>
     <script src="../../bower_components/underscore/underscore.js"></script>
-    <script src="../../bower_components/requirejs/require.js"></script>
-
-    <script src="manual-config.js"></script>
 </head>
 <body>
 
 <h1>JW Player Style Guide</h1>
 
+<h2> Top Level Classes </h2>
+<ul id="classes"></ul>
+
 <h2> Flags </h2>
 <div id="flagButtons"></div>
-<ul id="flags"></ul>
+
+<h2> Skins </h2>
+<div id="skinButtons"></div>
 
 <h2> Stretch Mode </h2>
 <div id="stretchButtons"></div>
 
-<style>
-    .wrapper {
-        float:left;
-        width: 450px;
-    }
-
-    .jwplayer .jw-preview {
-        background-color: aquamarine;
-    }
-    .jwplayer .jw-video {
-        background-color: blueviolet;
-    }
-</style>
-
-<script type="text/javascript">
-require([
-    'mock/mock-api',
-    'mock/mock-model',
-    'view/view'
-], function (mockApi, mockModel, View) {
-
-    function makePlayer(state) {
-        var m = _.extend({}, mockModel);
-        m.setup();
-
-        var view = new View(mockApi, m) ;
-        view.setup();
-        m.set('state', state);
-        view.resize(400, 300);
-
-        window[state] = m;
-
-        var $wrapper = $('<div class="wrapper"></div>')
-                .append('<h2>' + state + '</h3>')
-                .append(view.element());
-        $('body').append($wrapper);
-    }
-
-    function updateFlagList() {
-        var classList = $('.jwplayer').first()[0].className.split(' ');
-
-        // remove the leading 'jwplayer' class
-        classList.shift();
-        $('#flags').html('<li>' + classList.join('</li><li>') + '</li>');
-    }
-
-    _.each([
-            'idle',
-            'playing',
-            'paused',
-            'buffering',
-            'complete',
-            'error'
-    ], makePlayer);
-
-
-    _.each([
-        'jw-flag-ads',
-        'jw-flag-live',
-        'jw-flag-user-inactive',
-        'jw-flag-controlbar-only',
-        'jw-flag-media-audio',
-        'jw-flag-dragging',
-        'jw-flag-aspect-mode'
-        // 'jw-flag-fullscreen' // cannot escape!
-    ], function(val) {
-        var $btn = $('<input>', {
-                type: "button",
-                value: val
-                });
-        $btn.click(function() {
-            $('.jwplayer').toggleClass(val);
-            updateFlagList();
-        });
-        $('#flagButtons').append($btn);
-    });
-
-    var StretchButtons = [
-        'jw-stretch-none',
-        'jw-stretch-exactfit',
-        'jw-stretch-uniform',
-        'jw-stretch-fill'
-    ];
-    _.each(StretchButtons, function(val) {
-        var $btn = $('<input>', {
-            type: "button",
-            value: val
-        });
-        $btn.click(function() {
-            $('.jwplayer').removeClass(StretchButtons.join(' '));
-            $('.jwplayer').addClass(val);
-        });
-        $('#stretchButtons').append($btn);
-    });
-    _.delay(updateFlagList, 100);
-});
-
-</script>
-
+<!-- load requirejs library and run config.js -->
+<script data-main="../config" src="../../node_modules/requirejs/require.js"></script>
+<script src="view.js"></script>
 </body>
 </html>
