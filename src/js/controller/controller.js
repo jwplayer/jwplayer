@@ -59,10 +59,6 @@ define([
         playlistItem : _queueCommand('item'),
         setCurrentCaptions : _queueCommand('setCurrentCaptions'),
         setCurrentQuality : _queueCommand('setCurrentQuality'),
-
-        setVolume : _queueCommand('setVolume'),
-        setMute : _queueCommand('setMute'),
-
         setFullscreen : _queueCommand('setFullscreen'),
 
         setup : function(options, _api) {
@@ -192,8 +188,8 @@ define([
                 // Reset mediaType so that we get a change mediaType event
                 _model.mediaModel.set('mediaType', null);
 
-                _model.mediaController.on('all', _this.trigger.bind(_this));
-                _view.on('all', _this.trigger.bind(_this));
+                _model.mediaController.on('all', _this.trigger, _this);
+                _view.on('all', _this.trigger, _this);
 
                 this.showView(_view.element());
 
@@ -639,6 +635,7 @@ define([
             this._item = _item;
             this._setCurrentCaptions = _setCurrentCaptions;
             this._setCurrentQuality = _setCurrentQuality;
+            this._setFullscreen = _setFullscreen;
 
             this.detachMedia = _detachMedia;
             this.attachMedia = _attachMedia;
@@ -652,11 +649,10 @@ define([
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
             this.getState = _getState;
-            this._setFullscreen = _setFullscreen;
 
             // Model passthroughs
-            this._setVolume = _model.setVolume;
-            this._setMute = _model.setMute;
+            this.setVolume = _model.setVolume.bind(_model);
+            this.setMute = _model.setMute.bind(_model);
             this.getProvider = function(){ return _model.get('provider'); };
             this.getWidth = function() { return _model.get('containerWidth'); };
             this.getHeight = function() { return _model.get('containerHeight'); };

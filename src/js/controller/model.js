@@ -295,28 +295,28 @@ define([
             _currentProvider = null;
         };
 
-        this.setVolume = function(vol) {
-            vol = Math.round(vol);
-            _this.set('volume', vol);
+        this.setVolume = function(volume) {
+            volume = Math.round(volume);
+            this.set('volume', volume);
             if (_provider) {
-                _provider.volume(vol);
+                _provider.volume(volume);
             }
-            var muted = (vol === 0);
-            if (muted !== _this.get('mute')) {
-                _this.setMute(muted);
+            var mute = (volume === 0);
+            if (mute !== this.get('mute')) {
+                this.setMute(mute);
             }
         };
 
-        this.setMute = function(state) {
-            if (!utils.exists(state)) {
-                state = !_this.get('mute');
+        this.setMute = function(mute) {
+            if (!utils.exists(mute)) {
+                mute = !this.get('mute');
             }
-            _this.set('mute', state);
+            this.set('mute', mute);
             if (_provider) {
-                _provider.mute(state);
+                _provider.mute(mute);
             }
-            if (!state) {
-                var volume = Math.max(10, _this.get('volume'));
+            if (!mute) {
+                var volume = Math.max(10, this.get('volume'));
                 this.setVolume(volume);
             }
         };
