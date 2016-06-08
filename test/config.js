@@ -8,6 +8,7 @@
     window.__DEBUG__ = false;
 
     var base = '';
+    var callback;
     var deps = [
         'bind-polyfill'
     ];
@@ -25,15 +26,8 @@
         };
     }
 
-    var callback;
 
-    if (!window.__karma__) {
-        base = document.location.href.replace(/[^\/]+\/[^\/]*$/, '');
-        // this path is relative to the baseUrl src/js folder
-        deps.push('../../test/tests');
-        callback = window.QUnit.start;
-
-    } else {
+    if (window.__karma__) {
         base = '/base/';
         for (var file in window.__karma__.files) {
             if (/test\/unit\/[^\/]+\.js$/.test(file)) {
@@ -41,7 +35,16 @@
             }
         }
         callback = window.__karma__.start;
+    } else if (window.QUnit) {
+        base = document.location.href.replace(/[^\/]+\/[^\/]*$/, '');
+        // this path is relative to the baseUrl src/js folder
+        deps.push('../../test/tests');
+        callback = window.QUnit.start;
+    } else if (window.requireBaseUrl || window.requireCallback) {
+        base = window.requireBaseUrl || base;
+        callback = window.requireCallback || undefined;
     }
+
 
     // Add qunit-fixture to page if not present
     if (!document.getElementById('qunit-fixture')) {
@@ -83,7 +86,8 @@
 
             'data': data,
             'mock': mock,
-            'unit': unit
+            'unit': unit,
+            'simple-style-loader': base + 'node_modules/simple-style-loader'
         },
         shim: {
             'test/underscore': {

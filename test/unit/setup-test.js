@@ -95,7 +95,7 @@ define([
 
     test('succeeds when model.playlist.sources is valid', function(assert) {
         var model = {
-            playlist: [{sources:[{file:'file.mp4'}]}]
+            playlist: [{sources:[{file:'http://playertest.longtailvideo.com/mp4.mp4'}]}]
         };
 
         testSetup(model, function() {
@@ -131,7 +131,7 @@ define([
 
     test('modifies config', function(assert) {
         var options = {
-            file: 'file.mp4',
+            file: 'http://playertest.longtailvideo.com/mp4.mp4',
             aspectratio: '4:3',
             width: '100%'
         };

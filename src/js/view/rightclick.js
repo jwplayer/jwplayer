@@ -18,7 +18,7 @@ define([
                     title: 'Powered by JW Player ' + majorMinorPatchPre,
                     featured : true,
                     showLogo : true,
-                    link: 'https://jwplayer.com/learn-more/?m=h&e=o&v=' + version
+                    link: 'https://jwplayer.com/learn-more'
                 }]
             };
 
@@ -32,8 +32,8 @@ define([
                 });
             }
 
-            var _provider = this.model.get('provider').name;
-            if (_provider.indexOf('flash') >= 0) {
+            var _provider = this.model.get('provider');
+            if (_provider && _provider.name.indexOf('flash') >= 0) {
                 var text = 'Flash Version ' + utils.flashVersion();
                 obj.items.push({
                     title : text,

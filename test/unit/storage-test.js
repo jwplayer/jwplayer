@@ -13,14 +13,10 @@ define([
     }
 
     QUnit.test('provides persistent storage', function(assert) {
-        var PERSIST = [
-            'volume',
-            'mute'
-        ];
 
         var model = new mockModel();
         var storage = new Storage();
-        storage.track(PERSIST, model);
+        storage.track(model);
 
         model.set('volume', 70);
         data = storage.getAllItems();

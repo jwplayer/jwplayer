@@ -1,31 +1,32 @@
-define([], function() {
+define([
+    'test/underscore',
+    'data/api-members',
+    'data/api-methods',
+    'data/api-methods-chainable'
+], function(_, members, methods, chainable) {
+
     function noop() {
-        console.log('I shouldn\'t exist.');
+        //console.log('I shouldn\'t exist.');
     }
-    var mockApi = {
-        getContainer : function() {
-            return document.createElement('div');
-        },
 
-        on : noop,
+    function noopChained() {
+        //console.log('I shouldn\'t exist too.');
+        return this;
+    }
 
-        onAdPlay : noop,
-        onAdSkipped : noop,
-        onAdComplete : noop,
-        onAdError : noop,
-        onCaptionsList : noop,
-        onCaptionsChange: noop,
-        onPlaylistItem : noop,
-        onPlaylistComplete : noop,
-        onError : noop,
-        onResize: noop,
-        onReady: noop,
-        onFullscreen: noop,
-        getState : noop,
-        setVolume : noop,
-        setMute : noop,
-        play : noop,
-        pause : noop,
+    var mockApi = _.extend({}, members);
+
+    _.each(methods, function(value, name) {
+        mockApi[name] = noop;
+    });
+
+    _.each(chainable, function(value, name) {
+        mockApi[name] = noopChained;
+    });
+
+    mockApi.getContainer = function() {
+        return document.createElement('div');
     };
+
     return mockApi;
 });

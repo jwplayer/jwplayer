@@ -15,7 +15,8 @@ define([
             'mute',
             'item', // this was playlistindex
             'stretching',
-            'playlist'
+            'playlist',
+            'captions'
         ];
 
         // given a name "buffer", it adds to jwplayer api a function named getBuffer
@@ -69,7 +70,8 @@ define([
             'setFullscreen',
             'setVolume',
             'setMute',
-            'setCues'
+            'setCues',
+            'setCaptions'
         ];
 
         // getters

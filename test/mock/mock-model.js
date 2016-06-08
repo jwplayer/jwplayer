@@ -4,10 +4,12 @@ define([
 ], function(Events, _) {
     var mockModel = {
         setup : function() {
-            this.attrs = _.extend({}, this.default_attrs);
+            this.attrs = _.extend({}, this.default_attrs, {
+                mediaModel : this.mediaModel
+            });
         },
         default_attrs : {
-            state : '',
+            state : 'idle',
             mute : false,
             volume : 50,
             controls : true,
@@ -43,13 +45,8 @@ define([
             };
         },
 
-        mediaController : {
-            on : function() {}
-        },
-        mediaModel : {
-            on : function() {}
-        },
-
+        mediaController : _.extend({}, Events),
+        mediaModel : _.extend({}, Events),
 
         // SimpleModel
         'get' : function(attr) {

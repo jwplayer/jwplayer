@@ -200,7 +200,9 @@ define([
             if(typeof track.id !== 'number') {
                 track.id = track.name || track.file || ('cc' + _tracks.length);
             }
+
             track.data = track.data || [];
+
             if (!track.label) {
                 track.label = 'Unknown CC';
                 _unknownCount++;
@@ -219,8 +221,7 @@ define([
         }
 
         function _xhrSuccess(xhr, track) {
-            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null,
-                status;
+            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null;
 
             // IE9 sets the firstChild element to the root <xml> tag
             if (rss) {
@@ -232,17 +233,14 @@ define([
                     rss = rss.nextSibling;
                 }
             }
-            if (rss && parsers.localName(rss) === 'tt') {
-                status = utils.tryCatch(function() {
+            try {
+                if (rss && parsers.localName(rss) === 'tt') {
                     track.data = dfxp(xhr.responseXML);
-                });
-            } else {
-                status = utils.tryCatch(function() {
+                } else {
                     track.data = srt(xhr.responseText);
-                });
-            }
-            if (status instanceof utils.Error) {
-                _errorHandler(status.message + ': ' + track.file);
+                }
+            } catch(error) {
+                _errorHandler(error.message + ': ' + track.file);
             }
         }
 
