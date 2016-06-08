@@ -329,6 +329,25 @@ define([
         });
     });
 
+    test('queues commands called after setup before ready', function(assert) {
+        var done = assert.async();
+
+        var api = createApi('player');
+
+        var config = _.extend(configSmall, {});
+
+        api.setup(config)
+            .play()
+            .pause()
+            .on('ready', function() {
+                assert.ok(true, 'ready event fired after setup');
+                done();
+            }).on('setupError', function() {
+                assert.ok(false, 'FAIL');
+                done();
+            });
+    });
+
     function createApi(id, globalRemoveCallback) {
         var container = createContainer(id);
         return new Api(container, globalRemoveCallback || _.noop);

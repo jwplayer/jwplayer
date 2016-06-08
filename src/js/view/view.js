@@ -167,6 +167,14 @@ define([
                 case 40: // down-arrow
                     adjustVolume(-10);
                     break;
+                case 67: // c-key
+                    var captionsList = _api.getCaptionsList();
+                    var listLength = captionsList.length;
+                    if (listLength) {
+                        var nextIndex = (_api.getCurrentCaptions() + 1) % listLength;
+                        _api.setCurrentCaptions(nextIndex);
+                    }
+                    break;
                 case 77: // m-key
                     _api.setMute();
                     break;
@@ -257,7 +265,7 @@ define([
 
                 var o = {};
                 o[attr] = value;
-                utils.css(elements.join(', '), o);
+                utils.css(elements.join(', '), o, id);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
@@ -744,6 +752,10 @@ define([
                 height = _videoLayer.clientHeight;
             }
 
+            if (_preview) {
+                _preview.resize(width, height, _model.get('stretching'));
+            }
+
             //IE9 Fake Full Screen Fix
             if (utils.isMSIE(9) && document.all && !window.atob) {
                 width = height = '100%';
@@ -1016,6 +1028,13 @@ define([
             return bounds;
         };
 
+        this.setCaptions = function(captionsStyle) {
+            // This will need to be changed when the captionsRenderer is refactored
+            _captionsRenderer.clear();
+            _captionsRenderer.setup(_model.get('id'), captionsStyle);
+            _captionsRenderer.resize();
+        };
+
         this.destroy = function() {
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
@@ -1040,7 +1059,7 @@ define([
             if (_logo) {
                 _logo.destroy();
             }
-            utils.clearCss('#'+_model.get('id'));
+            utils.clearCss(_model.get('id'));
         };
     };
 

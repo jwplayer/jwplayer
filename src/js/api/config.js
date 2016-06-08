@@ -53,8 +53,9 @@ define([
         return val;
     }
 
-    var config = function(options) {
-        var allOptions = _.extend({}, (window.jwplayer || {}).defaults, options);
+    var config = function(options, storage) {
+        var persisted = storage && storage.getAllItems();
+        var allOptions = _.extend({}, (window.jwplayer || {}).defaults, persisted, options);
 
         _deserialize(allOptions);
 
