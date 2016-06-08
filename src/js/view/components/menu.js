@@ -27,7 +27,8 @@ define([
 
             var isMenu = list.length > 2 || (list.length === 2 && options && options.toggle === false);
             var isToggle = !isMenu && list.length === 2;
-            utils.toggleClass(this.el, 'jw-toggle', isToggle);
+            // Make caption menu always a toggle to show active color
+            utils.toggleClass(this.el, 'jw-toggle', isToggle || utils.hasClass(this.el, 'jw-icon-cc'));
             utils.toggleClass(this.el, 'jw-button-color', !isToggle);
             this.isActive = isMenu || isToggle;
 
@@ -68,6 +69,7 @@ define([
                 for(var i=0; i<this.content.children.length; i++ ){
                     utils.toggleClass(this.content.children[i], 'jw-active-option', (selectedIndex === i));
                 }
+                utils.toggleClass(this.el, 'jw-off', (selectedIndex === 0));
             } else {
                 utils.toggleClass(this.el, 'jw-off', (selectedIndex === 0));
             }
