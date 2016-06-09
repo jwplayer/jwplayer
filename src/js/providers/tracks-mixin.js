@@ -63,13 +63,14 @@ define(['../utils/underscore',
         if (!tracks) {
             return;
         }
+
+        if (!_textTracks) {
+            _initTextTracks();
+        }
+
         //filter for 'subtitles' or 'captions' tracks
         if (tracks.length) {
             var i = 0, len = tracks.length;
-
-            if (!_textTracks) {
-                _initTextTracks();
-            }
 
             for (i; i < len; i++) {
                 var track = tracks[i];
