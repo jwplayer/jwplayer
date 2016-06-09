@@ -83,6 +83,15 @@ define(['../utils/underscore',
                     _textTracksCache[i + track.kind] = track;
                 }
                 else if (track.kind === 'subtitles' || track.kind === 'captions') {
+                    // By setting the track mode to 'hidden', we can determine if the 608 track has cues
+                    var mode = track.mode;
+                    track.mode = 'hidden';
+                    if (!track.cues.length && this.getName().name === 'caterpillar' && track.label === 'Unknown CC') {
+                        // There's no method to remove tracks added via: video.addTextTrack in caterpillar.
+                        // This ensures the 608 captions track isn't added until it has cues
+                        continue;
+                    }
+                    track.mode = mode;
                     _textTracks.push(track);
                     _textTracksCache[i + track.kind] = track;
                 }
@@ -96,7 +105,7 @@ define(['../utils/underscore',
 
     function setupSideloadedTracks(tracks) {
         var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
-        if (this._isSDK || !canRenderNatively || !tracks || !tracks.length) {
+        if (this._isSDK || !canRenderNatively || !tracks) {
             return;
         }
         // Add tracks if we're starting playback or resuming after a midroll
@@ -110,7 +119,7 @@ define(['../utils/underscore',
     function _tracksAlreadySideloaded(tracks) {
         // Determines if tracks have already been added to the video element or
         // just to the _textTracks list for rendering with the captions renderer
-        return tracks && _textTracks && tracks.length === _textTracks.length &&
+        return tracks && tracks.length && _textTracks && tracks.length === _textTracks.length &&
             this.video.textTracks.length === _nativeTrackCount;
     }
 
@@ -121,13 +130,13 @@ define(['../utils/underscore',
             return;
         }
         var crossoriginAnonymous = false;
-        if(!_textTracks) {
+        if (!_textTracks) {
             _initTextTracks();
         }
         for (var i = 0; i < tracks.length; i++) {
             var itemTrack = tracks[i];
             // only add .vtt or .webvtt files
-            if(!(/\.(?:web)?vtt(?:\?.*)?$/i).test(itemTrack.file)) {
+            if (!(/\.(?:web)?vtt(?:\?.*)?$/i).test(itemTrack.file)) {
                 // non-VTT tracks need to be added here so they can be displayed using the captions renderer
                 _textTracks.push(itemTrack);
                 _textTracksCache[i + itemTrack.kind] = track;
@@ -169,7 +178,7 @@ define(['../utils/underscore',
         }
 
         // _currentTextTrackIndex = index - 1 ('Off' = 0 in controlbar)
-        if(_currentTextTrackIndex === index - 1) {
+        if (_currentTextTrackIndex === index - 1) {
             return;
         }
 
