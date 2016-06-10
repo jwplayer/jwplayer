@@ -28,6 +28,7 @@ define([
             model.on('change:state', function(model, state) {
                 if (state === 'complete' || state === 'idle' || state === 'error') {
                     this.setImage(playlistItem.image);
+                    this.resize(null, null, model.get('stretching'));
                 }
             }, this);
             return;
@@ -64,7 +65,12 @@ define([
         },
         resize: function(width, height, stretching) {
             if (stretching === 'uniform') {
-                var playerAspectRatio = width / height;
+                if (width) {
+                    this.playerAspectRatio = width / height;
+                }
+                if (!this.playerAspectRatio) {
+                    return;
+                }
                 // snap image to edges when the difference in aspect ratio is less than 9%
                 var image = this.image;
                 var backgroundSize = null;
@@ -77,7 +83,7 @@ define([
                         return;
                     }
                     var imageAspectRatio = image.width / image.height;
-                    if (Math.abs(playerAspectRatio - imageAspectRatio) < 0.09) {
+                    if (Math.abs(this.playerAspectRatio - imageAspectRatio) < 0.09) {
                         backgroundSize = 'cover';
                     }
                 }
