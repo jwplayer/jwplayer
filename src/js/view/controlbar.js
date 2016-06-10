@@ -280,7 +280,7 @@ define([
 
         onCaptionsList: function(model, tracks) {
             var index = model.get('captionsIndex');
-            this.elements.cc.setup(tracks, index);
+            this.elements.cc.setup(tracks, index, {isToggle: true});
             this.clearCompactMode();
         },
         onCaptionsIndex: function(model, index) {
