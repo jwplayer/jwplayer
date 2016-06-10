@@ -29,7 +29,7 @@ define([
             var isMenu = list.length > 2 || (list.length === 2 && options && options.toggle === false);
             var isToggle = !isMenu && list.length === 2;
             // Make caption menu always a toggle to show active color
-            utils.toggleClass(this.el, 'jw-toggle', isToggle || options.isToggle);
+            utils.toggleClass(this.el, 'jw-toggle', isToggle || !!options.isToggle);
             utils.toggleClass(this.el, 'jw-button-color', !isToggle);
             this.isActive = isMenu || isToggle;
 
