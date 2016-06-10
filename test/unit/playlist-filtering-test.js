@@ -100,4 +100,48 @@ define([
     });
 
 
+    test('it prioritizes withCredentials in the order of source, playlist, then global', function (assert) {
+        assert.expect(4);
+        var withCredentialsPlaylist = [
+            {
+                // Uses source
+                withCredentials: false,
+                sources: [
+                    {
+                        file: 'foo.mp4',
+                        withCredentials: true
+                    }
+                ]
+            },
+            {
+                // Uses playlist
+                withCredentials: true,
+                sources: [
+                    {
+                        file: 'foo.mp4'
+                    }
+                ]
+            },
+            {
+                // Uses global (providers)
+                sources: [
+                    {
+                        file: 'foo.mp4'
+                    }
+                ]
+            }
+        ];
+
+        var providersConfig = {
+            primary: 'html5'
+        };
+        
+        var pl = playlist.filterPlaylist(withCredentialsPlaylist, new Providers(providersConfig), undefined, undefined, undefined, undefined, false);
+        console.log(pl);
+
+        assert.equal(pl.length, 3);
+        assert.equal(pl[0].allSources[0].withCredentials, true);
+        assert.equal(pl[1].allSources[0].withCredentials, true);
+        assert.equal(pl[2].allSources[0].withCredentials, false);
+    });
 });
