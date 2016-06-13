@@ -599,6 +599,7 @@ define([
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
             this.setupSideloadedTracks(item.tracks);
+            _itemTracks = this.itemTracks;
         };
 
         this.load = function(item) {
