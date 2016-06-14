@@ -20,21 +20,24 @@ define([
         volume: 90,
         width: 480,
         height: 270,
-        aria: {
-            'jw-icon-play': 'Play',
-            'jw-icon-playback': 'Start playback',
-            'jw-icon-pause': 'Pause',
-            'jw-icon-volume': 'Volume',
-            'jw-icon-prev': 'Previous',
-            'jw-icon-next': 'Next',
-            'jw-icon-cast': 'Chromecast',
-            'jw-icon-fullscreen': 'Fullscreen',
-            'jw-icon-playlist': 'Playlist',
-            'jw-icon-hd': 'Quality',
-            'jw-icon-cc': 'Closed captions',
-            'jw-icon-audio-tracks': 'Audio tracks',
-            'jw-icon-replay': 'Replay',
-            'jw-icon-buffer': 'Loading'
+        localization: {
+            play: 'Play',
+            playback: 'Start playback',
+            pause: 'Pause',
+            volume: 'Volume',
+            prev: 'Previous',
+            next: 'Next',
+            cast: 'Chromecast',
+            fullscreen: 'Fullscreen',
+            playlist: 'Playlist',
+            hd: 'Quality',
+            cc: 'Closed captions',
+            audioTracks: 'Audio tracks',
+            replay: 'Replay',
+            buffer: 'Loading',
+            more: 'More',
+            liveBroadcast: 'Live broadcast',
+            loadingAd: 'Loading ad'
         }
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
