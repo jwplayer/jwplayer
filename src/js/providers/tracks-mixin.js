@@ -21,7 +21,7 @@ define(['../utils/underscore',
     var _textTracks = null, // subtitles and captions tracks
         _textTracksCache = null,
         _currentTextTrackIndex = -1, // captionsIndex - 1 (accounts for Off = 0 in model)
-        _nativeTrackCount = 0; // Need to know the number of tracks added to the browser. May differ from total count
+        _embeddedTrackCount = 0;
 
     function _cueChangeHandler(e) {
         var activeCues = e.currentTarget.activeCues;
@@ -71,6 +71,7 @@ define(['../utils/underscore',
         //filter for 'subtitles' or 'captions' tracks
         if (tracks.length) {
             var i = 0, len = tracks.length;
+            _embeddedTrackCount = 0;
 
             for (i; i < len; i++) {
                 var track = tracks[i];
@@ -81,6 +82,10 @@ define(['../utils/underscore',
                     track.oncuechange = _cueChangeHandler.bind(this);
                     track.mode = 'showing';
                     _textTracksCache[i + track.kind] = track;
+
+                    if (track.label === 'ID3 Metadata') {
+                        _embeddedTrackCount++;
+                    }
                 }
                 else if (track.kind === 'subtitles' || track.kind === 'captions') {
                     // By setting the track mode to 'hidden', we can determine if the 608 track has cues
@@ -94,10 +99,14 @@ define(['../utils/underscore',
                     track.mode = mode;
                     _textTracks.push(track);
                     _textTracksCache[i + track.kind] = track;
+
+                    if (track.label === 'Unknown CC') {
+                        _embeddedTrackCount++;
+                    }
                 }
             }
         }
-        this.addTracksListener(_textTracks, 'change', textTrackChangeHandler);
+        this.addTracksListener(tracks, 'change', textTrackChangeHandler);
         if (_textTracks && _textTracks.length) {
             this.trigger('subtitlesTracks', {tracks: _textTracks});
         }
@@ -109,22 +118,37 @@ define(['../utils/underscore',
             return;
         }
         // Add tracks if we're starting playback or resuming after a midroll
-        if (!_tracksAlreadySideloaded(tracks)) {
+        if (!_tracksAlreadySideloaded.call(this,tracks)) {
             disableTextTrack();
             dom.emptyElement(this.video);
+            _clearSideloadedTextTracks();
+            this.itemTracks = tracks;
             _addTracks.call(this, tracks);
         }
     }
 
     function _tracksAlreadySideloaded(tracks) {
-        // Determines if tracks have already been added to the video element or
-        // just to the _textTracks list for rendering with the captions renderer
-        return tracks && tracks.length && _textTracks && tracks.length === _textTracks.length &&
-            this.video.textTracks.length === _nativeTrackCount;
+        // Determine if the tracks are the same and the embedded + sideloaded count = # of tracks in the controlbar
+        return tracks === this.itemTracks && _textTracks &&
+            _textTracks.length === (_embeddedTrackCount + this.itemTracks.length);
+    }
+
+    function _clearSideloadedTextTracks() {
+        // Clear VTT textTracks
+        if(!_textTracks) {
+            return;
+        }
+        var nonVTTTracks = _.filter(_textTracks, function (track) {
+            return track.label === 'Unknown CC' || track.label === 'ID3 Metadata';
+        });
+        _initTextTracks();
+        _.each(nonVTTTracks, function (track, index) {
+           _textTracksCache[index + track] = track;
+        });
+        _textTracks = nonVTTTracks;
     }
 
     function _addTracks(tracks) {
-        _nativeTrackCount = 0;
         // Adding .vtt tracks to the DOM lets the tracks API handle CC/Subtitle rendering
         if (!tracks) {
             return;
@@ -163,7 +187,6 @@ define(['../utils/underscore',
 
             // add vtt tracks directly to the video element
             this.video.appendChild(track);
-            _nativeTrackCount++;
         }
     }
 
@@ -177,15 +200,21 @@ define(['../utils/underscore',
             return;
         }
 
-        // _currentTextTrackIndex = index - 1 ('Off' = 0 in controlbar)
+        // 0 = 'Off'
+        if (index === 0) {
+            _.each(_textTracks, function (track) {
+                track.mode = 'disabled';
+            });
+        }
+
+        // Track index is 1 less than controlbar index to account for 'Off' = 0.
+        // Prevent unnecessary track change events
         if (_currentTextTrackIndex === index - 1) {
             return;
         }
 
-        // Disable all tracks
-        _.each(_textTracks, function (track) {
-            track.mode = 'disabled';
-        });
+        // Turn off current track
+        disableTextTrack();
 
         // Set the provider's index to the model's index, then show the selected track if it exists
         _currentTextTrackIndex = index - 1;
@@ -193,7 +222,7 @@ define(['../utils/underscore',
             _textTracks[_currentTextTrackIndex].mode = 'showing';
         }
 
-        // update the model index if change did not originate from controlbar or api
+        // Update the model index if change did not originate from controlbar or api
         this.trigger('subtitlesTrackChanged', {
             currentTrack: _currentTextTrackIndex + 1,
             tracks: _textTracks
@@ -205,7 +234,7 @@ define(['../utils/underscore',
     }
 
     function addTracksListener (tracks, eventType, handler) {
-        handler.bind(this);
+        handler = handler.bind(this);
 
         if (tracks.addEventListener) {
             tracks.addEventListener(eventType, handler);
@@ -246,6 +275,7 @@ define(['../utils/underscore',
     function clearTracks() {
         _textTracks = null;
         _textTracksCache = null;
+        _embeddedTrackCount = 0;
     }
 
     function disableTextTrack() {
