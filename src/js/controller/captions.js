@@ -153,7 +153,7 @@ define([
 
             var tracks = item.tracks,
                 track, kind, isVTT, i;
-            var isHTML5 = _model.get('provider').name === 'html5';
+            var isFlash = _model.get('provider').name === 'flash';
 
             var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
 
@@ -161,8 +161,8 @@ define([
                 track = tracks[i];
                 isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
 
-                //let the browser handle rendering sideloaded VTT tracks in the HTML5 provider
-                if(isHTML5 && isVTT && !_isSDK && canRenderNatively) {
+                // let the browser handle rendering sideloaded VTT tracks natively when supported
+                if(!isFlash && isVTT && !_isSDK && canRenderNatively) {
                     continue;
                 }
 

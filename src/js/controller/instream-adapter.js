@@ -113,6 +113,9 @@ define([
         };
 
         function _instreamForward(type, data) {
+            if (type === 'complete') {
+                return;
+            }
             data = data || {};
 
             if (_options.tag && !data.tag) {
@@ -128,8 +131,15 @@ define([
         }
 
         function _instreamItemComplete(e) {
+            var data = {};
+            if (_options.tag) {
+                data.tag = _options.tag;
+            }
 
             if (_array && _arrayIndex + 1 < _array.length) {
+                // fire complete event
+                this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
+
                 // We want a play event for the next item, so we ensure the state != playing
                 _instream._adModel.set('state', 'buffering');
 
@@ -145,8 +155,7 @@ define([
                 this.loadItem(item, options);
             } else {
                 if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
-                    // Forward last media complete event. 'all' listener has not fired yet.
-                    _instreamForward.call(this, e.type, e);
+                    this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
                     // Dispatch playlist complete event for ad pods
                     this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                 }
