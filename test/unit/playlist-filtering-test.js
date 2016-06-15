@@ -105,17 +105,16 @@ define([
         var withCredentialsPlaylist = [
             {
                 // Uses source
-                withCredentials: false,
                 sources: [
                     {
                         file: 'foo.mp4',
-                        withCredentials: true
+                        withCredentials: false
                     }
                 ]
             },
             {
                 // Uses playlist
-                withCredentials: true,
+                withCredentials: false,
                 sources: [
                     {
                         file: 'foo.mp4'
@@ -123,7 +122,7 @@ define([
                 ]
             },
             {
-                // Uses global (providers)
+                // Uses model
                 sources: [
                     {
                         file: 'foo.mp4'
@@ -135,13 +134,14 @@ define([
         var providersConfig = {
             primary: 'html5'
         };
+
+        var withCredentialsOnModel = true;
         
-        var pl = playlist.filterPlaylist(withCredentialsPlaylist, new Providers(providersConfig), undefined, undefined, undefined, undefined, false);
-        console.log(pl);
+        var pl = playlist.filterPlaylist(withCredentialsPlaylist, new Providers(providersConfig), undefined, undefined, undefined, undefined, withCredentialsOnModel);
 
         assert.equal(pl.length, 3);
-        assert.equal(pl[0].allSources[0].withCredentials, true);
-        assert.equal(pl[1].allSources[0].withCredentials, true);
-        assert.equal(pl[2].allSources[0].withCredentials, false);
+        assert.equal(pl[0].allSources[0].withCredentials, false);
+        assert.equal(pl[1].allSources[0].withCredentials, false);
+        assert.equal(pl[2].allSources[0].withCredentials, true);
     });
 });
