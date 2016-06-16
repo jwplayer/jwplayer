@@ -1033,7 +1033,7 @@ define([
         };
 
         this.setCaptions = function(captionsStyle) {
-            // This will need to be changed when the captionsRenderer is refactored
+            // TODO: This will need to be changed when the captionsRenderer is refactored
             _captionsRenderer.clear();
             _captionsRenderer.setup(_model.get('id'), captionsStyle);
             _captionsRenderer.resize();

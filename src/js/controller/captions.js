@@ -2,8 +2,9 @@ define([
     'parsers/parsers',
     'parsers/captions/srt',
     'parsers/captions/dfxp',
-    'utils/helpers'
-], function(parsers, srt, dfxp, utils) {
+    'utils/helpers',
+    'utils/underscore'
+], function(parsers, srt, dfxp, utils, _) {
 
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_api, _model) {
@@ -222,7 +223,8 @@ define([
 
         function _xhrSuccess(xhr, track) {
             var rss = xhr.responseXML ? xhr.responseXML.firstChild : null;
-            var status;
+            var status,
+                _this = this;
 
             // IE9 sets the firstChild element to the root <xml> tag
             if (rss) {
@@ -244,7 +246,7 @@ define([
                 } else {
                     status = utils.tryCatch(function () {
                         if (window.WebVTT) {
-                            _parseCues.call(_this, xhr.responseText, track);
+                            _parseCues(xhr.responseText, track);
                         } else {
                             // If no valid captions were found, an empty array is returned
                             track.data = srt(xhr.responseText);
@@ -355,6 +357,8 @@ define([
         this.setCaptionsList = function(captionsMenu) {
             _model.set('captionsList', captionsMenu);
         };
+
+        this.loadTrack = _load;
     };
 
     return Captions;
