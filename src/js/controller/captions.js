@@ -245,16 +245,12 @@ define([
                     });
                 } else {
                     status = utils.tryCatch(function () {
-                        if (window.WebVTT) {
-                            _parseCues(xhr.responseText, track);
-                        } else {
-                            // If no valid captions were found, an empty array is returned
-                            track.data = srt(xhr.responseText);
-                            if (track.data.length) {
-                                _addTrack(track);
-                                _this.setCaptionsList(_captionsMenu());
-                                _selectDefaultIndex();
-                            }
+                        // If no valid captions were found, an empty array is returned
+                        track.data = srt(xhr.responseText);
+                        if (track.data.length) {
+                            _addTrack(track);
+                            _this.setCaptionsList(_captionsMenu());
+                            _selectDefaultIndex();
                         }
                     });
                 }
@@ -263,39 +259,6 @@ define([
                     _errorHandler(status.message + ': ' + track.file);
                 }
             }
-        }
-
-        function  _parseCues(srcContent, track) {
-            var _this = this;
-            var parser = new window.WebVTT.Parser(window, window.WebVTT.StringDecoder());
-            track.data = track.data || [];
-            parser.oncue = function(cue) {
-                track.data.push(cue);
-            };
-
-            parser.onparsingerror = function(error) {
-                console.log(error);
-            };
-
-            parser.onflush = function() {
-                console.log('flushing');
-                if (track.data.length) {
-                    _addTrack(track);
-                    _this.setCaptionsList(_captionsMenu());
-                    _selectDefaultIndex();
-                }
-            };
-
-            parser.parse(srcContent);
-            parser.flush();
-        }
-
-        function _convertToVTTCues(cues) {
-            var VTTCue = VTTCue || window.VTTCue;
-            var vttCues = _.map(cues, function (cue) {
-               return new VTTCue(cue.begin, cue.end, cue.text);
-            });
-            return vttCues;
         }
 
         function _captionsMenu() {

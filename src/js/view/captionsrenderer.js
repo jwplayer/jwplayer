@@ -172,36 +172,34 @@ define([
 
             _options = _.extend({}, _defaults, options);
 
-            if (options) {
-                var fontOpacity = _options.fontOpacity,
-                    windowOpacity = _options.windowOpacity,
-                    edgeStyle = _options.edgeStyle,
-                    bgColor = _options.backgroundColor,
-                    windowStyle = {},
-                    textStyle = {
-                        color: cssUtils.hexToRgba(_options.color, fontOpacity),
-                        fontFamily: _options.fontFamily,
-                        fontStyle: _options.fontStyle,
-                        fontWeight: _options.fontWeight,
-                        textDecoration: _options.textDecoration
-                    };
+            var fontOpacity = _options.fontOpacity,
+                windowOpacity = _options.windowOpacity,
+                edgeStyle = _options.edgeStyle,
+                bgColor = _options.backgroundColor,
+                windowStyle = {},
+                textStyle = {
+                    color: cssUtils.hexToRgba(_options.color, fontOpacity),
+                    fontFamily: _options.fontFamily,
+                    fontStyle: _options.fontStyle,
+                    fontWeight: _options.fontWeight,
+                    textDecoration: _options.textDecoration
+                };
 
-                if (windowOpacity) {
-                    windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
-                }
-
-                addEdgeStyle(edgeStyle, textStyle, fontOpacity);
-
-                if (_options.back) {
-                    textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, _options.backgroundOpacity);
-                } else if (edgeStyle === null) {
-                    addEdgeStyle('uniform', textStyle);
-                }
-
-                _style(_captionsWindow, windowStyle);
-                _style(_textContainer, textStyle);
-                setupCaptionStyles(playerElementId, windowStyle, textStyle);
+            if (windowOpacity) {
+                windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
             }
+
+            addEdgeStyle(edgeStyle, textStyle, fontOpacity);
+
+            if (_options.back) {
+                textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, _options.backgroundOpacity);
+            } else if (edgeStyle === null) {
+                addEdgeStyle('uniform', textStyle);
+            }
+
+            _style(_captionsWindow, windowStyle);
+            _style(_textContainer, textStyle);
+            setupCaptionStyles(playerElementId, windowStyle, textStyle);
 
             _captionsWindow.appendChild(_textContainer);
             _display.appendChild(_captionsWindow);
