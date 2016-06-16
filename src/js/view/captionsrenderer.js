@@ -2,8 +2,9 @@ define([
     'utils/helpers',
     'utils/css',
     'events/states',
-    'utils/underscore'
-], function(utils, cssUtils, states, _) {
+    'utils/underscore',
+    'polyfills/vtt'
+], function(utils, cssUtils, states, _, VTT) {
     var _style = cssUtils.style;
 
     var _defaults = {
@@ -94,9 +95,7 @@ define([
         };
 
         this.repositionCues = function () {
-            if(window.WebVTT) {
-                window.WebVTT.processCues(window, _currentCues,_display);
-            }
+            VTT.WebVTT.processCues(window, _currentCues,_display);
         };
 
         function _timeChange(e) {
@@ -139,6 +138,7 @@ define([
             }
 
             var found = -1;
+            var WebVTT = VTT.WebVTT;
             for (var i = 0; i < data.length; i++) {
                 if (_intersects(data, i, pos)) {
                     found = i;
@@ -150,18 +150,11 @@ define([
                 _render('');
             } else if (found !== _current) {
                 _current = found;
-                //_render( _options.preprocessor(data[_current].text) );
                 //render with vtt.js
-                if(window.WebVTT) {
-                    //render captions w/ vtt.js
-                    _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
-                    _currentCues = [data[_current]];
-                    window.WebVTT.processCues(window, _currentCues,_display);
-                    //window.WebVTT.processCues(window, [data[_current]],
-                        //document.getElementById('overlay'));
-                } else {
-                    console.log('vtt.js not found');
-                }
+                _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
+                _currentCues = [data[_current]];
+                console.log(_currentCues);
+                WebVTT.processCues(window, _currentCues,_display);
             }
         }
 
