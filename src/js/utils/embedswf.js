@@ -58,7 +58,7 @@ define([
             appendParam(swf, 'wmode', wmode);
             appendParam(swf, 'menu', 'false');
 
-            container.appendChild(swf, container);
+            container.insertBefore(swf, container.firstChild);
         }
 
         swf.className = 'jw-swf jw-reset';

@@ -849,6 +849,7 @@ define([
             clearTimeout(_controlsTimeout);
             _controlbar.hideComponents();
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
+            console.log('#inactive: repositioning cues..');
             _captionsRenderer.repositionCues();
         }
 
@@ -856,6 +857,7 @@ define([
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _controlbar.checkCompactMode(_videoLayer.clientWidth);
+                console.log('#active: repositioning cues..');
                 _captionsRenderer.repositionCues();
             }
 
@@ -880,17 +882,17 @@ define([
 
         function _onMediaTypeChange(model, val) {
             var isAudioFile = (val ==='audio');
-            var provider = _model.getVideo();
-            var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+            //var provider = _model.getVideo();
+            //var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
 
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-            if (isAudioFile && !isFlash) {
+            if (isAudioFile) {
                 // Put the preview element before the media element in order to display browser captions
                 _playerElement.insertBefore(_preview.el, _videoLayer);
             } else {
                 // Put the preview element before the captions element to display captions with the captions renderer
-                _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
+                _playerElement.insertBefore(_preview.el, _title.element());
             }
         }
 

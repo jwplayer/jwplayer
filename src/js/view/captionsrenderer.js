@@ -3,7 +3,7 @@ define([
     'utils/css',
     'events/states',
     'utils/underscore',
-    'polyfills/vtt'
+    '../polyfills/vtt'
 ], function(utils, cssUtils, states, _, VTT) {
     var _style = cssUtils.style;
 
@@ -95,7 +95,9 @@ define([
         };
 
         this.repositionCues = function () {
-            VTT.WebVTT.processCues(window, _currentCues,_display);
+            if(VTT && VTT.WebVTT) {
+                VTT.WebVTT.processCues(window, _currentCues,_display);
+            }
         };
 
         function _timeChange(e) {
@@ -153,7 +155,6 @@ define([
                 //render with vtt.js
                 _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
                 _currentCues = [data[_current]];
-                console.log(_currentCues);
                 WebVTT.processCues(window, _currentCues,_display);
             }
         }

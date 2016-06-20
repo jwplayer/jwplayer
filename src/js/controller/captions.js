@@ -1,10 +1,4 @@
-define([
-    'parsers/parsers',
-    'parsers/captions/srt',
-    'parsers/captions/dfxp',
-    'utils/helpers',
-    'utils/underscore'
-], function(parsers, srt, dfxp, utils, _) {
+define([], function() {
 
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_api, _model) {
@@ -28,6 +22,7 @@ define([
             }
             // If we get webvtt captions, do not override with metadata captions
             _model.mediaController.off('meta', _metaHandler);
+
 
             _tracks = [];
             _tracksById = {};
@@ -132,9 +127,9 @@ define([
                 }
             }
         }
-        function _errorHandler(error) {
-            utils.log('CAPTIONS(' + error + ')');
-        }
+        //function _errorHandler(error) {
+        //    utils.log('CAPTIONS(' + error + ')');
+        //}
 
         /** Listen to playlist item updates. **/
         function _itemHandler(model, item) {
@@ -152,32 +147,32 @@ define([
             _model.mediaController.off('meta', _metaHandler);
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
 
-            var tracks = item.tracks,
-                track, kind, isVTT, i;
-            var isFlash = _model.get('provider').name === 'flash';
-
-            var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
-
-            for (i = 0; i < tracks.length; i++) {
-                track = tracks[i];
-                isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
-
-                // let the browser handle rendering sideloaded VTT tracks natively when supported
-                if(!isFlash && isVTT && !_isSDK && canRenderNatively) {
-                    continue;
-                }
-
-                kind = track.kind.toLowerCase();
-
-                if (kind === 'captions' || kind === 'subtitles') {
-                    if (track.file) {
-                        _addTrack(track);
-                        _load(track);
-                    } else if (track.data) {
-                        _addTrack(track);
-                    }
-                }
-            }
+            //var tracks = item.tracks,
+            //    track, kind, isVTT, i;
+            //var isFlash = _model.get('provider').name === 'flash';
+            //
+            //var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
+            //
+            //for (i = 0; i < tracks.length; i++) {
+            //    track = tracks[i];
+            //    isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
+            //
+            //    // let the browser handle rendering sideloaded VTT tracks natively when supported
+            //    if(!isFlash && isVTT && !_isSDK && canRenderNatively) {
+            //        continue;
+            //    }
+            //
+            //    kind = track.kind.toLowerCase();
+            //
+            //    if (kind === 'captions' || kind === 'subtitles') {
+            //        if (track.file) {
+            //            _addTrack(track);
+            //            _load(track);
+            //        } else if (track.data) {
+            //            _addTrack(track);
+            //        }
+            //    }
+            //}
 
             // only listen for other captions if there are no side loaded captions
             if (!_tracks.length) {
@@ -215,51 +210,51 @@ define([
             _tracksById[track.id] = track;
         }
 
-        function _load(track) {
-            utils.ajax(track.file, function(xhr) {
-                _xhrSuccess(xhr, track);
-            }, _errorHandler);
-        }
+        //function _load(track) {
+        //    utils.ajax(track.file, function(xhr) {
+        //        //_xhrSuccess(xhr, track);
+        //    }, _errorHandler);
+        //}
 
-        function _xhrSuccess(xhr, track) {
-            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null;
-            var status,
-                _this = this;
-
-            // IE9 sets the firstChild element to the root <xml> tag
-            if (rss) {
-                if (parsers.localName(rss) === 'xml') {
-                    rss = rss.nextSibling;
-                }
-                // Ignore all comments
-                while (rss.nodeType === rss.COMMENT_NODE) {
-                    rss = rss.nextSibling;
-                }
-            }
-            try {
-                if (rss && parsers.localName(rss) === 'tt') {
-                    status = utils.tryCatch(function () {
-                        var cues = dfxp(xhr.responseXML);
-                        var vttCues = _convertToVTTCues(cues);
-                        track.data = vttCues;
-                    });
-                } else {
-                    status = utils.tryCatch(function () {
-                        // If no valid captions were found, an empty array is returned
-                        track.data = srt(xhr.responseText);
-                        if (track.data.length) {
-                            _addTrack(track);
-                            _this.setCaptionsList(_captionsMenu());
-                            _selectDefaultIndex();
-                        }
-                    });
-                }
-            } catch (error) {
-                if (status instanceof utils.Error) {
-                    _errorHandler(status.message + ': ' + track.file);
-                }
-            }
-        }
+        //function _xhrSuccess(xhr, track) {
+        //    var rss = xhr.responseXML ? xhr.responseXML.firstChild : null;
+        //    var status,
+        //        _this = this;
+        //
+        //    // IE9 sets the firstChild element to the root <xml> tag
+        //    if (rss) {
+        //        if (parsers.localName(rss) === 'xml') {
+        //            rss = rss.nextSibling;
+        //        }
+        //        // Ignore all comments
+        //        while (rss.nodeType === rss.COMMENT_NODE) {
+        //            rss = rss.nextSibling;
+        //        }
+        //    }
+        //    try {
+        //        if (rss && parsers.localName(rss) === 'tt') {
+        //            status = utils.tryCatch(function () {
+        //                var cues = dfxp(xhr.responseXML);
+        //                var vttCues = _convertToVTTCues(cues);
+        //                track.data = vttCues;
+        //            });
+        //        } else {
+        //            status = utils.tryCatch(function () {
+        //                // If no valid captions were found, an empty array is returned
+        //                track.data = srt(xhr.responseText);
+        //                if (track.data.length) {
+        //                    _addTrack(track);
+        //                    _this.setCaptionsList(_captionsMenu());
+        //                    _selectDefaultIndex();
+        //                }
+        //            });
+        //        }
+        //    } catch (error) {
+        //        if (status instanceof utils.Error) {
+        //            _errorHandler(status.message + ': ' + track.file);
+        //        }
+        //    }
+        //}
 
         function _captionsMenu() {
             var list = [{
@@ -321,7 +316,8 @@ define([
             _model.set('captionsList', captionsMenu);
         };
 
-        this.loadTrack = _load;
+        //this.loadTrack = _load;
+        this.isSDK = _isSDK;
     };
 
     return Captions;
