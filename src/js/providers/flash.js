@@ -266,9 +266,9 @@ define([
                         events.JWPLAYER_MEDIA_ERROR,
                         events.JWPLAYER_MEDIA_SEEK,
                         events.JWPLAYER_MEDIA_SEEKED,
-                        'subtitlesTracks',
+                        //'subtitlesTracks',
                         'subtitlesTrackChanged',
-                        'subtitlesTrackData',
+                        //'subtitlesTrackData',
                         'mediaType'
                     ];
 
@@ -361,6 +361,14 @@ define([
                     _swf.on(events.JWPLAYER_ERROR, function(event) {
                         utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
+                    }, this);
+
+                    _swf.on('subtitlesTracks', function(e) {
+                        this.setTextTracks(e.tracks);
+                    }, this);
+
+                    _swf.on('subtitlesTrackData', function(e) {
+                        this.addCuesToTrack(e);
                     }, this);
 
                     if (flashThrottleTarget(_playerConfig)) {
