@@ -849,7 +849,6 @@ define([
             clearTimeout(_controlsTimeout);
             _controlbar.hideComponents();
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
-            console.log('#inactive: repositioning cues..');
             _captionsRenderer.repositionCues();
         }
 
@@ -857,7 +856,6 @@ define([
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _controlbar.checkCompactMode(_videoLayer.clientWidth);
-                console.log('#active: repositioning cues..');
                 _captionsRenderer.repositionCues();
             }
 
