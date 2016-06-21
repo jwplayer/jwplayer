@@ -15,11 +15,16 @@
     @buffer-color: @inactive-color;
     @rail-color: rgba(255, 255, 255, 0.4);
     @thumb-color: @progress-color;
-    
+
+    @controlbar-height: 2em;
     @rail-height: 2em;
     @cue-size: .66em;
+    @def-rail-width: 0.5em;
 
-    @volume-background: @inactive-color;
+    @volume-background: #333;
+
+  @controlbar-height: 2em;
+  #namespace > .controlbar-height();
 
     #namespace > .basic-skin-styles(); // Using the above local variables
 	.skin-element-padding();
@@ -48,7 +53,7 @@
 
     /* Playlist */
 	.jw-playlist-container {
-        left: -42%;
+        left: -47%;
         bottom: 0;
         border-radius: 0;
         background-color: #1e1e1e;
@@ -93,18 +98,6 @@
 
     /* Horizontal (timeline & horz volume) slider */
 	.jw-slider-horizontal {
-		height: @rail-height;
-
-        .jw-slider-container {
-            height: @rail-height;
-        }
-
-		.jw-rail,
-		.jw-progress,
-		.jw-buffer {
-			height: @rail-height;
-		}
-
 		.jw-knob,
 		.jw-cue {
 			height: 2em;
@@ -112,9 +105,9 @@
 
 		.jw-knob {
 			margin-left: 0;
-
             background-color: #fff;
             width: .2em;
+            .vertically-centered-rail-element(@rail-height, 2em);
 		}
 
 		.jw-cue {
@@ -130,6 +123,7 @@
 		bottom: 3px;
 		border-radius: 2px;
 		border: 0;
+        background-color: #333333;
 
         .jw-knob {
             display: none;
@@ -141,7 +135,6 @@
 
 		.jw-rail,
 		.jw-progress {
-			width: .5em;
 			border: 1px solid #000;
 		}
 
@@ -166,5 +159,14 @@
             background: @inactive-color;
         }
     }
+
+  .jw-icon-inline,
+  .jw-icon-tooltip,
+  .jw-slider-horizontal,
+  .jw-text-elapsed,
+  .jw-text-duration {
+      height: @controlbar-height;
+      line-height: @controlbar-height;
+  }
 
 }
