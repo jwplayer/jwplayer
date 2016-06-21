@@ -47,7 +47,6 @@ define([
         _display = document.createElement('div');
         _display.className = 'jw-captions jw-reset';
 
-
         this.show = function () {
             _display.className = 'jw-captions jw-captions-enabled jw-reset';
         };
@@ -62,24 +61,10 @@ define([
             _currentCues = [];
             _captionsTrack = captions;
             if (!captions) {
-                _render('');
                 return;
             }
             _select(captions, _timeEvent);
         };
-
-        /** Render the active caption. **/
-        function _render(html) {
-            html = html || '';
-            var windowClassName = 'jw-captions-window jw-reset';
-            if (html) {
-                _textContainer.innerHTML = html;
-                _captionsWindow.className = windowClassName + ' jw-captions-window-active';
-            } else {
-                _captionsWindow.className = windowClassName;
-                utils.empty(_textContainer);
-            }
-        }
 
         this.resize = function () {
             this.repositionCues();
@@ -96,7 +81,7 @@ define([
 
         this.repositionCues = function () {
             if(VTT && VTT.WebVTT) {
-                VTT.WebVTT.processCues(window, _currentCues,_display);
+                VTT.WebVTT.processCues(window, _currentCues, _display);
             }
         };
 
@@ -140,7 +125,6 @@ define([
             }
 
             var found = -1;
-            var WebVTT = VTT.WebVTT;
             for (var i = 0; i < data.length; i++) {
                 if (_intersects(data, i, pos)) {
                     found = i;
@@ -149,13 +133,15 @@ define([
             }
             // If none, empty the text. If not current, re-render.
             if (found === -1) {
-                _render('');
+                // clear displaying cues
             } else if (found !== _current) {
                 _current = found;
                 //render with vtt.js
                 _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
                 _currentCues = [data[_current]];
-                WebVTT.processCues(window, _currentCues,_display);
+                if (VTT && VTT.WebVTT) {
+                    VTT.WebVTT.processCues(window, _currentCues, _display);
+                }
             }
         }
 
@@ -257,7 +243,6 @@ define([
             _timeEvent = null;
             _current = -1;
             _currentCues = [];
-            _render('');
         }, this);
 
         _model.on('change:captionsTrack', function(model, captionsTrack) {
