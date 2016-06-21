@@ -46,7 +46,6 @@
 .jw-menu {
     position: relative;
     left: -50%;
-    border: solid 1px #000;
     margin: 0;
 }
 
@@ -57,13 +56,13 @@
 }
 
 .jw-time-tip {
-    text-align:center;
+    text-align: center;
     font-family: inherit;
-    color: @inactive-color;
     bottom: 1em;
-    border: solid 4px #000;
+    padding: @ui-padding;
 
     .jw-text {
+        color: @active-color;
         line-height: 1em;
     }
 }
@@ -101,6 +100,12 @@
         
         &:before {
             padding-right: 0.125em;
+        }
+
+        &.jw-active-option {
+            font-size: @font-size + 0.15em;
+            font-weight: 900;
+            color: @accent-color;
         }
     }
 }
