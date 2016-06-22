@@ -2,14 +2,13 @@ define([
     'utils/helpers',
     'utils/css',
     'events/states',
-    'utils/underscore',
-    '../polyfills/vtt'
-], function(utils, cssUtils, states, _, VTT) {
+    'utils/underscore'
+], function(utils, cssUtils, states, _) {
     var _style = cssUtils.style;
 
     var _defaults = {
         back: true,
-        fontSize: 15,
+        fontSize: 14,
         fontFamily: 'Arial,sans-serif',
         fontOpacity: 100,
         color: '#FFF',
@@ -42,7 +41,8 @@ define([
         // display hierarchy
             _display,
             _captionsWindow,
-            _textContainer;
+            _textContainer,
+            _VTTRenderer;
 
         _display = document.createElement('div');
         _display.className = 'jw-captions jw-reset';
@@ -61,13 +61,15 @@ define([
             _currentCues = [];
             _captionsTrack = captions;
             if (!captions) {
+                _currentCues = [];
+                renderCues();
                 return;
             }
             _select(captions, _timeEvent);
         };
 
         this.resize = function () {
-            this.repositionCues();
+            renderCues();
             var width = _display.clientWidth,
                 scale = Math.pow(width / 400, 0.6);
             if (scale) {
@@ -79,11 +81,13 @@ define([
 
         };
 
-        this.repositionCues = function () {
-            if(VTT && VTT.WebVTT) {
-                VTT.WebVTT.processCues(window, _currentCues, _display);
+        this.renderCues = renderCues;
+
+        function renderCues() {
+            if(_VTTRenderer) {
+                _VTTRenderer.WebVTT.processCues(window, _currentCues, _display);
             }
-        };
+        }
 
         function _timeChange(e) {
             _timeEvent = e;
@@ -139,9 +143,7 @@ define([
                 //render with vtt.js
                 _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
                 _currentCues = [data[_current]];
-                if (VTT && VTT.WebVTT) {
-                    VTT.WebVTT.processCues(window, _currentCues, _display);
-                }
+                renderCues();
             }
         }
 
@@ -235,6 +237,12 @@ define([
             }
         }
 
+        function _nativeRenderingSupported() {
+            var provider = _model.get('provider');
+            return provider.name.indexOf('flash') === -1 &&
+                utils.isChrome() || utils.isIOS() || utils.isSafari();
+        }
+
         this.element = function() {
             return _display;
         };
@@ -270,6 +278,17 @@ define([
                     break;
             }
         }, this);
+
+        _model.on('itemReady', _itemReadyHandler, this);
+
+        function _itemReadyHandler() {
+            // don't load the polyfill or do unnecessary work if rendering natively
+            if(!_nativeRenderingSupported()) {
+                require.ensure(['polyfills/vtt'], function (require) {
+                    _VTTRenderer = require('polyfills/vtt');
+                }, 'polyfills.vttrenderer');
+            }
+        }
     };
 
     return CaptionsRenderer;
