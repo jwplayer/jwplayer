@@ -137,7 +137,8 @@ define([
             }
             // If none, empty the text. If not current, re-render.
             if (found === -1) {
-                // clear displaying cues
+                _currentCues = [];
+                renderCues();
             } else if (found !== _current) {
                 _current = found;
                 //render with vtt.js

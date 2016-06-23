@@ -20,9 +20,6 @@ define([], function() {
             if(! e.tracks.length) {
                 return;
             }
-            // If we get webvtt captions, do not override with metadata captions
-            _model.mediaController.off('meta', _metaHandler);
-
 
             _tracks = [];
             _tracksById = {};
@@ -43,8 +40,7 @@ define([], function() {
         // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
         _model.mediaController.on('meta', _metaHandler, this);
 
-        var _isSDK = !!_model.get('sdkplatform'),
-            _item = {},
+        var _item = {},
             _tracks = [],
             _tracksById = {},
             _metaCuesByTextTime = {},
@@ -208,9 +204,6 @@ define([], function() {
         this.setCaptionsList = function(captionsMenu) {
             _model.set('captionsList', captionsMenu);
         };
-
-        //this.loadTrack = _load;
-        this.isSDK = _isSDK;
     };
 
     return Captions;

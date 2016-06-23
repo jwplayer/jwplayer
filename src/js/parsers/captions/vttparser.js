@@ -11,17 +11,6 @@ define([], function() {
         this.regionList = [];
     };
 
-    var _objCreate = Object.create || (function() {
-            function F() {}
-            return function(o) {
-                if (arguments.length !== 1) {
-                    throw new Error('Object.create shim only accepts one parameter.');
-                }
-                F.prototype = o;
-                return new F();
-            };
-        })();
-
     function StringDecoder() {
         return {
             decode: function(data) {
@@ -64,7 +53,7 @@ define([], function() {
     // A settings object holds key/value pairs and will ignore anything but the first
     // assignment to a specific key.
     function Settings() {
-        this.values = _objCreate(null);
+        this.values = Object.create(null);
     }
 
     Settings.prototype = {

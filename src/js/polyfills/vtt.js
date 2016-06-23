@@ -69,17 +69,6 @@
     });
   }
 
-  var _objCreate = Object.create || (function() {
-    function F() {}
-    return function(o) {
-      if (arguments.length !== 1) {
-        throw new Error('Object.create shim only accepts one parameter.');
-      }
-      F.prototype = o;
-      return new F();
-    };
-  })();
-
   // Creates a new ParserError object from an errorData object. The errorData
   // object should have default code and message properties. The default message
   // property can be overriden by passing in a message parameter.
@@ -89,7 +78,7 @@
     this.code = errorData.code;
     this.message = message || errorData.message;
   }
-  ParsingError.prototype = _objCreate(Error.prototype);
+  ParsingError.prototype = Object.create(Error.prototype);
   ParsingError.prototype.constructor = ParsingError;
 
   // ParsingError metadata for acceptable ParsingErrors.
@@ -132,7 +121,7 @@
   // A settings object holds key/value pairs and will ignore anything but the first
   // assignment to a specific key.
   function Settings() {
-    this.values = _objCreate(null);
+    this.values = Object.create(null);
   }
 
   Settings.prototype = {
@@ -607,6 +596,7 @@
     // Parse our cue's text into a DOM tree rooted at 'cueDiv'. This div will
     // have inline positioning and will function as the cue background box.
     this.cueDiv = parseContent(window, cue.text);
+    // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
     this.cueDiv.className = 'jw-text-track-cue';
     var styles = {
       textShadow: textShadow,
@@ -693,7 +683,7 @@
       });
     };
   }
-  CueStyleBox.prototype = _objCreate(StyleBox.prototype);
+  CueStyleBox.prototype = Object.create(StyleBox.prototype);
   CueStyleBox.prototype.constructor = CueStyleBox;
 
   // Represents the co-ordinates of an Element in a way that we can easily
@@ -1021,6 +1011,7 @@
     }
 
     var paddedOverlay = window.document.createElement("div");
+    // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
     paddedOverlay.className = 'jw-text-track-container';
     paddedOverlay.style.position = "absolute";
     paddedOverlay.style.left = "0";
@@ -1061,6 +1052,7 @@
 
         // Compute the initial position and styles of the cue div.
         styleBox = new CueStyleBox(window, cue);
+        // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
         styleBox.div.className = 'jw-text-track-display';
         paddedOverlay.appendChild(styleBox.div);
 

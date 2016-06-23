@@ -266,9 +266,7 @@ define([
                         events.JWPLAYER_MEDIA_ERROR,
                         events.JWPLAYER_MEDIA_SEEK,
                         events.JWPLAYER_MEDIA_SEEKED,
-                        //'subtitlesTracks',
                         'subtitlesTrackChanged',
-                        //'subtitlesTrackData',
                         'mediaType'
                     ];
 

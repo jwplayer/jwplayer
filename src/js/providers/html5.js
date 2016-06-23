@@ -812,7 +812,12 @@ define([
 
         this.setContainer = function(element) {
             _container = element;
-            element.insertBefore(_videotag, element.firstChild);
+            if(element.firstChild) {
+                // Place videotag behind the captions container
+                element.insertBefore(_videotag, element.firstChild);
+            } else {
+                element.appendChild(_videotag);
+            }
         };
 
         this.getContainer = function() {
