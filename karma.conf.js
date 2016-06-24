@@ -75,9 +75,16 @@ module.exports = function( config ) {
 
         files : [
             //3rd Party Code
-            {pattern: 'bower_components/requirejs/require.js', included: true},
-            {pattern: 'bower_components/**/*.js', included: false},
+            {pattern: 'node_modules/handlebars/dist/*.js', included: false},
+            {pattern: 'node_modules/handlebars-loader/*.js', included: false},
+            {pattern: 'node_modules/jquery/dist/*.js', included: false},
+            {pattern: 'node_modules/phantomjs-polyfill/*.js', included: false},
+            {pattern: 'node_modules/requirejs/require.js', included: true},
+            {pattern: 'node_modules/requirejs-handlebars/*.js', included: false},
+            {pattern: 'node_modules/requirejs-text/*.js', included: false},
+            {pattern: 'node_modules/require-less/*.js', included: false},
             {pattern: 'node_modules/simple-style-loader/addStyles.js', included: false},
+            {pattern: 'node_modules/underscore/*.js', included: false},
 
             // Require Config
             {pattern: 'test/config.js', included: true},

@@ -10,7 +10,7 @@
     var base = '';
     var callback;
     var deps = [
-        'bind-polyfill'
+        'phantomjs-polyfill'
     ];
 
     // Add polyfills for phantomjs 1.x and IE9
@@ -53,7 +53,7 @@
         document.body.appendChild(qunitFixture);
     }
 
-    var components = base + 'bower_components';
+    var components = base + 'node_modules';
     var data = base + 'test/data';
     var mock = base + 'test/mock';
     var unit = base + 'test/unit';
@@ -72,14 +72,14 @@
             'templates': '../' + 'templates',
             'css': '../' + 'css',
 
-            'handlebars': components + '/handlebars/handlebars.amd',
+            'handlebars': components + '/handlebars/dist/handlebars.amd',
             'text': components + '/requirejs-text/text',
             'handlebars-loader': components + '/requirejs-handlebars/hb',
             'less': components + '/require-less/less',
             'lessc': components + '/require-less/lessc',
             'normalize': components + '/require-less/normalize',
             'jquery': components + '/jquery/dist/jquery',
-            'bind-polyfill': components + '/bind-polyfill/index',
+            'phantomjs-polyfill': components + '/phantomjs-polyfill/bind-polyfill',
 
             // always use test/underscore in test scripts
             'test/underscore': components + '/underscore/underscore',
