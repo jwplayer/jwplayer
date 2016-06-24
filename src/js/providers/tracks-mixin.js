@@ -21,7 +21,8 @@ define(['../utils/underscore',
     var _textTracks = null, // subtitles and captions tracks
         _textTracksCache = null,
         _currentTextTrackIndex = -1, // captionsIndex - 1 (accounts for Off = 0 in model)
-        _embeddedTrackCount = 0;
+        _embeddedTrackCount = 0,
+        _activeCuePosition = null;
 
     function _cueChangeHandler(e) {
         var activeCues = e.currentTarget.activeCues;
@@ -31,14 +32,18 @@ define(['../utils/underscore',
 
         // Get the most recent start time. Cues are sorted by start time in ascending order by the browser
         var startTime = activeCues[activeCues.length - 1].startTime;
-
+        //Prevent duplicate meta events for the same list of cues since the cue change handler fires once
+        // for each activeCue in Safari
+        if (_activeCuePosition === startTime) {
+            return;
+        }
         var dataCues = [];
 
         _.each(activeCues, function(cue) {
             if (cue.startTime < startTime) {
                 return;
             }
-            if (cue.data) {
+            if (cue.data || cue.value) {
                 dataCues.push(cue);
             } else if (cue.text) {
                 this.trigger('meta', {
@@ -55,6 +60,7 @@ define(['../utils/underscore',
                 metadata: id3Data
             });
         }
+        _activeCuePosition = startTime;
     }
 
     function setTextTracks() {
@@ -276,6 +282,7 @@ define(['../utils/underscore',
         _textTracks = null;
         _textTracksCache = null;
         _embeddedTrackCount = 0;
+        _activeCuePosition = null;
     }
 
     function disableTextTrack() {
