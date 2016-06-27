@@ -12,9 +12,14 @@ define([
     'view/components/drawer'
 ], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip, Drawer) {
 
-    function button(icon, apiAction) {
+    function button(icon, apiAction, ariaText) {
         var element = document.createElement('div');
         element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
+        element.setAttribute('role', 'button');
+        element.setAttribute('tabindex', '0');
+        if (ariaText) {
+            element.setAttribute('aria-label', ariaText);
+        }
         element.style.display = 'none';
 
         if (apiAction) {
@@ -36,14 +41,17 @@ define([
         };
     }
 
-    function text(name) {
+    function text(name, role) {
         var element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
+        if (role) {
+            element.setAttribute('role', role);
+        }
         return element;
     }
 
-    function menu(name) {
-        var createdMenu = new Menu(name);
+    function menu(name, ariaText) {
+        var createdMenu = new Menu(name, ariaText);
 
         return createdMenu;
     }
@@ -68,7 +76,7 @@ define([
         this._isMobile = utils.isMobile();
         this._compactModeMaxSize = 400;
         this._maxCompactWidth = -1;
-
+        this._localization = this._model.get('localization');
         this.setup();
     }
 
@@ -81,7 +89,7 @@ define([
 
         build : function() {
             var timeSlider = new TimeSlider(this._model, this._api),
-                drawer = new Drawer('jw-icon-more'),
+                drawer = new Drawer('jw-icon-more', this._localization.more),
                 playlistTooltip,
                 volumeSlider,
                 volumeTooltip,
@@ -89,34 +97,39 @@ define([
 
             // Create the playlistTooltip as long as visualplaylist from the config is not false
             if(this._model.get('visualplaylist') !== false) {
-                playlistTooltip = new Playlist('jw-icon-playlist');
+                playlistTooltip = new Playlist('jw-icon-playlist', this._localization.playlist);
             }
+
+            var play = this._localization.play;
+            var prev = this._localization.prev;
+            var next = this._localization.next;
+            var vol = this._localization.volume;
 
             // Do not initialize volume sliders on mobile.
             if(!this._isMobile){
-                muteButton = button('jw-icon-volume', this._api.setMute);
-                volumeSlider = new Slider('jw-slider-volume', 'horizontal');
-                volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume');
+                muteButton = button('jw-icon-volume', this._api.setMute, vol);
+                volumeSlider = new Slider('jw-slider-volume', 'horizontal');//, vol);
+                volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume', vol);
             }
 
             this.elements = {
-                alt: text('jw-text-alt'),
-                play: button('jw-icon-playback', this._api.play.bind(this, {reason: 'interaction'})),
-                prev: button('jw-icon-prev', this._api.playlistPrev.bind(this, {reason: 'interaction'})),
-                next: button('jw-icon-next', this._api.playlistNext.bind(this, {reason: 'interaction'})),
+                alt: text('jw-text-alt', 'status'),
+                play: button('jw-icon-playback', this._api.play.bind(this, {reason: 'interaction'}), play),
+                prev: button('jw-icon-prev', this._api.playlistPrev.bind(this, {reason: 'interaction'}), prev),
+                next: button('jw-icon-next', this._api.playlistNext.bind(this, {reason: 'interaction'}), next),
                 playlist : playlistTooltip,
-                elapsed: text('jw-text-elapsed'),
+                elapsed: text('jw-text-elapsed', 'timer'),
                 time: timeSlider,
-                duration: text('jw-text-duration'),
+                duration: text('jw-text-duration', 'timer'),
                 drawer: drawer,
-                hd: menu('jw-icon-hd'),
-                cc: menu('jw-icon-cc'),
-                audiotracks: menu('jw-icon-audio-tracks'),
+                hd: menu('jw-icon-hd', this._localization.hd),
+                cc: menu('jw-icon-cc', this._localization.cc),
+                audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast jw-off', this._api.castToggle),
-                fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen)
+                cast: button('jw-icon-cast jw-off', this._api.castToggle, this._localization.cast),
+                fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
 
             this.layout = {

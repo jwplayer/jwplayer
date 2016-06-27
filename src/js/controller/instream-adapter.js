@@ -108,7 +108,7 @@ define([
             // don't trigger api play/pause on display click
             _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
 
-            this.setText('Loading ad');
+            this.setText(_model.get('localization').loadingAd);
             return this;
         };
 

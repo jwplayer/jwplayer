@@ -893,7 +893,7 @@ define([
         function _setLiveMode(model, duration){
             var live = utils.adaptiveType(duration) === 'LIVE';
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
-            _this.setAltText((live) ? 'Live Broadcast' : '');
+            _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
 
         function _errorHandler(model, evt) {
