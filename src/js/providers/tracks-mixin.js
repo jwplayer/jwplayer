@@ -15,6 +15,7 @@ define(['../utils/underscore',
         disableTextTrack: disableTextTrack,
         getSubtitlesTrack: getSubtitlesTrack,
         removeTracksListener: removeTracksListener,
+        addTextTracks: addTextTracks,
         setTextTracks: setTextTracks,
         setupSideloadedTracks: setupSideloadedTracks,
         setSubtitlesTrack: setSubtitlesTrack,
@@ -82,9 +83,6 @@ define(['../utils/underscore',
                     }
 
                     _addTrackToList(track);
-                } else if (track.flashhls) {
-                    // setup subtitles track coming from Flash HLS Manifest
-                    _addTrackToList(_createTrack.call(this, track));
                 }
             }
         }
@@ -93,7 +91,7 @@ define(['../utils/underscore',
             this.addTracksListener(_textTracks, 'change', textTrackChangeHandler);
         }
 
-        if (_textTracks && _textTracks.length) {
+        if (_textTracks.length) {
             this.trigger('subtitlesTracks', {tracks: _textTracks});
         }
     }
@@ -111,12 +109,7 @@ define(['../utils/underscore',
                 _clearSideloadedTextTracks();
             }
             this.itemTracks = tracks;
-            _addTracks.call(this, tracks);
-        }
-
-        // We can setup the captions menu now since we're not rendering textTracks natively
-        if (!_renderNatively && _textTracks && _textTracks.length) {
-            this.trigger('subtitlesTracks', {tracks: _textTracks});
+            addTextTracks.call(this, tracks);
         }
     }
 
@@ -324,7 +317,7 @@ define(['../utils/underscore',
         _renderNatively = false;
     }
 
-    function _addTracks(tracks) {
+    function addTextTracks(tracks) {
         if (!tracks) {
             return;
         }
@@ -339,7 +332,14 @@ define(['../utils/underscore',
             var itemTrack = tracks[i];
             var track = _createTrack.call(this, itemTrack);
             _addTrackToList(track);
-            _parseTrack(itemTrack, track);
+            if (itemTrack.file) {
+                _parseTrack(itemTrack, track);
+            }
+        }
+
+        // We can setup the captions menu now since we're not rendering textTracks natively
+        if(!_renderNatively && _textTracks.length) {
+            this.trigger('subtitlesTracks', {tracks: _textTracks});
         }
     }
 
