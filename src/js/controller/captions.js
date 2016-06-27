@@ -1,9 +1,4 @@
-define([
-    'parsers/parsers',
-    'parsers/captions/srt',
-    'parsers/captions/dfxp',
-    'utils/helpers'
-], function(parsers, srt, dfxp, utils) {
+define([], function() {
 
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_api, _model) {
@@ -25,8 +20,6 @@ define([
             if(! e.tracks.length) {
                 return;
             }
-            // If we get webvtt captions, do not override with metadata captions
-            _model.mediaController.off('meta', _metaHandler);
 
             _tracks = [];
             _tracksById = {};
@@ -44,38 +37,10 @@ define([
             _selectDefaultIndex();
         }
 
-        // Append data to subtitle tracks
-        _model.mediaController.on('subtitlesTrackData', function(e) {
-            var track = _tracksById[e.name];
-            if (!track) {
-                // Player expects that tracks were received in 'subtitlesTracks' event
-                return;
-            }
-
-            track.source = e.source;
-            var cues = e.captions || [];
-            var sort = false;
-            for (var i=0; i<cues.length; i++) {
-                var cue = cues[i];
-                var cueId = e.name +'_'+ cue.begin +'_'+ cue.end;
-                if (!_metaCuesByTextTime[cueId]) {
-                    _metaCuesByTextTime[cueId] = cue;
-                    track.data.push(cue);
-                    sort = true;
-                }
-            }
-            if (sort) {
-                track.data.sort(function(a, b) {
-                    return a.begin - b.begin;
-                });
-            }
-        }, this);
-
         // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
         _model.mediaController.on('meta', _metaHandler, this);
 
-        var _isSDK = !!_model.get('sdkplatform'),
-            _item = {},
+        var _item = {},
             _tracks = [],
             _tracksById = {},
             _metaCuesByTextTime = {},
@@ -131,9 +96,6 @@ define([
                 }
             }
         }
-        function _errorHandler(error) {
-            utils.log('CAPTIONS(' + error + ')');
-        }
 
         /** Listen to playlist item updates. **/
         function _itemHandler(model, item) {
@@ -148,41 +110,10 @@ define([
             // Clean up in case we're replaying
             _itemHandler(_model,item);
 
-            _model.mediaController.off('meta', _metaHandler);
-            _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler);
+            // listen for tracks coming from the provider
+            _model.mediaController.on('meta', _metaHandler, this);
+            _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
 
-            var tracks = item.tracks,
-                track, kind, isVTT, i;
-            var isFlash = _model.get('provider').name === 'flash';
-
-            var canRenderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari();
-
-            for (i = 0; i < tracks.length; i++) {
-                track = tracks[i];
-                isVTT = track.file && (/\.(?:web)?vtt(?:\?.*)?$/i.test(track.file));
-
-                // let the browser handle rendering sideloaded VTT tracks natively when supported
-                if(!isFlash && isVTT && !_isSDK && canRenderNatively) {
-                    continue;
-                }
-
-                kind = track.kind.toLowerCase();
-
-                if (kind === 'captions' || kind === 'subtitles') {
-                    if (track.file) {
-                        _addTrack(track);
-                        _load(track);
-                    } else if (track.data) {
-                        _addTrack(track);
-                    }
-                }
-            }
-
-            // only listen for other captions if there are no side loaded captions
-            if (!_tracks.length) {
-                _model.mediaController.on('meta', _metaHandler, this);
-                _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
-            }
             var captionsMenu = _captionsMenu();
             this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
@@ -212,36 +143,6 @@ define([
             }
             _tracks.push(track);
             _tracksById[track.id] = track;
-        }
-
-        function _load(track) {
-            utils.ajax(track.file, function(xhr) {
-                _xhrSuccess(xhr, track);
-            }, _errorHandler);
-        }
-
-        function _xhrSuccess(xhr, track) {
-            var rss = xhr.responseXML ? xhr.responseXML.firstChild : null;
-
-            // IE9 sets the firstChild element to the root <xml> tag
-            if (rss) {
-                if (parsers.localName(rss) === 'xml') {
-                    rss = rss.nextSibling;
-                }
-                // Ignore all comments
-                while (rss.nodeType === rss.COMMENT_NODE) {
-                    rss = rss.nextSibling;
-                }
-            }
-            try {
-                if (rss && parsers.localName(rss) === 'tt') {
-                    track.data = dfxp(xhr.responseXML);
-                } else {
-                    track.data = srt(xhr.responseText);
-                }
-            } catch(error) {
-                _errorHandler(error.message + ': ' + track.file);
-            }
         }
 
         function _captionsMenu() {

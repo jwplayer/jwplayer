@@ -5,8 +5,9 @@ define([
     'events/states',
     'utils/embedswf',
     'providers/default',
-    'utils/backbone.events'
-], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events) {
+    'utils/backbone.events',
+    'providers/tracks-mixin',
+], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events, Tracks) {
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
@@ -132,7 +133,7 @@ define([
             window.removeEventListener('focus', onFocus);
         }
 
-        _.extend(this, Events, {
+        _.extend(this, Events, Tracks, {
                 init: function(item) {
                     // if not preloading or autostart is true, do nothing
                     if (!item.preload || item.preload === 'none' || _playerConfig.autostart) {
@@ -145,6 +146,7 @@ define([
                     _item = item;
                     _beforecompleted = false;
                     this.setState(states.LOADING);
+                    this.setupSideloadedTracks(item.tracks);
                     _flashCommand('load', item);
                     // HLS mediaType comes from the AdaptiveProvider
                     if(item.sources.length && item.sources[0].type !== 'hls') {
@@ -162,6 +164,7 @@ define([
                     _flashCommand('stop');
                     _currentQuality = -1;
                     _item = null;
+                    this.clearTracks();
                     this.setState(states.IDLE);
                 },
                 seek: function(seekPos) {
@@ -263,9 +266,7 @@ define([
                         events.JWPLAYER_MEDIA_ERROR,
                         events.JWPLAYER_MEDIA_SEEK,
                         events.JWPLAYER_MEDIA_SEEKED,
-                        'subtitlesTracks',
                         'subtitlesTrackChanged',
-                        'subtitlesTrackData',
                         'mediaType'
                     ];
 
@@ -360,6 +361,14 @@ define([
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
 
+                    _swf.on('subtitlesTracks', function(e) {
+                        this.setTextTracks(e.tracks);
+                    }, this);
+
+                    _swf.on('subtitlesTrackData', function(e) {
+                        this.addCuesToTrack(e);
+                    }, this);
+
                     if (flashThrottleTarget(_playerConfig)) {
                         _swf.on('throttle', function(e) {
                             removeBlockedCheck();
@@ -434,6 +443,7 @@ define([
                     }
                     _container = null;
                     _item = null;
+                    this.clearTracks();
                     this.off();
                 }
         });

@@ -532,6 +532,7 @@ define([
                 dom.emptyElement(_videotag);
                 _currentQuality = -1;
                 _itemTracks = null;
+                _this.clearTracks();
                 // Don't call load in iE9/10 and check for load in PhantomJS
                 if (!_isMSIE && 'load' in _videotag) {
                     _videotag.load();
@@ -811,7 +812,12 @@ define([
 
         this.setContainer = function(element) {
             _container = element;
-            element.appendChild(_videotag);
+            if(element.firstChild) {
+                // Place videotag behind the captions container
+                element.insertBefore(_videotag, element.firstChild);
+            } else {
+                element.appendChild(_videotag);
+            }
         };
 
         this.getContainer = function() {
