@@ -88,12 +88,19 @@
         .jw-button-color {
             color: @inactive-color;
             .hover(@hover-color);
+            &:focus {
+                outline: none;
+                color: @hover-color;
+            }
         }
 
         .jw-toggle {
             color: @hover-color;
             &.jw-off {
                 color: @inactive-color;
+            }
+            &:focus {
+                outline: none;
             }
         }
         
