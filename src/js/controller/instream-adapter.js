@@ -33,7 +33,8 @@ define([
             _options = {},
             _oldProvider,
             _oldpos,
-            _olditem;
+            _olditem,
+            _this = this;
 
         var _clickHandler = _.bind(function(evt) {
             evt = evt || {};
@@ -112,6 +113,22 @@ define([
             return this;
         };
 
+        function _loadNextItem() {
+            // We want a play event for the next item, so we ensure the state != playing
+            _instream._adModel.set('state', 'buffering');
+
+            // destroy skip button
+            _model.set('skipButton', false);
+
+            _arrayIndex++;
+            var item = _array[_arrayIndex];
+            var options;
+            if (_arrayOptions) {
+                options = _arrayOptions[_arrayIndex];
+            }
+            _this.loadItem(item, options);
+        }
+
         function _instreamForward(type, data) {
             if (type === 'complete') {
                 return;
@@ -123,6 +140,12 @@ define([
             }
 
             this.trigger(type, data);
+
+            if (type === 'mediaError' || type === 'error') {
+                if (_array && _arrayIndex + 1 < _array.length) {
+                    _loadNextItem();
+                }
+            }
         }
 
         function _instreamTime(evt) {
@@ -139,20 +162,7 @@ define([
             if (_array && _arrayIndex + 1 < _array.length) {
                 // fire complete event
                 this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
-
-                // We want a play event for the next item, so we ensure the state != playing
-                _instream._adModel.set('state', 'buffering');
-
-                // destroy skip button
-                _model.set('skipButton', false);
-
-                _arrayIndex++;
-                var item = _array[_arrayIndex];
-                var options;
-                if (_arrayOptions) {
-                    options = _arrayOptions[_arrayIndex];
-                }
-                this.loadItem(item, options);
+                _loadNextItem();
             } else {
                 if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
                     this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
