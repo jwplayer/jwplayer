@@ -28,7 +28,7 @@ define([], function() {
             var tracks = e.tracks || [];
             for (var i = 0; i < tracks.length; i++) {
                 var track = tracks[i];
-                track.label = track.name || track.language;
+                track.label = track.label || track.name || track.language;
                 _addTrack(track);
             }
             var captionsMenu = _captionsMenu();
@@ -36,65 +36,11 @@ define([], function() {
             _selectDefaultIndex();
         }
 
-        // Listen for legacy Flash RTMP/MP4/608 metadata closed captions
-        _model.mediaController.on('meta', _metaHandler, this);
-
         var _item = {},
             _tracks = [],
             _tracksById = {},
             _metaCuesByTextTime = {},
             _unknownCount = 0;
-
-        function _metaHandler (e) {
-            var metadata = e.metadata;
-            if (!metadata) {
-                return;
-            }
-            if (metadata.type === 'textdata') {
-                if (!metadata.text) {
-                    return;
-                }
-                var track = _tracksById[metadata.trackid];
-                if (!track) {
-                    track = {
-                        kind: 'captions',
-                        _id: metadata.trackid,
-                        data: []
-                    };
-                    _addTrack(track);
-                    var captionsMenu = _captionsMenu();
-                    this.setCaptionsList(captionsMenu);
-                }
-
-                var time, cueId;
-
-                if (metadata.useDTS) {
-                    // There may not be any 608 captions when the track is first created
-                    // Need to set the source so position is determined from metadata
-                    if(!track.source) {
-                        track.source = metadata.source || 'mpegts';
-                    }
-                    time = metadata.begin;
-                    cueId = metadata.begin + '_' + metadata.text;
-                } else {
-                    time = e.position || _model.get('position');
-                    cueId = '' + Math.round(time * 10) + '_' + metadata.text;
-                }
-
-                var cue = _metaCuesByTextTime[cueId];
-                if (!cue) {
-                    cue = {
-                        begin: time,
-                        text: metadata.text
-                    };
-                    if(metadata.end) {
-                        cue.end = metadata.end;
-                    }
-                    _metaCuesByTextTime[cueId] = cue;
-                    track.data.push(cue);
-                }
-            }
-        }
 
         /** Listen to playlist item updates. **/
         function _itemHandler(model, item) {
@@ -110,7 +56,6 @@ define([], function() {
             _itemHandler(_model,item);
 
             // listen for tracks coming from the provider
-            _model.mediaController.on('meta', _metaHandler, this);
             _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
 
             var captionsMenu = _captionsMenu();

@@ -20,7 +20,8 @@ define(['../utils/underscore',
         setupSideloadedTracks: setupSideloadedTracks,
         setSubtitlesTrack: setSubtitlesTrack,
         textTrackChangeHandler: textTrackChangeHandler,
-        addCuesToTrack: addCuesToTrack
+        addCuesToTrack: addCuesToTrack,
+        addCaptionsCue: addCaptionsCue
     };
 
     var _textTracks = null, // subtitles and captions tracks
@@ -155,6 +156,51 @@ define(['../utils/underscore',
 
     function getSubtitlesTrack() {
         return _currentTextTrackIndex;
+    }
+
+    function addCaptionsCue(cueData) {
+        if (!cueData.text) {
+            return;
+        }
+        var trackId = cueData.trackid.toString();
+        var track = _tracksById && _tracksById[trackId];
+        if (!track) {
+            _renderNatively = _nativeRenderingSupported(this.getName().name);
+            track = {
+                kind: 'captions',
+                _id: trackId,
+                data: []
+            };
+            _addTracks.call(this, [track]);
+            this.trigger('subtitlesTracks', {tracks: _textTracks});
+        }
+
+        var time, cueId;
+
+        if (cueData.useDTS) {
+            // There may not be any 608 captions when the track is first created
+            // Need to set the source so position is determined from metadata
+            if(!track.source) {
+                track.source = cueData.source || 'mpegts';
+            }
+
+        }
+        time = cueData.begin;
+        cueId = cueData.begin + '_' + cueData.text;
+
+        var cue = _metaCuesByTextTime[cueId];
+        if (!cue) {
+            cue = {
+                begin: time,
+                text: cueData.text
+            };
+            if(cueData.end) {
+                cue.end = cueData.end;
+            }
+            _metaCuesByTextTime[cueId] = cue;
+            var vttCue = _convertToVTTCues([cue])[0];
+            track.data.push(vttCue);
+        }
     }
 
     function addCuesToTrack(cueData) {
@@ -446,7 +492,7 @@ define(['../utils/underscore',
             track.data = track.data || [];
         }
 
-        track._id = itemTrack.default || itemTrack.defaulttrack ? 'default' : '';
+        track._id = track._id || (itemTrack.default || itemTrack.defaulttrack ? 'default' : '');
         if (!track._id) {
             track._id = itemTrack.name || itemTrack.file || ('cc' + _textTracks.length);
         }
