@@ -854,7 +854,9 @@ define([
                 return false;
             }
             var style = {
-                objectFit: ''
+                objectFit: '',
+                width: '',
+                height: ''
             };
             if (stretching === 'uniform') {
                 // snap video to edges when the difference in aspect ratio is less than 9%
