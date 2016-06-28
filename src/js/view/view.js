@@ -591,7 +591,8 @@ define([
             _captionsRenderer = new CaptionsRenderer(_model);
             _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
-            _videoLayer.appendChild(_captionsRenderer.element());
+            // captions should be place behind controls, and not hidden when controls are hidden
+            _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             var height = _model.get('height');
@@ -877,15 +878,17 @@ define([
 
         function _onMediaTypeChange(model, val) {
             var isAudioFile = (val ==='audio');
+            var provider = _model.getVideo();
+            var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
 
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-            if (isAudioFile) {
+            if (isAudioFile && !isFlash) {
                 // Put the preview element before the media element in order to display browser captions
                 _playerElement.insertBefore(_preview.el, _videoLayer);
             } else {
                 // Put the preview element before the captions element to display captions with the captions renderer
-                _playerElement.insertBefore(_preview.el, _title.element());
+                _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
             }
         }
 

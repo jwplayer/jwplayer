@@ -28,7 +28,6 @@ define([], function() {
             var tracks = e.tracks || [];
             for (var i = 0; i < tracks.length; i++) {
                 var track = tracks[i];
-                track.id = track.name;
                 track.label = track.name || track.language;
                 _addTrack(track);
             }
@@ -59,7 +58,7 @@ define([], function() {
                 if (!track) {
                     track = {
                         kind: 'captions',
-                        id: metadata.trackid,
+                        _id: metadata.trackid,
                         data: []
                     };
                     _addTrack(track);
@@ -128,8 +127,8 @@ define([], function() {
         }
 
         function _addTrack(track) {
-            if(typeof track.id !== 'number') {
-                track.id = track.name || track.file || ('cc' + _tracks.length);
+            if(typeof track._id !== 'number') {
+                track._id = track.name || track.file || ('cc' + _tracks.length);
             }
 
             track.data = track.data || [];
@@ -142,7 +141,7 @@ define([], function() {
                 }
             }
             _tracks.push(track);
-            _tracksById[track.id] = track;
+            _tracksById[track._id] = track;
         }
 
         function _captionsMenu() {
@@ -152,7 +151,7 @@ define([], function() {
             }];
             for (var i = 0; i < _tracks.length; i++) {
                 list.push({
-                    id: _tracks[i].id,
+                    id: _tracks[i]._id,
                     label: _tracks[i].label || 'Unknown CC'
                 });
             }
@@ -175,7 +174,7 @@ define([], function() {
                 if (label && label === track.label) {
                     captionsMenuIndex = i + 1;
                     break;
-                } else if (track['default'] || track.defaulttrack || track.id === 'default') {
+                } else if (track['default'] || track.defaulttrack || track._id === 'default') {
                     captionsMenuIndex = i + 1;
                 } else if (track.autoselect) {
                     // TODO: auto select track by comparing track.language to system lang

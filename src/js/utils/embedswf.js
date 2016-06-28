@@ -58,12 +58,7 @@ define([
             appendParam(swf, 'wmode', wmode);
             appendParam(swf, 'menu', 'false');
 
-            if(container.firstChild) {
-                // Place swf behind the captions container
-                container.insertBefore(swf, container.firstChild);
-            } else {
-                container.appendChild(swf, container);
-            }
+            container.appendChild(swf, container);
         }
 
         swf.className = 'jw-swf jw-reset';
