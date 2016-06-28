@@ -375,7 +375,7 @@ define([
                     }, this);
 
                     _swf.on('subtitlesTracks', function(e) {
-                        this.setTextTracks(e.tracks);
+                        this.addTextTracks(e.tracks);
                     }, this);
 
                     _swf.on('subtitlesTrackData', function(e) {
