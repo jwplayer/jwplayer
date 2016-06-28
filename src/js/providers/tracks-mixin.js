@@ -171,7 +171,7 @@ define(['../utils/underscore',
                 _id: trackId,
                 data: []
             };
-            _addTracks.call(this, [track]);
+            addTextTracks.call(this, [track]);
             this.trigger('subtitlesTracks', {tracks: _textTracks});
         }
 
@@ -492,9 +492,12 @@ define(['../utils/underscore',
             track.data = track.data || [];
         }
 
-        track._id = track._id || (itemTrack.default || itemTrack.defaulttrack ? 'default' : '');
         if (!track._id) {
-            track._id = itemTrack.name || itemTrack.file || ('cc' + _textTracks.length);
+            if (itemTrack.default || itemTrack.defaulttrack) {
+                track._id = 'default';
+            } else {
+                track._id = itemTrack.name || itemTrack.file || ('cc' + _textTracks.length);
+            }
         }
 
         track.label = track.label || track.name || track.language;
