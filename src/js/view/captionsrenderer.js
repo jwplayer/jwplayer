@@ -241,7 +241,7 @@ define([
         function _nativeRenderingSupported() {
             var provider = _model.get('provider');
             return provider.name.indexOf('flash') === -1 &&
-                utils.isChrome() || utils.isIOS() || utils.isSafari();
+                (utils.isChrome() || utils.isIOS() || utils.isSafari());
         }
 
         this.element = function() {
