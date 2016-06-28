@@ -15,6 +15,7 @@ define(['../utils/underscore',
         disableTextTrack: disableTextTrack,
         getSubtitlesTrack: getSubtitlesTrack,
         removeTracksListener: removeTracksListener,
+        addTextTracks: addTextTracks,
         setTextTracks: setTextTracks,
         setupSideloadedTracks: setupSideloadedTracks,
         setSubtitlesTrack: setSubtitlesTrack,
@@ -111,12 +112,7 @@ define(['../utils/underscore',
                 _clearSideloadedTextTracks();
             }
             this.itemTracks = tracks;
-            _addTracks.call(this, tracks);
-        }
-
-        // We can setup the captions menu now since we're not rendering textTracks natively
-        if (!_renderNatively && _textTracks && _textTracks.length) {
-            this.trigger('subtitlesTracks', {tracks: _textTracks});
+            addTextTracks.call(this, tracks);
         }
     }
 
@@ -324,7 +320,7 @@ define(['../utils/underscore',
         _renderNatively = false;
     }
 
-    function _addTracks(tracks) {
+    function addTextTracks(tracks) {
         if (!tracks) {
             return;
         }
@@ -340,6 +336,11 @@ define(['../utils/underscore',
             var track = _createTrack.call(this, itemTrack);
             _addTrackToList(track);
             _parseTrack(itemTrack, track);
+        }
+
+        // We can setup the captions menu now since we're not rendering textTracks natively
+        if (!_renderNatively && _textTracks && _textTracks.length) {
+            this.trigger('subtitlesTracks', {tracks: _textTracks});
         }
     }
 
