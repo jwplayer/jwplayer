@@ -285,7 +285,6 @@ define([
                     }, this);
 
                     var forwardEventsWithData = [
-                        events.JWPLAYER_MEDIA_META,
                         events.JWPLAYER_MEDIA_ERROR,
                         events.JWPLAYER_MEDIA_SEEK,
                         events.JWPLAYER_MEDIA_SEEKED,
@@ -380,6 +379,14 @@ define([
 
                     _swf.on('subtitlesTrackData', function(e) {
                         this.addCuesToTrack(e);
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_META, function(e) {
+                        if(e.metadata && e.metadata.type === 'textdata') {
+                            this.addCaptionsCue(e.metadata);
+                        } else {
+                            this.trigger(e.type, e);
+                        }
                     }, this);
 
                     if (flashThrottleTarget(_playerConfig)) {
