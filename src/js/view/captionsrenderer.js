@@ -8,7 +8,7 @@ define([
 
     var _defaults = {
         back: true,
-        fontSize: 15,
+        fontSize: 14,
         fontFamily: 'Arial,sans-serif',
         fontOpacity: 100,
         color: '#FFF',
@@ -29,8 +29,11 @@ define([
         // array of cues
             _captionsTrack,
 
-        // current cue
+        // current cue index
             _current,
+
+        // current cues
+            _currentCues,
 
         // last time/seek event
             _timeEvent,
@@ -38,11 +41,11 @@ define([
         // display hierarchy
             _display,
             _captionsWindow,
-            _textContainer;
+            _textContainer,
+            _VTTRenderer;
 
         _display = document.createElement('div');
         _display.className = 'jw-captions jw-reset';
-
 
         this.show = function () {
             _display.className = 'jw-captions jw-captions-enabled jw-reset';
@@ -55,26 +58,15 @@ define([
         /** Assign list of captions to the renderer. **/
         this.populate = function(captions) {
             _current = -1;
+            _currentCues = [];
             _captionsTrack = captions;
             if (!captions) {
-                _render('');
+                _currentCues = [];
+                renderCues();
                 return;
             }
             _select(captions, _timeEvent);
         };
-
-        /** Render the active caption. **/
-        function _render(html) {
-            html = html || '';
-            var windowClassName = 'jw-captions-window jw-reset';
-            if (html) {
-                _textContainer.innerHTML = html;
-                _captionsWindow.className = windowClassName + ' jw-captions-window-active';
-            } else {
-                _captionsWindow.className = windowClassName;
-                utils.empty(_textContainer);
-            }
-        }
 
         this.resize = function () {
             var width = _display.clientWidth,
@@ -85,7 +77,17 @@ define([
                     fontSize: Math.round(size) + 'px'
                 });
             }
+            renderCues(true);
         };
+
+        this.renderCues = renderCues;
+
+        function renderCues(updateBoxPosition) {
+            updateBoxPosition = !!updateBoxPosition;
+            if(_VTTRenderer) {
+                _VTTRenderer.WebVTT.processCues(window, _currentCues, _display, updateBoxPosition);
+            }
+        }
 
         function _timeChange(e) {
             _timeEvent = e;
@@ -135,16 +137,20 @@ define([
             }
             // If none, empty the text. If not current, re-render.
             if (found === -1) {
-                _render('');
+                _currentCues = [];
+                renderCues();
             } else if (found !== _current) {
                 _current = found;
-                _render( _options.preprocessor(data[_current].text) );
+                //render with vtt.js
+                _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
+                _currentCues = [data[_current]];
+                renderCues();
             }
         }
 
         function _intersects(data, i, pos) {
-            return (data[i].begin <= pos && (!data[i].end || data[i].end >= pos) &&
-            (i === data.length - 1 || data[i + 1].begin >= pos));
+            return (data[i].startTime <= pos && (!data[i].endTime || data[i].endTime >= pos) &&
+            (i === data.length - 1 || data[i + 1].startTime >= pos));
         }
 
         /** Constructor for the renderer. **/
@@ -156,36 +162,34 @@ define([
 
             _options = _.extend({}, _defaults, options);
 
-            if (options) {
-                var fontOpacity = _options.fontOpacity,
-                    windowOpacity = _options.windowOpacity,
-                    edgeStyle = _options.edgeStyle,
-                    bgColor = _options.backgroundColor,
-                    windowStyle = {},
-                    textStyle = {
-                        color: cssUtils.hexToRgba(_options.color, fontOpacity),
-                        fontFamily: _options.fontFamily,
-                        fontStyle: _options.fontStyle,
-                        fontWeight: _options.fontWeight,
-                        textDecoration: _options.textDecoration
-                    };
+            var fontOpacity = _options.fontOpacity,
+                windowOpacity = _options.windowOpacity,
+                edgeStyle = _options.edgeStyle,
+                bgColor = _options.backgroundColor,
+                windowStyle = {},
+                textStyle = {
+                    color: cssUtils.hexToRgba(_options.color, fontOpacity),
+                    fontFamily: _options.fontFamily,
+                    fontStyle: _options.fontStyle,
+                    fontWeight: _options.fontWeight,
+                    textDecoration: _options.textDecoration
+                };
 
-                if (windowOpacity) {
-                    windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
-                }
-
-                addEdgeStyle(edgeStyle, textStyle, fontOpacity);
-
-                if (_options.back) {
-                    textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, _options.backgroundOpacity);
-                } else if (edgeStyle === null) {
-                    addEdgeStyle('uniform', textStyle);
-                }
-
-                _style(_captionsWindow, windowStyle);
-                _style(_textContainer, textStyle);
-                setupShadowDOMStyles(playerElementId, windowStyle, textStyle);
+            if (windowOpacity) {
+                windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
             }
+
+            addEdgeStyle(edgeStyle, textStyle, fontOpacity);
+
+            if (_options.back) {
+                textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, _options.backgroundOpacity);
+            } else if (edgeStyle === null) {
+                addEdgeStyle('uniform', textStyle);
+            }
+
+            _style(_captionsWindow, windowStyle);
+            _style(_textContainer, textStyle);
+            setupCaptionStyles(playerElementId, windowStyle, textStyle);
 
             _captionsWindow.appendChild(_textContainer);
             _display.appendChild(_captionsWindow);
@@ -198,14 +202,19 @@ define([
             utils.empty(_display);
         };
 
-        function setupShadowDOMStyles(playerId, windowStyle, textStyle) {
-            // Caption window styles
+        function setupCaptionStyles(playerId, windowStyle, textStyle) {
+            // VTT.js DOM window styles
+            cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
+            // VTT.js DOM text styles
+            cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+
+            // Shadow DOM window styles
             cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
 
-            // Caption text styles
+            // Shadow DOM text styles
             cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
 
-            // Caption text background style in Safari needs to be important to override browser style
+            // Shadow DOM text background style in Safari needs to be important to override browser style
             if (textStyle.backgroundColor) {
                 var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
@@ -229,6 +238,12 @@ define([
             }
         }
 
+        function _nativeRenderingSupported() {
+            var provider = _model.get('provider');
+            return provider.name.indexOf('flash') === -1 &&
+                (utils.isChrome() || utils.isIOS() || utils.isSafari());
+        }
+
         this.element = function() {
             return _display;
         };
@@ -236,14 +251,16 @@ define([
         _model.on('change:playlistItem', function() {
             _timeEvent = null;
             _current = -1;
-            _render('');
+            _currentCues = [];
         }, this);
 
         _model.on('change:captionsTrack', function(model, captionsTrack) {
             this.populate(captionsTrack);
+            // TODO: handle with VTT.js
         }, this);
         _model.mediaController.on('seek', function() {
             _current = -1;
+            _currentCues = [];
         }, this);
         _model.mediaController.on('time seek', _timeChange, this);
         _model.mediaController.on('subtitlesTrackData', function() {
@@ -262,6 +279,17 @@ define([
                     break;
             }
         }, this);
+
+        _model.on('itemReady', _itemReadyHandler, this);
+
+        function _itemReadyHandler() {
+            // don't load the polyfill or do unnecessary work if rendering natively
+            if(!_nativeRenderingSupported()) {
+                require.ensure(['polyfills/vtt'], function (require) {
+                    _VTTRenderer = require('polyfills/vtt');
+                }, 'polyfills.vttrenderer');
+            }
+        }
     };
 
     return CaptionsRenderer;

@@ -5,12 +5,14 @@
   @accent-color: #FFF;
   @active-color: #cecece;
   @inactive-color: #777;
-  @rail-color: #323232;
+  @rail-color: @inactive-color;
   @hover-color: @accent-color;
   @controlbar-background: @background-color;
 
   @buffer-color: @inactive-color;
   @progress-color: @accent-color;
+
+  @display-bkgd-color: @background-color;
 
   @ui-corner-round: @display-icon-container-size / 2;
 
@@ -35,16 +37,10 @@
   }
 
   .jw-knob {
-    //height: @thumb-size;
-    //width: @thumb-size * 1.3;
     border-radius: @thumb-size;
   }
 
-  .jw-volume-tip {
-    padding: 0.5em;
-  }
-
-  .jw-playlist-container {
+    .jw-playlist-container {
     left: -38%;
   }
 
@@ -57,5 +53,33 @@
 
   .jw-active-option {
     background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .jw-skip {
+    border-radius: 1em;
+  }
+
+  .jw-slider-vertical {
+    bottom: 0;
+    .jw-slider-container{
+      background-color: @rail-color;
+    }
+  }
+
+
+  .jw-display-icon-container {
+    display: table;
+    border: 4px solid @accent-color;
+    font-size: 20px;
+  }
+
+  .jw-display-icon-container > .jw-icon {
+    padding-left: 4px;
+    color: @accent-color;
+    font-size: 1.7em;
+  }
+
+  .jw-menu {
+    padding: 0;
   }
 }

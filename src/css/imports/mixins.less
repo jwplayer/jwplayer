@@ -67,7 +67,6 @@
 /* Mixin for common skin styles with variable colors */
 #namespace() {
     .basic-skin-styles() {
-
         .jw-controlbar {
             height: @controlbar-height;
         }
@@ -96,12 +95,19 @@
         .jw-button-color {
             color: @inactive-color;
             .hover(@hover-color);
+            &:focus {
+                outline: none;
+                color: @hover-color;
+            }
         }
 
         .jw-toggle {
             color: @hover-color;
             &.jw-off {
                 color: @inactive-color;
+            }
+            &:focus {
+                outline: none;
             }
         }
         
@@ -120,6 +126,7 @@
 
         .jw-display-icon-container {
             border-radius: @ui-corner-round;
+            background: @display-bkgd-color;
 
             &:hover {
                 background: @display-bkgd-hover-color;

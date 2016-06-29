@@ -532,6 +532,7 @@ define([
                 dom.emptyElement(_videotag);
                 _currentQuality = -1;
                 _itemTracks = null;
+                _this.clearTracks();
                 // Don't call load in iE9/10 and check for load in PhantomJS
                 if (!_isMSIE && 'load' in _videotag) {
                     _videotag.load();
@@ -853,7 +854,9 @@ define([
                 return false;
             }
             var style = {
-                objectFit: ''
+                objectFit: '',
+                width: '',
+                height: ''
             };
             if (stretching === 'uniform') {
                 // snap video to edges when the difference in aspect ratio is less than 9%

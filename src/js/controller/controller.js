@@ -218,10 +218,21 @@ define([
                 });
 
                 if (_model.get('autostart')) {
-                    _play({reason: 'autostart'});
+                    _this.play({reason: 'autostart'});
                 }
+            }
 
-                _executeQueuedEvents();
+            function _loadProvidersForPlaylist(playlist) {
+                var providersManager = _model.getProviders();
+                var providersNeeded = providersManager.required(playlist);
+                return providersManager.load(providersNeeded)
+                    .then(function() {
+                        if (!_this.getProvider()) {
+                            _model.setProvider(_model.get('playlistItem'));
+
+                            _executeQueuedEvents();
+                        }
+                    });
             }
 
             function _executeQueuedEvents() {
@@ -248,21 +259,6 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                        var playlist = Playlist(item);
-                        // TODO: edition logic only belongs in the commercial edition of the player
-                        var edition = _model.get('edition');
-                        var providersManager = _model.getProviders();
-                        var providersNeeded = providersManager.required(playlist, edition);
-
-                        Providers.load(providersNeeded, edition)
-                            .then(function() {
-                                if (!_this.getProvider()) {
-                                    _model.setProvider(_model.get('playlistItem'));
-
-                                    _executeQueuedEvents();
-                                }
-                            });
-
                         var success = _setPlaylist(item);
                         if (success) {
                             _setItem(0);
@@ -326,12 +322,14 @@ define([
                     }
                 }
 
+                // TODO: The state is idle while providers load
                 if (_isIdle()) {
                     if (_model.get('playlist').length === 0) {
                         return false;
                     }
 
                     status = utils.tryCatch(function() {
+                        // FIXME: playAttempt is not triggered until this is called. Should be on play()
                         _model.loadVideo();
                     });
                 } else if (_model.get('state') === states.PAUSED) {
@@ -440,6 +438,8 @@ define([
                     });
                     return false;
                 }
+
+                _loadProvidersForPlaylist(playlist);
 
                 return true;
             }
