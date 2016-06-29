@@ -67,6 +67,10 @@
 /* Mixin for common skin styles with variable colors */
 #namespace() {
     .basic-skin-styles() {
+
+        .jw-controlbar {
+            height: @controlbar-height;
+        }
         
         .jw-background-color {
             background: @display-bkgd-color;
@@ -142,6 +146,13 @@
 
         .jw-slider-horizontal {
             background: @controlbar-background;
+            height: @rail-height;
+
+            .jw-rail,
+            .jw-buffer,
+            .jw-progress {
+                height: @rail-height;
+            }
 
             .jw-knob {
                 margin-left: @thumb-size/-2;
@@ -149,9 +160,14 @@
         }
 
         .jw-slider-vertical {
-
             .jw-knob {
                 margin-bottom: @thumb-size/-2;
+            }
+
+            .jw-slider-container,
+            .jw-rail,
+            .jw-progress {
+                width: @def-rail-width;
             }
         }
         
@@ -198,6 +214,12 @@
         /* Reset padding on .jw-menu's that are playlists */
         .jw-playlist-container {
             padding: 0;
+        }
+
+        .jw-rail,
+        .jw-buffer,
+        .jw-progress {
+            height: @rail-height;
         }
     }
 }

@@ -35,7 +35,7 @@
     .jw-skip {
         border-radius: @ui-padding;
     }
-    
+
     /* Position of remaining overlay containers */
     .jw-volume-tip,
     .jw-menu {
@@ -85,7 +85,7 @@
         border-bottom: 1px solid #5B697A;
         background-color: @rail-color;
     }
-    
+
     /* Rail/slider styles */
     .jw-rail,
     .jw-buffer,
@@ -103,12 +103,6 @@
 
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress {
-            height: @rail-height;
-        }
-
         .jw-progress {
             background: @horiz-rail-gradient;
         }
@@ -146,6 +140,7 @@
             height: .2em;
             background: @horiz-rail-gradient;
             border-width: 1px;
+            .horizontally-centered-rail-element(@rail-height, 0.5em);
         }
     }
 

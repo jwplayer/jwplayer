@@ -34,6 +34,7 @@
     @rail-height: .65em;
     @thumb-size: .8em;
     @cue-size: .25em;
+    @slider-height: 1.2em;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
@@ -157,26 +158,12 @@
 
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
-        .jw-slider-container {
-            height: 1.2em;
-        }
-
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress {
-            height: @rail-height;
-        }
-
         .jw-knob {
             .vertically-centered-rail-element(@rail-height, @thumb-size);
         }
 
-
         .jw-progress {
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            border-bottom-left-radius: 0.5em;
-            border-top-left-radius: 0.5em;
+            border-radius: 0.5em 0 0 0.5em;
         }
 
         .jw-progress,
@@ -184,7 +171,6 @@
             border: @def-border;
             border-style: solid none #000;
         }
-
 
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
@@ -210,6 +196,10 @@
             border-bottom-right-radius: 0.5em;
             border-bottom-left-radius: 0.5em;
             border-top-left-radius: 0;
+        }
+
+        .jw-knob {
+            .horizontally-centered-rail-element(@rail-height, @thumb-size);
         }
     }
     
@@ -252,5 +242,9 @@
             background: @def-background-style;
             background-size: @def-background-size;
         }
+    }
+
+    .jw-time-tip {
+        bottom: 1.5em;
     }
 }
