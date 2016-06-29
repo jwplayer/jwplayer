@@ -3,7 +3,7 @@
 .jw-slider-container {
     height: @slider-height;
     width: 100%;
-    position: relative;
+    //position: relative;
     touch-action: none;
 }
 
@@ -65,12 +65,17 @@
 .jw-slider-vertical {
     padding: @volume-padding;
     position: absolute;
+    bottom: @ui-padding;
+    margin-bottom: 1px;
 
     .jw-rail,
     .jw-buffer,
     .jw-progress {
         bottom: 0;
         height: 100%;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
     }
 
     .jw-slider-container,
@@ -80,14 +85,14 @@
     }
 
     .jw-slider-container {
+        position: relative;
         display: block;
         height: @volume-rail-length;
     }
 
     .jw-knob {
         right: 0;
-        //margin: 0 auto;
-        left: (@def-rail-width - @thumb-size) / 2;
+        left: -@thumb-size / 4;
     }
 }
 
