@@ -1000,7 +1000,9 @@
   // Runs the processing model over the cues and regions passed to it.
   // @param overlay A block level element (usually a div) that the computed cues
   //                and regions will be placed into.
-  WebVTT.processCues = function(window, cues, overlay) {
+  // @param updateBoxPosition added on 6/29/2016 by Evol Greaves: evol@jwplayer.com.
+  // This ensures that cues are displayed within the overlay whenever its size changes
+  WebVTT.processCues = function(window, cues, overlay, updateBoxPosition) {
     if (!window || !cues || !overlay) {
       return null;
     }
@@ -1034,7 +1036,7 @@
     }
 
     // We don't need to recompute the cues' display states. Just reuse them.
-    if (!shouldCompute(cues)) {
+    if (!shouldCompute(cues) && !updateBoxPosition) {
       for (var i = 0; i < cues.length; i++) {
         paddedOverlay.appendChild(cues[i].displayState);
       }

@@ -69,7 +69,6 @@ define([
         };
 
         this.resize = function () {
-            renderCues();
             var width = _display.clientWidth,
                 scale = Math.pow(width / 400, 0.6);
             if (scale) {
@@ -78,14 +77,15 @@ define([
                     fontSize: Math.round(size) + 'px'
                 });
             }
-
+            renderCues(true);
         };
 
         this.renderCues = renderCues;
 
-        function renderCues() {
+        function renderCues(updateBoxPosition) {
+            updateBoxPosition = !!updateBoxPosition;
             if(_VTTRenderer) {
-                _VTTRenderer.WebVTT.processCues(window, _currentCues, _display);
+                _VTTRenderer.WebVTT.processCues(window, _currentCues, _display, updateBoxPosition);
             }
         }
 

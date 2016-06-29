@@ -847,14 +847,14 @@ define([
             clearTimeout(_controlsTimeout);
             _controlbar.hideComponents();
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
-            _captionsRenderer.renderCues();
+            _captionsRenderer.renderCues(true);
         }
 
         function _userActivity() {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _controlbar.checkCompactMode(_videoLayer.clientWidth);
-                _captionsRenderer.renderCues();
+                _captionsRenderer.renderCues(true);
             }
 
             _showing = true;
