@@ -9,7 +9,11 @@ define([
 ], function(InstreamHtml5, InstreamFlash, events, states, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
-        var providerName = _model.get('provider').name || '';
+        var providerName = '';
+        var provider = _model.get('provider');
+        if (provider) {
+            providerName = provider.name;
+        }
         if (providerName.indexOf('flash') >= 0) {
             return InstreamFlash;
         }
@@ -182,6 +186,7 @@ define([
                 return;
             }
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
+            var playlist = item;
             if (_.isArray(item)) {
                 _array = item;
                 _arrayOptions = options;
@@ -189,27 +194,38 @@ define([
                 if (_arrayOptions) {
                     options = _arrayOptions[_arrayIndex];
                 }
+            } else {
+                playlist = [item];
             }
 
-            // Dispatch playlist item event for ad pods
-            this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                index: _arrayIndex,
-                item: item
-            });
+            var _this = this;
+            var providersManager = _model.getProviders();
+            var providersNeeded = providersManager.required(playlist);
+            providersManager.load(providersNeeded)
+                .then(function() {
+                    if (_instream === null) {
+                        return;
+                    }
+                    // Dispatch playlist item event for ad pods
+                    _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
+                        index: _arrayIndex,
+                        item: item
+                    });
 
-            _options = _.extend({}, _defaultOptions, options);
-            _instream.load(item);
+                    _options = _.extend({}, _defaultOptions, options);
+                    _instream.load(item);
 
-            this.addClickHandler();
+                    _this.addClickHandler();
 
-            var skipoffset = item.skipoffset || _options.skipoffset;
-            if (skipoffset) {
-                _instream._adModel.set('skipMessage', _options.skipMessage);
-                _instream._adModel.set('skipText', _options.skipText);
-                _instream._adModel.set('skipOffset', skipoffset);
+                    var skipoffset = item.skipoffset || _options.skipoffset;
+                    if (skipoffset) {
+                        _instream._adModel.set('skipMessage', _options.skipMessage);
+                        _instream._adModel.set('skipText', _options.skipText);
+                        _instream._adModel.set('skipOffset', skipoffset);
 
-                _model.set('skipButton', true);
-            }
+                        _model.set('skipButton', true);
+                    }
+                });
         };
 
         this.applyProviderListeners = function(provider){
