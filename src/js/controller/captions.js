@@ -72,9 +72,6 @@ define([], function() {
         }
 
         function _addTrack(track) {
-            if(typeof track._id !== 'number') {
-                track._id = track.name || track.file || ('cc' + _tracks.length);
-            }
 
             track.data = track.data || [];
 

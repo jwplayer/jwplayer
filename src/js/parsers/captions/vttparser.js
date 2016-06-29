@@ -405,7 +405,6 @@ define([], function() {
                             try {
                                 parseCue(line, self.cue, self.regionList);
                             } catch (e) {
-                                self.reportOrThrowError(e);
                                 // In case of an error ignore rest of the cue.
                                 self.cue = null;
                                 self.state = 'BADCUE';
@@ -442,7 +441,6 @@ define([], function() {
                     }
                 }
             } catch (e) {
-                self.reportOrThrowError(e);
 
                 // If we are currently parsing a cue, report what we have.
                 if (self.state === 'CUETEXT' && self.cue && self.oncue) {

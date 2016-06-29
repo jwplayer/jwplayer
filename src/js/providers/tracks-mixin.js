@@ -5,7 +5,7 @@ define(['../utils/underscore',
     '../parsers/parsers',
     '../parsers/captions/srt',
     '../parsers/captions/dfxp'
-], function(_, ID3Parser, utils, dom, Captions, parsers, srt, dfxp) {
+], function(_, ID3Parser, utils, Captions, parsers, srt, dfxp) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -21,7 +21,8 @@ define(['../utils/underscore',
         setSubtitlesTrack: setSubtitlesTrack,
         textTrackChangeHandler: textTrackChangeHandler,
         addCuesToTrack: addCuesToTrack,
-        addCaptionsCue: addCaptionsCue
+        addCaptionsCue: addCaptionsCue,
+        addVTTCue: addVTTCue
     };
 
     var _textTracks = null, // subtitles and captions tracks
@@ -30,7 +31,8 @@ define(['../utils/underscore',
         _metaCuesByTextTime = null,
         _currentTextTrackIndex = -1, // captionsIndex - 1 (accounts for Off = 0 in model)
         _unknownCount = 0,
-        _renderNatively = false;
+        _renderNatively = false,
+        _activeCuePosition = null;
 
     function setTextTracks(tracks) {
         _currentTextTrackIndex = -1;
@@ -49,14 +51,18 @@ define(['../utils/underscore',
 
             for (i; i < len; i++) {
                 var track = tracks[i];
+                if (!track._id) {
+                    track._id = createTrackId(track);
+                    track.inuse = true;
+                }
                 if (!track.inuse || _tracksById[track._id]) {
                     continue;
                 }
                 // setup TextTrack
                 if (track.kind === 'metadata') {
-                    track.oncuechange = _cueChangeHandler.bind(this);
                     track.mode = 'showing';
-                    _tracksById[track.kind] = track;
+                    track.oncuechange = _cueChangeHandler.bind(this);
+                    _tracksById[track._id] = track;
                 }
                 else if (track.kind === 'subtitles' || track.kind === 'captions') {
                     var mode = track.mode,
@@ -84,9 +90,6 @@ define(['../utils/underscore',
                     }
 
                     _addTrackToList(track);
-                } else if (track.flashhls) {
-                    // setup subtitles track coming from Flash HLS Manifest
-                    _addTrackToList(_createTrack.call(this, track));
                 }
             }
         }
@@ -101,7 +104,7 @@ define(['../utils/underscore',
     }
 
     function setupSideloadedTracks(tracks) {
-        _renderNatively = _renderNatively || _nativeRenderingSupported(this.getName().name);
+        _renderNatively = _nativeRenderingSupported(this.getName().name);
         if (this.isSDK || !tracks) {
             return;
         }
@@ -203,6 +206,26 @@ define(['../utils/underscore',
         }
     }
 
+    function addVTTCue(cueData) {
+
+        var trackId = 'native' + cueData.type,
+            track = _tracksById[trackId],
+            label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
+
+        if (!track) {
+            _renderNatively = _nativeRenderingSupported(this.getName().name);
+            var itemTrack = {
+                kind: cueData.type,
+                _id: trackId,
+                label: label,
+                embedded: true
+            };
+            track = _createTrack.call(this, itemTrack);
+            _addTrackToList(track);
+        }
+        track.addCue(cueData.cue);
+    }
+
     function addCuesToTrack(cueData) {
         // convert cues coming from the flash provider into VTTCues, then append them to track
         var track = _tracksById[cueData.name];
@@ -259,6 +282,7 @@ define(['../utils/underscore',
         _cuesByTrackId = null;
         _metaCuesByTextTime = null;
         _unknownCount = 0;
+        _activeCuePosition = null;
         if (_renderNatively) {
             _removeCues(this.video.textTracks);
         }
@@ -311,14 +335,18 @@ define(['../utils/underscore',
 
         // Get the most recent start time. Cues are sorted by start time in ascending order by the browser
         var startTime = activeCues[activeCues.length - 1].startTime;
-
+        //Prevent duplicate meta events for the same list of cues since the cue change handler fires once
+        // for each activeCue in Safari
+        if (_activeCuePosition === startTime) {
+            return;
+        }
         var dataCues = [];
 
         _.each(activeCues, function(cue) {
             if (cue.startTime < startTime) {
                 return;
             }
-            if (cue.data) {
+            if (cue.data || cue.value) {
                 dataCues.push(cue);
             } else if (cue.text) {
                 this.trigger('meta', {
@@ -335,6 +363,7 @@ define(['../utils/underscore',
                 metadata: id3Data
             });
         }
+        _activeCuePosition = startTime;
     }
 
     function _tracksAlreadySideloaded(tracks) {
@@ -379,9 +408,15 @@ define(['../utils/underscore',
 
         for (var i = 0; i < tracks.length; i++) {
             var itemTrack = tracks[i];
+            // only add valid kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
+            if (_renderNatively && !(/subtitles|captions|descriptions|chapters|metadata/i).test(itemTrack.kind)) {
+                continue;
+            }
             var track = _createTrack.call(this, itemTrack);
             _addTrackToList(track);
-            _parseTrack(itemTrack, track);
+            if (itemTrack.file) {
+                _parseTrack(itemTrack, track);
+            }
         }
 
         // We can setup the captions menu now since we're not rendering textTracks natively
@@ -493,11 +528,7 @@ define(['../utils/underscore',
         }
 
         if (!track._id) {
-            if (itemTrack.default || itemTrack.defaulttrack) {
-                track._id = 'default';
-            } else {
-                track._id = itemTrack.name || itemTrack.file || ('cc' + _textTracks.length);
-            }
+            track._id = createTrackId(itemTrack);
         }
 
         track.label = track.label || track.name || track.language;
@@ -511,6 +542,17 @@ define(['../utils/underscore',
         }
 
         return track;
+    }
+
+    function createTrackId(track) {
+        var trackId;
+        var prefix = track.kind || 'cc';
+        if (track.default || track.defaulttrack) {
+            trackId = 'default';
+        } else {
+            trackId = track._id || track.name || track.file || (prefix + _textTracks.length);
+        }
+        return trackId;
     }
 
     function _convertToVTTCues(cues) {
