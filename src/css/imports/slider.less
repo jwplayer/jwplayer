@@ -3,7 +3,7 @@
 .jw-slider-container {
     height: @slider-height;
     width: 100%;
-    //position: relative;
+    position: relative;
     touch-action: none;
 }
 
@@ -66,7 +66,6 @@
     padding: @volume-padding;
     position: absolute;
     bottom: @ui-padding;
-    margin-bottom: 1px;
 
     .jw-rail,
     .jw-buffer,
@@ -85,14 +84,13 @@
     }
 
     .jw-slider-container {
-        position: relative;
-        display: block;
+        //display: block;
         height: @volume-rail-length;
     }
 
     .jw-knob {
         right: 0;
-        left: -@thumb-size / 4;
+        left: (@def-rail-width - @thumb-size) / 2;
     }
 }
 

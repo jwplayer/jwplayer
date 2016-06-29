@@ -175,7 +175,11 @@
     }
 
     .jw-slider-vertical {
-        bottom: 5px;
+        //bottom: 5px;
+
+        .jw-slider-container {
+            width: 0.4em;
+        }
 
         .jw-rail,
         .jw-progress {
@@ -193,6 +197,7 @@
         .jw-knob {
             width: .7em;
             height: .7em;
+            .horizontally-centered-rail-element(0.4em, 0.7em);
         }
     }
 
