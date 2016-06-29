@@ -32,6 +32,7 @@
     @cc-active: @active-color;
 
     @rail-height: .5em;
+    @slider-height: @rail-height;
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
@@ -143,10 +144,10 @@
 
     .jw-slider-horizontal {
         background: transparent;
-        
+        height: @rail-height;
+
         .jw-slider-container {
-            .vertically-centered-rail-element(@rail-height, 2em);
-            height: .4em;
+            height: @rail-height;
         }
 
         .jw-rail,
