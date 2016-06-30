@@ -396,6 +396,7 @@ define(['../utils/underscore',
             if (track) {
                 track.kind = itemTrack.kind;
                 track.label = itemTrack.label;
+                track.default = itemTrack.default;
                 track.language = itemTrack.language || '';
             } else {
                 track = this.video.addTextTrack(itemTrack.kind, itemTrack.label, itemTrack.language || '');
