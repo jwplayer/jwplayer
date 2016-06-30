@@ -53,7 +53,7 @@ define(['../utils/underscore',
                     track._id = createTrackId.call(this, track);
                     track.inuse = true;
                 }
-                if (!track.inuse || !this._tracksById || this._tracksById[track._id]) {
+                if (!track.inuse || this._tracksById[track._id]) {
                     continue;
                 }
                 // setup TextTrack
