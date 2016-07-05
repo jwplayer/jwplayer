@@ -53,7 +53,7 @@ define(['../utils/underscore',
                     track._id = createTrackId.call(this, track);
                     track.inuse = true;
                 }
-                if (!track.inuse || !this._tracksById || this._tracksById[track._id]) {
+                if (!track.inuse || this._tracksById[track._id]) {
                     continue;
                 }
                 // setup TextTrack
@@ -396,6 +396,7 @@ define(['../utils/underscore',
             if (track) {
                 track.kind = itemTrack.kind;
                 track.label = itemTrack.label;
+                track.default = itemTrack.default;
                 track.language = itemTrack.language || '';
             } else {
                 track = this.video.addTextTrack(itemTrack.kind, itemTrack.label, itemTrack.language || '');
