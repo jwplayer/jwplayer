@@ -30,6 +30,7 @@
 
     @volume-background: @def-background-style;
     @volume-border: @def-border;
+    @volume-padding: 0.5em;
 
     @rail-height: .65em;
     @thumb-size: .8em;
@@ -93,7 +94,7 @@
     
     /* Playlist */
     .jw-playlist-container {
-        left: -41%;
+        left: -46%;
 
         .jw-text,
         .jw-icon {
@@ -118,11 +119,12 @@
         }
 
         ::-webkit-scrollbar {
-            border-radius: .25em;
+            border-radius: .25em !important;
         }
       
         ::-webkit-scrollbar-track {
             background-color: #3C3C3E;
+            border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -239,15 +241,11 @@
         background-size: @def-background-size;
         border: @def-border;
         border-radius: .3em;
-        padding: @ui-padding @ui-corner-round;
+        //padding: @ui-padding @ui-corner-round;
 
         &:hover.jw-skippable {
             background: @def-background-style;
             background-size: @def-background-size;
         }
-    }
-
-    .jw-time-tip {
-        bottom: 1.5em;
     }
 }
