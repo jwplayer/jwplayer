@@ -437,8 +437,15 @@ define(['../utils/underscore',
     }
 
     function _tracksAlreadySideloaded(tracks) {
+        // Determine if the currently chosen track is removed and disabled
+        var textTracks = this._textTracks;
+        var index = this._currentTextTrackIndex;
+        var disabled = false;
+        if (textTracks && textTracks[index]) {
+            disabled = textTracks[index].mode === 'disabled';
+        }
         // Determine if the tracks are the same and the embedded + sideloaded count = # of tracks in the controlbar
-        return tracks === this.itemTracks && this._textTracks && this._textTracks.length >= tracks.length;
+        return tracks === this.itemTracks && textTracks && textTracks.length >= tracks.length && !disabled;
     }
 
     function _clearSideloadedTextTracks() {
