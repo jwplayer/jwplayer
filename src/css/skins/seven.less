@@ -1,77 +1,28 @@
 @import "../imports/mixins";
 
 .jw-skin-seven {
-  @background-color: rgba(0, 0, 0, 0.8);
   @accent-color: #FFF;
-  @active-color: #cecece;
-  @inactive-color: #777;
-  @rail-color: @inactive-color;
-  @hover-color: @accent-color;
-  @controlbar-background: @background-color;
-
-  @buffer-color: @inactive-color;
-  @progress-color: @accent-color;
-
-  @display-bkgd-color: @background-color;
-
-  @ui-corner-round: @display-icon-container-size / 2;
-
-  #namespace > .basic-skin-styles();
-
-  .jw-background-color.jw-slider-horizontal {
-    background-color:transparent;
-  }
-
-  .jw-text, .jw-button-color {
-    color: @active-color;
-  }
-
-  .jw-text-elapsed, .jw-text-duration {
-    color: @accent-color;
-  }
-
-  .jw-icon-playlist {
-    color: @active-color;
-  }
-
-  .jw-knob {
-    border-radius: @thumb-size;
-  }
-
-  //  .jw-playlist-container {
-  //  left: -38%;
-  //}
-
-  .jw-time-tip {
-    padding: 0.2em;
-    .jw-text {
-      color: @accent-color;
-    }
-  }
+  @inactive-color: #cecece;
 
   .jw-active-option {
     background-color: rgba(255, 255, 255, 0.1);
   }
 
-  .jw-skip {
-    border-radius: 1em;
-  }
+  .jw-display-icon-container {
+    display: table;
+    font-size: 20px;
+    border-radius: 3.5em;
+    background-color: rgba(37, 37, 37, 0.8);
 
-  .jw-slider-vertical {
-    bottom: 0;
-    .jw-slider-container{
-      background-color: @rail-color;
+    &:hover {
+      .jw-icon {
+        color: @accent-color;
+      }
     }
   }
 
-  .jw-display-icon-container {
-    display: table;
-    border: 2px solid @accent-color;
-    font-size: 20px;
-  }
-
   .jw-display-icon-container > .jw-icon {
-    color: @accent-color;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 1.7em;
   }
   
@@ -80,18 +31,11 @@
     padding-left: 4px;
   }
 
+  .jw-dock-button {
+    border-radius: 2.5em;
+  }
+
   .jw-menu {
-    padding: 0;
-  }
-
-  .jw-skip {
-    .jw-skip-icon {
-      color: @active-color;
-    }
-
-    &.jw-skippable:hover .jw-skip-icon,
-    &.jw-skippable:hover .jw-text {
-      color: @accent-color;
+      padding: 0;
     }
   }
-}

@@ -60,9 +60,10 @@
     font-family: inherit;
     bottom: (@controlbar-height / 2);
     padding: @ui-padding;
+    border-radius: @ui-corner-round;
 
     .jw-text {
-        color: @active-color;
+        color: @accent-color;
         line-height: 1em;
     }
 }
@@ -101,5 +102,8 @@
         &:before {
             padding-right: 0.125em;
         }
+      &.jw-active-option {
+        color: @hover-color;
+      }
     }
 }
