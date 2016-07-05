@@ -220,7 +220,7 @@ define(['../utils/underscore',
                 embedded: true
             };
             track = _createTrack.call(this, itemTrack);
-            _addTrackToList.call(this, track);
+            this.setTextTracks(this.video.textTracks);
         }
         track.addCue(cueData.cue);
     }
