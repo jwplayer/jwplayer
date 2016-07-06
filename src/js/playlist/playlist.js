@@ -67,7 +67,13 @@ define([
                 originalSource.preload = originalSource.preload || preload;
             }
 
-            originalSource.withCredentials = _fallbackIfUndefined(originalSource.withCredentials, withCredentials);
+            // withCredentials is assigned in ascending priority order, source > playlist > model
+            // a false value that is a higher priority than true must result in a false withCredentials value
+            // we don't want undefined if all levels have withCredentials as undefined
+            var cascadedWithCredentials = _fallbackIfUndefined(originalSource.withCredentials, withCredentials);
+            if (!_.isUndefined(cascadedWithCredentials)) {
+                originalSource.withCredentials = cascadedWithCredentials;
+            }
 
             return Source(originalSource);
         }));

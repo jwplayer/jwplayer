@@ -144,4 +144,23 @@ define([
         assert.equal(pl[1].allSources[0].withCredentials, false);
         assert.equal(pl[2].allSources[0].withCredentials, true);
     });
+
+
+    test('it does not put withCredentials on the playlist if undefined', function (assert) {
+        assert.expect(2);
+
+        var undefinedCredentialsPlaylist = [
+            {
+                sources: [
+                    {
+                        file: 'foo.mp4'
+                    }
+                ]
+            }
+        ];
+
+        var pl = playlist.filterPlaylist(undefinedCredentialsPlaylist, new Providers(), undefined, undefined, undefined, undefined, undefined);
+        assert.equal(pl.length, 1);
+        assert.equal(pl[0].allSources[0].withCredentials, undefined);
+    });
 });
