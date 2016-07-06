@@ -32,6 +32,10 @@
     @cc-active: @active-color;
 
     @rail-height: .5em;
+    @slider-height: @rail-height;
+
+    @controlbar-height: 2em;
+    #namespace > .controlbar-height();
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
@@ -76,7 +80,7 @@
 
     /* Playlist */
     .jw-playlist-container {
-        left: -45%;
+        left: -57%;
         background-color: #282828;
         bottom: .5em;
 
@@ -143,10 +147,10 @@
 
     .jw-slider-horizontal {
         background: transparent;
-        
+        height: @rail-height;
+
         .jw-slider-container {
-            .vertically-centered-rail-element(@rail-height, 2em);
-            height: .4em;
+            height: @rail-height;
         }
 
         .jw-rail,
@@ -174,7 +178,9 @@
     }
 
     .jw-slider-vertical {
-        bottom: 5px;
+        .jw-slider-container {
+            width: 0.4em;
+        }
 
         .jw-rail,
         .jw-progress {
@@ -192,6 +198,7 @@
         .jw-knob {
             width: .7em;
             height: .7em;
+            .horizontally-centered-rail-element(0.4em, 0.7em);
         }
     }
 

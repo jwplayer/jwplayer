@@ -46,7 +46,6 @@
 .jw-menu {
     position: relative;
     left: -50%;
-    border: solid 1px #000;
     margin: 0;
 }
 
@@ -57,13 +56,14 @@
 }
 
 .jw-time-tip {
-    text-align:center;
+    text-align: center;
     font-family: inherit;
-    color: @inactive-color;
-    bottom: 1em;
-    border: solid 4px #000;
+    bottom: (@controlbar-height / 2);
+    padding: @ui-padding;
+    border-radius: @ui-corner-round;
 
     .jw-text {
+        color: @accent-color;
         line-height: 1em;
     }
 }
@@ -72,7 +72,7 @@
     .jw-overlay {
         margin: 0;
         position: absolute;
-        bottom: 2em;
+        bottom: @controlbar-height;
         left: 50%;
         opacity: 0;
         visibility: hidden;
@@ -92,7 +92,7 @@
         line-height: 1.5em;
         color: @inactive-color;
         padding: 0 .5em;
-        font-size: .8em;
+        font-size: 0.8em;
 
         &:hover,
         &:before:hover {
@@ -102,5 +102,8 @@
         &:before {
             padding-right: 0.125em;
         }
+      &.jw-active-option {
+        color: @hover-color;
+      }
     }
 }
