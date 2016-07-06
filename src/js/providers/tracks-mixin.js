@@ -390,17 +390,19 @@ define(['../utils/underscore',
 
     function _createTrack(itemTrack) {
         var track;
+        var label = _createLabel.call(this, itemTrack);
         if (this._renderNatively) {
             var tracks = this.video.textTracks;
             track = _.findWhere(tracks, {'_id': itemTrack.file});
+
             if (track) {
                 track.kind = itemTrack.kind;
-                track.label = itemTrack.label;
-                track.default = itemTrack.default;
+                track.label = label;
                 track.language = itemTrack.language || '';
             } else {
-                track = this.video.addTextTrack(itemTrack.kind, itemTrack.label, itemTrack.language || '');
+                track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
             }
+            track.default = itemTrack.default;
             track.mode    = 'disabled';
             track.inuse = true;
         } else {
@@ -412,17 +414,19 @@ define(['../utils/underscore',
             track._id = createTrackId.call(this, itemTrack);
         }
 
-        track.label = track.label || track.name || track.language;
+        return track;
+    }
 
-        if (!track.label) {
-            track.label = 'Unknown CC';
+    function _createLabel(track) {
+        var label = track.label || track.name || track.language;
+        if (!label) {
+            label = 'Unknown CC';
             this._unknownCount++;
             if (this._unknownCount > 1) {
-                track.label += ' [' + this._unknownCount + ']';
+                label += ' [' + this._unknownCount + ']';
             }
         }
-
-        return track;
+        return label;
     }
 
     function _addTrackToList(track) {
