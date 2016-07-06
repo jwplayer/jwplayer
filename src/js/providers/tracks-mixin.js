@@ -50,7 +50,11 @@ define(['../utils/underscore',
             for (i; i < len; i++) {
                 var track = tracks[i];
                 if (!track._id) {
-                    track._id = createTrackId.call(this, track);
+                    if (track.kind === 'captions' || track.kind === 'metadata') {
+                        track._id = 'native' + track.kind;
+                    } else {
+                        track._id = createTrackId.call(this, track);
+                    }
                     track.inuse = true;
                 }
                 if (!track.inuse || this._tracksById[track._id]) {
@@ -161,7 +165,7 @@ define(['../utils/underscore',
     }
 
     function addCaptionsCue(cueData) {
-        if (!cueData.text) {
+        if (!cueData.text || !cueData.begin || !cueData.end) {
             return;
         }
         var trackId = cueData.trackid.toString();
@@ -177,7 +181,7 @@ define(['../utils/underscore',
             this.trigger('subtitlesTracks', {tracks: this._textTracks});
         }
 
-        var time, cueId;
+        var cueId;
 
         if (cueData.useDTS) {
             // There may not be any 608 captions when the track is first created
@@ -187,18 +191,15 @@ define(['../utils/underscore',
             }
 
         }
-        time = cueData.begin;
         cueId = cueData.begin + '_' + cueData.text;
 
         var cue = this._metaCuesByTextTime[cueId];
         if (!cue) {
             cue = {
-                begin: time,
+                begin: cueData.begin,
+                end: cueData.end,
                 text: cueData.text
             };
-            if(cueData.end) {
-                cue.end = cueData.end;
-            }
             this._metaCuesByTextTime[cueId] = cue;
             var vttCue = _convertToVTTCues([cue])[0];
             track.data.push(vttCue);
@@ -351,7 +352,7 @@ define(['../utils/underscore',
         if (track.default || track.defaulttrack) {
             trackId = 'default';
         } else {
-            trackId = track._id || track.name || track.file || (prefix + this._textTracks.length);
+            trackId = track._id|| track.name || track.file || track.label || (prefix + this._textTracks.length);
         }
         return trackId;
     }
@@ -393,7 +394,9 @@ define(['../utils/underscore',
         var label = _createLabel.call(this, itemTrack);
         if (this._renderNatively) {
             var tracks = this.video.textTracks;
-            track = _.findWhere(tracks, {'_id': itemTrack.file});
+            // TextTrack label is read only, so we'll need to create a new track if we don't
+            // already have one with the same label
+            track = _.findWhere(tracks, {'label': label});
 
             if (track) {
                 track.kind = itemTrack.kind;
