@@ -50,7 +50,11 @@ define(['../utils/underscore',
             for (i; i < len; i++) {
                 var track = tracks[i];
                 if (!track._id) {
-                    track._id = createTrackId.call(this, track);
+                    if (track.kind === 'captions' || track.kind === 'metadata') {
+                        track._id = 'native' + track.kind;
+                    } else {
+                        track._id = createTrackId.call(this, track);
+                    }
                     track.inuse = true;
                 }
                 if (!track.inuse || this._tracksById[track._id]) {
@@ -348,7 +352,7 @@ define(['../utils/underscore',
         if (track.default || track.defaulttrack) {
             trackId = 'default';
         } else {
-            trackId = track._id || track.name || track.file || (prefix + this._textTracks.length);
+            trackId = track._id|| track.name || track.file || track.label || (prefix + this._textTracks.length);
         }
         return trackId;
     }
