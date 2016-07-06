@@ -12,7 +12,6 @@
 .jw-progress {
     position: absolute;
     cursor: pointer;
-    height: @rail-height;
 }
 
 .jw-progress {
@@ -60,6 +59,12 @@
     .jw-knob {
         top: (@rail-height - @thumb-size) / 2;
         margin-left: @thumb-size / -2;
+    }
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        height: @rail-height;
     }
 }
 
