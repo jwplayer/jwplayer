@@ -8,12 +8,16 @@
     @buffer-color: #3B3D41;
     @rail-color: #2A2C2E;
     @controlbar-background: fade(#131415, 80%);
+    @volume-background: #333;
 
     @cc-inactive: @buffer-color;
     @cc-active: @active-color;
 
     @rail-height: .4em;
     @cue-size: .25em;
+
+    @controlbar-height: 2em;
+    #namespace > .controlbar-height();
 
     .jw-background-color {
         background: fade(#333, 80%);
@@ -37,7 +41,7 @@
     
     /* Playlist */
     .jw-playlist-container {
-        left: -42%;
+        left: -48%;
         bottom: 0;
         border-radius: 0;
 
