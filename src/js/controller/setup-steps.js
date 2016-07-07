@@ -101,9 +101,9 @@ define([
     }
 
     function _loadVTTCuePolyfill(resolve) {
-        if (!window.VTTCue && !window.TextTrackCue) {
+        if (!window.VTTCue) {
             require.ensure(['polyfills/vttcue'], function(require) {
-                window.VTTCue = require('polyfills/vttcue');
+                require('polyfills/vttcue');
                 resolve();
             }, 'polyfills.vttcue');
         } else {
