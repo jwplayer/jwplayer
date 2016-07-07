@@ -330,7 +330,7 @@ define(['../utils/underscore',
         for (var i = 0; i < tracks.length; i++) {
             var itemTrack = tracks[i];
             // only add valid and supported kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
-            if (!(/subtitles|captions/i).test(itemTrack.kind)) {
+            if (itemTrack.kind && !(/subtitles|captions/i).test(itemTrack.kind)) {
                 continue;
             }
             var track = _createTrack.call(this, itemTrack);
