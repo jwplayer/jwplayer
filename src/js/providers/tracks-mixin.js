@@ -96,13 +96,12 @@ define(['../utils/underscore',
             }
         }
 
-        if (this._textTracks) {
-            if (this._renderNatively) {
-                this.addTracksListener(this._textTracks, 'change', textTrackChangeHandler.bind(this));
-            }
-            if (this._textTracks.length) {
-                this.trigger('subtitlesTracks', {tracks: this._textTracks});
-            }
+        if (this._renderNatively) {
+            this.addTracksListener(this.video.textTracks, 'change', textTrackChangeHandler.bind(this));
+        }
+
+        if (this._textTracks.length) {
+            this.trigger('subtitlesTracks', {tracks: this._textTracks});
         }
     }
 
@@ -186,7 +185,7 @@ define(['../utils/underscore',
         if (cueData.useDTS) {
             // There may not be any 608 captions when the track is first created
             // Need to set the source so position is determined from metadata
-            if(!track.source) {
+            if (!track.source) {
                 track.source = cueData.source || 'mpegts';
             }
 
@@ -300,12 +299,15 @@ define(['../utils/underscore',
     }
 
     function textTrackChangeHandler() {
-
-        if (!this._textTracks || this.video.textTracks.length > this._textTracks.length) {
+        var textTracks = this.video.textTracks;
+        var inUseTracks = _.filter(textTracks, function (track)  {
+            return track.inuse || !track._id;
+        });
+        if (!this._textTracks || inUseTracks.length > this._textTracks.length) {
             // If the video element has more tracks than we have internally..
-            this.setTextTracks.call(this, this.video.textTracks);
+            this.setTextTracks.call(this, textTracks);
         }
-        // if a caption/subtitle track is showing, find its index
+        // If a caption/subtitle track is showing, find its index
         var _selectedTextTrackIndex = -1, i = 0;
         for (i; i < this._textTracks.length; i++) {
             if (this._textTracks[i].mode === 'showing') {
@@ -313,7 +315,10 @@ define(['../utils/underscore',
                 break;
             }
         }
-        this.setSubtitlesTrack.call(this, _selectedTextTrackIndex + 1);
+        // Notifying the model when the index changes keeps the current index in sync in iOS Fullscreen mode
+        if (_selectedTextTrackIndex !== this._currentTextTrackIndex) {
+            this.setSubtitlesTrack.call(this, _selectedTextTrackIndex + 1);
+        }
     }
 
     function addTextTracks(tracks) {
