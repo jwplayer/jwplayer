@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-(function(root) {
+(function() {
 
   var autoKeyword = "auto";
   var directionSetting = {
@@ -304,5 +304,5 @@
     return WebVTT.convertCueToDOMTree(window, this.text);
   };
 
-  return VTTCue;
+  window.VTTCue = VTTCue;
 }(this));

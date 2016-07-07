@@ -498,8 +498,8 @@ define(['../utils/underscore',
     }
 
     function _convertToVTTCues(cues) {
-        // VTTCue is available natively or polyfilled everywhere except IE/Edge, which has TextTrackCue
-        var VTTCue = window.VTTCue || window.TextTrackCue;
+        // VTTCue is available natively or polyfilled where necessary
+        var VTTCue = window.VTTCue;
         var vttCues = _.map(cues, function (cue) {
             return new VTTCue(cue.begin, cue.end, cue.text);
         });
