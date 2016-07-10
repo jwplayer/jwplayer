@@ -30,6 +30,9 @@
 
     @volume-background: fade(#505863,90%);
 
+    @controlbar-height: 2em;
+    #namespace > .controlbar-height();
+
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
 
@@ -39,7 +42,7 @@
     }
 
     .jw-playlist-container {
-        left: -42%;
+        left: -47%;
         overflow: hidden;
         bottom: .2em;
 
@@ -88,17 +91,12 @@
             width: .7em;
             height: .7em;
             border-radius: 50%;
+            .horizontally-centered-rail-element(@def-rail-width, 0.7em);
         }
     }
 
     .jw-slider-horizontal {
         background: transparent;
-
-        .jw-rail,
-        .jw-progress,
-        .jw-buffer {
-            height: @rail-height;
-        }
 
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);

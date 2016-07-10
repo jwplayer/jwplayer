@@ -83,6 +83,9 @@ define([
                 _abortAjax(xhr);
                 options.onerror('Timeout', url, xhr);
             }, options.timeout);
+            xhr.onabort = function() {
+                clearTimeout(options.timeoutId);
+            };
         }
 
         try {
