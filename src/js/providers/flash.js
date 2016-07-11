@@ -358,6 +358,11 @@ define([
                     }, this);
 
                     _swf.on('visualQuality', function(e) {
+                        // Get index from sorted levels from the level's index + 1 to take Auto into account
+                        var sortedIndex = (_qualityLevels.length) === 1 ? 0 :
+                            _getSortedIndex(_qualityLevels, e.level.index + 1) - 1;
+                        // Use extend so that the actual level's index is not modified
+                        e.level = _.extend(e.level, {index: sortedIndex});
                         e.reason = e.reason || 'api'; // or 'user selected';
                         this.trigger('visualQuality', e);
                         this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
