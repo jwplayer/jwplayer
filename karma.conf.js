@@ -1,11 +1,20 @@
+/* jshint node: true */
 module.exports = function( config ) {
-    /* jshint node: true */
-
+    var env = process.env;
     var isJenkins = !!process.env.JENKINS_HOME;
+    var serverPort = process.env.KARMA_PORT || 9876;
+    var testReporters = [
+        'progress',
+        'coverage'
+    ];
+    if (isJenkins) {
+        testReporters.push('junit');
+    }
+    var packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
     config.set({
 
-        basePath: '../../',
+        basePath: '.',
 
         plugins: [
             'karma-coverage',
@@ -19,11 +28,8 @@ module.exports = function( config ) {
             'karma-browserstack-launcher'
         ],
         frameworks: ['requirejs', 'qunit'],
-        reporters: [
-            'dots',
-            'coverage'
-        ],
-        port: 9876, // web server port
+        reporters: testReporters,
+        port: serverPort, // web server port
         colors: !isJenkins, // colors in the output (reporters and logs)
         autoWatch: false, // watch file and execute tests whenever any file changes
         singleRun: true, // if true, Karma captures browsers, runs the tests and exits
@@ -40,17 +46,45 @@ module.exports = function( config ) {
         // config.LOG_DEBUG
         logLevel: config.LOG_INFO,
 
+        browsers: [
+            'PhantomJS',
+            'Chrome',
+            //'Safari', // experiencing issues with safari-launcher@1.0.0 and Safari 9.1.1
+            'Firefox'
+        ],
+
+        customLaunchers: require( './test/karma/browserstack-launchers' ),
+
+        browserStack: {
+            username:  env.BS_USERNAME,
+            accessKey: env.BS_AUTHKEY,
+            name: 'Unit Tests',
+            project: 'jwplayer',
+            build: '' + (env.JOB_NAME     || 'local' ) +' '+
+            (env.BUILD_NUMBER || env.USER) +' '+
+            (env.GIT_BRANCH   || ''      ) +' '+
+            packageInfo.version,
+            timeout: 300 // 5 minutes
+        },
+
         // to avoid DISCONNECTED messages when connecting to BrowserStack
-        browserDisconnectTimeout : 5*60*1000, // default 2000
+        browserDisconnectTimeout : 20 * 1000, // default 2000
         browserDisconnectTolerance : 1, // default 0
-        browserNoActivityTimeout : 7*60*1000, //default 10000
-        captureTimeout : 8*60*1000, //default 60000
+        browserNoActivityTimeout : 100 * 1000, //default 10000
+        captureTimeout : 120 * 1000, //default 60000
 
         files : [
             //3rd Party Code
-            {pattern: 'bower_components/requirejs/require.js', included: true},
-            {pattern: 'bower_components/**/*.js', included: false},
+            {pattern: 'node_modules/handlebars/dist/*.js', included: false},
+            {pattern: 'node_modules/handlebars-loader/*.js', included: false},
+            {pattern: 'node_modules/jquery/dist/*.js', included: false},
+            {pattern: 'node_modules/phantomjs-polyfill/*.js', included: false},
+            {pattern: 'node_modules/requirejs/require.js', included: true},
+            {pattern: 'node_modules/requirejs-handlebars/*.js', included: false},
+            {pattern: 'node_modules/requirejs-text/*.js', included: false},
+            {pattern: 'node_modules/require-less/*.js', included: false},
             {pattern: 'node_modules/simple-style-loader/addStyles.js', included: false},
+            {pattern: 'node_modules/underscore/*.js', included: false},
 
             // Require Config
             {pattern: 'test/config.js', included: true},
@@ -74,11 +108,13 @@ module.exports = function( config ) {
             // source files, that you want to generate coverage for
             'src/js/*.js': ['coverage'],
             'src/js/!(polyfill)/*.js': ['coverage']
-        }
-    });
+        },
+        coverageReporter: {
+            type: 'html',
+            dir: 'reports/coverage'
+        },
 
-    // Jenkins JUnit report
-    if (isJenkins) {
-        config.reporters.push( 'junit' );
-    }
+        // number of browsers to run at once
+        concurrency: Infinity
+    });
 };

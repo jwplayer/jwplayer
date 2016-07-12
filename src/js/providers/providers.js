@@ -4,7 +4,7 @@ define([
     'providers/providers-loaded',
     'utils/underscore'
     ], function(Default, ProvidersSupported, ProvidersLoaded, _) {
-    /*global Promise:true*/
+
     function Providers(config) {
         this.providers = ProvidersSupported.slice();
         this.config = config || {};
@@ -12,6 +12,31 @@ define([
         this.reorderProviders();
     }
 
+    Providers.loaders = {
+        html5: function(resolvePromise) {
+            require.ensure(['providers/html5'], function(require) {
+                var provider = require('providers/html5');
+                registerProvider(provider);
+                resolvePromise(provider);
+            }, 'provider.html5');
+        },
+        flash: function(resolvePromise) {
+            require.ensure(['providers/flash'], function(require) {
+                var provider = require('providers/flash');
+                registerProvider(provider);
+                resolvePromise(provider);
+            }, 'provider.flash');
+        },
+        youtube: function(resolvePromise) {
+            require.ensure(['providers/youtube'], function(require) {
+                var provider = require('providers/youtube');
+                registerProvider(provider);
+                resolvePromise(provider);
+            }, 'provider.youtube');
+        }
+    };
+
+    var registerProvider =
     Providers.registerProvider = function(provider) {
         var name = provider.getName().name;
 
@@ -43,39 +68,21 @@ define([
         ProvidersLoaded[name] = provider;
     };
 
-    Providers.load = function(providersToLoad) {
-
-        return Promise.all(_.map(providersToLoad, function(provider) {
-            return new Promise(function(resolvePromise) {
-                switch (provider.name) {
-                    case 'html5':
-                        require.ensure(['providers/html5'], function(require) {
-                            resolvePromise(require('providers/html5'));
-                        }, 'provider.html5');
-                        break;
-                    case 'flash':
-                        require.ensure(['providers/flash'], function(require) {
-                            resolvePromise(require('providers/flash'));
-                        }, 'provider.flash');
-                        break;
-                    case 'youtube':
-                        require.ensure(['providers/youtube'], function(require) {
-                            resolvePromise(require('providers/youtube'));
-                        }, 'provider.youtube');
-                        break;
-                    default:
-                        resolvePromise(/* unknown registered module */);
-                }
-            }).then(function(providerModule) {
-                if (!providerModule) {
-                    return;
-                }
-                Providers.registerProvider(providerModule);
-            });
-        }));
-    };
-
     _.extend(Providers.prototype, {
+
+        load: function(providersToLoad) {
+            return Promise.all(_.map(providersToLoad, function(provider) {
+                return new Promise(function(resolvePromise) {
+                    var providerLoaderMethod = Providers.loaders[provider.name];
+                    if (providerLoaderMethod) {
+                        providerLoaderMethod(resolvePromise);
+                    } else {
+                        resolvePromise(/* unknown registered module */);
+                    }
+                });
+            }));
+        },
+
         reorderProviders : function () {
             // Remove the flash provider, and add it in front of the html5 provider
             if (this.config.primary === 'flash') {
@@ -90,7 +97,8 @@ define([
             return provider.supports(source);
         },
 
-        required: function(playlist, args) {
+        required: function(playlist) {
+            var _this = this;
             playlist = playlist.slice();
             return _.compact(_.map(this.providers, function(provider) {
                 // remove items from copied playlist that can be played by provider
@@ -99,7 +107,7 @@ define([
                 var loadProvider = false;
                 for (var i = playlist.length; i--;) {
                     var item = playlist[i];
-                    var supported = provider.supports(item.sources[0], args);
+                    var supported = _this.providerSupports(provider, item.sources[0]);
                     if (supported) {
                         playlist.splice(i, 1);
                     }

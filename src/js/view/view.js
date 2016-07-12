@@ -167,6 +167,14 @@ define([
                 case 40: // down-arrow
                     adjustVolume(-10);
                     break;
+                case 67: // c-key
+                    var captionsList = _api.getCaptionsList();
+                    var listLength = captionsList.length;
+                    if (listLength) {
+                        var nextIndex = (_api.getCurrentCaptions() + 1) % listLength;
+                        _api.setCurrentCaptions(nextIndex);
+                    }
+                    break;
                 case 77: // m-key
                     _api.setMute();
                     break;
@@ -744,6 +752,10 @@ define([
                 height = _videoLayer.clientHeight;
             }
 
+            if (_preview) {
+                _preview.resize(width, height, _model.get('stretching'));
+            }
+
             //IE9 Fake Full Screen Fix
             if (utils.isMSIE(9) && document.all && !window.atob) {
                 width = height = '100%';
@@ -835,12 +847,14 @@ define([
             clearTimeout(_controlsTimeout);
             _controlbar.hideComponents();
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
+            _captionsRenderer.renderCues(true);
         }
 
         function _userActivity() {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _controlbar.checkCompactMode(_videoLayer.clientWidth);
+                _captionsRenderer.renderCues(true);
             }
 
             _showing = true;
@@ -881,7 +895,7 @@ define([
         function _setLiveMode(model, duration){
             var live = utils.adaptiveType(duration) === 'LIVE';
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
-            _this.setAltText((live) ? 'Live Broadcast' : '');
+            _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
 
         function _errorHandler(model, evt) {
@@ -1014,6 +1028,12 @@ define([
             }
 
             return bounds;
+        };
+
+        this.setCaptions = function(captionsStyle) {
+            _captionsRenderer.clear();
+            _captionsRenderer.setup(_model.get('id'), captionsStyle);
+            _captionsRenderer.resize();
         };
 
         this.destroy = function() {
