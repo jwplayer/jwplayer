@@ -203,6 +203,12 @@ define([
             utils.removeClass(_playerElement, 'jw-no-focus');
         }
 
+        function handleMouseUp(e) {
+            if (e.target && e.target.blur) {
+                e.target.blur();
+            }
+        }
+
         function handleMouseDown() {
             _focusFromClick = true;
             utils.addClass(_playerElement, 'jw-no-focus');
@@ -614,6 +620,7 @@ define([
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
+            _playerElement.onmouseup = handleMouseUp;
         }
 
         function stopDragging(model) {
