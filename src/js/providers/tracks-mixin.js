@@ -301,7 +301,7 @@ define(['../utils/underscore',
     function textTrackChangeHandler() {
         var textTracks = this.video.textTracks;
         var inUseTracks = _.filter(textTracks, function (track)  {
-            return track.inuse || !track._id;
+            return (track.inuse || !track._id) && _kindSupported(track.kind);
         });
         if (!this._textTracks || inUseTracks.length > this._textTracks.length) {
             // If the video element has more tracks than we have internally..
@@ -335,7 +335,7 @@ define(['../utils/underscore',
         for (var i = 0; i < tracks.length; i++) {
             var itemTrack = tracks[i];
             // only add valid and supported kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
-            if (itemTrack.kind && !(/subtitles|captions/i).test(itemTrack.kind)) {
+            if (itemTrack.kind && !_kindSupported(itemTrack.kind)) {
                 continue;
             }
             var track = _createTrack.call(this, itemTrack);
@@ -383,6 +383,10 @@ define(['../utils/underscore',
 
     function _nativeRenderingSupported(providerName) {
         return providerName.indexOf('flash') === -1 && (utils.isChrome() || utils.isIOS() || utils.isSafari());
+    }
+
+    function _kindSupported(kind) {
+        return (/subtitles|captions/i).test(kind);
     }
 
     function _initTextTracks() {
