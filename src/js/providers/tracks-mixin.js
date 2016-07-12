@@ -66,7 +66,7 @@ define(['../utils/underscore',
                     track.oncuechange = _cueChangeHandler.bind(this);
                     this._tracksById[track._id] = track;
                 }
-                else if (track.kind === 'subtitles' || track.kind === 'captions') {
+                else if (_kindSupported(track.kind)) {
                     var mode = track.mode,
                         cue;
 
@@ -386,7 +386,7 @@ define(['../utils/underscore',
     }
 
     function _kindSupported(kind) {
-        return (/subtitles|captions/i).test(kind);
+        return kind === 'subtitles' || kind === 'captions';
     }
 
     function _initTextTracks() {
