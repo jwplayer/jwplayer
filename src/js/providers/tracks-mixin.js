@@ -228,9 +228,19 @@ define(['../utils/underscore',
                 embedded: true
             };
             track = _createTrack.call(this, itemTrack);
-            this.setTextTracks(this.video.textTracks);
+            if (this._renderNatively) {
+                this.setTextTracks(this.video.textTracks);
+            } else {
+                track.data = [];
+                addTextTracks.call(this, [track]);
+            }
         }
-        track.addCue(cueData.cue);
+
+        if (this._renderNatively) {
+            track.addCue(cueData.cue);
+        } else {
+            track.data.push(cueData.cue);
+        }
     }
 
     function addCuesToTrack(cueData) {
