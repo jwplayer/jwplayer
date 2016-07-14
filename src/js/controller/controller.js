@@ -87,6 +87,7 @@ define([
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);
 
+            _model.mediaController.on('all', _triggerAfterReady, this);
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 _.defer(_completeHandler);
@@ -183,7 +184,6 @@ define([
                 // Set up provider and allow preload
                 _setItem(_model.get('item'));
 
-                _model.mediaController.on('all', _triggerAfterReady, _this);
                 _view.on('all', _triggerAfterReady, _this);
 
                 this.showView(_view.element());
