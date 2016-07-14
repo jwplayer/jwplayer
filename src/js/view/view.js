@@ -52,6 +52,7 @@ define([
             _showing = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
+            _resizeContainerRequestId = -1,
             _previewDisplayStateTimeout = -1,
             _currentState,
             _originalContainer,
@@ -225,17 +226,12 @@ define([
             }
         }
 
-        function _responsiveListener() {
+        function _setContainerDimensions() {
             var bounds = _bounds(_playerElement),
                 containerWidth = Math.round(bounds.width),
                 containerHeight = Math.round(bounds.height);
 
-            if (!document.body.contains(_playerElement)) {
-                window.removeEventListener('resize', _responsiveListener);
-                if (_isMobile) {
-                    window.removeEventListener('orientationchange', _responsiveListener);
-                }
-            } else if (containerWidth && containerHeight) {
+            if (containerWidth && containerHeight) {
                 if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
                     _lastWidth = containerWidth;
                     _lastHeight = containerHeight;
@@ -250,7 +246,24 @@ define([
                     });
                 }
             }
-            return bounds;
+        }
+
+        function _responsiveListener() {
+            if (!document.body.contains(_playerElement)) {
+                window.removeEventListener('resize', _responsiveListener);
+                if (_isMobile) {
+                    window.removeEventListener('orientationchange', _responsiveListener);
+                }
+            } else {
+                if (window.requestAnimationFrame) {
+                    cancelAnimationFrame(_resizeContainerRequestId);
+                    _resizeContainerRequestId = requestAnimationFrame(_setContainerDimensions);
+                } else {
+                    clearTimeout(_resizeContainerRequestId);
+                    // 60Hz framerate is approximately 17ms
+                    _resizeContainerRequestId = setTimeout(_setContainerDimensions, 17);
+                }
+            }
         }
 
 
