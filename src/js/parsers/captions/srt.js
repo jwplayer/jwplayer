@@ -50,7 +50,7 @@ define([
                 entry.begin = _seconds(line.substr(0, index));
                 entry.end   = _seconds(line.substr(index + 5));
                 // Remaining lines contain the text
-                entry.text = array.slice(idx + 1).join('<br/>');
+                entry.text = array.slice(idx + 1).join('\r\n');
             }
         }
         return entry;
