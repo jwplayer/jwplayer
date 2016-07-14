@@ -231,21 +231,23 @@ define([
                 containerWidth = Math.round(bounds.width),
                 containerHeight = Math.round(bounds.height);
 
-            if (containerWidth && containerHeight) {
-                if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
-                    _lastWidth = containerWidth;
-                    _lastHeight = containerHeight;
-                    clearTimeout(_resizeMediaTimeout);
-                    _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
-
-                    _model.set('containerWidth', containerWidth);
-                    _model.set('containerHeight', containerHeight);
-                    _this.trigger(events.JWPLAYER_RESIZE, {
-                        width: containerWidth,
-                        height: containerHeight
-                    });
-                }
+            // If we have bad values for either dimension or the container is the same size as before, return early.
+            if ((!containerWidth || !containerHeight) ||
+                (containerWidth === _lastWidth && containerHeight === _lastHeight)) {
+                return;
             }
+
+            _lastWidth = containerWidth;
+            _lastHeight = containerHeight;
+            clearTimeout(_resizeMediaTimeout);
+            _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
+
+            _model.set('containerWidth', containerWidth);
+            _model.set('containerHeight', containerHeight);
+            _this.trigger(events.JWPLAYER_RESIZE, {
+                width: containerWidth,
+                height: containerHeight
+            });
         }
 
         function _responsiveListener() {
@@ -256,12 +258,12 @@ define([
                 }
             } else {
                 if (window.requestAnimationFrame) {
-                    cancelAnimationFrame(_resizeContainerRequestId);
-                    _resizeContainerRequestId = requestAnimationFrame(_setContainerDimensions);
+                    window.cancelAnimationFrame(_resizeContainerRequestId);
+                    _resizeContainerRequestId = window.requestAnimationFrame(_setContainerDimensions);
                 } else {
-                    clearTimeout(_resizeContainerRequestId);
+                    window.clearTimeout(_resizeContainerRequestId);
                     // 60Hz framerate is approximately 17ms
-                    _resizeContainerRequestId = setTimeout(_setContainerDimensions, 17);
+                    _resizeContainerRequestId = window.setTimeout(_setContainerDimensions, 17);
                 }
             }
         }
