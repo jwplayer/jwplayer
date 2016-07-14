@@ -161,10 +161,14 @@ define([
 
             // For onCaptionsList and onCaptionsChange
             _model.on('change:captionsList', function(model, captionsList) {
-                _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
-                    tracks: captionsList,
-                    track: _getCurrentCaptions()
-                });
+                try {
+                    _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
+                        tracks: captionsList,
+                        track: _getCurrentCaptions()
+                    });
+                } catch (e) {
+                    utils.log('Error with captionsList event:', e);
+                }
             });
 
             _model.on('change:mediaModel', function(model) {
