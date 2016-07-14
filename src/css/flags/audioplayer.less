@@ -11,21 +11,20 @@
         }
     }
 
-
     .jw-preview, // overrides 'block' from .jw-state-idle
     .jw-display-icon-container { // overrides 'block' from .jw-flag-touch.jw-state-paused
         display: none;
     }
 
     .jw-controlbar {
+        vertical-align: middle;
         display: table;  // This overrides 'none' from jw-state-idle
-        height: auto;
+        height: 100%;
         left: 0;
         bottom: 0;
         margin: 0;
         width: 100%;
         min-width: 100%;
-        opacity: 1;
 
         .jw-icon-fullscreen,
         .jw-icon-tooltip {
@@ -44,5 +43,15 @@
         .jw-controlbar {
             display: table; // overrides 'none' from jw-flag-user-inactive
         }
+    }
+
+    // Setting height/line-height to their defaults allows the controls to responsively resize
+    .jw-icon-inline {
+        height: auto;
+        line-height: normal;
+    }
+
+    .jw-group {
+        vertical-align: middle;
     }
 }
