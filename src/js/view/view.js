@@ -442,7 +442,7 @@ define([
             // This setTimeout allows the player to actually get embedded into the player
             _api.on(events.JWPLAYER_READY, function() {
                 // Initialize values for containerWidth and containerHeight
-                _responsiveListener();
+                _setContainerDimensions();
 
                 _resize(_model.get('width'), _model.get('height'));
             });
@@ -802,7 +802,7 @@ define([
         this.resize = function(width, height) {
             var resetAspectMode = true;
             _resize(width, height, resetAspectMode);
-            _responsiveListener();
+            _setContainerDimensions();
         };
         this.resizeMedia = _resizeMedia;
 
