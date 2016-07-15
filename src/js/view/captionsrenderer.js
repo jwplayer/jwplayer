@@ -202,6 +202,12 @@ define([
             utils.empty(_display);
         };
 
+        this.setContainerHeight = function (height) {
+            _style(_display, {
+                height: height
+            });
+        };
+
         function setupCaptionStyles(playerId, windowStyle, textStyle) {
             // VTT.js DOM window styles
             cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
