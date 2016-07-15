@@ -1,5 +1,3 @@
-@import "../imports/vars";
-
 .jwplayer.jw-flag-audio-player {
     background-color: transparent;
 
@@ -45,12 +43,6 @@
     &.jw-flag-user-inactive {
         .jw-controlbar {
             display: table; // overrides 'none' from jw-flag-user-inactive
-        }
-
-        video::-webkit-media-text-track-container {
-            // With 16 lines of captions, 1em ~= 6.25% of height
-            max-height: calc(97% - 6.25 * (@controlbar-height));
-            line-height: 1.3em;
         }
     }
 
