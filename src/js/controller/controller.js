@@ -740,6 +740,9 @@ define([
             this.createInstream = function() {
                 this.instreamDestroy();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
+                // Persist the current captions track so the index
+                // is  set correctly after ad playback ends
+                _model.persistCaptionsTrack();
                 return this._instreamAdapter;
             };
 
