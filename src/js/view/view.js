@@ -564,7 +564,7 @@ define([
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
             _displayClickHandler.on('move', _userActivity);
             _displayClickHandler.on('over', _userActivity);
-            
+
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
             displayIcon.on('click', function() {
@@ -722,6 +722,11 @@ define([
             if (!utils.hasClass(_playerElement, 'jw-flag-aspect-mode')) {
                 playerStyle.height = height;
             }
+
+            if (_model.get('aspectratio')) {
+                _resizeAspectModeCaptions();
+            }
+
             _styles(_playerElement, playerStyle, true);
 
             _checkAudioMode(height);
@@ -794,6 +799,11 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
+
+            if (_model.get('aspectratio')) {
+                _resizeAspectModeCaptions();
+            }
+
             _captionsRenderer.resize();
 
             _controlbar.checkCompactMode(width);
@@ -970,6 +980,11 @@ define([
                     _userActivity();
                     break;
             }
+        }
+
+        function _resizeAspectModeCaptions() {
+            var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
+            _captionsRenderer.setContainerHeight(aspectRatioContainer.offsetHeight);
         }
 
         this.setupInstream = function(instreamModel) {
