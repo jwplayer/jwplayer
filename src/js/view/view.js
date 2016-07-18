@@ -53,6 +53,13 @@ define([
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _resizeContainerRequestId = -1,
+            // Function that delays the call of _setContainerDimensions so that the page has finished repainting.
+            _delayResize = window.requestAnimationFrame ||
+                function(rafFunc) {
+                    return window.setTimeout(rafFunc, 17);
+                },
+            // Function that prevents multiple calls of _setContainerDimensions when not necessary.
+            _cancelDelayResize = window.cancelAnimationFrame || window.clearTimeout,
             _previewDisplayStateTimeout = -1,
             _currentState,
             _originalContainer,
@@ -231,6 +238,8 @@ define([
                 containerWidth = Math.round(bounds.width),
                 containerHeight = Math.round(bounds.height);
 
+            _cancelDelayResize(_resizeContainerRequestId);
+
             // If we have bad values for either dimension or the container is the same size as before, return early.
             if ((!containerWidth || !containerHeight) ||
                 (containerWidth === _lastWidth && containerHeight === _lastHeight)) {
@@ -257,14 +266,8 @@ define([
                     window.removeEventListener('orientationchange', _responsiveListener);
                 }
             } else {
-                if (window.requestAnimationFrame) {
-                    window.cancelAnimationFrame(_resizeContainerRequestId);
-                    _resizeContainerRequestId = window.requestAnimationFrame(_setContainerDimensions);
-                } else {
-                    window.clearTimeout(_resizeContainerRequestId);
-                    // 60Hz framerate is approximately 17ms
-                    _resizeContainerRequestId = window.setTimeout(_setContainerDimensions, 17);
-                }
+                _cancelDelayResize(_resizeContainerRequestId);
+                _resizeContainerRequestId = _delayResize(_setContainerDimensions);
             }
         }
 
@@ -442,7 +445,7 @@ define([
             // This setTimeout allows the player to actually get embedded into the player
             _api.on(events.JWPLAYER_READY, function() {
                 // Initialize values for containerWidth and containerHeight
-                _responsiveListener();
+                _setContainerDimensions();
 
                 _resize(_model.get('width'), _model.get('height'));
             });
@@ -812,7 +815,7 @@ define([
         this.resize = function(width, height) {
             var resetAspectMode = true;
             _resize(width, height, resetAspectMode);
-            _responsiveListener();
+            _setContainerDimensions();
         };
         this.resizeMedia = _resizeMedia;
 
