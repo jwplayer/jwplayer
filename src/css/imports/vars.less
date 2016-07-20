@@ -1,14 +1,15 @@
 @default-em-size: 16px;
 
+// (160,160,160)
 // Colors
-@active-color: #FFF;
-@inactive-color: #cecece;
-@background-color: rgba(0, 0, 0, 0.8);
-@accent-color: #FFF;
+@active-color: rgba(255, 255, 255, 1);
+@inactive-color: rgba(255, 255, 255, .6);
+@background-color: rgba(33, 33, 33, 0.8);
+@accent-color: rgba(255, 255, 255, 1);
 
 @rail-color: rgba(255, 255, 255, 0.2);
-@buffer-color: rgba(255, 255, 255, 0.5);
-@progress-color: @accent-color;
+@buffer-color: rgba(255, 255, 255, 0.3);
+@progress-color: rgba(255, 255, 255, 1);
 
 @hover-color: @accent-color;
 @controlbar-background: @background-color;
@@ -17,7 +18,7 @@
 @toggle-active: @accent-color;
 
 // Display icon is the big play button shown before playback
-@display-bkgd-color:  rgba(37, 37, 37, 0.8);
+@display-bkgd-color:  rgba(33, 33, 33, 1);
 @display-bkgd-hover-color:  rgba(0, 0, 0, 0.8);
 @display-icon-color: @inactive-color;
 @display-icon-hover-color: @accent-color;
@@ -52,7 +53,7 @@
 // Volume tooltip
 @volume-background: @background-color;
 @volume-border: 0;
-@volume-padding: @ui-padding * 1.5;
+@volume-padding: @ui-padding * 2;
 @volume-border-radius: 0;
 
 @dock-corner-radius: 0;

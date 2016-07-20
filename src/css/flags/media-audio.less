@@ -19,6 +19,11 @@
         video::-webkit-media-text-track-container {
             max-height: calc(97% - 6.25 * (@controlbar-height));
         }
+
+        &.jw-flag-touch video::-webkit-media-text-track-container {
+            // need to compensate for the control bar being 3.75em on mobile
+            max-height: 70%;  // 97% - 6.25 * 4.25em
+        }
     }
 }
 .jw-flag-media-audio {
