@@ -40,7 +40,7 @@ define([
      * This does not return the file extension, instead it returns a media type extension
      */
     function getAzureFileFormat(path) {
-        if (path.indexOf('(format=m3u8-') > -1) {
+        if ((/[\(,]format=m3u8-/i).test(path)) {
             return 'm3u8';
         } else {
             return false;
@@ -57,7 +57,7 @@ define([
             return azureFormat;
         }
 
-        path = path.substring(path.lastIndexOf('/') + 1, path.length).split('?')[0].split('#')[0];
+        path = path.split('?')[0].split('#')[0];
         if (path.lastIndexOf('.') > -1) {
             return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
         }

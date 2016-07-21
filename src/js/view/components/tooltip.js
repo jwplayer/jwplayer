@@ -4,9 +4,25 @@ define([
 ], function(Extendable, utils) {
 
     var Tooltip = Extendable.extend({
-        'constructor' : function(name) {
+        'constructor' : function(name, ariaText, ariaShown) {
             this.el = document.createElement('div');
             this.el.className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset jw-hidden';
+            if (ariaText) {
+                this.el.setAttribute('tabindex', '0');
+                this.el.setAttribute('role', 'button');
+                this.el.setAttribute('aria-label', ariaText);
+            }
+            if (ariaShown === true) {
+                // Avoiding to hide the tooltip if requested
+                // e.g. The volume tooltip overlay don't work
+                // with the keyboard but can still mute/unmute
+                this.el.setAttribute('aria-hidden', 'false');
+            } else {
+                // Tooltip only works on :hover :^(
+                // It is not working using the keyboard
+                // Hiding it for ARIA while not supported
+                this.el.setAttribute('aria-hidden', 'true');
+            }
             this.container = document.createElement('div');
             this.container.className = 'jw-overlay jw-reset';
             this.openClass = 'jw-open';

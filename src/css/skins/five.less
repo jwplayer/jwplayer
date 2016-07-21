@@ -1,4 +1,3 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-five {
@@ -13,6 +12,7 @@
     @buffer-color: #9c9a9d;
     @rail-color: #b8b6b7;
     @thumb-color: @progress-color;
+    @volume-background: #333;
 
     @display-icon-color: @controlbar-background;
     @display-icon-hover-color: #fff;
@@ -28,6 +28,9 @@
     @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
     
     @five-border-radius: 0;
+
+    @controlbar-height: 2em;
+    #namespace > .controlbar-height();
 
     #namespace > .basic-skin-styles(); // Using the above local variables
     .skin-element-padding();
@@ -49,7 +52,7 @@
     
     /* Playlist */
     .jw-playlist-container {
-        left: -42%;
+        left: -46%;
         background-color: #fff;
 
         .jw-option {
@@ -153,11 +156,10 @@
         .jw-knob {
             margin-bottom: 2px/-2;
             width: .6em;
-
+            height: 2px;
             background: @rail-vert-gradient;
             border-radius: @five-border-radius;
-            height: 2px;
-            width: 100%;
+            .horizontally-centered-rail-element(@rail-height, 0.6em);
         }
     }
     

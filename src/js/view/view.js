@@ -14,7 +14,7 @@ define([
     'view/rightclick',
     'view/title',
     'utils/underscore',
-    'handlebars-loader!templates/player.html'
+    'templates/player.html'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, _, playerTemplate) {
@@ -52,6 +52,7 @@ define([
             _showing = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
+            _previewDisplayStateTimeout = -1,
             _currentState,
             _originalContainer,
 
@@ -64,6 +65,12 @@ define([
             _focusFromClick = false,
 
             _this = _.extend(this, Events);
+
+        // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
+        // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
+        if (window.webpackJsonpjwplayer) {
+            require('css/jwplayer.less');
+        }
 
         this.model = _model;
         this.api = _api;
@@ -160,6 +167,14 @@ define([
                 case 40: // down-arrow
                     adjustVolume(-10);
                     break;
+                case 67: // c-key
+                    var captionsList = _api.getCaptionsList();
+                    var listLength = captionsList.length;
+                    if (listLength) {
+                        var nextIndex = (_api.getCurrentCaptions() + 1) % listLength;
+                        _api.setCurrentCaptions(nextIndex);
+                    }
+                    break;
                 case 77: // m-key
                     _api.setMute();
                     break;
@@ -233,13 +248,8 @@ define([
         }
 
 
-        this.onChangeSkin = function(model, newSkin, oldSkin) {
-            if (oldSkin) {
-                utils.removeClass(_playerElement, 'jw-skin-'+oldSkin);
-            }
-            if (newSkin) {
-                utils.addClass(_playerElement, 'jw-skin-'+newSkin);
-            }
+        this.onChangeSkin = function(model, newSkin) {
+            utils.replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-'+newSkin) : '');
         };
 
 
@@ -255,7 +265,7 @@ define([
 
                 var o = {};
                 o[attr] = value;
-                utils.css(elements.join(', '), o);
+                utils.css(elements.join(', '), o, id);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
@@ -428,11 +438,8 @@ define([
             utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
         }
 
-        function _onStretchChange(model, newVal, oldVal) {
-            if(oldVal){
-                utils.removeClass(_playerElement, 'jw-stretch-' + oldVal);
-            }
-            utils.addClass(_playerElement, 'jw-stretch-' + newVal);
+        function _onStretchChange(model, newVal) {
+            utils.replaceClass(_playerElement, /jw-stretch-\S+/, 'jw-stretch-' + newVal);
         }
 
         function _onCompactUIChange(model, newVal) {
@@ -519,8 +526,10 @@ define([
         }
 
         function _setupControls() {
+            var overlaysElement = _playerElement.getElementsByClassName('jw-overlays')[0];
+            overlaysElement.addEventListener('mousemove', _userActivity);
 
-            _displayClickHandler = new ClickHandler(_model, _videoLayer);
+            _displayClickHandler = new ClickHandler(_model, _videoLayer, {useHover: true});
             _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 if(_model.get('controls')) {
@@ -533,6 +542,7 @@ define([
             });
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
             _displayClickHandler.on('move', _userActivity);
+            _displayClickHandler.on('over', _userActivity);
             
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
@@ -579,7 +589,7 @@ define([
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_model.get('captions'));
+            _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
@@ -742,6 +752,10 @@ define([
                 height = _videoLayer.clientHeight;
             }
 
+            if (_preview) {
+                _preview.resize(width, height, _model.get('stretching'));
+            }
+
             //IE9 Fake Full Screen Fix
             if (utils.isMSIE(9) && document.all && !window.atob) {
                 width = height = '100%';
@@ -809,7 +823,6 @@ define([
         }
 
         function _toggleDOMFullscreen(playerElement, fullscreenState) {
-            utils.removeClass(playerElement, 'jw-flag-fullscreen');
             if (fullscreenState) {
                 utils.addClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
@@ -819,6 +832,7 @@ define([
                 // On going fullscreen we want the control bar to fade after a few seconds
                 _userActivity();
             } else {
+                utils.removeClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
                     'overflow-y': ''
                 });
@@ -833,12 +847,14 @@ define([
             clearTimeout(_controlsTimeout);
             _controlbar.hideComponents();
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
+            _captionsRenderer.renderCues(true);
         }
 
         function _userActivity() {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _controlbar.checkCompactMode(_videoLayer.clientWidth);
+                _captionsRenderer.renderCues(true);
             }
 
             _showing = true;
@@ -862,13 +878,24 @@ define([
 
         function _onMediaTypeChange(model, val) {
             var isAudioFile = (val ==='audio');
+            var provider = _model.getVideo();
+            var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
+
+            if (isAudioFile && !isFlash) {
+                // Put the preview element before the media element in order to display browser captions
+                _playerElement.insertBefore(_preview.el, _videoLayer);
+            } else {
+                // Put the preview element before the captions element to display captions with the captions renderer
+                _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
+            }
         }
 
         function _setLiveMode(model, duration){
             var live = utils.adaptiveType(duration) === 'LIVE';
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
-            _this.setAltText((live) ? 'Live Broadcast' : '');
+            _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
 
         function _errorHandler(model, evt) {
@@ -891,11 +918,20 @@ define([
             return false;
         }
 
+        function _updateStateClass() {
+            utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _currentState);
+        }
 
         function _stateHandler(model, state) {
-            utils.removeClass(_playerElement, 'jw-state-' + _currentState);
-            utils.addClass(_playerElement, 'jw-state-' + state);
             _currentState = state;
+
+            clearTimeout(_previewDisplayStateTimeout);
+            if (state === states.COMPLETE || state === states.IDLE) {
+                _previewDisplayStateTimeout = setTimeout(_updateStateClass, 100);
+            } else {
+                _updateStateClass();
+            }
+
             // cast.display
             if (_isCasting()) {
                 // TODO: needs to be done in the provider.setVisibility
@@ -994,6 +1030,12 @@ define([
             return bounds;
         };
 
+        this.setCaptions = function(captionsStyle) {
+            _captionsRenderer.clear();
+            _captionsRenderer.setup(_model.get('id'), captionsStyle);
+            _captionsRenderer.resize();
+        };
+
         this.destroy = function() {
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
@@ -1018,7 +1060,7 @@ define([
             if (_logo) {
                 _logo.destroy();
             }
-            utils.clearCss('#'+_model.get('id'));
+            utils.clearCss(_model.get('id'));
         };
     };
 

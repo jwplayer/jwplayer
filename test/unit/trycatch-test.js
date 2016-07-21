@@ -3,7 +3,8 @@ define([
 ], function (trycatch) {
     /* jshint qunit: true */
 
-    module('trycatch');
+    QUnit.module('trycatch');
+    var test = QUnit.test.bind(QUnit);
 
     test('defines', function(assert) {
         assert.expect(2);

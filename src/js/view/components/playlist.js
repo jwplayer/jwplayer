@@ -3,7 +3,7 @@ define([
     'utils/underscore',
     'view/components/tooltip',
     'utils/ui',
-    'handlebars-loader!templates/playlist.html'
+    'templates/playlist.html'
 ], function(utils, _, Tooltip, UI, PlaylistTemplate) {
 
     var Playlist = Tooltip.extend({
@@ -43,10 +43,11 @@ define([
 
         menuTemplate : function(list, selectedIndex) {
             var newList = _.map(list, function(item, idx) {
+                var title = item.title ? utils.createElement(item.title).textContent : '';
                 return {
                     active : (idx === selectedIndex),
                     label : (idx+1)+ '.',
-                    title : item.title
+                    title : title
                 };
             });
             return PlaylistTemplate(newList);

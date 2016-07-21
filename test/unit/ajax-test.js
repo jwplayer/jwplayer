@@ -4,7 +4,8 @@ define([
 ], function (_, utils) {
     /* jshint qunit: true */
 
-    module('utils.ajax');
+    QUnit.module('utils.ajax');
+    var test = QUnit.test.bind(QUnit);
 
     function validXHR(xhr) {
         if ('XDomainRequest' in window && xhr instanceof window.XDomainRequest) {
@@ -98,8 +99,9 @@ define([
                 assert.ok(false, 'expected request to timeout immediately');
                 done();
             },
-            onerror: function() {
-                assert.ok(true, 'request timed out right away');
+            onerror: function(message) {
+                assert.equal(message, 'Timeout',
+                    '"Timeout" error message');
                 done();
             },
             timeout: 0.0001,

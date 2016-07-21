@@ -3,17 +3,19 @@ define([
 ], function (constants) {
     /* jshint qunit: true */
 
-    module('constants');
+    QUnit.module('constants');
 
-    test('constants', function(assert) {
-        assert.equal(typeof constants.repo, 'string');
+    QUnit.test('constants', function(assert) {
+        assert.equal(typeof constants.repo, 'string', 'constants.repo is a string');
 
         for (var i = 0; i < constants.SkinsIncluded.length; i++) {
-            assert.equal(typeof constants.SkinsIncluded[i], 'string');
+            var skinIncluded = constants.SkinsIncluded[i];
+            assert.equal(typeof skinIncluded, 'string', 'Player configured to include "'+ skinIncluded +'" skin');
         }
 
         for (var j = 0; j < constants.SkinsLoadable.length; j++) {
-            assert.equal(typeof constants.SkinsLoadable[j], 'string');
+            var loadsSkin = constants.SkinsLoadable[j];
+            assert.equal(typeof loadsSkin, 'string', 'Player configured to load "'+ loadsSkin +'" skin');
         }
 
     });

@@ -9,6 +9,10 @@ define([
 
     /** Gets the repository location **/
     playerUtils.repo = _.memoize(function () {
+        if (__SELF_HOSTED__) {
+            return  parser.getScriptPath('jwplayer.js');
+        }
+
         var semver = version.split('+')[0];
         var repo = Constants.repo + semver + '/';
         if (validator.isHTTPS()) {
@@ -33,9 +37,11 @@ define([
         return true;
     };
 
-
     playerUtils.loadFrom = function () {
-        return (__DEBUG__ ? parser.getScriptPath('jwplayer.js') : playerUtils.repo());
+        if (__DEBUG__ || __SELF_HOSTED__) {
+            return parser.getScriptPath('jwplayer.js');
+        }
+        return playerUtils.repo();
     };
 
     return playerUtils;

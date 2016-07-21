@@ -1,9 +1,11 @@
 define([
     'test/underscore',
     'api/config'
-], function (_, config) {
+], function (_, Config) {
     /* jshint qunit: true */
-    module('API config');
+
+    QUnit.module('API config');
+    var test = QUnit.test.bind(QUnit);
 
     function validWidth(val) {
 
@@ -17,7 +19,7 @@ define([
     }
 
     function testConfig(assert, obj) {
-        var x = config(obj);
+        var x = new Config(obj);
 
 
         var attrs = ['width', 'height', 'base'];
@@ -126,24 +128,30 @@ define([
     });
 
     test('updates base to cdn or script location', function(assert) {
-        var CDN_URL = 'http://ssl.p.jwpcdn.com/player/v/'+ window.__BUILD_VERSION__ +'/';
-        var CUSTOM_BASE = 'http://ssl.p.jwpcdn.com/player/v/7.0.1-beta.1/';
+        var CUSTOM_BASE = 'http://mywebsite.com/jwplayer/';
+        var apiConfig;
 
-        var x = testConfig(assert, {});
-        assert.equal(x.base, CDN_URL,
-            'Config sets base to the CDN url when no base is specified');
 
-        x = testConfig(assert, {
+        apiConfig = testConfig(assert, {});
+        if (window.__SELF_HOSTED__) {
+            assert.ok(/.*\//.test(apiConfig.base),
+                'config.base is set to the jwplayer script location in self-hosted builds: '+apiConfig.base);
+        } else {
+            assert.ok(/.*\//.test(apiConfig.base),
+                'config.base is set to the repo locations: '+apiConfig.base);
+        }
+
+        apiConfig = testConfig(assert, {
             base: '.'
         });
-        assert.ok(/.+\//.test(x.base) && x.base !== CDN_URL,
-            'Config replaces a base of "." with the jwplayer script location (not the CDN path)');
+        assert.ok(/.*\//.test(apiConfig.base),
+            'config.base of "." is replaced with the jwplayer script locations: '+apiConfig.base);
 
-        x = testConfig(assert, {
+        apiConfig = testConfig(assert, {
             base: CUSTOM_BASE
         });
-        assert.equal(x.base, CUSTOM_BASE,
-            'Config does not replace base when a custom value other than "." is specified');
+        assert.equal(apiConfig.base, CUSTOM_BASE,
+            'config.base is not replaced when a custom value other than "." is specified');
     });
 
     test('flattens skin object', function(assert) {

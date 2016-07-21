@@ -15,7 +15,8 @@ define([
             'mute',
             'item', // this was playlistindex
             'stretching',
-            'playlist'
+            'playlist',
+            'captions'
         ];
 
         // given a name "buffer", it adds to jwplayer api a function named getBuffer
@@ -26,7 +27,6 @@ define([
                 return _controller._model.get(attr);
             };
         });
-
 
         var passthroughs = [
             'getAudioTracks',
@@ -70,7 +70,8 @@ define([
             'setFullscreen',
             'setVolume',
             'setMute',
-            'setCues'
+            'setCues',
+            'setCaptions'
         ];
 
         // getters
@@ -89,5 +90,8 @@ define([
                 return _api;
             };
         });
+
+        // This is here because it binds to the methods declared above
+        _api.getPlaylistIndex = _api.getItem;
     };
 });

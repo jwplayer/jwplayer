@@ -73,25 +73,38 @@ define([
         };
     }
 
-    module('provider primary priority');
+    function getKeyIndexes(arr) {
+        var o = {};
+        for (var i= 0; i < arr.length; i++) {
+            var name = getName(arr[i]);
+            o[name] = i;
+        }
+        return o;
+    }
+
+    QUnit.module('provider primary priority');
+    var test = QUnit.test.bind(QUnit);
 
     test('no primary defined', function (assert) {
         var providerList = new Providers().providers;
         assert.expect(4);
 
 		assert.ok(providerList.length >= 3, 'There are at least 3 providers listed');
-		assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
-		assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
-		assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
+
+        var keys = getKeyIndexes(providerList);
+		assert.ok(keys.html5 < keys.flash, 'HTML5 has higher priority than flash');
+        assert.ok(keys.html5 > keys.youtube, 'HTML5 has lower priority than youtube');
+        assert.ok(keys.flash > keys.youtube, 'Flash has lower priority than youtube');
     });
 
     test('html5 primary requested', function (assert) {
 		var providerList = new Providers({primary: 'html5'}).providers;
         assert.expect(3);
 
-        assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
-        assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
-        assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
+        var keys = getKeyIndexes(providerList);
+        assert.ok(keys.html5 < keys.flash, 'HTML5 has higher priority than flash');
+        assert.ok(keys.html5 > keys.youtube, 'HTML5 has lower priority than youtube');
+        assert.ok(keys.flash > keys.youtube, 'Flash has lower priority than youtube');
     });
 
 
@@ -99,21 +112,23 @@ define([
 		var providerList = new Providers({primary: 'flash'}).providers;
         assert.expect(3);
 
-        assert.equal(getName(providerList[1]), 'flash', 'Flash is the number 1 provider');
-        assert.equal(getName(providerList[2]), 'html5', 'HTML5 is the number 2 provider');
-        assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
+        var keys = getKeyIndexes(providerList);
+        assert.ok(keys.html5 > keys.flash, 'HTML5 has lower priority than flash');
+        assert.ok(keys.html5 > keys.youtube, 'HTML5 has lower priority than youtube');
+        assert.ok(keys.flash > keys.youtube, 'Flash has lower priority than youtube');
     });
 
 	test('invalid primary requested', function (assert) {
 		var providerList = new Providers({primary:'invalid primary value'}).providers;
         assert.expect(3);
 
-        assert.equal(getName(providerList[1]), 'html5', 'HTML5 is the number 1 provider');
-        assert.equal(getName(providerList[2]), 'flash', 'Flash is the number 2 provider');
-        assert.equal(getName(providerList[0]), 'youtube', 'YouTube is the number 3 provider');
+        var keys = getKeyIndexes(providerList);
+        assert.ok(keys.html5 < keys.flash, 'HTML5 has higher priority than flash');
+        assert.ok(keys.html5 > keys.youtube, 'HTML5 has lower priority than youtube');
+        assert.ok(keys.flash > keys.youtube, 'Flash has lower priority than youtube');
 	});
 
-	module('provider.choose tests');
+    QUnit.module('provider.choose');
 
 	// HTML5 Primary
 	test('html5 primary', function (assert) {

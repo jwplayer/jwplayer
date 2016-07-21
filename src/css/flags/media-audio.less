@@ -1,7 +1,24 @@
-// This has higher specificity to overwrite jw-flag-user-inactive
+@import "../imports/vars";
+
 .jwplayer.jw-flag-media-audio {
     .jw-controlbar {
         display: table;
+    }
+    // This has higher specificity to overwrite jw-flag-user-inactive in pause state
+    &.jw-flag-user-inactive {
+        .jw-controlbar {
+            display: table;
+        }
+    }
+    // This has higher specificity to overwrite caption position when user inactive in playing state
+    &.jw-flag-user-inactive.jw-state-playing {
+        .jw-plugin,
+        .jw-captions {
+            bottom: 3em;
+        }
+        video::-webkit-media-text-track-container {
+            max-height: calc(97% - 6.25 * (@controlbar-height));
+        }
     }
 }
 .jw-flag-media-audio {

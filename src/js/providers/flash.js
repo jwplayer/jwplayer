@@ -5,8 +5,9 @@ define([
     'events/states',
     'utils/embedswf',
     'providers/default',
-    'utils/backbone.events'
-], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events) {
+    'utils/backbone.events',
+    'providers/tracks-mixin',
+], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events, Tracks) {
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
@@ -35,6 +36,7 @@ define([
         var _flashProviderType;
         var _attached = true;
         var _fullscreen = false;
+        var _this = this;
 
         var _ready = function() {
             return _swf && _swf.__ready;
@@ -47,20 +49,6 @@ define([
         };
 
         var _customLabels = _getCustomLabels();
-
-        /** Translate sources into quality levels, assigning custom levels if present. **/
-        function _labelLevels(levels) {
-            if (_customLabels) {
-                for (var i = 0; i < levels.length; i++) {
-                    var level = levels[i];
-                    if (level.bitrate) {
-                        // get label with nearest rate match
-                        var sourceKBps = Math.round(level.bitrate / 1024);
-                        level.label = _getNearestCustomLabel(sourceKBps);
-                    }
-                }
-            }
-        }
 
         function _getNearestCustomLabel(sourceKBps) {
             // get indexed value
@@ -111,7 +99,64 @@ define([
             };
         }
 
-        _.extend(this, Events, {
+        function checkFlashBlocked() {
+            _flashBlockedTimeout = setTimeout(function() {
+                Events.trigger.call(_this, 'flashBlocked');
+            }, 4000);
+            _swf.once('embedded', function() {
+                removeBlockedCheck();
+                Events.trigger.call(_this, 'flashUnblocked');
+            }, _this);
+        }
+
+        function onFocus() {
+            removeBlockedCheck();
+            checkFlashBlocked();
+        }
+
+        function removeBlockedCheck() {
+            clearTimeout(_flashBlockedTimeout);
+            window.removeEventListener('focus', onFocus);
+        }
+
+        function _updateLevelsEvent(e) {
+            var levels = e.levels;
+            for (var i = 0; i < levels.length; i++) {
+                var level = levels[i];
+                // Set original index
+                level.index = i;
+                // Translate sources into quality levels, assigning custom levels if present
+                if (_customLabels && level.bitrate) {
+                    // get label with nearest rate match
+                    var sourceKbps = Math.round(level.bitrate / 1000);
+                    level.label = _getNearestCustomLabel(sourceKbps);
+                }
+            }
+            e.levels =
+                _qualityLevels = _sortedLevels(e.levels);
+            e.currentQuality =
+                _currentQuality = _getSortedIndex(_qualityLevels, e.currentQuality);
+        }
+
+        function _sortedLevels(levels) {
+            return levels.sort(function(obj1, obj2) {
+                if (obj1.height && obj2.height) {
+                    return obj2.height - obj1.height;
+                }
+                return obj2.bitrate - obj1.bitrate;
+            });
+        }
+
+        function _getSortedIndex(levels, originalIndex) {
+            for (var i = 0; i < levels.length; i++) {
+                if (levels[i].index === originalIndex) {
+                    return  i;
+                }
+            }
+        }
+
+
+        _.extend(this, Events, Tracks, {
                 init: function(item) {
                     // if not preloading or autostart is true, do nothing
                     if (!item.preload || item.preload === 'none' || _playerConfig.autostart) {
@@ -124,6 +169,7 @@ define([
                     _item = item;
                     _beforecompleted = false;
                     this.setState(states.LOADING);
+                    this.setupSideloadedTracks(item.tracks);
                     _flashCommand('load', item);
                     // HLS mediaType comes from the AdaptiveProvider
                     if(item.sources.length && item.sources[0].type !== 'hls') {
@@ -141,6 +187,7 @@ define([
                     _flashCommand('stop');
                     _currentQuality = -1;
                     _item = null;
+                    this.clearTracks();
                     this.setState(states.IDLE);
                 },
                 seek: function(seekPos) {
@@ -204,19 +251,16 @@ define([
 
                     _swf = this.getSwfObject(parent);
 
-                    // The browser may block the flash object until user enables it
-                    var _this = this;
-                    _flashBlockedTimeout = setTimeout(function() {
-                        Events.trigger.call(_this, 'flashBlocked');
-                    }, 4000);
-                    _swf.once('embedded', function() {
-                        clearTimeout(_flashBlockedTimeout);
-                        Events.trigger.call(_this, 'flashUnblocked');
-                    }, this);
+                    // Wait until the window gets focus to see check flash is blocked
+                    if (document.hasFocus()) {
+                        checkFlashBlocked();
+                    } else {
+                        window.addEventListener('focus', onFocus);
+                    }
 
                     // listen to events sendEvented from flash
                     _swf.once('ready', function() {
-                        clearTimeout(_flashBlockedTimeout);
+                        removeBlockedCheck();
                         // After plugins load, then execute commandqueue
                         _swf.once('pluginsLoaded', function() {
                             _swf.queueCommands = false;
@@ -241,13 +285,10 @@ define([
                     }, this);
 
                     var forwardEventsWithData = [
-                        events.JWPLAYER_MEDIA_META,
                         events.JWPLAYER_MEDIA_ERROR,
                         events.JWPLAYER_MEDIA_SEEK,
                         events.JWPLAYER_MEDIA_SEEKED,
-                        'subtitlesTracks',
                         'subtitlesTrackChanged',
-                        'subtitlesTrackData',
                         'mediaType'
                     ];
 
@@ -261,19 +302,9 @@ define([
                     ];
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
-                    _swf.on(events.JWPLAYER_MEDIA_LEVELS, function(e) {
-                        _labelLevels(e.levels);
-                        _currentQuality = e.currentQuality;
-                        _qualityLevels = e.levels;
+                    _swf.on([events.JWPLAYER_MEDIA_LEVELS, events.JWPLAYER_MEDIA_LEVEL_CHANGED].join(' '), function(e) {
+                        _updateLevelsEvent(e);
                         this.trigger(e.type, e);
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
-                        _labelLevels(e.levels);
-                        _currentQuality = e.currentQuality;
-                        _qualityLevels = e.levels;
-                        this.trigger(e.type, e);
-
                     }, this);
 
                     _swf.on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
@@ -342,9 +373,25 @@ define([
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
 
+                    _swf.on('subtitlesTracks', function(e) {
+                        this.addTextTracks(e.tracks);
+                    }, this);
+
+                    _swf.on('subtitlesTrackData', function(e) {
+                        this.addCuesToTrack(e);
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_META, function(e) {
+                        if(e.metadata && e.metadata.type === 'textdata') {
+                            this.addCaptionsCue(e.metadata);
+                        } else {
+                            this.trigger(e.type, e);
+                        }
+                    }, this);
+
                     if (flashThrottleTarget(_playerConfig)) {
                         _swf.on('throttle', function(e) {
-                            clearTimeout(_flashBlockedTimeout);
+                            removeBlockedCheck();
 
                             if (e.state === 'resume') {
                                 Events.trigger.call(_this, 'flashThrottle', e);
@@ -381,7 +428,7 @@ define([
                     return _fullscreen;
                 },
                 setCurrentQuality: function(quality) {
-                    _flashCommand('setCurrentQuality', quality);
+                    _flashCommand('setCurrentQuality', _qualityLevels[quality].index);
                 },
                 getCurrentQuality: function() {
                     return _currentQuality;
@@ -408,6 +455,7 @@ define([
                     _flashCommand('setCurrentAudioTrack', audioTrack);
                 },
                 destroy: function() {
+                    removeBlockedCheck();
                     this.remove();
                     if (_swf) {
                         _swf.off();
@@ -415,6 +463,7 @@ define([
                     }
                     _container = null;
                     _item = null;
+                    this.clearTracks();
                     this.off();
                 }
         });
@@ -434,6 +483,10 @@ define([
     var F = function(){};
     F.prototype = DefaultProvider;
     FlashProvider.prototype = new F();
+
+    FlashProvider.getName = function() {
+        return { name : 'flash' };
+    };
 
     return FlashProvider;
 });

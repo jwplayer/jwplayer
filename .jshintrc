@@ -1,33 +1,21 @@
 {
-    //"indent": 4,
     "maxlen": 120,
     "trailing": true,
     "eqeqeq": true,
     "browser": true,
-
-    // console, alert
     "devel": true,
-
-    // A function can only take max 3 arguments
     "maxparams": 99,
-
-    // Strings use single quotes instead of double
     "quotmark": "single",
-
-    // All conditionals and loops require curly brackets
     "curly": true,
-
-    // require correct variable declaration
     "undef": true,
     "unused": true,
-
-    // These variables are predefined
     "predef": [
-      //"jwplayer",
       "require",
       "define",
-      "module",
+      "Promise",
       "__DEBUG__",
+      "__REPO__",
+      "__SELF_HOSTED__",
       "__BUILD_VERSION__",
       "__FLASH_VERSION__"
     ]

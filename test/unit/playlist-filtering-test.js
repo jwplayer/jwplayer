@@ -45,7 +45,8 @@ define([
         assert.ok(sourcesMatch(filtered), title + sourceName + ' has only matching sources');
     }
 
-    module('playlist.filterSources');
+    QUnit.module('playlist.filterSources');
+    var test = QUnit.test.bind(QUnit);
 
     test('flash primary', function(assert) {
         testSource(assert, 'flv_mp4', 'flv', true);
@@ -68,7 +69,7 @@ define([
     });
 
 
-    module('playlist.filterPlaylist');
+    QUnit.module('playlist.filterPlaylist');
 
     test('filterPlaylist', function(assert) {
         var pl;
@@ -99,4 +100,67 @@ define([
     });
 
 
+    test('it prioritizes withCredentials in the order of source, playlist, then global', function (assert) {
+        assert.expect(4);
+        var withCredentialsPlaylist = [
+            {
+                // Uses source
+                sources: [
+                    {
+                        file: 'foo.mp4',
+                        withCredentials: false
+                    }
+                ]
+            },
+            {
+                // Uses playlist
+                withCredentials: false,
+                sources: [
+                    {
+                        file: 'foo.mp4'
+                    }
+                ]
+            },
+            {
+                // Uses model
+                sources: [
+                    {
+                        file: 'foo.mp4'
+                    }
+                ]
+            }
+        ];
+
+        var providersConfig = {
+            primary: 'html5'
+        };
+
+        var withCredentialsOnModel = true;
+        
+        var pl = playlist.filterPlaylist(withCredentialsPlaylist, new Providers(providersConfig), undefined, undefined, undefined, undefined, withCredentialsOnModel);
+
+        assert.equal(pl.length, 3);
+        assert.equal(pl[0].allSources[0].withCredentials, false);
+        assert.equal(pl[1].allSources[0].withCredentials, false);
+        assert.equal(pl[2].allSources[0].withCredentials, true);
+    });
+
+
+    test('it does not put withCredentials on the playlist if undefined', function (assert) {
+        assert.expect(2);
+
+        var undefinedCredentialsPlaylist = [
+            {
+                sources: [
+                    {
+                        file: 'foo.mp4'
+                    }
+                ]
+            }
+        ];
+
+        var pl = playlist.filterPlaylist(undefinedCredentialsPlaylist, new Providers(), undefined, undefined, undefined, undefined, undefined);
+        assert.equal(pl.length, 1);
+        assert.equal(pl[0].allSources[0].withCredentials, undefined);
+    });
 });

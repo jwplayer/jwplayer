@@ -4,7 +4,6 @@ define([
     'utils/backbone.events',
     'utils/helpers',
     'utils/timer',
-    'utils/trycatch',
     'utils/underscore',
     'controller/controller',
     'api/api-actions',
@@ -12,7 +11,7 @@ define([
     'api/callbacks-deprecate',
     'version'
 ], function(events, states,
-            Events, utils, Timer, trycatch, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
+            Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     var Api = function (container, globalRemovePlayer) {
         var _this = this,
@@ -23,7 +22,7 @@ define([
         // Set up event handling
         _.extend(this, Events);
 
-        // This helps plugins, particularly analytics
+        // Provide module access to plugins from the player instance
         this.utils = utils;
         this._ = _;
         this.Events = Events;

@@ -83,6 +83,9 @@ define([
                 _abortAjax(xhr);
                 options.onerror('Timeout', url, xhr);
             }, options.timeout);
+            xhr.onabort = function() {
+                clearTimeout(options.timeoutId);
+            };
         }
 
         try {
@@ -132,11 +135,17 @@ define([
             var xhr = e.currentTarget || options.xhr;
             if (xhr.readyState === 4) {
                 clearTimeout(options.timeoutId);
+                if (xhr.status >= 400) {
+                    var message;
+                    if (xhr.status === 404) {
+                        message = 'File not found';
+                    } else {
+                        message = '' + xhr.status + '(' + xhr.statusText + ')';
+                    }
+                    return options.onerror(message, options.url, xhr);
+                }
                 if (xhr.status === 200) {
                     return _ajaxComplete(options)(e);
-                }
-                if (xhr.status === 404) {
-                    return options.onerror('File not found', options.url, xhr);
                 }
             }
         };

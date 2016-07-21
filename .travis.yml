@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - 5
+  - 4
+
+before_install:
+  - npm install -g npm
+  - npm config set loglevel warn
+
+before_script:
+  - webpack --only test
+  - npm install -g grunt-cli
+
+script:
+  - grunt karma:local 
