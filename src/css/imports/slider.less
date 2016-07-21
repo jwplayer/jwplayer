@@ -1,7 +1,7 @@
 @import "vars";
 
 .jw-slider-container {
-    height: @slider-height;
+    height: 1em; // For easy grabbability - does not affect positioning of slider itself
     width: 100%;
     position: relative;
     touch-action: none;
@@ -34,7 +34,8 @@
 
 .jw-cue {
     height: @rail-height;
-    background-color: #fff;
+    background-color: rgba(33,33,33,.9);
+    border-radius:25%;
     width: @ui-padding;
 }
 
@@ -69,7 +70,7 @@
 }
 
 .jw-slider-vertical {
-    padding: @volume-padding;
+    padding: @volume-padding @volume-padding 0 @volume-padding;
     position: absolute;
 
     .jw-rail,

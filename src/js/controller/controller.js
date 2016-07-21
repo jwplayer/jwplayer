@@ -87,6 +87,7 @@ define([
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);
 
+            _model.mediaController.on('all', _triggerAfterReady, this);
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 _.defer(_completeHandler);
@@ -160,10 +161,14 @@ define([
 
             // For onCaptionsList and onCaptionsChange
             _model.on('change:captionsList', function(model, captionsList) {
-                _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
-                    tracks: captionsList,
-                    track: _getCurrentCaptions()
-                });
+                try {
+                    _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
+                        tracks: captionsList,
+                        track: _getCurrentCaptions()
+                    });
+                } catch (e) {
+                    utils.log('Error with captionsList event:', e);
+                }
             });
 
             _model.on('change:mediaModel', function(model) {
@@ -183,7 +188,6 @@ define([
                 // Set up provider and allow preload
                 _setItem(_model.get('item'));
 
-                _model.mediaController.on('all', _triggerAfterReady, _this);
                 _view.on('all', _triggerAfterReady, _this);
 
                 this.showView(_view.element());
@@ -736,6 +740,9 @@ define([
             this.createInstream = function() {
                 this.instreamDestroy();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
+                // Persist the current captions track so the index
+                // is  set correctly after ad playback ends
+                _model.persistCaptionsTrack();
                 return this._instreamAdapter;
             };
 

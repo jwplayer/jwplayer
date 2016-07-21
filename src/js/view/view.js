@@ -52,6 +52,14 @@ define([
             _showing = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
+            _resizeContainerRequestId = -1,
+            // Function that delays the call of _setContainerDimensions so that the page has finished repainting.
+            _delayResize = window.requestAnimationFrame ||
+                function(rafFunc) {
+                    return window.setTimeout(rafFunc, 17);
+                },
+            // Function that prevents multiple calls of _setContainerDimensions when not necessary.
+            _cancelDelayResize = window.cancelAnimationFrame || window.clearTimeout,
             _previewDisplayStateTimeout = -1,
             _currentState,
             _originalContainer,
@@ -203,6 +211,12 @@ define([
             utils.removeClass(_playerElement, 'jw-no-focus');
         }
 
+        function handleMouseUp(e) {
+            if (e.target && e.target.blur) {
+                e.target.blur();
+            }
+        }
+
         function handleMouseDown() {
             _focusFromClick = true;
             utils.addClass(_playerElement, 'jw-no-focus');
@@ -219,32 +233,42 @@ define([
             }
         }
 
-        function _responsiveListener() {
+        function _setContainerDimensions() {
             var bounds = _bounds(_playerElement),
                 containerWidth = Math.round(bounds.width),
                 containerHeight = Math.round(bounds.height);
 
+            _cancelDelayResize(_resizeContainerRequestId);
+
+            // If we have bad values for either dimension or the container is the same size as before, return early.
+            if ((!containerWidth || !containerHeight) ||
+                (containerWidth === _lastWidth && containerHeight === _lastHeight)) {
+                return;
+            }
+
+            _lastWidth = containerWidth;
+            _lastHeight = containerHeight;
+            clearTimeout(_resizeMediaTimeout);
+            _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
+
+            _model.set('containerWidth', containerWidth);
+            _model.set('containerHeight', containerHeight);
+            _this.trigger(events.JWPLAYER_RESIZE, {
+                width: containerWidth,
+                height: containerHeight
+            });
+        }
+
+        function _responsiveListener() {
             if (!document.body.contains(_playerElement)) {
                 window.removeEventListener('resize', _responsiveListener);
                 if (_isMobile) {
                     window.removeEventListener('orientationchange', _responsiveListener);
                 }
-            } else if (containerWidth && containerHeight) {
-                if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
-                    _lastWidth = containerWidth;
-                    _lastHeight = containerHeight;
-                    clearTimeout(_resizeMediaTimeout);
-                    _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
-
-                    _model.set('containerWidth', containerWidth);
-                    _model.set('containerHeight', containerHeight);
-                    _this.trigger(events.JWPLAYER_RESIZE, {
-                        width: containerWidth,
-                        height: containerHeight
-                    });
-                }
+            } else {
+                _cancelDelayResize(_resizeContainerRequestId);
+                _resizeContainerRequestId = _delayResize(_setContainerDimensions);
             }
-            return bounds;
         }
 
 
@@ -421,7 +445,7 @@ define([
             // This setTimeout allows the player to actually get embedded into the player
             _api.on(events.JWPLAYER_READY, function() {
                 // Initialize values for containerWidth and containerHeight
-                _responsiveListener();
+                _setContainerDimensions();
 
                 _resize(_model.get('width'), _model.get('height'));
             });
@@ -543,7 +567,7 @@ define([
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
             _displayClickHandler.on('move', _userActivity);
             _displayClickHandler.on('over', _userActivity);
-            
+
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
             displayIcon.on('click', function() {
@@ -614,6 +638,7 @@ define([
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
+            _playerElement.onmouseup = handleMouseUp;
         }
 
         function stopDragging(model) {
@@ -700,6 +725,11 @@ define([
             if (!utils.hasClass(_playerElement, 'jw-flag-aspect-mode')) {
                 playerStyle.height = height;
             }
+
+            if (_model.get('aspectratio')) {
+                _resizeAspectModeCaptions();
+            }
+
             _styles(_playerElement, playerStyle, true);
 
             _checkAudioMode(height);
@@ -772,6 +802,11 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
+
+            if (_model.get('aspectratio')) {
+                _resizeAspectModeCaptions();
+            }
+
             _captionsRenderer.resize();
 
             _controlbar.checkCompactMode(width);
@@ -780,7 +815,7 @@ define([
         this.resize = function(width, height) {
             var resetAspectMode = true;
             _resize(width, height, resetAspectMode);
-            _responsiveListener();
+            _setContainerDimensions();
         };
         this.resizeMedia = _resizeMedia;
 
@@ -948,6 +983,11 @@ define([
                     _userActivity();
                     break;
             }
+        }
+
+        function _resizeAspectModeCaptions() {
+            var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
+            _captionsRenderer.setContainerHeight(aspectRatioContainer.offsetHeight);
         }
 
         this.setupInstream = function(instreamModel) {
