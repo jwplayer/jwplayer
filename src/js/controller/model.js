@@ -247,6 +247,17 @@ define([
             return _providers.choose(source).provider;
         };
 
+        this.setItemIndex = function(index) {
+            var playlist = this.get('playlist');
+
+            // If looping past the end, or before the beginning
+            index = parseInt(index, 10) || 0;
+            index = (index + playlist.length) % playlist.length;
+
+            this.set('item', index);
+            this.set('playlistItem', playlist[index]);
+            this.setActiveItem(playlist[index]);
+        };
 
         this.setActiveItem = function(item) {
             // Item is actually changing
