@@ -446,6 +446,13 @@ define([
             return currentQuality;
         }
 
+        function _play() {
+            var promise = _videotag.play();
+            if (promise && promise.catch) {
+                promise.catch(utils.noop);
+            }
+        }
+
         function _completeLoad(startTime, duration) {
 
             _delayedSeek = 0;
@@ -472,7 +479,7 @@ define([
                     _this.seek(startTime);
                 }
 
-                _videotag.play();
+                _play();
             }
 
             _position = _videotag.currentTime;
@@ -626,7 +633,7 @@ define([
                 _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
                 return;
             }
-            _videotag.play();
+            _play();
         };
 
         this.pause = function() {
@@ -668,7 +675,7 @@ define([
                 // Firefox isn't firing canplay event when in a paused state
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=1194624
                 if (_isFirefox && _videotag.paused) {
-                    _videotag.play();
+                    _play();
                 }
             }
         };
