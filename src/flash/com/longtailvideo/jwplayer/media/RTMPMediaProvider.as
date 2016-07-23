@@ -425,7 +425,7 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Interval for the position progress. **/
     private function positionInterval():void {
-        var pos:Number = Math.round((_stream.time) * 10) / 10;
+        var pos:Number = _stream.time;
         var bfr:Number = Math.round(_stream.bufferLength * 10 / _stream.bufferTime) / 10;
         // Toggle between buffering and playback states
         if (bfr < 0.6 && isVOD(_item.duration) && pos < _item.duration - 5 && state != PlayerState.BUFFERING) {
