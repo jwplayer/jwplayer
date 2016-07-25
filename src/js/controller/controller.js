@@ -10,14 +10,13 @@ define([
     'playlist/loader',
     'utils/helpers',
     'view/view',
-    'providers/providers',
     'utils/backbone.events',
     'events/change-state-event',
     'events/states',
     'events/events',
     'view/error'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
-            Playlist, PlaylistLoader, utils, View, Providers, Events, changeStateEvent, states, events, error) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queueCommand(command) {
         return function(){
@@ -78,6 +77,8 @@ define([
             var storage = new Storage();
             storage.track(_model);
             var config = new Config(options, storage);
+
+            var _eventQueuedUntilReady = [];
 
             _model.setup(config, storage);
             _view  = this._view  = new View(_api, _model);
@@ -185,18 +186,13 @@ define([
             function _playerReady() {
                 _setup = null;
 
-                // Set up provider and allow preload
-                _setItem(_model.get('item'));
-
                 _view.on('all', _triggerAfterReady, _this);
 
-                this.showView(_view.element());
+                _this.showView(_view.element());
 
                 // Defer triggering of events until they can be registered
                 _.defer(_playerReadyNotify);
             }
-
-            var _eventQueuedUntilReady = [];
 
             function _playerReadyNotify() {
                 // Tell the api that we are loaded
@@ -449,15 +445,7 @@ define([
             }
 
             function _setItem(index) {
-                var playlist = _model.get('playlist');
-
-                // If looping past the end, or before the beginning
-                index = parseInt(index, 10) || 0;
-                index = (index + playlist.length) % playlist.length;
-
-                _model.set('item', index);
-                _model.set('playlistItem', playlist[index]);
-                _model.setActiveItem(playlist[index]);
+                _model.setItemIndex(index);
             }
 
             function _prev(meta) {
@@ -788,7 +776,7 @@ define([
             this.trigger(events.JWPLAYER_ERROR, evt);
         },
 
-        setupError: function(evt){
+        setupError: function(evt) {
             var message = evt.message;
             var errorElement = utils.createElement(error(this._model.get('id'), this._model.get('skin'), message));
 
