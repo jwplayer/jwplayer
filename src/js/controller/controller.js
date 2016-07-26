@@ -10,14 +10,13 @@ define([
     'playlist/loader',
     'utils/helpers',
     'view/view',
-    'providers/providers',
     'utils/backbone.events',
     'events/change-state-event',
     'events/states',
     'events/events',
     'view/error'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
-            Playlist, PlaylistLoader, utils, View, Providers, Events, changeStateEvent, states, events, error) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
     function _queueCommand(command) {
         return function(){
@@ -79,6 +78,8 @@ define([
             storage.track(_model);
             var config = new Config(options, storage);
 
+            var _eventQueuedUntilReady = [];
+
             _model.setup(config, storage);
             _view  = this._view  = new View(_api, _model);
             _captions = new Captions(_api, _model);
@@ -87,6 +88,7 @@ define([
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);
 
+            _model.mediaController.on('all', _triggerAfterReady, this);
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 _.defer(_completeHandler);
@@ -160,10 +162,14 @@ define([
 
             // For onCaptionsList and onCaptionsChange
             _model.on('change:captionsList', function(model, captionsList) {
-                _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
-                    tracks: captionsList,
-                    track: _getCurrentCaptions()
-                });
+                try {
+                    _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
+                        tracks: captionsList,
+                        track: _getCurrentCaptions()
+                    });
+                } catch (e) {
+                    utils.log('Error with captionsList event:', e);
+                }
             });
 
             _model.on('change:mediaModel', function(model) {
@@ -180,19 +186,13 @@ define([
             function _playerReady() {
                 _setup = null;
 
-                // Set up provider and allow preload
-                _setItem(_model.get('item'));
-
-                _model.mediaController.on('all', _triggerAfterReady, _this);
                 _view.on('all', _triggerAfterReady, _this);
 
-                this.showView(_view.element());
+                _this.showView(_view.element());
 
                 // Defer triggering of events until they can be registered
                 _.defer(_playerReadyNotify);
             }
-
-            var _eventQueuedUntilReady = [];
 
             function _playerReadyNotify() {
                 // Tell the api that we are loaded
@@ -445,15 +445,7 @@ define([
             }
 
             function _setItem(index) {
-                var playlist = _model.get('playlist');
-
-                // If looping past the end, or before the beginning
-                index = parseInt(index, 10) || 0;
-                index = (index + playlist.length) % playlist.length;
-
-                _model.set('item', index);
-                _model.set('playlistItem', playlist[index]);
-                _model.setActiveItem(playlist[index]);
+                _model.setItemIndex(index);
             }
 
             function _prev(meta) {
@@ -736,6 +728,9 @@ define([
             this.createInstream = function() {
                 this.instreamDestroy();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
+                // Persist the current captions track so the index
+                // is  set correctly after ad playback ends
+                _model.persistCaptionsTrack();
                 return this._instreamAdapter;
             };
 
@@ -781,7 +776,7 @@ define([
             this.trigger(events.JWPLAYER_ERROR, evt);
         },
 
-        setupError: function(evt){
+        setupError: function(evt) {
             var message = evt.message;
             var errorElement = utils.createElement(error(this._model.get('id'), this._model.get('skin'), message));
 

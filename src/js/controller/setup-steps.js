@@ -65,12 +65,18 @@ define([
                     'LOAD_SKIN'
                 ]
             },
+            SET_ITEM : {
+                method: _setPlaylistItem,
+                depends: [
+                    'INIT_PLUGINS',
+                    'FILTER_PLAYLIST'
+                ]
+            },
             SEND_READY : {
                 method: _sendReady,
                 depends: [
-                    'INIT_PLUGINS',
-                    'FILTER_PLAYLIST',
-                    'SETUP_VIEW'
+                    'SETUP_VIEW',
+                    'SET_ITEM'
                 ]
             }
         };
@@ -227,6 +233,11 @@ define([
     function _setupView(resolve, _model, _api, _view) {
         _view.setup();
         resolve();
+    }
+
+    function _setPlaylistItem(resolve, _model) {
+        _model.once('itemReady', resolve);
+        _model.setItemIndex(_model.get('item'));
     }
 
     function _sendReady(resolve) {
