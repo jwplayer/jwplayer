@@ -597,7 +597,7 @@
     // have inline positioning and will function as the cue background box.
     this.cueDiv = parseContent(window, cue.text);
     // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-    this.cueDiv.className = 'jw-text-track-cue';
+    this.cueDiv.className = 'jw-text-track-cue jw-reset';
     var styles = {
       textShadow: textShadow,
       position: "relative",
@@ -630,8 +630,8 @@
       styles.direction = determineBidi(this.cueDiv);
       styles.writingMode = cue.vertical === "" ? "horizontal-tb"
                                                : cue.vertical === "lr" ? "vertical-lr"
-                                                                       : "vertical-rl".
-      stylesunicodeBidi =  "plaintext";
+                                                                       : "vertical-rl";
+      styles.unicodeBidi =  "plaintext";
     }
 
     this.applyStyles(styles);
@@ -1014,7 +1014,7 @@
 
     var paddedOverlay = window.document.createElement("div");
     // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-    paddedOverlay.className = 'jw-text-track-container';
+    paddedOverlay.className = 'jw-text-track-container jw-reset';
     paddedOverlay.style.position = "absolute";
     paddedOverlay.style.left = "0";
     paddedOverlay.style.right = "0";
@@ -1055,7 +1055,7 @@
         // Compute the initial position and styles of the cue div.
         styleBox = new CueStyleBox(window, cue);
         // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-        styleBox.div.className = 'jw-text-track-display';
+        styleBox.div.className = 'jw-text-track-display jw-reset';
         paddedOverlay.appendChild(styleBox.div);
 
         // Move the cue div to it's correct line position.
