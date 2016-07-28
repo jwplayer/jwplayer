@@ -459,8 +459,11 @@ define(['../utils/underscore',
         if (this._renderNatively && textTracks && textTracks.length) {
             inuse = textTracks[0].inuse;
         }
+        var supportedTracks = _.filter(tracks, function (track) {
+            return _kindSupported(track.kind);
+        });
         // Determine if the tracks are the same and the embedded + sideloaded count = # of tracks in the controlbar
-        return tracks === this.itemTracks && textTracks && textTracks.length >= tracks.length && inuse;
+        return tracks === this.itemTracks && textTracks && textTracks.length >= supportedTracks.length && inuse;
     }
 
     function _clearSideloadedTextTracks() {
