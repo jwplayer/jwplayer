@@ -322,7 +322,7 @@ define([
                 '.jw-text',
                 // menu option text
                 '.jw-option',
-                // controlbar button colors<style type="text/css" data-jwplayer-id="playa1">…</style>
+                // controlbar button colors
                 '.jw-button-color',
                 // toggle button
                 '.jw-toggle.jw-off',
