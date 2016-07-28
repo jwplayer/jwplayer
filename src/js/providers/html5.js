@@ -460,7 +460,7 @@ define([
             if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
-                _this.setupSideloadedTracks(this._itemTracks);
+                _this.setupSideloadedTracks(_this._itemTracks);
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
