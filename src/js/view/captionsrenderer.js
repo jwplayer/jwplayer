@@ -74,7 +74,7 @@ define([
             if (scale) {
                 var size = _options.fontSize * scale;
                 _style(_display, {
-                    fontSize: Math.round(size) + 'px'
+                    fontSize: Math.floor(size*2)/2 + 'px'
                 });
             }
             renderCues(true);
