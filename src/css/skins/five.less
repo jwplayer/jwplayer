@@ -30,11 +30,12 @@
     @five-border-radius: 0;
 
     @controlbar-height: 2em;
+
     #namespace > .controlbar-height();
-
     #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
+    #namespace > .set-global-color-classes();
 
+    .skin-element-padding();
     /* Styles for play button container on idle */
     .jw-display-icon-container {
         border-radius: @five-border-radius;

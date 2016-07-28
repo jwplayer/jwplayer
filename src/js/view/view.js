@@ -322,7 +322,7 @@ define([
                 '.jw-text',
                 // menu option text
                 '.jw-option',
-                // controlbar button colors
+                // controlbar button colors<style type="text/css" data-jwplayer-id="playa1">…</style>
                 '.jw-button-color',
                 // toggle button
                 '.jw-toggle.jw-off',
@@ -351,6 +351,12 @@ define([
                 // area around scrollbar on the playlist.  skin fix required to remove
                 '.jw-playlist-container ::-webkit-scrollbar'
             ], 'border-color', backgroundColor);
+
+            // Set global colors, used by related plugin
+            utils.css('#' + id + ' .jw-color-active', { color: activeColor, borderColor: activeColor, stroke: activeColor }, id);
+            utils.css('#' + id + ' .jw-color-active-hover:hover', { color: activeColor, borderColor: activeColor, stroke: activeColor }, id);
+            utils.css('#' + id + ' .jw-color-inactive', { color: inactiveColor, borderColor: inactiveColor }, id);
+            utils.css('#' + id + ' .jw-color-inactive-hover:hover', { color: inactiveColor, borderColor: inactiveColor, stroke: inactiveColor }, id);
         };
 
         this.setup = function() {

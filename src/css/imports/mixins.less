@@ -269,4 +269,34 @@
             min-width: @controlbar-height * 5/8;
         }
     }
+    // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
+    .set-global-color-classes() {
+        .jw-color-active {
+            color: @active-color;
+            stroke: @active-color;
+            border-color: @active-color;
+        }
+
+        .jw-color-active-hover {
+            &:hover {
+                color: @active-color;
+                stroke: @active-color;
+                border-color: @active-color;
+            }
+        }
+
+        .jw-color-inactive {
+            color: @inactive-color;
+            stroke: @inactive-color;
+            border-color: @inactive-color;
+        }
+
+        .jw-color-inactive-hover {
+            &:hover {
+                color: @inactive-color;
+                stroke: @inactive-color;
+                border-color: @inactive-color;
+            }
+        }
+    }
 }
