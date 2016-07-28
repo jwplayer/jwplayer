@@ -117,14 +117,13 @@ define(['../utils/underscore',
             _cancelXhr(this._itemTracks);
         }
         this._itemTracks = itemTracks;
-
-        this._renderNatively = _nativeRenderingSupported(this.getName().name);
-        if (!itemTracks || !itemTracks.length) {
+        if (!itemTracks) {
             return;
         }
-
+        
         if (!alreadyLoaded) {
             // Add tracks if we're starting playback or resuming after a midroll
+            this._renderNatively = _nativeRenderingSupported(this.getName().name);
             if (this._renderNatively) {
                 this.disableTextTrack();
                 _clearSideloadedTextTracks.call(this);
