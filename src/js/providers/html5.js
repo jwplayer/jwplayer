@@ -144,7 +144,6 @@ define([
             _audioTracks = null,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _itemTracks = null,
             _visualQuality = { level: {} };
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
@@ -154,7 +153,6 @@ define([
         _videotag.className = 'jw-video jw-reset';
 
         this.isSDK = _isSDK;
-        this.itemTracks = _itemTracks;
         this.video = _videotag;
 
         // prevent browser from showing second cast icon
@@ -462,7 +460,7 @@ define([
             if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
-                _this.setupSideloadedTracks(_itemTracks);
+                _this.setupSideloadedTracks(_this._itemTracks);
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
@@ -531,8 +529,6 @@ define([
 
                 dom.emptyElement(_videotag);
                 _currentQuality = -1;
-                _itemTracks = null;
-                _this.clearTracks();
                 // Don't call load in iE9/10 and check for load in PhantomJS
                 if (!_isMSIE && 'load' in _videotag) {
                     _videotag.load();
@@ -566,6 +562,7 @@ define([
                 return;
             }
             _clearVideotagSource();
+            this.clearTracks();
             // IE may continue to play a video after changing source and loading a new media file.
             // https://connect.microsoft.com/IE/feedbackdetail/view/2000141/htmlmediaelement-autoplays-after-src-is-changed-and-load-is-called
             if(utils.isIETrident()) {
@@ -587,7 +584,6 @@ define([
             if (!_attached) {
                 return;
             }
-            _itemTracks = null;
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
             // the loadeddata event determines the mediaType for HLS sources
@@ -600,7 +596,6 @@ define([
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
             this.setupSideloadedTracks(item.tracks);
-            _itemTracks = this.itemTracks;
         };
 
         this.load = function(item) {
