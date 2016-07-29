@@ -271,6 +271,25 @@ define([
             }
         }
 
+        // Set global colors, used by related plugin
+        // If a color is undefined simple-style-loader won't add their styles to the dom
+        function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
+            var activeColorSet = {
+                color: activeColor,
+                borderColor: activeColor,
+                stroke: activeColor
+            };
+            var inactiveColorSet = {
+                color: inactiveColor,
+                borderColor: inactiveColor,
+                stroke: inactiveColor
+            };
+            utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
+        }
+
 
         this.onChangeSkin = function(model, newSkin) {
             utils.replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-'+newSkin) : '');
@@ -352,11 +371,7 @@ define([
                 '.jw-playlist-container ::-webkit-scrollbar'
             ], 'border-color', backgroundColor);
 
-            // Set global colors, used by related plugin
-            utils.css('#' + id + ' .jw-color-active', { color: activeColor, borderColor: activeColor, stroke: activeColor }, id);
-            utils.css('#' + id + ' .jw-color-active-hover:hover', { color: activeColor, borderColor: activeColor, stroke: activeColor }, id);
-            utils.css('#' + id + ' .jw-color-inactive', { color: inactiveColor, borderColor: inactiveColor }, id);
-            utils.css('#' + id + ' .jw-color-inactive-hover:hover', { color: inactiveColor, borderColor: inactiveColor, stroke: inactiveColor }, id);
+            insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
 
         this.setup = function() {
