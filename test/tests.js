@@ -31,5 +31,6 @@ define([
     'unit/utils-defs-test',
     'unit/utils-test',
     'unit/validator-test',
-    'unit/playlist-loader-test'
+    'unit/playlist-loader-test',
+    'unit/manual/captionsrenderer-test'
 ]);
