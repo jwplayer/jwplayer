@@ -85,7 +85,7 @@ define(['../utils/underscore',
                     // Parsed cues may not have been added to this track yet
                     if (this._cuesByTrackId[track._id] && !this._cuesByTrackId[track._id].loaded) {
                         var cues = this._cuesByTrackId[track._id].cues;
-                        while ((cue = cues.pop())) {
+                        while ((cue = cues.shift())) {
                             track.addCue(cue);
                         }
                         track.mode = mode;
@@ -508,7 +508,7 @@ define(['../utils/underscore',
             var cue;
             this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
 
-            while((cue = vttCues.pop())) {
+            while((cue = vttCues.shift())) {
                 textTrack.addCue(cue);
             }
         } else {
