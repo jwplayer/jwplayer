@@ -1,14 +1,15 @@
 define([
     'test/underscore',
-    'view/captionsrenderer',
-    'controller/model'
-], function (_, CaptionsRenderer, Model) {
+    'controller/model',
+    'view/captionsrenderer'
+], function (_, Model, CaptionsRenderer) {
     /* jshint maxlen: 1000, qunit: true */
 
     var test = QUnit.test.bind(QUnit);
 
     var captionsRenderer = new CaptionsRenderer(new Model());
-
+    captionsRenderer.setup();
+    
     QUnit.module('CaptionsRenderer.getCurrentCues');
 
     test('should show the correct number of cues at any given position in time', function (assert) {
