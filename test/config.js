@@ -20,6 +20,9 @@
     if (!('Promise' in window)) {
         deps.push('polyfills/promise');
     }
+    if (!('VTTCue' in window)) {
+        deps.push('polyfills/vttcue');
+    }
     if (!('console' in window) || !('log' in window.console) ) {
         window.console = {
             log: function() {}
