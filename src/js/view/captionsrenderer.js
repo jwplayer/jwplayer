@@ -102,11 +102,9 @@ define([
         };
 
         this.getCurrentCues = function(allCues, pos) {
-            var cues = _.filter(allCues, function (cue) {
+            return _.filter(allCues, function (cue) {
                 return pos >= (cue.startTime) && (!cue.endTime || pos <= cue.endTime);
             });
-
-            return cues.reverse();
         };
 
         this.updateCurrentCues = function(cues) {
