@@ -112,7 +112,6 @@ define([
             if (!cues.length) {
                 _currentCues = [];
             } else if (_.difference(cues, _currentCues).length) {
-                // _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
                 _currentCues = cues;
             }
 
