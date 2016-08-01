@@ -231,7 +231,7 @@ define([
             }
         }
 
-        // TODO: move to a captions utils file
+        // TODO: move to a captions utils file. Similar to a method in tracks-mixin.js
         function _nativeRenderingSupported() {
             var provider = _model.get('provider');
             return provider.name.indexOf('flash') === -1 &&
