@@ -348,6 +348,7 @@ define(['../utils/underscore',
             var textTrackAny = _createTrack.call(this, itemTrack);
             _addTrackToList.call(this, textTrackAny);
             if (itemTrack.file) {
+                itemTrack.data = [];
                 itemTrack.xhr = _loadTrack.call(this, itemTrack, textTrackAny);
             }
         }
