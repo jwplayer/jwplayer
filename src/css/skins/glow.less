@@ -17,15 +17,17 @@
     @cue-size: .25em;
 
     @controlbar-height: 2em;
+
     #namespace > .controlbar-height();
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
+    .skin-element-padding();
 
     .jw-background-color {
         background: fade(#333, 80%);
     }
-    
-    #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
-    
+
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,

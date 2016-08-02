@@ -271,6 +271,25 @@ define([
             }
         }
 
+        // Set global colors, used by related plugin
+        // If a color is undefined simple-style-loader won't add their styles to the dom
+        function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
+            var activeColorSet = {
+                color: activeColor,
+                borderColor: activeColor,
+                stroke: activeColor
+            };
+            var inactiveColorSet = {
+                color: inactiveColor,
+                borderColor: inactiveColor,
+                stroke: inactiveColor
+            };
+            utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
+        }
+
 
         this.onChangeSkin = function(model, newSkin) {
             utils.replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-'+newSkin) : '');
@@ -351,6 +370,8 @@ define([
                 // area around scrollbar on the playlist.  skin fix required to remove
                 '.jw-playlist-container ::-webkit-scrollbar'
             ], 'border-color', backgroundColor);
+
+            insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
 
         this.setup = function() {

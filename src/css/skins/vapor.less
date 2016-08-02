@@ -23,11 +23,13 @@
 
     @volume-background: #333;
 
-  @controlbar-height: 2em;
-  #namespace > .controlbar-height();
+    @controlbar-height: 2em;
 
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
-	.skin-element-padding();
+    #namespace > .set-global-color-classes();
+
+    .skin-element-padding();
 	
     /* For the overlay containers */
     .jw-time-tip,
