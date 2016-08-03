@@ -122,7 +122,7 @@ define([
 
     /** Format the elapsed / remaining text. **/
     parser.timeFormat = function(sec, allowNegative) {
-        if (sec <= 0 && !allowNegative) {
+        if (_.isNaN(parseInt(sec)) || (sec <= 0 && !allowNegative)) {
             return '00:00';
         }
 
