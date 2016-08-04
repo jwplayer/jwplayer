@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/jwplayer/jwplayer.png?label=ready&title=Ready)](https://waffle.io/jwplayer/jwplayer)
 # <img height="70px" src="http://www.jwplayer.com/wp-content/uploads/JWP-GitHub-Banner-1.png" alt="JW Player Logo" title="JW Player Logo"/>
 
 [![Join the chat at https://gitter.im/jwplayer/jwplayer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jwplayer/jwplayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
