@@ -20,7 +20,8 @@ define([
         }
     };
 
-    var jwError = function (name, error) {
+    var jwError = function (name, error, code) {
+        this.code = code || -1;
         this.name = name;
         this.message = error.message || error.toString();
         this.error = error;
