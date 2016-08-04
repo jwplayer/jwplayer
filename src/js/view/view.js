@@ -1042,8 +1042,7 @@ define([
                 _instreamModel = null;
             }
             this.setAltText('');
-            utils.removeClass(_playerElement, 'jw-flag-ads');
-            utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
+            utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
             if (_model.getVideo) {
                 var provider = _model.getVideo();
                 provider.setContainer(_videoLayer);
