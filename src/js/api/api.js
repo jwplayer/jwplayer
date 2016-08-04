@@ -175,6 +175,10 @@ define([
             return 'html5';
         };
 
+        this.getDrmUsed = function() {
+            return _controller._model.getVideo().drmUsed || null;
+        };
+
         this.load = function (toLoad) {
             var plugin = this.getPlugin('vast') || this.getPlugin('googima');
             if (plugin) {

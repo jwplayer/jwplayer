@@ -25,6 +25,7 @@ define({
     getCurrentAudioTrack: null,
     getCurrentCaptions: null,
     getCurrentQuality: null,
+    getDrmUsed: null,
     getDuration: null,
     getFullscreen: null,
     getHeight: null,
