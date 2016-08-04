@@ -827,6 +827,10 @@
       // video, depending on the writing direction, and reverse our axis directions.
       if (linePos < 0) {
         position += cue.vertical === "" ? containerBox.height : containerBox.width;
+        // textHeight added on 8/04/2016 by Evol Greaves: evol@jwplayer.com
+        // Account for lines of text when determining position based on a negative line value
+        var textHeight = numLinesOfText * step;
+        position -= textHeight;
         axis = axis.reverse();
       }
 
