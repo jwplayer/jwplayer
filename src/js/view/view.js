@@ -1027,6 +1027,10 @@ define([
             _controlbar.setAltText(text);
         };
 
+        this.showControls = function() {
+            utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
+        };
+
         this.useExternalControls = function() {
             utils.addClass(_playerElement, 'jw-flag-ads-hide-controls');
         };
