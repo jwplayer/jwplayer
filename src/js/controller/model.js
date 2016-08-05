@@ -102,7 +102,7 @@ define([
 
                     /* falls through */
                 case events.JWPLAYER_MEDIA_META:
-                    var duration = data.duration;
+                    var duration = data.duration || 0;
                     if (_.isNumber(duration)) {
                         this.mediaModel.set('duration', duration);
                         this.set('duration', duration);

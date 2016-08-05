@@ -118,6 +118,9 @@ define([
         time = parser.timeFormat(NaN);
         assert.equal(time, '00:00', 'timeFormat with minutes seconds');
 
+        time = parser.timeFormat(Infinity);
+        assert.equal(time, '00:00', 'timeFormat with minutes seconds');
+
         time = parser.timeFormat(null);
         assert.equal(time, '00:00', 'timeFormat with minutes seconds');
 
