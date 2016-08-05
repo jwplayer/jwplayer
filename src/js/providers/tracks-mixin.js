@@ -358,6 +358,7 @@ define(['../utils/underscore',
             var textTrackAny = _createTrack.call(this, itemTrack);
             _addTrackToList.call(this, textTrackAny);
             if (itemTrack.file) {
+                itemTrack.data = [];
                 itemTrack.xhr = _loadTrack.call(this, itemTrack, textTrackAny);
             }
         }
@@ -403,8 +404,8 @@ define(['../utils/underscore',
                 // Cues are inaccessible if the track is disabled. While hidden,
                 // we can remove cues while the track is in a non-visible state
                 track.mode = 'hidden';
-                while (track.cues.length) {
-                    track.removeCue(track.cues[0]);
+                for (var i = track.cues.length; i--;) {
+                    track.removeCue(track.cues[i]);
                 }
                 track.mode = 'disabled';
                 track.inuse = false;

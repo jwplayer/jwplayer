@@ -98,7 +98,7 @@ define([
             cues = this.getCurrentCues(track.data, pos);
 
             this.updateCurrentCues(cues);
-            this.renderCues();
+            this.renderCues(true);
         };
 
         this.getCurrentCues = function(allCues, pos) {
