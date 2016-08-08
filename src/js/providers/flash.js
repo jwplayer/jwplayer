@@ -328,7 +328,6 @@ define([
                     }, this);
 
                     _swf.on(forwardEventsWithDataDuration.join(' '), function(e) {
-                        e.duration = e.duration || 0;
                         if(e.duration === 'Infinity') {
                             e.duration = Infinity;
                         }

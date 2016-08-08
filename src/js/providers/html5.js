@@ -280,7 +280,7 @@ define([
         }
         
         function _getDuration() {
-            var duration = _videotag.duration || 0;
+            var duration = _videotag.duration;
             var end = _getSeekableEnd();
             if (duration === Infinity && end) {
                 var seekableDuration = end - _videotag.seekable.start(0);
