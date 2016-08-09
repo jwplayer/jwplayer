@@ -114,7 +114,7 @@ define([
                     if (this.mediaModel.get('playAttempt')) {
                         this.playVideo();
                     } else {
-                        this.mediaModel.on('change:playAttempt', function () {
+                        this.mediaModel.on('change:playAttempt', function() {
                             this.playVideo();
                         }, this);
                     }
@@ -149,9 +149,11 @@ define([
                     break;
                 case 'subtitlesTrackChanged':
                     var adState = this.get('adState');
+
+                    // We only want to update the tracks ands persist the select track
+                    // when an ad is not playing
                     if (!_.isString(adState)) {
-                        this.setVideoSubtitleTrack(data.currentTrack, data.tracks);
-                        this.persistCaptionsTrack();
+                        this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
                     }
                     break;
 
@@ -183,7 +185,7 @@ define([
             }
         };
 
-        this.onMediaContainer = function () {
+        this.onMediaContainer = function() {
             var container = this.get('mediaContainer');
             _currentProvider.setContainer(container);
         };
@@ -388,8 +390,8 @@ define([
 
         };
 
-        this.persistVideoSubtitleTrack = function(trackIndex) {
-            this.setVideoSubtitleTrack(trackIndex);
+        this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
+            this.setVideoSubtitleTrack(trackIndex, tracks);
             this.persistCaptionsTrack();
         };
     };
