@@ -282,8 +282,12 @@ define([
                 loader.load(toLoad);
             }
 
+            function _getAdState() {
+                return _this._instreamAdapter && _this._instreamAdapter.getState();
+            }
+
             function _getState() {
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     return adState;
                 }
@@ -301,7 +305,7 @@ define([
                     return;
                 }
 
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     // this will resume the ad. _api.playAd would load a new ad
                     return _api.pauseAd(false);
@@ -377,7 +381,7 @@ define([
             function _pause() {
                 _actionOnAttach = null;
 
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     return _api.pauseAd(true);
                 }
@@ -641,6 +645,7 @@ define([
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
             this.getState = _getState;
+            this.getAdState = _getAdState;
 
             // Model passthroughs
             this.setVolume = _model.setVolume.bind(_model);
@@ -728,9 +733,8 @@ define([
             this.createInstream = function() {
                 this.instreamDestroy();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
-                // Persist the current captions track so the index
-                // is  set correctly after ad playback ends
-                _model.persistCaptionsTrack();
+                _model.set('adState', this.getAdState());
+
                 return this._instreamAdapter;
             };
 
@@ -738,12 +742,14 @@ define([
                 if (this._instreamAdapter) {
                     this._instreamAdapter.skipAd();
                 }
+                _model.set('adState', this.getAdState());
             };
 
             this.instreamDestroy = function() {
                 if (_this._instreamAdapter) {
                     _this._instreamAdapter.destroy();
                 }
+                _model.set('adState', this.getAdState());
             };
 
             _setup.start();

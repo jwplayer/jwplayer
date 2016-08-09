@@ -120,7 +120,7 @@ define(['../utils/underscore',
         if (!itemTracks) {
             return;
         }
-        
+
         if (!alreadyLoaded) {
             // Add tracks if we're starting playback or resuming after a midroll
             this._renderNatively = _nativeRenderingSupported(this.getName().name);
@@ -295,6 +295,7 @@ define(['../utils/underscore',
         this._unknownCount = 0;
         this._activeCuePosition = null;
         if (this._renderNatively) {
+            this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
             _removeCues.call(this, this.video.textTracks);
         }
     }

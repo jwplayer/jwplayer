@@ -100,7 +100,7 @@ define([
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', data.bufferPercent);
 
-                    /* falls through */
+                /* falls through */
                 case events.JWPLAYER_MEDIA_META:
                     var duration = data.duration;
                     if (_.isNumber(duration) && !_.isNaN(duration)) {
@@ -111,10 +111,10 @@ define([
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
-                    if(this.mediaModel.get('playAttempt')) {
+                    if (this.mediaModel.get('playAttempt')) {
                         this.playVideo();
                     } else {
-                        this.mediaModel.on('change:playAttempt', function() {
+                        this.mediaModel.on('change:playAttempt', function () {
                             this.playVideo();
                         }, this);
                     }
@@ -148,7 +148,11 @@ define([
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
                 case 'subtitlesTrackChanged':
-                    this.setVideoSubtitleTrack(data.currentTrack, data.tracks);
+                    var adState = this.get('adState');
+                    if (!_.isString(adState)) {
+                        this.setVideoSubtitleTrack(data.currentTrack, data.tracks);
+                        this.persistCaptionsTrack();
+                    }
                     break;
 
                 case 'visualQuality':
