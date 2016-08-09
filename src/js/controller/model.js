@@ -103,7 +103,7 @@ define([
                     /* falls through */
                 case events.JWPLAYER_MEDIA_META:
                     var duration = data.duration;
-                    if (_.isNumber(duration)) {
+                    if (_.isNumber(duration) && !_.isNaN(duration)) {
                         this.mediaModel.set('duration', duration);
                         this.set('duration', duration);
                     }
