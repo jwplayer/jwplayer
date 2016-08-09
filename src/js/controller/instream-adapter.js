@@ -201,6 +201,7 @@ define([
             var _this = this;
             var providersManager = _model.getProviders();
             var providersNeeded = providersManager.required(playlist);
+            _model.set('hideAdsControls', false);
             providersManager.load(providersNeeded)
                 .then(function() {
                     if (_instream === null) {
@@ -240,10 +241,6 @@ define([
 
         this.pause = function() {
             _instream.instreamPause();
-        };
-
-        this.hide = function() {
-            _instream.hide();
         };
 
         this.addClickHandler = function() {
@@ -330,7 +327,7 @@ define([
 
         // This method is triggered by plugins which want to hide player controls
         this.hide = function() {
-            _view.useExternalControls();
+            _model.set('hideAdsControls', true);
         };
 
     };
