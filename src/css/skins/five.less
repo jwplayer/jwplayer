@@ -51,49 +51,6 @@
         }
     }
     
-    /* Playlist */
-    .jw-playlist-container {
-        left: -46%;
-        background-color: #fff;
-
-        .jw-option {
-            border-bottom: 1px solid #ECECEC;
-            background-color: #fff;
-            margin-right: 8px;
-            color: @inactive-color;
-
-            // Menu items are black when active, or hovered
-            &:hover,
-            &.jw-active-option {
-                background-color: #ECECEC;
-                color: @hover-color;
-            }
-
-            // Number turn red when li is hovered
-            &:hover {              
-                color: @active-color;
-            }
-        }
-
-        // play icon is always red
-        .jw-label .jw-icon-play {
-            color: @active-color;
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #ECECEC;
-        }
-
-        ::-webkit-scrollbar {
-            width: 2px;
-            border: 10px solid #fff;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: @active-color;
-        }
-    }
-    
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;

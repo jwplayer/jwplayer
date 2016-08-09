@@ -7,10 +7,9 @@ define([
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
-    'view/components/playlist',
     'view/components/volumetooltip',
     'view/components/drawer'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip, Drawer) {
+], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, Drawer) {
 
     function button(icon, apiAction, ariaText) {
         var element = document.createElement('div');
@@ -90,18 +89,11 @@ define([
         build : function() {
             var timeSlider = new TimeSlider(this._model, this._api),
                 drawer = new Drawer('jw-icon-more', this._localization.more),
-                playlistTooltip,
                 volumeSlider,
                 volumeTooltip,
                 muteButton;
 
-            // Create the playlistTooltip as long as visualplaylist from the config is not false
-            if(this._model.get('visualplaylist') !== false) {
-                playlistTooltip = new Playlist('jw-icon-playlist', this._localization.playlist);
-            }
-
             var play = this._localization.play;
-            var prev = this._localization.prev;
             var next = this._localization.next;
             var vol = this._localization.volume;
 
@@ -115,9 +107,7 @@ define([
             this.elements = {
                 alt: text('jw-text-alt', 'status'),
                 play: button('jw-icon-playback', this._api.play.bind(this, {reason: 'interaction'}), play),
-                prev: button('jw-icon-prev', this._api.playlistPrev.bind(this, {reason: 'interaction'}), prev),
                 next: button('jw-icon-next', this._api.playlistNext.bind(this, {reason: 'interaction'}), next),
-                playlist : playlistTooltip,
                 elapsed: text('jw-text-elapsed', 'timer'),
                 time: timeSlider,
                 duration: text('jw-text-duration', 'timer'),
@@ -135,9 +125,6 @@ define([
             this.layout = {
                 left: [
                     this.elements.play,
-                    this.elements.prev,
-                    this.elements.playlist,
-                    this.elements.next,
                     this.elements.elapsed
                 ],
                 center: [
@@ -146,6 +133,7 @@ define([
                 ],
                 right: [
                     this.elements.duration,
+                    this.elements.next,
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
@@ -165,7 +153,6 @@ define([
             };
 
             this.menus = _.compact([
-                this.elements.playlist,
                 this.elements.hd,
                 this.elements.cc,
                 this.elements.audiotracks,
@@ -240,15 +227,6 @@ define([
                 }, this);
             }
 
-            if(this.elements.playlist) {
-                this.elements.playlist.on('select', function (value) {
-                    this._model.once('itemReady', function () {
-                        this._api.play({reason: 'interaction'});
-                    }, this);
-                    this._api.load(value);
-                }, this);
-            }
-
             this.elements.hd.on('select', function(value){
                 this._model.getVideo().setCurrentQuality(value);
             }, this);
@@ -302,12 +280,8 @@ define([
         onPlaylist : function(model, playlist) {
             var display = (playlist.length > 1);
             this.elements.next.toggle(display);
-            this.elements.prev.toggle(display);
-            if(this.elements.playlist) {
-                this.elements.playlist.setup(playlist, model.get('item'));
-            }
         },
-        onPlaylistItem : function(model/*, item*/) {
+        onPlaylistItem : function(/*model, item*/) {
             this.elements.time.updateBuffer(0);
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
@@ -315,10 +289,6 @@ define([
 
             this.clearCompactMode();
 
-            var itemIdx = model.get('item');
-            if (this.elements.playlist) {
-                this.elements.playlist.selectItem(itemIdx);
-            }
             this.elements.audiotracks.setup();
         },
 
