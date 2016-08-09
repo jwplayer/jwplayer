@@ -274,6 +274,10 @@ define([
             }
         };
 
+        this.showControls = function() {
+            _view.showControls();
+        };
+
         this.destroy = function() {
             this.off();
 
