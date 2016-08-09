@@ -298,7 +298,7 @@ define(['../utils/underscore',
 
     function clearTracks() {
         _cancelXhr(this._itemTracks);
-        var metadataTrack = this._tracksById && this._tracksById['nativemetadata'];
+        var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
         if (this._renderNatively || metadataTrack) {
             _removeCues.call(this, this.video.textTracks);
             if(metadataTrack) {
