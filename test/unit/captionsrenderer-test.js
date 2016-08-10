@@ -32,14 +32,14 @@ define([
 
     test('should show the correct number of cues at any given position in time with some missing end times', function (assert) {
         var allCues = [
-            new VTTCue(0, undefined, 'HG: Morning, Rob.'),
+            new VTTCue(0, 0, 'HG: Morning, Rob.'),
             new VTTCue(4, 5, 'How are you?'),
             new VTTCue(7, 10, 'RW: Good, and you?'),
-            new VTTCue(10, undefined, 'I\'m great!'),
+            new VTTCue(10, 0, 'I\'m great!'),
             new VTTCue(12, 15, 'EG: Hey, Jo...'),
-            new VTTCue(13, undefined, 'JB: Yeah?'),
+            new VTTCue(13, 0, 'JB: Yeah?'),
             new VTTCue(13, 14, 'JP: Yeah?'),
-            new VTTCue(16, undefined, 'The End')
+            new VTTCue(16, 0, 'The End')
         ];
         var currentNumCues = [1, 1, 1, 1, 2, 1, 0, 1, 1, 1, 2, 1, 2, 3, 3, 2, 2, 1, 1, 1];
 
@@ -50,14 +50,14 @@ define([
 
     test('should show the correct number of cues at any given position in time with missing end times', function (assert) {
         var allCues = [
-            new VTTCue(0, undefined, 'HG: Morning, Rob.'),
-            new VTTCue(4, undefined, 'How are you?'),
-            new VTTCue(7, undefined, 'RW: Good, and you?'),
-            new VTTCue(10, undefined, 'I\'m great!'),
-            new VTTCue(12, undefined, 'EG: Hey, Jo...'),
-            new VTTCue(13, undefined, 'JB: Yeah?'),
-            new VTTCue(13, undefined, 'JP: Yeah?'),
-            new VTTCue(16, undefined, 'The End')
+            new VTTCue(0, 0, 'HG: Morning, Rob.'),
+            new VTTCue(4, 0, 'How are you?'),
+            new VTTCue(7, 0, 'RW: Good, and you?'),
+            new VTTCue(10, 0, 'I\'m great!'),
+            new VTTCue(12, 0, 'EG: Hey, Jo...'),
+            new VTTCue(13, 0, 'JB: Yeah?'),
+            new VTTCue(13, 0, 'JP: Yeah?'),
+            new VTTCue(16, 0, 'The End')
         ];
         var currentNumCues = [1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 2, 3, 2, 2, 3, 1];
 
