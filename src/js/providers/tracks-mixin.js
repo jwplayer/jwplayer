@@ -295,6 +295,7 @@ define(['../utils/underscore',
         this._unknownCount = 0;
         this._activeCuePosition = null;
         if (this._renderNatively) {
+            // Removing listener first to ensure that removing cues does not trigger it unnecessarily
             this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
             _removeCues.call(this, this.video.textTracks);
         }
