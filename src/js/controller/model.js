@@ -100,7 +100,7 @@ define([
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', data.bufferPercent);
 
-                    /* falls through */
+                /* falls through */
                 case events.JWPLAYER_MEDIA_META:
                     var duration = data.duration;
                     if (_.isNumber(duration) && !_.isNaN(duration)) {
@@ -111,7 +111,7 @@ define([
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
-                    if(this.mediaModel.get('playAttempt')) {
+                    if (this.mediaModel.get('playAttempt')) {
                         this.playVideo();
                     } else {
                         this.mediaModel.on('change:playAttempt', function() {
@@ -148,7 +148,13 @@ define([
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
                 case 'subtitlesTrackChanged':
-                    this.setVideoSubtitleTrack(data.currentTrack, data.tracks);
+                    var adState = this.get('adState');
+
+                    // We only want to update the tracks ands persist the select track
+                    // when an ad is not playing
+                    if (!_.isString(adState)) {
+                        this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
+                    }
                     break;
 
                 case 'visualQuality':
@@ -179,7 +185,7 @@ define([
             }
         };
 
-        this.onMediaContainer = function () {
+        this.onMediaContainer = function() {
             var container = this.get('mediaContainer');
             _currentProvider.setContainer(container);
         };
@@ -384,8 +390,8 @@ define([
 
         };
 
-        this.persistVideoSubtitleTrack = function(trackIndex) {
-            this.setVideoSubtitleTrack(trackIndex);
+        this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
+            this.setVideoSubtitleTrack(trackIndex, tracks);
             this.persistCaptionsTrack();
         };
     };
