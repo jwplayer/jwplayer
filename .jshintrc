@@ -17,6 +17,7 @@
       "__REPO__",
       "__SELF_HOSTED__",
       "__BUILD_VERSION__",
-      "__FLASH_VERSION__"
+      "__FLASH_VERSION__",
+      "__FF_FLASH_VERSION__"
     ]
 }
