@@ -491,10 +491,6 @@ define([
             utils.replaceClass(_playerElement, /jw-stretch-\S+/, 'jw-stretch-' + newVal);
         }
 
-        function _onCompactUIChange(model, newVal) {
-            utils.toggleClass(_playerElement, 'jw-flag-compact-player', newVal);
-        }
-
         function _componentFadeListeners(comp) {
             if (comp && !_isMobile) {
                 comp.element().addEventListener('mousemove', _overControlElement, false);
@@ -655,7 +651,6 @@ define([
             _controlbar = new Controlbar(_api, _model);
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
-            _model.on('change:compactUI', _onCompactUIChange);
 
             _controlsLayer.appendChild(_controlbar.element());
 
@@ -833,8 +828,6 @@ define([
             }
 
             _captionsRenderer.resize();
-
-            _controlbar.checkCompactMode(width);
         }
 
         this.resize = function(width, height) {
@@ -913,7 +906,6 @@ define([
         function _userActivity() {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
-                _controlbar.checkCompactMode(_videoLayer.clientWidth);
                 _captionsRenderer.renderCues(true);
             }
 
