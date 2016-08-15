@@ -96,6 +96,7 @@ define([
             var play = this._localization.play;
             var next = this._localization.next;
             var vol = this._localization.volume;
+            var rewind = this._localization.rewind;
 
             // Do not initialize volume sliders on mobile.
             if(!this._isMobile){
@@ -107,6 +108,7 @@ define([
             this.elements = {
                 alt: text('jw-text-alt', 'status'),
                 play: button('jw-icon-playback', this._api.play.bind(this, {reason: 'interaction'}), play),
+                rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
                 next: button('jw-icon-next', this._api.playlistNext.bind(this, {reason: 'interaction'}), next),
                 elapsed: text('jw-text-elapsed', 'timer'),
                 time: timeSlider,
@@ -125,6 +127,7 @@ define([
             this.layout = {
                 left: [
                     this.elements.play,
+                    this.elements.rewind,
                     this.elements.elapsed
                 ],
                 center: [
@@ -360,6 +363,9 @@ define([
                 totalTime = utils.timeFormat(val);
             }
             this.elements.duration.innerHTML = totalTime;
+
+            // Hide rewind button when in LIVE mode
+            this.elements.rewind.toggle(utils.adaptiveType(val) !== 'LIVE');
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
@@ -464,6 +470,19 @@ define([
                     this.elements.right.insertBefore(ele.el, this.elements.drawer.el);
                 }, this);
             }
+        },
+        rewind : function() {
+            var currentPosition = this._model.get('position'),
+                duration = this._model.get('duration'),
+                rewindPosition = currentPosition - 10,
+                startPosition = 0;
+
+            // duration is negative in DVR mode
+            if (utils.adaptiveType(duration) === 'DVR') {
+                startPosition = duration;
+            }
+            // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
+            this._api.seek(Math.max(rewindPosition, startPosition));
         }
     });
 
