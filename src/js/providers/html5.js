@@ -449,7 +449,9 @@ define([
         function _play() {
             var promise = _videotag.play();
             if (promise && promise.catch) {
-                promise.catch(utils.noop);
+                promise.catch(function(err) {
+                    console.warn(err);
+                });
             }
         }
 
