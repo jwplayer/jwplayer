@@ -187,7 +187,7 @@ define([
             }
             this.onVolume(this._model, this._model.get('volume'));
             this.onPlaylist(this._model, this._model.get('playlist'));
-            this.onPlaylistItem(this._model, this._model.get('playlistItem'));
+            this.onPlaylistItem();
             this.onMediaModel(this._model, this._model.get('mediaModel'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
             this.onCastActive(this._model, this._model.get('castActive'));
@@ -281,7 +281,7 @@ define([
             var display = (playlist.length > 1);
             this.elements.next.toggle(display);
         },
-        onPlaylistItem : function(/*model, item*/) {
+        onPlaylistItem : function() {
             this.elements.time.updateBuffer(0);
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
