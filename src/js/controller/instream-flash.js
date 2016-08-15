@@ -83,8 +83,6 @@ define([
         stateHandler: function(evt) {
             switch (evt.newstate) {
             case states.PLAYING:
-                this._adModel.set('state', evt.newstate);
-                break;
             case states.PAUSED:
                 this._adModel.set('state', evt.newstate);
                 break;
