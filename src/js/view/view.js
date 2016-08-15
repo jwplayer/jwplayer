@@ -331,8 +331,6 @@ define([
                 '.jw-active-option',
                 // slider fill color
                 '.jw-progress',
-                '.jw-playlist-container .jw-option.jw-active-option',
-                '.jw-playlist-container .jw-option:hover'
             ], 'background', activeColor);
 
             // Apply inactive color
@@ -346,30 +344,20 @@ define([
                 // toggle button
                 '.jw-toggle.jw-off',
                 '.jw-tooltip-title',
-                '.jw-skip .jw-skip-icon',
-                '.jw-playlist-container .jw-icon'
+                '.jw-skip .jw-skip-icon'
             ], 'color', inactiveColor);
             addStyle([
                 // slider children
                 '.jw-cue',
                 '.jw-knob'
             ], 'background', inactiveColor);
-            addStyle([
-                '.jw-playlist-container .jw-option'
-            ], 'border-bottom-color', inactiveColor);
 
             // Apply background color
             addStyle([
                 // general background color
                 '.jw-background-color',
-                '.jw-tooltip-title',
-                '.jw-playlist',
-                '.jw-playlist-container .jw-option'
+                '.jw-tooltip-title'
             ], 'background', backgroundColor);
-            addStyle([
-                // area around scrollbar on the playlist.  skin fix required to remove
-                '.jw-playlist-container ::-webkit-scrollbar'
-            ], 'border-color', backgroundColor);
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
