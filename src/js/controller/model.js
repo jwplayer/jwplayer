@@ -34,7 +34,6 @@ define([
                 // Initially we don't assume Flash is needed
                 flashBlocked : false,
                 fullscreen: false,
-                compactUI: false,
                 scrubbing : false,
                 duration: 0,
                 position: 0,
