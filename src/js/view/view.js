@@ -260,15 +260,9 @@ define([
         }
 
         function _responsiveListener() {
-            if (!document.body.contains(_playerElement)) {
-                window.removeEventListener('resize', _responsiveListener);
-                if (_isMobile) {
-                    window.removeEventListener('orientationchange', _responsiveListener);
-                }
-            } else {
+            if (document.body.contains(_playerElement)) {
                 _cancelDelayResize(_resizeContainerRequestId);
                 _resizeContainerRequestId = _delayResize(_setContainerDimensions);
-            }
         }
 
         // Set global colors, used by related plugin
