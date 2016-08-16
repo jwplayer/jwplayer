@@ -3,8 +3,9 @@ define(['../utils/underscore',
     '../utils/helpers',
     '../parsers/parsers',
     '../parsers/captions/srt',
-    '../parsers/captions/dfxp'
-], function(_, ID3Parser, utils, parsers, srt, dfxp) {
+    '../parsers/captions/dfxp',
+    '../utils/captions'
+], function(_, ID3Parser, utils, parsers, srt, dfxp, captions) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -131,7 +132,7 @@ define(['../utils/underscore',
         
         if (!alreadyLoaded) {
             // Add tracks if we're starting playback or resuming after a midroll
-            this._renderNatively = utils.nativeRenderingSupported(this.getName().name);
+            this._renderNatively = captions.nativeRenderingSupported(this.getName().name);
             if (this._renderNatively) {
                 this.disableTextTrack();
                 _clearSideloadedTextTracks.call(this);
@@ -350,7 +351,7 @@ define(['../utils/underscore',
             _initTextTracks.call(this);
         }
 
-        this._renderNatively = utils.nativeRenderingSupported(this.getName().name);
+        this._renderNatively = captions.nativeRenderingSupported(this.getName().name);
 
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];

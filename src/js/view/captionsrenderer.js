@@ -2,8 +2,9 @@ define([
     'utils/helpers',
     'utils/css',
     'events/states',
-    'utils/underscore'
-], function(utils, cssUtils, states, _) {
+    'utils/underscore',
+    'utils/captions'
+], function(utils, cssUtils, states, _, captions) {
     var _style = cssUtils.style;
 
     var _defaults = {
@@ -238,7 +239,7 @@ define([
 
         function _itemReadyHandler() {
             // don't load the polyfill or do unnecessary work if rendering natively
-            if(!utils.nativeRenderingSupported(_model.get('provider').name)) {
+            if(!captions.nativeRenderingSupported(_model.get('provider').name)) {
                 require.ensure(['polyfills/vtt'], function (require) {
                     _VTTRenderer = require('polyfills/vtt');
                 }, 'polyfills.vttrenderer');
