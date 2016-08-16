@@ -97,7 +97,7 @@ define(['../utils/underscore',
             }
         }
 
-        if (this._renderNatively) {
+        if (this._renderNatively && !this.instreamMode) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
 

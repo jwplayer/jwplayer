@@ -148,13 +148,7 @@ define([
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
                 case 'subtitlesTrackChanged':
-                    var adState = this.get('adState');
-
-                    // We only want to update the tracks ands persist the select track
-                    // when an ad is not playing
-                    if (!_.isString(adState)) {
-                        this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
-                    }
+                    this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
                     break;
 
                 case 'visualQuality':
@@ -198,6 +192,7 @@ define([
                 if (_provider.getContainer()) {
                     _provider.remove();
                 }
+                delete _provider.instreamMode;
             }
 
             if (!Provider) {
@@ -226,6 +221,10 @@ define([
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
             _provider.on('all', _videoEventHandler, this);
+
+            if (this.get('instreamMode') === true) {
+                _provider.instreamMode = true;
+            }
         };
 
         this.destroy = function() {

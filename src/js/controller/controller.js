@@ -733,8 +733,6 @@ define([
             this.createInstream = function() {
                 this.instreamDestroy();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
-                _model.set('adState', this.getAdState());
-
                 return this._instreamAdapter;
             };
 
@@ -742,14 +740,12 @@ define([
                 if (this._instreamAdapter) {
                     this._instreamAdapter.skipAd();
                 }
-                _model.set('adState', this.getAdState());
             };
 
             this.instreamDestroy = function() {
                 if (_this._instreamAdapter) {
                     _this._instreamAdapter.destroy();
                 }
-                _model.set('adState', this.getAdState());
             };
 
             _setup.start();
