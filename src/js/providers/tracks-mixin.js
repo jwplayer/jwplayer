@@ -102,21 +102,16 @@ define(['../utils/underscore',
         if (this._renderNatively) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-<<<<<<< HEAD
 
             this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
-
-            // If provider is being used to play an ad, don't add listener, so tracks won't change.
             if (!this.instreamMode) {
                 this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
-=======
-            this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
+            }
 
             if (utils.isEdge()) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
                 this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
->>>>>>> master
             }
         }
 
