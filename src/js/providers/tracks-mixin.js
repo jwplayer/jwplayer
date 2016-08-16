@@ -3,8 +3,9 @@ define(['../utils/underscore',
     '../utils/helpers',
     '../parsers/parsers',
     '../parsers/captions/srt',
-    '../parsers/captions/dfxp'
-], function(_, ID3Parser, utils, parsers, srt, dfxp) {
+    '../parsers/captions/dfxp',
+    '../utils/nativerenderingsupported'
+], function(_, ID3Parser, utils, parsers, srt, dfxp, nativeRenderingSupported) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -28,6 +29,7 @@ define(['../utils/underscore',
         setupSideloadedTracks: setupSideloadedTracks,
         setSubtitlesTrack: setSubtitlesTrack,
         textTrackChangeHandler: null,
+        addTrackHandler: null,
         addCuesToTrack: addCuesToTrack,
         addCaptionsCue: addCaptionsCue,
         addVTTCue: addVTTCue
@@ -100,9 +102,13 @@ define(['../utils/underscore',
         if (this._renderNatively) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-
-            this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
+
+            if (utils.isEdge()) {
+                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge
+                this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
+                this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
+            }
         }
 
         if (this._textTracks.length) {
@@ -123,7 +129,7 @@ define(['../utils/underscore',
         
         if (!alreadyLoaded) {
             // Add tracks if we're starting playback or resuming after a midroll
-            this._renderNatively = _nativeRenderingSupported(this.getName().name);
+            this._renderNatively = nativeRenderingSupported(this.getName().name);
             if (this._renderNatively) {
                 this.disableTextTrack();
                 _clearSideloadedTextTracks.call(this);
@@ -266,6 +272,8 @@ define(['../utils/underscore',
         if (!tracks) {
             return;
         }
+        // Always remove existing listener
+        removeTracksListener(tracks, eventType, handler);
 
         if (tracks.addEventListener) {
             tracks.addEventListener(eventType, handler);
@@ -328,6 +336,11 @@ define(['../utils/underscore',
         }
     }
 
+    // Used in MS Edge to get tracks from the videotag as they're added
+    function addTrackHandler() {
+        this.setTextTracks(this.video.textTracks);
+    }
+
     function addTextTracks(tracksArray) {
         if (!tracksArray) {
             return;
@@ -337,7 +350,7 @@ define(['../utils/underscore',
             _initTextTracks.call(this);
         }
 
-        this._renderNatively = _nativeRenderingSupported(this.getName().name);
+        this._renderNatively = nativeRenderingSupported(this.getName().name);
 
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];
@@ -401,10 +414,6 @@ define(['../utils/underscore',
                 track.inuse = false;
             });
         }
-    }
-
-    function _nativeRenderingSupported(providerName) {
-        return providerName.indexOf('flash') === -1 && (utils.isChrome() || utils.isIOS() || utils.isSafari());
     }
 
     function _kindSupported(kind) {
