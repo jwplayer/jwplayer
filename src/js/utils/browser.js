@@ -177,5 +177,10 @@ define([
         return majorVersion;
     };
 
+    browser.nativeRenderingSupported = function (providerName) {
+        return providerName.indexOf('flash') === -1 &&
+        (browser.isChrome() || browser.isIOS() || browser.isSafari() || browser.isEdge());
+    };
+
     return browser;
 });
