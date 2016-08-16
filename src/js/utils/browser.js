@@ -2,6 +2,7 @@ define([
     'utils/underscore'
 ], function(_) {
     var browser = {};
+    var partNames = ['major', 'minor', 'patch', 'rev'];
 
     var _userAgentMatch = _.memoize(function (regex) {
         var agent = navigator.userAgent.toLowerCase();
@@ -12,6 +13,17 @@ define([
         return function () {
             return _userAgentMatch(regex);
         };
+    }
+
+    function _parseVersion(version) {
+        var parts = version.split(/[\s,. ]+/);
+        var parsed = {};
+
+        _.forEach(partNames, function(partName, i) {
+           parsed[partName] = (i < parts.length)? parts[i] : 0;
+        });
+
+        return parsed;
     }
 
     var _isInt = browser.isInt = function (value) {
@@ -121,12 +133,19 @@ define([
         }
 
         var plugins = navigator.plugins,
+            majorVersion = 0,
+            version = '',
             flash;
 
-        if (plugins) {
+        if (plugins && plugins['Shockwave Flash']) {
             flash = plugins['Shockwave Flash'];
-            if (flash && flash.description) {
-                return parseFloat(flash.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
+
+            if (flash.description) {
+                majorVersion = parseFloat(flash.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
+            }
+
+            if (flash.version) {
+                version = flash.version;
             }
         }
 
@@ -134,15 +153,28 @@ define([
             try {
                 flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 if (flash) {
-                    return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
+                    version = flash.GetVariable('$version');
+                    majorVersion = parseFloat(version.split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
             } catch(e) {
-                return 0;
+                majorVersion = 0;
             }
-
-            return flash;
         }
-        return 0;
+
+
+        if (browser.isFF() && version) {
+            var parsedCurrent = _parseVersion(version);
+            var parsedLatest = _parseVersion(__FF_FLASH_VERSION__);
+
+            for (var i = 0; i < partNames.length; i += 1) {
+                if (parsedCurrent[partNames[i]] < parsedLatest[partNames[i]]) {
+                    majorVersion = 0;
+                    break;
+                }
+            }
+        }
+
+        return majorVersion;
     };
 
     return browser;

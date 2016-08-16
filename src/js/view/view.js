@@ -260,12 +260,7 @@ define([
         }
 
         function _responsiveListener() {
-            if (!document.body.contains(_playerElement)) {
-                window.removeEventListener('resize', _responsiveListener);
-                if (_isMobile) {
-                    window.removeEventListener('orientationchange', _responsiveListener);
-                }
-            } else {
+            if (document.body.contains(_playerElement)) {
                 _cancelDelayResize(_resizeContainerRequestId);
                 _resizeContainerRequestId = _delayResize(_setContainerDimensions);
             }
@@ -440,6 +435,10 @@ define([
             _onCastAvailable(_model, _model.get('castAvailable'));
             _model.on('change:castActive', _onCastActive);
             _onCastActive(_model, _model.get('castActive'));
+
+            _model.on('change:hideAdsControls', function(model, val) {
+                utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
+            });
 
             // set initial state
             if(_model.get('stretching')){
@@ -1027,10 +1026,6 @@ define([
             _controlbar.setAltText(text);
         };
 
-        this.useExternalControls = function() {
-            utils.addClass(_playerElement, 'jw-flag-ads-hide-controls');
-        };
-
         this.destroyInstream = function() {
             _instreamMode = false;
             if (_instreamModel) {
@@ -1038,8 +1033,8 @@ define([
                 _instreamModel = null;
             }
             this.setAltText('');
-            utils.removeClass(_playerElement, 'jw-flag-ads');
-            utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
+            utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
+            _model.set('hideAdsControls', false);
             if (_model.getVideo) {
                 var provider = _model.getVideo();
                 provider.setContainer(_videoLayer);
