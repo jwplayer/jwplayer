@@ -280,6 +280,8 @@ define([
                 if (_view.clickHandler()) {
                     _view.clickHandler().revertAlternateClickHandlers();
                 }
+
+                _model.off(null, null, _instream);
                 _instream.instreamDestroy();
 
                 // Must happen after instream.instreamDestroy()
