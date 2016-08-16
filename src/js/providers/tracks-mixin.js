@@ -97,6 +97,7 @@ define(['../utils/underscore',
             }
         }
 
+        // If provider is being used to play an ad, don't add listener, so tracks won't change.
         if (this._renderNatively && !this.instreamMode) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
