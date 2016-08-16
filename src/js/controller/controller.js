@@ -645,7 +645,6 @@ define([
             this.getVisualQuality = _getVisualQuality;
             this.getConfig = _getConfig;
             this.getState = _getState;
-            this.getAdState = _getAdState;
 
             // Model passthroughs
             this.setVolume = _model.setVolume.bind(_model);
