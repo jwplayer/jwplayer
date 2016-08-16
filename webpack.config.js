@@ -6,7 +6,6 @@ var argv = require('minimist')(process.argv.slice(2));
 
 var packageInfo = require('./package.json');
 var flashVersion = 11.2;
-var latestFlashVersion = '22.0.0.209';
 
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
@@ -32,7 +31,6 @@ var compileConstants =
     __REPO__ : '\'\'',
     __DEBUG__ : false,
     __BUILD_VERSION__: '\'' + getBuildVersion(packageInfo) + '\'',
-    __FF_FLASH_VERSION__: '\'' + latestFlashVersion + '\'',
     __FLASH_VERSION__: flashVersion
 };
 
