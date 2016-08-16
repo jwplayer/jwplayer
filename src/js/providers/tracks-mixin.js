@@ -18,6 +18,7 @@ define(['../utils/underscore',
         _unknownCount: 0,
         _renderNatively: false,
         _activeCuePosition: null,
+        _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
         clearTracks: clearTracks,
         disableTextTrack: disableTextTrack,
@@ -41,7 +42,7 @@ define(['../utils/underscore',
         }
 
         if (!this._textTracks) {
-            _initTextTracks.call(this);
+            this._initTextTracks();
         }
 
         // filter for 'subtitles' or 'captions' tracks
@@ -215,6 +216,9 @@ define(['../utils/underscore',
     }
 
     function addVTTCue(cueData) {
+        if (!this._tracksById) {
+            this._initTextTracks();
+        }
 
         var trackId = 'native' + cueData.type,
             track = this._tracksById[trackId],
@@ -334,7 +338,7 @@ define(['../utils/underscore',
         }
 
         if (!this._textTracks) {
-            _initTextTracks.call(this);
+            this._initTextTracks();
         }
 
         this._renderNatively = _nativeRenderingSupported(this.getName().name);
@@ -482,7 +486,7 @@ define(['../utils/underscore',
         var nonSideloadedTracks = _.filter(this._textTracks, function (track) {
             return track.embedded || track.groupid === 'subs';
         });
-        _initTextTracks.call(this);
+        this._initTextTracks();
         _.each(nonSideloadedTracks, function (track) {
             this._tracksById[track._id] = track;
         });
