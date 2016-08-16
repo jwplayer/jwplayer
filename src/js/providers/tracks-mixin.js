@@ -4,8 +4,8 @@ define(['../utils/underscore',
     '../parsers/parsers',
     '../parsers/captions/srt',
     '../parsers/captions/dfxp',
-    '../utils/captions'
-], function(_, ID3Parser, utils, parsers, srt, dfxp, captions) {
+    '../utils/nativerenderingsupported'
+], function(_, ID3Parser, utils, parsers, srt, dfxp, nativeRenderingSupported) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -102,14 +102,11 @@ define(['../utils/underscore',
         if (this._renderNatively) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-
-            this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
             if (utils.isEdge()) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-                this.removeTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
                 this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
             }
         }
@@ -132,7 +129,7 @@ define(['../utils/underscore',
         
         if (!alreadyLoaded) {
             // Add tracks if we're starting playback or resuming after a midroll
-            this._renderNatively = captions.nativeRenderingSupported(this.getName().name);
+            this._renderNatively = nativeRenderingSupported(this.getName().name);
             if (this._renderNatively) {
                 this.disableTextTrack();
                 _clearSideloadedTextTracks.call(this);
@@ -275,6 +272,8 @@ define(['../utils/underscore',
         if (!tracks) {
             return;
         }
+        // Always remove existing listener
+        removeTracksListener(tracks, eventType, handler);
 
         if (tracks.addEventListener) {
             tracks.addEventListener(eventType, handler);
@@ -351,7 +350,7 @@ define(['../utils/underscore',
             _initTextTracks.call(this);
         }
 
-        this._renderNatively = captions.nativeRenderingSupported(this.getName().name);
+        this._renderNatively = nativeRenderingSupported(this.getName().name);
 
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];
