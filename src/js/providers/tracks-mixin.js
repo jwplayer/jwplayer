@@ -100,7 +100,7 @@ define(['../utils/underscore',
             }
         }
 
-        if (this._renderNatively && !this.instreamMode) {
+        if (this._renderNatively) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
@@ -278,6 +278,10 @@ define(['../utils/underscore',
         }
         // Always remove existing listener
         removeTracksListener(tracks, eventType, handler);
+
+        if (this.instreamMode) {
+            return;
+        }
 
         if (tracks.addEventListener) {
             tracks.addEventListener(eventType, handler);
