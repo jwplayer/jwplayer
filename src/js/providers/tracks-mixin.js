@@ -127,7 +127,7 @@ define(['../utils/underscore',
         if (!itemTracks) {
             return;
         }
-        
+
         if (!alreadyLoaded) {
             // Add tracks if we're starting playback or resuming after a midroll
             this._renderNatively = nativeRenderingSupported(this.getName().name);
@@ -279,6 +279,10 @@ define(['../utils/underscore',
         // Always remove existing listener
         removeTracksListener(tracks, eventType, handler);
 
+        if (this.instreamMode) {
+            return;
+        }
+
         if (tracks.addEventListener) {
             tracks.addEventListener(eventType, handler);
         } else {
@@ -307,6 +311,8 @@ define(['../utils/underscore',
         this._unknownCount = 0;
         this._activeCuePosition = null;
         if (this._renderNatively) {
+            // Removing listener first to ensure that removing cues does not trigger it unnecessarily
+            this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
             _removeCues.call(this, this.video.textTracks);
         }
     }
