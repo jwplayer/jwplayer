@@ -100,14 +100,10 @@ define(['../utils/underscore',
             }
         }
 
-        if (this._renderNatively) {
+        if (this._renderNatively && !this.instreamMode) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-
-            this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
-            if (!this.instreamMode) {
-                this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
-            }
+            this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
             if (utils.isEdge()) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge
