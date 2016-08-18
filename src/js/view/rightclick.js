@@ -88,6 +88,8 @@ define([
 
             utils.addClass(this.playerElement, 'jw-flag-rightclick-open');
             utils.addClass(this.el, 'jw-open');
+            clearTimeout(this._menuTimeout);
+            this._menuTimeout = setTimeout(this.hideMenu.bind(this), 3000);
             return false;
         },
 
