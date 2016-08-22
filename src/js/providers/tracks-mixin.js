@@ -89,7 +89,7 @@ define(['../utils/underscore',
                     if (this._cuesByTrackId[track._id] && !this._cuesByTrackId[track._id].loaded) {
                         var cues = this._cuesByTrackId[track._id].cues;
                         while ((cue = cues.shift())) {
-                            track.addCue(cue);
+                            _addCueToTrack(track, cue);
                         }
                         track.mode = mode;
                         this._cuesByTrackId[track._id].loaded = true;
@@ -240,7 +240,7 @@ define(['../utils/underscore',
             track = _createTrack.call(this, itemTrack);
             this.setTextTracks(this.video.textTracks);
         }
-        track.addCue(cueData.cue);
+        _addCueToTrack(track, cueData.cue);
     }
 
     function addCuesToTrack(cueData) {
@@ -411,6 +411,18 @@ define(['../utils/underscore',
     ////// PRIVATE METHODS
     //////////////////////
 
+    function _addCueToTrack(track, vttCue) {
+        if (!utils.isEdge() || !window.TextTrackCue) {
+            track.addCue(vttCue);
+            return;
+        }
+        // There's no support for the VTTCue interface in Edge.
+        // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
+        // This unfortunately removes positioning properties from the cues
+        var textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
+        track.addCue(textTrackCue);
+    }
+
     function _removeCues(tracks) {
         if (tracks.length) {
             _.each(tracks, function(track) {
@@ -529,7 +541,7 @@ define(['../utils/underscore',
             this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
 
             while((cue = vttCues.shift())) {
-                textTrack.addCue(cue);
+                _addCueToTrack(textTrack, cue);
             }
         } else {
             track.data = vttCues;
@@ -552,7 +564,7 @@ define(['../utils/underscore',
             var parser = new VTTParser(window);
             if (renderNatively) {
                 parser.oncue = function(cue) {
-                    track.addCue(cue);
+                    _addCueToTrack(track, cue);
                 };
             } else {
                 track.data = track.data || [];
