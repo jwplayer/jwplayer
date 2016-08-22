@@ -402,7 +402,7 @@ define(['../utils/underscore',
     //////////////////////
 
     function _addCueToTrack(track, vttCue) {
-        if (!utils.isEdge()) {
+        if (!utils.isEdge() || !window.TextTrackCue) {
             track.addCue(vttCue);
             return;
         }
