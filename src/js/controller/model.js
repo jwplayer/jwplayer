@@ -295,17 +295,6 @@ define([
             if (_currentProvider.init) {
                 _currentProvider.init(item);
             }
-
-            // Listening for change:item won't suffice when loading the same index or file
-            // We also can't listen for change:mediaModel because it triggers whether or not
-            //  an item was actually loaded
-            this.trigger('itemReady', item);
-
-            // In IE9, trigger this event, since the loadeddata event is firing before it binds the
-            // subtitlesTracks event listener
-            if (utils.isIE(9) && _currentProvider._textTracks && _currentProvider._textTracks.length) {
-                _currentProvider.trigger('subtitlesTracks', {tracks: _currentProvider._textTracks});
-            }
         };
 
         this.getProviders = function() {

@@ -13,6 +13,7 @@ define([
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
         _isIE = utils.isIE(),
+        _isIE9 = utils.isIE(9),
         _isMSIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isFirefox = utils.isFF(),
@@ -321,6 +322,9 @@ define([
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
+            if (_isIE9) {
+                _this.setTextTracks(_this._textTracks);
+            }
             _sendBufferFull();
         }
 
@@ -334,6 +338,7 @@ define([
                 _videotag.muted = false;
                 _videotag.muted = true;
             }
+
             _videotag.setAttribute('jw-loaded', 'meta');
             _sendMetaEvent();
         }
