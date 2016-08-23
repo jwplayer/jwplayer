@@ -247,12 +247,7 @@ define([
             // start listening for ad click
             _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
 
-            //if (utils.isMSIE()) {
-                //_oldProvider.parentElement.addEventListener('click', _view.clickHandler().clickHandler);
-            //}
-
             _instream.on(events.JWPLAYER_MEDIA_META, this.metaHandler, this);
-
         };
 
         this.skipAd = function(evt) {
@@ -280,6 +275,8 @@ define([
                 if (_view.clickHandler()) {
                     _view.clickHandler().revertAlternateClickHandlers();
                 }
+
+                _model.off(null, null, _instream);
                 _instream.instreamDestroy();
 
                 // Must happen after instream.instreamDestroy()

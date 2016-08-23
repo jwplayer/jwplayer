@@ -3,8 +3,9 @@ define(['../utils/underscore',
     '../utils/helpers',
     '../parsers/parsers',
     '../parsers/captions/srt',
-    '../parsers/captions/dfxp'
-], function(_, ID3Parser, utils, parsers, srt, dfxp) {
+    '../parsers/captions/dfxp',
+    '../utils/nativerenderingsupported'
+], function(_, ID3Parser, utils, parsers, srt, dfxp, nativeRenderingSupported) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -18,6 +19,7 @@ define(['../utils/underscore',
         _unknownCount: 0,
         _renderNatively: false,
         _activeCuePosition: null,
+        _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
         clearTracks: clearTracks,
         disableTextTrack: disableTextTrack,
@@ -28,6 +30,7 @@ define(['../utils/underscore',
         setupSideloadedTracks: setupSideloadedTracks,
         setSubtitlesTrack: setSubtitlesTrack,
         textTrackChangeHandler: null,
+        addTrackHandler: null,
         addCuesToTrack: addCuesToTrack,
         addCaptionsCue: addCaptionsCue,
         addVTTCue: addVTTCue
@@ -41,7 +44,7 @@ define(['../utils/underscore',
         }
 
         if (!this._textTracks) {
-            _initTextTracks.call(this);
+            this._initTextTracks();
         }
 
         // filter for 'subtitles' or 'captions' tracks
@@ -87,7 +90,7 @@ define(['../utils/underscore',
                     if (this._cuesByTrackId[track._id] && !this._cuesByTrackId[track._id].loaded) {
                         var cues = this._cuesByTrackId[track._id].cues;
                         while ((cue = cues.shift())) {
-                            track.addCue(cue);
+                            _addCueToTrack(track, cue);
                         }
                         track.mode = mode;
                         this._cuesByTrackId[track._id].loaded = true;
@@ -101,9 +104,13 @@ define(['../utils/underscore',
         if (this._renderNatively) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-
-            this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
+
+            if (utils.isEdge()) {
+                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge
+                this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
+                this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
+            }
         }
 
         if (this._textTracks.length) {
@@ -121,10 +128,10 @@ define(['../utils/underscore',
         if (!itemTracks) {
             return;
         }
-        
+
         if (!alreadyLoaded) {
             // Add tracks if we're starting playback or resuming after a midroll
-            this._renderNatively = _nativeRenderingSupported(this.getName().name);
+            this._renderNatively = nativeRenderingSupported(this.getName().name);
             if (this._renderNatively) {
                 this.disableTextTrack();
                 _clearSideloadedTextTracks.call(this);
@@ -216,6 +223,9 @@ define(['../utils/underscore',
     }
 
     function addVTTCue(cueData) {
+        if (!this._tracksById) {
+            this._initTextTracks();
+        }
 
         var trackId = 'native' + cueData.type,
             track = this._tracksById[trackId],
@@ -238,7 +248,7 @@ define(['../utils/underscore',
         }
 
         if (this._renderNatively || track.kind === 'metadata') {
-            track.addCue(cueData.cue);
+            _addCueToTrack(track, cueData.cue);
         } else {
             track.data.push(cueData.cue);
         }
@@ -277,6 +287,12 @@ define(['../utils/underscore',
         if (!tracks) {
             return;
         }
+        // Always remove existing listener
+        removeTracksListener(tracks, eventType, handler);
+
+        if (this.instreamMode) {
+            return;
+        }
 
         if (tracks.addEventListener) {
             tracks.addEventListener(eventType, handler);
@@ -312,6 +328,11 @@ define(['../utils/underscore',
         this._metaCuesByTextTime = null;
         this._unknownCount = 0;
         this._activeCuePosition = null;
+        if (this._renderNatively) {
+            // Removing listener first to ensure that removing cues does not trigger it unnecessarily
+            this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
+            _removeCues.call(this, this.video.textTracks);
+        }
     }
 
     function disableTextTrack() {
@@ -343,16 +364,21 @@ define(['../utils/underscore',
         }
     }
 
+    // Used in MS Edge to get tracks from the videotag as they're added
+    function addTrackHandler() {
+        this.setTextTracks(this.video.textTracks);
+    }
+
     function addTextTracks(tracksArray) {
         if (!tracksArray) {
             return;
         }
 
         if (!this._textTracks) {
-            _initTextTracks.call(this);
+            this._initTextTracks();
         }
 
-        this._renderNatively = _nativeRenderingSupported(this.getName().name);
+        this._renderNatively = nativeRenderingSupported(this.getName().name);
 
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];
@@ -403,6 +429,18 @@ define(['../utils/underscore',
     ////// PRIVATE METHODS
     //////////////////////
 
+    function _addCueToTrack(track, vttCue) {
+        if (!utils.isEdge() || !window.TextTrackCue) {
+            track.addCue(vttCue);
+            return;
+        }
+        // There's no support for the VTTCue interface in Edge.
+        // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
+        // This unfortunately removes positioning properties from the cues
+        var textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
+        track.addCue(textTrackCue);
+    }
+
     function _removeCues(tracks) {
         if (tracks.length) {
             _.each(tracks, function(track) {
@@ -416,10 +454,6 @@ define(['../utils/underscore',
                 track.inuse = false;
             });
         }
-    }
-
-    function _nativeRenderingSupported(providerName) {
-        return providerName.indexOf('flash') === -1 && (utils.isChrome() || utils.isIOS() || utils.isSafari());
     }
 
     function _kindSupported(kind) {
@@ -497,7 +531,7 @@ define(['../utils/underscore',
         var nonSideloadedTracks = _.filter(this._textTracks, function (track) {
             return track.embedded || track.groupid === 'subs';
         });
-        _initTextTracks.call(this);
+        this._initTextTracks();
         _.each(nonSideloadedTracks, function (track) {
             this._tracksById[track._id] = track;
         });
@@ -525,7 +559,7 @@ define(['../utils/underscore',
             this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
 
             while((cue = vttCues.shift())) {
-                textTrack.addCue(cue);
+                _addCueToTrack(textTrack, cue);
             }
         } else {
             track.data = vttCues;
@@ -548,7 +582,7 @@ define(['../utils/underscore',
             var parser = new VTTParser(window);
             if (renderNatively) {
                 parser.oncue = function(cue) {
-                    track.addCue(cue);
+                    _addCueToTrack(track, cue);
                 };
             } else {
                 track.data = track.data || [];

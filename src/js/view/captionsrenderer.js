@@ -2,8 +2,9 @@ define([
     'utils/helpers',
     'utils/css',
     'events/states',
-    'utils/underscore'
-], function(utils, cssUtils, states, _) {
+    'utils/underscore',
+    'utils/nativerenderingsupported'
+], function(utils, cssUtils, states, _, nativeRenderingSupported) {
     var _style = cssUtils.style;
 
     var _defaults = {
@@ -231,13 +232,6 @@ define([
             }
         }
 
-        // TODO: move to a captions utils file. Similar to a method in tracks-mixin.js
-        function _nativeRenderingSupported() {
-            var provider = _model.get('provider');
-            return provider.name.indexOf('flash') === -1 &&
-                (utils.isChrome() || utils.isIOS() || utils.isSafari());
-        }
-
         function _timeChange(e) {
             _timeEvent = e;
             this.selectCues(_captionsTrack, _timeEvent);
@@ -245,7 +239,7 @@ define([
 
         function _itemReadyHandler() {
             // don't load the polyfill or do unnecessary work if rendering natively
-            if(!_nativeRenderingSupported()) {
+            if(!nativeRenderingSupported(_model.get('provider').name)) {
                 require.ensure(['polyfills/vtt'], function (require) {
                     _VTTRenderer = require('polyfills/vtt');
                 }, 'polyfills.vttrenderer');

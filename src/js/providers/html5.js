@@ -13,6 +13,7 @@ define([
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
         _isIE = utils.isIE(),
+        _isIE9 = utils.isIE(9),
         _isMSIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isFirefox = utils.isFF(),
@@ -321,6 +322,11 @@ define([
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
+            if (_isIE9) {
+                // In IE9, set tracks here since they are not ready
+                // on load
+                _this.setTextTracks(_this._textTracks);
+            }
             _sendBufferFull();
         }
 
@@ -444,6 +450,15 @@ define([
             return currentQuality;
         }
 
+        function _play() {
+            var promise = _videotag.play();
+            if (promise && promise.catch) {
+                promise.catch(function(err) {
+                    console.warn(err);
+                });
+            }
+        }
+
         function _completeLoad(startTime, duration) {
 
             _delayedSeek = 0;
@@ -470,7 +485,7 @@ define([
                     _this.seek(startTime);
                 }
 
-                _videotag.play();
+                _play();
             }
 
             _position = _videotag.currentTime;
@@ -563,9 +578,9 @@ define([
             }
             _clearVideotagSource();
             this.clearTracks();
-            // IE may continue to play a video after changing source and loading a new media file.
-            // https://connect.microsoft.com/IE/feedbackdetail/view/2000141/htmlmediaelement-autoplays-after-src-is-changed-and-load-is-called
-            if(utils.isIETrident()) {
+            // IE/Edge continue to play a video after changing video.src and calling video.load()
+            // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5383483/ (not fixed in Edge 14)
+            if (utils.isIE()) {
                 _videotag.pause();
             }
             this.setState(states.IDLE);
@@ -621,7 +636,7 @@ define([
                 _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
                 return;
             }
-            _videotag.play();
+            _play();
         };
 
         this.pause = function() {
@@ -663,7 +678,7 @@ define([
                 // Firefox isn't firing canplay event when in a paused state
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=1194624
                 if (_isFirefox && _videotag.paused) {
-                    _videotag.play();
+                    _play();
                 }
             }
         };
