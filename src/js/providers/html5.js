@@ -323,6 +323,8 @@ define([
                 _setMediaType();
             }
             if (_isIE9) {
+                // In IE9, set tracks here since they are not ready
+                // on load
                 _this.setTextTracks(_this._textTracks);
             }
             _sendBufferFull();
