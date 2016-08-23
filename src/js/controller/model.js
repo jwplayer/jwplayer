@@ -301,7 +301,8 @@ define([
             //  an item was actually loaded
             this.trigger('itemReady', item);
 
-            // In IE9, trigger this event, since it does not getting triggered at the correct time
+            // In IE9, trigger this event, since the loadeddata event is firing before it binds the
+            // subtitlesTracks event listener
             if (utils.isIE(9) && _currentProvider._textTracks && _currentProvider._textTracks.length) {
                 _currentProvider.trigger('subtitlesTracks', {tracks: _currentProvider._textTracks});
             }
