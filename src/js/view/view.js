@@ -824,10 +824,10 @@ define([
             }
 
             _captionsRenderer.resize();
-            if (_isMobile) {
-                var hideTimeInControl = width && width < _minWidthForTimeDisplay;
-                utils.toggleClass(_playerElement, 'jw-flag-compact-player', hideTimeInControl);
-            }
+            
+            var hideTimeInControl = width && width < _minWidthForTimeDisplay;
+            utils.toggleClass(_playerElement, 'jw-flag-compact-player', hideTimeInControl);
+
         }
 
         this.resize = function(width, height) {
