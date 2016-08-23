@@ -295,6 +295,11 @@ define([
             if (_currentProvider.init) {
                 _currentProvider.init(item);
             }
+
+            // Listening for change:item won't suffice when loading the same index or file
+            // We also can't listen for change:mediaModel because it triggers whether or not
+            //  an item was actually loaded
+            this.trigger('itemReady', item);
         };
 
         this.getProviders = function() {
