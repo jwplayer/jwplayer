@@ -596,7 +596,7 @@ define([
             });
 
             // make displayIcon clickthrough on chrome for flash to avoid power safe throttle
-            if (utils.isChrome()) {
+            if (utils.isChrome() && !utils.isMobile()) {
                 displayIcon.el.addEventListener('mousedown', function() {
                     var provider = _model.getVideo();
                     var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
