@@ -8,8 +8,9 @@ define([
     'view/components/timeslider',
     'view/components/menu',
     'view/components/playlist',
-    'view/components/volumetooltip'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+    'view/components/volumetooltip',
+    'view/components/drawer'
+], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip, Drawer) {
 
     function button(icon, apiAction, ariaText) {
         var element = document.createElement('div');
@@ -73,6 +74,8 @@ define([
         this._api = _api;
         this._model = _model;
         this._isMobile = utils.isMobile();
+        this._compactModeMaxSize = 400;
+        this._maxCompactWidth = -1;
         this._localization = this._model.get('localization');
         this.setup();
     }
@@ -86,6 +89,7 @@ define([
 
         build : function() {
             var timeSlider = new TimeSlider(this._model, this._api),
+                drawer = new Drawer('jw-icon-more', this._localization.more),
                 playlistTooltip,
                 volumeSlider,
                 volumeTooltip,
@@ -117,6 +121,7 @@ define([
                 elapsed: text('jw-text-elapsed', 'timer'),
                 time: timeSlider,
                 duration: text('jw-text-duration', 'timer'),
+                drawer: drawer,
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
@@ -144,12 +149,18 @@ define([
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
+                    this.elements.drawer,
                     this.elements.mute,
                     this.elements.cast,
                     this.elements.volume,
                     this.elements.volumetooltip,
                     // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
+                ],
+                drawer: [
+                    this.elements.hd,
+                    this.elements.cc,
+                    this.elements.audiotracks
                 ]
             };
 
@@ -166,6 +177,7 @@ define([
             this.layout.left = _.compact(this.layout.left);
             this.layout.center = _.compact(this.layout.center);
             this.layout.right = _.compact(this.layout.right);
+            this.layout.drawer = _.compact(this.layout.drawer);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
@@ -207,6 +219,7 @@ define([
             this._model.on('change:fullscreen', this.onFullscreen, this);
             this._model.on('change:captionsList', this.onCaptionsList, this);
             this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
+            this._model.on('change:compactUI', this.onCompactUI, this);
 
             // Event listeners
 
@@ -266,6 +279,13 @@ define([
             // When the control bar is interacted with, trigger a user action event
             new UI(this.el).on('click tap drag', function(){ this.trigger('userAction'); }, this);
 
+            this.elements.drawer.on('open-drawer close-drawer', function(evt, props){
+                utils.toggleClass(this.el, 'jw-drawer-expanded', props.isOpen);
+                if(!props.isOpen){
+                    this.closeMenus();
+                }
+            }, this);
+
             _.each(this.menus, function(ele){
                 ele.on('open-tooltip', this.closeMenus, this);
             }, this);
@@ -274,6 +294,7 @@ define([
         onCaptionsList: function(model, tracks) {
             var index = model.get('captionsIndex');
             this.elements.cc.setup(tracks, index, {isToggle: true});
+            this.clearCompactMode();
         },
         onCaptionsIndex: function(model, index) {
             this.elements.cc.selectItem(index);
@@ -292,6 +313,8 @@ define([
             this.elements.duration.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
 
+            this.clearCompactMode();
+
             var itemIdx = model.get('item');
             if (this.elements.playlist) {
                 this.elements.playlist.selectItem(itemIdx);
@@ -302,6 +325,7 @@ define([
         onMediaModel : function(model, mediaModel) {
             mediaModel.on('change:levels', function(model, levels) {
                 this.elements.hd.setup(levels, model.get('currentLevel'));
+                this.clearCompactMode();
             }, this);
             mediaModel.on('change:currentLevel', function(model, level) {
                 this.elements.hd.selectItem(level);
@@ -309,9 +333,16 @@ define([
             mediaModel.on('change:audioTracks', function(model, audioTracks) {
                 var list = _.map(audioTracks, function(track) { return { label : track.name }; });
                 this.elements.audiotracks.setup(list, model.get('currentAudioTrack'), {toggle: false});
+                this.clearCompactMode();
             }, this);
             mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);
+            }, this);
+            mediaModel.on('change:state', function(model, state) {
+                if(state === 'complete') {
+                    this.elements.drawer.closeTooltip();
+                    utils.removeClass(this.el, 'jw-drawer-expanded');
+                }
             }, this);
         },
         onVolume : function(model, pct) {
@@ -335,6 +366,7 @@ define([
         },
         onCastAvailable : function(model, val) {
             this.elements.cast.toggle(val);
+            this.clearCompactMode();
         },
         onCastActive : function(model, val) {
             utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
@@ -353,6 +385,7 @@ define([
             var totalTime;
             if (utils.adaptiveType(val) === 'DVR') {
                 totalTime = 'Live';
+                this.clearCompactMode();
             } else {
                 totalTime = utils.timeFormat(val);
             }
@@ -394,15 +427,73 @@ define([
             }
         },
         // Close menus if it has no event.  Otherwise close all but the event's target.
-        closeMenus : function(evt) {
+        closeMenus : function(evt){
             _.each(this.menus, function(ele){
                 if(!evt || evt.target !== ele.el) {
                     ele.closeTooltip(evt);
                 }
             });
         },
-        hideComponents : function() {
+        hideComponents : function(){
             this.closeMenus();
+            this.elements.drawer.closeTooltip();
+            utils.removeClass(this.el, 'jw-drawer-expanded');
+        },
+        clearCompactMode : function() {
+            this._maxCompactWidth = -1;
+            this._model.set('compactUI', false);
+            if(this._containerWidth) {
+                this.checkCompactMode(this._containerWidth);
+            }
+        },
+        // Sets this._maxCompactWidth so we calculate less per call of isCompactMode
+        setCompactModeBounds : function(){
+            if(this.element().offsetWidth > 0 ){
+                // Use the current center section content (timeslider or alt text) to determine compact mode
+                var nonCenterExpandedSize = this.elements.left.offsetWidth + this.elements.right.offsetWidth;
+                if(utils.adaptiveType(this._model.get('duration')) === 'LIVE'){
+                    this._maxCompactWidth = nonCenterExpandedSize + this.elements.alt.offsetWidth;
+                } else {
+                    var containerRequiredSize = nonCenterExpandedSize +
+                            (this.elements.center.offsetWidth - this.elements.time.el.offsetWidth),
+                        timeSliderBreakpoint = 0.20;
+                    this._maxCompactWidth = containerRequiredSize / (1-timeSliderBreakpoint);
+                }
+
+            }
+        },
+        checkCompactMode : function(containerWidth) {
+            // If we cleared the _maxCompactWidth then try to reset it. This can fail if the controlbar is display: none
+            if(this._maxCompactWidth === -1){
+                this.setCompactModeBounds();
+            }
+
+            this._containerWidth = containerWidth;
+
+            // If the _maxCompactWidth is set (which it may or may not be above)
+            if(this._maxCompactWidth !== -1) {
+
+                // If we're in compact mode and we have enough space to exit it, then do so
+                if( containerWidth >= this._compactModeMaxSize && containerWidth > this._maxCompactWidth) {
+                    this._model.set('compactUI', false);
+                }
+                // Enter if we're in a small player or our timeslider is too small.
+                else if( containerWidth < this._compactModeMaxSize || containerWidth <= this._maxCompactWidth ){
+                    this._model.set('compactUI', true);
+                }
+            }
+        },
+        onCompactUI : function(model, isCompact) {
+            utils.removeClass(this.el, 'jw-drawer-expanded');
+
+            this.elements.drawer.setup(this.layout.drawer, isCompact);
+
+            // If we're not in compact mode or we're not hiding icons, then put them back where they came from.
+            if(!isCompact || this.elements.drawer.activeContents.length < 2){
+                _.each(this.layout.drawer,function(ele){
+                    this.elements.right.insertBefore(ele.el, this.elements.drawer.el);
+                }, this);
+            }
         }
     });
 
