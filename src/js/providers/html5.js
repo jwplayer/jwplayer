@@ -338,7 +338,6 @@ define([
                 _videotag.muted = false;
                 _videotag.muted = true;
             }
-
             _videotag.setAttribute('jw-loaded', 'meta');
             _sendMetaEvent();
         }
