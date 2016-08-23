@@ -28,18 +28,16 @@ define([
     browser.isIPad = _browserCheck(/iPad/i);
     browser.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
     browser.isOSX = _browserCheck(/Mac OS X/i);
-    browser.isEdge = _browserCheck(/\sedge\/\d+/i);
 
-    var _isIETrident = browser.isIETrident = function(browserVersion) {
-        if(browser.isEdge()){
-            return true;
-        }
+    var _isEdge = browser.isEdge = function(browserVersion) {
         if (browserVersion) {
-            browserVersion = parseFloat(browserVersion).toFixed(1);
-            return _userAgentMatch(new RegExp('trident/.+rv:\\s*' + browserVersion, 'i'));
+            return _userAgentMatch(new RegExp('\\sedge\\/' + browserVersion, 'i'));
         }
-        return _userAgentMatch(/trident/i);
+        return _userAgentMatch(/\sEdge\/\d+/i);
     };
+
+
+    var _isIETrident = browser.isIETrident = _browserCheck(/trident\/.+rv:\s*11/i);
 
 
     var _isMSIE = browser.isMSIE = function(browserVersion) {
@@ -50,22 +48,22 @@ define([
         return _userAgentMatch(/msie/i);
     };
 
-    var _isChrome = _browserCheck(/chrome/i);
-
-    browser.isChrome = function(){
-        return _isChrome() && !browser.isEdge();
+    browser.isChrome = function() {
+        return _userAgentMatch(/\s(?:Chrome|CriOS)\//i) && !browser.isEdge();
     };
 
     browser.isIE = function(browserVersion) {
         if (browserVersion) {
             browserVersion = parseFloat(browserVersion).toFixed(1);
-            if (browserVersion >= 11) {
-                return _isIETrident(browserVersion);
+            if (browserVersion >= 12) {
+                return _isEdge(browserVersion);
+            } else if (browserVersion >= 11) {
+                return _isIETrident();
             } else {
                 return _isMSIE(browserVersion);
             }
         }
-        return _isMSIE() || _isIETrident();
+        return _isEdge() || _isIETrident() || _isMSIE();
     };
 
     browser.isSafari = function() {

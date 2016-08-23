@@ -572,9 +572,9 @@ define([
             }
             _clearVideotagSource();
             this.clearTracks();
-            // IE may continue to play a video after changing source and loading a new media file.
-            // https://connect.microsoft.com/IE/feedbackdetail/view/2000141/htmlmediaelement-autoplays-after-src-is-changed-and-load-is-called
-            if(utils.isIETrident()) {
+            // IE/Edge continue to play a video after changing video.src and calling video.load()
+            // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5383483/ (not fixed in Edge 14)
+            if (utils.isIE()) {
                 _videotag.pause();
             }
             this.setState(states.IDLE);
