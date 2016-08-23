@@ -13,6 +13,7 @@ define([
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
         _isIE = utils.isIE(),
+        _isIE9 = utils.isIE(9),
         _isMSIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isFirefox = utils.isFF(),
@@ -320,6 +321,11 @@ define([
             _canSeek = true;
             if (!_isAndroidHLS) {
                 _setMediaType();
+            }
+            if (_isIE9) {
+                // In IE9, set tracks here since they are not ready
+                // on load
+                _this.setTextTracks(_this._textTracks);
             }
             _sendBufferFull();
         }
