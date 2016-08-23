@@ -300,6 +300,11 @@ define([
             // We also can't listen for change:mediaModel because it triggers whether or not
             //  an item was actually loaded
             this.trigger('itemReady', item);
+
+            // In IE9, trigger this event, since it does not getting triggered at the correct time
+            if (utils.isIE(9) && _currentProvider._textTracks && _currentProvider._textTracks.length) {
+                _currentProvider.trigger('subtitlesTracks', {tracks: _currentProvider._textTracks});
+            }
         };
 
         this.getProviders = function() {
