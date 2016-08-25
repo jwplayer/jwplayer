@@ -66,7 +66,8 @@ define(['../utils/underscore',
                 }
                 // setup TextTrack
                 if (track.kind === 'metadata') {
-                    track.mode = 'showing';
+                    // track mode needs to be "hidden", not "showing", so that cues don't display as captions in Firefox
+                    track.mode = 'hidden';
                     track.oncuechange = _cueChangeHandler.bind(this);
                     this._tracksById[track._id] = track;
                 }
@@ -238,9 +239,19 @@ define(['../utils/underscore',
                 embedded: true
             };
             track = _createTrack.call(this, itemTrack);
-            this.setTextTracks(this.video.textTracks);
+            if (this._renderNatively || track.kind === 'metadata') {
+                this.setTextTracks(this.video.textTracks);
+            } else {
+                track.data = [];
+                addTextTracks.call(this, [track]);
+            }
         }
-        _addCueToTrack(track, cueData.cue);
+
+        if (this._renderNatively || track.kind === 'metadata') {
+            _addCueToTrack(track, cueData.cue);
+        } else {
+            track.data.push(cueData.cue);
+        }
     }
 
     function addCuesToTrack(cueData) {
@@ -303,6 +314,13 @@ define(['../utils/underscore',
 
     function clearTracks() {
         _cancelXhr(this._itemTracks);
+        var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
+        if (this._renderNatively || metadataTrack) {
+            _removeCues.call(this, this.video.textTracks);
+            if(metadataTrack) {
+               metadataTrack.oncuechange = null;
+            }
+        }
         this._itemTracks = null;
         this._textTracks = null;
         this._tracksById = null;
@@ -453,7 +471,7 @@ define(['../utils/underscore',
     function _createTrack(itemTrack) {
         var track;
         var label = _createLabel.call(this, itemTrack);
-        if (this._renderNatively) {
+        if (this._renderNatively || itemTrack.kind === 'metadata') {
             var tracks = this.video.textTracks;
             // TextTrack label is read only, so we'll need to create a new track if we don't
             // already have one with the same label

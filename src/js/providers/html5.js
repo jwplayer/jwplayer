@@ -249,7 +249,7 @@ define([
                 level.width = _videotag.videoWidth;
                 level.height = _videotag.videoHeight;
                 _setMediaType();
-                if (!level.width || !level.height) {
+                if (!level.width || !level.height || _currentQuality === -1) {
                     return;
                 }
                 _visualQuality.reason = _visualQuality.reason || 'auto';
@@ -263,7 +263,7 @@ define([
         }
 
         function _setBuffered(buffered, currentTime, duration) {
-            if (buffered !== _buffered || duration !== _duration) {
+            if (duration !== 0 && (buffered !== _buffered || duration !== _duration)) {
                 _buffered = buffered;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: buffered * 100,
