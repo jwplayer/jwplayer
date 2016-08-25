@@ -7,7 +7,7 @@ define([
     'unit/constants-test',
     'unit/css-test',
     'unit/dom-test',
-    'unit/dxfp-test',
+    'unit/dfxp-test',
     'unit/embed-swf-test',
     'unit/fetch-test',
     'unit/extendable-test',
