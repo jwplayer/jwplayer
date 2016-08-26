@@ -53,6 +53,7 @@ define([
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _resizeContainerRequestId = -1,
+            _minWidthForTimeDisplay = 450,
             // Function that delays the call of _setContainerDimensions so that the page has finished repainting.
             _delayResize = window.requestAnimationFrame ||
                 function(rafFunc) {
@@ -823,6 +824,10 @@ define([
             }
 
             _captionsRenderer.resize();
+            
+            var hideTimeInControl = width && width < _minWidthForTimeDisplay;
+            utils.toggleClass(_playerElement, 'jw-flag-compact-player', hideTimeInControl);
+
         }
 
         this.resize = function(width, height) {
