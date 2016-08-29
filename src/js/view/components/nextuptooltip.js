@@ -11,27 +11,14 @@ define([
             this.sticky = false;
             this.nextEl = nextEl;
             this._nextUpText = ariaText || 'Next Up';
-            var related = _api.getPlugin('related');
-            var nextUp;
-            if(related) {
-                nextUp = related.controller_.getNextUpItem();
-            }
-
-            // Prevent NextUp tooltip button from being aria-hidden="true"
-            //Tooltip.call(this, name, ariaText, true);
-
-            //utils.removeClass(this.el, 'jw-hidden');
-            // hide initially
-            //this.hide();
 
             this.container = document.createElement('div');
             this.container.className = 'jw-nextup-container jw-background-color jw-reset';
             this.hide();
             this.openClass = 'jw-open';
 
-            this.onPlaylistItem(this._model);
             this.onMediaModel(this._model, this._model.get('mediaModel'));
-            this._model.on('change:playlistItem', this.onPlaylistItem, this);
+            this._api.onPlaylistItem(this.onPlaylistItem.bind(this));
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:position', this.onElapsed, this);
 
@@ -40,27 +27,6 @@ define([
                 .on('over', this.open, this)
                 .on('out', this.close, this);
 
-        },
-        setNextUpItem : function(item) {
-            var element = utils.createElement(nextUpTemplate());
-            this.addContent(element);
-            this.closeButton = element.getElementsByClassName('jw-nextup-close')[0];
-            new UI(this.closeButton)
-                .on('click tap', this.close, this);
-
-            new UI(this.content)
-                .on('click tap', this.playNext, this);
-            // setup thumbnail
-            this.img = element.getElementsByClassName('jw-nextup-thumbnail')[0];
-            this.image(this.loadThumbnail(item.image));
-
-            // set header
-            this.header = element.getElementsByClassName('jw-nextup-header')[0];
-            this.header.innerText = this._nextUpText;
-            // set title
-            this.title = element.getElementsByClassName('jw-nextup-title')[0];
-            this.title.innerText = item.title || 'title';
-            this.hide(this.closeButton);
         },
         loadThumbnail : function(url) {
             var style = {
@@ -106,14 +72,12 @@ define([
         },
         open : function () {
             if (!this.sticky) {
-                console.log('open tooltip');
                 this.show();
             }
         },
         close : function (evt) {
             if (evt && evt.currentTarget === this.closeButton || !this.sticky) {
                 this.hide();
-                console.log('close tooltip');
             }
         },
         showTilEnd : function() {
@@ -126,13 +90,43 @@ define([
             this.content.className = 'jw-nextup jw-reset jw-nextup-sticky';
             this.open();
             this.sticky = true;
-            console.log('open tooltip til end');
         },
-        onPlaylistItem : function(model) {
-            //var playlist = model.get('playlist');
-            var playlistItem = model.get('playlistItem');
-            if (playlistItem) {
-                this.setNextUpItem(playlistItem);
+        onPlaylistItem : function(item) {
+            var playlist = this._model.get('playlist');
+            var nextUpIndex = (item.index + 1) % playlist.length;
+            var nextUpItem = playlist[nextUpIndex];
+
+            this._related = this._related || this._api.getPlugin('related');
+            if(this._related && item.index === playlist.length - 1) {
+                this._related.on('playlist', this.onRelatedPlaylist.bind(this));
+            } else {
+                this.setNextUpItem(nextUpItem);
+            }
+        },
+        setNextUpItem : function(nextUpItem) {
+            var element = utils.createElement(nextUpTemplate());
+            this.addContent(element);
+            this.closeButton = element.getElementsByClassName('jw-nextup-close')[0];
+            new UI(this.closeButton)
+                .on('click tap', this.close, this);
+
+            new UI(this.content)
+                .on('click tap', this.playNext, this);
+            // setup thumbnail
+            this.img = element.getElementsByClassName('jw-nextup-thumbnail')[0];
+            this.image(this.loadThumbnail(nextUpItem.image));
+
+            // set header
+            this.header = element.getElementsByClassName('jw-nextup-header')[0];
+            this.header.innerText = this._nextUpText;
+            // set title
+            this.title = element.getElementsByClassName('jw-nextup-title')[0];
+            this.title.innerText = nextUpItem.title || 'title';
+            this.hide(this.closeButton);
+        },
+        onRelatedPlaylist : function(evt) {
+            if (evt.playlist && evt.playlist.length) {
+                this.setNextUpItem(evt.playlist[0]);
             }
         },
         onMediaModel : function (model, mediaModel) {
@@ -145,9 +139,18 @@ define([
         },
         onElapsed : function(model, val) {
             var duration = model.get('duration');
+            var relatedConfig = model.get('related');
+            var showNextUp = true;
+            if(relatedConfig) {
+                var autoplayTimer = relatedConfig.autoplaytimer;
+                var oncomplete = relatedConfig.oncomplete;
+                showNextUp = oncomplete === 'autoplay' && autoplayTimer === 0;
+            }
 
-            if (duration - val <= 10) {
-                // Show nextup when we're 10s away from the end and not playing an ad
+            // Show nextup 10s from completion if:
+            // - we're in playlist mode but not playing an ad
+            // - we're autplaying in related mode and autoplaytimer is set to 0
+            if (showNextUp && (duration - val <= 10)) {
                 this.showTilEnd();
             }
         },
