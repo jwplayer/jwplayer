@@ -1,9 +1,10 @@
 define([
+    'utils/dom',
     'utils/ui',
     'view/components/tooltip',
     'utils/helpers',
     'templates/nextup.html'
-], function(UI, Tooltip, utils, nextUpTemplate) {
+], function(dom, UI, Tooltip, utils, nextUpTemplate) {
     var NextUpTooltip = Tooltip.extend({
         'constructor' : function(_model, _api, nextEl, ariaText) {
             this._model = _model;
@@ -13,7 +14,7 @@ define([
             this._nextUpText = ariaText || 'Next Up';
 
             this.container = document.createElement('div');
-            this.container.className = 'jw-nextup-container jw-background-color jw-reset';
+            this.container.className = 'jw-nextup-container jw-reset';
             this.hide();
             this.openClass = 'jw-open';
 
@@ -29,13 +30,7 @@ define([
 
         },
         loadThumbnail : function(url) {
-            var style = {
-                display: 'block',
-                margin: '0 auto',
-                backgroundPosition: '0 0',
-                width: '30px',
-                height: '20px'
-            };
+            var style = {};
             this.nextUpImage = new Image();
             this.nextUpImage.onload = (function () {
                 this.nextUpImage.onload = null;
@@ -57,11 +52,11 @@ define([
         },
         show : function(el) {
             el = el || this.container;
-            el.style.display = '';
+            dom.addClass(el, 'jw-nextup-container-visible');
         },
         hide : function(el) {
             el = el || this.container;
-            el.style.display = 'none';
+            dom.removeClass(el, 'jw-nextup-container-visible');
         },
         toggle : function(m, el) {
             if (m) {
@@ -114,14 +109,19 @@ define([
                 .on('click tap', this.playNext, this);
             // setup thumbnail
             this.img = element.getElementsByClassName('jw-nextup-thumbnail')[0];
-            this.image(this.loadThumbnail(nextUpItem.image));
+            if (nextUpItem.image) {
+              this.image(this.loadThumbnail(nextUpItem.image));
+              dom.addClass(this.img, 'jw-nextup-thumbnail-visible');
+            } else {
+              dom.removeClass(this.img, 'jw-nextup-thumbnail-visible');
+            }
 
             // set header
             this.header = element.getElementsByClassName('jw-nextup-header')[0];
             this.header.innerText = this._nextUpText;
             // set title
             this.title = element.getElementsByClassName('jw-nextup-title')[0];
-            this.title.innerText = nextUpItem.title || 'title';
+            this.title.innerText = nextUpItem.title || 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
             this.hide(this.closeButton);
         },
         onRelatedPlaylist : function(evt) {
