@@ -648,6 +648,7 @@ define([
             _model.on('change:compactUI', _onCompactUIChange);
 
             _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next.element());
+            _nextuptooltip.setup();
 
             // NextUp needs to be behind the controlbar to not block other tooltips
             _controlsLayer.appendChild(_nextuptooltip.element());

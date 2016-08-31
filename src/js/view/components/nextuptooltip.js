@@ -13,8 +13,6 @@ define([
         this.nextUpText = _model.get('localization').nextup;
         this.state = 'tooltip';
         this.relatedMode = false;
-
-        this.setup();
     };
 
     _.extend(NextUpTooltip.prototype, {
@@ -23,7 +21,6 @@ define([
             this.container.className = 'jw-nextup-container jw-reset';
             var element = utils.createElement(nextUpTemplate());
             this.addContent(element);
-            this.hide();
 
             var relatedBlock = this._model.get('related');
 
@@ -41,6 +38,7 @@ define([
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:position', this.onElapsed, this);
             this._api.onPlaylistItem(this.onPlaylistItem.bind(this));
+            this._api.onReady(this.onReady.bind(this));
 
             this.onMediaModel(this._model, this._model.get('mediaModel'));
 
@@ -50,7 +48,7 @@ define([
             this.nextButtonUI = new UI(this._nextButton, {'useHover': true, 'directSelect': true})
                 .on('click tap', this.click, this)
                 .on('over', this.show, this)
-                .on('out', this.hide, this);
+                .on('out', this.hoverOut, this);
         },
         loadThumbnail : function(url) {
             var style = {};
@@ -75,22 +73,27 @@ define([
             this.hide();
         },
         show: function() {
-            if (this.state === 'tooltip' || this.state === 'closed') {
-                dom.addClass(this.container, 'jw-nextup-container-visible');
-            }
-        },
-        hide: function(evt) {
-            // Hovering over the next button should not show/hide NextUp if it is in the opened state
-            if (this.state === 'opened' && evt.currentTarget === this._nextButton) {
+            if(this.state === 'opened') {
                 return;
             }
 
+            dom.addClass(this.container, 'jw-nextup-container-visible');
+        },
+        hide: function() {
             dom.removeClass(this.container, 'jw-nextup-container-visible');
             dom.removeClass(this.container, 'jw-nextup-sticky');
 
             if (this.state === 'opened') {
                 this.state = 'closed';
             }
+        },
+        hoverOut: function() {
+            if (this.state === 'opened') {
+                // Moving the pointer away from the next button should not show/hide NextUp if it is 'opened'
+                return;
+            }
+
+            this.hide();
         },
         showTilEnd: function() {
             // Show next up til playback ends. Don't hide even when controlbar is idle
@@ -109,8 +112,8 @@ define([
 
             this.nextUpItem = nextUpItem;
 
-            this.closeButton = this.content.getElementsByClassName('jw-nextup-close')[0];
-            this.tooltip = this.content.getElementsByClassName('jw-nextup-tooltip')[0];
+            this.closeButton = this.content.querySelector('.jw-nextup-close');
+            this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
 
             // Events
             this.closeButtonUI = new UI(this.closeButton, {'directSelect': true})
@@ -119,7 +122,7 @@ define([
                 .on('click tap', this.click, this);
 
             // Setup thumbnail
-            this.thumbnail = this.content.getElementsByClassName('jw-nextup-thumbnail')[0];
+            this.thumbnail = this.content.querySelector('.jw-nextup-thumbnail');
             dom.toggleClass(this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
 
             if (nextUpItem.image) {
@@ -129,13 +132,18 @@ define([
             }
 
             // Set header
-            this.header = this.content.getElementsByClassName('jw-nextup-header')[0];
+            this.header = this.content.querySelector('.jw-nextup-header');
             this.header.innerText = this.nextUpText;
 
             // Set title
-            this.title = this.content.getElementsByClassName('jw-nextup-title')[0];
+            this.title = this.content.querySelector('.jw-nextup-title');
             this.title.innerText = nextUpItem.title || '';
 
+        },
+        onReady: function() {
+            this._related = this._api.getPlugin('related');
+            // Only switch to related mode if there is a related playlist
+            this._related.on('playlist', this.onRelatedPlaylist.bind(this));
         },
         onPlaylistItem: function(item) {
             // Listen for duration changes to determine the offset
@@ -147,12 +155,6 @@ define([
             var nextUpItem = playlist[nextUpIndex];
             this.relatedMode = false;
             this.setNextUpItem(nextUpItem);
-
-            this._related = this._related || this._api.getPlugin('related');
-            if (this._related && item.index === playlist.length - 1) {
-                // Only switch to related mode if there is a related playlist
-                this._related.on('playlist', this.onRelatedPlaylist.bind(this));
-            }
         },
         onDuration: function(model, duration) {
             if (!duration) {
