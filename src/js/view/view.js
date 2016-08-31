@@ -647,9 +647,9 @@ define([
             _model.on('change:scrubbing', _dragging);
             _model.on('change:compactUI', _onCompactUIChange);
 
-            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next.element(),
-                _model.get('localization').nextup);
-            // NextUp needs to be before the controlbar to not block other tooltips
+            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next.element());
+
+            // NextUp needs to be behind the controlbar to not block other tooltips
             _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
 
