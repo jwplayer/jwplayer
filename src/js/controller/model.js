@@ -248,7 +248,8 @@ define([
 
         // Give the option for a provider to be forced
         this.chooseProvider = function(source) {
-            return _providers.choose(source).provider;
+            var providerChosen = _providers.choose(source);
+            return providerChosen ? providerChosen.provider : null;
         };
 
         this.setItemIndex = function(index) {
