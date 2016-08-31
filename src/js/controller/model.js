@@ -248,6 +248,7 @@ define([
 
         // Give the option for a provider to be forced
         this.chooseProvider = function(source) {
+            // if _providers.choose is null, something went wrong in filtering
             return _providers.choose(source).provider;
         };
 
