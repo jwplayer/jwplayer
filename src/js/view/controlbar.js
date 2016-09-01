@@ -105,7 +105,7 @@ define([
                 alt: text('jw-text-alt', 'status'),
                 play: button('jw-icon-playback', this._api.play.bind(this, {reason: 'interaction'}), play),
                 rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
-                next: button('jw-icon-next', this._api.playlistNext.bind(this, {reason: 'interaction'}), next),
+                next: button('jw-icon-next', null, next), // the click/tap event listener is in the nextup tooltip
                 elapsed: text('jw-text-elapsed', 'timer'),
                 time: timeSlider,
                 duration: text('jw-text-duration', 'timer'),

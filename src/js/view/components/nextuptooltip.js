@@ -22,15 +22,8 @@ define([
             var element = utils.createElement(nextUpTemplate());
             this.addContent(element);
 
-            var relatedBlock = this._model.get('related');
-
             // Next Up is always shown for playlist items
             this.showNextUp = true;
-
-            // If there are related items, Next Up is shown when we're autoplaying and the timer is set to 0
-            if (relatedBlock) {
-                this.showNextUp = relatedBlock.oncomplete === 'autoplay' && relatedBlock.autoplaytimer === 0;
-            }
 
             this.reset();
             
@@ -38,7 +31,11 @@ define([
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:position', this.onElapsed, this);
             this._api.onPlaylistItem(this.onPlaylistItem.bind(this));
-            this._api.onReady(this.onReady.bind(this));
+
+            // If there's a related block, wait until the plugin is available
+            if (this._model.get('related')) {
+                this._api.onReady(this.onReady.bind(this));
+            }
 
             this.onMediaModel(this._model, this._model.get('mediaModel'));
 
@@ -178,6 +175,10 @@ define([
         onRelatedPlaylist: function(evt) {
             if (evt.playlist && evt.playlist.length) {
                 this.relatedMode = true;
+                var relatedBlock = this._model.get('related');
+                // If there are related items, Next Up is shown when we're autoplaying and the timer is set to 0
+                this.showNextUp = relatedBlock.oncomplete === 'autoplay' && relatedBlock.autoplaytimer === 0;
+
                 this.setNextUpItem(evt.playlist[0]);
             }
         },
