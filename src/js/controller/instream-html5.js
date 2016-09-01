@@ -28,7 +28,8 @@ define([
                 id: _model.get('id'),
                 volume: _model.get('volume'),
                 fullscreen: _model.get('fullscreen'),
-                mute: _model.get('mute')
+                mute: _model.get('mute'),
+                instreamMode: true
             });
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
 
@@ -151,8 +152,6 @@ define([
         function stateHandler(evt) {
             switch (evt.newstate) {
                 case states.PLAYING:
-                    _adModel.set('state', evt.newstate);
-                    break;
                 case states.PAUSED:
                     _adModel.set('state', evt.newstate);
                     break;

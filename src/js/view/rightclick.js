@@ -88,12 +88,16 @@ define([
 
             utils.addClass(this.playerElement, 'jw-flag-rightclick-open');
             utils.addClass(this.el, 'jw-open');
+            clearTimeout(this._menuTimeout);
+            this._menuTimeout = setTimeout(this.hideMenu.bind(this), 3000);
             return false;
         },
 
         hideMenu : function() {
+            this.elementUI.off('out', this.hideMenu, this);
             if (this.mouseOverContext) {
-                // If mouse is over the menu, do nothing
+                // If mouse is over the menu, hide the menu when mouse moves out
+                this.elementUI.on('out', this.hideMenu, this);
                 return;
             }
             utils.removeClass(this.playerElement, 'jw-flag-rightclick-open');

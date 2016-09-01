@@ -34,7 +34,6 @@ define([
                 // Initially we don't assume Flash is needed
                 flashBlocked : false,
                 fullscreen: false,
-                compactUI: false,
                 scrubbing : false,
                 duration: 0,
                 position: 0,
@@ -100,7 +99,7 @@ define([
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', data.bufferPercent);
 
-                    /* falls through */
+                /* falls through */
                 case events.JWPLAYER_MEDIA_META:
                     var duration = data.duration;
                     if (_.isNumber(duration) && !_.isNaN(duration)) {
@@ -111,7 +110,7 @@ define([
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
-                    if(this.mediaModel.get('playAttempt')) {
+                    if (this.mediaModel.get('playAttempt')) {
                         this.playVideo();
                     } else {
                         this.mediaModel.on('change:playAttempt', function() {
@@ -148,7 +147,7 @@ define([
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
                 case 'subtitlesTrackChanged':
-                    this.setVideoSubtitleTrack(data.currentTrack, data.tracks);
+                    this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
                     break;
 
                 case 'visualQuality':
@@ -179,7 +178,7 @@ define([
             }
         };
 
-        this.onMediaContainer = function () {
+        this.onMediaContainer = function() {
             var container = this.get('mediaContainer');
             _currentProvider.setContainer(container);
         };
@@ -192,6 +191,7 @@ define([
                 if (_provider.getContainer()) {
                     _provider.remove();
                 }
+                delete _provider.instreamMode;
             }
 
             if (!Provider) {
@@ -220,6 +220,10 @@ define([
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
             _provider.on('all', _videoEventHandler, this);
+
+            if (this.get('instreamMode') === true) {
+                _provider.instreamMode = true;
+            }
         };
 
         this.destroy = function() {
@@ -384,8 +388,8 @@ define([
 
         };
 
-        this.persistVideoSubtitleTrack = function(trackIndex) {
-            this.setVideoSubtitleTrack(trackIndex);
+        this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
+            this.setVideoSubtitleTrack(trackIndex, tracks);
             this.persistCaptionsTrack();
         };
     };
