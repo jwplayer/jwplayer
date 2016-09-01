@@ -86,18 +86,24 @@ define([
             providers = new Providers({primary : providers ? 'flash' : null});
         }
 
-        var bestType = _chooseType(sources, providers);
-
-        return _.where(sources, {type : bestType});
+        var chosenProviderAndType = _chooseProviderAndType(sources, providers);
+        if (!chosenProviderAndType) {
+            return [];
+        }
+        var provider = chosenProviderAndType.provider;
+        var bestType = chosenProviderAndType.type;
+        return _.filter(sources, function(source) {
+            return source.type === bestType && providers.providerSupports(provider, source);
+        });
     };
 
     //  Choose from the sources a type which matches our most preferred provider
-    function _chooseType(sources, providers) {
+    function _chooseProviderAndType(sources, providers) {
         for (var i = 0; i < sources.length; i++) {
             var source = sources[i];
             var chosenProvider = providers.choose(source);
             if (chosenProvider) {
-                return source.type;
+                return {type: source.type, provider: chosenProvider.providerToCheck};
             }
         }
 
