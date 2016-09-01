@@ -13,11 +13,12 @@ define([
     'view/preview',
     'view/rightclick',
     'view/title',
+    'view/components/nextuptooltip',
     'utils/underscore',
     'templates/player.html'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -47,6 +48,7 @@ define([
             _dock,
             _logo,
             _title,
+            _nextuptooltip,
             _captionsRenderer,
             _audioMode,
             _showing = false,
@@ -645,7 +647,15 @@ define([
             _model.on('change:scrubbing', _dragging);
             _model.on('change:compactUI', _onCompactUIChange);
 
+            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next.element());
+            _nextuptooltip.setup();
+
+            // NextUp needs to be behind the controlbar to not block other tooltips
+            _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
+
+
+
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
