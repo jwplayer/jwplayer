@@ -30,6 +30,7 @@ define([
             // Events
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:position', this.onElapsed, this);
+            this._model.on('change:playlist', this.onPlaylist, this);
             this._api.onPlaylistItem(this.onPlaylistItem.bind(this));
 
             // If there's a related block, wait until the plugin is available
@@ -142,14 +143,23 @@ define([
             // Only switch to related mode if there is a related playlist
             this._related.on('playlist', this.onRelatedPlaylist.bind(this));
         },
+        onPlaylist: function(model, playlist) {
+            this._playlist = playlist;
+            this.showNextUp = (playlist.length > 1);
+        },
         onPlaylistItem: function(item) {
+            this._model.off('change:duration', this.onDuration, this);
+
+            if(!this.showNextUp) {
+                return;
+            }
+
             // Listen for duration changes to determine the offset
             // for when next up should be shown
             this._model.on('change:duration', this.onDuration, this);
 
-            var playlist = this._model.get('playlist');
-            var nextUpIndex = (item.index + 1) % playlist.length;
-            var nextUpItem = playlist[nextUpIndex];
+            var nextUpIndex = (item.index + 1) % this._playlist.length;
+            var nextUpItem = this._playlist[nextUpIndex];
             this.relatedMode = false;
             this.setNextUpItem(nextUpItem);
         },
@@ -157,6 +167,12 @@ define([
             if (!duration) {
                 return;
             }
+
+            if (utils.adaptiveType(duration) === 'LIVE' || utils.adaptiveType(duration) === 'DVR') {
+                model.off('change:duration', this.onDuration, this);
+                return;
+            }
+
             // Use nextupoffset if set or default to 10 seconds from the end of playback
             var offset = model.get('nextupoffset') || -10;
             offset = utils.seconds(offset);
