@@ -30,6 +30,7 @@ define([
             // Events
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:position', this.onElapsed, this);
+            this._model.on('change:playlist', this.onPlaylist, this);
             this._api.onPlaylistItem(this.onPlaylistItem.bind(this));
 
             // If there's a related block, wait until the plugin is available
@@ -42,7 +43,7 @@ define([
             // Next button behavior:
             // - click = go to next playlist or related item
             // - hover = show NextUp tooltip without 'close' button
-            this.nextButtonUI = new UI(this._nextButton, {'useHover': true, 'directSelect': true})
+            this.nextButtonUI = new UI(this._nextButton.element(), {'useHover': true, 'directSelect': true})
                 .on('click tap', this.click, this)
                 .on('over', this.show, this)
                 .on('out', this.hoverOut, this);
@@ -142,14 +143,17 @@ define([
             // Only switch to related mode if there is a related playlist
             this._related.on('playlist', this.onRelatedPlaylist.bind(this));
         },
+        onPlaylist: function(model, playlist) {
+            this._playlist = playlist;
+            var display = (playlist.length > 1);
+            this._nextButton.toggle(display);
+        },
         onPlaylistItem: function(item) {
             // Listen for duration changes to determine the offset
             // for when next up should be shown
             this._model.on('change:duration', this.onDuration, this);
-
-            var playlist = this._model.get('playlist');
-            var nextUpIndex = (item.index + 1) % playlist.length;
-            var nextUpItem = playlist[nextUpIndex];
+            var nextUpIndex = (item.index + 1) % this._playlist.length;
+            var nextUpItem = this._playlist[nextUpIndex];
             this.relatedMode = false;
             this.setNextUpItem(nextUpItem);
         },
@@ -173,11 +177,15 @@ define([
             this.offset = offset;
         },
         onRelatedPlaylist: function(evt) {
-            if (evt.playlist && evt.playlist.length) {
+            var playlist = evt.playlist;
+            if (playlist && playlist.length) {
                 this.relatedMode = true;
                 var relatedBlock = this._model.get('related');
                 // If there are related items, Next Up is shown when we're autoplaying and the timer is set to 0
                 this.showNextUp = relatedBlock.oncomplete === 'autoplay' && relatedBlock.autoplaytimer === 0;
+
+                // Show the next button when there is related content
+                this._nextButton.toggle(true);
 
                 this.setNextUpItem(evt.playlist[0]);
             }
