@@ -43,7 +43,7 @@ define([
             // Next button behavior:
             // - click = go to next playlist or related item
             // - hover = show NextUp tooltip without 'close' button
-            this.nextButtonUI = new UI(this._nextButton, {'useHover': true, 'directSelect': true})
+            this.nextButtonUI = new UI(this._nextButton.element(), {'useHover': true, 'directSelect': true})
                 .on('click tap', this.click, this)
                 .on('over', this.show, this)
                 .on('out', this.hoverOut, this);
@@ -146,6 +146,9 @@ define([
         onPlaylist: function(model, playlist) {
             this._playlist = playlist;
             this.showNextUp = (playlist.length > 1);
+            this.relatedMode = false;
+
+            this._nextButton.toggle(this.showNextUp);
         },
         onPlaylistItem: function(item) {
             this._model.off('change:duration', this.onDuration, this);
@@ -160,7 +163,7 @@ define([
 
             var nextUpIndex = (item.index + 1) % this._playlist.length;
             var nextUpItem = this._playlist[nextUpIndex];
-            this.relatedMode = false;
+
             this.setNextUpItem(nextUpItem);
         },
         onDuration: function(model, duration) {
@@ -189,11 +192,15 @@ define([
             this.offset = offset;
         },
         onRelatedPlaylist: function(evt) {
-            if (evt.playlist && evt.playlist.length) {
+            var playlist = evt.playlist;
+            if (playlist && playlist.length) {
                 this.relatedMode = true;
                 var relatedBlock = this._model.get('related');
                 // If there are related items, Next Up is shown when we're autoplaying and the timer is set to 0
                 this.showNextUp = relatedBlock.oncomplete === 'autoplay' && relatedBlock.autoplaytimer === 0;
+
+                // Show the next button when there is related content
+                this._nextButton.toggle(true);
 
                 this.setNextUpItem(evt.playlist[0]);
             }
