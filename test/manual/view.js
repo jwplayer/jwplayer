@@ -7,6 +7,7 @@ window.requireCallback = function(){
         'view/view',
         'css/jwplayer.less'
     ], function(mockApi, mockModel, View) {
+        var _ = window._;
 
         function makePlayer(state) {
             var m = _.extend({}, mockModel);

@@ -1199,11 +1199,6 @@
       "from": "fresh@0.3.0",
       "resolved": "https://registry.npmjs.org/fresh/-/fresh-0.3.0.tgz"
     },
-    "fs": {
-      "version": "0.0.2",
-      "from": "fs@0.0.2",
-      "resolved": "https://registry.npmjs.org/fs/-/fs-0.0.2.tgz"
-    },
     "fs-access": {
       "version": "1.0.0",
       "from": "fs-access@>=1.0.0 <2.0.0",
@@ -2011,9 +2006,9 @@
       }
     },
     "grunt-flash-compiler": {
-      "version": "0.2.1",
-      "from": "grunt-flash-compiler@0.2.1",
-      "resolved": "https://registry.npmjs.org/grunt-flash-compiler/-/grunt-flash-compiler-0.2.1.tgz"
+      "version": "0.2.3",
+      "from": "grunt-flash-compiler@0.2.3",
+      "resolved": "https://registry.npmjs.org/grunt-flash-compiler/-/grunt-flash-compiler-0.2.3.tgz"
     },
     "grunt-karma": {
       "version": "2.0.0",

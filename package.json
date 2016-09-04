@@ -22,7 +22,7 @@
     "grunt-contrib-jshint": "1.0.0",
     "grunt-contrib-uglify": "1.0.1",
     "grunt-contrib-watch": "1.0.0",
-    "grunt-flash-compiler": "0.2.2",
+    "grunt-flash-compiler": "0.2.3",
     "grunt-karma": "2.0.0",
     "grunt-recess": "1.0.1",
     "handlebars": "4.0.5",
