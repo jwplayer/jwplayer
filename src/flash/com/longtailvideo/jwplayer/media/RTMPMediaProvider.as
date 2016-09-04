@@ -146,7 +146,7 @@ public class RTMPMediaProvider extends MediaProvider {
         if (!_video) {
             _video = new Video(320, 240);
             _video.smoothing = true;
-            _video.attachNetStream(_stream);
+            this.attachNetStream(_stream);
         }
 
         media = _video;
@@ -204,7 +204,7 @@ public class RTMPMediaProvider extends MediaProvider {
             _afterLoading = play;
             return;
         }
-        _video.attachNetStream(_stream);
+        this.attachNetStream(_stream);
         clearInterval(_interval);
         _interval = setInterval(positionInterval, 100);
         if (_isPaused) {
@@ -247,6 +247,7 @@ public class RTMPMediaProvider extends MediaProvider {
 
     /** Close the stream; reset all variables. **/
     override public function stop():void {
+        this.attachNetStream(null);
         if (_stream && _stream.time) {
             _stream.close();
         }
@@ -471,7 +472,7 @@ public class RTMPMediaProvider extends MediaProvider {
             _stream.bufferTime = 2;
         }
         _stream.client = new NetClient(this);
-        _video.attachNetStream(_stream);
+        this.attachNetStream(_stream);
         _stream.soundTransform = config.soundTransform;
         // JWPLAYER_MEDIA_BUFFER_FULL will trigger a play() of the video...?
         if (_afterLoading !== null) {

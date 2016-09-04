@@ -5,11 +5,14 @@ import com.longtailvideo.jwplayer.events.PlayerStateEvent;
 import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.player.PlayerState;
+import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Stretcher;
 
 import flash.display.DisplayObject;
 import flash.display.Sprite;
 import flash.events.Event;
+import flash.media.StageVideo;
+import flash.net.NetStream;
 
 public class MediaProvider extends Sprite implements IMediaProvider {
 
@@ -238,7 +241,17 @@ public class MediaProvider extends Sprite implements IMediaProvider {
         _height = height;
         if (_media) {
             Stretcher.stretch(_media, width, height, _config.stretching);
+            var stage:StageVideo = RootReference.stage.stageVideos[0];
+            stage.viewPort = _media.getRect(RootReference.root);
         }
+    }
+
+    protected function attachNetStream(stream:NetStream):void {
+        var stage:StageVideo = RootReference.stage.stageVideos[0];
+        if (_media && stream !== null) {
+            stage.viewPort = _media.getRect(RootReference.root);
+        }
+        stage.attachNetStream(stream);
     }
 
     /**
