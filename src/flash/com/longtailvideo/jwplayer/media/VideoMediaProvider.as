@@ -81,6 +81,7 @@ public class VideoMediaProvider extends MediaProvider {
         _stream.bufferTime = 1;
         _stream.client = new NetClient(this);
         _stream.soundTransform = cfg.soundTransform;
+        this.attachNetStream(_stream);
         // Set startparam when available
         if (_config.startparam) {
             _startparam = _config.startparam;
@@ -122,7 +123,7 @@ public class VideoMediaProvider extends MediaProvider {
         clearInterval(_interval);
         _seeking = false;
         _interval = setInterval(positionHandler, 100);
-        _video.attachNetStream(_stream);
+        this.attachNetStream(_stream);
         _stream.resume();
         super.play();
     }
@@ -176,6 +177,7 @@ public class VideoMediaProvider extends MediaProvider {
             _stream.pause();
             _stream.seek(0);
         }
+        this.attachNetStream(null);
         clearInterval(_interval);
         _keyframes = undefined;
         _buffered = 0;
@@ -297,8 +299,7 @@ public class VideoMediaProvider extends MediaProvider {
             _video = new Video();
             _video.smoothing = true;
         }
-
-        _video.attachNetStream(_stream);
+        this.attachNetStream(_stream);
 
         // Set initial quality and set levels
         _currentQuality = 0;
