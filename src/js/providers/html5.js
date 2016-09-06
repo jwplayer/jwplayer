@@ -12,6 +12,7 @@ define([
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
+        MIN_DVR_DURATION = 120,
         _isIE = utils.isIE(),
         _isIE9 = utils.isIE(9),
         _isMSIE = utils.isMSIE(),
@@ -141,6 +142,8 @@ define([
             _beforecompleted = false,
             // webkit fullscreen media element state
             _fullscreenState = false,
+            // function to call when resuming after pause
+            _beforeResumeHandler = utils.noop,
             // MediaElement Tracks
             _audioTracks = null,
             _currentAudioTrackIndex = -1,
@@ -284,8 +287,8 @@ define([
             var duration = _videotag.duration;
             var end = _getSeekableEnd();
             if (duration === Infinity && end) {
-                var seekableDuration = end - _videotag.seekable.start(0);
-                if (seekableDuration !== Infinity && seekableDuration > 120) {
+                var seekableDuration = end - _getSeekableStart();
+                if (seekableDuration !== Infinity && seekableDuration > MIN_DVR_DURATION) {
                     // Player interprets negative duration as DVR
                     duration = -seekableDuration;
                 }
@@ -588,6 +591,7 @@ define([
 
 
         this.destroy = function() {
+            _beforeResumeHandler = utils.noop;
              _removeListeners(_mediaEvents, _videotag);
             this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
             this.removeTracksListener(_videotag.textTracks, 'change', _this.textTrackChangeHandler);
@@ -636,12 +640,27 @@ define([
                 _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
                 return;
             }
+            _beforeResumeHandler();
             _play();
         };
 
         this.pause = function() {
             clearTimeout(_playbackTimeout);
             _videotag.pause();
+            _beforeResumeHandler = function() {
+                var unpausing = _videotag.paused && _videotag.currentTime;
+                if (unpausing && _videotag.duration === Infinity) {
+                    var end = _getSeekableEnd();
+                    var seekableDuration = end - _getSeekableStart();
+                    var isLiveNotDvr = seekableDuration < MIN_DVR_DURATION;
+                    var behindLiveEdge = end - _videotag.currentTime;
+                    if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
+                        // resume playback at edge of live stream
+                        _videotag.currentTime = Math.max(end - 10, end - seekableDuration);
+                    }
+
+                }
+            };
             this.setState(states.PAUSED);
         };
 
