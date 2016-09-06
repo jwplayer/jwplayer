@@ -654,7 +654,7 @@ define([
                     var seekableDuration = end - _getSeekableStart();
                     var isLiveNotDvr = seekableDuration < MIN_DVR_DURATION;
                     var behindLiveEdge = end - _videotag.currentTime;
-                    if (isLiveNotDvr && end && behindLiveEdge > 15) {
+                    if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
                         // resume playback at edge of live stream
                         _videotag.currentTime = Math.max(end - 10, end - seekableDuration);
                     }
