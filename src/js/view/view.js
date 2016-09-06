@@ -638,7 +638,7 @@ define([
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
 
-            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next.element());
+            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
             _nextuptooltip.setup();
 
             // NextUp needs to be behind the controlbar to not block other tooltips
