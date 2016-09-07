@@ -13,11 +13,12 @@ define([
     'view/preview',
     'view/rightclick',
     'view/title',
+    'view/components/nextuptooltip',
     'utils/underscore',
     'templates/player.html'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -47,6 +48,7 @@ define([
             _dock,
             _logo,
             _title,
+            _nextuptooltip,
             _captionsRenderer,
             _audioMode,
             _showing = false,
@@ -327,8 +329,6 @@ define([
                 '.jw-active-option',
                 // slider fill color
                 '.jw-progress',
-                '.jw-playlist-container .jw-option.jw-active-option',
-                '.jw-playlist-container .jw-option:hover'
             ], 'background', activeColor);
 
             // Apply inactive color
@@ -342,30 +342,20 @@ define([
                 // toggle button
                 '.jw-toggle.jw-off',
                 '.jw-tooltip-title',
-                '.jw-skip .jw-skip-icon',
-                '.jw-playlist-container .jw-icon'
+                '.jw-skip .jw-skip-icon'
             ], 'color', inactiveColor);
             addStyle([
                 // slider children
                 '.jw-cue',
                 '.jw-knob'
             ], 'background', inactiveColor);
-            addStyle([
-                '.jw-playlist-container .jw-option'
-            ], 'border-bottom-color', inactiveColor);
 
             // Apply background color
             addStyle([
                 // general background color
                 '.jw-background-color',
-                '.jw-tooltip-title',
-                '.jw-playlist',
-                '.jw-playlist-container .jw-option'
+                '.jw-tooltip-title'
             ], 'background', backgroundColor);
-            addStyle([
-                // area around scrollbar on the playlist.  skin fix required to remove
-                '.jw-playlist-container ::-webkit-scrollbar'
-            ], 'border-color', backgroundColor);
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
@@ -648,7 +638,15 @@ define([
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
 
+            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
+            _nextuptooltip.setup();
+
+            // NextUp needs to be behind the controlbar to not block other tooltips
+            _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
+
+
+
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);

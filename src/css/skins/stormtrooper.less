@@ -48,44 +48,6 @@
         bottom: .3em;
     }
 
-    /* Playlist container */
-    .jw-playlist-container {
-        background-color: @inactive-color;
-        left: -48%;
-        border-radius: 0;
-        bottom: 0;
-
-        .jw-option,
-        .jw-text,
-        .jw-icon {
-            color: #CBD0DA;
-        }
-
-        .jw-option {
-            border-bottom: 1px solid #5B697A;
-            background-color: @inactive-color;
-
-            // Menu item backgrounds are lighter when active or hovered
-            &:hover,
-            &.jw-active-option {
-                background: #5B697A;
-            }
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #5B697A;
-        }
-
-        ::-webkit-scrollbar {
-            width: 2px;
-            border: 10px solid @inactive-color;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to right, @rail-color 0%, #fff 50%, @rail-color 100%);
-        }
-    }
-
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #5B697A;

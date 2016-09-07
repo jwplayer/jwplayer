@@ -7,9 +7,8 @@ define([
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
-    'view/components/playlist',
     'view/components/volumetooltip'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, Playlist, VolumeTooltip) {
+], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip) {
 
     function button(icon, apiAction, ariaText) {
         var element = document.createElement('div');
@@ -86,20 +85,14 @@ define([
 
         build : function() {
             var timeSlider = new TimeSlider(this._model, this._api),
-                playlistTooltip,
                 volumeSlider,
                 volumeTooltip,
                 muteButton;
 
-            // Create the playlistTooltip as long as visualplaylist from the config is not false
-            if(this._model.get('visualplaylist') !== false) {
-                playlistTooltip = new Playlist('jw-icon-playlist', this._localization.playlist);
-            }
-
             var play = this._localization.play;
-            var prev = this._localization.prev;
             var next = this._localization.next;
             var vol = this._localization.volume;
+            var rewind = this._localization.rewind;
 
             // Do not initialize volume sliders on mobile.
             if(!this._isMobile){
@@ -111,9 +104,8 @@ define([
             this.elements = {
                 alt: text('jw-text-alt', 'status'),
                 play: button('jw-icon-playback', this._api.play.bind(this, {reason: 'interaction'}), play),
-                prev: button('jw-icon-prev', this._api.playlistPrev.bind(this, {reason: 'interaction'}), prev),
-                next: button('jw-icon-next', this._api.playlistNext.bind(this, {reason: 'interaction'}), next),
-                playlist : playlistTooltip,
+                rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
+                next: button('jw-icon-next', null, next), // the click/tap event listener is in the nextup tooltip
                 elapsed: text('jw-text-elapsed', 'timer'),
                 time: timeSlider,
                 duration: text('jw-text-duration', 'timer'),
@@ -130,9 +122,7 @@ define([
             this.layout = {
                 left: [
                     this.elements.play,
-                    this.elements.prev,
-                    this.elements.playlist,
-                    this.elements.next,
+                    this.elements.rewind,
                     this.elements.elapsed
                 ],
                 center: [
@@ -141,6 +131,7 @@ define([
                 ],
                 right: [
                     this.elements.duration,
+                    this.elements.next,
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
@@ -154,7 +145,6 @@ define([
             };
 
             this.menus = _.compact([
-                this.elements.playlist,
                 this.elements.hd,
                 this.elements.cc,
                 this.elements.audiotracks,
@@ -188,7 +178,7 @@ define([
             }
             this.onVolume(this._model, this._model.get('volume'));
             this.onPlaylist(this._model, this._model.get('playlist'));
-            this.onPlaylistItem(this._model, this._model.get('playlistItem'));
+            this.onPlaylistItem();
             this.onMediaModel(this._model, this._model.get('mediaModel'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
             this.onCastActive(this._model, this._model.get('castActive'));
@@ -224,15 +214,6 @@ define([
                 }, this);
                 this.elements.volumetooltip.on('toggleValue', function(){
                     this._api.setMute();
-                }, this);
-            }
-
-            if(this.elements.playlist) {
-                this.elements.playlist.on('select', function (value) {
-                    this._model.once('itemReady', function () {
-                        this._api.play({reason: 'interaction'});
-                    }, this);
-                    this._api.load(value);
                 }, this);
             }
 
@@ -281,21 +262,13 @@ define([
         onPlaylist : function(model, playlist) {
             var display = (playlist.length > 1);
             this.elements.next.toggle(display);
-            this.elements.prev.toggle(display);
-            if(this.elements.playlist) {
-                this.elements.playlist.setup(playlist, model.get('item'));
-            }
         },
-        onPlaylistItem : function(model/*, item*/) {
+        onPlaylistItem : function() {
             this.elements.time.updateBuffer(0);
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
 
-            var itemIdx = model.get('item');
-            if (this.elements.playlist) {
-                this.elements.playlist.selectItem(itemIdx);
-            }
             this.elements.audiotracks.setup();
         },
 
@@ -357,6 +330,9 @@ define([
                 totalTime = utils.timeFormat(val);
             }
             this.elements.duration.innerHTML = totalTime;
+
+            // Hide rewind button when in LIVE mode
+            this.elements.rewind.toggle(utils.adaptiveType(val) !== 'LIVE');
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
@@ -403,6 +379,19 @@ define([
         },
         hideComponents : function() {
             this.closeMenus();
+        },
+        rewind : function() {
+            var currentPosition = this._model.get('position'),
+                duration = this._model.get('duration'),
+                rewindPosition = currentPosition - 10,
+                startPosition = 0;
+
+            // duration is negative in DVR mode
+            if (utils.adaptiveType(duration) === 'DVR') {
+                startPosition = duration;
+            }
+            // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
+            this._api.seek(Math.max(rewindPosition, startPosition));
         }
     });
 

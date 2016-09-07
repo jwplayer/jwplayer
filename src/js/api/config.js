@@ -37,7 +37,9 @@ define([
             buffer: 'Loading',
             more: 'More',
             liveBroadcast: 'Live broadcast',
-            loadingAd: 'Loading ad'
+            loadingAd: 'Loading ad',
+            rewind: 'Rewind 10s',
+            nextup: 'Next Up'
         }
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
