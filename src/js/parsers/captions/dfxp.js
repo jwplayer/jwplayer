@@ -30,7 +30,7 @@ define([
         for (var i = 0; i < paragraphs.length; i++) {
             var p = paragraphs[i];
             var rawText = (p.innerHTML || p.textContent || p.text || '');
-            var text = strings.trim(rawText).replace(/>\s+</g, '><').replace(/tts?:/g, '').replace(/<br.*?\/>/g, '\r\n');
+            var text = strings.trim(rawText).replace(/>\s+</g, '><').replace(/(<\/?)tts?:/g, '$1').replace(/<br.*?\/>/g, '\r\n');
             if (text) {
                 var begin = p.getAttribute('begin');
                 var dur = p.getAttribute('dur');
