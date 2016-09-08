@@ -10,7 +10,7 @@ define([
         this._api = _api;
         this._nextButton = nextButton;
 
-        this.nextUpText = _model.get('localization').nextup;
+        this.nextUpText = _model.get('localization').nextuptext;
         this.state = 'tooltip';
         this.relatedMode = false;
     };
