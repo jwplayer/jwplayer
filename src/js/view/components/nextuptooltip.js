@@ -22,6 +22,9 @@ define([
             var element = utils.createElement(nextUpTemplate());
             this.addContent(element);
 
+            this.closeButton = this.content.querySelector('.jw-nextup-close');
+            this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
+
             // Next Up is always shown for playlist items
             this.showNextUp = true;
 
@@ -32,6 +35,11 @@ define([
             this._model.on('change:position', this.onElapsed, this);
             this._model.on('change:playlist', this.onPlaylist, this);
             this._api.onPlaylistItem(this.onPlaylistItem.bind(this));
+
+            this.closeButtonUI = new UI(this.closeButton, {'directSelect': true})
+                .on('click tap', this.hide, this);
+            this.tooltipUI = new UI(this.tooltip)
+                .on('click tap', this.click, this);
 
             // If there's a related block, wait until the plugin is available
             if (this._model.get('related')) {
@@ -103,39 +111,36 @@ define([
             this.state = 'opened';
         },
         setNextUpItem: function(nextUpItem) {
-            if (!nextUpItem) {
-                this.reset();
-                return;
-            }
-
             this.nextUpItem = nextUpItem;
 
-            this.closeButton = this.content.querySelector('.jw-nextup-close');
-            this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
+            var _this = this;
 
-            // Events
-            this.closeButtonUI = new UI(this.closeButton, {'directSelect': true})
-                .on('click tap', this.hide, this);
-            this.tooltipUI = new UI(this.tooltip)
-                .on('click tap', this.click, this);
+            // Give the previous item time to complete its animation
+            setTimeout(function () {
+                if (!nextUpItem) {
+                    _this.reset();
+                    return;
+                }
 
-            // Setup thumbnail
-            this.thumbnail = this.content.querySelector('.jw-nextup-thumbnail');
-            dom.toggleClass(this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
+                // Setup thumbnail
+                _this.thumbnail = _this.content.querySelector('.jw-nextup-thumbnail');
+                dom.toggleClass(_this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
 
-            if (nextUpItem.image) {
-                var thumbnailStyle = this.loadThumbnail(nextUpItem.image);
-                utils.style(this.thumbnail, thumbnailStyle);
+                if (nextUpItem.image) {
+                    var thumbnailStyle = _this.loadThumbnail(nextUpItem.image);
+                    utils.style(_this.thumbnail, thumbnailStyle);
 
-            }
+                }
 
-            // Set header
-            this.header = this.content.querySelector('.jw-nextup-header');
-            this.header.innerText = this.nextUpText;
+                // Set header
+                _this.header = _this.content.querySelector('.jw-nextup-header');
+                _this.header.innerText = _this.nextUpText;
 
-            // Set title
-            this.title = this.content.querySelector('.jw-nextup-title');
-            this.title.innerText = nextUpItem.title || '';
+                // Set title
+                _this.title = _this.content.querySelector('.jw-nextup-title');
+                var title = nextUpItem.title;
+                _this.title.innerText = title ? utils.createElement(title).textContent : '';
+            }, 500);
 
         },
         onReady: function() {
@@ -202,7 +207,9 @@ define([
                 // Show the next button when there is related content
                 this._nextButton.toggle(true);
 
-                this.setNextUpItem(evt.playlist[0]);
+                this.setNextUpItem(this._related.nextUp());
+
+                this._model.on('change:duration', this.onDuration, this);
             }
         },
         onMediaModel: function(model, mediaModel) {
