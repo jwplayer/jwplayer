@@ -159,23 +159,22 @@ define([
         this.isSDK = _isSDK;
         this.video = _videotag;
 
+        function _setAttribute(name, value) {
+            _videotag.setAttribute(name, value || '');
+        }
+
         // prevent browser from showing second cast icon
         // https://w3c.github.io/remote-playback/
         if (_.isObject(_playerConfig.cast) && _playerConfig.cast.appid) {
-            _videotag.setAttribute('disableRemotePlayback', '');
+            _setAttribute('disableRemotePlayback', '');
         }
 
         _setupListeners(_mediaEvents, _videotag);
 
-        // Workaround for a Safari bug where video disappears on switch to fullscreen
-        if (!_isIOS7) {
-            _videotag.controls = true;
-            _videotag.controls = false;
-        }
-
         // Enable AirPlay
-        _videotag.setAttribute('x-webkit-airplay', 'allow');
-        _videotag.setAttribute('webkit-playsinline', '');
+        _setAttribute('x-webkit-airplay', 'allow');
+        _setAttribute('webkit-playsinline');
+        _setAttribute('playsinline');
 
         // Enable tracks support for HLS videos
         function _onLoadedData() {
@@ -184,14 +183,14 @@ define([
             }
             _setAudioTracks(_videotag.audioTracks);
             _this.setTextTracks(_videotag.textTracks);
-            _videotag.setAttribute('jw-loaded', 'data');
+            _setAttribute('jw-loaded', 'data');
         }
 
         function _onLoadStart() {
             if (!_attached) {
                 return;
             }
-            _videotag.setAttribute('jw-loaded', 'started');
+            _setAttribute('jw-loaded', 'started');
         }
 
         function _clickHandler(evt) {
@@ -343,7 +342,7 @@ define([
                 _videotag.muted = false;
                 _videotag.muted = true;
             }
-            _videotag.setAttribute('jw-loaded', 'meta');
+            _setAttribute('jw-loaded', 'meta');
             _sendMetaEvent();
         }
 
@@ -357,7 +356,7 @@ define([
         function _playingHandler() {
             _this.setState(states.PLAYING);
             if(!_videotag.hasAttribute('jw-played')) {
-                _videotag.setAttribute('jw-played','');
+                _setAttribute('jw-played','');
             }
             _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
@@ -524,14 +523,14 @@ define([
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(source);
             if (source.preload && source.preload !== _videotag.getAttribute('preload')) {
-                _videotag.setAttribute('preload', source.preload);
+                _setAttribute('preload', source.preload);
             }
 
             var sourceElement = document.createElement('source');
             sourceElement.src = source.file;
             var sourceChanged = (_videotag.src !== sourceElement.src);
             if (sourceChanged) {
-                _videotag.setAttribute('jw-loaded', 'none');
+                _setAttribute('jw-loaded', 'none');
                 _videotag.src = source.file;
             }
         }
