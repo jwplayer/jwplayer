@@ -39,7 +39,8 @@ define([
             liveBroadcast: 'Live broadcast',
             loadingAd: 'Loading ad',
             rewind: 'Rewind 10s',
-            nextup: 'Next Up'
+            nextUp: 'Next Up',
+            related: 'Related'
         }
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
