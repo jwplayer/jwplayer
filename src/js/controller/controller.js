@@ -425,6 +425,9 @@ define([
 
             function _item(index, meta) {
                 _stop(true);
+                if(_model.get('state') === states.ERROR) {
+                    _model.set('state', states.IDLE);
+                }
                 _setItem(index);
                 _play(meta);
             }
