@@ -70,9 +70,9 @@ define([
         click: function() {
             this.state = 'tooltip';
 
-            if (this.relatedMode) {
-                this._related.selectItem_(this.nextUpItem, 'interaction');
-            } else {
+            if (this.relatedMode && this._related.selectItem_) {
+                 this._related.selectItem_(this.nextUpItem, 'interaction');
+            } else if (!this.relatedMode) {
                 this._api.playlistNext({reason: 'interaction'});
             }
 
@@ -111,17 +111,23 @@ define([
             this.state = 'opened';
         },
         setNextUpItem: function(nextUpItem) {
+            this._model.off('change:position', this.onElapsed, this);
+
+            if (!nextUpItem) {
+                this.showNextUp = false;
+                this._nextButton.toggle(false);
+                this._model.off('change:duration', this.onDuration, this);
+                return;
+            }
+
             this.nextUpItem = nextUpItem;
+
+            this._model.on('change:position', this.onElapsed, this);
 
             var _this = this;
 
             // Give the previous item time to complete its animation
             setTimeout(function () {
-                if (!nextUpItem) {
-                    _this.reset();
-                    return;
-                }
-
                 // Setup thumbnail
                 _this.thumbnail = _this.content.querySelector('.jw-nextup-thumbnail');
                 dom.toggleClass(_this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
@@ -207,7 +213,9 @@ define([
                 // Show the next button when there is related content
                 this._nextButton.toggle(true);
 
-                this.setNextUpItem(this._related.nextUp());
+                var nextUpItem = this._related.nextUp && this._related.nextUp();
+
+                this.setNextUpItem(nextUpItem);
 
                 this._model.on('change:duration', this.onDuration, this);
             }
