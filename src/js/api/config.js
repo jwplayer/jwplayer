@@ -65,6 +65,8 @@ define([
 
         _deserialize(allOptions);
 
+        allOptions.localization = _.extend({}, Defaults.localization, allOptions.localization);
+
         var config = _.extend({}, Defaults, allOptions);
         if (config.base === '.') {
             config.base = utils.getScriptPath('jwplayer.js');
