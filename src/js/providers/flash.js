@@ -6,7 +6,7 @@ define([
     'utils/embedswf',
     'providers/default',
     'utils/backbone.events',
-    'providers/tracks-mixin',
+    'providers/tracks-mixin'
 ], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events, Tracks) {
     var _providerId = 0;
     function getObjectId(playerId) {
@@ -468,7 +468,6 @@ define([
                     }
                     _container = null;
                     _item = null;
-                    this.clearTracks();
                     this.off();
                 }
         });

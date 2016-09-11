@@ -37,7 +37,10 @@ define([
             buffer: 'Loading',
             more: 'More',
             liveBroadcast: 'Live broadcast',
-            loadingAd: 'Loading ad'
+            loadingAd: 'Loading ad',
+            rewind: 'Rewind 10s',
+            nextUp: 'Next Up',
+            related: 'Related'
         }
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
@@ -61,6 +64,8 @@ define([
         var allOptions = _.extend({}, (window.jwplayer || {}).defaults, persisted, options);
 
         _deserialize(allOptions);
+
+        allOptions.localization = _.extend({}, Defaults.localization, allOptions.localization);
 
         var config = _.extend({}, Defaults, allOptions);
         if (config.base === '.') {

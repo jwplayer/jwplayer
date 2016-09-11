@@ -282,8 +282,12 @@ define([
                 loader.load(toLoad);
             }
 
+            function _getAdState() {
+                return _this._instreamAdapter && _this._instreamAdapter.getState();
+            }
+
             function _getState() {
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     return adState;
                 }
@@ -301,7 +305,7 @@ define([
                     return;
                 }
 
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     // this will resume the ad. _api.playAd would load a new ad
                     return _api.pauseAd(false);
@@ -377,7 +381,7 @@ define([
             function _pause() {
                 _actionOnAttach = null;
 
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     return _api.pauseAd(true);
                 }
@@ -421,6 +425,9 @@ define([
 
             function _item(index, meta) {
                 _stop(true);
+                if(_model.get('state') === states.ERROR) {
+                    _model.set('state', states.IDLE);
+                }
                 _setItem(index);
                 _play(meta);
             }
@@ -728,9 +735,6 @@ define([
             this.createInstream = function() {
                 this.instreamDestroy();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
-                // Persist the current captions track so the index
-                // is  set correctly after ad playback ends
-                _model.persistCaptionsTrack();
                 return this._instreamAdapter;
             };
 

@@ -122,6 +122,7 @@ define([
     }
 
     function _loadPlugins(resolve, _model) {
+        window.jwplayerPluginJsonp = plugins.registerPlugin;
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
         _pluginLoader.on(events.COMPLETE, resolve);
         _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
@@ -129,8 +130,8 @@ define([
     }
 
     function _initPlugins(resolve, _model, _api) {
+        delete window.jwplayerPluginJsonp;
         _pluginLoader.setupPlugins(_api, _model);
-        
         resolve();
     }
 

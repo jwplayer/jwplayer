@@ -135,6 +135,7 @@ define([
                         priority: priority,
                         name : provider.name,
                         type: source.type,
+                        providerToCheck: provider,
                         // If provider isn't loaded, this will be undefined
                         provider : ProvidersLoaded[provider.name]
                     };

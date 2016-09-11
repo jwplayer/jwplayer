@@ -13,11 +13,12 @@ define([
     'view/preview',
     'view/rightclick',
     'view/title',
+    'view/components/nextuptooltip',
     'utils/underscore',
     'templates/player.html'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -47,12 +48,14 @@ define([
             _dock,
             _logo,
             _title,
+            _nextuptooltip,
             _captionsRenderer,
             _audioMode,
             _showing = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _resizeContainerRequestId = -1,
+            _minWidthForTimeDisplay = 450,
             // Function that delays the call of _setContainerDimensions so that the page has finished repainting.
             _delayResize = window.requestAnimationFrame ||
                 function(rafFunc) {
@@ -260,15 +263,29 @@ define([
         }
 
         function _responsiveListener() {
-            if (!document.body.contains(_playerElement)) {
-                window.removeEventListener('resize', _responsiveListener);
-                if (_isMobile) {
-                    window.removeEventListener('orientationchange', _responsiveListener);
-                }
-            } else {
+            if (document.body.contains(_playerElement)) {
                 _cancelDelayResize(_resizeContainerRequestId);
                 _resizeContainerRequestId = _delayResize(_setContainerDimensions);
             }
+        }
+
+        // Set global colors, used by related plugin
+        // If a color is undefined simple-style-loader won't add their styles to the dom
+        function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
+            var activeColorSet = {
+                color: activeColor,
+                borderColor: activeColor,
+                stroke: activeColor
+            };
+            var inactiveColorSet = {
+                color: inactiveColor,
+                borderColor: inactiveColor,
+                stroke: inactiveColor
+            };
+            utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
         }
 
 
@@ -312,8 +329,6 @@ define([
                 '.jw-active-option',
                 // slider fill color
                 '.jw-progress',
-                '.jw-playlist-container .jw-option.jw-active-option',
-                '.jw-playlist-container .jw-option:hover'
             ], 'background', activeColor);
 
             // Apply inactive color
@@ -327,30 +342,22 @@ define([
                 // toggle button
                 '.jw-toggle.jw-off',
                 '.jw-tooltip-title',
-                '.jw-skip .jw-skip-icon',
-                '.jw-playlist-container .jw-icon'
+                '.jw-skip .jw-skip-icon'
             ], 'color', inactiveColor);
             addStyle([
                 // slider children
                 '.jw-cue',
                 '.jw-knob'
             ], 'background', inactiveColor);
-            addStyle([
-                '.jw-playlist-container .jw-option'
-            ], 'border-bottom-color', inactiveColor);
 
             // Apply background color
             addStyle([
                 // general background color
                 '.jw-background-color',
-                '.jw-tooltip-title',
-                '.jw-playlist',
-                '.jw-playlist-container .jw-option'
+                '.jw-tooltip-title'
             ], 'background', backgroundColor);
-            addStyle([
-                // area around scrollbar on the playlist.  skin fix required to remove
-                '.jw-playlist-container ::-webkit-scrollbar'
-            ], 'border-color', backgroundColor);
+
+            insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
 
         this.setup = function() {
@@ -420,6 +427,10 @@ define([
             _model.on('change:castActive', _onCastActive);
             _onCastActive(_model, _model.get('castActive'));
 
+            _model.on('change:hideAdsControls', function(model, val) {
+                utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
+            });
+
             // set initial state
             if(_model.get('stretching')){
                 _onStretchChange(_model, _model.get('stretching'));
@@ -464,10 +475,6 @@ define([
 
         function _onStretchChange(model, newVal) {
             utils.replaceClass(_playerElement, /jw-stretch-\S+/, 'jw-stretch-' + newVal);
-        }
-
-        function _onCompactUIChange(model, newVal) {
-            utils.toggleClass(_playerElement, 'jw-flag-compact-player', newVal);
         }
 
         function _componentFadeListeners(comp) {
@@ -580,7 +587,7 @@ define([
             });
 
             // make displayIcon clickthrough on chrome for flash to avoid power safe throttle
-            if (utils.isChrome()) {
+            if (utils.isChrome() && !utils.isMobile()) {
                 displayIcon.el.addEventListener('mousedown', function() {
                     var provider = _model.getVideo();
                     var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
@@ -630,9 +637,16 @@ define([
             _controlbar = new Controlbar(_api, _model);
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
-            _model.on('change:compactUI', _onCompactUIChange);
 
+            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
+            _nextuptooltip.setup();
+
+            // NextUp needs to be behind the controlbar to not block other tooltips
+            _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
+
+
+
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
@@ -808,8 +822,10 @@ define([
             }
 
             _captionsRenderer.resize();
+            
+            var hideTimeInControl = width && width < _minWidthForTimeDisplay;
+            utils.toggleClass(_playerElement, 'jw-flag-compact-player', hideTimeInControl);
 
-            _controlbar.checkCompactMode(width);
         }
 
         this.resize = function(width, height) {
@@ -888,7 +904,6 @@ define([
         function _userActivity() {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
-                _controlbar.checkCompactMode(_videoLayer.clientWidth);
                 _captionsRenderer.renderCues(true);
             }
 
@@ -1006,10 +1021,6 @@ define([
             _controlbar.setAltText(text);
         };
 
-        this.useExternalControls = function() {
-            utils.addClass(_playerElement, 'jw-flag-ads-hide-controls');
-        };
-
         this.destroyInstream = function() {
             _instreamMode = false;
             if (_instreamModel) {
@@ -1017,8 +1028,8 @@ define([
                 _instreamModel = null;
             }
             this.setAltText('');
-            utils.removeClass(_playerElement, 'jw-flag-ads');
-            utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
+            utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
+            _model.set('hideAdsControls', false);
             if (_model.getVideo) {
                 var provider = _model.getVideo();
                 provider.setContainer(_videoLayer);

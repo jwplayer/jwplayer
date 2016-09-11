@@ -36,11 +36,12 @@
 
     @controlbar-height: 2em;
     #namespace > .controlbar-height();
-
     #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
+    #namespace > .set-global-color-classes();
 
+    .skin-element-padding();
     .inset-controlbar();
+
     .jw-controlbar,
     .jw-skip {
         box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
@@ -75,39 +76,6 @@
             &:before {
                 padding-right: .8em;
             }
-        }
-    }
-
-    /* Playlist */
-    .jw-playlist-container {
-        left: -57%;
-        background-color: #282828;
-        bottom: .5em;
-
-        .jw-option {
-            border-bottom: 1px solid #000;
-            background-color: #282828;
-            color: #B6B6B6;
-            
-            /* Playlist items are grey when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                color: rgb(201, 56, 53);
-                background-color: black;
-            }
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #000;
-        }
-
-        ::-webkit-scrollbar {
-            border: 10px solid #282828;
-            border-radius: .25em;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #B6B6B6;
         }
     }
     

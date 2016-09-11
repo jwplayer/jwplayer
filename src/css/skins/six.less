@@ -38,17 +38,20 @@
     @slider-height: 1.2em;
 
     @controlbar-height: 2em;
-    #namespace > .controlbar-height();
 
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
+
     .skin-element-padding();
+    /* Controlbar styles */
+    .inset-controlbar();
 
     .jw-background-color {
         background-color: @def-background-color;
     }
-    
-    /* Controlbar styles */
-    .inset-controlbar();
+
     .jw-controlbar {
         border: @def-border;
         border-radius: .3em;
@@ -89,46 +92,6 @@
             font-size: .4em;
             vertical-align: middle;
             margin-right: .4em;
-        }
-    }
-    
-    /* Playlist */
-    .jw-playlist-container {
-        left: -46%;
-
-        .jw-text,
-        .jw-icon {
-            color: @progress-color;
-        }
-
-        .jw-option {
-            border-bottom: 1px solid #2F2F31;
-            color: #878787;
-            
-            /* Remove the option bullet */
-            &:before {
-                content: "";
-            }
-
-            /* Menu items are white when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                background-color: #2F2F31;
-                color: #fff;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            border-radius: .25em;
-        }
-      
-        ::-webkit-scrollbar-track {
-            background-color: #3C3C3E;
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to right, rgba(255, 255, 255, 1) 0, rgba(204, 204, 204, 1) 50%, rgba(255, 255, 255, 1) 100%);
         }
     }
 
