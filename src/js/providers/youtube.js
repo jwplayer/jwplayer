@@ -604,19 +604,17 @@ define([
             }
         };
 
-        this.getName = function() {
-            return { name: 'youtube' };
-        };
+        this.getName = YoutubeProvider.getName;
     }
 
     YoutubeProvider.getName = function() {
         return { name: 'youtube' };
     };
 
-    return {
-        register : function(jwplayer) {
-            jwplayer.api.registerProvider(YoutubeProvider);
-        }
+    YoutubeProvider.register = function(jwplayer) {
+        jwplayer.api.registerProvider(YoutubeProvider);
     };
+
+    return YoutubeProvider;
 
 });

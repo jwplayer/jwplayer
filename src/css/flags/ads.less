@@ -1,7 +1,13 @@
 .jwplayer.jw-flag-ads {
 
     .jw-preview,
-    .jw-dock {
+    .jw-dock,
+    .jw-logo,
+    .jw-captions.jw-captions-enabled,
+    .jw-nextup-container {
+        display: none;
+    }
+    video::-webkit-media-text-track-container {
         display: none;
     }
 
@@ -32,11 +38,6 @@
             display : none;
         }
     }
-
-    .jw-logo,
-    .jw-captions {
-        display: none;
-    }
 }
 
 .jwplayer.jw-flag-ads-googleima {
@@ -60,7 +61,13 @@
     }
 }
 
-.jwplayer.jw-flag-ads-vpaid {
+.jwplayer.jw-flag-ads.jw-flag-touch {
+    .jw-controlbar {
+        display: table;
+    }
+}
+
+.jwplayer.jw-flag-ads-vpaid, .jwplayer.jw-flag-touch.jw-flag-ads-vpaid {
     .jw-controlbar {
         display: none;
     }
@@ -72,8 +79,3 @@
     }
 }
 
-.jwplayer.jw-flag-ads.jw-flag-touch {
-    .jw-controlbar {
-        display: table;
-    }
-}

@@ -1,4 +1,3 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-stormtrooper {
@@ -20,13 +19,19 @@
     @controlbar-background: @rail-color;
     @cc-inactive: @buffer-color;
     @cc-active: @active-color;
+    @volume-background: #333;
 
     @rail-height: .3em;
     @thumb-size: .1em;
     @thumb-width: @thumb-size;
     @thumb-height: .5em;
 
+    @controlbar-height: 2em;
+
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
     .skin-element-padding();
 
     /* For the overlay containers */
@@ -36,49 +41,11 @@
     .jw-skip {
         border-radius: @ui-padding;
     }
-    
+
     /* Position of remaining overlay containers */
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
-    }
-
-    /* Playlist container */
-    .jw-playlist-container {
-        background-color: @inactive-color;
-        left: -42%;
-        border-radius: 0;
-        bottom: 0;
-
-        .jw-option,
-        .jw-text,
-        .jw-icon {
-            color: #CBD0DA;
-        }
-
-        .jw-option {
-            border-bottom: 1px solid #5B697A;
-            background-color: @inactive-color;
-
-            // Menu item backgrounds are lighter when active or hovered
-            &:hover,
-            &.jw-active-option {
-                background: #5B697A;
-            }
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #5B697A;
-        }
-
-        ::-webkit-scrollbar {
-            width: 2px;
-            border: 10px solid @inactive-color;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to right, @rail-color 0%, #fff 50%, @rail-color 100%);
-        }
     }
 
     /* Playlist title */
@@ -86,7 +53,7 @@
         border-bottom: 1px solid #5B697A;
         background-color: @rail-color;
     }
-    
+
     /* Rail/slider styles */
     .jw-rail,
     .jw-buffer,
@@ -104,12 +71,6 @@
 
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress {
-            height: @rail-height;
-        }
-
         .jw-progress {
             background: @horiz-rail-gradient;
         }
@@ -144,11 +105,10 @@
 
         .jw-knob {
             width: .5em;
-
-            background: @horiz-rail-gradient;
             height: .2em;
-            width: .5em;
+            background: @horiz-rail-gradient;
             border-width: 1px;
+            .horizontally-centered-rail-element(@rail-height, 0.5em);
         }
     }
 

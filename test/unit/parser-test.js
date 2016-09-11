@@ -3,7 +3,8 @@ define([
 ], function (parser) {
     /* jshint qunit: true */
 
-    module('parser');
+    QUnit.module('parser');
+    var test = QUnit.test.bind(QUnit);
 
     var testerGenerator = function (assert, method) {
         return function (left, right, message) {
@@ -91,14 +92,43 @@ define([
     });
 
     test('parser.timeFormat', function(assert) {
-        var time = parser.timeFormat(-1);
-        assert.equal(time, '00:00', 'timeFormat with negative number should be 00:00');
+        var time;
 
         time = parser.timeFormat(3661);
         assert.equal(time, '1:01:01', 'timeFormat with hours minutes seconds');
 
         time = parser.timeFormat(610);
         assert.equal(time, '10:10', 'timeFormat with minutes seconds');
+
+        time = parser.timeFormat('610');
+        assert.equal(time, '10:10', 'timeFormat with minutes seconds');
+
+        time = parser.timeFormat(-1);
+        assert.equal(time, '00:00', 'timeFormat with negative number should be 00:00');
+
+        time = parser.timeFormat(-1, true);
+        assert.equal(time, '-00:01', 'timeFormat with negative numbers allowed should be -00:01');
+
+        time = parser.timeFormat(0);
+        assert.equal(time, '00:00', 'timeFormat with minutes seconds');
+
+        time = parser.timeFormat();
+        assert.equal(time, '00:00', 'timeFormat with minutes seconds');
+
+        time = parser.timeFormat(NaN);
+        assert.equal(time, '00:00', 'timeFormat with minutes seconds');
+
+        time = parser.timeFormat(Infinity);
+        assert.equal(time, '00:00', 'timeFormat with minutes seconds');
+
+        time = parser.timeFormat(null);
+        assert.equal(time, '00:00', 'timeFormat with minutes seconds');
+
+        time = parser.timeFormat(false);
+        assert.equal(time, '00:00', 'timeFormat with minutes seconds');
+
+        time = parser.timeFormat('test');
+        assert.equal(time, '00:00', 'timeFormat with minutes seconds');
     });
 
     test('parser.adaptiveType', function(assert) {

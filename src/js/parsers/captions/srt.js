@@ -15,6 +15,7 @@ define([
         if (list.length === 1) {
             list = data.split('\n\n');
         }
+
         for (var i = 0; i < list.length; i++) {
             if (list[i] === 'WEBVTT') {
                 continue;
@@ -25,9 +26,7 @@ define([
                 _captions.push(entry);
             }
         }
-        if (!_captions.length) {
-            throw new Error('Invalid SRT file');
-        }
+
         return _captions;
     };
 
@@ -51,7 +50,7 @@ define([
                 entry.begin = _seconds(line.substr(0, index));
                 entry.end   = _seconds(line.substr(index + 5));
                 // Remaining lines contain the text
-                entry.text = array.slice(idx + 1).join('<br/>');
+                entry.text = array.slice(idx + 1).join('\r\n');
             }
         }
         return entry;

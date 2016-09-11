@@ -13,11 +13,12 @@ define([
     'view/preview',
     'view/rightclick',
     'view/title',
+    'view/components/nextuptooltip',
     'utils/underscore',
-    'handlebars-loader!templates/player.html'
+    'templates/player.html'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -47,11 +48,21 @@ define([
             _dock,
             _logo,
             _title,
+            _nextuptooltip,
             _captionsRenderer,
             _audioMode,
             _showing = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
+            _resizeContainerRequestId = -1,
+            _minWidthForTimeDisplay = 450,
+            // Function that delays the call of _setContainerDimensions so that the page has finished repainting.
+            _delayResize = window.requestAnimationFrame ||
+                function(rafFunc) {
+                    return window.setTimeout(rafFunc, 17);
+                },
+            // Function that prevents multiple calls of _setContainerDimensions when not necessary.
+            _cancelDelayResize = window.cancelAnimationFrame || window.clearTimeout,
             _previewDisplayStateTimeout = -1,
             _currentState,
             _originalContainer,
@@ -65,6 +76,12 @@ define([
             _focusFromClick = false,
 
             _this = _.extend(this, Events);
+
+        // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
+        // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
+        if (window.webpackJsonpjwplayer) {
+            require('css/jwplayer.less');
+        }
 
         this.model = _model;
         this.api = _api;
@@ -161,6 +178,14 @@ define([
                 case 40: // down-arrow
                     adjustVolume(-10);
                     break;
+                case 67: // c-key
+                    var captionsList = _api.getCaptionsList();
+                    var listLength = captionsList.length;
+                    if (listLength) {
+                        var nextIndex = (_api.getCurrentCaptions() + 1) % listLength;
+                        _api.setCurrentCaptions(nextIndex);
+                    }
+                    break;
                 case 77: // m-key
                     _api.setMute();
                     break;
@@ -189,6 +214,12 @@ define([
             utils.removeClass(_playerElement, 'jw-no-focus');
         }
 
+        function handleMouseUp(e) {
+            if (e.target && e.target.blur) {
+                e.target.blur();
+            }
+        }
+
         function handleMouseDown() {
             _focusFromClick = true;
             utils.addClass(_playerElement, 'jw-no-focus');
@@ -205,32 +236,56 @@ define([
             }
         }
 
-        function _responsiveListener() {
+        function _setContainerDimensions() {
             var bounds = _bounds(_playerElement),
                 containerWidth = Math.round(bounds.width),
                 containerHeight = Math.round(bounds.height);
 
-            if (!document.body.contains(_playerElement)) {
-                window.removeEventListener('resize', _responsiveListener);
-                if (_isMobile) {
-                    window.removeEventListener('orientationchange', _responsiveListener);
-                }
-            } else if (containerWidth && containerHeight) {
-                if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
-                    _lastWidth = containerWidth;
-                    _lastHeight = containerHeight;
-                    clearTimeout(_resizeMediaTimeout);
-                    _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
+            _cancelDelayResize(_resizeContainerRequestId);
 
-                    _model.set('containerWidth', containerWidth);
-                    _model.set('containerHeight', containerHeight);
-                    _this.trigger(events.JWPLAYER_RESIZE, {
-                        width: containerWidth,
-                        height: containerHeight
-                    });
-                }
+            // If we have bad values for either dimension or the container is the same size as before, return early.
+            if ((!containerWidth || !containerHeight) ||
+                (containerWidth === _lastWidth && containerHeight === _lastHeight)) {
+                return;
             }
-            return bounds;
+
+            _lastWidth = containerWidth;
+            _lastHeight = containerHeight;
+            clearTimeout(_resizeMediaTimeout);
+            _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
+
+            _model.set('containerWidth', containerWidth);
+            _model.set('containerHeight', containerHeight);
+            _this.trigger(events.JWPLAYER_RESIZE, {
+                width: containerWidth,
+                height: containerHeight
+            });
+        }
+
+        function _responsiveListener() {
+            if (document.body.contains(_playerElement)) {
+                _cancelDelayResize(_resizeContainerRequestId);
+                _resizeContainerRequestId = _delayResize(_setContainerDimensions);
+            }
+        }
+
+        // Set global colors, used by related plugin
+        // If a color is undefined simple-style-loader won't add their styles to the dom
+        function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
+            var activeColorSet = {
+                color: activeColor,
+                borderColor: activeColor,
+                stroke: activeColor
+            };
+            var inactiveColorSet = {
+                color: inactiveColor,
+                borderColor: inactiveColor,
+                stroke: inactiveColor
+            };
+            utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
+            utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
         }
 
 
@@ -251,7 +306,7 @@ define([
 
                 var o = {};
                 o[attr] = value;
-                utils.css(elements.join(', '), o);
+                utils.css(elements.join(', '), o, id);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
@@ -274,8 +329,6 @@ define([
                 '.jw-active-option',
                 // slider fill color
                 '.jw-progress',
-                '.jw-playlist-container .jw-option.jw-active-option',
-                '.jw-playlist-container .jw-option:hover'
             ], 'background', activeColor);
 
             // Apply inactive color
@@ -289,30 +342,22 @@ define([
                 // toggle button
                 '.jw-toggle.jw-off',
                 '.jw-tooltip-title',
-                '.jw-skip .jw-skip-icon',
-                '.jw-playlist-container .jw-icon'
+                '.jw-skip .jw-skip-icon'
             ], 'color', inactiveColor);
             addStyle([
                 // slider children
                 '.jw-cue',
                 '.jw-knob'
             ], 'background', inactiveColor);
-            addStyle([
-                '.jw-playlist-container .jw-option'
-            ], 'border-bottom-color', inactiveColor);
 
             // Apply background color
             addStyle([
                 // general background color
                 '.jw-background-color',
-                '.jw-tooltip-title',
-                '.jw-playlist',
-                '.jw-playlist-container .jw-option'
+                '.jw-tooltip-title'
             ], 'background', backgroundColor);
-            addStyle([
-                // area around scrollbar on the playlist.  skin fix required to remove
-                '.jw-playlist-container ::-webkit-scrollbar'
-            ], 'border-color', backgroundColor);
+
+            insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
 
         this.setup = function() {
@@ -382,6 +427,10 @@ define([
             _model.on('change:castActive', _onCastActive);
             _onCastActive(_model, _model.get('castActive'));
 
+            _model.on('change:hideAdsControls', function(model, val) {
+                utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
+            });
+
             // set initial state
             if(_model.get('stretching')){
                 _onStretchChange(_model, _model.get('stretching'));
@@ -407,7 +456,7 @@ define([
             // This setTimeout allows the player to actually get embedded into the player
             _api.on(events.JWPLAYER_READY, function() {
                 // Initialize values for containerWidth and containerHeight
-                _responsiveListener();
+                _setContainerDimensions();
 
                 _resize(_model.get('width'), _model.get('height'));
             });
@@ -426,10 +475,6 @@ define([
 
         function _onStretchChange(model, newVal) {
             utils.replaceClass(_playerElement, /jw-stretch-\S+/, 'jw-stretch-' + newVal);
-        }
-
-        function _onCompactUIChange(model, newVal) {
-            utils.toggleClass(_playerElement, 'jw-flag-compact-player', newVal);
         }
 
         function _componentFadeListeners(comp) {
@@ -529,7 +574,7 @@ define([
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
             _displayClickHandler.on('move', _userActivity);
             _displayClickHandler.on('over', _userActivity);
-            
+
             var displayIcon = new DisplayIcon(_model);
             //toggle playback
             displayIcon.on('click', function() {
@@ -542,7 +587,7 @@ define([
             });
 
             // make displayIcon clickthrough on chrome for flash to avoid power safe throttle
-            if (utils.isChrome()) {
+            if (utils.isChrome() && !utils.isMobile()) {
                 displayIcon.el.addEventListener('mousedown', function() {
                     var provider = _model.getVideo();
                     var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
@@ -575,7 +620,7 @@ define([
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_model.get('captions'));
+            _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
             // captions should be place behind controls, and not hidden when controls are hidden
             _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
@@ -592,14 +637,22 @@ define([
             _controlbar = new Controlbar(_api, _model);
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
-            _model.on('change:compactUI', _onCompactUIChange);
 
+            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
+            _nextuptooltip.setup();
+
+            // NextUp needs to be behind the controlbar to not block other tooltips
+            _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
+
+
+
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
             _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
+            _playerElement.onmouseup = handleMouseUp;
         }
 
         function stopDragging(model) {
@@ -686,6 +739,11 @@ define([
             if (!utils.hasClass(_playerElement, 'jw-flag-aspect-mode')) {
                 playerStyle.height = height;
             }
+
+            if (_model.get('aspectratio')) {
+                _resizeAspectModeCaptions();
+            }
+
             _styles(_playerElement, playerStyle, true);
 
             _checkAudioMode(height);
@@ -738,6 +796,10 @@ define([
                 height = _videoLayer.clientHeight;
             }
 
+            if (_preview) {
+                _preview.resize(width, height, _model.get('stretching'));
+            }
+
             //IE9 Fake Full Screen Fix
             if (utils.isMSIE(9) && document.all && !window.atob) {
                 width = height = '100%';
@@ -754,15 +816,22 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
-            _captionsRenderer.resize();
 
-            _controlbar.checkCompactMode(width);
+            if (_model.get('aspectratio')) {
+                _resizeAspectModeCaptions();
+            }
+
+            _captionsRenderer.resize();
+            
+            var hideTimeInControl = width && width < _minWidthForTimeDisplay;
+            utils.toggleClass(_playerElement, 'jw-flag-compact-player', hideTimeInControl);
+
         }
 
         this.resize = function(width, height) {
             var resetAspectMode = true;
             _resize(width, height, resetAspectMode);
-            _responsiveListener();
+            _setContainerDimensions();
         };
         this.resizeMedia = _resizeMedia;
 
@@ -829,12 +898,13 @@ define([
             clearTimeout(_controlsTimeout);
             _controlbar.hideComponents();
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
+            _captionsRenderer.renderCues(true);
         }
 
         function _userActivity() {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
-                _controlbar.checkCompactMode(_videoLayer.clientWidth);
+                _captionsRenderer.renderCues(true);
             }
 
             _showing = true;
@@ -858,13 +928,24 @@ define([
 
         function _onMediaTypeChange(model, val) {
             var isAudioFile = (val ==='audio');
+            var provider = _model.getVideo();
+            var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
+
+            if (isAudioFile && !isFlash) {
+                // Put the preview element before the media element in order to display browser captions
+                _playerElement.insertBefore(_preview.el, _videoLayer);
+            } else {
+                // Put the preview element before the captions element to display captions with the captions renderer
+                _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
+            }
         }
 
         function _setLiveMode(model, duration){
             var live = utils.adaptiveType(duration) === 'LIVE';
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
-            _this.setAltText((live) ? 'Live Broadcast' : '');
+            _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
 
         function _errorHandler(model, evt) {
@@ -919,6 +1000,11 @@ define([
             }
         }
 
+        function _resizeAspectModeCaptions() {
+            var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
+            _captionsRenderer.setContainerHeight(aspectRatioContainer.offsetHeight);
+        }
+
         this.setupInstream = function(instreamModel) {
             this.instreamModel = _instreamModel = instreamModel;
             _instreamModel.on('change:controls', _onChangeControls, this);
@@ -935,10 +1021,6 @@ define([
             _controlbar.setAltText(text);
         };
 
-        this.useExternalControls = function() {
-            utils.addClass(_playerElement, 'jw-flag-ads-hide-controls');
-        };
-
         this.destroyInstream = function() {
             _instreamMode = false;
             if (_instreamModel) {
@@ -946,8 +1028,8 @@ define([
                 _instreamModel = null;
             }
             this.setAltText('');
-            utils.removeClass(_playerElement, 'jw-flag-ads');
-            utils.removeClass(_playerElement, 'jw-flag-ads-hide-controls');
+            utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
+            _model.set('hideAdsControls', false);
             if (_model.getVideo) {
                 var provider = _model.getVideo();
                 provider.setContainer(_videoLayer);
@@ -999,6 +1081,12 @@ define([
             return bounds;
         };
 
+        this.setCaptions = function(captionsStyle) {
+            _captionsRenderer.clear();
+            _captionsRenderer.setup(_model.get('id'), captionsStyle);
+            _captionsRenderer.resize();
+        };
+
         this.destroy = function() {
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
@@ -1023,7 +1111,7 @@ define([
             if (_logo) {
                 _logo.destroy();
             }
-            utils.clearCss('#'+_model.get('id'));
+            utils.clearCss(_model.get('id'));
         };
     };
 

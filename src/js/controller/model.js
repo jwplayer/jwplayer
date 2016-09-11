@@ -1,22 +1,13 @@
 define([
     'utils/helpers',
     'providers/providers',
-    'controller/storage',
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
     'utils/simplemodel',
     'events/events',
     'events/states'
-], function(utils, Providers, Storage, QOE, _, Events, SimpleModel, events, states) {
-
-
-    var PERSIST_ITEMS = [
-        'volume',
-        'mute',
-        'captionLabel',
-        'qualityLabel'
-    ];
+], function(utils, Providers, QOE, _, Events, SimpleModel, events, states) {
 
     // Represents the state of the player
     var Model = function() {
@@ -34,10 +25,8 @@ define([
         this.set('mediaModel', this.mediaModel);
 
         this.setup = function(config) {
-            var storage = new Storage();
-            storage.track(PERSIST_ITEMS, this);
 
-            _.extend(this.attributes, storage.getAllItems(), config, {
+            _.extend(this.attributes, config, {
                 // always start on first playlist item
                 item : 0,
                 // Initial state, upon setup
@@ -45,7 +34,6 @@ define([
                 // Initially we don't assume Flash is needed
                 flashBlocked : false,
                 fullscreen: false,
-                compactUI: false,
                 scrubbing : false,
                 duration: 0,
                 position: 0,
@@ -73,6 +61,7 @@ define([
         };
 
         function _videoEventHandler(type, data) {
+            var evt = _.extend({}, data, {type: type});
             switch (type) {
                 case 'flashThrottle':
                     var throttled = (data.state !== 'resume');
@@ -93,8 +82,11 @@ define([
                     return;
 
                 case events.JWPLAYER_MEDIA_TYPE:
-                    this.mediaModel.set('mediaType', data.mediaType);
-                    break;
+                    if (this.mediaModel.get('mediaType') !== data.mediaType) {
+                        this.mediaModel.set('mediaType', data.mediaType);
+                        this.mediaController.trigger(type, evt);
+                    }
+                    return;
 
                 case events.JWPLAYER_PLAYER_STATE:
                     this.mediaModel.set('state', data.newstate);
@@ -107,10 +99,10 @@ define([
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', data.bufferPercent);
 
-                    /* falls through */
+                /* falls through */
                 case events.JWPLAYER_MEDIA_META:
                     var duration = data.duration;
-                    if (_.isNumber(duration)) {
+                    if (_.isNumber(duration) && !_.isNaN(duration)) {
                         this.mediaModel.set('duration', duration);
                         this.set('duration', duration);
                     }
@@ -118,7 +110,7 @@ define([
 
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
-                    if(this.mediaModel.get('playAttempt')) {
+                    if (this.mediaModel.get('playAttempt')) {
                         this.playVideo();
                     } else {
                         this.mediaModel.on('change:playAttempt', function() {
@@ -155,7 +147,7 @@ define([
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
                 case 'subtitlesTrackChanged':
-                    this.setVideoSubtitleTrack(data.currentTrack, data.tracks);
+                    this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
                     break;
 
                 case 'visualQuality':
@@ -164,7 +156,6 @@ define([
                     break;
             }
 
-            var evt = _.extend({}, data, {type: type});
             this.mediaController.trigger(type, evt);
         }
 
@@ -187,7 +178,7 @@ define([
             }
         };
 
-        this.onMediaContainer = function () {
+        this.onMediaContainer = function() {
             var container = this.get('mediaContainer');
             _currentProvider.setContainer(container);
         };
@@ -200,6 +191,13 @@ define([
                 if (_provider.getContainer()) {
                     _provider.remove();
                 }
+                delete _provider.instreamMode;
+            }
+
+            if (!Provider) {
+                _provider = _currentProvider = Provider;
+                this.set('provider', undefined);
+                return;
             }
 
             _currentProvider = new Provider(_this.get('id'), _this.getConfiguration());
@@ -222,6 +220,10 @@ define([
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
             _provider.on('all', _videoEventHandler, this);
+
+            if (this.get('instreamMode') === true) {
+                _provider.instreamMode = true;
+            }
         };
 
         this.destroy = function() {
@@ -246,31 +248,48 @@ define([
 
         // Give the option for a provider to be forced
         this.chooseProvider = function(source) {
+            // if _providers.choose is null, something went wrong in filtering
             return _providers.choose(source).provider;
         };
 
+        this.setItemIndex = function(index) {
+            var playlist = this.get('playlist');
+
+            // If looping past the end, or before the beginning
+            index = parseInt(index, 10) || 0;
+            index = (index + playlist.length) % playlist.length;
+
+            this.set('item', index);
+            this.set('playlistItem', playlist[index]);
+            this.setActiveItem(playlist[index]);
+        };
 
         this.setActiveItem = function(item) {
-
             // Item is actually changing
             this.mediaModel.off();
             this.mediaModel = new MediaModel();
             this.set('mediaModel', this.mediaModel);
+            this.set('position', item.starttime || 0);
+            this.set('duration', item.duration || 0);
 
+            this.setProvider(item);
+        };
+
+        this.setProvider = function(item) {
             var source = item && item.sources && item.sources[0];
             if (source === undefined) {
                 // source is undefined when resetting index with empty playlist
                 return;
             }
 
-            var Provider = this.chooseProvider(source);
-            if (!Provider) {
-                throw new Error('No suitable provider found');
+            var provider = this.chooseProvider(source);
+            // If we are changing video providers
+            if (!provider || !(_currentProvider instanceof provider)) {
+                _this.changeVideoProvider(provider);
             }
 
-            // If we are changing video providers
-            if (!(_currentProvider instanceof Provider)) {
-                _this.changeVideoProvider(Provider);
+            if (!_currentProvider) {
+                return;
             }
 
             // this allows the providers to preload
@@ -292,44 +311,42 @@ define([
             _currentProvider = null;
         };
 
-        this.setVolume = function(vol) {
-            vol = Math.round(vol);
-            _this.set('volume', vol);
+        this.setVolume = function(volume) {
+            volume = Math.round(volume);
+            this.set('volume', volume);
             if (_provider) {
-                _provider.volume(vol);
+                _provider.volume(volume);
             }
-            var muted = (vol === 0);
-            if (muted !== _this.get('mute')) {
-                _this.setMute(muted);
+            var mute = (volume === 0);
+            if (mute !== this.get('mute')) {
+                this.setMute(mute);
             }
         };
 
-        this.setMute = function(state) {
-            if (!utils.exists(state)) {
-                state = !_this.get('mute');
+        this.setMute = function(mute) {
+            if (!utils.exists(mute)) {
+                mute = !this.get('mute');
             }
-            _this.set('mute', state);
+            this.set('mute', mute);
             if (_provider) {
-                _provider.mute(state);
+                _provider.mute(mute);
             }
-            if (!state) {
-                var volume = Math.max(10, _this.get('volume'));
+            if (!mute) {
+                var volume = Math.max(10, this.get('volume'));
                 this.setVolume(volume);
             }
         };
 
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
-
-            this.mediaModel.set('playAttempt', true);
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
-
             if (!item) {
                 var idx = this.get('item');
                 item = this.get('playlist')[idx];
             }
             this.set('position', item.starttime || 0);
             this.set('duration', item.duration || 0);
+            this.mediaModel.set('playAttempt', true);
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
 
             _provider.load(item);
         };
@@ -372,8 +389,8 @@ define([
 
         };
 
-        this.persistVideoSubtitleTrack = function(trackIndex) {
-            this.setVideoSubtitleTrack(trackIndex);
+        this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
+            this.setVideoSubtitleTrack(trackIndex, tracks);
             this.persistCaptionsTrack();
         };
     };

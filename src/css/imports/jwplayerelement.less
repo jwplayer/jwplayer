@@ -49,8 +49,6 @@
     &:hover {
         .jw-display-icon-container {
             background-color: @display-bkgd-color;
-            background: @display-bkgd-color;
-            background-size: @display-bkgd-color
         }
     }
 }
@@ -91,7 +89,7 @@
         right: 0;
         left: 0;
         // this should be adjusted in different skins based on controlbar height
-        bottom: 2em;
+        bottom: @controlbar-height;
     }
 }
 
@@ -150,8 +148,7 @@
 
 // These items can intercept pointer-events
 .jw-overlays > div,
-.jw-media, .jw-controlbar, .jw-dock, .jw-logo, .jw-skip, .jw-display-icon-container {
+.jw-media, .jw-controlbar, .jw-dock, .jw-logo, .jw-skip, .jw-display-icon-container,
+.jw-nextup-container {
     pointer-events: all;
 }
-
-

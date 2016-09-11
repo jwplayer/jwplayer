@@ -4,7 +4,7 @@ define([
     'events/events',
     'utils/underscore',
     'utils/backbone.events',
-    'handlebars-loader!templates/logo.html'
+    'templates/logo.html'
 ], function(UI, utils, events, _, Events, logoTemplate) {
     var _styles = utils.style;
 

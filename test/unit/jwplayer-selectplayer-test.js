@@ -5,7 +5,8 @@ define([
 ], function (_, $, jwplayer) {
     /* jshint qunit: true */
 
-    module('jwplayer function');
+    QUnit.module('jwplayer function');
+    var test = QUnit.test.bind(QUnit);
 
     var append = function(html) {
         var $element = $(html);

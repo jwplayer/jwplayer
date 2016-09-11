@@ -3,7 +3,8 @@ define([
 ], function (browser) {
     /* jshint qunit: true */
 
-    module('browser');
+    QUnit.module('browser');
+    var test = QUnit.test.bind(QUnit);
 
     test('browser checks', function(assert) {
         assert.equal(typeof browser.isFF(), 'boolean');

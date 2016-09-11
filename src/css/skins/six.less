@@ -1,4 +1,3 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-six {
@@ -31,20 +30,28 @@
 
     @volume-background: @def-background-style;
     @volume-border: @def-border;
+    @volume-padding: 0.5em;
 
     @rail-height: .65em;
     @thumb-size: .8em;
     @cue-size: .25em;
+    @slider-height: 1.2em;
 
+    @controlbar-height: 2em;
+
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
+
     .skin-element-padding();
+    /* Controlbar styles */
+    .inset-controlbar();
 
     .jw-background-color {
         background-color: @def-background-color;
     }
-    
-    /* Controlbar styles */
-    .inset-controlbar();
+
     .jw-controlbar {
         border: @def-border;
         border-radius: .3em;
@@ -87,45 +94,6 @@
             margin-right: .4em;
         }
     }
-    
-    /* Playlist */
-    .jw-playlist-container {
-        left: -41%;
-
-        .jw-text,
-        .jw-icon {
-            color: @progress-color;
-        }
-
-        .jw-option {
-            border-bottom: 1px solid #2F2F31;
-            color: #878787;
-            
-            /* Remove the option bullet */
-            &:before {
-                content: "";
-            }
-
-            /* Menu items are white when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                background-color: #2F2F31;
-                color: #fff;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            border-radius: .25em;
-        }
-      
-        ::-webkit-scrollbar-track {
-            background-color: #3C3C3E;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(to right, rgba(255, 255, 255, 1) 0, rgba(204, 204, 204, 1) 50%, rgba(255, 255, 255, 1) 100%);
-        }
-    }
 
     /* Rail/slider styles */
     .jw-rail,
@@ -158,26 +126,12 @@
 
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
-        .jw-slider-container {
-            height: 1.2em;
-        }
-
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress {
-            height: @rail-height;
-        }
-
         .jw-knob {
             .vertically-centered-rail-element(@rail-height, @thumb-size);
         }
 
-
         .jw-progress {
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-            border-bottom-left-radius: 0.5em;
-            border-top-left-radius: 0.5em;
+            border-radius: 0.5em 0 0 0.5em;
         }
 
         .jw-progress,
@@ -185,7 +139,6 @@
             border: @def-border;
             border-style: solid none #000;
         }
-
 
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
@@ -211,6 +164,10 @@
             border-bottom-right-radius: 0.5em;
             border-bottom-left-radius: 0.5em;
             border-top-left-radius: 0;
+        }
+
+        .jw-knob {
+            .horizontally-centered-rail-element(@rail-height, @thumb-size);
         }
     }
     
@@ -247,7 +204,6 @@
         background-size: @def-background-size;
         border: @def-border;
         border-radius: .3em;
-        padding: @ui-padding @ui-corner-round;
 
         &:hover.jw-skippable {
             background: @def-background-style;

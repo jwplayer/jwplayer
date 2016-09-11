@@ -4,10 +4,9 @@ define([
 ], function (simpleModel, _) {
     /* jshint qunit: true */
 
-    module('simpleModel');
+    QUnit.module('simpleModel');
 
-
-    test('simplemodel', function(assert) {
+    QUnit.test('simplemodel', function(assert) {
         var model = _.extend({}, simpleModel);
         assert.notOk(model.get('noExisting'), 'get with no attributes');
 

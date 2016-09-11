@@ -4,7 +4,8 @@ define([
 ], function (_, validator) {
     /* jshint qunit: true */
 
-    module('validator');
+    QUnit.module('validator');
+    var test = QUnit.test.bind(QUnit);
 
     var testerGenerator = function (assert, method) {
         return function (left, right, message) {

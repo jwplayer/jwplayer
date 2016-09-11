@@ -5,7 +5,8 @@ define([
 ], function (_, PlaylistLoader, events) {
     /* jshint qunit: true */
 
-    module('loader');
+    QUnit.module('loader');
+    var test = QUnit.test.bind(QUnit);
 
     test('Test JSON feed', function (assert) {
         var done = assert.async();

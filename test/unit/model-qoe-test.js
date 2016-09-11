@@ -7,7 +7,8 @@ define([
 ], function (_, Model, SimpleModel, events, states) {
     /* jshint qunit: true */
 
-    module('Model QoE');
+    QUnit.module('Model QoE');
+    var test = QUnit.test.bind(QUnit);
 
     // mock MediaModel
     var MediaModel = function() {

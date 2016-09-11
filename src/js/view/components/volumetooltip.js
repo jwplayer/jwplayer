@@ -5,10 +5,11 @@ define([
     'utils/helpers'
 ], function(Tooltip, Slider, UI, utils) {
     var VolumeTooltip = Tooltip.extend({
-        'constructor' : function(_model, name) {
+        'constructor' : function(_model, name, ariaText) {
             this._model = _model;
 
-            Tooltip.call(this, name);
+            // Prevent Volume tooltip button from being aria-hidden="true"
+            Tooltip.call(this, name, ariaText, true);
 
             this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', 'vertical');
             this.addContent(this.volumeSlider.element());

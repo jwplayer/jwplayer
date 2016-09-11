@@ -4,9 +4,9 @@ define([
 ], function (playerutils, version) {
     /* jshint qunit: true */
 
-    module('playerutils');
+    QUnit.module('playerutils');
 
-    test('playerutils.versionCheck', function(assert) {
+    QUnit.test('playerutils.versionCheck', function(assert) {
         var versionCheck = playerutils.versionCheck('0.5');
         assert.ok(versionCheck, 'playerutils.versionCheck with valid version');
 

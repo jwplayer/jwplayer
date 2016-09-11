@@ -23,11 +23,16 @@ define([
                 method: _loadBase64Polyfill,
                 depends: []
             },
+            LOAD_VTTCUE_POLYFILL : {
+                method: _loadVTTCuePolyfill,
+                depends: []
+            },
             LOADED_POLYFILLS : {
                 method: _loadedPolyfills,
                 depends: [
                     'LOAD_PROMISE_POLYFILL',
-                    'LOAD_BASE64_POLYFILL'
+                    'LOAD_BASE64_POLYFILL',
+                    'LOAD_VTTCUE_POLYFILL'
                 ]
             },
             LOAD_PLUGINS : {
@@ -41,10 +46,6 @@ define([
                     // Init requires jw-overlays to be in the DOM
                     'SETUP_VIEW'
                 ]
-            },
-            LOAD_YOUTUBE : {
-                method: _loadYoutube,
-                depends: ['FILTER_PLAYLIST']
             },
             LOAD_SKIN : {
                 method: _loadSkin,
@@ -64,12 +65,18 @@ define([
                     'LOAD_SKIN'
                 ]
             },
+            SET_ITEM : {
+                method: _setPlaylistItem,
+                depends: [
+                    'INIT_PLUGINS',
+                    'FILTER_PLAYLIST'
+                ]
+            },
             SEND_READY : {
                 method: _sendReady,
                 depends: [
-                    'INIT_PLUGINS',
-                    'LOAD_YOUTUBE',
-                    'SETUP_VIEW'
+                    'SETUP_VIEW',
+                    'SET_ITEM'
                 ]
             }
         };
@@ -99,11 +106,23 @@ define([
         }
     }
 
+    function _loadVTTCuePolyfill(resolve) {
+        if (!window.VTTCue) {
+            require.ensure(['polyfills/vttcue'], function(require) {
+                require('polyfills/vttcue');
+                resolve();
+            }, 'polyfills.vttcue');
+        } else {
+            resolve();
+        }
+    }
+
     function _loadedPolyfills(resolve){
         resolve();
     }
 
     function _loadPlugins(resolve, _model) {
+        window.jwplayerPluginJsonp = plugins.registerPlugin;
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
         _pluginLoader.on(events.COMPLETE, resolve);
         _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
@@ -111,8 +130,8 @@ define([
     }
 
     function _initPlugins(resolve, _model, _api) {
+        delete window.jwplayerPluginJsonp;
         _pluginLoader.setupPlugins(_api, _model);
-        
         resolve();
     }
 
@@ -126,6 +145,7 @@ define([
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
                 _model.set('playlist', data.playlist);
+                _model.set('feedid', data.feedid);
                 resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
@@ -210,33 +230,15 @@ define([
         });
     }
 
-    function _loadYoutube(resolve, _model) {
-        var p = _model.get('playlist');
-
-        var hasYoutube = _.some(p, function(item) {
-            var itemYoutube = utils.isYouTube(item.file, item.type);
-            if (itemYoutube && !item.image) {
-                var url = item.file;
-                var videoId = utils.youTubeID(url);
-                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
-            }
-            return itemYoutube;
-        });
-
-        if (hasYoutube) {
-            require.ensure(['providers/youtube'], function(require) {
-                var youtube = require('providers/youtube');
-                youtube.register(window.jwplayer);
-                resolve();
-            }, 'provider.youtube');
-        } else {
-            resolve();
-        }
-    }
 
     function _setupView(resolve, _model, _api, _view) {
         _view.setup();
         resolve();
+    }
+
+    function _setPlaylistItem(resolve, _model) {
+        _model.once('itemReady', resolve);
+        _model.setItemIndex(_model.get('item'));
     }
 
     function _sendReady(resolve) {

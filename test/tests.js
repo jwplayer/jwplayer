@@ -7,7 +7,7 @@ define([
     'unit/constants-test',
     'unit/css-test',
     'unit/dom-test',
-    'unit/dxfp-test',
+    'unit/dfxp-test',
     'unit/embed-swf-test',
     'unit/fetch-test',
     'unit/extendable-test',
@@ -25,10 +25,12 @@ define([
     'unit/simplemodel-test',
     'unit/storage-test',
     'unit/strings-test',
+    'unit/style-loader-test',
     'unit/timer-test',
     'unit/trycatch-test',
     'unit/utils-defs-test',
     'unit/utils-test',
     'unit/validator-test',
-    'unit/playlist-loader-test'
+    'unit/playlist-loader-test',
+    'unit/captionsrenderer-test'
 ]);

@@ -1,4 +1,3 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-beelden {
@@ -33,11 +32,16 @@
     @cc-active: @active-color;
 
     @rail-height: .5em;
+    @slider-height: @rail-height;
 
+    @controlbar-height: 2em;
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
+    #namespace > .set-global-color-classes();
 
+    .skin-element-padding();
     .inset-controlbar();
+
     .jw-controlbar,
     .jw-skip {
         box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
@@ -72,39 +76,6 @@
             &:before {
                 padding-right: .8em;
             }
-        }
-    }
-
-    /* Playlist */
-    .jw-playlist-container {
-        left: -45%;
-        background-color: #282828;
-        bottom: .5em;
-
-        .jw-option {
-            border-bottom: 1px solid #000;
-            background-color: #282828;
-            color: #B6B6B6;
-            
-            /* Playlist items are grey when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                color: rgb(201, 56, 53);
-                background-color: black;
-            }
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #000;
-        }
-
-        ::-webkit-scrollbar {
-            border: 10px solid #282828;
-            border-radius: .25em;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #B6B6B6;
         }
     }
     
@@ -144,10 +115,10 @@
 
     .jw-slider-horizontal {
         background: transparent;
-        
+        height: @rail-height;
+
         .jw-slider-container {
-            .vertically-centered-rail-element(@rail-height, 2em);
-            height: .4em;
+            height: @rail-height;
         }
 
         .jw-rail,
@@ -175,7 +146,11 @@
     }
 
     .jw-slider-vertical {
-        bottom: 5px;
+        //bottom: 5px;
+
+        .jw-slider-container {
+            width: 0.4em;
+        }
 
         .jw-rail,
         .jw-progress {
@@ -193,6 +168,7 @@
         .jw-knob {
             width: .7em;
             height: .7em;
+            .horizontally-centered-rail-element(0.4em, 0.7em);
         }
     }
 
