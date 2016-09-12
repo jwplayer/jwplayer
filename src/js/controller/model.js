@@ -270,7 +270,7 @@ define([
             this.mediaModel = new MediaModel();
             this.set('mediaModel', this.mediaModel);
             this.set('position', item.starttime || 0);
-            this.set('duration', item.duration || 0);
+            this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
 
             this.setProvider(item);
         };
@@ -344,7 +344,7 @@ define([
                 item = this.get('playlist')[idx];
             }
             this.set('position', item.starttime || 0);
-            this.set('duration', item.duration || 0);
+            this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
             this.mediaModel.set('playAttempt', true);
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
 
