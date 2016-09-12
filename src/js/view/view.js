@@ -943,8 +943,11 @@ define([
         }
 
         function _setLiveMode(model, duration){
-            var minDvrWindow = model.get('playlistItem').minDvrWindow;
-            var live = utils.adaptiveType(duration, minDvrWindow) === 'LIVE';
+            var minDvrWindow = model.get('minDvrWindow');
+            var streamType = utils.adaptiveType(duration, minDvrWindow);
+            var live = streamType === 'LIVE';
+
+            model.set('streamType', streamType);
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
             _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }

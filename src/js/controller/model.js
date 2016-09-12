@@ -271,7 +271,7 @@ define([
             this.set('mediaModel', this.mediaModel);
             this.set('position', item.starttime || 0);
             this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
-
+            this.set('minDvrWindow', item.minDvrWindow);
             this.setProvider(item);
         };
 
