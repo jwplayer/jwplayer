@@ -21,7 +21,7 @@ define([
     function testItemComplete(assert, config) {
         var item = testItem(assert, config);
 
-        var attrs = ['image', 'description', 'mediaid', 'title'];
+        var attrs = ['image', 'description', 'mediaid', 'title', 'minDvrWindow'];
         _.each(attrs, function(a) {
             assert.ok(_.has(item, a), 'Item has ' + a + ' attribute');
         });

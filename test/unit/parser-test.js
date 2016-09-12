@@ -132,22 +132,44 @@ define([
     });
 
     test('parser.adaptiveType', function(assert) {
-        var type = parser.adaptiveType(0);
-        assert.equal(type, 'VOD', 'adaptiveType with 0');
+        var minDvrWindow = 120;
+        var type = parser.adaptiveType(0, minDvrWindow);
+        assert.equal(type, 'VOD', 'adaptiveType with 0 and 120');
 
-        type = parser.adaptiveType(10);
-        assert.equal(type, 'VOD', 'adaptiveType with 10');
+        type = parser.adaptiveType(0, 0);
+        assert.equal(type, 'VOD', 'adaptiveType with 0 and 0');
 
-        type = parser.adaptiveType(-120);
-        assert.equal(type, 'DVR', 'adaptiveType with -120');
+        type = parser.adaptiveType(10, minDvrWindow);
+        assert.equal(type, 'VOD', 'adaptiveType with 10 and 120');
 
-        type = parser.adaptiveType(-20);
+        type = parser.adaptiveType(10, undefined);
+        assert.equal(type, 'VOD', 'adaptiveType with 10 and undefined');
+
+        type = parser.adaptiveType(-120, minDvrWindow);
+        assert.equal(type, 'DVR', 'adaptiveType with -120 and 120');
+
+        type = parser.adaptiveType(120, -10);
+        assert.equal(type, 'DVR', 'adaptiveType with 120 and -10');
+
+        type = parser.adaptiveType(120, 0);
+        assert.equal(type, 'DVR', 'adaptiveType with 120 and 0');
+
+        type = parser.adaptiveType(-120, 0);
+        assert.equal(type, 'DVR', 'adaptiveType with -120 and 0');
+
+        type = parser.adaptiveType(120, undefined);
+        assert.equal(type, 'DVR', 'adaptiveType with 120 and undefined');
+
+        type = parser.adaptiveType(-20, minDvrWindow);
         assert.equal(type, 'LIVE', 'adaptiveType with -20');
 
-        type = parser.adaptiveType(-1);
+        type = parser.adaptiveType(-1, minDvrWindow);
         assert.equal(type, 'LIVE', 'adaptiveType with -1');
 
-        type = parser.adaptiveType(Infinity);
+        type = parser.adaptiveType(Infinity, minDvrWindow);
         assert.equal(type, 'LIVE', 'adaptiveType with Infinity');
+
+        type = parser.adaptiveType(-20, undefined);
+        assert.equal(type, 'LIVE', 'adaptiveType with -20 and undefined');
     });
 });

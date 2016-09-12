@@ -139,14 +139,15 @@ define([
 
     /**
      * Determine the adaptive type
+     * Duration can be positive or negative, but minDvrWindow should always be positive
      */
-    parser.adaptiveType = function(duration) {
+    parser.adaptiveType = function(duration, _minDvrWindow) {
+        var minDvrWindow = _.isUndefined(_minDvrWindow) ? 120 : _minDvrWindow;
+
         if (duration !== 0) {
-            var MIN_DVR_DURATION = -120;
-            if (duration <= MIN_DVR_DURATION) {
+            if (duration !== Infinity && Math.abs(duration) >= Math.max(minDvrWindow, 0)) {
                 return 'DVR';
-            }
-            if (duration < 0 || duration === Infinity) {
+            } else if (duration < 0 || duration === Infinity) {
                 return 'LIVE';
             }
         }
