@@ -153,7 +153,7 @@ define(['../utils/underscore',
         // 0 = 'Off'
         if (menuIndex === 0) {
             _.each(this._textTracks, function (track) {
-                track.mode = 'disabled';
+                track.mode = track.embedded ? 'hidden' : 'disabled';
             });
         }
 
@@ -337,8 +337,11 @@ define(['../utils/underscore',
     }
 
     function disableTextTrack() {
-        if (this._textTracks && this._textTracks[this._currentTextTrackIndex]) {
-            this._textTracks[this._currentTextTrackIndex].mode = 'disabled';
+        if (this._textTracks) {
+            var track = this._textTracks[this._currentTextTrackIndex];
+            if (track) {
+                track.mode = track.embedded ? 'hidden' : 'disabled';
+            }
         }
     }
 
@@ -451,7 +454,7 @@ define(['../utils/underscore',
             track.addCue(vttCue);
             return;
         }
-        // There's no support for the VTTCue interface in Edge.
+        // There's no support for the VTTCue interface in Edge / IE11.
         // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
         // This unfortunately removes positioning properties from the cues
         var textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
@@ -467,7 +470,9 @@ define(['../utils/underscore',
                 for (var i = track.cues.length; i--;) {
                     track.removeCue(track.cues[i]);
                 }
-                track.mode = 'disabled';
+                if (!track.embedded) {
+                    track.mode = 'disabled';
+                }
                 track.inuse = false;
             });
         }

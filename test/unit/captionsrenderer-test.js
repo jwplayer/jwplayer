@@ -1,8 +1,9 @@
 define([
     'test/underscore',
     'controller/model',
-    'view/captionsrenderer'
-], function (_, Model, CaptionsRenderer) {
+    'view/captionsrenderer',
+    'parsers/captions/vttcue'
+], function (_, Model, CaptionsRenderer, VTTCue) {
     /* jshint maxlen: 1000, qunit: true */
 
     var test = QUnit.test.bind(QUnit);
