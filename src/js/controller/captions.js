@@ -67,12 +67,11 @@ define(['../utils/helpers',
                 var tracks = item.tracks,
                     len = tracks.length,
                     i,
-                    track,
-                    kind;
+                    track;
 
                 for (i = 0; i < len; i++) {
                     track = tracks[i];
-                    if (_kindSupported(kind)) {
+                    if (_kindSupported(track.kind)) {
                         _addTrack(track);
                         track.xhr = tracksLoader.loadFile(track.file,
                             _addVTTCuesToTrack.bind(null,track),
