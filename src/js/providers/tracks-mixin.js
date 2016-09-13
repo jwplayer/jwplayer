@@ -437,7 +437,7 @@ define(['../utils/underscore',
             track.addCue(vttCue);
             return;
         }
-        // There's no support for the VTTCue interface in Edge.
+        // There's no support for the VTTCue interface in Edge / IE11.
         // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
         // This unfortunately removes positioning properties from the cues
         var textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);

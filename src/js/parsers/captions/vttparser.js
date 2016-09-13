@@ -2,7 +2,7 @@
  * Source: https://github.com/mozilla/vtt.js/blob/master/dist/vtt.js#L1716
  */
 
-define([], function() {
+define(['parsers/captions/vttcue'], function(VTTCue) {
     var VTTParser = function(window, decoder) {
         this.window = window;
         this.state = 'INITIAL';
@@ -391,7 +391,7 @@ define([], function() {
                             if (!line) {
                                 continue;
                             }
-                            self.cue = new self.window.VTTCue(0, 0, '');
+                            self.cue = new VTTCue(0, 0, '');
                             self.state = 'CUE';
                             // 30-39 - Check if self line contains an optional identifier or timing data.
                             if (line.indexOf('-->') === -1) {
