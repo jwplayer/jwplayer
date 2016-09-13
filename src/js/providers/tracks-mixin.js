@@ -152,7 +152,7 @@ define(['../utils/underscore',
         // 0 = 'Off'
         if (menuIndex === 0) {
             _.each(this._textTracks, function (track) {
-                track.mode = 'disabled';
+                track.mode = track.embedded ? 'hidden' : 'disabled';
             });
         }
 
@@ -336,8 +336,11 @@ define(['../utils/underscore',
     }
 
     function disableTextTrack() {
-        if (this._textTracks && this._textTracks[this._currentTextTrackIndex]) {
-            this._textTracks[this._currentTextTrackIndex].mode = 'disabled';
+        if (this._textTracks) {
+            var track = this._textTracks[this._currentTextTrackIndex];
+            if (track) {
+                track.mode = track.embedded ? 'hidden' : 'disabled';
+            }
         }
     }
 
@@ -450,7 +453,9 @@ define(['../utils/underscore',
                 for (var i = track.cues.length; i--;) {
                     track.removeCue(track.cues[i]);
                 }
-                track.mode = 'disabled';
+                if (!track.embedded) {
+                    track.mode = 'disabled';
+                }
                 track.inuse = false;
             });
         }
