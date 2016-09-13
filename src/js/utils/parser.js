@@ -143,15 +143,17 @@ define([
      */
     parser.streamType = function(duration, _minDvrWindow) {
         var minDvrWindow = _.isUndefined(_minDvrWindow) ? 120 : _minDvrWindow;
+        var streamType = 'VOD';
 
         if (duration !== 0) {
             if (duration !== Infinity && Math.abs(duration) >= Math.max(minDvrWindow, 0)) {
-                return 'DVR';
+                streamType = 'DVR';
             } else if (duration < 0 || duration === Infinity) {
-                return 'LIVE';
+                streamType = 'LIVE';
             }
         }
-        return 'VOD';
+
+        return streamType;
     };
 
     return parser;
