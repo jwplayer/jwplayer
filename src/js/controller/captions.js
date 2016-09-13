@@ -1,4 +1,7 @@
-define([], function() {
+define(['../utils/helpers',
+    '../utils/nativerenderingsupported',
+    '../controller/tracksLoader'
+], function(utils, nativeRenderingSupported, tracksLoader) {
 
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_api, _model) {
@@ -53,14 +56,46 @@ define([], function() {
 
         function _itemReadyHandler(item) {
             // Clean up in case we're replaying
-            _itemHandler(_model,item);
+            _itemHandler(_model, item);
 
-            // listen for tracks coming from the provider
-            _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
+            _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler, this);
 
-            var captionsMenu = _captionsMenu();
-            this.setCaptionsList(captionsMenu);
-            _selectDefaultIndex();
+            if (nativeRenderingSupported(_model.get('provider').name)) {
+                // listen for tracks coming from the provider
+                _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
+            } else {
+                var tracks = item.tracks,
+                    len = tracks.length,
+                    i,
+                    track,
+                    kind;
+
+                for (i = 0; i < len; i++) {
+                    track = tracks[i];
+                    if (_kindSupported(kind)) {
+                        _addTrack(track);
+                        track.xhr = tracksLoader.loadFile(track.file,
+                            _addVTTCuesToTrack.bind(null,track),
+                            _errorHandler);
+                    }
+                }
+
+                var captionsMenu = _captionsMenu();
+                this.setCaptionsList(captionsMenu);
+                _selectDefaultIndex();
+            }
+        }
+
+        function _kindSupported(kind) {
+            return kind === 'subtitles' || kind === 'captions';
+        }
+
+        function _addVTTCuesToTrack(track, vttCues) {
+            track.data = vttCues;
+        }
+
+        function _errorHandler(error) {
+            utils.log('CAPTIONS(' + error + ')');
         }
 
         function _captionsIndexHandler(model, captionsMenuIndex) {

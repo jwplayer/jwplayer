@@ -1,11 +1,9 @@
 define(['../utils/underscore',
     '../utils/id3Parser',
     '../utils/helpers',
-    '../parsers/parsers',
-    '../parsers/captions/srt',
-    '../parsers/captions/dfxp',
-    '../utils/nativerenderingsupported'
-], function(_, ID3Parser, utils, parsers, srt, dfxp, nativeRenderingSupported) {
+    '../utils/nativerenderingsupported',
+    '../controller/tracksLoader'
+], function(_, ID3Parser, utils, nativeRenderingSupported, tracksLoader) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -33,7 +31,8 @@ define(['../utils/underscore',
         addTrackHandler: null,
         addCuesToTrack: addCuesToTrack,
         addCaptionsCue: addCaptionsCue,
-        addVTTCue: addVTTCue
+        addVTTCue: addVTTCue,
+        addVTTCuesToTrack: addVTTCuesToTrack
     };
 
     function setTextTracks(tracks) {
@@ -119,10 +118,16 @@ define(['../utils/underscore',
     }
 
     function setupSideloadedTracks(itemTracks) {
+        // Add tracks if we're starting playback or resuming after a midroll
+        this._renderNatively = nativeRenderingSupported(this.getName().name);
+
+        if (!this._renderNatively) {
+            return;
+        }
         // Determine if the tracks are the same and the embedded + sideloaded count = # of tracks in the controlbar
         var alreadyLoaded = itemTracks === this._itemTracks;
         if (!alreadyLoaded) {
-            _cancelXhr(this._itemTracks);
+            tracksLoader.cancelXhr(this._itemTracks);
         }
         this._itemTracks = itemTracks;
         if (!itemTracks) {
@@ -130,12 +135,8 @@ define(['../utils/underscore',
         }
 
         if (!alreadyLoaded) {
-            // Add tracks if we're starting playback or resuming after a midroll
-            this._renderNatively = nativeRenderingSupported(this.getName().name);
-            if (this._renderNatively) {
-                this.disableTextTrack();
-                _clearSideloadedTextTracks.call(this);
-            }
+            this.disableTextTrack();
+            _clearSideloadedTextTracks.call(this);
             this.addTextTracks(itemTracks);
         }
     }
@@ -217,7 +218,7 @@ define(['../utils/underscore',
                 text: cueData.text
             };
             this._metaCuesByTextTime[cueId] = cue;
-            var vttCue = _convertToVTTCues([cue])[0];
+            var vttCue = tracksLoader.convertToVTTCues([cue])[0];
             track.data.push(vttCue);
         }
     }
@@ -279,7 +280,7 @@ define(['../utils/underscore',
                 return a.begin - b.begin;
             });
         }
-        var vttCues = _convertToVTTCues(cuesToConvert);
+        var vttCues = tracksLoader.convertToVTTCues(cuesToConvert);
         Array.prototype.push.apply(track.data, vttCues);
     }
 
@@ -313,7 +314,7 @@ define(['../utils/underscore',
     }
 
     function clearTracks() {
-        _cancelXhr(this._itemTracks);
+        tracksLoader.cancelXhr(this._itemTracks);
         var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
         if (this._renderNatively || metadataTrack) {
             _removeCues.call(this, this.video.textTracks);
@@ -390,7 +391,9 @@ define(['../utils/underscore',
             _addTrackToList.call(this, textTrackAny);
             if (itemTrack.file) {
                 itemTrack.data = [];
-                itemTrack.xhr = _loadTrack.call(this, itemTrack, textTrackAny);
+                itemTrack.xhr = tracksLoader.loadFile(itemTrack.file,
+                    this.addVTTCuesToTrack.bind(this, textTrackAny),
+                    _errorHandler);
             }
         }
 
@@ -398,20 +401,6 @@ define(['../utils/underscore',
         if (!this._renderNatively && this._textTracks && this._textTracks.length) {
             this.trigger('subtitlesTracks', {tracks: this._textTracks});
         }
-    }
-
-    function _cancelXhr(itemTracks) {
-        _.each(itemTracks, function(itemTrack) {
-            var xhr = itemTrack.xhr;
-            if (xhr) {
-                xhr.onload = null;
-                xhr.onreadystatechange = null;
-                xhr.onerror = null;
-                if ('abort' in xhr) {
-                    xhr.abort();
-                }
-            }
-        });
     }
 
     function createTrackId(track) {
@@ -423,6 +412,34 @@ define(['../utils/underscore',
             trackId = track._id|| track.name || track.file || track.label || (prefix + this._textTracks.length);
         }
         return trackId;
+    }
+
+    function addVTTCuesToTrack(track, vttCues) {
+        if (this._renderNatively) {
+            var textTrack = this._tracksById[track._id];
+            // the track may not be on the video tag yet
+            if (!textTrack) {
+
+                if (!this._cuesByTrackId) {
+                    this._cuesByTrackId = {};
+                }
+                this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false};
+                return;
+            }
+            // Cues already added
+            if (this._cuesByTrackId[track._id] && this._cuesByTrackId[track._id].loaded) {
+                return;
+            }
+
+            var cue;
+            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
+
+            while((cue = vttCues.shift())) {
+                _addCueToTrack(textTrack, cue);
+            }
+        } else {
+            track.data = vttCues;
+        }
     }
 
     //////////////////////
@@ -516,13 +533,6 @@ define(['../utils/underscore',
         this._tracksById[track._id] = track;
     }
 
-    function _loadTrack(itemTrack, track) {
-        var _this = this;
-        return utils.ajax(itemTrack.file, function(xhr) {
-            _xhrSuccess.call(_this, xhr, track);
-        }, _errorHandler);
-    }
-
     function _clearSideloadedTextTracks() {
         // Clear VTT textTracks
         if (!this._textTracks) {
@@ -536,68 +546,6 @@ define(['../utils/underscore',
             this._tracksById[track._id] = track;
         });
         this._textTracks = nonSideloadedTracks;
-    }
-
-    function _addVTTCuesToTrack(track, vttCues) {
-        if (this._renderNatively) {
-            var textTrack = this._tracksById[track._id];
-            // the track may not be on the video tag yet
-            if (!textTrack) {
-
-                if (!this._cuesByTrackId) {
-                    this._cuesByTrackId = {};
-                }
-                this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false};
-                return;
-            }
-            // Cues already added
-            if (this._cuesByTrackId[track._id] && this._cuesByTrackId[track._id].loaded) {
-                return;
-            }
-
-            var cue;
-            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
-
-            while((cue = vttCues.shift())) {
-                _addCueToTrack(textTrack, cue);
-            }
-        } else {
-            track.data = vttCues;
-        }
-    }
-
-    function _convertToVTTCues(cues) {
-        // VTTCue is available natively or polyfilled where necessary
-        var VTTCue = window.VTTCue;
-        var vttCues = _.map(cues, function (cue) {
-            return new VTTCue(cue.begin, cue.end, cue.text);
-        });
-        return vttCues;
-    }
-
-    function _parseCuesFromText(srcContent, track) {
-        var renderNatively = this._renderNatively;
-        require.ensure(['../parsers/captions/vttparser'], function (require) {
-            var VTTParser = require('../parsers/captions/vttparser');
-            var parser = new VTTParser(window);
-            if (renderNatively) {
-                parser.oncue = function(cue) {
-                    _addCueToTrack(track, cue);
-                };
-            } else {
-                track.data = track.data || [];
-                parser.oncue = function(cue) {
-                    track.data.push(cue);
-                };
-            }
-
-            try {
-                parser.parse(srcContent).flush();
-            } catch(error) {
-                _errorHandler(error);
-            }
-
-        }, 'vttparser');
     }
 
     function _cueChangeHandler(e) {
@@ -637,46 +585,6 @@ define(['../utils/underscore',
             });
         }
         this._activeCuePosition = startTime;
-    }
-
-    function _xhrSuccess(xhr, track) {
-        var xmlRoot = xhr.responseXML ? xhr.responseXML.firstChild : null;
-        var cues, vttCues;
-
-        // IE9 sets the firstChild element to the root <xml> tag
-        if (xmlRoot) {
-            if (parsers.localName(xmlRoot) === 'xml') {
-                xmlRoot = xmlRoot.nextSibling;
-            }
-            // Ignore all comments
-            while (xmlRoot.nodeType === xmlRoot.COMMENT_NODE) {
-                xmlRoot = xmlRoot.nextSibling;
-            }
-        }
-        try {
-            if (xmlRoot && parsers.localName(xmlRoot) === 'tt') {
-                // parse dfxp track
-                cues = dfxp(xhr.responseXML);
-                vttCues = _convertToVTTCues(cues);
-                _addVTTCuesToTrack.call(this, track, vttCues);
-            } else {
-                // parse VTT/SRT track
-                var responseText = xhr.responseText;
-
-                // TODO: parse SRT with using vttParser and deprecate srt module
-                if (responseText.indexOf('WEBVTT') >= 0) {
-                    // make VTTCues from VTT track
-                    _parseCuesFromText.call(this, responseText, track);
-                } else {
-                    // make VTTCues from SRT track
-                    cues = srt(responseText);
-                    vttCues = _convertToVTTCues(cues);
-                    _addVTTCuesToTrack.call(this, track, vttCues);
-                }
-            }
-        } catch (error) {
-            _errorHandler(error.message + ': ' + track.file);
-        }
     }
 
     function _errorHandler(error) {
