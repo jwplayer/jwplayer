@@ -23,16 +23,11 @@ define([
                 method: _loadBase64Polyfill,
                 depends: []
             },
-            LOAD_VTTCUE_POLYFILL : {
-                method: _loadVTTCuePolyfill,
-                depends: []
-            },
             LOADED_POLYFILLS : {
                 method: _loadedPolyfills,
                 depends: [
                     'LOAD_PROMISE_POLYFILL',
-                    'LOAD_BASE64_POLYFILL',
-                    'LOAD_VTTCUE_POLYFILL'
+                    'LOAD_BASE64_POLYFILL'
                 ]
             },
             LOAD_PLUGINS : {
@@ -101,17 +96,6 @@ define([
                 require('polyfills/base64');
                 resolve();
             }, 'polyfills.base64');
-        } else {
-            resolve();
-        }
-    }
-
-    function _loadVTTCuePolyfill(resolve) {
-        if (!window.VTTCue) {
-            require.ensure(['polyfills/vttcue'], function(require) {
-                require('polyfills/vttcue');
-                resolve();
-            }, 'polyfills.vttcue');
         } else {
             resolve();
         }
