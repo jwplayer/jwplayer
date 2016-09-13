@@ -148,23 +148,23 @@ define([
         type = parser.streamType(-120, minDvrWindow);
         assert.equal(type, 'DVR', 'streamType with -120 and 120');
 
-        type = parser.streamType(120, -10);
+        type = parser.streamType(-120, -10);
         assert.equal(type, 'DVR', 'streamType with 120 and -10');
 
-        type = parser.streamType(120, 0);
+        type = parser.streamType(-120, 0);
         assert.equal(type, 'DVR', 'streamType with 120 and 0');
 
         type = parser.streamType(-120, 0);
         assert.equal(type, 'DVR', 'streamType with -120 and 0');
 
-        type = parser.streamType(120, undefined);
+        type = parser.streamType(-120, undefined);
         assert.equal(type, 'DVR', 'streamType with 120 and undefined');
 
         type = parser.streamType(-20, minDvrWindow);
-        assert.equal(type, 'LIVE', 'streamType with -20');
+        assert.equal(type, 'LIVE', 'streamType with -20 and 120');
 
         type = parser.streamType(-1, minDvrWindow);
-        assert.equal(type, 'LIVE', 'streamType with -1');
+        assert.equal(type, 'LIVE', 'streamType with -1 and 120');
 
         type = parser.streamType(Infinity, minDvrWindow);
         assert.equal(type, 'LIVE', 'streamType with Infinity');

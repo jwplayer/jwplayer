@@ -145,14 +145,20 @@ define([
         var minDvrWindow = _.isUndefined(_minDvrWindow) ? 120 : _minDvrWindow;
         var streamType = 'VOD';
 
-        if (duration !== 0) {
-            if (duration !== Infinity && Math.abs(duration) >= Math.max(minDvrWindow, 0)) {
+        if (duration === Infinity) {
+            // Live streams are always Infinity duration
+            streamType = 'LIVE';
+        } else if (duration < 0) {
+            // Negative durations are always either DVR or Live
+            // It's DVR if the duration is above the minDvrWindow, live otherwise
+            if (Math.abs(duration) >= Math.max(minDvrWindow, 0)) {
                 streamType = 'DVR';
-            } else if (duration < 0 || duration === Infinity) {
+            } else {
                 streamType = 'LIVE';
             }
         }
 
+        // Default option is VOD (i.e. positive or non-infinite)
         return streamType;
     };
 
