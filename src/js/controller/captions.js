@@ -73,8 +73,8 @@ define(['../utils/helpers',
                     track = tracks[i];
                     if (_kindSupported(track.kind)) {
                         _addTrack(track);
-                        track.xhr = tracksLoader.loadFile(track.file,
-                            _addVTTCuesToTrack.bind(null,track),
+                        tracksLoader.loadFile(track,
+                            _addVTTCuesToTrack.bind(null, track),
                             _errorHandler);
                     }
                 }

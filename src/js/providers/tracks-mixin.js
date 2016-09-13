@@ -394,7 +394,7 @@ define(['../utils/underscore',
             _addTrackToList.call(this, textTrackAny);
             if (itemTrack.file) {
                 itemTrack.data = [];
-                itemTrack.xhr = tracksLoader.loadFile(itemTrack.file,
+                tracksLoader.loadFile(itemTrack,
                     this.addVTTCuesToTrack.bind(this, textTrackAny),
                     _errorHandler);
             }
