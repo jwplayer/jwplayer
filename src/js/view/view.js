@@ -117,7 +117,7 @@ define([
             var min = 0;
             var max = _model.get('duration');
             var position = _model.get('position');
-            if (utils.adaptiveType(max) === 'DVR') {
+            if (_model.get('streamType') === 'DVR') {
                 min = max;
                 max = Math.max(position, Constants.dvrSeekLimit);
             }
@@ -944,8 +944,8 @@ define([
 
         function _setLiveMode(model, duration){
             var minDvrWindow = model.get('minDvrWindow');
-            var streamType = utils.adaptiveType(duration, minDvrWindow);
-            var live = streamType === 'LIVE';
+            var streamType = utils.streamType(duration, minDvrWindow);
+            var live = (streamType === 'LIVE');
 
             model.set('streamType', streamType);
             utils.toggleClass(_playerElement, 'jw-flag-live', live);

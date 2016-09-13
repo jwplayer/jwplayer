@@ -69,7 +69,6 @@ define([
         },
         click: function() {
             this.state = 'tooltip';
-
             if (this.relatedMode && this._related.selectItem_) {
                  this._related.selectItem_(this.nextUpItem, 'interaction');
             } else if (!this.relatedMode) {
@@ -182,7 +181,8 @@ define([
                 return;
             }
 
-            if (utils.adaptiveType(duration) === 'LIVE' || utils.adaptiveType(duration) === 'DVR') {
+            var streamType = this._model.get('streamType');
+            if (streamType === 'LIVE' || streamType === 'DVR') {
                 model.off('change:duration', this.onDuration, this);
                 return;
             }

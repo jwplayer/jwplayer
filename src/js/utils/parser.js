@@ -141,7 +141,7 @@ define([
      * Determine the adaptive type
      * Duration can be positive or negative, but minDvrWindow should always be positive
      */
-    parser.adaptiveType = function(duration, _minDvrWindow) {
+    parser.streamType = function(duration, _minDvrWindow) {
         var minDvrWindow = _.isUndefined(_minDvrWindow) ? 120 : _minDvrWindow;
 
         if (duration !== 0) {
