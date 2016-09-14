@@ -1,7 +1,7 @@
-define(['../utils/helpers',
-    '../utils/nativerenderingsupported',
-    '../controller/tracksLoader'
-], function(utils, nativeRenderingSupported, tracksLoader) {
+define(['utils/helpers',
+    'utils/render-captions-natively',
+    'controller/tracks-loader'
+], function(utils, renderCaptionsNatively, tracksLoader) {
 
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_api, _model) {
@@ -60,7 +60,7 @@ define(['../utils/helpers',
 
             _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler, this);
 
-            if (nativeRenderingSupported(_model.get('provider').name)) {
+            if (renderCaptionsNatively(_model.get('provider').name)) {
                 // listen for tracks coming from the provider
                 _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
             } else {

@@ -1,9 +1,9 @@
-define(['../utils/underscore',
-    '../utils/id3Parser',
-    '../utils/helpers',
-    '../utils/nativerenderingsupported',
-    '../controller/tracksLoader'
-], function(_, ID3Parser, utils, nativeRenderingSupported, tracksLoader) {
+define(['utils/underscore',
+    'utils/id3Parser',
+    'utils/helpers',
+    'utils/render-captions-natively',
+    'controller/tracks-loader'
+], function(_, ID3Parser, utils, renderCaptionsNatively, tracksLoader) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -119,7 +119,7 @@ define(['../utils/underscore',
 
     function setupSideloadedTracks(itemTracks) {
         // Add tracks if we're starting playback or resuming after a midroll
-        this._renderNatively = nativeRenderingSupported(this.getName().name);
+        this._renderNatively = renderCaptionsNatively(this.getName().name);
 
         if (!this._renderNatively) {
             return;
@@ -382,7 +382,7 @@ define(['../utils/underscore',
             this._initTextTracks();
         }
 
-        this._renderNatively = nativeRenderingSupported(this.getName().name);
+        this._renderNatively = renderCaptionsNatively(this.getName().name);
 
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];
@@ -418,30 +418,30 @@ define(['../utils/underscore',
     }
 
     function addVTTCuesToTrack(track, vttCues) {
-        if (this._renderNatively) {
-            var textTrack = this._tracksById[track._id];
-            // the track may not be on the video tag yet
-            if (!textTrack) {
+        if (!this._renderNatively) {
+            return;
+        }
 
-                if (!this._cuesByTrackId) {
-                    this._cuesByTrackId = {};
-                }
-                this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false};
-                return;
-            }
-            // Cues already added
-            if (this._cuesByTrackId[track._id] && this._cuesByTrackId[track._id].loaded) {
-                return;
-            }
+        var textTrack = this._tracksById[track._id];
+        // the track may not be on the video tag yet
+        if (!textTrack) {
 
-            var cue;
-            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
-
-            while((cue = vttCues.shift())) {
-                _addCueToTrack(textTrack, cue);
+            if (!this._cuesByTrackId) {
+                this._cuesByTrackId = {};
             }
-        } else {
-            track.data = vttCues;
+            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false};
+            return;
+        }
+        // Cues already added
+        if (this._cuesByTrackId[track._id] && this._cuesByTrackId[track._id].loaded) {
+            return;
+        }
+
+        var cue;
+        this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
+
+        while((cue = vttCues.shift())) {
+            _addCueToTrack(textTrack, cue);
         }
     }
 

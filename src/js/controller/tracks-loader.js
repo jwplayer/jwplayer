@@ -1,10 +1,10 @@
 define([
-    '../utils/underscore',
-    '../utils/helpers',
-    '../parsers/parsers',
-    '../parsers/captions/srt',
-    '../parsers/captions/dfxp',
-    '../parsers/captions/vttcue'
+    'utils/underscore',
+    'utils/helpers',
+    'parsers/parsers',
+    'parsers/captions/srt',
+    'parsers/captions/dfxp',
+    'parsers/captions/vttcue'
 ], function(_, utils, parsers, srt, dfxp, VTTCue) {
     var tracksLoader = {};
 
