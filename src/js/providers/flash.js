@@ -169,7 +169,6 @@ define([
                     _item = item;
                     _beforecompleted = false;
                     this.setState(states.LOADING);
-                    this.setupSideloadedTracks(item.tracks);
                     _flashCommand('load', item);
                     // HLS mediaType comes from the AdaptiveProvider
                     if(item.sources.length && item.sources[0].type !== 'hls') {

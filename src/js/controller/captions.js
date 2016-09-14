@@ -58,16 +58,12 @@ define(['utils/helpers',
             // Clean up in case we're replaying
             _itemHandler(_model, item);
 
-            _model.mediaController.off('subtitlesTracks', _subtitlesTracksHandler, this);
+            var tracks = item.tracks,
+                len = tracks && tracks.length;
 
-            if (renderCaptionsNatively(_model.get('provider').name)) {
-                // listen for tracks coming from the provider
-                _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
-            } else {
-                var tracks = item.tracks,
-                    len = tracks.length,
-                    i,
-                    track;
+            // Sideload tracks when not rendering natively
+            if (!renderCaptionsNatively(_model.get('provider').name) && len) {
+                var i, track;
 
                 for (i = 0; i < len; i++) {
                     track = tracks[i];
@@ -78,11 +74,11 @@ define(['utils/helpers',
                             _errorHandler);
                     }
                 }
-
-                var captionsMenu = _captionsMenu();
-                this.setCaptionsList(captionsMenu);
-                _selectDefaultIndex();
             }
+
+            var captionsMenu = _captionsMenu();
+            this.setCaptionsList(captionsMenu);
+            _selectDefaultIndex();
         }
 
         function _kindSupported(kind) {

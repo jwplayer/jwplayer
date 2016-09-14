@@ -10,7 +10,7 @@ define([
 
     tracksLoader.loadFile = function(track, successHandler, errorHandler) {
         track.xhr = utils.ajax(track.file, function(xhr) {
-            xhrSuccess(xhr, track, successHandler, errorHandler);
+            xhrSuccess.call(tracksLoader, xhr, track, successHandler, errorHandler);
         }, errorHandler);
     };
 
