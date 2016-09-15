@@ -152,6 +152,7 @@ define([
             this._related = this._api.getPlugin('related');
             // Only switch to related mode if there is a related playlist
             this._related.on('playlist', this.onRelatedPlaylist.bind(this));
+            this._related.on('cached', this.onRelatedCached.bind(this));
         },
         onPlaylist: function(model, playlist) {
             this._playlist = playlist;
@@ -202,22 +203,13 @@ define([
 
             this.offset = offset;
         },
+        onRelatedCached: function() {
+          this.enableRelatedMode();
+        },
         onRelatedPlaylist: function(evt) {
             var playlist = evt.playlist;
             if (playlist && playlist.length) {
-                this.relatedMode = true;
-                var relatedBlock = this._model.get('related');
-                // If there are related items, Next Up is shown when we're autoplaying and the timer is set to 0
-                this.showNextUp = relatedBlock.oncomplete === 'autoplay' && relatedBlock.autoplaytimer === 0;
-
-                // Show the next button when there is related content
-                this._nextButton.toggle(true);
-
-                var nextUpItem = this._related.nextUp && this._related.nextUp();
-
-                this.setNextUpItem(nextUpItem);
-
-                this._model.on('change:duration', this.onDuration, this);
+                this.enableRelatedMode();
             }
         },
         onMediaModel: function(model, mediaModel) {
@@ -272,6 +264,21 @@ define([
             if (this.tooltipUI) {
                 this.tooltipUI.off();
             }
+        },
+        enableRelatedMode: function() {
+            this.relatedMode = true;
+            var relatedBlock = this._model.get('related');
+            // If there are related items, Next Up is shown when we're autoplaying and the timer is set to 0
+            this.showNextUp = relatedBlock.oncomplete === 'autoplay' && relatedBlock.autoplaytimer === 0;
+
+            // Show the next button when there is related content
+            this._nextButton.toggle(true);
+
+            var nextUpItem = this._related.nextUp && this._related.nextUp();
+
+            this.setNextUpItem(nextUpItem);
+
+            this._model.on('change:duration', this.onDuration, this);
         }
     });
 
