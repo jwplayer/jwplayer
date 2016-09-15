@@ -393,6 +393,10 @@ define([
             this.setVideoSubtitleTrack(trackIndex, tracks);
             this.persistCaptionsTrack();
         };
+
+        this.setNextUp = function (nextUp) {
+            this.set('nextUp', nextUp);
+        };
     };
 
     // Represents the state of the provider/media element
