@@ -9,7 +9,7 @@ define([
         this.providers = ProvidersSupported.slice();
         this.config = config || {};
 
-        this.reorderProviders();
+        this.reorderProviders(this.config.primary);
     }
 
     Providers.loaders = {
@@ -83,9 +83,9 @@ define([
             }));
         },
 
-        reorderProviders : function () {
+        reorderProviders: function (primary) {
             // Remove the flash provider, and add it in front of the html5 provider
-            if (this.config.primary === 'flash') {
+            if (primary === 'flash') {
                 var flashIdx = _.indexOf(this.providers, _.findWhere(this.providers, {name: 'flash'}));
                 var flashProvider = this.providers.splice(flashIdx, 1)[0];
                 var html5Idx = _.indexOf(this.providers, _.findWhere(this.providers, {name: 'html5'}));
@@ -93,7 +93,7 @@ define([
             }
         },
 
-        providerSupports : function(provider, source) {
+        providerSupports: function(provider, source) {
             return provider.supports(source);
         },
 
