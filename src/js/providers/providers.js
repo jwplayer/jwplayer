@@ -83,22 +83,24 @@ define([
             }));
         },
 
-        reorderProviders: function (primary) {
-            // Remove the flash provider, and add it in front of the html5 provider
-            if (primary === 'flash') {
-                var flashIdx = _.indexOf(this.providers, _.findWhere(this.providers, {name: 'flash'}));
-                var flashProvider = this.providers.splice(flashIdx, 1)[0];
-                var html5Idx = _.indexOf(this.providers, _.findWhere(this.providers, {name: 'html5'}));
-                this.providers.splice(html5Idx, 0, flashProvider);
-            }
+        reorderProviders: function (primaryOverride) {
+            var primary = primaryOverride || this.config.primary;
+            var secondary = (primary === 'flash')? 'html5' : 'flash';
+            var flashIdx = _.indexOf(this.providers, _.findWhere(this.providers, {name: primary}));
+            var flashProvider = this.providers.splice(flashIdx, 1)[0];
+            var html5Idx = _.indexOf(this.providers, _.findWhere(this.providers, {name: secondary}));
+
+            this.providers.splice(html5Idx, 0, flashProvider);
         },
 
         providerSupports: function(provider, source) {
             return provider.supports(source);
         },
 
-        required: function(playlist) {
+        required: function(playlist, primary) {
             var _this = this;
+
+            this.reorderProviders(primary);
             playlist = playlist.slice();
             return _.compact(_.map(this.providers, function(provider) {
                 // remove items from copied playlist that can be played by provider

@@ -201,9 +201,8 @@ define([
             var _this = this;
             var providersManager = _model.getProviders();
             var primary = (InstreamMethod === InstreamHtml5? 'html5' : 'flash');
-            providersManager.reorderProviders(primary);
-            
-            var providersNeeded = providersManager.required(playlist);
+            var providersNeeded = providersManager.required(playlist, primary);
+
             _model.set('hideAdsControls', false);
             providersManager.load(providersNeeded)
                 .then(function() {
