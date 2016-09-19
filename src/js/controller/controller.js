@@ -210,6 +210,11 @@ define([
                     _this.trigger(event.type, event.args);
                 }
 
+                var related = _api.getPlugin('related');
+                if (related) {
+                    related.on('nextUp', _model.setNextUp, _model);
+                }
+
                 if (_model.get('autostart')) {
                     _this.play({reason: 'autostart'});
                 }
@@ -623,6 +628,13 @@ define([
                 }
             }
 
+            function _nextUp() {
+                var related = _api.getPlugin('related');
+                if (related) {
+                    related.next();
+                }
+            }
+
             /** Controller API / public methods **/
             this._play = _play;
             this._pause = _pause;
@@ -664,6 +676,8 @@ define([
             //this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
             this.setCaptions = _view.setCaptions;
+
+            this.next = _nextUp;
 
 
             this.addButton = function(img, tooltip, callback, id, btnClass) {

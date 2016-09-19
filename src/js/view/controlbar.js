@@ -177,7 +177,6 @@ define([
                 this.elements.mute.show();
             }
             this.onVolume(this._model, this._model.get('volume'));
-            this.onPlaylist(this._model, this._model.get('playlist'));
             this.onPlaylistItem();
             this.onMediaModel(this._model, this._model.get('mediaModel'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
@@ -187,7 +186,6 @@ define([
             // Listen for model changes
             this._model.on('change:volume', this.onVolume, this);
             this._model.on('change:mute', this.onMute, this);
-            this._model.on('change:playlist', this.onPlaylist, this);
             this._model.on('change:playlistItem', this.onPlaylistItem, this);
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
@@ -259,10 +257,6 @@ define([
         },
         onCaptionsIndex: function(model, index) {
             this.elements.cc.selectItem(index);
-        },
-        onPlaylist : function(model, playlist) {
-            var display = (playlist.length > 1);
-            this.elements.next.toggle(display);
         },
         onPlaylistItem : function() {
             this.elements.time.updateBuffer(0);

@@ -48,6 +48,7 @@ define({
     isBeforeComplete: null,
     isBeforePlay: null,
     load: null,
+    next: null,
     pause: null,
     pauseAd: null,
     play: null,
