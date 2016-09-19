@@ -6,10 +6,8 @@ define([
     ], function(Default, ProvidersSupported, ProvidersLoaded, _) {
 
     function Providers(config) {
-        this.providers = ProvidersSupported.slice();
         this.config = config || {};
-
-        this.reorderProviders();
+        this.providers = this.reorderProviders(this.config.primary);
     }
 
     Providers.loaders = {
@@ -83,22 +81,16 @@ define([
             }));
         },
 
-        getPrimaryProvider: function(primaryOverride) {
-            var primary = primaryOverride || this.config.primary;
+        reorderProviders: function (primary) {
+            var providers = _.clone(ProvidersSupported);
 
-            if (primary === 'html5' || primary === 'flash') {
-                return primary;
+            if (primary === 'flash') {
+                var flashIdx = _.indexOf(providers, _.findWhere(providers, {name: 'flash'}));
+                var flashProvider = providers.splice(flashIdx, 1)[0];
+                var html5Idx = _.indexOf(providers, _.findWhere(providers, {name: 'html5'}));
+                providers.splice(html5Idx, 0, flashProvider);
             }
-        },
-
-        reorderProviders: function (primaryOverride) {
-            var primary = this.getPrimaryProvider(primaryOverride) || 'html5';
-            var secondary = (primary === 'flash')? 'html5' : 'flash';
-            var flashIdx = _.indexOf(this.providers, _.findWhere(this.providers, {name: primary}));
-            var flashProvider = this.providers.splice(flashIdx, 1)[0];
-            var html5Idx = _.indexOf(this.providers, _.findWhere(this.providers, {name: secondary}));
-
-            this.providers.splice(html5Idx, 0, flashProvider);
+            return providers;
         },
 
         providerSupports: function(provider, source) {
@@ -107,10 +99,10 @@ define([
 
         required: function(playlist, primary) {
             var _this = this;
+            var providers = this.reorderProviders(primary);
 
-            this.reorderProviders(primary);
             playlist = playlist.slice();
-            return _.compact(_.map(this.providers, function(provider) {
+            return _.compact(_.map(providers, function(provider) {
                 // remove items from copied playlist that can be played by provider
                 // remaining providers will be checked against any remaining items
                 // provider will be loaded if there are matches
