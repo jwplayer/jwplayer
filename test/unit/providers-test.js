@@ -12,7 +12,7 @@ define([
     // TODO: Many of these can be moved to quint/config/{type}.source{_features}
     var videoSources = {
         'mp4': { file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4' },
-        'flv': { file:'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv' },	// Flash Specific
+        'flv': { file:'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv' },   // Flash Specific
         'smil': { file: 'assets/os/edgecast.smil' },                                            // Flash Specific
         'f4v': { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.f4v' },
         'm4v': { file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.m4v' },
@@ -34,16 +34,16 @@ define([
         'youtube': { file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4' }
     };
 
-	// Exists to protect against undefined results.  If no provider is chosen we get undefined.
-	var getName = function(func) {
-		if (func) {
+    // Exists to protect against undefined results.  If no provider is chosen we get undefined.
+    var getName = function(func) {
+        if (func) {
             if (func.name) {
                 return func.name;
             }
             return func.toString().match(/^function\s*([^\s(]+)/)[1];
-		}
+        }
         return 'None chosen';
-	};
+    };
 
     function fileDescription(file) {
         var description = source(file).type;
@@ -89,16 +89,16 @@ define([
         var providerList = new Providers().providers;
         assert.expect(4);
 
-		assert.ok(providerList.length >= 3, 'There are at least 3 providers listed');
+        assert.ok(providerList.length >= 3, 'There are at least 3 providers listed');
 
         var keys = getKeyIndexes(providerList);
-		assert.ok(keys.html5 < keys.flash, 'HTML5 has higher priority than flash');
+        assert.ok(keys.html5 < keys.flash, 'HTML5 has higher priority than flash');
         assert.ok(keys.html5 > keys.youtube, 'HTML5 has lower priority than youtube');
         assert.ok(keys.flash > keys.youtube, 'Flash has lower priority than youtube');
     });
 
     test('html5 primary requested', function (assert) {
-		var providerList = new Providers({primary: 'html5'}).providers;
+        var providerList = new Providers({primary: 'html5'}).providers;
         assert.expect(3);
 
         var keys = getKeyIndexes(providerList);
@@ -109,7 +109,7 @@ define([
 
 
     test('flash primary requested', function (assert) {
-		var providerList = new Providers({primary: 'flash'}).providers;
+        var providerList = new Providers({primary: 'flash'}).providers;
         assert.expect(3);
 
         var keys = getKeyIndexes(providerList);
@@ -118,20 +118,20 @@ define([
         assert.ok(keys.flash > keys.youtube, 'Flash has lower priority than youtube');
     });
 
-	test('invalid primary requested', function (assert) {
-		var providerList = new Providers({primary:'invalid primary value'}).providers;
+    test('invalid primary requested', function (assert) {
+        var providerList = new Providers({primary:'invalid primary value'}).providers;
         assert.expect(3);
 
         var keys = getKeyIndexes(providerList);
         assert.ok(keys.html5 < keys.flash, 'HTML5 has higher priority than flash');
         assert.ok(keys.html5 > keys.youtube, 'HTML5 has lower priority than youtube');
         assert.ok(keys.flash > keys.youtube, 'Flash has lower priority than youtube');
-	});
+    });
 
     QUnit.module('provider.choose');
 
-	// HTML5 Primary
-	test('html5 primary', function (assert) {
+    // HTML5 Primary
+    test('html5 primary', function (assert) {
         assert.expect(17);
 
         var runTest = getProvidersTestRunner(assert, 'html5');
@@ -162,8 +162,8 @@ define([
         runTest(videoSources.hls_androidhls_true,  isAndroidWithHls ? 'None chosen' : 'None chosen');
     });
 
-	// Flash Primary
-	test('flash primary', function (assert) {
+    // Flash Primary
+    test('flash primary', function (assert) {
         assert.expect(17);
 
         var runTest = getProvidersTestRunner(assert, 'flash');

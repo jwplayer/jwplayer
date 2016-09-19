@@ -200,7 +200,9 @@ define([
 
             var _this = this;
             var providersManager = _model.getProviders();
-            var providersNeeded = providersManager.required(playlist);
+            var primary = (InstreamMethod === InstreamFlash)? 'flash' : undefined;
+            var providersNeeded = providersManager.required(playlist, primary);
+
             _model.set('hideAdsControls', false);
             providersManager.load(providersNeeded)
                 .then(function() {
