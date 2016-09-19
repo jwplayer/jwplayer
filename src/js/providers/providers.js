@@ -9,7 +9,7 @@ define([
         this.providers = ProvidersSupported.slice();
         this.config = config || {};
 
-        this.reorderProviders(this.config.primary);
+        this.reorderProviders();
     }
 
     Providers.loaders = {
@@ -83,8 +83,18 @@ define([
             }));
         },
 
-        reorderProviders: function (primaryOverride) {
+        getPrimary: function(primaryOverride) {
             var primary = primaryOverride || this.config.primary;
+
+            if (primary === 'html5' || primary === 'flash') {
+                return primary;
+            }
+
+            return 'html5';
+        },
+
+        reorderProviders: function (primaryOverride) {
+            var primary = this.getPrimary(primaryOverride);
             var secondary = (primary === 'flash')? 'html5' : 'flash';
             var flashIdx = _.indexOf(this.providers, _.findWhere(this.providers, {name: primary}));
             var flashProvider = this.providers.splice(flashIdx, 1)[0];

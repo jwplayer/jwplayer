@@ -19,7 +19,7 @@ define([
     'unit/playlist-filtering-test',
     'unit/playlist-item-test',
     'unit/playlist-test',
-    'unit/provider-test',
+    'unit/providers-test',
     'unit/scriptloader-test',
     'unit/setup-test',
     'unit/simplemodel-test',
