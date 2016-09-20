@@ -538,7 +538,6 @@ define([
         function _clearVideotagSource() {
             if (_videotag) {
                 _this.disableTextTrack();
-                _videotag.removeAttribute('crossorigin');
                 _videotag.removeAttribute('preload');
                 _videotag.removeAttribute('src');
                 _videotag.removeAttribute('jw-loaded');

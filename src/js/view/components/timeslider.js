@@ -76,8 +76,8 @@ define([
                 return this.activeCue.pct;
             }
             var duration = this._model.get('duration');
-            var adaptiveType = utils.adaptiveType(duration);
-            if (adaptiveType === 'DVR') {
+            var streamType = this._model.get('streamType');
+            if (streamType === 'DVR') {
                 var position = (1 - (percent / 100)) * duration;
                 var currentPosition = this._model.get('position');
                 var updatedPosition = Math.min(position, Math.max(Constants.dvrSeekLimit, currentPosition));
@@ -120,10 +120,10 @@ define([
         updateTime : function(position, duration) {
             var pct = 0;
             if (duration) {
-                var adaptiveType = utils.adaptiveType(duration);
-                if(adaptiveType === 'DVR') {
+                var streamType = this._model.get('streamType');
+                if (streamType === 'DVR') {
                     pct = (duration - position) / duration * 100;
-                } else if (adaptiveType === 'VOD') {
+                } else if (streamType === 'VOD') {
                     pct = position / duration * 100;
                 }
             }
@@ -148,11 +148,11 @@ define([
         performSeek : function() {
             var percent = this.seekTo;
             var duration = this._model.get('duration');
-            var adaptiveType = utils.adaptiveType(duration);
+            var streamType = this._model.get('streamType');
             var position;
             if (duration === 0) {
                 this._api.play();
-            } else if (adaptiveType === 'DVR') {
+            } else if (streamType === 'DVR') {
                 position = (100 - percent) / 100 * duration;
                 this._api.seek(position);
             } else {
