@@ -12,7 +12,6 @@ define([
 
         this.nextUpText = _model.get('localization').nextUp;
         this.state = 'tooltip';
-        this.relatedMode = false;
     };
 
     _.extend(NextUpTooltip.prototype, {
@@ -33,18 +32,12 @@ define([
             // Events
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:position', this.onElapsed, this);
-            this._model.on('change:playlist', this.onPlaylist, this);
-            this._api.onPlaylistItem(this.onPlaylistItem.bind(this));
+            this._model.on('change:nextUp', this.onNextUp, this);
 
             this.closeButtonUI = new UI(this.closeButton, {'directSelect': true})
                 .on('click tap', this.hide, this);
             this.tooltipUI = new UI(this.tooltip)
                 .on('click tap', this.click, this);
-
-            // If there's a related block, wait until the plugin is available
-            if (this._model.get('related')) {
-                this._api.onReady(this.onReady.bind(this));
-            }
 
             this.onMediaModel(this._model, this._model.get('mediaModel'));
 
@@ -69,12 +62,7 @@ define([
         },
         click: function() {
             this.state = 'tooltip';
-            if (this.relatedMode && this._related.selectItem_) {
-                 this._related.selectItem_(this.nextUpItem, 'interaction');
-            } else if (!this.relatedMode) {
-                this._api.playlistNext({reason: 'interaction'});
-            }
-
+            this._api.next();
             this.hide();
         },
         show: function() {
@@ -148,33 +136,18 @@ define([
             }, 500);
 
         },
-        onReady: function() {
-            this._related = this._api.getPlugin('related');
-            // Only switch to related mode if there is a related playlist
-            this._related.on('playlist', this.onRelatedPlaylist.bind(this));
-        },
-        onPlaylist: function(model, playlist) {
-            this._playlist = playlist;
-            this.showNextUp = (playlist.length > 1);
-            this.relatedMode = false;
-
-            this._nextButton.toggle(this.showNextUp);
-        },
-        onPlaylistItem: function(item) {
+        onNextUp: function(model, nextUp) {
             this._model.off('change:duration', this.onDuration, this);
-
-            if(!this.showNextUp) {
+            if(!nextUp) {
+                this._nextButton.toggle(false);
                 return;
             }
 
+            this._nextButton.toggle(true);
             // Listen for duration changes to determine the offset
             // for when next up should be shown
             this._model.on('change:duration', this.onDuration, this);
-
-            var nextUpIndex = (item.index + 1) % this._playlist.length;
-            var nextUpItem = this._playlist[nextUpIndex];
-
-            this.setNextUpItem(nextUpItem);
+            this.setNextUpItem(nextUp);
         },
         onDuration: function(model, duration) {
             if (!duration) {
@@ -201,24 +174,6 @@ define([
             }
 
             this.offset = offset;
-        },
-        onRelatedPlaylist: function(evt) {
-            var playlist = evt.playlist;
-            if (playlist && playlist.length) {
-                this.relatedMode = true;
-                var relatedBlock = this._model.get('related');
-                // If there are related items, Next Up is shown when we're autoplaying and the timer is set to 0
-                this.showNextUp = relatedBlock.oncomplete === 'autoplay' && relatedBlock.autoplaytimer === 0;
-
-                // Show the next button when there is related content
-                this._nextButton.toggle(true);
-
-                var nextUpItem = this._related.nextUp && this._related.nextUp();
-
-                this.setNextUpItem(nextUpItem);
-
-                this._model.on('change:duration', this.onDuration, this);
-            }
         },
         onMediaModel: function(model, mediaModel) {
             mediaModel.on('change:state', function(model, state) {

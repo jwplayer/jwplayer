@@ -41,16 +41,18 @@
 }
 
 .jwplayer.jw-flag-ads-freewheel {
-    .jw-controlbar {
-        display: none;
-        bottom: 0;
-    }
-
     &.jw-state-idle {
         .jw-media {
             video {
                 pointer-events: none;
             }
+        }
+    }
+
+    span {
+        pointer-events: none;
+        iframe {
+            pointer-events: all;
         }
     }
 }
