@@ -154,9 +154,9 @@ define([
 
             _model.on('change:scrubbing', function(model, state) {
                 if (state) {
-                    _pause();
+                    _pause(true);
                 } else {
-                    _play();
+                    _model.playVideo();
                 }
             });
 
