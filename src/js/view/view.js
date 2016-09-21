@@ -55,7 +55,7 @@ define([
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _resizeContainerRequestId = -1,
-            _minWidthForTimeDisplay = 450,
+            _minWidthForTimeDisplay = 640,
             // Function that delays the call of _setContainerDimensions so that the page has finished repainting.
             _delayResize = window.requestAnimationFrame ||
                 function(rafFunc) {
