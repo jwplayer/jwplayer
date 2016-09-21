@@ -137,12 +137,27 @@ define([
                 }
 
                 var status = utils.tryCatch(function() {
-                    if (jsPlugin && pluginsConfig[pluginURL]) {
+                    if (jsPlugin) {
+                        var pluginConfig = pluginsConfig[pluginURL];
+
+                        if (!pluginConfig) {
+                            // Find the plugin's config by name if the plugin was already loaded from a different url
+                            pluginConfig = _.find(pluginsConfig, function(config, url) {
+                                return url.indexOf(pluginName) > 0;
+                            });
+
+                            if (!pluginConfig) {
+                                return;
+                            }
+
+                            utils.log('"' + pluginName + '" plugin already loaded from: ' + pluginURL);
+                        }
+
                         var div = document.createElement('div');
                         div.id = api.id + '_' + pluginName;
                         div.className = 'jw-plugin jw-reset';
 
-                        var pluginOptions = _.extend({}, pluginsConfig[pluginURL]);
+                        var pluginOptions = _.extend({}, pluginConfig);
                         var pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
                         pluginInstance.addToPlayer   = _addToPlayerGenerator(api, pluginInstance, div);
