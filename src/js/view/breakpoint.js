@@ -1,0 +1,29 @@
+define([
+    'utils/helpers',
+    'utils/underscore',
+], function (utils) {
+    return function setBreakpoint(playerElement, playerWidth, playerHeight) {
+        var className = 'jw-breakpoint-';
+        var width = playerWidth;
+        var height = playerHeight;
+
+        if (width >= 1280) {
+            className += '6';
+        } else if (width >= 960) {
+            className += '5';
+        } else if (width >= 800) {
+            className += '4';
+        } else if (width >= 640) {
+            className += '3';
+        } else if (width >= 540) {
+            className += '2';
+        } else if (width >= 420) {
+            className += '1';
+        } else {
+            className = '';
+        }
+
+        utils.replaceClass(playerElement, /jw-breakpoint-\d+/, className);
+        utils.toggleClass(playerElement, 'jw-orientation-portrait', (height > width));
+    };
+});

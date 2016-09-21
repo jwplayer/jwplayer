@@ -1,0 +1,54 @@
+define([
+    'utils/helpers',
+    'view/breakpoint'
+], function (utils, breakpoint) {
+    /* jshint qunit: true */
+    QUnit.module('browser');
+    var test = QUnit.test.bind(QUnit);
+
+    function breakpointClassname(width, height) {
+        var mockPlayer = utils.createElement();
+        breakpoint(mockPlayer, width, height);
+        return mockPlayer.className;
+    }
+
+    test('width >= 1280 sets jw-breakpoint-6', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(1280), 'jw-breakpoint-6');
+    });
+
+    test('width >= 960 sets jw-breakpoint-5', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(960), 'jw-breakpoint-5');
+    });
+
+    test('width >= 800 sets jw-breakpoint-4', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(800), 'jw-breakpoint-4');
+    });
+
+    test('width >= 640 sets jw-breakpoint-3', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(640), 'jw-breakpoint-3');
+    });
+
+    test('width >= 540 sets jw-breakpoint-2', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(540), 'jw-breakpoint-2');
+    });
+
+    test('width >= 420 sets jw-breakpoint-1', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(420), 'jw-breakpoint-1');
+    });
+
+    test('width < 420 sets no breakpoint', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(419), '');
+    });
+
+    test('if height > width jw-orientation-portrait is set', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(419, 420), 'jw-orientation-portrait');
+    })
+});
