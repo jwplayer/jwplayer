@@ -147,6 +147,7 @@ define([
             // Listen for duration changes to determine the offset
             // for when next up should be shown
             this._model.on('change:duration', this.onDuration, this);
+            this._model.on('change:position', this.onElapsed, this);
             this.setNextUpItem(nextUp);
         },
         onDuration: function(model, duration) {
@@ -157,6 +158,7 @@ define([
             var streamType = this._model.get('streamType');
             if (streamType === 'LIVE' || streamType === 'DVR') {
                 model.off('change:duration', this.onDuration, this);
+                model.off('change:position', this.onElapsed, this);
                 return;
             }
 
