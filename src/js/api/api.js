@@ -179,6 +179,7 @@ define([
         this.load = function (toLoad) {
             var plugin = this.getPlugin('vast') || this.getPlugin('googima');
             if (plugin) {
+                _controller._model.set('preInstreamState', 'instream-idle');
                 plugin.destroy();
             }
             _controller.load(toLoad);
