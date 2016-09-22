@@ -42,13 +42,13 @@ define([
         assert.equal(breakpointClassname(420), 'jw-breakpoint-1');
     });
 
-    test('width < 420 sets no breakpoint', function (assert) {
+    test('width < 420 sets jw-breakpoint-0', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(419), '');
+        assert.equal(breakpointClassname(419), 'jw-breakpoint-0');
     });
 
     test('if height > width jw-orientation-portrait is set', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(419, 420), 'jw-orientation-portrait');
+        assert.equal(breakpointClassname(419, 420), 'jw-breakpoint-0 jw-orientation-portrait');
     })
 });

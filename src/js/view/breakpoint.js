@@ -20,7 +20,7 @@ define([
         } else if (width >= 420) {
             className += '1';
         } else {
-            className = '';
+            className += '0';
         }
 
         utils.replaceClass(playerElement, /jw-breakpoint-\d+/, className);
