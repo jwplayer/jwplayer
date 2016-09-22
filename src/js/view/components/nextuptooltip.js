@@ -144,9 +144,9 @@ define([
             }
 
             this._nextButton.toggle(true);
-            // Listen for duration changes to determine the offset
-            // for when next up should be shown
+            // Listen for duration changes to determine the offset from the end for when next up should be shown
             this._model.on('change:duration', this.onDuration, this);
+            // Listen for position changes so we can show the tooltip when the offset has been crossed
             this._model.on('change:position', this.onElapsed, this);
             this.setNextUpItem(nextUp);
         },
