@@ -141,16 +141,8 @@ define([
                         var pluginConfig = pluginsConfig[pluginURL];
 
                         if (!pluginConfig) {
-                            // Find the plugin's config by name if the plugin was already loaded from a different url
-                            pluginConfig = _.find(pluginsConfig, function(config, url) {
-                                return url.indexOf(pluginName) > 0;
-                            });
-
-                            if (!pluginConfig) {
-                                return;
-                            }
-
-                            utils.log('"' + pluginName + '" plugin already loaded from: ' + pluginURL);
+                            utils.log('JW Plugin already loaded', pluginName, pluginURL);
+                            return;
                         }
 
                         var div = document.createElement('div');
