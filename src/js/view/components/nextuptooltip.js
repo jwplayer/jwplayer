@@ -25,6 +25,7 @@ define([
 
             // Next Up is always shown for playlist items
             this.showNextUp = true;
+            this.streamType = undefined;
 
             this.reset();
             
@@ -32,6 +33,12 @@ define([
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:streamType', this.onStreamType, this);
             this._model.on('change:nextUp', this.onNextUp, this);
+
+            // Listen for duration changes to determine the offset from the end for when next up should be shown
+            this._model.on('change:duration', this.onDuration, this);
+            // Listen for position changes so we can show the tooltip when the offset has been crossed
+            this._model.on('change:position', this.onElapsed, this);
+            // Listeners are also detached when
 
             this.closeButtonUI = new UI(this.closeButton, {'directSelect': true})
                 .on('click tap', this.hide, this);
@@ -118,12 +125,12 @@ define([
         },
         onNextUp: function(model, nextUp) {
             if (!nextUp) {
-                this.showNextUp = false;
                 this._nextButton.toggle(false);
-                this._model.off('change:duration', this.onDuration, this);
-                this._model.off('change:position', this.onElapsed, this);
+                this.showNextUp = false;
                 return;
             }
+
+            this.showNextUp = true;
             this._nextButton.toggle(true);
             this.setNextUpItem(nextUp);
         },
@@ -137,10 +144,6 @@ define([
             if (offset < 0) {
                 // Determine offset from the end. Duration may change.
                 offset += duration;
-            } else {
-                // Offset is from the beginning of playback.
-                // No need to listen for further duration changes.
-                model.off('change:duration', this.onDuration, this);
             }
 
             this.offset = offset;
@@ -157,7 +160,8 @@ define([
             // Show nextup if:
             // - in playlist mode but not playing an ad
             // - autoplaying in related mode and autoplaytimer is set to 0
-            if (this.showNextUp && (val >= this.offset)) {
+            // - not a live stream ('Live' or 'DVR')
+            if (this.streamType === 'VOD' && this.showNextUp && (val >= this.offset)) {
                 this.showTilEnd();
             } else if (this.state === 'opened' || this.state === 'closed') {
                 this.state = 'tooltip';
@@ -165,16 +169,7 @@ define([
             }
         },
         onStreamType: function(model, streamType) {
-            // Always detach handlers to avoid attaching multiple times when cycling through VODs
-            // Non-live media (e.g. mp4) are reported as VODs too
-            model.off('change:duration', this.onDuration, this);
-            model.off('change:position', this.onElapsed, this);
-            if (streamType === 'VOD') {
-                // Listen for duration changes to determine the offset from the end for when next up should be shown
-                this._model.on('change:duration', this.onDuration, this);
-                // Listen for position changes so we can show the tooltip when the offset has been crossed
-                this._model.on('change:position', this.onElapsed, this);
-            }
+            this.streamType = streamType;
         },
         element: function() {
             return this.container;
@@ -193,9 +188,9 @@ define([
             }
         },
         reset: function() {
-            this._model.off('change:duration', this.onDuration, this);
             this._model.off('change:mediaModel', this.onMediaModel, this);
-            this._model.off('change:position', this.onElapsed, this);
+            this._model.off('change:streamType', this.onStreamType, this);
+            this._model.off('change:nextUp', this.onNextUp, this);
 
             if (this.nextButtonUI) {
                 this.nextButtonUI.off();
