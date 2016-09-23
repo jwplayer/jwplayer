@@ -31,7 +31,7 @@ define([
             
             // Events
             this._model.on('change:mediaModel', this.onMediaModel, this);
-            this._model.on('change:position', this.onElapsed, this);
+            this._model.on('change:streamType', this.onStreamType, this);
             this._model.on('change:nextUp', this.onNextUp, this);
 
             this.closeButtonUI = new UI(this.closeButton, {'directSelect': true})
@@ -142,12 +142,7 @@ define([
                 this._nextButton.toggle(false);
                 return;
             }
-
             this._nextButton.toggle(true);
-            // Listen for duration changes to determine the offset from the end for when next up should be shown
-            this._model.on('change:duration', this.onDuration, this);
-            // Listen for position changes so we can show the tooltip when the offset has been crossed
-            this._model.on('change:position', this.onElapsed, this);
             this.setNextUpItem(nextUp);
         },
         onDuration: function(model, duration) {
@@ -155,17 +150,9 @@ define([
                 return;
             }
 
-            var streamType = this._model.get('streamType');
-            if (streamType === 'LIVE' || streamType === 'DVR') {
-                model.off('change:duration', this.onDuration, this);
-                model.off('change:position', this.onElapsed, this);
-                return;
-            }
-
             // Use nextupoffset if set or default to 10 seconds from the end of playback
             var offset = model.get('nextupoffset') || -10;
             offset = utils.seconds(offset);
-
             if (offset < 0) {
                 // Determine offset from the end. Duration may change.
                 offset += duration;
@@ -194,6 +181,17 @@ define([
             } else if (this.state === 'opened' || this.state === 'closed') {
                 this.state = 'tooltip';
                 this.hide();
+            }
+        },
+        onStreamType: function(model, streamType) {
+            if (streamType === 'LIVE' || streamType === 'DVR') {
+                model.off('change:duration', this.onDuration, this);
+                model.off('change:position', this.onElapsed, this);
+            } else {
+                // Listen for duration changes to determine the offset from the end for when next up should be shown
+                this._model.on('change:duration', this.onDuration, this);
+                // Listen for position changes so we can show the tooltip when the offset has been crossed
+                this._model.on('change:position', this.onElapsed, this);
             }
         },
         element: function() {
