@@ -375,7 +375,6 @@ define([
                     }, this);
 
                     _swf.on(events.JWPLAYER_ERROR, function(event) {
-                        utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
 

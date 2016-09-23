@@ -402,8 +402,6 @@ define([
             if (!_attached) {
                 return;
             }
-
-            utils.log('Error playing media: %o %s', _videotag.error, _videotag.src);
             _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
