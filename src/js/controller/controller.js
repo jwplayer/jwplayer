@@ -234,7 +234,6 @@ define([
                     .then(function() {
                         if (!_this.getProvider()) {
                             _model.setProvider(_model.get('playlistItem'));
-
                             _executeQueuedEvents();
                         }
                     });
@@ -264,10 +263,11 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                        var success = _setPlaylist(item);
-                        if (success) {
+                        _setPlaylist(item).then(function() {
                             _setItem(0);
-                        }
+                        }).catch(function(error) {
+                            _this.triggerError(error);
+                        });
                         break;
                     case 'number':
                         _setItem(item);
@@ -445,15 +445,12 @@ define([
                 _model.set('playlist', playlist);
 
                 if (!_.isArray(playlist) || playlist.length === 0) {
-                    _this.triggerError({
+                    throw {
                         message: 'Error loading playlist: No playable sources found'
-                    });
-                    return false;
+                    };
                 }
 
-                _loadProvidersForPlaylist(playlist);
-
-                return true;
+                return _loadProvidersForPlaylist(playlist);
             }
 
             function _setItem(index) {

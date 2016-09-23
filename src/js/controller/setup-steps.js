@@ -81,7 +81,9 @@ define([
 
     function _loadPromisePolyfill(resolve) {
         if (!window.Promise) {
+            var timeout = setTimeout(_polyfillCouldNotLoad(resolve, 'Promise JS'), 8000);
             require.ensure(['polyfills/promise'], function (require) {
+                clearTimeout(timeout);
                 require('polyfills/promise');
                 resolve();
             }, 'polyfills.promise');
@@ -92,7 +94,9 @@ define([
 
     function _loadBase64Polyfill(resolve) {
         if (!window.btoa || !window.atob) {
+            var timeout = setTimeout(_polyfillCouldNotLoad(resolve, 'base64'), 8000);
             require.ensure(['polyfills/base64'], function(require) {
+                clearTimeout(timeout);
                 require('polyfills/base64');
                 resolve();
             }, 'polyfills.base64');
@@ -103,6 +107,12 @@ define([
 
     function _loadedPolyfills(resolve){
         resolve();
+    }
+
+    function _polyfillCouldNotLoad(resolve, name) {
+        return function() {
+            error(resolve, 'Could not load polyfill', name);
+        };
     }
 
     function _loadPlugins(resolve, _model) {
@@ -143,13 +153,10 @@ define([
         var playlist = _model.get('playlist');
 
         // Performs filtering
-        var success = _setPlaylist(playlist);
+        _setPlaylist(playlist).then(resolve).catch(function(err) {
+            error(resolve, 'Error', err && err.message);
+        });
 
-        if (success) {
-            resolve();
-        } else {
-            _playlistError(resolve);
-        }
     }
 
     function _playlistError(resolve, evt) {
