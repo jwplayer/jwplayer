@@ -21,15 +21,20 @@
 
     @cc-inactive: @rail-color;
     @cc-active: @active-color;
-    
+
     @rail-height: .2em;
     @thumb-size: 1em;
     @cue-height: .4em;
     @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
-    
+
     @five-border-radius: 0;
 
     @controlbar-height: 2em;
+
+    @nextup-header-background: fade(#eee, 90%);
+    @nextup-body-background: darken(@nextup-header-background, 10%);
+    @nextup-title-overflow-background: darken(#eee, 10%);
+    @nextup-bottom-position: calc(@controlbar-height + 0.5em);
 
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
@@ -50,7 +55,7 @@
             color: #fff;
         }
     }
-    
+
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
@@ -60,7 +65,7 @@
     /* Slider styles */
     .jw-slider-horizontal {
         background: transparent;
-        
+
         .jw-slider-container {
             height: .9em;
         }
@@ -120,10 +125,40 @@
             .horizontally-centered-rail-element(@rail-height, 0.6em);
         }
     }
-    
+
     /* Five border-radius for the dock, in the upper right corner */
     .jw-dock-button {
         border-radius: @five-border-radius;
     }
-}
 
+    /* Next up display */
+    .jw-nextup-container {
+      bottom: @nextup-bottom-position;
+    }
+    .jw-nextup-header {
+      background: @nextup-header-background;
+      color: @active-color;
+    }
+    .jw-nextup-body {
+      background: @nextup-body-background;
+    }
+    .jw-nextup-thumbnail-visible + .jw-nextup-title::after {
+      background: linear-gradient(
+        -180deg,
+        fade(@nextup-title-overflow-background, 0%) 0%,
+        @nextup-title-overflow-background 100%
+      );
+    }
+    .jw-nextup-title {
+      color: #333;
+    }
+    .jw-nextup-close {
+      color: @inactive-color;
+    }
+    .jw-nextup-close:active {
+      color: @active-color;
+    }
+    .jw-nextup-close:hover {
+      color: @hover-color;
+    }
+}

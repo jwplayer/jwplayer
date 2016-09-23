@@ -1,8 +1,18 @@
 @import "../imports/mixins";
 
 .jw-skin-seven {
+
   @accent-color: #FFF;
   @inactive-color: #cecece;
+
+  @controlbar-background: rgba(33, 33, 33, 0.8);
+
+  @controlbar-height: 2.5em;
+
+  @nextup-header-background: rgba(33, 33, 33, 0.9);
+  @nextup-body-background: darken(@nextup-header-background, 20%);
+  @nextup-title-overflow-background: darken(rgb(33, 33, 33), 20%);
+  @nextup-bottom-position: calc(@controlbar-height + 0.5em);
 
   #namespace > .set-global-color-classes();
 
@@ -26,7 +36,7 @@
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.7em;
   }
-  
+
   &.jw-state-idle .jw-display-icon-container > .jw-icon {
     // improve alignment of play icon (should be done in font)
     padding-left: 4px;
@@ -53,5 +63,39 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Next up display */
+  .jw-nextup-container {
+    bottom: @nextup-bottom-position;
+  }
+  .jw-nextup-header {
+    background-color: @nextup-header-background;
+    color: @accent-color;
+  }
+  .jw-nextup {
+    border-radius: .3em;
+  }
+  .jw-nextup-body {
+    background: @nextup-body-background;
+  }
+  .jw-nextup-thumbnail-visible + .jw-nextup-title::after {
+    background: linear-gradient(
+      -180deg,
+      fade(@nextup-title-overflow-background, 0%) 0%,
+      @nextup-title-overflow-background 100%
+    );
+  }
+  .jw-nextup-title {
+    color: white;
+  }
+  .jw-nextup-close {
+    color: @inactive-color;
+  }
+  .jw-nextup-close:active {
+    color: @accent-color;
+  }
+  .jw-nextup-close:hover {
+    color: @accent-color;
   }
 }
