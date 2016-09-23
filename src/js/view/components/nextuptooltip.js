@@ -9,7 +9,6 @@ define([
         this._model = _model;
         this._api = _api;
         this._nextButton = nextButton;
-
         this.nextUpText = _model.get('localization').nextUp;
         this.state = 'tooltip';
     };
@@ -50,15 +49,15 @@ define([
                 .on('out', this.hoverOut, this);
         },
         loadThumbnail : function(url) {
-            var style = {};
             this.nextUpImage = new Image();
             this.nextUpImage.onload = (function() {
                 this.nextUpImage.onload = null;
             }).bind(this);
             this.nextUpImage.src = url;
 
-            style.backgroundImage = 'url("' + url + '")';
-            return style;
+            return {
+                backgroundImage: 'url("' + url + '")'
+            };
         },
         click: function() {
             this.state = 'tooltip';
@@ -69,7 +68,6 @@ define([
             if(this.state === 'opened') {
                 return;
             }
-
             dom.addClass(this.container, 'jw-nextup-container-visible');
         },
         hide: function() {
@@ -85,7 +83,6 @@ define([
                 // Moving the pointer away from the next button should not show/hide NextUp if it is 'opened'
                 return;
             }
-
             this.hide();
         },
         showTilEnd: function() {
@@ -98,31 +95,15 @@ define([
             this.state = 'opened';
         },
         setNextUpItem: function(nextUpItem) {
-            this._model.off('change:position', this.onElapsed, this);
-
-            if (!nextUpItem) {
-                this.showNextUp = false;
-                this._nextButton.toggle(false);
-                this._model.off('change:duration', this.onDuration, this);
-                return;
-            }
-
-            this.nextUpItem = nextUpItem;
-
-            this._model.on('change:position', this.onElapsed, this);
-
             var _this = this;
-
             // Give the previous item time to complete its animation
             setTimeout(function () {
-                // Setup thumbnail
+                // Set thumbnail
                 _this.thumbnail = _this.content.querySelector('.jw-nextup-thumbnail');
                 dom.toggleClass(_this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
-
                 if (nextUpItem.image) {
                     var thumbnailStyle = _this.loadThumbnail(nextUpItem.image);
                     utils.style(_this.thumbnail, thumbnailStyle);
-
                 }
 
                 // Set header
@@ -134,12 +115,13 @@ define([
                 var title = nextUpItem.title;
                 _this.title.innerText = title ? utils.createElement(title).textContent : '';
             }, 500);
-
         },
         onNextUp: function(model, nextUp) {
-            this._model.off('change:duration', this.onDuration, this);
-            if(!nextUp) {
+            if (!nextUp) {
+                this.showNextUp = false;
                 this._nextButton.toggle(false);
+                this._model.off('change:duration', this.onDuration, this);
+                this._model.off('change:position', this.onElapsed, this);
                 return;
             }
             this._nextButton.toggle(true);
@@ -151,8 +133,7 @@ define([
             }
 
             // Use nextupoffset if set or default to 10 seconds from the end of playback
-            var offset = model.get('nextupoffset') || -10;
-            offset = utils.seconds(offset);
+            var offset = utils.seconds(model.get('nextupoffset') || -10);
             if (offset < 0) {
                 // Determine offset from the end. Duration may change.
                 offset += duration;
@@ -184,10 +165,11 @@ define([
             }
         },
         onStreamType: function(model, streamType) {
-            if (streamType === 'LIVE' || streamType === 'DVR') {
-                model.off('change:duration', this.onDuration, this);
-                model.off('change:position', this.onElapsed, this);
-            } else {
+            // Always detach handlers to avoid attaching multiple times when cycling through VODs
+            // Non-live media (e.g. mp4) are reported as VODs too
+            model.off('change:duration', this.onDuration, this);
+            model.off('change:position', this.onElapsed, this);
+            if (streamType === 'VOD') {
                 // Listen for duration changes to determine the offset from the end for when next up should be shown
                 this._model.on('change:duration', this.onDuration, this);
                 // Listen for position changes so we can show the tooltip when the offset has been crossed
@@ -201,7 +183,6 @@ define([
             if (this.content) {
                 this.removeContent();
             }
-
             this.content = elem;
             this.container.appendChild(elem);
         },
