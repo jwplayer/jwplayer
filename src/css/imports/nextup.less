@@ -5,12 +5,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
   background-color: transparent;
+  bottom: @nextup-position-bottom;
   cursor: pointer;
   max-width: 300px;
   min-width: 200px;
   opacity: 0;
   position: absolute;
-  right: 0.5em;
+  right: @nextup-position-right;
   transform: translateY(5px);
   transition: all 150ms ease;
   visibility: hidden;
@@ -24,12 +25,15 @@
 }
 
 .jw-nextup {
+  border-radius: @nextup-border-radius;
   overflow: hidden;
   position: relative;
 }
 
 .jw-nextup-header {
+  background: @nextup-header-background;
   box-sizing: border-box;
+  color: @nextup-header-text-color;
   font-size: 12px;
   font-weight: bold;
   line-height: normal;
@@ -37,7 +41,8 @@
 }
 
 .jw-nextup-body {
-  color: white;
+  background: @nextup-body-background;
+  color: @nextup-body-text-color;
   overflow: hidden;
 }
 
@@ -75,6 +80,11 @@
 }
 
 .jw-nextup-thumbnail-visible + .jw-nextup-title::after {
+  background: linear-gradient(
+    -180deg,
+    fade(@nextup-body-text-color-overflow, 0%) 0%,
+    @nextup-body-text-color-overflow 100%
+  );
   bottom: 0;
   content: '';
   height: 30px;
@@ -87,6 +97,7 @@
   .jw-icon-display;
   .jw-icon-close;
   border: none;
+  color: @nextup-close-button-color-inactive;
   font-size: 13px;
   opacity: 0;
   position: absolute;
@@ -94,6 +105,14 @@
   top: 6px;
   transition: color 150ms ease, opacity 150ms ease, visibility 150ms ease;
   visibility: hidden;
+}
+
+.jw-nextup-close:active {
+  color: @nextup-close-button-color-active;
+}
+
+.jw-nextup-close:hover {
+  color: @nextup-close-button-color-hover;
 }
 
 .jw-nextup-sticky .jw-nextup-close {
