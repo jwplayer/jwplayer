@@ -78,7 +78,7 @@
         .jw-text {
             color: @inactive-color;
         }
-        
+
         /* Text color in thumbnail that appears upon hovering on the timeline slider */
         .jw-tooltip-title {
             color: @inactive-color;
@@ -107,7 +107,7 @@
                 outline: none;
             }
         }
-        
+
         /* Color for list item text in menu lists */
         .jw-option {
             color: @inactive-color;
@@ -115,7 +115,7 @@
                 color: @hover-color;
             }
         }
-        
+
         /* Colors for center play and buffering icons */
         .jw-icon-display {
             color: @display-icon-color;
@@ -173,7 +173,7 @@
                 width: @def-rail-width;
             }
         }
-        
+
         /* Styles for menu elements, volume, slider thumbnail */
         .jw-time-tip,
         .jw-volume-tip,
@@ -213,6 +213,47 @@
                 background: @display-bkgd-hover-color;
             }
         }
+
+        /* Next up display */
+        .jw-nextup-container {
+          bottom: @nextup-position-bottom;
+          right: @nextup-position-right;
+        }
+
+        .jw-nextup {
+          border-radius: @nextup-border-radius;
+        }
+
+        .jw-nextup-header {
+          background: @nextup-header-background;
+          color: @nextup-header-text-color;
+        }
+
+        .jw-nextup-body {
+          background: @nextup-body-background;
+          color: @nextup-body-text-color;
+        }
+
+        .jw-nextup-thumbnail-visible + .jw-nextup-title::after {
+          background: linear-gradient(
+            -180deg,
+            fade(@nextup-body-text-color-overflow, 0%) 0%,
+            @nextup-body-text-color-overflow 100%
+          );
+        }
+
+        .jw-nextup-close {
+          color: @nextup-close-button-color-inactive;
+        }
+
+        .jw-nextup-close:active {
+          color: @nextup-close-button-color-active;
+        }
+
+        .jw-nextup-close:hover {
+          color: @nextup-close-button-color-hover;
+        }
+
     }
 
     .controlbar-height() {

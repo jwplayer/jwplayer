@@ -31,25 +31,32 @@
 
     @controlbar-height: 2em;
 
+    @nextup-position-bottom: calc(@controlbar-height + 0.7em + .5em);
+    @nextup-position-right: 2%;
+    @nextup-border-radius: @roundster-corners / 2;
+    @nextup-header-background: fade(@controlbar-background, 80%);
+    @nextup-body-background: darken(@nextup-header-background, 20%);
+    @nextup-body-text-color-overflow: darken(@controlbar-background, 20%);
+
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
-    
+
     /* Controlbar styles */
     .inset-controlbar();
     .jw-controlbar {
         border-radius: @roundster-corners;
         padding: 0 @roundster-corners;
     }
-    
+
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #747D92;
         background-color: @rail-color;
     }
-    
+
     /* Rail/slider styles */
     .jw-rail,
     .jw-progress,
@@ -105,20 +112,20 @@
         }
 
     }
-    
+
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
         border-radius: 0.25em;
     }
-    
+
     /* Position of remaining overlay containers */
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
     }
-    
+
     /* For the dock, in the upper right corner */
     .jw-dock {
         .jw-dock-button {

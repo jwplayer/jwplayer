@@ -1,8 +1,13 @@
 @import "../imports/mixins";
 
 .jw-skin-seven {
+
   @accent-color: #FFF;
   @inactive-color: #cecece;
+
+  @controlbar-background: rgba(33, 33, 33, 0.8);
+
+  @controlbar-height: 2.5em;
 
   #namespace > .set-global-color-classes();
 
@@ -26,7 +31,7 @@
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.7em;
   }
-  
+
   &.jw-state-idle .jw-display-icon-container > .jw-icon {
     // improve alignment of play icon (should be done in font)
     padding-left: 4px;
@@ -54,4 +59,5 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
 }
