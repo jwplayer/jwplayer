@@ -27,8 +27,6 @@ define([
             this.showNextUp = true;
             this.streamType = undefined;
 
-            this.reset();
-            
             // Events
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:streamType', this.onStreamType, this);
@@ -38,19 +36,19 @@ define([
             this._model.on('change:duration', this.onDuration, this);
             // Listen for position changes so we can show the tooltip when the offset has been crossed
             this._model.on('change:position', this.onElapsed, this);
-            // Listeners are also detached when
-
-            this.closeButtonUI = new UI(this.closeButton, {'directSelect': true})
-                .on('click tap', this.hide, this);
-            this.tooltipUI = new UI(this.tooltip)
-                .on('click tap', this.click, this);
 
             this.onMediaModel(this._model, this._model.get('mediaModel'));
 
+            // Close button
+            new UI(this.closeButton, {'directSelect': true})
+                .on('click tap', this.hide, this);
+            // Tooltip
+            new UI(this.tooltip)
+                .on('click tap', this.click, this);
             // Next button behavior:
             // - click = go to next playlist or related item
             // - hover = show NextUp tooltip without 'close' button
-            this.nextButtonUI = new UI(this._nextButton.element(), {'useHover': true, 'directSelect': true})
+            new UI(this._nextButton.element(), {'useHover': true, 'directSelect': true})
                 .on('click tap', this.click, this)
                 .on('over', this.show, this)
                 .on('out', this.hoverOut, this);
@@ -185,23 +183,6 @@ define([
             if (this.content) {
                 this.container.removeChild(this.content);
                 this.content = null;
-            }
-        },
-        reset: function() {
-            this._model.off('change:mediaModel', this.onMediaModel, this);
-            this._model.off('change:streamType', this.onStreamType, this);
-            this._model.off('change:nextUp', this.onNextUp, this);
-
-            if (this.nextButtonUI) {
-                this.nextButtonUI.off();
-            }
-
-            if (this.closeButtonUI) {
-                this.closeButtonUI.off();
-            }
-
-            if (this.tooltipUI) {
-                this.tooltipUI.off();
             }
         }
     });
