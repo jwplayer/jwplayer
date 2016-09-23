@@ -25,10 +25,10 @@
 
     @controlbar-height: 2em;
 
-		@nextup-header-background: fade(mix(white, black, 50%), 90%);
+    @nextup-border-radius: @ui-padding / 2;
+    @nextup-header-background: fade(mix(white, black, 50%), 90%);
     @nextup-body-background: darken(@nextup-header-background, 20%);
-    @nextup-title-overflow-background: darken(mix(white, black, 50%), 20%);
-    @nextup-bottom-position: calc(@controlbar-height + 0.5em);
+    @nextup-body-text-color-overflow: darken(mix(white, black, 50%), 20%);
 
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
@@ -140,37 +140,4 @@
       line-height: @controlbar-height;
   }
 
-	/* Next up display */
-	.jw-nextup-container {
-		bottom: @nextup-bottom-position;
-	}
-	.jw-nextup-header {
-		background-color: @nextup-header-background;
-		color: @active-color;
-	}
-	.jw-nextup {
-		border-radius: @ui-padding / 2;
-	}
-	.jw-nextup-body {
-		background: @nextup-body-background;
-	}
-	.jw-nextup-thumbnail-visible + .jw-nextup-title::after {
-		background: linear-gradient(
-			-180deg,
-			fade(@nextup-title-overflow-background, 0%) 0%,
-			@nextup-title-overflow-background 100%
-		);
-	}
-	.jw-nextup-title {
-		color: white;
-	}
-	.jw-nextup-close {
-		color: @inactive-color;
-	}
-	.jw-nextup-close:active {
-		color: @active-color;
-	}
-	.jw-nextup-close:hover {
-		color: @hover-color;
-	}
 }
