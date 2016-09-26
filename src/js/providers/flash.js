@@ -358,13 +358,15 @@ define([
 
                     _swf.on('visualQuality', function(e) {
                         // Get index from sorted levels from the level's index + 1 to take Auto into account
-                        var sortedIndex = (_qualityLevels.length) === 1 ? 0 :
-                            _getSortedIndex(_qualityLevels, e.level.index + 1) - 1;
+                        var sortedIndex = 0;
+                        if (_qualityLevels.length > 1) {
+                            sortedIndex = _getSortedIndex(_qualityLevels, e.level.index + 1);
+                        }
                         // Use extend so that the actual level's index is not modified
                         e.level = _.extend(e.level, {index: sortedIndex});
                         e.reason = e.reason || 'api'; // or 'user selected';
                         this.trigger('visualQuality', e);
-                        this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+                        this.trigger('providerFirstFrame', {});
                     }, this);
 
                     _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
@@ -373,7 +375,6 @@ define([
                     }, this);
 
                     _swf.on(events.JWPLAYER_ERROR, function(event) {
-                        utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
 
@@ -447,7 +448,7 @@ define([
                     return { name : 'flash' };
                 },
                 getQualityLevels: function() {
-                    return _qualityLevels || _item.sources;
+                    return _qualityLevels || (_item && _item.sources);
                 },
                 getAudioTracks: function() {
                     return _audioTracks;

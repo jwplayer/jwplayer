@@ -9,7 +9,6 @@ define([
         this._model = _model;
         this._api = _api;
         this._nextButton = nextButton;
-
         this.nextUpText = _model.get('localization').nextUp;
         this.state = 'tooltip';
     };
@@ -24,41 +23,46 @@ define([
             this.closeButton = this.content.querySelector('.jw-nextup-close');
             this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
 
-            // Next Up is always shown for playlist items
-            this.showNextUp = true;
+            // Next Up is hidden until we get a valid NextUp item from the nextUp event
+            this.showNextUp = false;
+            this.streamType = undefined;
 
-            this.reset();
-            
             // Events
             this._model.on('change:mediaModel', this.onMediaModel, this);
-            this._model.on('change:position', this.onElapsed, this);
+            this._model.on('change:streamType', this.onStreamType, this);
             this._model.on('change:nextUp', this.onNextUp, this);
 
-            this.closeButtonUI = new UI(this.closeButton, {'directSelect': true})
-                .on('click tap', this.hide, this);
-            this.tooltipUI = new UI(this.tooltip)
-                .on('click tap', this.click, this);
+            // Listen for duration changes to determine the offset from the end for when next up should be shown
+            this._model.on('change:duration', this.onDuration, this);
+            // Listen for position changes so we can show the tooltip when the offset has been crossed
+            this._model.on('change:position', this.onElapsed, this);
 
             this.onMediaModel(this._model, this._model.get('mediaModel'));
 
+            // Close button
+            new UI(this.closeButton, {'directSelect': true})
+                .on('click tap', this.hide, this);
+            // Tooltip
+            new UI(this.tooltip)
+                .on('click tap', this.click, this);
             // Next button behavior:
             // - click = go to next playlist or related item
             // - hover = show NextUp tooltip without 'close' button
-            this.nextButtonUI = new UI(this._nextButton.element(), {'useHover': true, 'directSelect': true})
+            new UI(this._nextButton.element(), {'useHover': true, 'directSelect': true})
                 .on('click tap', this.click, this)
                 .on('over', this.show, this)
                 .on('out', this.hoverOut, this);
         },
         loadThumbnail : function(url) {
-            var style = {};
             this.nextUpImage = new Image();
             this.nextUpImage.onload = (function() {
                 this.nextUpImage.onload = null;
             }).bind(this);
             this.nextUpImage.src = url;
 
-            style.backgroundImage = 'url("' + url + '")';
-            return style;
+            return {
+                backgroundImage: 'url("' + url + '")'
+            };
         },
         click: function() {
             this.state = 'tooltip';
@@ -66,10 +70,9 @@ define([
             this.hide();
         },
         show: function() {
-            if(this.state === 'opened') {
+            if(this.state === 'opened' || this.hideToolTip) {
                 return;
             }
-
             dom.addClass(this.container, 'jw-nextup-container-visible');
         },
         hide: function() {
@@ -85,7 +88,6 @@ define([
                 // Moving the pointer away from the next button should not show/hide NextUp if it is 'opened'
                 return;
             }
-
             this.hide();
         },
         showTilEnd: function() {
@@ -98,31 +100,22 @@ define([
             this.state = 'opened';
         },
         setNextUpItem: function(nextUpItem) {
-            this._model.off('change:position', this.onElapsed, this);
-
-            if (!nextUpItem) {
-                this.showNextUp = false;
-                this._nextButton.toggle(false);
-                this._model.off('change:duration', this.onDuration, this);
-                return;
-            }
-
-            this.nextUpItem = nextUpItem;
-
-            this._model.on('change:position', this.onElapsed, this);
-
             var _this = this;
-
             // Give the previous item time to complete its animation
             setTimeout(function () {
-                // Setup thumbnail
+                // hide the tooltip if we don't have a title or a thumbnail image
+                _this.hideToolTip = !(nextUpItem.title || nextUpItem.image);
+
+                if(_this.hideToolTip) {
+                    return;
+                }
+                
+                // Set thumbnail
                 _this.thumbnail = _this.content.querySelector('.jw-nextup-thumbnail');
                 dom.toggleClass(_this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
-
                 if (nextUpItem.image) {
                     var thumbnailStyle = _this.loadThumbnail(nextUpItem.image);
                     utils.style(_this.thumbnail, thumbnailStyle);
-
                 }
 
                 // Set header
@@ -134,19 +127,16 @@ define([
                 var title = nextUpItem.title;
                 _this.title.innerText = title ? utils.createElement(title).textContent : '';
             }, 500);
-
         },
         onNextUp: function(model, nextUp) {
-            this._model.off('change:duration', this.onDuration, this);
-            if(!nextUp) {
+            if (!nextUp) {
                 this._nextButton.toggle(false);
+                this.showNextUp = false;
                 return;
             }
 
+            this.showNextUp = true;
             this._nextButton.toggle(true);
-            // Listen for duration changes to determine the offset
-            // for when next up should be shown
-            this._model.on('change:duration', this.onDuration, this);
             this.setNextUpItem(nextUp);
         },
         onDuration: function(model, duration) {
@@ -154,23 +144,11 @@ define([
                 return;
             }
 
-            var streamType = this._model.get('streamType');
-            if (streamType === 'LIVE' || streamType === 'DVR') {
-                model.off('change:duration', this.onDuration, this);
-                return;
-            }
-
             // Use nextupoffset if set or default to 10 seconds from the end of playback
-            var offset = model.get('nextupoffset') || -10;
-            offset = utils.seconds(offset);
-
+            var offset = utils.seconds(model.get('nextupoffset') || -10);
             if (offset < 0) {
                 // Determine offset from the end. Duration may change.
                 offset += duration;
-            } else {
-                // Offset is from the beginning of playback.
-                // No need to listen for further duration changes.
-                model.off('change:duration', this.onDuration, this);
             }
 
             this.offset = offset;
@@ -187,12 +165,16 @@ define([
             // Show nextup if:
             // - in playlist mode but not playing an ad
             // - autoplaying in related mode and autoplaytimer is set to 0
-            if (this.showNextUp && (val >= this.offset)) {
+            // - not a live stream ('Live' or 'DVR')
+            if (this.streamType === 'VOD' && this.showNextUp && (val >= this.offset)) {
                 this.showTilEnd();
             } else if (this.state === 'opened' || this.state === 'closed') {
                 this.state = 'tooltip';
                 this.hide();
             }
+        },
+        onStreamType: function(model, streamType) {
+            this.streamType = streamType;
         },
         element: function() {
             return this.container;
@@ -201,7 +183,6 @@ define([
             if (this.content) {
                 this.removeContent();
             }
-
             this.content = elem;
             this.container.appendChild(elem);
         },
@@ -209,23 +190,6 @@ define([
             if (this.content) {
                 this.container.removeChild(this.content);
                 this.content = null;
-            }
-        },
-        reset: function() {
-            this._model.off('change:duration', this.onDuration, this);
-            this._model.off('change:mediaModel', this.onMediaModel, this);
-            this._model.off('change:position', this.onElapsed, this);
-
-            if (this.nextButtonUI) {
-                this.nextButtonUI.off();
-            }
-
-            if (this.closeButtonUI) {
-                this.closeButtonUI.off();
-            }
-
-            if (this.tooltipUI) {
-                this.tooltipUI.off();
             }
         }
     });
