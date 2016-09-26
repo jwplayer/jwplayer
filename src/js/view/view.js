@@ -117,7 +117,7 @@ define([
             var min = 0;
             var max = _model.get('duration');
             var position = _model.get('position');
-            if (utils.adaptiveType(max) === 'DVR') {
+            if (_model.get('streamType') === 'DVR') {
                 min = max;
                 max = Math.max(position, Constants.dvrSeekLimit);
             }
@@ -943,7 +943,11 @@ define([
         }
 
         function _setLiveMode(model, duration){
-            var live = utils.adaptiveType(duration) === 'LIVE';
+            var minDvrWindow = model.get('minDvrWindow');
+            var streamType = utils.streamType(duration, minDvrWindow);
+            var live = (streamType === 'LIVE');
+
+            model.set('streamType', streamType);
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
             _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
