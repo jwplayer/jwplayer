@@ -23,8 +23,8 @@ define([
             this.closeButton = this.content.querySelector('.jw-nextup-close');
             this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
 
-            // Next Up is always shown for playlist items
-            this.showNextUp = true;
+            // Next Up is hidden until we get a valid NextUp item from the nextUp event
+            this.showNextUp = false;
             this.streamType = undefined;
 
             // Events
@@ -70,7 +70,7 @@ define([
             this.hide();
         },
         show: function() {
-            if(this.state === 'opened') {
+            if(this.state === 'opened' || this.hideToolTip) {
                 return;
             }
             dom.addClass(this.container, 'jw-nextup-container-visible');
@@ -103,6 +103,13 @@ define([
             var _this = this;
             // Give the previous item time to complete its animation
             setTimeout(function () {
+                // hide the tooltip if we don't have a title or a thumbnail image
+                _this.hideToolTip = !(nextUpItem.title || nextUpItem.image);
+
+                if(_this.hideToolTip) {
+                    return;
+                }
+                
                 // Set thumbnail
                 _this.thumbnail = _this.content.querySelector('.jw-nextup-thumbnail');
                 dom.toggleClass(_this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
