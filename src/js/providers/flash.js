@@ -448,7 +448,7 @@ define([
                     return { name : 'flash' };
                 },
                 getQualityLevels: function() {
-                    return _qualityLevels || _item.sources;
+                    return _qualityLevels || (_item && _item.sources);
                 },
                 getAudioTracks: function() {
                     return _audioTracks;

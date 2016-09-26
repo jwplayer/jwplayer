@@ -74,9 +74,6 @@ define([
         };
 
         this.setState = function(state) {
-            if (!_attached) {
-                return;
-            }
             return DefaultProvider.setState.call(this, state);
         };
 
