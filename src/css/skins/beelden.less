@@ -35,15 +35,17 @@
 
     @controlbar-height: 2em;
 
-    @nextup-position-bottom: calc(@controlbar-height + 0.7em + .5em);
+    @nextup-position-bottom: @controlbar-height + 0.7em + 0.5em;
+    @nextup-position-bottom-touch: (@controlbar-height * 1.5em) + 0.7em + 0.8em;
     @nextup-position-right: 2%;
-    @nextup-border-radius: .3em;
+    @nextup-border-radius: 0.3em;
     @nextup-header-background: fade(@controlbar-background-color, 90%);
     @nextup-body-background: darken(fade(@controlbar-background-color, 90%), 20%);
     @nextup-body-text-color-overflow: darken(@controlbar-background-color, 20%);
 
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
