@@ -27,7 +27,8 @@ define([
 
             'registerPlugin',
 
-            'attachMedia'
+            'attachMedia',
+            'next'
         ];
 
 

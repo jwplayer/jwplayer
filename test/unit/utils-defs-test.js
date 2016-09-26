@@ -18,7 +18,7 @@ define([
         assert.equal(typeof utils.serialize, 'function', 'serialize function is defined');
         assert.equal(typeof utils.parseDimension, 'function', 'parseDimension function is defined');
         assert.equal(typeof utils.timeFormat, 'function', 'timeFormat function is defined');
-        assert.equal(typeof utils.adaptiveType, 'function', 'adaptiveType function is defined');
+        assert.equal(typeof utils.streamType, 'function', 'streamType function is defined');
 
         // inherit from validator
         assert.equal(typeof utils.exists, 'function', 'exists function is defined');

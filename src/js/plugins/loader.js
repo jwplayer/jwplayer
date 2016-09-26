@@ -137,12 +137,19 @@ define([
                 }
 
                 var status = utils.tryCatch(function() {
-                    if (jsPlugin && pluginsConfig[pluginURL]) {
+                    if (jsPlugin) {
+                        var pluginConfig = pluginsConfig[pluginURL];
+
+                        if (!pluginConfig) {
+                            utils.log('JW Plugin already loaded', pluginName, pluginURL);
+                            return;
+                        }
+
                         var div = document.createElement('div');
                         div.id = api.id + '_' + pluginName;
                         div.className = 'jw-plugin jw-reset';
 
-                        var pluginOptions = _.extend({}, pluginsConfig[pluginURL]);
+                        var pluginOptions = _.extend({}, pluginConfig);
                         var pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
                         pluginInstance.addToPlayer   = _addToPlayerGenerator(api, pluginInstance, div);

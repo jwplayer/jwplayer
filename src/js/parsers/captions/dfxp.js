@@ -29,6 +29,13 @@ define([
 
         for (var i = 0; i < paragraphs.length; i++) {
             var p = paragraphs[i];
+
+            var breaks = p.getElementsByTagName('br');
+            for (var j = 0; j < breaks.length; j++) {
+                var b = breaks[j];
+                b.parentNode.replaceChild(xmlDoc.createTextNode('\r\n'), b);
+            }
+
             var rawText = (p.innerHTML || p.textContent || p.text || '');
             var text = strings.trim(rawText).replace(/>\s+</g, '><').replace(/(<\/?)tts?:/g, '$1').replace(/<br.*?\/>/g, '\r\n');
             if (text) {

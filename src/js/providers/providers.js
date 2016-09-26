@@ -6,10 +6,8 @@ define([
     ], function(Default, ProvidersSupported, ProvidersLoaded, _) {
 
     function Providers(config) {
-        this.providers = ProvidersSupported.slice();
         this.config = config || {};
-
-        this.reorderProviders();
+        this.providers = this.reorderProviders(this.config.primary);
     }
 
     Providers.loaders = {
@@ -83,24 +81,28 @@ define([
             }));
         },
 
-        reorderProviders : function () {
-            // Remove the flash provider, and add it in front of the html5 provider
-            if (this.config.primary === 'flash') {
-                var flashIdx = _.indexOf(this.providers, _.findWhere(this.providers, {name: 'flash'}));
-                var flashProvider = this.providers.splice(flashIdx, 1)[0];
-                var html5Idx = _.indexOf(this.providers, _.findWhere(this.providers, {name: 'html5'}));
-                this.providers.splice(html5Idx, 0, flashProvider);
+        reorderProviders: function (primary) {
+            var providers = _.clone(ProvidersSupported);
+
+            if (primary === 'flash') {
+                var flashIdx = _.indexOf(providers, _.findWhere(providers, {name: 'flash'}));
+                var flashProvider = providers.splice(flashIdx, 1)[0];
+                var html5Idx = _.indexOf(providers, _.findWhere(providers, {name: 'html5'}));
+                providers.splice(html5Idx, 0, flashProvider);
             }
+            return providers;
         },
 
-        providerSupports : function(provider, source) {
+        providerSupports: function(provider, source) {
             return provider.supports(source);
         },
 
-        required: function(playlist) {
+        required: function(playlist, primary) {
             var _this = this;
+            var providers = this.reorderProviders(primary);
+
             playlist = playlist.slice();
-            return _.compact(_.map(this.providers, function(provider) {
+            return _.compact(_.map(providers, function(provider) {
                 // remove items from copied playlist that can be played by provider
                 // remaining providers will be checked against any remaining items
                 // provider will be loaded if there are matches
