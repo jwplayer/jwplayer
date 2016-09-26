@@ -12,7 +12,9 @@ define([
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
+        MIN_DVR_DURATION = 120,
         _isIE = utils.isIE(),
+        _isIE9 = utils.isIE(9),
         _isMSIE = utils.isMSIE(),
         _isMobile = utils.isMobile(),
         _isFirefox = utils.isFF(),
@@ -140,11 +142,12 @@ define([
             _beforecompleted = false,
             // webkit fullscreen media element state
             _fullscreenState = false,
+            // function to call when resuming after pause
+            _beforeResumeHandler = utils.noop,
             // MediaElement Tracks
             _audioTracks = null,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _itemTracks = null,
             _visualQuality = { level: {} };
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
@@ -154,26 +157,24 @@ define([
         _videotag.className = 'jw-video jw-reset';
 
         this.isSDK = _isSDK;
-        this.itemTracks = _itemTracks;
         this.video = _videotag;
+
+        function _setAttribute(name, value) {
+            _videotag.setAttribute(name, value || '');
+        }
 
         // prevent browser from showing second cast icon
         // https://w3c.github.io/remote-playback/
         if (_.isObject(_playerConfig.cast) && _playerConfig.cast.appid) {
-            _videotag.setAttribute('disableRemotePlayback', '');
+            _setAttribute('disableRemotePlayback', '');
         }
 
         _setupListeners(_mediaEvents, _videotag);
 
-        // Workaround for a Safari bug where video disappears on switch to fullscreen
-        if (!_isIOS7) {
-            _videotag.controls = true;
-            _videotag.controls = false;
-        }
-
         // Enable AirPlay
-        _videotag.setAttribute('x-webkit-airplay', 'allow');
-        _videotag.setAttribute('webkit-playsinline', '');
+        _setAttribute('x-webkit-airplay', 'allow');
+        _setAttribute('webkit-playsinline');
+        _setAttribute('playsinline');
 
         // Enable tracks support for HLS videos
         function _onLoadedData() {
@@ -182,14 +183,14 @@ define([
             }
             _setAudioTracks(_videotag.audioTracks);
             _this.setTextTracks(_videotag.textTracks);
-            _videotag.setAttribute('jw-loaded', 'data');
+            _setAttribute('jw-loaded', 'data');
         }
 
         function _onLoadStart() {
             if (!_attached) {
                 return;
             }
-            _videotag.setAttribute('jw-loaded', 'started');
+            _setAttribute('jw-loaded', 'started');
         }
 
         function _clickHandler(evt) {
@@ -250,7 +251,7 @@ define([
                 level.width = _videotag.videoWidth;
                 level.height = _videotag.videoHeight;
                 _setMediaType();
-                if (!level.width || !level.height) {
+                if (!level.width || !level.height || _currentQuality === -1) {
                     return;
                 }
                 _visualQuality.reason = _visualQuality.reason || 'auto';
@@ -264,7 +265,7 @@ define([
         }
 
         function _setBuffered(buffered, currentTime, duration) {
-            if (buffered !== _buffered || duration !== _duration) {
+            if (duration !== 0 && (buffered !== _buffered || duration !== _duration)) {
                 _buffered = buffered;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: buffered * 100,
@@ -285,8 +286,8 @@ define([
             var duration = _videotag.duration;
             var end = _getSeekableEnd();
             if (duration === Infinity && end) {
-                var seekableDuration = end - _videotag.seekable.start(0);
-                if (seekableDuration !== Infinity && seekableDuration > 120) {
+                var seekableDuration = end - _getSeekableStart();
+                if (seekableDuration !== Infinity && seekableDuration > MIN_DVR_DURATION) {
                     // Player interprets negative duration as DVR
                     duration = -seekableDuration;
                 }
@@ -323,6 +324,11 @@ define([
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
+            if (_isIE9) {
+                // In IE9, set tracks here since they are not ready
+                // on load
+                _this.setTextTracks(_this._textTracks);
+            }
             _sendBufferFull();
         }
 
@@ -336,7 +342,7 @@ define([
                 _videotag.muted = false;
                 _videotag.muted = true;
             }
-            _videotag.setAttribute('jw-loaded', 'meta');
+            _setAttribute('jw-loaded', 'meta');
             _sendMetaEvent();
         }
 
@@ -350,7 +356,7 @@ define([
         function _playingHandler() {
             _this.setState(states.PLAYING);
             if(!_videotag.hasAttribute('jw-played')) {
-                _videotag.setAttribute('jw-played','');
+                _setAttribute('jw-played','');
             }
             _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
@@ -446,6 +452,15 @@ define([
             return currentQuality;
         }
 
+        function _play() {
+            var promise = _videotag.play();
+            if (promise && promise.catch) {
+                promise.catch(function(err) {
+                    console.warn(err);
+                });
+            }
+        }
+
         function _completeLoad(startTime, duration) {
 
             _delayedSeek = 0;
@@ -462,7 +477,7 @@ define([
             if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
-                _this.setupSideloadedTracks(_itemTracks);
+                _this.setupSideloadedTracks(_this._itemTracks);
                 _videotag.load();
             } else {
                 // Load event is from the same video as before
@@ -472,7 +487,7 @@ define([
                     _this.seek(startTime);
                 }
 
-                _videotag.play();
+                _play();
             }
 
             _position = _videotag.currentTime;
@@ -508,14 +523,14 @@ define([
             _bufferFull = false;
             _isAndroidHLS = _useAndroidHLS(source);
             if (source.preload && source.preload !== _videotag.getAttribute('preload')) {
-                _videotag.setAttribute('preload', source.preload);
+                _setAttribute('preload', source.preload);
             }
 
             var sourceElement = document.createElement('source');
             sourceElement.src = source.file;
             var sourceChanged = (_videotag.src !== sourceElement.src);
             if (sourceChanged) {
-                _videotag.setAttribute('jw-loaded', 'none');
+                _setAttribute('jw-loaded', 'none');
                 _videotag.src = source.file;
             }
         }
@@ -531,8 +546,6 @@ define([
 
                 dom.emptyElement(_videotag);
                 _currentQuality = -1;
-                _itemTracks = null;
-                _this.clearTracks();
                 // Don't call load in iE9/10 and check for load in PhantomJS
                 if (!_isMSIE && 'load' in _videotag) {
                     _videotag.load();
@@ -566,9 +579,10 @@ define([
                 return;
             }
             _clearVideotagSource();
-            // IE may continue to play a video after changing source and loading a new media file.
-            // https://connect.microsoft.com/IE/feedbackdetail/view/2000141/htmlmediaelement-autoplays-after-src-is-changed-and-load-is-called
-            if(utils.isIETrident()) {
+            this.clearTracks();
+            // IE/Edge continue to play a video after changing video.src and calling video.load()
+            // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5383483/ (not fixed in Edge 14)
+            if (utils.isIE()) {
                 _videotag.pause();
             }
             this.setState(states.IDLE);
@@ -576,6 +590,7 @@ define([
 
 
         this.destroy = function() {
+            _beforeResumeHandler = utils.noop;
              _removeListeners(_mediaEvents, _videotag);
             this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
             this.removeTracksListener(_videotag.textTracks, 'change', _this.textTrackChangeHandler);
@@ -587,7 +602,6 @@ define([
             if (!_attached) {
                 return;
             }
-            _itemTracks = null;
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
             // the loadeddata event determines the mediaType for HLS sources
@@ -600,7 +614,6 @@ define([
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
             this.setupSideloadedTracks(item.tracks);
-            _itemTracks = this.itemTracks;
         };
 
         this.load = function(item) {
@@ -626,12 +639,27 @@ define([
                 _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
                 return;
             }
-            _videotag.play();
+            _beforeResumeHandler();
+            _play();
         };
 
         this.pause = function() {
             clearTimeout(_playbackTimeout);
             _videotag.pause();
+            _beforeResumeHandler = function() {
+                var unpausing = _videotag.paused && _videotag.currentTime;
+                if (unpausing && _videotag.duration === Infinity) {
+                    var end = _getSeekableEnd();
+                    var seekableDuration = end - _getSeekableStart();
+                    var isLiveNotDvr = seekableDuration < MIN_DVR_DURATION;
+                    var behindLiveEdge = end - _videotag.currentTime;
+                    if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
+                        // resume playback at edge of live stream
+                        _videotag.currentTime = Math.max(end - 10, end - seekableDuration);
+                    }
+
+                }
+            };
             this.setState(states.PAUSED);
         };
 
@@ -668,7 +696,7 @@ define([
                 // Firefox isn't firing canplay event when in a paused state
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=1194624
                 if (_isFirefox && _videotag.paused) {
-                    _videotag.play();
+                    _play();
                 }
             }
         };

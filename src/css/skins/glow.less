@@ -17,15 +17,17 @@
     @cue-size: .25em;
 
     @controlbar-height: 2em;
+
     #namespace > .controlbar-height();
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
+    .skin-element-padding();
 
     .jw-background-color {
         background: fade(#333, 80%);
     }
-    
-    #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
-    
+
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
@@ -37,38 +39,6 @@
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
-    }
-    
-    /* Playlist */
-    .jw-playlist-container {
-        left: -48%;
-        bottom: 0;
-        border-radius: 0;
-
-        .jw-option {
-            border-bottom: 1px solid #000;
-            color: @active-color;
-            
-
-            /* Menu items are active when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                background-color: @controlbar-background;
-                color: @active-color;
-            }
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #000;
-        }
-
-        ::-webkit-scrollbar {
-            border: 10px solid #3B3D41;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: @active-color;
-        }
     }
     
     /* Playlist title */

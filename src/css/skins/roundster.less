@@ -30,9 +30,11 @@
     @rail-height: 0.4em;
 
     @controlbar-height: 2em;
-    #namespace > .controlbar-height();
 
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
     .skin-element-padding();
     
     /* Controlbar styles */
@@ -40,49 +42,6 @@
     .jw-controlbar {
         border-radius: @roundster-corners;
         padding: 0 @roundster-corners;
-    }
-
-    /* Playlist */
-    .jw-playlist-container {
-        left: -52%;
-        background-color: @rail-color;
-        border-radius: .3em;
-        overflow: hidden;
-
-        .jw-option,
-        .jw-text,
-        .jw-icon {
-            color: #CBD0DA;
-        }
-
-        .jw-option {
-            border-bottom: 1px solid #747D92;
-            background-color: @rail-color;
-
-            /* Menu items are white when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                background-color: #747D92;
-                color: #fff;
-            }
-        }
-
-        /* play icon is always active */
-        .jw-label .jw-icon-play {
-            color: @active-color;
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #747D92;
-        }
-
-        ::-webkit-scrollbar {
-            border: 10px solid @rail-color;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: white;
-        }
     }
     
     /* Playlist title */

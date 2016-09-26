@@ -31,45 +31,15 @@
     @volume-background: fade(#505863,90%);
 
     @controlbar-height: 2em;
+
     #namespace > .controlbar-height();
-
     #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
+    #namespace > .set-global-color-classes();
 
+    .skin-element-padding();
     .inset-controlbar();
     .jw-controlbar {
         border-radius: .3em;
-    }
-
-    .jw-playlist-container {
-        left: -47%;
-        overflow: hidden;
-        bottom: .2em;
-
-        .jw-option {
-            border-bottom: 1px solid @controlbar-background;
-            
-            // Menu items are blue when active, or hovered
-            &:hover,
-            &.jw-active-option {
-                background-color: @controlbar-background;
-                color: @active-color;
-            }
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #222C37;
-        }
-
-        ::-webkit-scrollbar {
-            width: 2px;
-            border: 10px solid @controlbar-background;
-            border-radius: .3em;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #fff;
-        }
     }
 
     .jw-tooltip-title {

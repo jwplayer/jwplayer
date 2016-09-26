@@ -193,111 +193,6 @@
     }
   }
 
-  function parseCue(input, cue, regionList) {
-    // Remember the original input if we need to throw an error.
-    var oInput = input;
-    // 4.1 WebVTT timestamp
-    function consumeTimeStamp() {
-      var ts = parseTimeStamp(input);
-      if (ts === null) {
-        throw new ParsingError(ParsingError.Errors.BadTimeStamp,
-                              "Malformed timestamp: " + oInput);
-      }
-      // Remove time stamp from input.
-      input = input.replace(/^[^\sa-zA-Z-]+/, "");
-      return ts;
-    }
-
-    // 4.4.2 WebVTT cue settings
-    function consumeCueSettings(input, cue) {
-      var settings = new Settings();
-
-      parseOptions(input, function (k, v) {
-        switch (k) {
-        case "region":
-          // Find the last region we parsed with the same region id.
-          for (var i = regionList.length - 1; i >= 0; i--) {
-            if (regionList[i].id === v) {
-              settings.set(k, regionList[i].region);
-              break;
-            }
-          }
-          break;
-        case "vertical":
-          settings.alt(k, v, ["rl", "lr"]);
-          break;
-        case "line":
-          var vals = v.split(","),
-              vals0 = vals[0];
-          settings.integer(k, vals0);
-          settings.percent(k, vals0) ? settings.set("snapToLines", false) : null;
-          settings.alt(k, vals0, ["auto"]);
-          if (vals.length === 2) {
-            settings.alt("lineAlign", vals[1], ["start", "middle", "end"]);
-          }
-          break;
-        case "position":
-          vals = v.split(",");
-          settings.percent(k, vals[0]);
-          if (vals.length === 2) {
-            settings.alt("positionAlign", vals[1], ["start", "middle", "end"]);
-          }
-          break;
-        case "size":
-          settings.percent(k, v);
-          break;
-        case "align":
-          settings.alt(k, v, ["start", "middle", "end", "left", "right"]);
-          break;
-        }
-      }, /:/, /\s/);
-
-      // Apply default values for any missing fields.
-      cue.region = settings.get("region", null);
-      cue.vertical = settings.get("vertical", "");
-      cue.line = settings.get("line", "auto");
-      cue.lineAlign = settings.get("lineAlign", "start");
-      cue.snapToLines = settings.get("snapToLines", true);
-      cue.size = settings.get("size", 100);
-      cue.align = settings.get("align", "middle");
-      cue.position = settings.get("position", {
-        start: 0,
-        left: 0,
-        middle: 50,
-        end: 100,
-        right: 100
-      }, cue.align);
-      cue.positionAlign = settings.get("positionAlign", {
-        start: "start",
-        left: "start",
-        middle: "middle",
-        end: "end",
-        right: "end"
-      }, cue.align);
-    }
-
-    function skipWhitespace() {
-      input = input.replace(/^\s+/, "");
-    }
-
-    // 4.1 WebVTT cue timings.
-    skipWhitespace();
-    cue.startTime = consumeTimeStamp();   // (1) collect cue start time
-    skipWhitespace();
-    if (input.substr(0, 3) !== "-->") {     // (3) next characters must match "-->"
-      throw new ParsingError(ParsingError.Errors.BadTimeStamp,
-                             "Malformed time stamp (time stamps must be separated by '-->'): " +
-                             oInput);
-    }
-    input = input.substr(3);
-    skipWhitespace();
-    cue.endTime = consumeTimeStamp();     // (5) collect cue end time
-
-    // 4.1 WebVTT cue settings list.
-    skipWhitespace();
-    consumeCueSettings(input, cue);
-  }
-
   var ESCAPE = {
     "&amp;": "&",
     "&lt;": "<",
@@ -597,7 +492,7 @@
     // have inline positioning and will function as the cue background box.
     this.cueDiv = parseContent(window, cue.text);
     // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-    this.cueDiv.className = 'jw-text-track-cue';
+    this.cueDiv.className = 'jw-text-track-cue jw-reset';
     var styles = {
       textShadow: textShadow,
       position: "relative",
@@ -630,8 +525,8 @@
       styles.direction = determineBidi(this.cueDiv);
       styles.writingMode = cue.vertical === "" ? "horizontal-tb"
                                                : cue.vertical === "lr" ? "vertical-lr"
-                                                                       : "vertical-rl".
-      stylesunicodeBidi =  "plaintext";
+                                                                       : "vertical-rl";
+      styles.unicodeBidi =  "plaintext";
     }
 
     this.applyStyles(styles);
@@ -653,6 +548,10 @@
       textPos = cue.position - cue.size;
       break;
     }
+
+    // Added on 8/04/2016 by Evol Greaves: evol@jwplayer.com.
+    // Ensures textPos is within the bounds of the cueBox
+    textPos = Math.max(Math.min(100, textPos), 0);
 
     // Horizontal box orientation; textPos is the distance from the left edge of the
     // area to the left edge of the box and cue.size is the distance extending to
@@ -842,7 +741,9 @@
   // Move a StyleBox to its specified, or next best, position. The containerBox
   // is the box that contains the StyleBox, such as a div. boxPositions are
   // a list of other boxes that the styleBox can't overlap with.
-  function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions) {
+  // @param numLinesOfText added on 08/03/16 by Evol Greaves evol@jwplayer.com.
+  // Puts the cue in the "best fit" line if the cue's line would cause text to fall outside the containerBox
+  function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, numLinesOfText) {
 
     // Find the best position for a cue box, b, on the video. The axis parameter
     // is a list of axis, the order of which, it will move the box along. For example:
@@ -901,11 +802,18 @@
       }
 
       var step = boxPosition.lineHeight,
+      // maxLines added on 8/03/2016 by Evol Greaves: evol@jwplayer.com.
+      // This ensures that cues are positioned according to the maximum number of lines
+      // that can be displayed based on the container size.
+      // The position also needs to account for the number of lines of text to ensure
+      // text isn't cut off at the bottom of the container
+          maxLines = Math.floor(containerBox[size] / step),
+          linePos = Math.min(linePos, maxLines - numLinesOfText),
           position = step * Math.round(linePos),
           maxPosition = containerBox[size] + step,
           initialAxis = axis[0];
 
-      // If the specified initial position is greater then the max position then
+      // If the specified initial position is greater than the max position, then
       // clamp the box to the amount of steps it would take for the box to
       // reach the max position.
       if (Math.abs(position) > maxPosition) {
@@ -919,6 +827,10 @@
       // video, depending on the writing direction, and reverse our axis directions.
       if (linePos < 0) {
         position += cue.vertical === "" ? containerBox.height : containerBox.width;
+        // textHeight added on 8/04/2016 by Evol Greaves: evol@jwplayer.com
+        // Account for lines of text when determining position based on a negative line value
+        var textHeight = numLinesOfText * step;
+        position -= textHeight;
         axis = axis.reverse();
       }
 
@@ -1012,9 +924,14 @@
       overlay.removeChild(overlay.firstChild);
     }
 
+    // Return early if there are no cues to process
+    if(!cues.length) {
+      return null;
+    }
+
     var paddedOverlay = window.document.createElement("div");
     // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-    paddedOverlay.className = 'jw-text-track-container';
+    paddedOverlay.className = 'jw-text-track-container jw-reset';
     paddedOverlay.style.position = "absolute";
     paddedOverlay.style.left = "0";
     paddedOverlay.style.right = "0";
@@ -1055,11 +972,14 @@
         // Compute the initial position and styles of the cue div.
         styleBox = new CueStyleBox(window, cue);
         // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-        styleBox.div.className = 'jw-text-track-display';
+        styleBox.div.className = 'jw-text-track-display jw-reset';
         paddedOverlay.appendChild(styleBox.div);
 
         // Move the cue div to it's correct line position.
-        moveBoxToLinePosition(window, styleBox, containerBox, boxPositions);
+        // Added on 08/03/2016 by Evol Greaves: evol@jwplayer.com for determining the correct
+        // position to place the containerBox.
+        var numLinesOfText = cue.text.split('\n').length;
+        moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, numLinesOfText);
 
         // Remember the computed div so that we don't have to recompute it later
         // if we don't have too.

@@ -213,11 +213,6 @@
                 background: @display-bkgd-hover-color;
             }
         }
-        
-        /* Reset padding on .jw-menu's that are playlists */
-        .jw-playlist-container {
-            padding: 0;
-        }
     }
 
     .controlbar-height() {
@@ -243,12 +238,6 @@
             video::-webkit-media-text-track-container {
                 max-height: calc(97% - 6.25 * (@controlbar-height));
             }
-
-            &.jw-flag-compact-player {
-                video::-webkit-media-text-track-container {
-                    max-height: calc(97% - 7.5 * (@controlbar-height));
-                }
-            }
         }
 
         .jw-controls {
@@ -267,6 +256,36 @@
         .jw-icon-inline,
         .jw-icon-tooltip {
             min-width: @controlbar-height * 5/8;
+        }
+    }
+    // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
+    .set-global-color-classes() {
+        .jw-color-active {
+            color: @active-color;
+            stroke: @active-color;
+            border-color: @active-color;
+        }
+
+        .jw-color-active-hover {
+            &:hover {
+                color: @active-color;
+                stroke: @active-color;
+                border-color: @active-color;
+            }
+        }
+
+        .jw-color-inactive {
+            color: @inactive-color;
+            stroke: @inactive-color;
+            border-color: @inactive-color;
+        }
+
+        .jw-color-inactive-hover {
+            &:hover {
+                color: @inactive-color;
+                stroke: @inactive-color;
+                border-color: @inactive-color;
+            }
         }
     }
 }

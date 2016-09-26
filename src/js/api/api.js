@@ -35,7 +35,8 @@ define([
                 args = {};
             }
             args.type = type;
-            if (window.jwplayer && window.jwplayer.debug) {
+            var jwplayer = window.jwplayer;
+            if (jwplayer && jwplayer.debug) {
                 return Events.trigger.call(_this, type, args);
             }
             return Events.triggerSafe.call(_this, type, args);

@@ -62,6 +62,12 @@ define([
 
         sec = strings.seconds('01:01:01.111');
         assert.equal(sec, 3661.111, 'hours minute seconds milliseconds input returns seconds');
+
+        sec = strings.seconds('00:00:01:15');
+        assert.equal(sec, 1, 'hours minute seconds frames input without frameRate returns seconds without frames');
+
+        sec = strings.seconds('00:01:01:25', 50);
+        assert.equal(sec, 61.5, 'hours minute seconds frames input with frameRate returns seconds');
     });
 
     test('strings.hms', function(assert) {

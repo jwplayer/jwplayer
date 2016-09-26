@@ -10,6 +10,15 @@ define([
         validate(xmlDoc);
         var _captions = [];
         var paragraphs = xmlDoc.getElementsByTagName('p');
+        // Default frameRate is 30
+        var frameRate = 30;
+        var tt = xmlDoc.getElementsByTagName('tt');
+        if (tt && tt[0]) {
+            var parsedFrameRate = parseFloat(tt[0].getAttribute('ttp:frameRate'));
+            if (!isNaN(parsedFrameRate)) {
+                frameRate = parsedFrameRate;
+            }
+        }
         validate(paragraphs);
         if (!paragraphs.length) {
             paragraphs = xmlDoc.getElementsByTagName('tt:p');
@@ -21,20 +30,20 @@ define([
         for (var i = 0; i < paragraphs.length; i++) {
             var p = paragraphs[i];
             var rawText = (p.innerHTML || p.textContent || p.text || '');
-            var text = strings.trim(rawText).replace(/>\s+</g, '><').replace(/tts?:/g, '');
+            var text = strings.trim(rawText).replace(/>\s+</g, '><').replace(/(<\/?)tts?:/g, '$1').replace(/<br.*?\/>/g, '\r\n');
             if (text) {
                 var begin = p.getAttribute('begin');
                 var dur = p.getAttribute('dur');
                 var end = p.getAttribute('end');
 
                 var entry = {
-                    begin: _seconds(begin),
+                    begin: _seconds(begin, frameRate),
                     text: text
                 };
                 if (end) {
-                    entry.end = _seconds(end);
+                    entry.end = _seconds(end, frameRate);
                 } else if (dur) {
-                    entry.end = entry.begin + _seconds(dur);
+                    entry.end = entry.begin + _seconds(dur, frameRate);
                 }
                 _captions.push(entry);
             }

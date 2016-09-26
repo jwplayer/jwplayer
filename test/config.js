@@ -20,6 +20,9 @@
     if (!('Promise' in window)) {
         deps.push('polyfills/promise');
     }
+    if (!('VTTCue' in window)) {
+        deps.push('polyfills/vttcue');
+    }
     if (!('console' in window) || !('log' in window.console) ) {
         window.console = {
             log: function() {}
@@ -106,6 +109,7 @@
                 'templates/slider.html': 'handlebars-loader!templates/slider.html',
                 'templates/menu.html': 'handlebars-loader!templates/menu.html',
                 'templates/playlist.html': 'handlebars-loader!templates/playlist.html',
+                'templates/nextup.html': 'handlebars-loader!templates/nextup.html',
                 'css/jwplayer.less': 'less!css/jwplayer',
                 'utils/video': mock + '/video.js'
             }

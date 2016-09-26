@@ -23,11 +23,13 @@
 
     @volume-background: #333;
 
-  @controlbar-height: 2em;
-  #namespace > .controlbar-height();
+    @controlbar-height: 2em;
 
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
-	.skin-element-padding();
+    #namespace > .set-global-color-classes();
+
+    .skin-element-padding();
 	
     /* For the overlay containers */
     .jw-time-tip,
@@ -48,45 +50,6 @@
         &:hover,
         &.jw-active-option {
             color: @progress-color;
-        }
-    }
-
-    /* Playlist */
-	.jw-playlist-container {
-        left: -47%;
-        bottom: 0;
-        border-radius: 0;
-        background-color: #1e1e1e;
-
-        .jw-option,
-        .jw-text,
-        .jw-icon {
-            color: #A0A0A0;
-        }
-
-        .jw-option {
-            border-bottom: 1px solid #000;
-            background-color: #1E1E1E;
-            color: #a8a8a8;
-            
-           /* Menu items are green when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                color: @progress-color;
-            }
-        }
-      
-        ::-webkit-scrollbar-track {
-            background-color: #000;
-        }
-
-        ::-webkit-scrollbar {
-            width: 2px;
-            border: 10px solid #1E1E1E;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #A0A0A0;
         }
     }
     

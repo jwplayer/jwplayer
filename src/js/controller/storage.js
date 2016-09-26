@@ -3,7 +3,6 @@ define([
     'utils/helpers'
 ], function(_, utils) {
 
-    var jwplayer = window.jwplayer;
     var storage = {
         removeItem: utils.noop
     };
@@ -31,6 +30,7 @@ define([
             storage[jwPrefix(name)] = value;
         } catch(e) {
             // ignore QuotaExceededError unless debugging
+            var jwplayer = window.jwplayer;
             if (jwplayer && jwplayer.debug) {
                 console.error(e);
             }

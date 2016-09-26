@@ -201,6 +201,7 @@ define([
             var _this = this;
             var providersManager = _model.getProviders();
             var providersNeeded = providersManager.required(playlist);
+            _model.set('hideAdsControls', false);
             providersManager.load(providersNeeded)
                 .then(function() {
                     if (_instream === null) {
@@ -242,20 +243,11 @@ define([
             _instream.instreamPause();
         };
 
-        this.hide = function() {
-            _instream.hide();
-        };
-
         this.addClickHandler = function() {
             // start listening for ad click
             _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
 
-            //if (utils.isMSIE()) {
-                //_oldProvider.parentElement.addEventListener('click', _view.clickHandler().clickHandler);
-            //}
-
             _instream.on(events.JWPLAYER_MEDIA_META, this.metaHandler, this);
-
         };
 
         this.skipAd = function(evt) {
@@ -283,6 +275,8 @@ define([
                 if (_view.clickHandler()) {
                     _view.clickHandler().revertAlternateClickHandlers();
                 }
+
+                _model.off(null, null, _instream);
                 _instream.instreamDestroy();
 
                 // Must happen after instream.instreamDestroy()
@@ -330,7 +324,7 @@ define([
 
         // This method is triggered by plugins which want to hide player controls
         this.hide = function() {
-            _view.useExternalControls();
+            _model.set('hideAdsControls', true);
         };
 
     };

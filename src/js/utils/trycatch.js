@@ -7,7 +7,8 @@ define([
         args = args || [];
 
         // if in debug mode, let 'er blow!
-        if (window.jwplayer && window.jwplayer.debug) {
+        var jwplayer = window.jwplayer;
+        if (jwplayer && jwplayer.debug) {
             return fn.apply(ctx, args);
         }
 

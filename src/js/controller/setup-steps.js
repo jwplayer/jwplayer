@@ -65,12 +65,18 @@ define([
                     'LOAD_SKIN'
                 ]
             },
+            SET_ITEM : {
+                method: _setPlaylistItem,
+                depends: [
+                    'INIT_PLUGINS',
+                    'FILTER_PLAYLIST'
+                ]
+            },
             SEND_READY : {
                 method: _sendReady,
                 depends: [
-                    'INIT_PLUGINS',
-                    'FILTER_PLAYLIST',
-                    'SETUP_VIEW'
+                    'SETUP_VIEW',
+                    'SET_ITEM'
                 ]
             }
         };
@@ -116,6 +122,7 @@ define([
     }
 
     function _loadPlugins(resolve, _model) {
+        window.jwplayerPluginJsonp = plugins.registerPlugin;
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
         _pluginLoader.on(events.COMPLETE, resolve);
         _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
@@ -123,8 +130,8 @@ define([
     }
 
     function _initPlugins(resolve, _model, _api) {
+        delete window.jwplayerPluginJsonp;
         _pluginLoader.setupPlugins(_api, _model);
-        
         resolve();
     }
 
@@ -227,6 +234,11 @@ define([
     function _setupView(resolve, _model, _api, _view) {
         _view.setup();
         resolve();
+    }
+
+    function _setPlaylistItem(resolve, _model) {
+        _model.once('itemReady', resolve);
+        _model.setItemIndex(_model.get('item'));
     }
 
     function _sendReady(resolve) {

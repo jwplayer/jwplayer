@@ -2,8 +2,9 @@ define([
     'utils/helpers',
     'utils/css',
     'events/states',
-    'utils/underscore'
-], function(utils, cssUtils, states, _) {
+    'utils/underscore',
+    'utils/nativerenderingsupported'
+], function(utils, cssUtils, states, _, nativeRenderingSupported) {
     var _style = cssUtils.style;
 
     var _defaults = {
@@ -28,9 +29,6 @@ define([
         var _options = {},
         // array of cues
             _captionsTrack,
-
-        // current cue index
-            _current,
 
         // current cues
             _currentCues,
@@ -57,15 +55,14 @@ define([
 
         /** Assign list of captions to the renderer. **/
         this.populate = function(captions) {
-            _current = -1;
             _currentCues = [];
             _captionsTrack = captions;
             if (!captions) {
                 _currentCues = [];
-                renderCues();
+                this.renderCues();
                 return;
             }
-            _select(captions, _timeEvent);
+            this.selectCues(captions, _timeEvent);
         };
 
         this.resize = function () {
@@ -74,27 +71,56 @@ define([
             if (scale) {
                 var size = _options.fontSize * scale;
                 _style(_display, {
-                    fontSize: Math.round(size) + 'px'
+                    fontSize: Math.floor(size*2)/2 + 'px'
                 });
             }
-            renderCues(true);
+            this.renderCues(true);
         };
 
-        this.renderCues = renderCues;
-
-        function renderCues(updateBoxPosition) {
+        this.renderCues = function(updateBoxPosition) {
             updateBoxPosition = !!updateBoxPosition;
             if(_VTTRenderer) {
                 _VTTRenderer.WebVTT.processCues(window, _currentCues, _display, updateBoxPosition);
             }
-        }
+        };
 
-        function _timeChange(e) {
-            _timeEvent = e;
-            _select(_captionsTrack, _timeEvent);
-        }
+        this.selectCues = function(track, timeEvent) {
+            var cues, pos;
 
-        function _getAlignmentPosition(track, timeEvent) {
+            if (!track || !track.data || !timeEvent) {
+                return;
+            }
+
+            pos = this.getAlignmentPosition(track, timeEvent);
+            if (pos === false) {
+                return;
+            }
+
+            cues = this.getCurrentCues(track.data, pos);
+
+            this.updateCurrentCues(cues);
+            this.renderCues(true);
+        };
+
+        this.getCurrentCues = function(allCues, pos) {
+            return _.filter(allCues, function (cue) {
+                return pos >= (cue.startTime) && (!cue.endTime || pos <= cue.endTime);
+            });
+        };
+
+        this.updateCurrentCues = function(cues) {
+            // Render with vtt.js if there are cues, clear if there are none
+            if (!cues.length) {
+                _currentCues = [];
+            } else if (_.difference(cues, _currentCues).length) {
+                _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
+                _currentCues = cues;
+            }
+
+            return _currentCues;
+        };
+
+        this.getAlignmentPosition = function(track, timeEvent) {
             var source = track.source;
             var metadata = timeEvent.metadata;
 
@@ -109,49 +135,17 @@ define([
 
             // Default to syncing with current position
             return timeEvent.position;
-        }
+        };
 
-        /** Select a caption for rendering. **/
-        function _select(track, timeEvent) {
-            if (!(track && track.data) || !timeEvent) {
-                return;
-            }
+        this.clear = function () {
+            utils.empty(_display);
+        };
 
-            var pos = _getAlignmentPosition(track, timeEvent);
-            if (pos === false) {
-                return;
-            }
-
-            var data = track.data;
-            if (_current >= 0 && _intersects(data, _current, pos)) {
-                // no change
-                return;
-            }
-
-            var found = -1;
-            for (var i = 0; i < data.length; i++) {
-                if (_intersects(data, i, pos)) {
-                    found = i;
-                    break;
-                }
-            }
-            // If none, empty the text. If not current, re-render.
-            if (found === -1) {
-                _currentCues = [];
-                renderCues();
-            } else if (found !== _current) {
-                _current = found;
-                //render with vtt.js
-                _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
-                _currentCues = [data[_current]];
-                renderCues();
-            }
-        }
-
-        function _intersects(data, i, pos) {
-            return (data[i].startTime <= pos && (!data[i].endTime || data[i].endTime >= pos) &&
-            (i === data.length - 1 || data[i + 1].startTime >= pos));
-        }
+        this.setContainerHeight = function (height) {
+            _style(_display, {
+                height: height
+            });
+        };
 
         /** Constructor for the renderer. **/
         this.setup = function(playerElementId, options) {
@@ -179,17 +173,17 @@ define([
                 windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
             }
 
-            addEdgeStyle(edgeStyle, textStyle, fontOpacity);
+            _addEdgeStyle(edgeStyle, textStyle, fontOpacity);
 
             if (_options.back) {
                 textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, _options.backgroundOpacity);
             } else if (edgeStyle === null) {
-                addEdgeStyle('uniform', textStyle);
+                _addEdgeStyle('uniform', textStyle);
             }
 
             _style(_captionsWindow, windowStyle);
             _style(_textContainer, textStyle);
-            setupCaptionStyles(playerElementId, windowStyle, textStyle);
+            _setupCaptionStyles(playerElementId, windowStyle, textStyle);
 
             _captionsWindow.appendChild(_textContainer);
             _display.appendChild(_captionsWindow);
@@ -198,17 +192,11 @@ define([
             _model.set('captions', _options);
         };
 
-        this.clear = function () {
-            utils.empty(_display);
+        this.element = function() {
+            return _display;
         };
 
-        this.setContainerHeight = function (height) {
-            _style(_display, {
-                height: height
-            });
-        };
-
-        function setupCaptionStyles(playerId, windowStyle, textStyle) {
+        function _setupCaptionStyles(playerId, windowStyle, textStyle) {
             // VTT.js DOM window styles
             cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
             // VTT.js DOM text styles
@@ -228,7 +216,7 @@ define([
             }
         }
 
-        function addEdgeStyle(option, style, fontOpacity) {
+        function _addEdgeStyle(option, style, fontOpacity) {
             var color = cssUtils.hexToRgba('#000000', fontOpacity);
             if (option === 'dropshadow') { // small drop shadow
                 style.textShadow = '0 2px 1px ' + color;
@@ -244,19 +232,22 @@ define([
             }
         }
 
-        function _nativeRenderingSupported() {
-            var provider = _model.get('provider');
-            return provider.name.indexOf('flash') === -1 &&
-                (utils.isChrome() || utils.isIOS() || utils.isSafari());
+        function _timeChange(e) {
+            _timeEvent = e;
+            this.selectCues(_captionsTrack, _timeEvent);
         }
 
-        this.element = function() {
-            return _display;
-        };
+        function _itemReadyHandler() {
+            // don't load the polyfill or do unnecessary work if rendering natively
+            if(!nativeRenderingSupported(_model.get('provider').name)) {
+                require.ensure(['polyfills/vtt'], function (require) {
+                    _VTTRenderer = require('polyfills/vtt');
+                }, 'polyfills.vttrenderer');
+            }
+        }
 
         _model.on('change:playlistItem', function() {
             _timeEvent = null;
-            _current = -1;
             _currentCues = [];
         }, this);
 
@@ -264,15 +255,18 @@ define([
             this.populate(captionsTrack);
             // TODO: handle with VTT.js
         }, this);
+
         _model.mediaController.on('seek', function() {
-            _current = -1;
             _currentCues = [];
         }, this);
+
         _model.mediaController.on('time seek', _timeChange, this);
+
         _model.mediaController.on('subtitlesTrackData', function() {
             // update captions after a provider's subtitle track changes
-            _select(_captionsTrack, _timeEvent);
+            this.selectCues(_captionsTrack, _timeEvent);
         }, this);
+
         _model.on('change:state', function(model, state) {
             switch (state) {
                 case states.IDLE:
@@ -287,15 +281,6 @@ define([
         }, this);
 
         _model.on('itemReady', _itemReadyHandler, this);
-
-        function _itemReadyHandler() {
-            // don't load the polyfill or do unnecessary work if rendering natively
-            if(!_nativeRenderingSupported()) {
-                require.ensure(['polyfills/vtt'], function (require) {
-                    _VTTRenderer = require('polyfills/vtt');
-                }, 'polyfills.vttrenderer');
-            }
-        }
     };
 
     return CaptionsRenderer;

@@ -1,5 +1,5 @@
 {
-    "maxlen": 120,
+    "maxlen": 1000,
     "trailing": true,
     "eqeqeq": true,
     "browser": true,
