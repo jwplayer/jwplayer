@@ -15,10 +15,11 @@ define([
     'view/title',
     'view/components/nextuptooltip',
     'utils/underscore',
-    'templates/player.html'
+    'templates/player.html',
+    'view/breakpoint',
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -55,7 +56,6 @@ define([
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _resizeContainerRequestId = -1,
-            _minWidthForTimeDisplay = 450,
             // Function that delays the call of _setContainerDimensions so that the page has finished repainting.
             _delayResize = window.requestAnimationFrame ||
                 function(rafFunc) {
@@ -256,6 +256,8 @@ define([
 
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
+            setBreakpoint(_playerElement, containerWidth, containerHeight);
+
             _this.trigger(events.JWPLAYER_RESIZE, {
                 width: containerWidth,
                 height: containerHeight
@@ -822,10 +824,6 @@ define([
             }
 
             _captionsRenderer.resize();
-            
-            var hideTimeInControl = width && width < _minWidthForTimeDisplay;
-            utils.toggleClass(_playerElement, 'jw-flag-compact-player', hideTimeInControl);
-
         }
 
         this.resize = function(width, height) {

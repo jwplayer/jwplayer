@@ -28,6 +28,11 @@
 
     @controlbar-height: 2em;
 
+    @nextup-border-radius: 2px;
+    @nextup-header-background: fade(@controlbar-background, 90%);
+    @nextup-body-background: darken(@nextup-header-background, 20%);
+    @nextup-body-text-color-overflow: darken(@controlbar-background, 20%);
+
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
@@ -124,5 +129,5 @@
             content: "\e609";
         }
     }
-}
 
+}
