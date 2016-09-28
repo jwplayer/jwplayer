@@ -62,8 +62,8 @@ define([
         if (evt.preventManipulation) {
             evt.preventManipulation();
         }
-        // When cancelable is false, it means the page is likely scrolling
-        if (evt.cancelable && evt.preventDefault) {
+        // prevent scrolling
+        if (evt.preventDefault) {
             evt.preventDefault();
         }
     }
@@ -156,6 +156,11 @@ define([
                 _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
                 _touchListenerTarget.addEventListener('touchcancel', interactEndHandler);
                 _touchListenerTarget.addEventListener('touchend', interactEndHandler);
+                
+                // Prevent scrolling the screen dragging while dragging on mobile.
+                if (options.preventScrolling) {
+                    preventDefault(evt);
+                }
             }
         }
 
@@ -197,10 +202,11 @@ define([
                 document.removeEventListener('mousemove', interactDragHandler);
                 document.removeEventListener('mouseup', interactEndHandler);
             }
-
-            _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
-            _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
-            _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            if (_touchListenerTarget) {
+                _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
+                _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
+                _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            }
 
             if (_hasMoved) {
                 triggerEvent(touchEvents.DRAG_END, evt);
