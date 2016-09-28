@@ -21,6 +21,7 @@ define(['utils/underscore',
         addTracksListener: addTracksListener,
         clearTracks: clearTracks,
         disableTextTrack: disableTextTrack,
+        enableTextTrack: enableTextTrack,
         getSubtitlesTrack: getSubtitlesTrack,
         removeTracksListener: removeTracksListener,
         addTextTracks: addTextTracks,
@@ -249,7 +250,9 @@ define(['utils/underscore',
         }
 
         if (this._renderNatively || track.kind === 'metadata') {
-            _addCueToTrack(track, cueData.cue);
+            if(_cacheVTTCue.call(this, track, cueData.cue)) {
+                _addCueToTrack(track, cueData.cue);
+            }
         } else {
             track.data.push(cueData.cue);
         }
@@ -341,6 +344,15 @@ define(['utils/underscore',
             var track = this._textTracks[this._currentTextTrackIndex];
             if (track) {
                 track.mode = track.embedded ? 'hidden' : 'disabled';
+            }
+        }
+    }
+
+    function enableTextTrack() {
+        if (this._textTracks) {
+            var track = this._textTracks[this._currentTextTrackIndex];
+            if (track) {
+                track.mode = 'showing';
             }
         }
     }
@@ -590,6 +602,41 @@ define(['utils/underscore',
             });
         }
         this._activeCuePosition = startTime;
+    }
+
+    function _cacheVTTCue(track, vttCue) {
+        var trackKind = track.kind;
+        if(!this._cuesByTrackId[track._id]) {
+            this._cuesByTrackId[track._id] = {};
+        }
+        var cachedCues = this._cuesByTrackId[track._id],
+            cacheKey;
+
+        switch (trackKind) {
+            case 'captions':
+                // VTTCues should have unique start and end times, even in cases where there are multiple
+                // active cues. This is safer than ensuring text is unique, which may be violated on seek.
+                // Captions within .05s of each other are treated as unique to account for
+                // quality switches where start/end times are slightly different.
+                cacheKey = Math.floor(vttCue.startTime * 20);
+                var cacheValue = Math.floor(vttCue.endTime * 20);
+                var cueExists = cachedCues[cacheKey] || cachedCues[cacheKey + 1] || cachedCues[cacheKey - 1];
+
+                if (cueExists && Math.abs(cueExists - cacheValue) <= 1) {
+                    return false;
+                }
+
+                cachedCues[cacheKey] = cacheValue;
+                return true;
+            case 'metadata':
+                cacheKey = vttCue.startTime + vttCue.text;
+                if (cachedCues[cacheKey]) {
+                    return false;
+                }
+
+                cachedCues[cacheKey] = vttCue.endTime;
+                return true;
+        }
     }
 
     function _errorHandler(error) {

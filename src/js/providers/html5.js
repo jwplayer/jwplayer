@@ -808,6 +808,9 @@ define([
          */
         this.detachMedia = function() {
             clearTimeout(_playbackTimeout);
+            // Stop listening to track changes so disabling the current track doesn't update the model
+            this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
+            // Prevent tracks from showing during ad playback
             this.disableTextTrack();
             _attached = false;
             return _videotag;
@@ -825,6 +828,10 @@ define([
 
             // In case the video tag was modified while we shared it
             _videotag.loop = false;
+
+            // If there was a showing track, re-enable it
+            this.enableTextTrack();
+            this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
 
             // This is after a postroll completes
             if (_beforecompleted) {
