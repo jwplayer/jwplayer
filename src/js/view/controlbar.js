@@ -333,23 +333,6 @@ define([
         element: function() {
             return this.el;
         },
-
-        getVisibleBounds : function (){
-            var el = this.el,
-                // getComputedStyle for modern browsers, currentStyle is for IE8
-                curStyle = (getComputedStyle) ? getComputedStyle(el) : el.currentStyle,
-                bounds;
-
-            if(curStyle.display === 'table'){
-                return utils.bounds(el);
-            } else {
-                el.style.visibility = 'hidden';
-                el.style.display = 'table';
-                bounds = utils.bounds(el);
-                el.style.visibility = el.style.display = '';
-                return bounds;
-            }
-        },
         setAltText : function(altText) {
             this.elements.alt.innerHTML = altText;
         },
