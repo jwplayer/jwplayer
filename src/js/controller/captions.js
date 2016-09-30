@@ -31,7 +31,6 @@ define(['utils/helpers',
             var tracks = e.tracks || [];
             for (var i = 0; i < tracks.length; i++) {
                 var track = tracks[i];
-                track.name = track.label || track.name || track.language;
                 _addTrack(track);
             }
             var captionsMenu = _captionsMenu();
@@ -104,6 +103,7 @@ define(['utils/helpers',
         function _addTrack(track) {
 
             track.data = track.data || [];
+            track.name = track.label || track.name || track.language;
 
             if (!track.name) {
                 track.name = 'Unknown CC';

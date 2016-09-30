@@ -560,7 +560,6 @@ define(['utils/underscore',
     }
 
     function _addTrackToList(track) {
-        // TODO: remove old track
         this._textTracks.push(track);
         this._tracksById[track._id] = track;
     }
