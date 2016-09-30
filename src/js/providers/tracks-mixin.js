@@ -46,6 +46,14 @@ define(['utils/underscore',
 
         if (!this._textTracks) {
             this._initTextTracks();
+        } else {
+            // Need to remove internal tracks that may have been changed by the browser
+            this._textTracks = _.reject(this._textTracks, function(track) {
+                if (track._id.indexOf('native') === 0) {
+                    this._tracksById[track._id] = null;
+                    return true;
+                }
+            }, this);
         }
 
         // filter for 'subtitles' or 'captions' tracks
@@ -57,6 +65,11 @@ define(['utils/underscore',
                 if (!track._id) {
                     if (track.kind === 'captions' || track.kind === 'metadata') {
                         track._id = 'native' + track.kind;
+                        if (!track.label && track.kind === 'captions') {
+                            // track label is read only in Safari
+                            // 'captions' tracks without a label need a name in order for the cc menu to work
+                            track.name = _createLabel(track);
+                        }
                     } else {
                         track._id = createTrackId.call(this, track);
                     }
@@ -362,9 +375,9 @@ define(['utils/underscore',
         var inUseTracks = _.filter(textTracks, function (track)  {
             return (track.inuse || !track._id) && _kindSupported(track.kind);
         });
-        if (!this._textTracks || inUseTracks.length > this._textTracks.length) {
-            // If the video element has more tracks than we have internally..
+        if (!this._textTracks || _tracksModified.call(this, inUseTracks)) {
             this.setTextTracks(textTracks);
+            return;
         }
         // If a caption/subtitle track is showing, find its index
         var selectedTextTrackIndex = -1, i = 0;
@@ -424,7 +437,7 @@ define(['utils/underscore',
         if (track.default || track.defaulttrack) {
             trackId = 'default';
         } else {
-            trackId = track._id|| track.name || track.file || track.label || (prefix + this._textTracks.length);
+            trackId = track._id || track.name || track.file || track.label || (prefix + this._textTracks.length);
         }
         return trackId;
     }
@@ -547,6 +560,7 @@ define(['utils/underscore',
     }
 
     function _addTrackToList(track) {
+        // TODO: remove old track
         this._textTracks.push(track);
         this._tracksById[track._id] = track;
     }
@@ -640,6 +654,24 @@ define(['utils/underscore',
                 return true;
         }
     }
+
+    function _tracksModified(inUseTracks) {
+        // Need to add new textTracks coming from the video tag
+        if (inUseTracks.length > this._textTracks.length) {
+            return true;
+        }
+
+        // Tracks may have changed in Safari after an ad
+        for (var i = 0; i < inUseTracks.length; i++) {
+            var track = inUseTracks[i];
+            if (!track._id || !this._tracksById[track._id]) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     function _errorHandler(error) {
         utils.log('CAPTIONS(' + error + ')');

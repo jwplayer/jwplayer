@@ -31,7 +31,7 @@ define(['utils/helpers',
             var tracks = e.tracks || [];
             for (var i = 0; i < tracks.length; i++) {
                 var track = tracks[i];
-                track.label = track.label || track.name || track.language;
+                track.name = track.label || track.name || track.language;
                 _addTrack(track);
             }
             var captionsMenu = _captionsMenu();
@@ -105,11 +105,11 @@ define(['utils/helpers',
 
             track.data = track.data || [];
 
-            if (!track.label) {
-                track.label = 'Unknown CC';
+            if (!track.name) {
+                track.name = 'Unknown CC';
                 _unknownCount++;
                 if (_unknownCount > 1) {
-                    track.label += ' (' + _unknownCount + ')';
+                    track.name += ' (' + _unknownCount + ')';
                 }
             }
             _tracks.push(track);
@@ -124,7 +124,7 @@ define(['utils/helpers',
             for (var i = 0; i < _tracks.length; i++) {
                 list.push({
                     id: _tracks[i]._id,
-                    label: _tracks[i].label || 'Unknown CC'
+                    label: _tracks[i].name || 'Unknown CC'
                 });
             }
             return list;
@@ -143,7 +143,7 @@ define(['utils/helpers',
 
             for (var i = 0; i < _tracks.length; i++) {
                 var track = _tracks[i];
-                if (label && label === track.label) {
+                if (label && label === track.name) {
                     captionsMenuIndex = i + 1;
                     break;
                 } else if (track['default'] || track.defaulttrack || track._id === 'default') {
