@@ -248,13 +248,12 @@ define(['utils/underscore',
                 addTextTracks.call(this, [track]);
             }
         }
-
-        if (this._renderNatively || track.kind === 'metadata') {
-            if(_cacheVTTCue.call(this, track, cueData.cue)) {
+        if(_cacheVTTCue.call(this, track, cueData.cue)) {
+            if (this._renderNatively || track.kind === 'metadata') {
                 _addCueToTrack(track, cueData.cue);
+            } else {
+                track.data.push(cueData.cue);
             }
-        } else {
-            track.data.push(cueData.cue);
         }
     }
 
@@ -629,7 +628,8 @@ define(['utils/underscore',
                 cachedCues[cacheKey] = cacheValue;
                 return true;
             case 'metadata':
-                cacheKey = vttCue.startTime + vttCue.text;
+                var text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
+                cacheKey = vttCue.startTime + text;
                 if (cachedCues[cacheKey]) {
                     return false;
                 }
