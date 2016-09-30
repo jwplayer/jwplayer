@@ -12,6 +12,7 @@ define(['utils/underscore',
         _textTracks: null,
         _tracksById: null,
         _cuesByTrackId: null,
+        _cachedVTTCues: null,
         _metaCuesByTextTime: null,
         _currentTextTrackIndex: -1,
         _unknownCount: 0,
@@ -498,6 +499,7 @@ define(['utils/underscore',
         this._tracksById = {};
         this._metaCuesByTextTime = {};
         this._cuesByTrackId = {};
+        this._cachedVTTCues = {};
         this._unknownCount = 0;
     }
 
@@ -605,10 +607,10 @@ define(['utils/underscore',
 
     function _cacheVTTCue(track, vttCue) {
         var trackKind = track.kind;
-        if(!this._cuesByTrackId[track._id]) {
-            this._cuesByTrackId[track._id] = {};
+        if(!this._cachedVTTCues[track._id]) {
+            this._cachedVTTCues[track._id] = {};
         }
-        var cachedCues = this._cuesByTrackId[track._id],
+        var cachedCues = this._cachedVTTCues[track._id],
             cacheKey;
 
         switch (trackKind) {
