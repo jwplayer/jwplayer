@@ -38,6 +38,7 @@
     "karma-qunit": "1.0.0",
     "karma-requirejs": "1.0.0",
     "karma-safari-launcher": "^1.0.0",
+    "karma-sinon": "^1.0.5",
     "less": "2.6.1",
     "less-loader": "2.2.3",
     "load-grunt-tasks": "3.5.0",
