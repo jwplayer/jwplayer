@@ -356,7 +356,7 @@ define(['utils/underscore',
         if (this._textTracks) {
             var track = this._textTracks[this._currentTextTrackIndex];
             if (track) {
-                track.mode = track.embedded ? 'hidden' : 'disabled';
+                track.mode = (track.embedded || track._id === 'nativecaptions') ? 'hidden' : 'disabled';
             }
         }
     }
