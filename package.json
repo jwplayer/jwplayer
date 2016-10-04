@@ -48,7 +48,6 @@
     "parallel-webpack": "1.5.0",
     "phantomjs-polyfill": "0.0.2",
     "phantomjs-prebuilt": "2.1.7",
-    "qunit": "^0.9.1",
     "qunitjs": "1.23.1",
     "raw-loader": "0.5.1",
     "require-less": "0.0.7",
