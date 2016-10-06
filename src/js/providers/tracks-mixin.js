@@ -1,11 +1,9 @@
 define(['utils/underscore',
     'utils/id3Parser',
     'utils/helpers',
-    'utils/render-captions-natively',
     'controller/tracks-loader',
-    'utils/track/create-id',
-    'utils/track/create-label'
-], function(_, ID3Parser, utils, renderCaptionsNatively, tracksLoader, createTrackId, createTrackLabel) {
+    'controller/tracks-helper'
+], function(_, ID3Parser, utils, tracksLoader, tracksHelper) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -46,7 +44,7 @@ define(['utils/underscore',
             return;
         }
 
-        this._renderNatively = renderCaptionsNatively(this.getName().name);
+        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
         if (!this._textTracks) {
             this._initTextTracks();
@@ -74,12 +72,12 @@ define(['utils/underscore',
                         if (!track.label && track.kind === 'captions') {
                             // track label is read only in Safari
                             // 'captions' tracks without a label need a name in order for the cc menu to work
-                            var labelInfo = createTrackLabel(track, this._unknownCount);
+                            var labelInfo = tracksHelper.createLabel(track, this._unknownCount);
                             track.name = labelInfo.label;
                             this._unknownCount = labelInfo.unknownCount;
                         }
                     } else {
-                        track._id = createTrackId(track, this._textTracks.length);
+                        track._id = tracksHelper.createId(track, this._textTracks.length);
                     }
                     track.inuse = true;
                 }
@@ -142,7 +140,7 @@ define(['utils/underscore',
 
     function setupSideloadedTracks(itemTracks) {
         // Add tracks if we're starting playback or resuming after a midroll
-        this._renderNatively = renderCaptionsNatively(this.getName().name);
+        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
         if (!this._renderNatively) {
             return;
@@ -417,7 +415,7 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        this._renderNatively = renderCaptionsNatively(this.getName().name);
+        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];
@@ -517,7 +515,7 @@ define(['utils/underscore',
 
     function _createTrack(itemTrack) {
         var track;
-        var labelInfo = createTrackLabel(itemTrack, this._unknownCount);
+        var labelInfo = tracksHelper.createLabel(itemTrack, this._unknownCount);
         var label = labelInfo.label;
         this._unknownCount = labelInfo.unknownCount;
 
@@ -543,7 +541,7 @@ define(['utils/underscore',
         }
 
         if (!track._id) {
-            track._id = createTrackId(itemTrack, this._textTracks.length);
+            track._id = tracksHelper.createId(itemTrack, this._textTracks.length);
         }
 
         return track;

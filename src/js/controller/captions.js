@@ -1,9 +1,7 @@
 define(['utils/helpers',
-    'utils/render-captions-natively',
     'controller/tracks-loader',
-    'utils/track/create-id',
-    'utils/track/create-label'
-], function(utils, renderCaptionsNatively, tracksLoader, createTrackId, createTrackLabel) {
+    'controller/tracks-helper'
+], function(utils, tracksLoader, tracksHelper) {
 
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_api, _model) {
@@ -62,7 +60,7 @@ define(['utils/helpers',
                 len = tracks && tracks.length;
 
             // Sideload tracks when not rendering natively
-            if (!renderCaptionsNatively(_model.get('provider').name) && len) {
+            if (!tracksHelper.renderNatively(_model.get('provider').name) && len) {
                 var i, track;
 
                 for (i = 0; i < len; i++) {
@@ -104,10 +102,10 @@ define(['utils/helpers',
         function _addTrack(track) {
             track.data = track.data || [];
             track.name = track.label || track.name || track.language;
-            track._id = createTrackId(track, _tracks.length);
+            track._id = tracksHelper.createId(track, _tracks.length);
 
             if (!track.name) {
-                var labelInfo = createTrackLabel(track, _unknownCount);
+                var labelInfo = tracksHelper.createLabel(track, _unknownCount);
                 track.name = labelInfo.label;
                 _unknownCount = labelInfo.unknownCount;
             }

@@ -33,5 +33,5 @@ define([
     'unit/validator-test',
     'unit/playlist-loader-test',
     'unit/captionsrenderer-test',
-    'unit/captions-rendering-support-test'
+    'unit/tracks-helper-test'
 ]);
