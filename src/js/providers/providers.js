@@ -2,8 +2,9 @@ define([
     'providers/default',
     'providers/providers-supported',
     'providers/providers-loaded',
-    'utils/underscore'
-    ], function(Default, ProvidersSupported, ProvidersLoaded, _) {
+    'utils/underscore',
+    'utils/defaults'
+    ], function(Default, ProvidersSupported, ProvidersLoaded, _, defaults) {
 
     function Providers(config) {
         this.config = config || {};
@@ -58,9 +59,8 @@ define([
             });
         }
 
-        var F = function(){};
-        F.prototype = Default;
-        provider.prototype = new F();
+        // Fill in any missing properties with the defaults - looks at the prototype chain
+        defaults(provider.prototype, Default);
 
         // After registration, it is loaded
         ProvidersLoaded[name] = provider;

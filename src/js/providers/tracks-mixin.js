@@ -16,7 +16,6 @@ define(['utils/underscore',
         _metaCuesByTextTime: null,
         _currentTextTrackIndex: -1,
         _unknownCount: 0,
-        _renderNatively: false,
         _activeCuePosition: null,
         _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
@@ -34,7 +33,8 @@ define(['utils/underscore',
         addCuesToTrack: addCuesToTrack,
         addCaptionsCue: addCaptionsCue,
         addVTTCue: addVTTCue,
-        addVTTCuesToTrack: addVTTCuesToTrack
+        addVTTCuesToTrack: addVTTCuesToTrack,
+        renderNatively: false
     };
 
     function setTextTracks(tracks) {
@@ -44,14 +44,12 @@ define(['utils/underscore',
             return;
         }
 
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
-
         if (!this._textTracks) {
             this._initTextTracks();
         } else {
             // Remove the 608 captions track that was mutated by the browser
             this._textTracks = _.reject(this._textTracks, function(track) {
-                if ((this._renderNatively && track._id === 'nativecaptions')) {
+                if ((this.renderNatively && track._id === 'nativecaptions')) {
                     delete this._tracksById[track._id];
                     return true;
                 }
@@ -122,7 +120,7 @@ define(['utils/underscore',
             }
         }
 
-        if (this._renderNatively) {
+        if (this.renderNatively) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
@@ -141,9 +139,8 @@ define(['utils/underscore',
 
     function setupSideloadedTracks(itemTracks) {
         // Add tracks if we're starting playback or resuming after a midroll
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
-        if (!this._renderNatively) {
+        if (!this.renderNatively) {
             return;
         }
         // Determine if the tracks are the same and the embedded + sideloaded count = # of tracks in the controlbar
@@ -191,7 +188,7 @@ define(['utils/underscore',
         // Set the provider's index to the model's index, then show the selected track if it exists
         this._currentTextTrackIndex = menuIndex - 1;
 
-        if (this._renderNatively) {
+        if (this.renderNatively) {
             if (this._textTracks[this._currentTextTrackIndex]) {
                 this._textTracks[this._currentTextTrackIndex].mode = 'showing';
             }
@@ -265,14 +262,14 @@ define(['utils/underscore',
 
             track = _createTrack.call(this, itemTrack);
 
-            if (this._renderNatively || track.kind === 'metadata') {
+            if (this.renderNatively || track.kind === 'metadata') {
                 this.setTextTracks(this.video.textTracks);
             } else {
                 addTextTracks.call(this, [track]);
             }
         }
         if(_cacheVTTCue.call(this, track, vttCue)) {
-            if (this._renderNatively || track.kind === 'metadata') {
+            if (this.renderNatively || track.kind === 'metadata') {
                 _addCueToTrack(track, vttCue);
             } else {
                 track.data.push(vttCue);
@@ -341,7 +338,7 @@ define(['utils/underscore',
     function clearTracks() {
         tracksLoader.cancelXhr(this._itemTracks);
         var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
-        if (this._renderNatively || metadataTrack) {
+        if (this.renderNatively || metadataTrack) {
             _removeCues.call(this, this.video.textTracks);
             if(metadataTrack) {
                metadataTrack.oncuechange = null;
@@ -354,7 +351,7 @@ define(['utils/underscore',
         this._metaCuesByTextTime = null;
         this._unknownCount = 0;
         this._activeCuePosition = null;
-        if (this._renderNatively) {
+        if (this.renderNatively) {
             // Removing listener first to ensure that removing cues does not trigger it unnecessarily
             this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
             _removeCues.call(this, this.video.textTracks);
@@ -416,8 +413,6 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
-
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];
             // only add valid and supported kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
@@ -435,13 +430,13 @@ define(['utils/underscore',
         }
 
         // We can setup the captions menu now since we're not rendering textTracks natively
-        if (!this._renderNatively && this._textTracks && this._textTracks.length) {
+        if (!this.renderNatively && this._textTracks && this._textTracks.length) {
             this.trigger('subtitlesTracks', {tracks: this._textTracks});
         }
     }
 
     function addVTTCuesToTrack(track, vttCues) {
-        if (!this._renderNatively) {
+        if (!this.renderNatively) {
             return;
         }
 
@@ -520,7 +515,7 @@ define(['utils/underscore',
         var label = labelInfo.label;
         this._unknownCount = labelInfo.unknownCount;
 
-        if (this._renderNatively || itemTrack.kind === 'metadata') {
+        if (this.renderNatively || itemTrack.kind === 'metadata') {
             var tracks = this.video.textTracks;
             // TextTrack label is read only, so we'll need to create a new track if we don't
             // already have one with the same label
