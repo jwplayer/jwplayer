@@ -40,11 +40,10 @@ define([
                 buffer: 0
             });
 
-            // Mobile doesn't support autostart
-            // This check should be replaced with something that detects whether the current system
-            // requires a user interaction to start playback
-            if (utils.isMobile() && !config.mobileSdk) {
-                this.set('autostart', false);
+            // Videos autostart on mobile when the `muted` and `autoplay` attributes are set.
+            // Mute the player on a mobile device if autostart is set to true
+            if (this.get('autostart') && utils.isMobile() && !this.get('mobileSdk')) {
+                this.set('mute', true);
             }
 
             this.updateProviders();
@@ -219,6 +218,11 @@ define([
             _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
+            // set autoplay attributes if on a mobile device and autostart is true
+            if (this.get('autostart') && utils.isMobile() && !this.get('mobileSdk') &&
+                _provider.setAutoplayAttributes) {
+                    _provider.setAutoplayAttributes();
+            }
             _provider.on('all', _videoEventHandler, this);
 
             if (this.get('instreamMode') === true) {

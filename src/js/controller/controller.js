@@ -214,8 +214,9 @@ define([
                 if (related) {
                     related.on('nextUp', _model.setNextUp, _model);
                 }
-
-                if (_model.get('autostart')) {
+                // Start playback on desktop or when using a mobile sdk.
+                // On mobile browsers, videos will autoplay when they are in the viewport
+                if (_model.get('autostart') && (!utils.isMobile() || _model.get('mobileSdk'))) {
                     _this.play({reason: 'autostart'});
                 }
             }
