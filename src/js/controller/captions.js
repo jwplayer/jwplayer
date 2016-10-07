@@ -33,8 +33,8 @@ define(['utils/helpers',
                 _addTrack(track);
             }
             var captionsMenu = _captionsMenu();
-            this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
+            this.setCaptionsList(captionsMenu);
         }
 
         var _item = {},
@@ -75,8 +75,8 @@ define(['utils/helpers',
             }
 
             var captionsMenu = _captionsMenu();
-            this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
+            this.setCaptionsList(captionsMenu);
         }
 
         function _kindSupported(kind) {
