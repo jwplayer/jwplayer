@@ -135,10 +135,10 @@ define([
         assertProperty(assert, 'default', 'default',
             'track.defaulttrack is 2nd priority even if other properties are set');
         assertProperty(assert, 'defaulttrack', '_id', 'track._id is used if track.default is undefined');
-        assertProperty(assert, '_id', 'name', 'track.name is used if track.default or track._id is undefined');
-        assertProperty(assert, 'name', 'file',
-            'track.file is prioritized over track.label if other properties are undefined.');
-        assertProperty(assert, 'file', 'label', 'track.label only has a higher priority than track.kind');
+        assertProperty(assert, '_id', 'file', 'track.file is used if track.default or track._id is undefined');
+        assertProperty(assert, 'file', 'name',
+            'track.name is prioritized over track.label if other properties are undefined.');
+        assertProperty(assert, 'name', 'label', 'track.label only has a higher priority than track.kind');
         setCount();
         assertProperty(assert, 'label', 'kind' + count, 'track.kind is lowest priority');
         setCount();
