@@ -177,7 +177,7 @@ define([
         };
 
         this.load = function (toLoad) {
-            var plugin = this.getPlugin('vast') || this.getPlugin('googima');
+            var plugin = _this.getPlugin('vast') || _this.getPlugin('googima') || _this.getPlugin('freewheel');
             if (plugin) {
                 _controller._model.set('preInstreamState', 'instream-idle');
                 plugin.destroy();
