@@ -1,9 +1,9 @@
 define(['utils/underscore',
     'utils/id3Parser',
     'utils/helpers',
-    'utils/render-captions-natively',
-    'controller/tracks-loader'
-], function(_, ID3Parser, utils, renderCaptionsNatively, tracksLoader) {
+    'controller/tracks-loader',
+    'controller/tracks-helper'
+], function(_, ID3Parser, utils, tracksLoader, tracksHelper) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -44,12 +44,16 @@ define(['utils/underscore',
             return;
         }
 
+        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
+
         if (!this._textTracks) {
             this._initTextTracks();
         } else {
             // Need to remove internal tracks that may have been changed by the browser
             this._textTracks = _.reject(this._textTracks, function(track) {
-                if (track._id.indexOf('native') === 0) {
+                // We use the player's renderer for captions and the browser for metadata tracks in FF.
+                // This ensures we only remove the captions track in cases where the browser handles rendering
+                if ((this._renderNatively && track._id === 'nativecaptions') || track.kind === 'metadata') {
                     this._tracksById[track._id] = null;
                     return true;
                 }
@@ -68,10 +72,12 @@ define(['utils/underscore',
                         if (!track.label && track.kind === 'captions') {
                             // track label is read only in Safari
                             // 'captions' tracks without a label need a name in order for the cc menu to work
-                            track.name = _createLabel(track);
+                            var labelInfo = tracksHelper.createLabel(track, this._unknownCount);
+                            track.name = labelInfo.label;
+                            this._unknownCount = labelInfo.unknownCount;
                         }
                     } else {
-                        track._id = createTrackId.call(this, track);
+                        track._id = tracksHelper.createId(track, this._textTracks.length);
                     }
                     track.inuse = true;
                 }
@@ -134,7 +140,7 @@ define(['utils/underscore',
 
     function setupSideloadedTracks(itemTracks) {
         // Add tracks if we're starting playback or resuming after a midroll
-        this._renderNatively = renderCaptionsNatively(this.getName().name);
+        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
         if (!this._renderNatively) {
             return;
@@ -245,7 +251,8 @@ define(['utils/underscore',
 
         var trackId = 'native' + cueData.type,
             track = this._tracksById[trackId],
-            label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
+            label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata',
+            vttCue = cueData.cue;
 
         if (!track) {
             var itemTrack = {
@@ -254,19 +261,20 @@ define(['utils/underscore',
                 label: label,
                 embedded: true
             };
+
             track = _createTrack.call(this, itemTrack);
+
             if (this._renderNatively || track.kind === 'metadata') {
                 this.setTextTracks(this.video.textTracks);
             } else {
-                track.data = [];
                 addTextTracks.call(this, [track]);
             }
         }
-        if(_cacheVTTCue.call(this, track, cueData.cue)) {
+        if(_cacheVTTCue.call(this, track, vttCue)) {
             if (this._renderNatively || track.kind === 'metadata') {
-                _addCueToTrack(track, cueData.cue);
+                _addCueToTrack(track, vttCue);
             } else {
-                track.data.push(cueData.cue);
+                track.data.push(vttCue);
             }
         }
     }
@@ -407,7 +415,7 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        this._renderNatively = renderCaptionsNatively(this.getName().name);
+        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];
@@ -429,17 +437,6 @@ define(['utils/underscore',
         if (!this._renderNatively && this._textTracks && this._textTracks.length) {
             this.trigger('subtitlesTracks', {tracks: this._textTracks});
         }
-    }
-
-    function createTrackId(track) {
-        var trackId;
-        var prefix = track.kind || 'cc';
-        if (track.default || track.defaulttrack) {
-            trackId = 'default';
-        } else {
-            trackId = track._id || track.name || track.file || track.label || (prefix + this._textTracks.length);
-        }
-        return trackId;
     }
 
     function addVTTCuesToTrack(track, vttCues) {
@@ -518,7 +515,10 @@ define(['utils/underscore',
 
     function _createTrack(itemTrack) {
         var track;
-        var label = _createLabel.call(this, itemTrack);
+        var labelInfo = tracksHelper.createLabel(itemTrack, this._unknownCount);
+        var label = labelInfo.label;
+        this._unknownCount = labelInfo.unknownCount;
+
         if (this._renderNatively || itemTrack.kind === 'metadata') {
             var tracks = this.video.textTracks;
             // TextTrack label is read only, so we'll need to create a new track if we don't
@@ -527,11 +527,11 @@ define(['utils/underscore',
 
             if (track) {
                 track.kind = itemTrack.kind;
-                track.label = label;
                 track.language = itemTrack.language || '';
             } else {
                 track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
             }
+
             track.default = itemTrack.default;
             track.mode    = 'disabled';
             track.inuse = true;
@@ -541,22 +541,10 @@ define(['utils/underscore',
         }
 
         if (!track._id) {
-            track._id = createTrackId.call(this, itemTrack);
+            track._id = tracksHelper.createId(itemTrack, this._textTracks.length);
         }
 
         return track;
-    }
-
-    function _createLabel(track) {
-        var label = track.label || track.name || track.language;
-        if (!label) {
-            label = 'Unknown CC';
-            this._unknownCount++;
-            if (this._unknownCount > 1) {
-                label += ' [' + this._unknownCount + ']';
-            }
-        }
-        return label;
     }
 
     function _addTrackToList(track) {
