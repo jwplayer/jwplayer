@@ -21,7 +21,7 @@
     "grunt-contrib-connect": "1.0.2",
     "grunt-contrib-jshint": "1.0.0",
     "grunt-contrib-watch": "1.0.0",
-    "grunt-flash-compiler": "0.2.2",
+    "grunt-flash-compiler": "0.3.1",
     "grunt-karma": "2.0.0",
     "grunt-recess": "1.0.1",
     "handlebars": "4.0.5",
