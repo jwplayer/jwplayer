@@ -6,7 +6,7 @@ define([
     /* jshint maxlen: 1000, qunit: true */
 
     browser.flashVersion = function() {
-        return 11.2;
+        return 15.0;
     };
 
     // TODO: Many of these can be moved to quint/config/{type}.source{_features}
