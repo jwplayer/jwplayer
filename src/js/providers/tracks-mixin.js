@@ -32,7 +32,8 @@ define(['utils/underscore',
         addCuesToTrack: addCuesToTrack,
         addCaptionsCue: addCaptionsCue,
         addVTTCue: addVTTCue,
-        addVTTCuesToTrack: addVTTCuesToTrack
+        addVTTCuesToTrack: addVTTCuesToTrack,
+        removeCues: removeCues
     };
 
     function setTextTracks(tracks) {
@@ -443,6 +444,10 @@ define(['utils/underscore',
         while((cue = vttCues.shift())) {
             _addCueToTrack(textTrack, cue);
         }
+    }
+
+    function removeCues() {
+        _removeCues.call(this, this.video.textTracks);
     }
 
     //////////////////////
