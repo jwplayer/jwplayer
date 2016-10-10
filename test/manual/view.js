@@ -53,6 +53,7 @@ window.requireCallback = function(){
             'jw-flag-dragging',
             'jw-flag-aspect-mode',
             'jw-flag-cast-available',
+            'jw-flag-airplay-available',
             'jw-flag-live',
             'jw-flag-controlbar-only',
             'jw-flag-media-audio',

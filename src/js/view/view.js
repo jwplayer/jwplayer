@@ -429,6 +429,11 @@ define([
             _model.on('change:castActive', _onCastActive);
             _onCastActive(_model, _model.get('castActive'));
 
+            _model.on('change:airplayAvailable', _onAirplayAvailable);
+            _onAirplayAvailable(_model, _model.get('airplayAvailable'));
+            _model.on('change:airplayActive', _onAirplayActive);
+            _onAirplayActive(_model, _model.get('airplayActive'));
+
             _model.on('change:hideAdsControls', function(model, val) {
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
             });
@@ -473,6 +478,17 @@ define([
         function _onCastAvailable(model, val) {
             utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
             utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
+        }
+
+        function _onAirplayActive(model, val) {
+            // if undefined it will simply alternate
+            val = val || false;
+
+            utils.toggleClass(_playerElement, 'jw-flag-airplay', val);
+        }
+        function _onAirplayAvailable(model, val) {
+            utils.toggleClass(_playerElement, 'jw-flag-airplay-available', val);
+            utils.toggleClass(_controlsLayer, 'jw-flag-airplay-available', val);
         }
 
         function _onStretchChange(model, newVal) {
