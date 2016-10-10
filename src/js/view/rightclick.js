@@ -149,6 +149,7 @@ define([
         },
 
         destroy : function() {
+            clearTimeout(this._menuTimeout);
             if(this.el) {
                 this.hideMenu();
                 this.elementUI.off();

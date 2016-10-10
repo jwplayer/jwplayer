@@ -256,6 +256,20 @@
 
     }
 
+    /* Override default touch flag styles */
+    .touch-flag-skin-styles() {
+        &.jw-flag-touch {
+            &.jw-breakpoint-3,
+            &.jw-breakpoint-4,
+            &.jw-breakpoint-5,
+            &.jw-breakpoint-6 {
+                .jw-nextup-container {
+                    bottom: @nextup-position-bottom-touch;
+                }
+            }
+        }
+    }
+
     .controlbar-height() {
         .jw-controlbar {
             height: @controlbar-height;

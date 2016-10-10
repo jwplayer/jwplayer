@@ -3,8 +3,8 @@ define([
     'utils/css',
     'events/states',
     'utils/underscore',
-    'utils/render-captions-natively'
-], function(utils, cssUtils, states, _, renderCaptionsNatively) {
+    'controller/tracks-helper'
+], function(utils, cssUtils, states, _, tracksHelper) {
     var _style = cssUtils.style;
 
     var _defaults = {
@@ -239,7 +239,7 @@ define([
 
         function _itemReadyHandler() {
             // don't load the polyfill or do unnecessary work if rendering natively
-            if(!renderCaptionsNatively(_model.get('provider').name)) {
+            if(!tracksHelper.renderNatively(_model.get('provider').name)) {
                 require.ensure(['polyfills/vtt'], function (require) {
                     _VTTRenderer = require('polyfills/vtt');
                 }, 'polyfills.vttrenderer');
