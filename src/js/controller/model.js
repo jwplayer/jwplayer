@@ -366,7 +366,7 @@ define([
 
             if (track) {
                 // update preference if an option was selected
-                this.set('captionLabel', track.label);
+                this.set('captionLabel', track.name);
             } else {
                 this.set('captionLabel', 'Off');
             }

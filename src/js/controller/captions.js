@@ -1,7 +1,7 @@
 define(['utils/helpers',
-    'utils/render-captions-natively',
-    'controller/tracks-loader'
-], function(utils, renderCaptionsNatively, tracksLoader) {
+    'controller/tracks-loader',
+    'controller/tracks-helper'
+], function(utils, tracksLoader, tracksHelper) {
 
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_api, _model) {
@@ -24,19 +24,17 @@ define(['utils/helpers',
                 return;
             }
 
-            _tracks = [];
-            _tracksById = {};
-            _metaCuesByTextTime = {};
-            _unknownCount = 0;
             var tracks = e.tracks || [];
             for (var i = 0; i < tracks.length; i++) {
                 var track = tracks[i];
-                track.label = track.label || track.name || track.language;
+                if(_tracksById[track._id]) {
+                    continue;
+                }
                 _addTrack(track);
             }
             var captionsMenu = _captionsMenu();
-            this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
+            this.setCaptionsList(captionsMenu);
         }
 
         var _item = {},
@@ -62,12 +60,12 @@ define(['utils/helpers',
                 len = tracks && tracks.length;
 
             // Sideload tracks when not rendering natively
-            if (!renderCaptionsNatively(_model.get('provider').name) && len) {
+            if (!tracksHelper.renderNatively(_model.get('provider').name) && len) {
                 var i, track;
 
                 for (i = 0; i < len; i++) {
                     track = tracks[i];
-                    if (_kindSupported(track.kind)) {
+                    if (_kindSupported(track.kind) && !_tracksById[track._id]) {
                         _addTrack(track);
                         tracksLoader.loadFile(track,
                             _addVTTCuesToTrack.bind(null, track),
@@ -77,8 +75,8 @@ define(['utils/helpers',
             }
 
             var captionsMenu = _captionsMenu();
-            this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
+            this.setCaptionsList(captionsMenu);
         }
 
         function _kindSupported(kind) {
@@ -102,16 +100,16 @@ define(['utils/helpers',
         }
 
         function _addTrack(track) {
-
             track.data = track.data || [];
+            track.name = track.label || track.name || track.language;
+            track._id = tracksHelper.createId(track, _tracks.length);
 
-            if (!track.label) {
-                track.label = 'Unknown CC';
-                _unknownCount++;
-                if (_unknownCount > 1) {
-                    track.label += ' (' + _unknownCount + ')';
-                }
+            if (!track.name) {
+                var labelInfo = tracksHelper.createLabel(track, _unknownCount);
+                track.name = labelInfo.label;
+                _unknownCount = labelInfo.unknownCount;
             }
+
             _tracks.push(track);
             _tracksById[track._id] = track;
         }
@@ -124,7 +122,7 @@ define(['utils/helpers',
             for (var i = 0; i < _tracks.length; i++) {
                 list.push({
                     id: _tracks[i]._id,
-                    label: _tracks[i].label || 'Unknown CC'
+                    label: _tracks[i].name || 'Unknown CC'
                 });
             }
             return list;
@@ -143,7 +141,7 @@ define(['utils/helpers',
 
             for (var i = 0; i < _tracks.length; i++) {
                 var track = _tracks[i];
-                if (label && label === track.label) {
+                if (label && label === track.name) {
                     captionsMenuIndex = i + 1;
                     break;
                 } else if (track['default'] || track.defaulttrack || track._id === 'default') {

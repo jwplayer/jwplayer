@@ -74,6 +74,9 @@ define([
                     provider.mute(value);
                 }, this);
 
+                provider.volume(this.model.get('volume'));
+                provider.mute(this.model.get('mute'));
+
                 // update admodel state when set from from googima
                 provider.off();
                 provider.on(events.JWPLAYER_PLAYER_STATE, this.stateHandler, this);
