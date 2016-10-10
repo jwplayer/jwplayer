@@ -116,6 +116,7 @@ define([
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
                 cast: button('jw-icon-cast jw-off', this._api.castToggle, this._localization.cast),
+                airplay: button('jw-icon-airplay jw-off', this._api.castToggle, this._localization.airplay),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
 
@@ -137,9 +138,9 @@ define([
                     this.elements.audiotracks,
                     this.elements.mute,
                     this.elements.cast,
+                    this.elements.airplay,
                     this.elements.volume,
                     this.elements.volumetooltip,
-                    // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
                 ]
             };
@@ -181,6 +182,8 @@ define([
             this.onMediaModel(this._model, this._model.get('mediaModel'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
             this.onCastActive(this._model, this._model.get('castActive'));
+            this.onAirplayAvailable(this._model, this._model.get('airplayAvailable'));
+            this.onAirplayActive(this._model, this._model.get('airplayActive'));
             this.onCaptionsList(this._model, this._model.get('captionsList'));
 
             // Listen for model changes
@@ -190,6 +193,8 @@ define([
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
             this._model.on('change:castActive', this.onCastActive, this);
+            this._model.on('change:airplayAvailable', this.onAirplayAvailable, this);
+            this._model.on('change:airplayActive', this.onAirplayActive, this);
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
             this._model.on('change:fullscreen', this.onFullscreen, this);
@@ -306,6 +311,12 @@ define([
         },
         onCastActive : function(model, val) {
             utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
+        },
+        onAirplayAvailable : function(model, val) {
+            this.elements.airplay.toggle(val);
+        },
+        onAirplayActive : function(model, val) {
+            utils.toggleClass(this.elements.airplay.element(), 'jw-off', !val);
         },
         onElapsed : function(model, val) {
             var elapsedTime;

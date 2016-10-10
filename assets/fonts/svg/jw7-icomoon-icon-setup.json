@@ -121,6 +121,11 @@
       "order": 27,
       "name": "rewind",
       "prevSize": 32
+    },
+    {
+      "order": 32,
+      "name": "airplay",
+      "prevSize": 32
     }
   ],
   "metadata": {
@@ -129,7 +134,7 @@
       "width": 84,
       "height": 100
     },
-    "iconsHash": 289144099
+    "iconsHash": 1346267700
   },
   "height": 1024,
   "prevSize": 32,
@@ -423,6 +428,19 @@
       ],
       "defaultCode": 59648,
       "grid": 32
+    },
+    {
+      "paths": [
+        "M260 960l380-500 380 500z",
+        "M1216 64h-1152v768h212.9l48.6-64h-197.5v-640h1024v640h-197.5l48.6 64h212.9z"
+      ],
+      "width": 1280,
+      "isMulticolor2": false,
+      "grid": 32,
+      "tags": [
+        "airplay"
+      ],
+      "defaultCode": 59649
     }
   ],
   "colorThemes": [
