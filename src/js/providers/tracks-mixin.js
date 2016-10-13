@@ -49,15 +49,16 @@ define(['utils/underscore',
         if (!this._textTracks) {
             this._initTextTracks();
         } else {
-            // Need to remove internal tracks that may have been changed by the browser
+            // Remove the 608 captions track that was mutated by the browser
             this._textTracks = _.reject(this._textTracks, function(track) {
-                // We use the player's renderer for captions and the browser for metadata tracks in FF.
-                // This ensures we only remove the captions track in cases where the browser handles rendering
-                if ((this._renderNatively && track._id === 'nativecaptions') || track.kind === 'metadata') {
-                    this._tracksById[track._id] = null;
+                if ((this._renderNatively && track._id === 'nativecaptions')) {
+                    delete this._tracksById[track._id];
                     return true;
                 }
             }, this);
+
+            // Remove the ID3 track from the cache
+            delete this._tracksById.nativemetadata;
         }
 
         // filter for 'subtitles' or 'captions' tracks
