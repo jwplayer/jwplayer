@@ -75,7 +75,7 @@ define([
         __webpack_public_path__ = config.base;
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
-        config.flashplayer = config.flashplayer || utils.getScriptPath('jwplayer.js') + 'jwplayer.flash.swf';
+        config.flashplayer = config.flashplayer || config.base + 'jwplayer.flash.swf';
 
         // Non ssl pages can only communicate with flash when it is loaded
         //   from a non ssl location
