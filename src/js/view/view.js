@@ -33,6 +33,7 @@ define([
 
     var View = function(_api, _model) {
         var _playerElement,
+            _controlbarLayer,
             _controlsLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
@@ -381,6 +382,8 @@ define([
 
             _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
 
+            _controlbarLayer = _playerElement.getElementsByClassName('jw-controlbar')[0];
+
             var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
             _preview = new Preview(_model);
             _preview.setup(previewElem);
@@ -484,7 +487,7 @@ define([
             // if undefined it will simply alternate
             val = val || false;
 
-            utils.toggleClass(_playerElement, 'jw-flag-airplay', val);
+            utils.toggleClass(_controlsLayer, 'jw-flag-airplay', val);
         }
         function _onAirplayAvailable(model, val) {
             utils.toggleClass(_playerElement, 'jw-flag-airplay-available', val);
@@ -662,9 +665,6 @@ define([
             // NextUp needs to be behind the controlbar to not block other tooltips
             _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
-
-
-
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
