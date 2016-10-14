@@ -131,6 +131,9 @@ define([
                 } else {
                     return false;
                 }
+            } else if (track.embedded && timeEvent.duration < 0) {
+                // In DVR mode, need to make alignmentPosition positive for captions to work
+                return timeEvent.position - timeEvent.duration;
             }
 
             // Default to syncing with current position
