@@ -145,7 +145,9 @@ define([
             _audioTracks = null,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _visualQuality = { level: {} };
+            _visualQuality = { level: {}},
+            // whether playback can start on iOS
+            _canPlay = false;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -317,7 +319,7 @@ define([
                 return;
             }
 
-            _canSeek = true;
+            _canSeek = _canPlay = true;
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
@@ -344,8 +346,9 @@ define([
         }
 
         function _sendBufferFull() {
-            if (!_bufferFull) {
+            if (!_bufferFull || (utils.isIOS() && _canPlay)) {
                 _bufferFull = true;
+                _canPlay = false;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
@@ -448,6 +451,11 @@ define([
         }
 
         function _play() {
+            if (utils.isIOS() && _videotag.readyState !== 4) {
+                // prevent AbortError caused by playing before the `bufferFull` event
+                return;
+            }
+
             var promise = _videotag.play();
             if (promise && promise.catch) {
                 promise.catch(function(err) {
