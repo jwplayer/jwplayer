@@ -168,8 +168,6 @@ define([
 
         _setupListeners(_mediaEvents, _videotag);
 
-        // Enable AirPlay
-        _setAttribute('x-webkit-airplay', 'allow');
         _setAttribute('webkit-playsinline');
         _setAttribute('playsinline');
 
