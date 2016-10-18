@@ -145,7 +145,7 @@ define([
             _audioTracks = null,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _visualQuality = { level: {}},
+            _visualQuality = { level: {} },
             // whether playback can start on iOS
             _canPlay = false;
 
@@ -451,8 +451,9 @@ define([
         }
 
         function _play() {
+            // Wait until the canplay event (readyState === 4) fires to play on iOS.
+            // Otherwise, calling play will result in an AbortError
             if (utils.isIOS() && _videotag.readyState !== 4) {
-                // prevent AbortError caused by playing before the `bufferFull` event
                 return;
             }
 

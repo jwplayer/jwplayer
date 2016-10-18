@@ -42,7 +42,7 @@ define([
 
             // Videos autostart on mobile when the `muted` and `autoplay` attributes are set.
             // Mute the player on a mobile device if autostart is set to true
-            if (this.get('autostart') && utils.isMobile() && !this.get('mobileSdk')) {
+            if (this.autoStartOnMobile()) {
                 this.set('mute', true);
             }
 
@@ -219,8 +219,7 @@ define([
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
             // set autoplay attributes if on a mobile device and autostart is true
-            if (this.get('autostart') && utils.isMobile() && !this.get('mobileSdk') &&
-                _provider.setAutoplayAttributes) {
+            if (this.autoStartOnMobile() && _provider.setAutoplayAttributes) {
                     _provider.setAutoplayAttributes();
             }
             _provider.on('all', _videoEventHandler, this);
@@ -400,6 +399,10 @@ define([
 
         this.setNextUp = function (nextUp) {
             this.set('nextUp', nextUp);
+        };
+
+        this.autoStartOnMobile = function() {
+            return this.get('autostart') && utils.isMobile() && !this.get('mobileSdk');
         };
     };
 
