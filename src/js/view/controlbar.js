@@ -317,9 +317,6 @@ define([
         },
         onAirplayActive : function(model, val) {
             utils.toggleClass(this.elements.airplay.element(), 'jw-off', !val);
-            if (this.elements.mute) {
-                this.elements.mute.toggle(!val);
-            }
         },
         onElapsed : function(model, val) {
             var elapsedTime;
