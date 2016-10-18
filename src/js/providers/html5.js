@@ -546,8 +546,6 @@ define([
                 _videotag.removeAttribute('src');
                 _videotag.removeAttribute('jw-loaded');
                 _videotag.removeAttribute('jw-played');
-                _videotag.removeAttribute('autoplay');
-                _videotag.removeAttribute('muted');
 
                 dom.emptyElement(_videotag);
                 _currentQuality = -1;
@@ -1024,6 +1022,11 @@ define([
         this.setAutoplayAttributes = function() {
             _setAttribute('autoplay');
             _setAttribute('muted');
+        };
+
+        this.removeAutoplayAttributes = function() {
+            _videotag.removeAttribute('autoplay');
+            _videotag.removeAttribute('muted');
         };
 
         function _setAudioTracks(tracks) {

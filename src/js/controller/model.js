@@ -218,6 +218,11 @@ define([
             _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
+
+            if (_provider.removeAutoplayAttributes) {
+                _provider.removeAutoplayAttributes();
+            }
+
             // set autoplay attributes if on a mobile device and autostart is true
             if (this.autoStartOnMobile() && _provider.setAutoplayAttributes) {
                     _provider.setAutoplayAttributes();
