@@ -33,7 +33,6 @@ define([
 
     var View = function(_api, _model) {
         var _playerElement,
-            _controlbarLayer,
             _controlsLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
@@ -381,8 +380,6 @@ define([
             _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
 
             _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
-
-            _controlbarLayer = _playerElement.getElementsByClassName('jw-controlbar')[0];
 
             var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
             _preview = new Preview(_model);
