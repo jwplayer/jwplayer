@@ -82,7 +82,6 @@ define([
 
             _model.setup(config, storage);
             _view  = this._view  = new View(_api, _model);
-            _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
@@ -178,6 +177,9 @@ define([
                     model.set('state', modelState);
                 });
             });
+
+            // Ensure captionsList event is raised after playlistItem
+            _captions = new Captions(_api, _model);
 
             function _triggerAfterReady(type, e) {
                 _this.triggerAfterReady(type, e);

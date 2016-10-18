@@ -537,7 +537,14 @@
     // position of the cue box. The reference edge will be resolved later when
     // the box orientation styles are applied.
     var textPos = 0;
-    switch (cue.positionAlign) {
+    // Modified on 10/05/2016 by Evol Greaves: evol@jwplayer.com.
+    // The polyfill used cue.positionAlign to determine whether text should be left,
+    // center or right aligned. However, this value is read only after a cue has been created in FF though the
+    // spec says this value should be settable. See below link:
+    // https://w3c.github.io/webvtt/#ref-for-enumdef-positionalignsetting-1
+    // The cue.align property is settable and other browsers use it as the offset from which the cue.position
+    // value is applied.
+    switch (cue.align) {
     case "start":
       textPos = cue.position;
       break;
