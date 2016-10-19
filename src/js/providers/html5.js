@@ -145,7 +145,9 @@ define([
             _audioTracks = null,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _visualQuality = { level: {} };
+            _visualQuality = { level: {} },
+            // whether playback can start on iOS
+            _canPlay = false;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -317,7 +319,7 @@ define([
                 return;
             }
 
-            _canSeek = true;
+            _canSeek = _canPlay = true;
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
@@ -344,8 +346,9 @@ define([
         }
 
         function _sendBufferFull() {
-            if (!_bufferFull) {
+            if (!_bufferFull || (utils.isIOS() && _canPlay)) {
                 _bufferFull = true;
+                _canPlay = false;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
@@ -448,6 +451,12 @@ define([
         }
 
         function _play() {
+            // Wait until the canplay event - readystate === 4 (HAVE_ENOUGH_DATA) - fires to play on iOS.
+            // Otherwise, calling play will result in an AbortError
+            if (utils.isIOS() && _videotag.readyState !== 4) {
+                return;
+            }
+
             var promise = _videotag.play();
             if (promise && promise.catch) {
                 promise.catch(function(err) {
@@ -1009,6 +1018,16 @@ define([
         this.getAudioTracks = _getAudioTracks;
 
         this.getCurrentAudioTrack = _getCurrentAudioTrack;
+
+        this.setAutoplayAttributes = function() {
+            _setAttribute('autoplay');
+            _setAttribute('muted');
+        };
+
+        this.removeAutoplayAttributes = function() {
+            _videotag.removeAttribute('autoplay');
+            _videotag.removeAttribute('muted');
+        };
 
         function _setAudioTracks(tracks) {
             _audioTracks = null;

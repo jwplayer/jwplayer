@@ -216,7 +216,7 @@ define([
                 if (related) {
                     related.on('nextUp', _model.setNextUp, _model);
                 }
-
+                // Start playback on desktop and mobile browsers
                 if (_model.get('autostart')) {
                     _this.play({reason: 'autostart'});
                 }
