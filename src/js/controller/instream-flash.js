@@ -77,9 +77,14 @@ define([
                 provider.volume(this.model.get('volume'));
                 provider.mute(this.model.get('mute'));
 
-                // update admodel state when set from from googima
+                // update admodel state when set from googima
                 provider.off();
                 provider.on(events.JWPLAYER_PLAYER_STATE, this.stateHandler, this);
+
+                // trigger time evemt when sent from freewheel
+                provider.on(events.JWPLAYER_MEDIA_TIME, function(data) {
+                    this.trigger(events.JWPLAYER_MEDIA_TIME, data);
+                }, this);
             };
         },
 
