@@ -225,7 +225,7 @@ define([
 
             // set autoplay attributes if on a mobile device and autostart is true
             if (this.autoStartOnMobile() && _provider.setAutoplayAttributes) {
-                    _provider.setAutoplayAttributes();
+                _provider.setAutoplayAttributes();
             }
             _provider.on('all', _videoEventHandler, this);
 

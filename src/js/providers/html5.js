@@ -451,7 +451,7 @@ define([
         }
 
         function _play() {
-            // Wait until the canplay event (readyState === 4) fires to play on iOS.
+            // Wait until the canplay event - readystate === 4 (HAVE_ENOUGH_DATA) - fires to play on iOS.
             // Otherwise, calling play will result in an AbortError
             if (utils.isIOS() && _videotag.readyState !== 4) {
                 return;
