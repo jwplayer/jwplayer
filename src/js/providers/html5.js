@@ -278,7 +278,7 @@ define([
             }
             _position = currentTime;
         }
-        
+
         function _getDuration() {
             var duration = _videotag.duration;
             var end = _getSeekableEnd();
@@ -291,7 +291,7 @@ define([
             }
             return duration;
         }
-        
+
         function _updateDuration(duration) {
             _duration = duration;
             if (_delayedSeek && duration && duration !== Infinity) {
@@ -608,6 +608,11 @@ define([
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
             this.setupSideloadedTracks(item.tracks);
+
+            // Update poster image for video element.
+            if (item.image) {
+                _setAttribute('poster', item.image);
+            }
         };
 
         this.load = function(item) {
