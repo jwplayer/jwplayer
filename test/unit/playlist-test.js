@@ -12,7 +12,8 @@ define([
         return _.isObject(item) && _.isArray(item.sources) && _.isArray(item.tracks);
     }
 
-    module('playlist');
+    QUnit.module('playlist');
+    var test = QUnit.test.bind(QUnit);
 
     test('Test initialized successfully', function(assert) {
         assert.expect(3);

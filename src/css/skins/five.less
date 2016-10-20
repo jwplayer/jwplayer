@@ -1,4 +1,3 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-five {
@@ -13,6 +12,7 @@
     @buffer-color: #9c9a9d;
     @rail-color: #b8b6b7;
     @thumb-color: @progress-color;
+    @volume-background: #333;
 
     @display-icon-color: @controlbar-background;
     @display-icon-hover-color: #fff;
@@ -29,9 +29,13 @@
     
     @five-border-radius: 0;
 
-    #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
+    @controlbar-height: 2em;
 
+    #namespace > .controlbar-height();
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
+    .skin-element-padding();
     /* Styles for play button container on idle */
     .jw-display-icon-container {
         border-radius: @five-border-radius;
@@ -44,49 +48,6 @@
         &:hover,
         &.jw-active-option {
             color: #fff;
-        }
-    }
-    
-    /* Playlist */
-    .jw-playlist-container {
-        left: -42%;
-        background-color: #fff;
-
-        .jw-option {
-            border-bottom: 1px solid #ECECEC;
-            background-color: #fff;
-            margin-right: 8px;
-            color: @inactive-color;
-
-            // Menu items are black when active, or hovered
-            &:hover,
-            &.jw-active-option {
-                background-color: #ECECEC;
-                color: @hover-color;
-            }
-
-            // Number turn red when li is hovered
-            &:hover {              
-                color: @active-color;
-            }
-        }
-
-        // play icon is always red
-        .jw-label .jw-icon-play {
-            color: @active-color;
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #ECECEC;
-        }
-
-        ::-webkit-scrollbar {
-            width: 2px;
-            border: 10px solid #fff;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: @active-color;
         }
     }
     
@@ -153,11 +114,10 @@
         .jw-knob {
             margin-bottom: 2px/-2;
             width: .6em;
-
+            height: 2px;
             background: @rail-vert-gradient;
             border-radius: @five-border-radius;
-            height: 2px;
-            width: 100%;
+            .horizontally-centered-rail-element(@rail-height, 0.6em);
         }
     }
     

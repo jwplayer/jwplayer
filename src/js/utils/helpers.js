@@ -5,11 +5,12 @@ define([
     'utils/dom',
     'utils/css',
     'utils/parser',
+    'utils/id3Parser',
     'utils/ajax',
     'utils/validator',
     'utils/playerutils',
     'utils/trycatch'
-], function(strings, _, browser, dom, css, parser, ajax, validator, playerutils, trycatch) {
+], function(strings, _, browser, dom, css, parser, id3Parser, ajax, validator, playerutils, trycatch) {
 
     var utils = {};
 
@@ -56,7 +57,7 @@ define([
     utils.prefix = strings.prefix;
     utils.suffix = strings.suffix;
 
-    _.extend(utils, parser, validator, browser, ajax, dom, css, playerutils, trycatch);
+    _.extend(utils, parser, id3Parser, validator, browser, ajax, dom, css, playerutils, trycatch);
 
     return utils;
 });

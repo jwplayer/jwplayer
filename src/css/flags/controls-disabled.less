@@ -1,9 +1,23 @@
 .jw-flag-controls-disabled {
     .jw-controls {
-        display: none;
+        visibility: hidden;
+    }
+
+    .jw-logo {
+        visibility: visible;
     }
 
     .jw-media {
         cursor: auto;
+    }
+
+    &.jwplayer {
+        .jw-captions {
+            max-height: none;
+        }
+
+        video::-webkit-media-text-track-container {
+            max-height: none;
+        }
     }
 }

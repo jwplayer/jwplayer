@@ -38,15 +38,17 @@
         display: none;
     }
 
-    &:focus, .jw-swf {
+    &.jw-no-focus:focus, .jw-swf {
         outline: none;
+    }
+
+    &.jw-ie:focus {
+        outline: #585858 dotted 1px;
     }
 
     &:hover {
         .jw-display-icon-container {
             background-color: @display-bkgd-color;
-            background: @display-bkgd-color;
-            background-size: @display-bkgd-color
         }
     }
 }
@@ -66,26 +68,13 @@
     cursor: pointer;
 }
 
+.jw-overlays {
+    cursor: auto;
+}
+
 .jw-media.jw-media-show {
     visibility: visible;
     opacity: 1;
-}
-
-.jw-media video {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin: auto;
-    background: transparent;
-
-    // Hides the native play button pseudoelement in iOS
-    &::-webkit-media-controls-start-playback-button {
-        display: none;
-    }
 }
 
 .jw-controls {
@@ -98,6 +87,9 @@
         position: absolute;
         top: 0;
         right: 0;
+        left: 0;
+        // this should be adjusted in different skins based on controlbar height
+        bottom: @controlbar-height;
     }
 }
 
@@ -116,6 +108,19 @@
 
 .jw-plugin {
     position: absolute;
+    bottom: 2.5em;
+
+    .jw-banner {
+        max-width: 100%;
+        opacity: 0;
+        cursor: pointer;
+        position: absolute;
+        margin: auto auto 0 auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: block;
+    }
 }
 
 .jw-cast-screen {
@@ -136,10 +141,6 @@
     .jw-icon-play;
 }
 
-.jw-tab-focus:focus {
-    outline: solid 2px #0b7ef4;
-}
-
 // Allow pointer events through to the provider
 .jw-preview, .jw-captions, .jw-title, .jw-overlays, .jw-controls {
     pointer-events : none;
@@ -147,8 +148,7 @@
 
 // These items can intercept pointer-events
 .jw-overlays > div,
-.jw-media, .jw-controlbar, .jw-dock, .jw-logo, .jw-skip, .jw-display-icon-container {
+.jw-media, .jw-controlbar, .jw-dock, .jw-logo, .jw-skip, .jw-display-icon-container,
+.jw-nextup-container {
     pointer-events: all;
 }
-
-

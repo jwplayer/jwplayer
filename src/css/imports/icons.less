@@ -1,6 +1,7 @@
-@import "vars";
 @import "mixins";
 
+/*** When not base64 encoded, fallbacks will work so that we won't load both fonts if we don't have to ***/
+/*** TTF is used for support for some older version of Android Stock (4.3 and less) ***/
 @font-face {
     font-family: 'jw-icons';
     src: url('../../../assets/fonts/jw-icons.woff') format('woff'),
@@ -77,6 +78,7 @@
     }
 }
 
+.jw-watermark,
 .jw-rightclick-logo {
     &:before {
         content: "\e60b";
@@ -98,12 +100,6 @@
 .jw-icon-play {
     &:before {
         content: "\e60e";
-    }
-}
-
-.jw-icon-prev {
-    &:before {
-        content: "\e60f";
     }
 }
 
@@ -135,9 +131,8 @@
     }
 }
 
-.jw-icon-playlist {
+.jw-icon-rewind {
     &:before {
-        content: "\e616";
+        content: "\e900";
     }
 }
-

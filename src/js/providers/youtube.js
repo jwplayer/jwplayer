@@ -1,14 +1,13 @@
 define([
     'utils/helpers',
     'utils/css',
-    'utils/stretching',
     'utils/underscore',
     'events/events',
     'events/states',
     'utils/scriptloader',
     'providers/default',
     'utils/backbone.events'
-], function(utils, cssUtils, stretchUtils, _, events, states, scriptloader, DefaultProvider, Events) {
+], function(utils, cssUtils, _, events, states, scriptloader, DefaultProvider, Events) {
     var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
         _isMobile = utils.isMobile();
 
@@ -59,8 +58,8 @@ define([
 
         // Load iFrame API
         if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === scriptloader.loaderstatus.NEW) {
-            _scriptLoader.addEventListener(events.COMPLETE, _onLoadSuccess);
-            _scriptLoader.addEventListener(events.ERROR, _onLoadError);
+            _scriptLoader.on(events.COMPLETE, _onLoadSuccess);
+            _scriptLoader.on(events.ERROR, _onLoadError);
             _scriptLoader.load();
         }
 
@@ -78,9 +77,12 @@ define([
         }
 
         function _onLoadError() {
-            _scriptLoader = null;
-            // console.log('Error loading Youtube iFrame API: %o', event);
-            // TODO: dispatch video error
+            if (_scriptLoader) {
+                _scriptLoader.off();
+                _scriptLoader = null;
+                // console.log('Error loading Youtube iFrame API: %o', event);
+                // TODO: dispatch video error
+            }
         }
 
         function _getVideoLayer() {
@@ -244,6 +246,10 @@ define([
             switch (_youtubeState) {
 
                 case youtubeStates.UNSTARTED: // -1: //unstarted
+                    // play video on android to avoid being stuck in this state
+                    if (utils.isAndroid()) {
+                        _youtubePlayer.playVideo();
+                    }
                     return;
 
                 case youtubeStates.ENDED: // 0: //ended (idle after playback)
@@ -286,6 +292,10 @@ define([
 
                 case youtubeStates.CUED: // 5: //video cued (idle before playback)
                     _this.setState(states.IDLE);
+                    // play video on android to avoid being stuck in this state
+                    if (utils.isAndroid()) {
+                        _youtubePlayer.playVideo();
+                    }
                     return;
             }
         }
@@ -361,10 +371,6 @@ define([
             var url = item.sources[0].file;
             var videoId = utils.youTubeID(url);
 
-            if (!item.image) {
-                item.image = '//i.ytimg.com/vi/' + videoId + '/0.jpg';
-            }
-
             _this.volume(_playerConfig.volume);
             _this.mute(_playerConfig.mute);
             _this.setVisibility(true);
@@ -374,7 +380,8 @@ define([
                 _youtubeEmbedReadyCallback = function() {
                     _embedYoutubePlayer(videoId);
                 };
-                _readyCheck();
+                // make sure _youtubeAPI is set before running readyCheck
+                _onLoadSuccess();
                 return;
             }
 
@@ -536,11 +543,8 @@ define([
             }
         };
 
-        this.resize = function(width, height, stretching) {
-            return stretchUtils.stretch(stretching,
-                _element,
-                width, height,
-                _element.clientWidth, _element.clientHeight);
+        this.resize = function(/* width, height, stretching */) {
+            return false;
         };
 
         this.checkComplete = function() {
@@ -600,19 +604,17 @@ define([
             }
         };
 
-        this.getName = function() {
-            return { name: 'youtube' };
-        };
+        this.getName = YoutubeProvider.getName;
     }
 
     YoutubeProvider.getName = function() {
         return { name: 'youtube' };
     };
 
-    return {
-        register : function(jwplayer) {
-            jwplayer.api.registerProvider(YoutubeProvider);
-        }
+    YoutubeProvider.register = function(jwplayer) {
+        jwplayer.api.registerProvider(YoutubeProvider);
     };
+
+    return YoutubeProvider;
 
 });

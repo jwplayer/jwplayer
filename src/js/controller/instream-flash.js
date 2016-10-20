@@ -4,8 +4,9 @@ define([
     'events/change-state-event',
     'events/events',
     'events/states',
+    'utils/helpers',
     'utils/underscore'
-], function(Events, Model, changeStateEvent, events, states, _) {
+], function(Events, Model, changeStateEvent, events, states, utils, _) {
 
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
@@ -26,17 +27,31 @@ define([
     InstreamFlash.prototype = _.extend({
 
         init: function() {
+            // Pause playback when throttled, and only resume is paused here
+            if (utils.isChrome()) {
+                var _throttleTimeout = -1;
+                var _throttlePaused = false;
+                this.swf.on('throttle', function(e) {
+                    clearTimeout(_throttleTimeout);
 
-            this.swf.on('instream:state', function(evt) {
-                switch (evt.newstate) {
-                    case states.PLAYING:
-                        this._adModel.set('state', evt.newstate);
-                        break;
-                    case states.PAUSED:
-                        this._adModel.set('state', evt.newstate);
-                        break;
-                }
-            }, this)
+                    if (e.state === 'resume') {
+                        if (_throttlePaused) {
+                            _throttlePaused = false;
+                            this.instreamPlay();
+                        }
+                    } else {
+                        var _this = this;
+                        _throttleTimeout = setTimeout(function () {
+                            if (_this._adModel.get('state') === states.PLAYING) {
+                                _throttlePaused = true;
+                                _this.instreamPause();
+                            }
+                        }, 250);
+                    }
+                }, this);
+            }
+
+            this.swf.on('instream:state', this.stateHandler, this)
             .on('instream:time', function(evt) {
                 this._adModel.set('position', evt.position);
                 this._adModel.set('duration', evt.duration);
@@ -50,6 +65,28 @@ define([
             }, this);
 
             this.swf.triggerFlash('instream:init');
+
+            this.applyProviderListeners = function(provider){
+                this.model.on('change:volume', function(data, value) {
+                    provider.volume(value);
+                }, this);
+                this.model.on('change:mute', function(data, value) {
+                    provider.mute(value);
+                }, this);
+
+                // update admodel state when set from from googima
+                provider.off();
+                provider.on(events.JWPLAYER_PLAYER_STATE, this.stateHandler, this);
+            };
+        },
+
+        stateHandler: function(evt) {
+            switch (evt.newstate) {
+            case states.PLAYING:
+            case states.PAUSED:
+                this._adModel.set('state', evt.newstate);
+                break;
+            }
         },
 
         instreamDestroy: function() {

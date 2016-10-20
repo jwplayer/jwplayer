@@ -7,6 +7,37 @@ define([
     'utils/scriptloader'
 ], function(pluginsUtils, utils, events, Events, _, scriptloader) {
 
+    function _addToPlayerGenerator(_api, pluginInstance, div) {
+        return function() {
+            var overlaysElement = _api.getContainer().getElementsByClassName('jw-overlays')[0];
+
+            // This should probably be an error
+            if (!overlaysElement) {
+                return;
+            }
+
+            overlaysElement.appendChild(div);
+            div.left = overlaysElement.style.left;
+            div.top = overlaysElement.style.top;
+
+            pluginInstance.displayArea = overlaysElement;
+        };
+    }
+
+    function _pluginResizeGenerator(pluginInstance) {
+        function resize() {
+            var displayarea = pluginInstance.displayArea;
+            if (displayarea) {
+                pluginInstance.resize(displayarea.clientWidth, displayarea.clientHeight);
+            }
+        }
+        return function() {
+            resize();
+            // Sometimes a mobile device may trigger resize before the new sizes are finalized
+            setTimeout(resize, 400);
+        };
+    }
+
     var PluginLoader = function (model, _config) {
         var _this = _.extend(this, Events),
             _status = scriptloader.loaderstatus.NEW,
@@ -84,9 +115,8 @@ define([
             _checkComplete();
         }
 
-        this.setupPlugins = function (api, playerModel, resizer) {
+        this.setupPlugins = function (api, playerModel) {
             var flashPlugins = [],
-                jsPlugins = {},
                 plugins = model.getPlugins();
 
             var pluginsConfig = playerModel.get('plugins');
@@ -111,10 +141,14 @@ define([
                         var div = document.createElement('div');
                         div.id = api.id + '_' + pluginName;
                         div.className = 'jw-plugin jw-reset';
-                        jsPlugins[pluginName] = pluginObj.getNewInstance(api,
-                            _.extend({}, pluginsConfig[pluginURL]), div);
-                        api.onReady(resizer(jsPlugins[pluginName], div, true));
-                        api.onResize(resizer(jsPlugins[pluginName], div));
+
+                        var pluginOptions = _.extend({}, pluginsConfig[pluginURL]);
+                        var pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
+
+                        pluginInstance.addToPlayer   = _addToPlayerGenerator(api, pluginInstance, div);
+                        pluginInstance.resizeHandler = _pluginResizeGenerator(pluginInstance);
+
+                        api.addPlugin(pluginName, pluginInstance, div);
                     }
 
                 });
@@ -124,7 +158,6 @@ define([
                 }
             });
 
-            api.plugins = jsPlugins;
             playerModel.set('flashPlugins', flashPlugins);
         };
 

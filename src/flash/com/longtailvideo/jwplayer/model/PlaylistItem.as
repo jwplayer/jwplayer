@@ -119,8 +119,8 @@ public dynamic class PlaylistItem {
         return _duration;
     }
 
-    public function set duration(d:*):void {
-        _duration = Strings.seconds(String(d));
+    public function set duration(value:*):void {
+        _duration = getTimeValue(value);
         if (_start > _duration && _duration > 0) {
             _duration += _start;
         }
@@ -132,11 +132,22 @@ public dynamic class PlaylistItem {
         return _start;
     }
 
-    public function set start(s:*):void {
-        _start = Strings.seconds(String(s));
+    public function set start(value:*):void {
+        _start = getTimeValue(value);
         if (_start > _duration && _duration > 0) {
             _duration += _start;
         }
+    }
+
+    [Inline]
+    final private function getTimeValue(value:*):Number {
+        if (value is Number) {
+            if (isNaN(value)) {
+                return 0;
+            }
+            return value;
+        }
+        return Strings.seconds(String(value));
     }
 
     protected var _streamer:String = "";
@@ -146,9 +157,8 @@ public dynamic class PlaylistItem {
         if (_levels.length > 0 && _currentLevel > -1 && _currentLevel < _levels.length) {
             var level:PlaylistItemLevel = _levels[_currentLevel] as PlaylistItemLevel;
             return level.streamer ? level.streamer : _streamer;
-        } else {
-            return _streamer;
         }
+        return _streamer;
     }
 
     /** Streamer setter.  Note, if levels are defined, this will be ignored. **/
@@ -203,19 +213,6 @@ public dynamic class PlaylistItem {
     /** Insert an additional bitrate level, keeping the array sorted from highest to lowest. **/
     public function addLevel(newLevel:PlaylistItemLevel):void {
         if (validExtension(newLevel)) {
-            // Removing playlist level sorting
-            /*				if (_currentLevel < 0) _currentLevel = 0;
-             for (var i:Number = 0; i < _levels.length; i++) {
-             var level:PlaylistItemLevel = _levels[i] as PlaylistItemLevel;
-             if (newLevel.bitrate > level.bitrate) {
-             _levels.splice(i, 0, newLevel);
-             return;
-             } else if ( (isNaN(newLevel.bitrate) || newLevel.bitrate == level.bitrate) && newLevel.width > level.width) {
-             _levels.splice(i, 0, newLevel);
-             return;
-             }
-             }
-             */
             _levels.push(newLevel);
         }
     }
@@ -258,9 +255,9 @@ public dynamic class PlaylistItem {
                     _type = lType;
                     return true;
                 }
-            } else {
+            } else if (_provider) {
                 // No valid extension, but if provider is set manually, try to play using that provider.
-                if (_provider) return true;
+                return true;
             }
         }
         return false;
@@ -281,6 +278,19 @@ public dynamic class PlaylistItem {
         return null;
     }
 
+    public function get provider():String {
+        if (_provider) {
+            return _provider;
+        } else if (_levels.length > 0) {
+            return typeMap(levelType(_levels[_currentLevel]));
+        }
+        return null;
+    }
+
+    public function set provider(p:*):void {
+        _provider = (p == "audio") ? "sound" : p;
+    }
+
     private static function extensionMap(extension:String):String {
         switch (extension) {
             case "flv":
@@ -296,6 +306,8 @@ public dynamic class PlaylistItem {
                 return "aac";
             case "mp3":
                 return "mp3";
+            case "m3u8":
+                return "hls";
             case "smil":
                 return "rtmp";
             case "webm":
@@ -318,6 +330,8 @@ public dynamic class PlaylistItem {
             case "mpeg":
             case "sound":
                 return "sound";
+            case "hls":
+                return "hls";
             case "rtmp":
                 return "rtmp";
         }

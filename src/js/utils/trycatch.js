@@ -7,7 +7,8 @@ define([
         args = args || [];
 
         // if in debug mode, let 'er blow!
-        if (window.jwplayer && window.jwplayer.debug) {
+        var jwplayer = window.jwplayer;
+        if (jwplayer && jwplayer.debug) {
             return fn.apply(ctx, args);
         }
 
@@ -20,9 +21,10 @@ define([
         }
     };
 
-    var jwError = function (name, message) {
+    var jwError = function (name, error) {
         this.name = name;
-        this.message = message;
+        this.message = error.message || error.toString();
+        this.error = error;
     };
 
     return {

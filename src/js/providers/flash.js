@@ -5,11 +5,21 @@ define([
     'events/states',
     'utils/embedswf',
     'providers/default',
-    'utils/backbone.events'
-], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events) {
+    'utils/backbone.events',
+    'providers/tracks-mixin'
+], function(utils, _, events, states, EmbedSwf, DefaultProvider, Events, Tracks) {
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
+    }
+
+    function flashThrottleTarget(config) {
+        var a = document.createElement('a');
+        a.href = config.flashplayer;
+
+        var sameHost = (a.hostname === window.location.host);
+
+        return utils.isChrome() && !sameHost;
     }
 
     function FlashProvider(_playerId, _playerConfig) {
@@ -17,6 +27,7 @@ define([
         var _container;
         var _swf;
         var _item = null;
+        var _flashBlockedTimeout = -1;
         var _beforecompleted = false;
         var _currentQuality = -1;
         var _qualityLevels = null;
@@ -25,6 +36,7 @@ define([
         var _flashProviderType;
         var _attached = true;
         var _fullscreen = false;
+        var _this = this;
 
         var _ready = function() {
             return _swf && _swf.__ready;
@@ -37,20 +49,6 @@ define([
         };
 
         var _customLabels = _getCustomLabels();
-
-        /** Translate sources into quality levels, assigning custom levels if present. **/
-        function _labelLevels(levels) {
-            if (_customLabels) {
-                for (var i = 0; i < levels.length; i++) {
-                    var level = levels[i];
-                    if (level.bitrate) {
-                        // get label with nearest rate match
-                        var sourceKBps = Math.round(level.bitrate / 1024);
-                        level.label = _getNearestCustomLabel(sourceKBps);
-                    }
-                }
-            }
-        }
 
         function _getNearestCustomLabel(sourceKBps) {
             // get indexed value
@@ -101,13 +99,82 @@ define([
             };
         }
 
-        _.extend(this, Events, {
+        function checkFlashBlocked() {
+            _flashBlockedTimeout = setTimeout(function() {
+                Events.trigger.call(_this, 'flashBlocked');
+            }, 4000);
+            _swf.once('embedded', function() {
+                removeBlockedCheck();
+                Events.trigger.call(_this, 'flashUnblocked');
+            }, _this);
+        }
+
+        function onFocus() {
+            removeBlockedCheck();
+            checkFlashBlocked();
+        }
+
+        function removeBlockedCheck() {
+            clearTimeout(_flashBlockedTimeout);
+            window.removeEventListener('focus', onFocus);
+        }
+
+        function _updateLevelsEvent(e) {
+            var levels = e.levels;
+            for (var i = 0; i < levels.length; i++) {
+                var level = levels[i];
+                // Set original index
+                level.index = i;
+                // Translate sources into quality levels, assigning custom levels if present
+                if (_customLabels && level.bitrate) {
+                    // get label with nearest rate match
+                    var sourceKbps = Math.round(level.bitrate / 1000);
+                    level.label = _getNearestCustomLabel(sourceKbps);
+                }
+            }
+            e.levels =
+                _qualityLevels = _sortedLevels(e.levels);
+            e.currentQuality =
+                _currentQuality = _getSortedIndex(_qualityLevels, e.currentQuality);
+        }
+
+        function _sortedLevels(levels) {
+            return levels.sort(function(obj1, obj2) {
+                if (obj1.height && obj2.height) {
+                    return obj2.height - obj1.height;
+                }
+                return obj2.bitrate - obj1.bitrate;
+            });
+        }
+
+        function _getSortedIndex(levels, originalIndex) {
+            for (var i = 0; i < levels.length; i++) {
+                if (levels[i].index === originalIndex) {
+                    return  i;
+                }
+            }
+        }
+
+
+        _.extend(this, Events, Tracks, {
+                init: function(item) {
+                    // if not preloading or autostart is true, do nothing
+                    if (!item.preload || item.preload === 'none' || _playerConfig.autostart) {
+                        return;
+                    } else {
+                        _item = item;
+                    }
+                },
                 load: function(item) {
                     _item = item;
                     _beforecompleted = false;
                     this.setState(states.LOADING);
+                    this.setupSideloadedTracks(item.tracks);
                     _flashCommand('load', item);
-                    this.sendMediaType(item.sources);
+                    // HLS mediaType comes from the AdaptiveProvider
+                    if(item.sources.length && item.sources[0].type !== 'hls') {
+                        this.sendMediaType(item.sources);
+                    }
                 },
                 play: function() {
                     _flashCommand('play');
@@ -120,6 +187,7 @@ define([
                     _flashCommand('stop');
                     _currentQuality = -1;
                     _item = null;
+                    this.clearTracks();
                     this.setState(states.IDLE);
                 },
                 seek: function(seekPos) {
@@ -166,12 +234,14 @@ define([
                         return found;
                     }
 
-                    return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId));
+                    return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId),
+                        _playerConfig.wmode);
                 },
 
                 getContainer: function() {
                     return _container;
                 },
+
                 setContainer: function(parent) {
                     if (_container === parent) {
                         // ignore instream's attempt to put provider back in it's place
@@ -181,9 +251,16 @@ define([
 
                     _swf = this.getSwfObject(parent);
 
+                    // Wait until the window gets focus to see check flash is blocked
+                    if (document.hasFocus()) {
+                        checkFlashBlocked();
+                    } else {
+                        window.addEventListener('focus', onFocus);
+                    }
+
                     // listen to events sendEvented from flash
                     _swf.once('ready', function() {
-
+                        removeBlockedCheck();
                         // After plugins load, then execute commandqueue
                         _swf.once('pluginsLoaded', function() {
                             _swf.queueCommands = false;
@@ -193,18 +270,26 @@ define([
 
                         // setup flash player
                         var config = _.extend({}, _playerConfig);
-                        _flashCommand('setup', config);
-
+                        var result = _swf.triggerFlash('setup', config);
+                        if (result === _swf) {
                         _swf.__ready = true;
+                        } else {
+                            this.trigger(events.JWPLAYER_MEDIA_ERROR, result);
+                        }
+
+                        // init if _item is defined
+                        if (_item) {
+                            _flashCommand('init', _item);
+                        }
 
                     }, this);
 
                     var forwardEventsWithData = [
-                        events.JWPLAYER_MEDIA_META,
                         events.JWPLAYER_MEDIA_ERROR,
-                        'subtitlesTracks',
+                        events.JWPLAYER_MEDIA_SEEK,
+                        events.JWPLAYER_MEDIA_SEEKED,
                         'subtitlesTrackChanged',
-                        'subtitlesTrackData'
+                        'mediaType'
                     ];
 
                     var forwardEventsWithDataDuration = [
@@ -217,71 +302,111 @@ define([
                     ];
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
-                    _swf.on(events.JWPLAYER_MEDIA_LEVELS, function(e) {
-                        _labelLevels(e.levels);
-                        _currentQuality = e.currentQuality;
-                        _qualityLevels = e.levels;
+                    _swf.on([events.JWPLAYER_MEDIA_LEVELS, events.JWPLAYER_MEDIA_LEVEL_CHANGED].join(' '), function(e) {
+                        _updateLevelsEvent(e);
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, function(e) {
-                        _labelLevels(e.levels);
-                        _currentQuality = e.currentQuality;
-                        _qualityLevels = e.levels;
-                        this.trigger(e.type, e);
-
-                    }, this).on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
+                    _swf.on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
                         _currentAudioTrack = e.currentTrack;
                         _audioTracks = e.tracks;
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(events.JWPLAYER_AUDIO_TRACK_CHANGED, function(e) {
+                    _swf.on(events.JWPLAYER_AUDIO_TRACK_CHANGED, function(e) {
                         _currentAudioTrack = e.currentTrack;
                         _audioTracks = e.tracks;
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(events.JWPLAYER_PLAYER_STATE, function(e) {
+                    _swf.on(events.JWPLAYER_PLAYER_STATE, function(e) {
                         var state = e.newstate;
                         if (state === states.IDLE) {
                             return;
                         }
                         this.setState(state);
+                    }, this);
 
-                    }, this).on(forwardEventsWithDataDuration.join(' '), function(e) {
+                    _swf.on(forwardEventsWithDataDuration.join(' '), function(e) {
                         if(e.duration === 'Infinity') {
                             e.duration = Infinity;
                         }
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(forwardEventsWithData.join(' '), function(e) {
+                    _swf.on(forwardEventsWithData.join(' '), function(e) {
                         this.trigger(e.type, e);
+                    }, this);
 
-                    }, this).on(forwardEvents.join(' '), function(e) {
+                    _swf.on(forwardEvents.join(' '), function(e) {
                         this.trigger(e.type);
+                    }, this);
 
-                    }, this).on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
+                    _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
                         _beforecompleted = true;
                         this.trigger(e.type);
                         if(_attached === true) {
                             _beforecompleted = false;
                         }
-                    }, this).on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
                         if(!_beforecompleted){
                             this.setState(states.COMPLETE);
                             this.trigger(e.type);
                         }
-                    }, this).on(events.JWPLAYER_MEDIA_SEEK, function(e) {
-                        this.trigger(events.JWPLAYER_MEDIA_SEEK, e);
-                    }, this).on('visualQuality', function(e) {
+                    }, this);
+
+                    _swf.on('visualQuality', function(e) {
+                        // Get index from sorted levels from the level's index + 1 to take Auto into account
+                        var sortedIndex = (_qualityLevels.length) === 1 ? 0 :
+                            _getSortedIndex(_qualityLevels, e.level.index + 1) - 1;
+                        // Use extend so that the actual level's index is not modified
+                        e.level = _.extend(e.level, {index: sortedIndex});
                         e.reason = e.reason || 'api'; // or 'user selected';
                         this.trigger('visualQuality', e);
                         this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
-                    }, this).on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
                         _flashProviderType = e.message;
                         this.trigger(events.JWPLAYER_PROVIDER_CHANGED, e);
-                    }, this).on(events.JWPLAYER_ERROR, function(event) {
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_ERROR, function(event) {
                         utils.log('Error playing media: %o %s', event.code, event.message, event);
                         this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
                     }, this);
+
+                    _swf.on('subtitlesTracks', function(e) {
+                        this.addTextTracks(e.tracks);
+                    }, this);
+
+                    _swf.on('subtitlesTrackData', function(e) {
+                        this.addCuesToTrack(e);
+                    }, this);
+
+                    _swf.on(events.JWPLAYER_MEDIA_META, function(e) {
+                        if(e.metadata && e.metadata.type === 'textdata') {
+                            this.addCaptionsCue(e.metadata);
+                        } else {
+                            this.trigger(e.type, e);
+                        }
+                    }, this);
+
+                    if (flashThrottleTarget(_playerConfig)) {
+                        _swf.on('throttle', function(e) {
+                            removeBlockedCheck();
+
+                            if (e.state === 'resume') {
+                                Events.trigger.call(_this, 'flashThrottle', e);
+                            } else {
+                                _flashBlockedTimeout = setTimeout(function () {
+                                    Events.trigger.call(_this, 'flashThrottle', e);
+                                }, 250);
+                            }
+                        }, this);
+                    }
                 },
                 remove: function() {
                     _currentQuality = -1;
@@ -308,7 +433,7 @@ define([
                     return _fullscreen;
                 },
                 setCurrentQuality: function(quality) {
-                    _flashCommand('setCurrentQuality', quality);
+                    _flashCommand('setCurrentQuality', _qualityLevels[quality].index);
                 },
                 getCurrentQuality: function() {
                     return _currentQuality;
@@ -335,6 +460,7 @@ define([
                     _flashCommand('setCurrentAudioTrack', audioTrack);
                 },
                 destroy: function() {
+                    removeBlockedCheck();
                     this.remove();
                     if (_swf) {
                         _swf.off();
@@ -361,6 +487,10 @@ define([
     var F = function(){};
     F.prototype = DefaultProvider;
     FlashProvider.prototype = new F();
+
+    FlashProvider.getName = function() {
+        return { name : 'flash' };
+    };
 
     return FlashProvider;
 });

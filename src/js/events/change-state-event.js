@@ -25,6 +25,10 @@ define([
                 oldstate: oldstate,
                 reason: model.mediaModel.get('state')
             };
+            // add reason for play if the event type is play
+            if (eventType === 'play') {
+                evt.playReason = model.get('playReason');
+            }
             this.trigger(eventType, evt);
         }
     };

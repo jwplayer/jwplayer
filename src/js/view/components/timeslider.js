@@ -1,11 +1,12 @@
 define([
     'utils/underscore',
-    'view/components/slider',
     'utils/helpers',
+    'utils/constants',
+    'view/components/slider',
     'view/components/tooltip',
     'view/components/chapters.mixin',
     'view/components/thumbnails.mixin'
-], function(_, Slider, utils, Tooltip, ChaptersMixin, ThumbnailsMixin) {
+], function(_, utils, Constants, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
 
     var TimeTip = Tooltip.extend({
         setup : function() {
@@ -42,6 +43,7 @@ define([
             this.timeTip = new TimeTip('jw-tooltip-time');
             this.timeTip.setup();
 
+            this.cues = [];
 
             // Store the attempted seek, until the previous one completes
             this.seekThrottled = _.throttle(this.performSeek, 400);
@@ -49,6 +51,7 @@ define([
             this._model
                 .on('change:playlistItem', this.onPlaylistItem, this)
                 .on('change:position', this.onPosition, this)
+                .on('change:duration', this.onDuration, this)
                 .on('change:buffer', this.onBuffer, this);
 
             Slider.call(this, 'jw-slider-time', 'horizontal');
@@ -58,20 +61,33 @@ define([
         setup : function() {
             Slider.prototype.setup.apply(this, arguments);
 
-            this.onPlaylistItem(this._model, this._model.get('playlistItem'));
+            if (this._model.get('playlistItem')) {
+                this.onPlaylistItem(this._model, this._model.get('playlistItem'));
+            }
 
             this.elementRail.appendChild(this.timeTip.element());
 
             // mousemove/mouseout because this currently mouse specific functionality.
-            this.elementRail.addEventListener('mousemove', this.showTimeTooltip.bind(this), false);
-            this.elementRail.addEventListener('mouseout', this.hideTimeTooltip.bind(this), false);
+            this.el.addEventListener('mousemove', this.showTimeTooltip.bind(this), false);
+            this.el.addEventListener('mouseout', this.hideTimeTooltip.bind(this), false);
         },
-        update: function(pct) {
+        limit: function(percent) {
             if (this.activeCue && _.isNumber(this.activeCue.pct)) {
-                this.seekTo = this.activeCue.pct;
-            } else {
-                this.seekTo = pct;
+                return this.activeCue.pct;
             }
+            var duration = this._model.get('duration');
+            var adaptiveType = utils.adaptiveType(duration);
+            if (adaptiveType === 'DVR') {
+                var position = (1 - (percent / 100)) * duration;
+                var currentPosition = this._model.get('position');
+                var updatedPosition = Math.min(position, Math.max(Constants.dvrSeekLimit, currentPosition));
+                var updatedPercent = updatedPosition * 100 / duration;
+                return 100 - updatedPercent;
+            }
+            return percent;
+        },
+        update: function(percent) {
+            this.seekTo = percent;
             this.seekThrottled();
             Slider.prototype.update.apply(this, arguments);
         },
@@ -95,15 +111,20 @@ define([
         onBuffer : function (model, pct) {
             this.updateBuffer(pct);
         },
-        onPosition : function(model, pos) {
+        onPosition : function(model, position) {
+            this.updateTime(position, model.get('duration'));
+        },
+        onDuration : function(model, duration) {
+            this.updateTime(model.get('position'), duration);
+        },
+        updateTime : function(position, duration) {
             var pct = 0;
-            var duration = this._model.get('duration');
             if (duration) {
                 var adaptiveType = utils.adaptiveType(duration);
                 if(adaptiveType === 'DVR') {
-                    pct = (duration - pos) / duration * 100;
+                    pct = (duration - position) / duration * 100;
                 } else if (adaptiveType === 'VOD') {
-                    pct = pos / duration * 100;
+                    pct = position / duration * 100;
                 }
             }
             this.render(pct);
@@ -124,24 +145,24 @@ define([
             }, this);
         },
 
-        // These are new methods
-        performSeek : function () {
+        performSeek : function() {
+            var percent = this.seekTo;
             var duration = this._model.get('duration');
             var adaptiveType = utils.adaptiveType(duration);
             var position;
-            if (adaptiveType === 'LIVE' || duration === 0) {
+            if (duration === 0) {
                 this._api.play();
             } else if (adaptiveType === 'DVR') {
-                position = (1 - (this.seekTo / 100)) * duration;
-                this._api.seek(Math.min(position, -0.25));
+                position = (100 - percent) / 100 * duration;
+                this._api.seek(position);
             } else {
-                position = this.seekTo / 100 * duration;
+                position = percent / 100 * duration;
                 this._api.seek(Math.min(position, duration - 0.25));
             }
         },
         showTimeTooltip: function(evt) {
             var duration = this._model.get('duration');
-            if (duration <= 0) {
+            if (duration === 0) {
                 return;
             }
 
@@ -151,11 +172,22 @@ define([
             var pct = position / _railBounds.width;
             var time = duration * pct;
 
+            // For DVR we need to swap it around
+            if (duration < 0) {
+                time = duration - time;
+            }
+
             var timetipText;
             if (this.activeCue) {
                 timetipText = this.activeCue.text;
             } else {
-                timetipText = utils.timeFormat(time);
+                var allowNegativeTime = true;
+                timetipText = utils.timeFormat(time, allowNegativeTime);
+
+                // If DVR and within live buffer
+                if (duration < 0 && time > Constants.dvrSeekLimit) {
+                    timetipText = 'Live';
+                }
             }
             this.timeTip.update(timetipText);
             this.showThumbnail(time);

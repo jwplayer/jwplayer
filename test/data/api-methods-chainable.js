@@ -1,13 +1,16 @@
 define({
-    // COMMENTED OUT UNTIL FIXED:
-    // (throws exception before setup)
-    //seek: [0],
-    //playlistNext: void 0,
-    //playlistPrev: void 0,
-    //playlistItem: [0],
-    //setCurrentCaptions: [{}],
-    //setCurrentQuality: [0],
-    //setCurrentAudioTrack: [0],
+    // values represent the method's expected arguments
+
+    // These are commented out because they throw exception before setup
+    //   setCurrentCaptions: [{}],
+    //   setCurrentQuality: [0],
+    //   setCurrentAudioTrack: [0],
+    //   setCaptions: [{}],
+
+    seek: [0],
+    playlistNext: void 0,
+    playlistPrev: void 0,
+    playlistItem: [0],
     setup: [{}],
     load: [{}],
     play: void 0,
@@ -18,8 +21,8 @@ define({
     setMute: [false],
     setCues: [[]],
     resize: [100, 75],
-    on: [''],
-    once: [''],
+    on: ['', function() {}],
+    once: ['', function() {}],
     trigger: [''],
     off: void 0,
     remove: void 0

@@ -9,7 +9,11 @@ define([
 ], function(InstreamHtml5, InstreamFlash, events, states, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
-        var providerName = _model.get('provider').name || '';
+        var providerName = '';
+        var provider = _model.get('provider');
+        if (provider) {
+            providerName = provider.name;
+        }
         if (providerName.indexOf('flash') >= 0) {
             return InstreamFlash;
         }
@@ -33,7 +37,8 @@ define([
             _options = {},
             _oldProvider,
             _oldpos,
-            _olditem;
+            _olditem,
+            _this = this;
 
         var _clickHandler = _.bind(function(evt) {
             evt = evt || {};
@@ -108,11 +113,30 @@ define([
             // don't trigger api play/pause on display click
             _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
 
-            this.setText('Loading ad');
+            this.setText(_model.get('localization').loadingAd);
             return this;
         };
 
+        function _loadNextItem() {
+            // We want a play event for the next item, so we ensure the state != playing
+            _instream._adModel.set('state', 'buffering');
+
+            // destroy skip button
+            _model.set('skipButton', false);
+
+            _arrayIndex++;
+            var item = _array[_arrayIndex];
+            var options;
+            if (_arrayOptions) {
+                options = _arrayOptions[_arrayIndex];
+            }
+            _this.loadItem(item, options);
+        }
+
         function _instreamForward(type, data) {
+            if (type === 'complete') {
+                return;
+            }
             data = data || {};
 
             if (_options.tag && !data.tag) {
@@ -120,6 +144,12 @@ define([
             }
 
             this.trigger(type, data);
+
+            if (type === 'mediaError' || type === 'error') {
+                if (_array && _arrayIndex + 1 < _array.length) {
+                    _loadNextItem();
+                }
+            }
         }
 
         function _instreamTime(evt) {
@@ -128,24 +158,18 @@ define([
         }
 
         function _instreamItemComplete(e) {
-            // Allow 'play' state change to trigger next adPlay event in ad pods
-            _instream._adModel.set('state', 'complete');
+            var data = {};
+            if (_options.tag) {
+                data.tag = _options.tag;
+            }
 
             if (_array && _arrayIndex + 1 < _array.length) {
-                // destroy skip button
-                _model.set('skipButton', false);
-
-                _arrayIndex++;
-                var item = _array[_arrayIndex];
-                var options;
-                if (_arrayOptions) {
-                    options = _arrayOptions[_arrayIndex];
-                }
-                this.loadItem(item, options);
+                // fire complete event
+                this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
+                _loadNextItem();
             } else {
                 if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
-                    // Forward last media complete event. 'all' listener has not fired yet.
-                    _instreamForward.call(this, e.type, e);
+                    this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
                     // Dispatch playlist complete event for ad pods
                     this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                 }
@@ -162,6 +186,7 @@ define([
                 return;
             }
             // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
+            var playlist = item;
             if (_.isArray(item)) {
                 _array = item;
                 _arrayOptions = options;
@@ -169,26 +194,45 @@ define([
                 if (_arrayOptions) {
                     options = _arrayOptions[_arrayIndex];
                 }
+            } else {
+                playlist = [item];
             }
 
-            // Dispatch playlist item event for ad pods
-            this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                index: _arrayIndex,
-                item: item
-            });
+            var _this = this;
+            var providersManager = _model.getProviders();
+            var providersNeeded = providersManager.required(playlist);
+            _model.set('hideAdsControls', false);
+            providersManager.load(providersNeeded)
+                .then(function() {
+                    if (_instream === null) {
+                        return;
+                    }
+                    // Dispatch playlist item event for ad pods
+                    _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
+                        index: _arrayIndex,
+                        item: item
+                    });
 
-            _options = _.extend({}, _defaultOptions, options);
-            _instream.load(item);
+                    _options = _.extend({}, _defaultOptions, options);
+                    _instream.load(item);
+
+                    _this.addClickHandler();
+
+                    var skipoffset = item.skipoffset || _options.skipoffset;
+                    if (skipoffset) {
+                        _instream._adModel.set('skipMessage', _options.skipMessage);
+                        _instream._adModel.set('skipText', _options.skipText);
+                        _instream._adModel.set('skipOffset', skipoffset);
+
+                        _model.set('skipButton', true);
+                    }
+                });
+        };
+
+        this.applyProviderListeners = function(provider){
+            _instream.applyProviderListeners(provider);
 
             this.addClickHandler();
-
-            if (_options.skipoffset) {
-                _instream._adModel.set('skipMessage', _options.skipMessage);
-                _instream._adModel.set('skipText', _options.skipText);
-                _instream._adModel.set('skipOffset', _options.skipoffset);
-
-                _model.set('skipButton', true);
-            }
         };
 
         this.play = function() {
@@ -199,20 +243,11 @@ define([
             _instream.instreamPause();
         };
 
-        this.hide = function() {
-            _instream.hide();
-        };
-
         this.addClickHandler = function() {
             // start listening for ad click
             _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
 
-            //if (utils.isMSIE()) {
-                //_oldProvider.parentElement.addEventListener('click', _view.clickHandler().clickHandler);
-            //}
-
             _instream.on(events.JWPLAYER_MEDIA_META, this.metaHandler, this);
-
         };
 
         this.skipAd = function(evt) {
@@ -240,6 +275,8 @@ define([
                 if (_view.clickHandler()) {
                     _view.clickHandler().revertAlternateClickHandlers();
                 }
+
+                _model.off(null, null, _instream);
                 _instream.instreamDestroy();
 
                 // Must happen after instream.instreamDestroy()
@@ -258,6 +295,11 @@ define([
                         item.starttime = _oldpos;
                         _model.loadVideo(item);
 
+                        // On error, mediaModel has buffering states in mobile, but oldProvider's state is playing.
+                        // So, changing mediaModel's state to playing does not change provider state unless we do this
+                        if (utils.isMobile() && (_model.mediaModel.get('state') === states.BUFFERING)) {
+                            _oldProvider.setState(states.BUFFERING);
+                        }
                         _oldProvider.play();
                         break;
                     case 'instream-postroll':
@@ -282,7 +324,7 @@ define([
 
         // This method is triggered by plugins which want to hide player controls
         this.hide = function() {
-            _view.useExternalControls();
+            _model.set('hideAdsControls', true);
         };
 
     };

@@ -6,13 +6,13 @@ define([
 ], function(SetupSteps, Events, _, events) {
 
 
-    var Setup = function(_api, _model, _view, _errorTimeoutSeconds) {
+    var Setup = function(_api, _model, _view, _setPlaylist) {
         var _this = this,
             _setupFailureTimeout;
 
         var _queue = SetupSteps.getQueue();
 
-        _errorTimeoutSeconds = _errorTimeoutSeconds || 10;
+        var _errorTimeoutSeconds = 30;
 
 
         this.start = function () {
@@ -52,7 +52,8 @@ define([
                 resolveState = resolveState || {};
                 _taskComplete(task, resolveState);
             };
-            task.method(resolve, _model, _api, _view);
+
+            task.method(resolve, _model, _api, _view, _setPlaylist);
         }
 
         function _allComplete(dependencies) {

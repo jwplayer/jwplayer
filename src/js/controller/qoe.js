@@ -43,16 +43,16 @@ define([
             model._qoeItem.tick(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         };
 
-        model.mediaController.once(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+        model.mediaController.on(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
         model.mediaController.once(events.JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.on(events.JWPLAYER_MEDIA_TIME, model._onTime);
     }
 
     function initModel(model) {
 
-        model.on('change:mediaModel', function(model, mediaModel, oldMediaModel) {
+        function onMediaModel(model, mediaModel, oldMediaModel) {
             // finish previous item
-            if (model._qoeItem) {
+            if (model._qoeItem && oldMediaModel) {
                 model._qoeItem.end(oldMediaModel.get('state'));
             }
             // reset item level qoe
@@ -62,11 +62,13 @@ define([
 
             trackFirstFrame(model);
 
-            mediaModel.on('change:state', function(mediaModel, newstate, oldstate) {
+            mediaModel.on('change:state', function (mediaModel, newstate, oldstate) {
                 model._qoeItem.end(oldstate);
                 model._qoeItem.start(newstate);
             });
-        });
+        }
+
+        model.on('change:mediaModel', onMediaModel);
     }
 
     return {

@@ -216,6 +216,7 @@ public class InstreamPlayer extends Sprite {
 
     private function timeHandler(evt:MediaEvent):void {
         SwfEventRouter.triggerJsEvent('instream:time', evt);
+        dispatchEvent(evt);
     }
 
     private function completeHandler(evt:MediaEvent):void {

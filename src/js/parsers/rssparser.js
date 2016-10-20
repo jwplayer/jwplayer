@@ -20,7 +20,7 @@ define([
      * Parse an RSS playlist for feed items.
      *
      * @param {XML} dat
-     * @reuturn {Array} playlistarray
+     * @return {Array} playlistarray
      */
     rssparser.parse = function (dat) {
         var arr = [];

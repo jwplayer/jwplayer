@@ -1,4 +1,4 @@
 src/js/utils/backbone.events.js
 src/js/utils/underscore.js
 src/js/polyfills/*.js
-src/js/__*/*.js
+src/js/view/style-loader/*.js

@@ -1,5 +1,6 @@
 ﻿package com.longtailvideo.jwplayer.player {
 import com.longtailvideo.jwplayer.controller.Controller;
+import com.longtailvideo.jwplayer.events.MediaEvent;
 import com.longtailvideo.jwplayer.events.PlayerEvent;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.model.PlayerConfig;
@@ -16,7 +17,7 @@ import flash.events.Event;
 import flash.geom.Rectangle;
 import flash.system.Security;
 
-[SWF(width="640", height="360", frameRate="60", backgroundColor="#000000")]
+[SWF(width="640", height="360", frameRate="30", backgroundColor="#000000")]
 
 public class Player extends Sprite implements IPlayer {
 
@@ -29,8 +30,12 @@ public class Player extends Sprite implements IPlayer {
     public function Player() {
         Security.allowDomain("*");
 
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         RootReference.init(this);
         this.addEventListener(Event.ADDED_TO_STAGE, stageReady);
+
         this.tabEnabled = false;
         this.tabChildren = false;
         this.focusRect = false;
@@ -48,10 +53,57 @@ public class Player extends Sprite implements IPlayer {
         _controller.runSetupInterface();
     }
 
+    private function pluginPowerSaveTarget():Boolean {
+        var audioPlayer:Boolean = RootReference.stage.stageWidth < 6 && RootReference.stage.stageHeight < 6;
+        var contentPlayer:Boolean = RootReference.stage.stageWidth > 400 && RootReference.stage.stageHeight > 300;
+        if (audioPlayer || contentPlayer) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function stageReady(e:Event):void {
         this.removeEventListener(Event.ADDED_TO_STAGE, stageReady);
+
+        this.addEventListener('throttle', onThrottleEvent);
+        _model.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
+
         RootReference.init(this);
         _view.setupView();
+    }
+
+    private function onThrottleEvent(e:Event):void {
+
+        // e.state can be ThrottleType.THROTTLE, ThrottleType.PAUSE, or ThrottleType.RESUME
+        // in Chrome we only get 'throttle' and 'resume' for offscreen and power-save throttling
+        var state:String = e['state'] as String;
+
+        if (state !== 'resume') {
+            // Ignore throttle events for players ignored by Chrome's heuristics
+            if (! pluginPowerSaveTarget() ) {
+                return;
+            }
+        }
+
+        SwfEventRouter.triggerJsEvent('throttle', {
+            state: state
+        });
+    }
+
+    private function removeThrottleListener(e:MediaEvent):void {
+        // After a time event has been received, we're past Chrome Power Save
+        // stop listening to the off-screen throttle events
+        if (e.position) {
+            _model.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
+            if (_instream) {
+                _instream.removeEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener);
+            }
+            this.removeEventListener('throttle', onThrottleEvent);
+            SwfEventRouter.triggerJsEvent('throttle', {
+                state: 'resume'
+            });
+        }
     }
 
     public function get version():String {
@@ -169,6 +221,10 @@ public class Player extends Sprite implements IPlayer {
         return _model.item;
     }
 
+    public function init(item:*):void {
+        _controller.init(new PlaylistItem(item));
+    }
+
     public function load(item:*):Boolean {
         _controller.load(new PlaylistItem(item));
         _controller.play();
@@ -214,6 +270,9 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function playerReady(evt:PlayerEvent):void {
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         // Only handle Setup Events once
         _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
 
@@ -226,6 +285,7 @@ public class Player extends Sprite implements IPlayer {
         SwfEventRouter.off()
                 .on('setup', setupPlayer)
                 .on('setupCommandQueue', setupPlayerCommandQueue)
+                .on('init', init)
                 .on('load', load)
                 .on('play', play)
                 .on('pause', pause)
@@ -253,6 +313,7 @@ public class Player extends Sprite implements IPlayer {
     protected function initInstream():void {
         var lockPlugin:IPlugin = new AbstractPlugin();
         _instream = new InstreamPlayer(lockPlugin, _model, _view, _controller);
+        _instream.addEventListener(MediaEvent.JWPLAYER_MEDIA_TIME, removeThrottleListener, false, 0, true);
     }
 
     protected function loadInstream(item:Object):void {
@@ -292,6 +353,9 @@ public class Player extends Sprite implements IPlayer {
     }
 
     protected function setupError(evt:PlayerEvent):void {
+        // Send embedded event so we know flash isn't blocked
+        SwfEventRouter.triggerJsEvent('embedded');
+
         // Only handle Setup Events once
         _controller.removeEventListener(PlayerEvent.JWPLAYER_READY, playerReady);
         _controller.removeEventListener(PlayerEvent.JWPLAYER_SETUP_ERROR, setupError);

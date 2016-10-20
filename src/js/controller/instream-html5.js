@@ -28,7 +28,8 @@ define([
                 id: _model.get('id'),
                 volume: _model.get('volume'),
                 fullscreen: _model.get('fullscreen'),
-                mute: _model.get('mute')
+                mute: _model.get('mute'),
+                instreamMode: true
             });
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
 
@@ -37,9 +38,11 @@ define([
 
         /** Load an instream item and initialize playback **/
         _this.load = function(item) {
+
+            _adModel.set('item', 0);
+            _adModel.set('playlistItem', item);
             // Make sure it chooses a provider
-            _adModel.setPlaylist([item]);
-            _adModel.setItem(0);
+            _adModel.setActiveItem(item);
 
             // check provider after item change
             _checkProvider();
@@ -51,7 +54,24 @@ define([
             }, _this);
 
             // Load the instream item
-            _adModel.loadVideo();
+            _adModel.loadVideo(item);
+        };
+
+        _this.applyProviderListeners = function(provider){
+            // check provider after item change
+            _checkProvider(provider);
+
+            // Match the main player's controls state
+            provider.off(events.JWPLAYER_ERROR);
+            provider.on(events.JWPLAYER_ERROR, function(data) {
+                this.trigger(events.JWPLAYER_ERROR, data);
+            }, _this);
+            _model.on('change:volume', function(data, value) {
+                _currentProvider.volume(value);
+            }, _this);
+            _model.on('change:mute', function(data, value) {
+                _currentProvider.mute(value);
+            }, _this);
         };
 
         /** Stop the instream playback and revert the main player back to its original state **/
@@ -67,7 +87,9 @@ define([
             if (_currentProvider) {
                 _currentProvider.detachMedia();
                 _currentProvider.off();
-                _currentProvider.destroy();
+                if(_adModel.getVideo()){
+                    _currentProvider.destroy();
+                }
             }
 
             // Return the view to its normal state
@@ -99,8 +121,8 @@ define([
          ****** Private methods ******
          *****************************/
 
-        function _checkProvider() {
-            var provider = _adModel.getVideo();
+        function _checkProvider(pseduoProvider) {
+            var provider = pseduoProvider || _adModel.getVideo();
 
             if (_currentProvider !== provider) {
                 _currentProvider = provider;
@@ -120,8 +142,8 @@ define([
 
                 provider.on(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.attachMedia();
-                provider.mute(_model.get('mute'));
                 provider.volume(_model.get('volume'));
+                provider.mute(_model.get('mute'));
 
                 _adModel.on('change:state', changeStateEvent, _this);
             }
@@ -130,8 +152,6 @@ define([
         function stateHandler(evt) {
             switch (evt.newstate) {
                 case states.PLAYING:
-                    _adModel.set('state', evt.newstate);
-                    break;
                 case states.PAUSED:
                     _adModel.set('state', evt.newstate);
                     break;

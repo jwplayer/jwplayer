@@ -1,7 +1,6 @@
 define([
-    'utils/underscore',
-    'utils/trycatch'
-], function(_, trycatch) {
+    'utils/underscore'
+], function(_) {
     var browser = {};
 
     var _userAgentMatch = _.memoize(function (regex) {
@@ -25,18 +24,20 @@ define([
     };
 
     browser.isFF = _browserCheck(/firefox/i);
-    browser.isChrome = _browserCheck(/chrome/i);
     browser.isIPod = _browserCheck(/iP(hone|od)/i);
     browser.isIPad = _browserCheck(/iPad/i);
     browser.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
+    browser.isOSX = _browserCheck(/Mac OS X/i);
 
-    var _isIETrident = browser.isIETrident = function(browserVersion) {
+    var _isEdge = browser.isEdge = function(browserVersion) {
         if (browserVersion) {
-            browserVersion = parseFloat(browserVersion).toFixed(1);
-            return _userAgentMatch(new RegExp('trident/.+rv:\\s*' + browserVersion, 'i'));
+            return _userAgentMatch(new RegExp('\\sedge\\/' + browserVersion, 'i'));
         }
-        return _userAgentMatch(/trident/i);
+        return _userAgentMatch(/\sEdge\/\d+/i);
     };
+
+
+    var _isIETrident = browser.isIETrident = _browserCheck(/trident\/.+rv:\s*11/i);
 
 
     var _isMSIE = browser.isMSIE = function(browserVersion) {
@@ -47,16 +48,22 @@ define([
         return _userAgentMatch(/msie/i);
     };
 
+    browser.isChrome = function() {
+        return _userAgentMatch(/\s(?:Chrome|CriOS)\//i) && !browser.isEdge();
+    };
+
     browser.isIE = function(browserVersion) {
         if (browserVersion) {
             browserVersion = parseFloat(browserVersion).toFixed(1);
-            if (browserVersion >= 11) {
-                return _isIETrident(browserVersion);
+            if (browserVersion >= 12) {
+                return _isEdge(browserVersion);
+            } else if (browserVersion >= 11) {
+                return _isIETrident();
             } else {
                 return _isMSIE(browserVersion);
             }
         }
-        return _isMSIE() || _isIETrident();
+        return _isEdge() || _isIETrident() || _isMSIE();
     };
 
     browser.isSafari = function() {
@@ -67,7 +74,9 @@ define([
     /** Matches iOS devices **/
     var _isIOS = browser.isIOS = function(osVersion) {
         if (osVersion) {
-            return _userAgentMatch(new RegExp('iP(hone|ad|od).+\\sOS\\s' + osVersion, 'i'));
+            return _userAgentMatch(
+                new RegExp('iP(hone|ad|od).+\\s(OS\\s'+osVersion+'|.*\\sVersion/'+osVersion+')', 'i')
+            );
         }
         return _userAgentMatch(/iP(hone|ad|od)/i);
     };
@@ -120,18 +129,16 @@ define([
         }
 
         if (typeof window.ActiveXObject !== 'undefined') {
-            var status = trycatch.tryCatch(function() {
+            try {
                 flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
                 if (flash) {
                     return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
-            });
-
-            if (status instanceof trycatch.Error) {
+            } catch(e) {
                 return 0;
             }
 
-            return status;
+            return flash;
         }
         return 0;
     };

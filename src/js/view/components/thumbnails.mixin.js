@@ -19,7 +19,9 @@ define([
             // Only load the first individual image file so we can get its dimensions. All others are loaded when
             // they're set as background-images.
             this.individualImage = null;
-            utils.ajax(file, this.thumbnailsLoaded.bind(this), this.thumbnailsFailed.bind(this), true);
+            utils.ajax(file, this.thumbnailsLoaded.bind(this), this.thumbnailsFailed.bind(this), {
+                plainText: true
+            });
         },
 
         thumbnailsLoaded: function (evt) {
@@ -78,7 +80,7 @@ define([
                 }
             }
 
-            style.backgroundImage = url;
+            style.backgroundImage = 'url("' + url + '")';
 
             return style;
         },

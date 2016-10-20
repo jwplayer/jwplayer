@@ -6,22 +6,18 @@ import com.longtailvideo.jwplayer.model.PlayerConfig;
 import com.longtailvideo.jwplayer.model.PlaylistItem;
 import com.longtailvideo.jwplayer.player.PlayerState;
 import com.longtailvideo.jwplayer.utils.NetClient;
-import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Strings;
 import com.longtailvideo.jwplayer.utils.Utils;
 
 import flash.events.AsyncErrorEvent;
 import flash.events.ErrorEvent;
-import flash.events.Event;
 import flash.events.IOErrorEvent;
 import flash.events.NetStatusEvent;
-import flash.geom.Rectangle;
 import flash.media.Video;
 import flash.net.NetConnection;
 import flash.net.NetStream;
 import flash.utils.clearInterval;
 import flash.utils.setInterval;
-import flash.utils.setTimeout;
 
 /**
  * Wrapper for playback of progressively downloaded MP4, FLV and AAC.
@@ -48,7 +44,9 @@ public class VideoMediaProvider extends MediaProvider {
     /** Video object to be instantiated. **/
     private var _video:Video;
     /** Is buffering due to load/seek or underflow? **/
-    private var seeking:Boolean;
+    private var _seeking:Boolean;
+    /** Netstream stopped state **/
+    private var _complete:Boolean;
 
     /** Set the current quality level. **/
     override public function set currentQuality(quality:Number):void {
@@ -57,8 +55,9 @@ public class VideoMediaProvider extends MediaProvider {
             _item.setLevel(quality);
             _currentQuality = quality;
             _starttime = _position;
-            _config.qualitylabel = _item.levels[_currentQuality].label;
+            _config.qualityLabel = _item.levels[_currentQuality].label;
             sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVEL_CHANGED, _item.levels, _currentQuality);
+            setState(PlayerState.LOADING);
             loadQuality();
         }
     }
@@ -88,47 +87,28 @@ public class VideoMediaProvider extends MediaProvider {
         }
     }
 
+    override public function init(itm:PlaylistItem):void {
+        if (itm.preload === "auto") {
+            setupVideo(itm);
+            loadQuality();
+            _stream.pause();
+        }
+    }
+
     /** Load new media file; only requested once per item. **/
     override public function load(itm:PlaylistItem):void {
-        clearInterval(_interval);
-        _item = itm;
-        // Set Video or StageVideo
-        if (!_video) {
-            _video = new Video();
-            _video.smoothing = true;
-        }
-
-        _video.attachNetStream(_stream);
-
-        // Set initial quality and set levels
-        _currentQuality = 0;
-
-        for (var i:Number = 0; i < _item.levels.length; i++) {
-            if (_item.levels[i]["default"]) {
-                _currentQuality = i;
-                break;
-            }
-        }
-
-        if (config.qualitylabel) {
-            for (i = 0; i < _item.levels.length; i++) {
-                if (_item.levels[i].label == config.qualitylabel) {
-                    _currentQuality = i;
-                    break;
-                }
-            }
-        }
-
-        sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
-        // Do not set a stretchable media for AAC files.
-        _item.type == "aac" ? media = null : media = _video;
-        // Get item start (should remove this someday)
-        if (_startparam && _item.start) {
-            _starttime = _item.start;
+        setState(PlayerState.LOADING);
+        if (_item !== itm || _complete) {
+            setupVideo(itm);
+            loadQuality();
+        } else if (itm.preload === "auto") {
+            play();
         } else {
-            _starttime = 0;
+            loadQuality();
         }
-        loadQuality();
+
+        // need to call this every time we load, but after setupVideo has been called
+        sendQualityEvent(MediaEvent.JWPLAYER_MEDIA_LEVELS, _item.levels, _currentQuality);
     }
 
     /** Pause playback. **/
@@ -140,7 +120,7 @@ public class VideoMediaProvider extends MediaProvider {
     /** Resume playing. **/
     override public function play():void {
         clearInterval(_interval);
-        this.seeking = false;
+        _seeking = false;
         _interval = setInterval(positionHandler, 100);
         _video.attachNetStream(_stream);
         _stream.resume();
@@ -149,8 +129,11 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Seek to a new position. **/
     override public function seek(pos:Number):void {
+        _seekInternal(pos);
+    }
+
+    private function _seekInternal(pos:Number, extendRangePastBuffer:Number = 5):void {
         var range:Number = _item.duration * _buffered / 100;
-        clearInterval(_interval);
         // Pseudo: seek on first load in range, request when outside
         if (_startparam) {
             if (_offset.time < pos && pos < range) {
@@ -160,26 +143,28 @@ public class VideoMediaProvider extends MediaProvider {
                 } else {
                     _stream.seek(_position - _offset.time);
                 }
-            } else {
-                if (_keyframes) {
-                    _position = pos;
-                    _offset = seekOffset(pos);
-                    loadStream();
-                } else {
-                    // Delay the seek if no keyframes yet
-                    _starttime = pos;
-                    return;
-                }
-            }
-            // Progressive: only seek when in range
-        } else {
-            if (pos < range) {
+            } else if (_keyframes) {
                 _position = pos;
-                _stream.seek(_position);
+                _offset = seekOffset(pos);
+                loadStream();
+            } else {
+                // Delay the seek if no keyframes yet
+                _starttime = pos;
+                return;
             }
+
+        } else {
+            // Progressive file playback - exit if trying to seek past 5 seconds after buffer
+            range = Math.min(range + extendRangePastBuffer, _item.duration);
+            if (pos > range) {
+                return;
+            }
+            // seek immediately if in range
+            _position = pos;
+            _stream.seek(pos);
         }
         clearInterval(_interval);
-        this.seeking = true;
+        _seeking = true;
         _interval = setInterval(positionHandler, 100);
     }
 
@@ -217,8 +202,8 @@ public class VideoMediaProvider extends MediaProvider {
             _video.height = data.height;
             resize(_config.width, _config.height);
         }
-        if (data.duration && item.duration < 1) {
-            item.duration = data.duration;
+        if (data.duration && _item.duration < 1) {
+            _item.duration = data.duration;
         }
         if (data.type == 'metadata' && !_keyframes) {
             if (data.seekpoints) {
@@ -244,9 +229,9 @@ public class VideoMediaProvider extends MediaProvider {
             } else {
                 _keyframes = data.keyframes;
             }
-            // Do a seek, with small delay to prevent misses
+            // Do a seek, allowing progressive download to starttime
             if (_starttime) {
-                setTimeout(seek, 20, _starttime);
+                _seekInternal(_starttime, _starttime);
             }
         }
         sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_META, {metadata: data});
@@ -254,11 +239,24 @@ public class VideoMediaProvider extends MediaProvider {
 
     /** Interval for the position progress **/
     protected function positionHandler():void {
-        var pos:Number = Math.round(Math.min(_stream.time, Math.max(item.duration, 0)) * 100) / 100;
+        var pos:Number = _stream.time;
+        var duration:Number = _item.duration;
+        if (duration <= 0 && pos === 0) {
+            // don't send time or buffer event until duration or position is known
+            return;
+        }
+        if (duration > 0) {
+            // VOD
+            pos = Math.min(pos, duration);
+        } else if (pos > 0) {
+            // Live Stream
+            duration = _item.duration = -1;
+        }
+        pos = Math.round(pos * 1000) / 1000;
         // Toggle state between buffering and playing.
         if (_stream.bufferLength < 1 && state == PlayerState.PLAYING && _buffered < 100) {
-            if (this.seeking) {
-                setState(PlayerState.LOADING)
+            if (_seeking) {
+                setState(PlayerState.LOADING);
             } else {
                 setState(PlayerState.STALLED);
             }
@@ -268,43 +266,95 @@ public class VideoMediaProvider extends MediaProvider {
         }
         // Send out buffer percentage.
         if (_buffered < 100) {
-            _buffered = Math.floor(100 * (_stream.bytesLoaded / _stream.bytesTotal + _offset.time / _item.duration));
-            _buffered = Math.min(100, _buffered);
+            var startOffset:Number = 0;
+            if (duration > 0) {
+                startOffset = _offset.time / duration;
+            }
+            var buffered:Number = _stream.bytesLoaded / _stream.bytesTotal;
+            _buffered = Math.floor(100 * (startOffset + buffered));
             sendBufferEvent(_buffered);
         }
-        if (state == PlayerState.PLAYING) {
+        if (state === PlayerState.PLAYING && _position !== pos) {
             _position = pos;
             if (_item.type == 'mp4') {
                 _position += _offset.time;
             }
+            if (duration < 0) {
+                duration = Infinity;
+            }
             sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_TIME, {
-                position: _position,
-                duration: item.duration
+                position: pos,
+                duration: duration
             });
         }
     }
 
-/** Load new quality level; only requested on quality switches. **/
+    private function setupVideo(itm:PlaylistItem):void {
+        clearInterval(_interval);
+        _item = itm;
+        // Set Video or StageVideo
+        if (!_video) {
+            _video = new Video();
+            _video.smoothing = true;
+        }
+
+        _video.attachNetStream(_stream);
+
+        // Set initial quality and set levels
+        _currentQuality = 0;
+
+        for (var i:Number = 0; i < _item.levels.length; i++) {
+            if (_item.levels[i]["default"]) {
+                _currentQuality = i;
+                break;
+            }
+        }
+
+        if (config.qualityLabel) {
+            for (i = 0; i < _item.levels.length; i++) {
+                if (_item.levels[i].label == config.qualityLabel) {
+                    _currentQuality = i;
+                    break;
+                }
+            }
+        }
+
+        // Do not set a stretchable media for AAC files.
+        _item.type == "aac" ? media = null : media = _video;
+        // Get item start (should remove this someday)
+        if (_startparam && _item.start) {
+            _starttime = _item.start;
+        } else {
+            _starttime = 0;
+        }
+    }
+
+    /** Load new quality level; only requested on quality switches. **/
     private function loadQuality():void {
         _keyframes = undefined;
         _offset = {time: 0, byte: 0};
-        loadStream();
-    }
 
-    /** Load the actual stream; requested with every HTTP seek. **/
-    private function loadStream():void {
-        var levels:Array = item.levels;
+        var levels:Array = _item.levels;
         if (_currentQuality >= levels.length) {
             error('no playable source');
             return;
         }
+        loadStream();
+    }
 
+    private function loadStream():void {
+        var levels:Array = _item.levels;
         var url:String = Strings.getAbsolutePath(levels[_currentQuality].file);
         var prm:Number = _offset.byte;
         if (_item.type == 'mp4') {
             prm = _offset.time;
         }
-        // Use startparam if needed
+
+        // set complete to false before _stream.play is called
+        _complete = false;
+        _buffered = 0;
+
+        //  need to call stream.play even when preloading, because this is how stream starts to load the content
         if (!_startparam || _offset.time == 0) {
             _stream.play(url);
         } else if (url.indexOf('?') > -1) {
@@ -312,30 +362,27 @@ public class VideoMediaProvider extends MediaProvider {
         } else {
             _stream.play(url + '?' + _startparam + '=' + prm);
         }
-        _buffered = 0;
-        setState(PlayerState.LOADING);
+        
         sendBufferEvent(0);
 
-        // TODO: do this on enter frame like HLS
         clearInterval(_interval);
-        this.seeking = true;
+        _seeking = true;
         _interval = setInterval(positionHandler, 100);
     }
 
     /** Return the seek offset based upon a position. **/
     private function seekOffset(position:Number):Object {
-        if (!_keyframes || !_startparam || position == 0) {
-            return {byte: 0, time: 0};
-        }
-        for (var i:Number = 0; i < _keyframes.times.length - 1; i++) {
-            if (_keyframes.times[i] <= position && _keyframes.times[i + 1] >= position) {
-                break;
+        if (_keyframes && _startparam && position > 0) {
+            for (var i:uint = _keyframes.times.length-1; i--;) {
+                if (_keyframes.times[i] <= position && _keyframes.times[i + 1] >= position) {
+                    return {
+                        byte: _keyframes.filepositions[i],
+                        time: _keyframes.times[i]
+                    }
+                }
             }
         }
-        return {
-            byte: _keyframes.filepositions[i],
-            time: _keyframes.times[i]
-        }
+        return {byte: 0, time: 0};
     }
 
     /** Catch security errors. **/
@@ -348,12 +395,18 @@ public class VideoMediaProvider extends MediaProvider {
         switch (evt.info.code) {
             case "NetStream.Play.Stop":
                 complete();
+                _complete = true;
+                _seeking = false;
                 break;
             case "NetStream.Play.StreamNotFound":
                 error('Error loading media: File not found');
                 break;
             case "NetStream.Play.NoSupportedTrackFound":
                 error('Error loading media: File could not be played');
+                break;
+            case 'NetStream.Seek.Notify':
+                sendMediaEvent(MediaEvent.JWPLAYER_MEDIA_SEEKED);
+                _seeking = false;
                 break;
         }
     }

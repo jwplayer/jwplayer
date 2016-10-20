@@ -167,6 +167,14 @@ public class MediaProvider extends Sprite implements IMediaProvider {
     }
 
     /**
+     * Called when preloading. Placeholder to be override
+     * @param itm
+     */
+    public function init(itm:PlaylistItem):void {
+        _item = itm;
+    }
+
+    /**
      * Load a new playlist item
      * @param itm The playlistItem to load
      **/
@@ -294,10 +302,11 @@ public class MediaProvider extends Sprite implements IMediaProvider {
 
     /** Dispatches buffer change notifications **/
     protected function sendBufferEvent(bufferPercent:Number, offset:Number = 0, metadata:Object = null):void {
-        if ((_bufferPercent != bufferPercent || bufferPercent == 0) && 0 <= bufferPercent < 100) {
+        bufferPercent = Math.max(0, Math.min(bufferPercent, 100));
+        if (bufferPercent !== _bufferPercent) {
             _bufferPercent = bufferPercent;
             var obj:Object = {
-                bufferPercent: _bufferPercent,
+                bufferPercent: bufferPercent,
                 offset: offset,
                 duration: _item.duration,
                 position: Math.max(0, _position),

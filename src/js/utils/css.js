@@ -1,28 +1,23 @@
 define([
-    'utils/strings'
-], function(Strings) {
+    'utils/strings',
+    'simple-style-loader/addStyles'
+], function(Strings, styleLoader) {
 
-    var _styleRules = {},
-        _styleSheet;
-
-    var _css = function(selector, styles) {
-        if (!_styleSheet) {
-            _styleSheet = document.createElement('style');
-            _styleSheet.type = 'text/css';
-            document.getElementsByTagName('head')[0].appendChild(_styleSheet);
+    var _css = function(selector, styles, playerId) {
+        playerId = playerId || 'all-players';
+        var cssText = '';
+        if (typeof styles === 'object') {
+            var el = document.createElement('div');
+            _style(el,styles);
+            cssText = '{' + el.style.cssText + '}';
+        } else if (typeof styles === 'string') {
+            cssText = styles;
         }
-        var cssText = selector + JSON.stringify(styles).replace(/"/g, '');
-        var node = document.createTextNode(cssText);
-        if (_styleRules[selector]) {
-            _styleSheet.removeChild(_styleRules[selector]);
-        }
-        _styleRules[selector] = node;
-        _styleSheet.appendChild(node);
+        styleLoader.style([[selector, selector + cssText]], playerId);
     };
 
     var _style = function (elements, styles) {
         if (elements === undefined || elements === null) {
-            //utils.log('css.style invalid elements: '+ elements +' '+ JSON.stringify(styles) +' '+ immediate);
             return;
         }
         if (elements.length === undefined) {
@@ -81,26 +76,14 @@ define([
         return Math.ceil(value) + 'px' + importantString;
     }
 
-    // Removes all css elements which match a particular style
-    var _clearCss = function(filter) {
-        for (var selector in _styleRules) {
-            if (selector.indexOf(filter) >= 0) {
-                _styleSheet.removeChild(_styleRules[selector]);
-                delete _styleRules[selector];
-            }
-        }
-    };
-
     var transform = function (element, value) {
-        var transform = 'transform',
-            style = {};
-        value = value || '';
-        style[transform] = value;
-        style['-webkit-' + transform] = value;
-        style['-ms-' + transform] = value;
-        style['-moz-' + transform] = value;
-        style['-o-' + transform] = value;
-        _style(element, style);
+        _style(element, {
+            transform: value,
+            webkitTransform: value,
+            msTransform: value,
+            mozTransform: value,
+            oTransform: value
+        });
     };
 
     var hexToRgba = function (hexColor, opacity) {
@@ -128,7 +111,7 @@ define([
     return {
         css : _css,
         style : _style,
-        clearCss : _clearCss,
+        clearCss : styleLoader.clear,
         transform : transform,
         hexToRgba : hexToRgba
     };

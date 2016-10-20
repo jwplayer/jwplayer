@@ -1,8 +1,7 @@
 define([
     'utils/underscore',
-    'utils/validator',
-    'utils/trycatch'
-], function(_, validator, trycatch) {
+    'utils/validator'
+], function(_, validator) {
     var parser = {};
 
     /** Gets an absolute file path based on a relative filepath * */
@@ -54,16 +53,22 @@ define([
         return '';
     });
 
+    function containsParserErrors(childNodes) {
+        return _.some(childNodes, function(node) {
+            return node.nodeName === 'parsererror';
+        });
+    }
+
     /** Takes an XML string and returns an XML object **/
     parser.parseXML = function (input) {
         var parsedXML = null;
-        trycatch.tryCatch(function() {
+        try {
             // Parse XML in FF/Chrome/Safari/Opera
-            if (window.DOMParser) {
+            if ('DOMParser' in window) {
                 parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
-                var childNodes = parsedXML.childNodes;
-                if (childNodes && childNodes.length && childNodes[0].firstChild &&
-                    childNodes[0].firstChild.nodeName === 'parsererror') {
+                // In Firefox the XML doc may contain the parsererror, other browsers it's further down
+                if (containsParserErrors(parsedXML.childNodes) ||
+                    (parsedXML.childNodes && containsParserErrors(parsedXML.childNodes[0].childNodes))) {
                     parsedXML = null;
                 }
             } else {
@@ -72,7 +77,7 @@ define([
                 parsedXML.async = 'false';
                 parsedXML.loadXML(input);
             }
-        });
+        } catch(e) {/* Expected when content is not XML */}
 
         return parsedXML;
     };
@@ -116,25 +121,29 @@ define([
     };
 
     /** Format the elapsed / remaining text. **/
-    parser.timeFormat = function(sec) {
-        if (sec > 0) {
-            var hrs = Math.floor(sec / 3600),
-                mins = Math.floor((sec - hrs * 3600) / 60),
-                secs = Math.floor(sec % 60);
-
-            return (hrs ? hrs + ':' : '') + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
-        } else {
+    parser.timeFormat = function(sec, allowNegative) {
+        if ((sec <= 0 && !allowNegative) || _.isNaN(parseInt(sec))) {
             return '00:00';
         }
+
+        // If negative add a minus sign
+        var prefix = (sec < 0) ? '-' : '';
+        sec = Math.abs(sec);
+
+        var hrs  = Math.floor(sec / 3600),
+            mins = Math.floor((sec - hrs * 3600) / 60),
+            secs = Math.floor(sec % 60);
+
+        return prefix + (hrs ? hrs + ':' : '') + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
     };
 
     /**
      * Determine the adaptive type
      */
     parser.adaptiveType = function(duration) {
-        if (duration !== -1) {
+        if (duration !== 0) {
             var MIN_DVR_DURATION = -120;
-            if(duration <= MIN_DVR_DURATION) {
+            if (duration <= MIN_DVR_DURATION) {
                 return 'DVR';
             }
             if (duration < 0 || duration === Infinity) {

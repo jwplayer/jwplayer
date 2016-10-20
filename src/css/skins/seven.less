@@ -1,299 +1,57 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-seven {
-    @active-color: #FF0046;
-    @inactive-color: #fff;
-    
-    @cc-inactive: @inactive-color;
-    @cc-active: @active-color;
+  @accent-color: #FFF;
+  @inactive-color: #cecece;
 
-    @rail-height: .2em;
+  #namespace > .set-global-color-classes();
 
-    .jw-background-color {
-        background: #000;
+  .jw-active-option {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .jw-display-icon-container {
+    display: table;
+    font-size: 20px;
+    border-radius: 3.5em;
+
+    &:hover {
+      .jw-icon {
+        color: @accent-color;
+      }
     }
-    
-    /* Controlbar styles */
-    .jw-controlbar {
-        border-top: #333 1px solid;
-        height: 2.5em;
-    }
+  }
 
-    /* Contains icons, time text, and slider */
-    .jw-group {
-        vertical-align: middle;
-    }
-    
-    /* Playlist container - need second background-color declaration to overwrite the .jw-background-color class */
-    .jw-playlist {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-    
-    /* ul container */
-    .jw-playlist-container {
-        left: -43%;
-        background-color: rgba(0, 0, 0, 0.5);
-        
-        /* li list option */
-        .jw-option {
-            border-bottom: 1px solid #444;
-            
-            /* Playlist items are black when active, or hovered */
-            &:hover,
-            &.jw-active-option {
-                background-color: black;
-            }
+  .jw-display-icon-container > .jw-icon {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.7em;
+  }
+  
+  &.jw-state-idle .jw-display-icon-container > .jw-icon {
+    // improve alignment of play icon (should be done in font)
+    padding-left: 4px;
+  }
 
-            /* Number color when li is hovered */
-            &:hover {
-                .jw-label {
-                    color: @active-color;
-                }
-            }
-        }
+  .jw-dock-button {
+    border-radius: 2.5em;
+  }
 
-        .jw-icon-playlist {
-            margin-left: 0;
-        }
-
-        /* play icon is always active */
-        .jw-label .jw-icon-play {
-            color: @active-color;
-            &:before {
-                padding-left: 0;
-            }
-        }
+  .jw-menu {
+      padding: 0;
     }
 
-    /* Playlist title */
-    .jw-tooltip-title {
-        background-color: #000;
-        color: @inactive-color
+  .jw-dock {
+    .jw-overlay {
+      border-radius: @ui-padding;
     }
+  }
+  .jw-skip {
+    border-radius: @ui-padding;
+  }
 
-    /* Colors, padding for icons and text */
-    .jw-text {
-        color: @inactive-color;
-    }
-
-    .jw-button-color {
-        color: @inactive-color;
-        .hover(@hover-color);
-    }
-
-    .jw-toggle {
-        color: @hover-color;
-        &.jw-off {
-            color: @inactive-color;
-        }
-    }
-
-    .jw-controlbar .jw-icon:before,
-    .jw-text-elapsed,
-    .jw-text-duration {
-        padding: 0 .7em;
-    }
-
-    // Styling for the playlist, next and previous icons so it looks correct if the playlist icon is disabled
-    .jw-controlbar .jw-icon-prev:before {
-        padding-right: 0.25em;
-    }
-    .jw-controlbar .jw-icon-playlist:before {
-        padding: 0 0.45em;
-    }
-    .jw-controlbar .jw-icon-next:before {
-        padding-left: 0.25em;
-    }
-
-    .jw-icon-prev,
-    .jw-icon-next {
-        font-size: .7em;
-    }
-
-    .jw-icon-prev:before {
-        border-left: 1px solid #666;
-    }
-
-    .jw-icon-next:before {
-        border-right: 1px solid #666;
-    }
-
-    .jw-icon-display {
-        color: #fff;
-        
-        &:before {
-            padding-left: 0;
-        }
-    }
-
-    /* Styles for play button on idle */
-    .jw-display-icon-container {
-        border-radius: 50%;
-        border: 1px solid #333;
-    }
-    
-    /* Rail/slider styles */
-    .jw-rail {
-        background-color: #384154;
-        box-shadow: none;
-    }
-
-    .jw-buffer {
-        background-color: #666F82;
-    }
-
-    .jw-progress {
-        background: @active-color;
-    }
-
-    .jw-knob {
-        width: .6em;
-        height: .6em;
-        background-color: #fff;
-        box-shadow: 0px 0px 0px 1px rgba(0,0,0,1);
-        border-radius: 1em;
-    }
-
-    /* Timeline and horizontal volume slider */
-    .jw-slider-horizontal {
-
-        .jw-slider-container {
-            height: 0.95em;
-        }
-
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress {
-            height: .2em;
-            border-radius: 0;
-        }
-
-        .jw-knob {
-            .vertically-centered-rail-element(.2em, .6em);
-        }
-
-        .jw-cue {
-            .vertically-centered-rail-element(.2em, .3em);
-
-            width: .3em;
-            height: .3em;
-            background-color: #fff;
-            border-radius: 50%;
-        }
-    }
-    
-    /* Volume slider */
-    .jw-slider-vertical {
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress {
-            width: .2em;
-        }
-    }
-
-    /* Volume slider container */
-    .jw-volume-tip {
-        width: 100%;
-        left: -45%;
-        padding-bottom: .7em;
-    }
-
-    /* Color of video's duration time */
-    .jw-text-duration {
-        color: #666F82;
-    }
-    
-    /* Icon borders on the right side of the controlbar */
-    .jw-controlbar-right-group {
-        .jw-icon-tooltip:before,
-        .jw-icon-inline:before {
-            border-left: 1px solid #666;
-        }
-
-        .jw-icon-inline:first-child:before {
-            border: none;
-        }
-    }
-
-    /* Icons, text and container styles for the dock, in the upper right corner */
-    .jw-dock {
-        .jw-dock-button {
-            border-radius: 50%;
-            border: 1px solid #333;
-        }
-        .jw-overlay {
-            border-radius: 2.5em;
-        }
-    }
-    
-    /* Styles for active list items */
-    .jw-icon-tooltip {
-        .jw-active-option {
-            background-color: @active-color;
-            color: #fff;
-        }
-    }
-    
-    /* A min-width on the volume icon to keep the width from collapsing on toggle */
-    .jw-icon-volume {
-        min-width: 2.6em;
-    }
-    
-    /* For the overlay containers */
-    .jw-time-tip,
-    .jw-menu,
-    .jw-volume-tip,
-    .jw-skip {
-        border: 1px solid #333;
-    }
-    
-    /* Position and padding of slider thumbnail */
-    .jw-time-tip {
-        padding: 0.2em;
-        bottom: 1.3em;
-    }
-
-    /* Position of remaining overlay containers */
-    .jw-menu,
-    .jw-volume-tip {
-        bottom: .24em;
-    }
-    
-    /* Skip icon and text styles */
-    .jw-skip {
-        padding: 0.4em;
-        border-radius: 1.75em;
-
-        .jw-text,
-        .jw-icon-inline {
-            color: @inactive-color;
-            line-height: 1.75em;
-        }
-
-        &.jw-skippable:hover .jw-text,
-        &.jw-skippable:hover .jw-icon-inline {
-            color: @active-color;
-        }
-    }
-
-    &.jw-flag-touch {
-        .jw-controlbar .jw-icon:before,
-        .jw-text-elapsed,
-        .jw-text-duration {
-            padding: 0 .35em;
-        }
-
-        .jw-controlbar .jw-icon-prev:before {
-            padding: 0 0.125em 0 0.7em;
-        }
-
-        .jw-controlbar .jw-icon-next:before {
-            padding: 0 0.7em 0 0.125em;
-        }
-
-        .jw-controlbar .jw-icon-playlist:before {
-            padding: 0 .225em;
-        }
-    }
+  .jw-text {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }

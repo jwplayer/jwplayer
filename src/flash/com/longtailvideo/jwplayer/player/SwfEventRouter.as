@@ -84,7 +84,7 @@ function(id, name, json) {
                 return swf.trigger(name);
             }
         }
-        console.log('Unhandled event from "' + id +'":', name, json);
+        // console.log('Unhandled event from "' + id +'":', name, json);
     }, 0);
 }]]></script>;
 

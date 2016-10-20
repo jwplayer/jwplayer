@@ -103,6 +103,7 @@ public class PlayerSetup extends EventDispatcher {
     }
 
     private function waitForSwfEventsRouter():void {
+        // This may take a moment to setup with early versions of IE
         if (SwfEventRouter.available) {
             tasker.success();
             return;

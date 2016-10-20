@@ -8,6 +8,7 @@ define([], function() {
         TAP: 'tap',
         DOUBLE_TAP: 'doubleTap',
         OVER: 'over',
+        MOVE: 'move',
         OUT: 'out'
     };
 

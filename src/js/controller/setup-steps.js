@@ -15,40 +15,68 @@ define([
     function getQueue() {
 
         var Components = {
-            LOAD_POLYFILLS : {
-                method: _loadPolyfills,
+            LOAD_PROMISE_POLYFILL : {
+                method: _loadPromisePolyfill,
                 depends: []
+            },
+            LOAD_BASE64_POLYFILL : {
+                method: _loadBase64Polyfill,
+                depends: []
+            },
+            LOAD_VTTCUE_POLYFILL : {
+                method: _loadVTTCuePolyfill,
+                depends: []
+            },
+            LOADED_POLYFILLS : {
+                method: _loadedPolyfills,
+                depends: [
+                    'LOAD_PROMISE_POLYFILL',
+                    'LOAD_BASE64_POLYFILL',
+                    'LOAD_VTTCUE_POLYFILL'
+                ]
             },
             LOAD_PLUGINS : {
                 method: _loadPlugins,
-                depends: ['LOAD_POLYFILLS']
+                depends: ['LOADED_POLYFILLS']
             },
-            LOAD_YOUTUBE : {
-                method: _loadYoutube,
-                depends: ['LOAD_PLAYLIST']
+            INIT_PLUGINS : {
+                method: _initPlugins,
+                depends: [
+                    'LOAD_PLUGINS',
+                    // Init requires jw-overlays to be in the DOM
+                    'SETUP_VIEW'
+                ]
             },
             LOAD_SKIN : {
                 method: _loadSkin,
-                depends: []
+                depends: ['LOADED_POLYFILLS']
             },
             LOAD_PLAYLIST : {
                 method: _loadPlaylist,
-                depends: ['LOAD_PLUGINS']
+                depends: ['LOADED_POLYFILLS']
             },
-            SETUP_COMPONENTS : {
-                method: _setupComponents,
+            FILTER_PLAYLIST: {
+                method: _filterPlaylist,
+                depends : ['LOAD_PLAYLIST']
+            },
+            SETUP_VIEW : {
+                method: _setupView,
                 depends: [
-                    // view controls require that a playlist item be set
-                    'LOAD_PLAYLIST',
-                    'LOAD_SKIN',
-                    'LOAD_YOUTUBE'
+                    'LOAD_SKIN'
+                ]
+            },
+            SET_ITEM : {
+                method: _setPlaylistItem,
+                depends: [
+                    'INIT_PLUGINS',
+                    'FILTER_PLAYLIST'
                 ]
             },
             SEND_READY : {
                 method: _sendReady,
                 depends: [
-                    'LOAD_PLUGINS',
-                    'SETUP_COMPONENTS'
+                    'SETUP_VIEW',
+                    'SET_ITEM'
                 ]
             }
         };
@@ -56,50 +84,55 @@ define([
         return Components;
     }
 
-
-    function _loadPolyfills(resolve) {
-        if (!window.btoa || !window.atob) {
-            require.ensure(['polyfills/base64'], function(require) {
-                require('polyfills/base64');
+    function _loadPromisePolyfill(resolve) {
+        if (!window.Promise) {
+            require.ensure(['polyfills/promise'], function (require) {
+                require('polyfills/promise');
                 resolve();
-            });
+            }, 'polyfills.promise');
         } else {
             resolve();
         }
     }
 
-    function _loadPlugins(resolve, _model, _api) {
+    function _loadBase64Polyfill(resolve) {
+        if (!window.btoa || !window.atob) {
+            require.ensure(['polyfills/base64'], function(require) {
+                require('polyfills/base64');
+                resolve();
+            }, 'polyfills.base64');
+        } else {
+            resolve();
+        }
+    }
+
+    function _loadVTTCuePolyfill(resolve) {
+        if (!window.VTTCue) {
+            require.ensure(['polyfills/vttcue'], function(require) {
+                require('polyfills/vttcue');
+                resolve();
+            }, 'polyfills.vttcue');
+        } else {
+            resolve();
+        }
+    }
+
+    function _loadedPolyfills(resolve){
+        resolve();
+    }
+
+    function _loadPlugins(resolve, _model) {
+        window.jwplayerPluginJsonp = plugins.registerPlugin;
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-        _pluginLoader.on(events.COMPLETE, _.partial(_completePlugins, resolve, _model, _api));
+        _pluginLoader.on(events.COMPLETE, resolve);
         _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
         _pluginLoader.load();
     }
 
-    function _completePlugins(resolve, _model, _api) {
-        _pluginLoader.setupPlugins(_api, _model, _.partial(_resizePlugin, _api));
-        
+    function _initPlugins(resolve, _model, _api) {
+        delete window.jwplayerPluginJsonp;
+        _pluginLoader.setupPlugins(_api, _model);
         resolve();
-    }
-
-    function _resizePlugin(_api, plugin, div, onready) {
-        var id = _api.id;
-        return function() {
-            var displayarea = document.querySelector('#' + id + ' .jw-overlays');
-            if (displayarea && onready) {
-                displayarea.appendChild(div);
-            }
-            if (typeof plugin.resize === 'function') {
-                plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
-                setTimeout(function() {
-                    plugin.resize(displayarea.clientWidth, displayarea.clientHeight);
-                }, 400);
-            }
-
-            if (displayarea && displayarea.style) {
-                div.left = displayarea.style.left;
-                div.top = displayarea.style.top;
-            }
-        };
     }
 
     function _pluginsError(resolve, evt) {
@@ -111,23 +144,28 @@ define([
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
-                _completePlaylist(resolve, _model, data.playlist);
+                _model.set('playlist', data.playlist);
+                _model.set('feedid', data.feedid);
+                resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
             _playlistLoader.load(playlist);
         } else {
-            _completePlaylist(resolve, _model, playlist);
+            resolve();
         }
     }
 
-    function _completePlaylist(resolve, _model, playlist) {
-        _model.setPlaylist(playlist);
-        var p = _model.get('playlist');
-        if (!_.isArray(p) || p.length === 0) {
-            _playlistError(resolve, 'Playlist type not supported');
-            return;
+    function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
+        var playlist = _model.get('playlist');
+
+        // Performs filtering
+        var success = _setPlaylist(playlist);
+
+        if (success) {
+            resolve();
+        } else {
+            _playlistError(resolve);
         }
-        resolve();
     }
 
     function _playlistError(resolve, evt) {
@@ -179,7 +217,6 @@ define([
                 _model.set('skin-loading', false);
             });
             loader.addEventListener(events.ERROR, function() {
-                console.log('The given skin failed to load : ', skinUrl);
                 _model.set('skin', 'seven'); // fall back to seven skin
                 _model.set('skin-loading', false);
             });
@@ -193,28 +230,15 @@ define([
         });
     }
 
-    function _loadYoutube(resolve, _model) {
-        var p = _model.get('playlist');
 
-        var hasYoutube = _.some(p, function(item) {
-            return utils.isYouTube(item.file, item.type);
-        });
-
-        if (hasYoutube) {
-            require.ensure(['providers/youtube'], function(require) {
-                var youtube = require('providers/youtube');
-                youtube.register(window.jwplayer);
-                resolve();
-            }, 'provider.youtube');
-        } else {
-            resolve();
-        }
-    }
-
-    function _setupComponents(resolve, _model, _api, _view) {
-        _model.setItem(0);
+    function _setupView(resolve, _model, _api, _view) {
         _view.setup();
         resolve();
+    }
+
+    function _setPlaylistItem(resolve, _model) {
+        _model.once('itemReady', resolve);
+        _model.setItemIndex(_model.get('item'));
     }
 
     function _sendReady(resolve) {

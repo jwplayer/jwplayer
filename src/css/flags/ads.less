@@ -1,7 +1,13 @@
 .jwplayer.jw-flag-ads {
 
     .jw-preview,
-    .jw-dock {
+    .jw-dock,
+    .jw-logo,
+    .jw-captions.jw-captions-enabled,
+    .jw-nextup-container {
+        display: none;
+    }
+    video::-webkit-media-text-track-container {
         display: none;
     }
 
@@ -31,10 +37,38 @@
         .jw-icon-tooltip.jw-icon-volume {
             display : none;
         }
+    }
+}
 
+.jwplayer.jw-flag-ads-googleima {
+    .jw-controlbar {
+        display: table;
+        bottom: 0;
     }
 
-    .jw-logo {
+    &.jw-flag-touch {
+        .jw-controlbar {
+            font-size: 1em;
+        }
+
+        &.jw-state-paused .jw-display-icon-container {
+            display: none;
+        }
+    }
+
+    &.jw-skin-seven .jw-controlbar {
+        font-size: 0.9em;
+    }
+}
+
+.jwplayer.jw-flag-ads.jw-flag-touch {
+    .jw-controlbar {
+        display: table;
+    }
+}
+
+.jwplayer.jw-flag-ads-vpaid, .jwplayer.jw-flag-touch.jw-flag-ads-vpaid {
+    .jw-controlbar {
         display: none;
     }
 }
@@ -45,8 +79,3 @@
     }
 }
 
-.jwplayer.jw-flag-ads.jw-flag-touch {
-    .jw-controlbar {
-        display: table;
-    }
-}

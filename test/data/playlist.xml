@@ -1,0 +1,24 @@
+<rss xmlns:jwplayer="http://rss.jwpcdn.com/">
+    <channel>
+        <title>Cosmos Laundromat - First Cycle</title>
+        <description>
+            The full first episode (12 minutes)! On a desolate island, suicidal sheep Franck meets his fate in a quirky salesman, who offers him the gift of a lifetime. Little does he know that he can only handle so much lifetime... "Cosmos Laundromat" started in 2014 as an experimental feature film, in which an adventurous and absurdist love story is being told by multiple teams - each working in their own unique style. The opening of the film, the 10 minutes pilot "First Cycle", has been made in the Netherlands by the studio of Blender Institute in Amsterdam. The film itself and all of the artwork files were made with free/open source software and are available under a permissive license. Free to share, free to remix and free to learn from.
+        </description>
+        <link>
+            http://content.jwplatform.com/previews/TQjoCPTk-V7MoJd7l
+        </link>
+        <item>
+            <title>Cosmos Laundromat - First Cycle</title>
+            <description>
+                The full first episode (12 minutes)! On a desolate island, suicidal sheep Franck meets his fate in a quirky salesman, who offers him the gift of a lifetime. Little does he know that he can only handle so much lifetime... "Cosmos Laundromat" started in 2014 as an experimental feature film, in which an adventurous and absurdist love story is being told by multiple teams - each working in their own unique style. The opening of the film, the 10 minutes pilot "First Cycle", has been made in the Netherlands by the studio of Blender Institute in Amsterdam. The film itself and all of the artwork files were made with free/open source software and are available under a permissive license. Free to share, free to remix and free to learn from.
+            </description>
+            <guid>TQjoCPTk</guid>
+            <jwplayer:image>
+                http://assets-jpcust.jwpsrv.com/thumbs/TQjoCPTk-720.jpg
+            </jwplayer:image>
+            <jwplayer:source file="http://content.jwplatform.com/manifests/TQjoCPTk.m3u8"/>
+            <jwplayer:source file="http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4"/>
+            <jwplayer:track file="http://assets-jpcust.jwpsrv.com/strips/TQjoCPTk-120.vtt" kind="thumbnails"/>
+        </item>
+    </channel>
+</rss>

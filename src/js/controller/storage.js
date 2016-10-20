@@ -3,59 +3,68 @@ define([
     'utils/helpers'
 ], function(_, utils) {
 
-    var persistItems = [
-        'volume',
-        'mute',
-        'captionLabel',
-        'qualityLabel'
-    ];
+    var storage = {
+        removeItem: utils.noop
+    };
 
-    function getAllItems() {
-        var items = {};
-        var cookies = document.cookie.split('; ');
-        for (var i = 0; i < cookies.length; i++) {
-            var split = cookies[i].split('=');
-            if (split[0].substr(0, 9) === 'jwplayer.') {
-                var name = split[0].substr(9);
-                items[name] = utils.serialize(split[1]);
-            }
-        }
-        return items;
+    try {
+        storage = window.localStorage;
+    } catch(e) {/* ignore */}
+
+    function jwPrefix(str) {
+        return 'jwplayer.' + str;
     }
 
-    function getItem(name) {
-        return getAllItems()[name];
+    function getAllItems() {
+        return _.reduce(this.persistItems, function(memo, key) {
+            var val = storage[jwPrefix(key)];
+            if (val) {
+                memo[key] = utils.serialize(val);
+            }
+            return memo;
+        }, {});
     }
 
     function setItem(name, value) {
-        document.cookie = 'jwplayer.' + name + '=' + value + '; path=/';
-    }
-
-    function removeItem(name) {
-        setItem(name, '; expires=Thu, 01 Jan 1970 00:00:01 GMT');
+        try {
+            storage[jwPrefix(name)] = value;
+        } catch(e) {
+            // ignore QuotaExceededError unless debugging
+            var jwplayer = window.jwplayer;
+            if (jwplayer && jwplayer.debug) {
+                console.error(e);
+            }
+        }
     }
 
     function clear() {
-        var all = getAllItems();
-        _.each(all, function(val, name) {
-            removeItem(name);
+        _.each(this.persistItems, function(val) {
+            storage.removeItem(jwPrefix(val));
         });
     }
 
-    function initModel(model) {
-        _.each(persistItems, function(item) {
+    function Storage() {
+        this.persistItems = [
+            'volume',
+            'mute',
+            'captionLabel',
+            'qualityLabel'
+        ];
+    }
+
+    function track(model) {
+        _.each(this.persistItems, function(item) {
             model.on('change:' + item, function(model, value) {
                 setItem(item, value);
             });
         });
     }
 
-    return {
-        model: initModel,
+    _.extend(Storage.prototype, {
         getAllItems: getAllItems,
-        getItem: getItem,
-        setItem: setItem,
-        removeItem: removeItem,
+        track : track,
         clear: clear
-    };
+    });
+
+    return Storage;
 });

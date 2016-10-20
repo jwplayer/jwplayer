@@ -92,6 +92,18 @@ define([
             if (events) triggerEvents(events, args, this);
             if (allEvents) triggerEvents(allEvents, arguments, this);
             return this;
+        },
+        // This is a c/p of the above trigger method, swapping out triggerEvents for safeTriggerEvents
+        //  this will have worse performance but safely allows plugins to not wreck eachother
+        triggerSafe: function (name) {
+            if (!this._events) return this;
+            var args = slice.call(arguments, 1);
+            if (!eventsApi(this, 'trigger', name, args)) return this;
+            var events = this._events[name];
+            var allEvents = this._events.all;
+            if (events) safeTriggerEvents(events, args, this);
+            if (allEvents) safeTriggerEvents(allEvents, arguments, this);
+            return this;
         }
 
         /*
@@ -165,6 +177,16 @@ define([
             default:
                 while (++i < l) (ev = events[i]).callback.apply(ev.context || context, args);
                 return;
+        }
+    };
+
+    // This is a deconstruction of the above default while loop, with try/catch inserted
+    var safeTriggerEvents = function(events, args, context) {
+        var ev, i = -1, l = events.length;
+        while (++i < l) {
+            try {
+                (ev = events[i]).callback.apply(ev.context || context, args);
+            } catch(e) {}
         }
     };
 

@@ -13,14 +13,6 @@ define([
 ], function(events, states,
             Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
-    function addFocusBorder(container) {
-        utils.addClass(container, 'jw-tab-focus');
-    }
-
-    function removeFocusBorder(container) {
-        utils.removeClass(container, 'jw-tab-focus');
-    }
-
     var Api = function (container, globalRemovePlayer) {
         var _this = this,
             _controller,
@@ -30,7 +22,7 @@ define([
         // Set up event handling
         _.extend(this, Events);
 
-        // This helps plugins, particularly analytics
+        // Provide module access to plugins from the player instance
         this.utils = utils;
         this._ = _;
         this.Events = Events;
@@ -43,24 +35,11 @@ define([
                 args = {};
             }
             args.type = type;
-            return Events.trigger.call(_this, type, args);
-        };
-
-        this.on = function(name, callback) {
-            if (_.isString(callback)) {
-                throw new TypeError('eval callbacks depricated');
+            var jwplayer = window.jwplayer;
+            if (jwplayer && jwplayer.debug) {
+                return Events.trigger.call(_this, type, args);
             }
-
-            var safeCallback = function() {
-                try {
-                    callback.apply(this, arguments);
-                } catch(e) {
-                    utils.log('There was an error calling back an event handler for "'+
-                        name+'". Error: '+ e.message);
-                }
-            };
-
-            return Events.on.call(_this, name, safeCallback);
+            return Events.triggerSafe.call(_this, type, args);
         };
 
         // Required by vast
@@ -81,13 +60,7 @@ define([
             _controller.on(events.JWPLAYER_MEDIA_META, function (data) {
                 _.extend(_itemMeta, data.metadata);
             });
-            _controller.on(events.JWPLAYER_VIEW_TAB_FOCUS, function (data) {
-                if (data.hasFocus === true) {
-                    addFocusBorder(this.getContainer());
-                } else {
-                    removeFocusBorder(this.getContainer());
-                }
-            });
+
             // capture the ready event and add setup time to it
             _controller.on(events.JWPLAYER_READY, function(event) {
                 _playerReady = true;
@@ -123,10 +96,21 @@ define([
             }
         };
 
-        var _getPlugin = function(name) {
-            // this.plugins is set by plugins.loader `api.plugins = jsplugins.plugins`
-            var plugins = _this.plugins;
-            return plugins && plugins[name];
+        this.getPlugin = function(name) {
+            return _this.plugins && _this.plugins[name];
+        };
+
+        this.addPlugin = function(name, pluginInstance) {
+            this.plugins = this.plugins || {};
+            this.plugins[name] = pluginInstance;
+
+
+            this.onReady(pluginInstance.addToPlayer);
+
+            // A swf plugin may rely on resize events
+            if (pluginInstance.resize) {
+                this.onResize(pluginInstance.resizeHandler);
+            }
         };
 
         this.setup = function (options) {
@@ -193,7 +177,7 @@ define([
         };
 
         this.load = function (toLoad) {
-            var plugin = _getPlugin('vast') || _getPlugin('googima');
+            var plugin = this.getPlugin('vast') || this.getPlugin('googima');
             if (plugin) {
                 plugin.destroy();
             }
@@ -201,9 +185,15 @@ define([
             return _this;
         };
 
-        this.play = function (state) {
+        this.play = function (state, meta) {
+            if (!_.isBoolean(state)) {
+                meta = state;
+            }
+            if (!meta) {
+                meta = {reason: 'external'};
+            }
             if (state === true) {
-                _controller.play();
+                _controller.play(meta);
                 return _this;
             } else if (state === false) {
                 _controller.pause();
@@ -217,7 +207,7 @@ define([
                     _controller.pause();
                     break;
                 default:
-                    _controller.play();
+                    _controller.play(meta);
             }
 
             return _this;

@@ -13,9 +13,8 @@ define([
      * @param {String} padder
      */
     var pad = function (str, length, padder) {
-        if (!padder) {
-            padder = '0';
-        }
+        str = '' + str;
+        padder = padder || '0';
         while (str.length < length) {
             str = padder + str;
         }
@@ -41,7 +40,7 @@ define([
      * This does not return the file extension, instead it returns a media type extension
      */
     function getAzureFileFormat(path) {
-        if (path.indexOf('(format=m3u8-') > -1) {
+        if ((/[\(,]format=m3u8-/i).test(path)) {
             return 'm3u8';
         } else {
             return false;
@@ -58,25 +57,39 @@ define([
             return azureFormat;
         }
 
-        path = path.substring(path.lastIndexOf('/') + 1, path.length).split('?')[0].split('#')[0];
+        path = path.split('?')[0].split('#')[0];
         if (path.lastIndexOf('.') > -1) {
             return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
         }
     };
 
     /**
+     * Convert seconds to HH:MN:SS.sss
+     *
+     * @param seconds  The number of seconds
+     * @return        An HH:MN:SS.sss string
+     **/
+    var hms = function(seconds) {
+        var h = parseInt(seconds / 3600);
+        var m = parseInt(seconds / 60) % 60;
+        var s = seconds % 60;
+        return pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s.toFixed(3), 6);
+    };
+
+    /**
      * Convert a time-representing string to a number.
      *
-     * @param {String}    The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
+     * @param {String}    The input string. Supported are 00:03:00:29 / 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
      * @return {Number}    The number of seconds.
      */
-    var seconds = function (str) {
+    var seconds = function (str, frameRate) {
         if (_.isNumber(str)) {
             return str;
         }
 
         str = str.replace(',', '.');
         var arr = str.split(':');
+        var arrLength = arr.length;
         var sec = 0;
         if (str.slice(-1) === 's') {
             sec = parseFloat(str);
@@ -84,11 +97,19 @@ define([
             sec = parseFloat(str) * 60;
         } else if (str.slice(-1) === 'h') {
             sec = parseFloat(str) * 3600;
-        } else if (arr.length > 1) {
-            sec = parseFloat(arr[arr.length - 1]);
-            sec += parseFloat(arr[arr.length - 2]) * 60;
-            if (arr.length === 3) {
-                sec += parseFloat(arr[arr.length - 3]) * 3600;
+        } else if (arrLength > 1) {
+            var secIndex = arrLength - 1;
+            if (arrLength === 4) {
+                // if frame is included in the string, calculate seconds by dividing by frameRate
+                if (frameRate) {
+                    sec = parseFloat(arr[secIndex]) / frameRate;
+                }
+                secIndex -= 1;
+            }
+            sec += parseFloat(arr[secIndex]);
+            sec += parseFloat(arr[secIndex - 1]) * 60;
+            if (arrLength >= 3) {
+                sec += parseFloat(arr[secIndex - 2]) * 3600;
             }
         } else {
             sec = parseFloat(str);
@@ -114,6 +135,7 @@ define([
         pad : pad,
         xmlAttribute : xmlAttribute,
         extension : extension,
+        hms: hms,
         seconds: seconds,
         suffix: suffix,
         prefix: prefix

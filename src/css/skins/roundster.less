@@ -1,5 +1,5 @@
-@import "../imports/vars";
 @import "../imports/mixins";
+@import "../imports/vars";
 
 .jw-skin-roundster {
     @active-color: #f15173;
@@ -23,11 +23,18 @@
 
     @volume-background: #5c6373;
 
-    @rail-height: .4em;
     @cue-size: .25em;
     @thumb-size: .9em;
+    @def-rail-width: 0.75em;
+    @slider-height: @rail-height;
+    @rail-height: 0.4em;
 
+    @controlbar-height: 2em;
+
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
     .skin-element-padding();
     
     /* Controlbar styles */
@@ -35,49 +42,6 @@
     .jw-controlbar {
         border-radius: @roundster-corners;
         padding: 0 @roundster-corners;
-    }
-
-    /* Playlist */
-    .jw-playlist-container {
-        left: -48%;
-        background-color: @rail-color;
-        border-radius: .3em;
-        overflow: hidden;
-
-        .jw-option,
-        .jw-text,
-        .jw-icon {
-            color: #CBD0DA;
-        }
-
-        .jw-option {
-            border-bottom: 1px solid #747D92;
-            background-color: @rail-color;
-
-            /* Menu items are white when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                background-color: #747D92;
-                color: #fff;
-            }
-        }
-
-        /* play icon is always active */
-        .jw-label .jw-icon-play {
-            color: @active-color;
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #747D92;
-        }
-
-        ::-webkit-scrollbar {
-            border: 10px solid @rail-color;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: white;
-        }
     }
     
     /* Playlist title */
@@ -93,6 +57,10 @@
         border-radius: @roundster-corners;
     }
 
+    .jw-slider-volume {
+        border: 0;
+    }
+
     .jw-knob {
         background-color: #fff;
         width: @thumb-size;
@@ -100,10 +68,9 @@
         border-radius: 50%;
         box-shadow: 0px 1px 5px 1px rgba(134,142,163,1);
     }
-    
+
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
-
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
 
@@ -129,13 +96,21 @@
             width: .4em;
         }
 
+        .jw-knob {
+            .horizontally-centered-rail-element(@def-rail-width, @thumb-size);
+        }
+
+        .jw-slider-container{
+            width: @def-rail-width;
+        }
+
     }
     
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
     .jw-menu {
-        border-radius: @ui-padding;
+        border-radius: 0.25em;
     }
     
     /* Position of remaining overlay containers */

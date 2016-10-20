@@ -253,7 +253,7 @@ public class Strings {
      */
 
     private static function getAzureFileFormat(path:String):String {
-        if (path.indexOf('(format=m3u8-') > -1) {
+        if ((/[\(,]format=m3u8-/i).test(path)) {
             return 'm3u8';
         } else {
             return '';

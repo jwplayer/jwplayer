@@ -1,7 +1,8 @@
 define([], function() {
     return {
-        repo : 'http://p.jwpcdn.com/player/v/',
+        repo : __REPO__,
         SkinsIncluded : ['seven'],
-        SkinsLoadable : ['beelden', 'bekle', 'five', 'glow', 'roundster', 'six', 'stormtrooper', 'vapor']
+        SkinsLoadable : ['beelden', 'bekle', 'five', 'glow', 'roundster', 'six', 'stormtrooper', 'vapor'],
+        dvrSeekLimit : -25
     };
 });

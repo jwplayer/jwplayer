@@ -1,8 +1,7 @@
 define([
     'utils/helpers',
-    'utils/stretching',
     'utils/underscore'
-], function(utils, stretchUtils, _) {
+], function(utils, _) {
     /*global __webpack_public_path__:true*/
 
     // Defaults
@@ -10,18 +9,41 @@ define([
         //androidhls: true,
         autostart: false,
         controls: true,
-        cookies: true,
         displaytitle : true,
         displaydescription: true,
         mobilecontrols: false,
         repeat: false,
         castAvailable: false,
         skin: 'seven',
-        stretching: stretchUtils.UNIFORM,
+        stretching: 'uniform',
         mute: false,
         volume: 90,
         width: 480,
-        height: 270
+        height: 270,
+        localization: {
+            play: 'Play',
+            playback: 'Start playback',
+            pause: 'Pause',
+            volume: 'Volume',
+            prev: 'Previous',
+            next: 'Next',
+            cast: 'Chromecast',
+            fullscreen: 'Fullscreen',
+            playlist: 'Playlist',
+            hd: 'Quality',
+            cc: 'Closed captions',
+            audioTracks: 'Audio tracks',
+            replay: 'Replay',
+            buffer: 'Loading',
+            more: 'More',
+            liveBroadcast: 'Live broadcast',
+            loadingAd: 'Loading ad',
+            rewind: 'Rewind 10s',
+            nextUp: 'Next Up',
+            related: 'Related'
+        }
+        //qualityLabel: '480p',     // specify a default quality
+        //captionLabel: 'English',  // specify a default Caption
     };
 
     function _deserialize(options) {
@@ -37,10 +59,13 @@ define([
         return val;
     }
 
-    var config = function(options) {
-        var allOptions = _.extend({}, (window.jwplayer || {}).defaults, options);
+    var config = function(options, storage) {
+        var persisted = storage && storage.getAllItems();
+        var allOptions = _.extend({}, (window.jwplayer || {}).defaults, persisted, options);
 
         _deserialize(allOptions);
+
+        allOptions.localization = _.extend({}, Defaults.localization, allOptions.localization);
 
         var config = _.extend({}, Defaults, allOptions);
         if (config.base === '.') {
@@ -79,8 +104,19 @@ define([
 
         if (!config.playlist) {
             // This is a legacy fallback, assuming a playlist item has been flattened into the config
-            //  we clone it to avoid circular dependences
-            config.playlist = _.clone(config);
+            var obj = _.pick(config, [
+                'title',
+                'description',
+                'type',
+                'mediaid',
+                'image',
+                'file',
+                'sources',
+                'tracks',
+                'preload'
+            ]);
+
+            config.playlist = [ obj ];
         }
 
         return config;
@@ -93,6 +129,9 @@ define([
         }
         if (typeof ar !== 'string' || !utils.exists(ar)) {
             return 0;
+        }
+        if (/^\d*\.?\d+%$/.test(ar)) {
+            return ar;
         }
         var index = ar.indexOf(':');
         if (index === -1) {

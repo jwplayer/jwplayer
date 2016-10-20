@@ -24,6 +24,7 @@ define([], function() {
     // are declared here.
     var
         nativeMap = ArrayProto.map,
+        nativeReduce       = ArrayProto.reduce,
         nativeForEach = ArrayProto.forEach,
         nativeFilter = ArrayProto.filter,
         nativeEvery = ArrayProto.every,
@@ -73,6 +74,29 @@ define([], function() {
             results.push(iterator.call(context, value, index, list));
         });
         return results;
+    };
+
+    var reduceError = 'Reduce of empty array with no initial value';
+
+    // **Reduce** builds up a single result from a list of values, aka `inject`,
+    // or `foldl`. Delegates to **ECMAScript 5**'s native `reduce` if available.
+    _.reduce = _.foldl = _.inject = function(obj, iterator, memo, context) {
+        var initial = arguments.length > 2;
+        if (obj == null) obj = [];
+        if (nativeReduce && obj.reduce === nativeReduce) {
+            if (context) iterator = _.bind(iterator, context);
+            return initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
+        }
+        each(obj, function(value, index, list) {
+            if (!initial) {
+                memo = value;
+                initial = true;
+            } else {
+                memo = iterator.call(context, memo, value, index, list);
+            }
+        });
+        if (!initial) throw new TypeError(reduceError);
+        return memo;
     };
 
     // Return the first value which passes a truth test. Aliased as `detect`.
@@ -149,6 +173,19 @@ define([], function() {
     };
 
 
+    // Array Functions
+    // ---------------
+
+
+    // Get the last element of an array. Passing **n** will return the last N
+    // values in the array. The **guard** check allows it to work with `_.map`.
+    _.last = function(array, n, guard) {
+        if (array == null) return void 0;
+        if ((n == null) || guard) return array[array.length - 1];
+        return slice.call(array, Math.max(array.length - n, 0));
+    };
+
+
     // Returns a function that will only be executed after being called N times.
     _.after = function (times, func) {
         return function () {
@@ -176,6 +213,35 @@ define([], function() {
         if (_.isFunction(value)) return value;
         return _.property(value);
     };
+
+
+    // An internal function used for aggregate "group by" operations.
+    var group = function(behavior) {
+        return function(obj, iterator, context) {
+            var result = {};
+            iterator = lookupIterator(iterator);
+            each(obj, function(value, index) {
+                var key = iterator.call(context, value, index, obj);
+                behavior(result, key, value);
+            });
+            return result;
+        };
+    };
+
+    // Groups the object's values by a criterion. Pass either a string attribute
+    // to group by, or a function that returns the criterion.
+    _.groupBy = group(function(result, key, value) {
+        _.has(result, key) ? result[key].push(value) : result[key] = [value];
+    });
+
+
+    // Indexes the object's values by a criterion, similar to `groupBy`, but for
+    // when you know that your index values will be unique.
+    _.indexBy = group(function(result, key, value) {
+        result[key] = value;
+    });
+
+
 
     // Use a comparator function to figure out the smallest index at which
     // an object should be inserted so as to maintain order. Uses binary search.
@@ -208,6 +274,11 @@ define([], function() {
         if (obj == null) return false;
         if (obj.length !== +obj.length) obj = _.values(obj);
         return _.indexOf(obj, target) >= 0;
+    };
+
+    // Convenience version of a common use case of `map`: fetching a property.
+    _.pluck = function(obj, key) {
+        return _.map(obj, _.property(key));
     };
 
     // Convenience version of a common use case of `filter`: selecting only objects
