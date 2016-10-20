@@ -25,9 +25,10 @@ module.exports = function( config ) {
             'karma-chrome-launcher',
             'karma-firefox-launcher',
             'karma-safari-launcher',
-            'karma-browserstack-launcher'
+            'karma-browserstack-launcher',
+            'karma-sinon'
         ],
-        frameworks: ['requirejs', 'qunit'],
+        frameworks: ['requirejs', 'qunit', 'sinon'],
         reporters: testReporters,
         port: serverPort, // web server port
         colors: !isJenkins, // colors in the output (reporters and logs)

@@ -58,4 +58,16 @@
 
 @dock-corner-radius: 0;
 
-
+// Next up display
+@nextup-position-bottom: @controlbar-height + 0.5em;
+@nextup-position-bottom-touch: (@controlbar-height * 1.5em) + 0.5em;
+@nextup-position-right: 0.5em;
+@nextup-border-radius: 0;
+@nextup-header-background: @controlbar-background;
+@nextup-header-text-color: @active-color;
+@nextup-body-background: darken(@nextup-header-background, 20%);
+@nextup-body-text-color: white;
+@nextup-body-text-color-overflow: darken(fade(@controlbar-background, 100%), 20%);
+@nextup-close-button-color-inactive: @inactive-color;
+@nextup-close-button-color-active: @active-color;
+@nextup-close-button-color-hover: @hover-color;

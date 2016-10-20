@@ -15,10 +15,11 @@ define([
     'view/title',
     'view/components/nextuptooltip',
     'utils/underscore',
-    'templates/player.html'
+    'templates/player.html',
+    'view/breakpoint',
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate) {
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -55,7 +56,6 @@ define([
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _resizeContainerRequestId = -1,
-            _minWidthForTimeDisplay = 450,
             // Function that delays the call of _setContainerDimensions so that the page has finished repainting.
             _delayResize = window.requestAnimationFrame ||
                 function(rafFunc) {
@@ -117,7 +117,7 @@ define([
             var min = 0;
             var max = _model.get('duration');
             var position = _model.get('position');
-            if (utils.adaptiveType(max) === 'DVR') {
+            if (_model.get('streamType') === 'DVR') {
                 min = max;
                 max = Math.max(position, Constants.dvrSeekLimit);
             }
@@ -256,6 +256,8 @@ define([
 
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
+            setBreakpoint(_playerElement, containerWidth, containerHeight);
+
             _this.trigger(events.JWPLAYER_RESIZE, {
                 width: containerWidth,
                 height: containerHeight
@@ -655,29 +657,6 @@ define([
             _playerElement.onmouseup = handleMouseUp;
         }
 
-        function stopDragging(model) {
-            if (model.get('state') === states.PAUSED) {
-                model.once('change:state', stopDragging);
-                return;
-            }
-
-            // Handle the case where they begin seeking again before the last seek completes
-            if (model.get('scrubbing') === false) {
-                utils.removeClass(_playerElement, 'jw-flag-dragging');
-            }
-        }
-
-        function _dragging(model, val) {
-            model.off('change:state', stopDragging);
-
-            if (val) {
-                utils.addClass(_playerElement, 'jw-flag-dragging');
-            } else {
-                stopDragging(model);
-            }
-        }
-
-
         // Perform the switch to fullscreen
         var _fullscreen = function(model, state) {
 
@@ -822,10 +801,6 @@ define([
             }
 
             _captionsRenderer.resize();
-            
-            var hideTimeInControl = width && width < _minWidthForTimeDisplay;
-            utils.toggleClass(_playerElement, 'jw-flag-compact-player', hideTimeInControl);
-
         }
 
         this.resize = function(width, height) {
@@ -943,7 +918,11 @@ define([
         }
 
         function _setLiveMode(model, duration){
-            var live = utils.adaptiveType(duration) === 'LIVE';
+            var minDvrWindow = model.get('minDvrWindow');
+            var streamType = utils.streamType(duration, minDvrWindow);
+            var live = (streamType === 'LIVE');
+
+            model.set('streamType', streamType);
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
             _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
@@ -974,19 +953,27 @@ define([
 
         function _stateHandler(model, state) {
             _currentState = state;
-
+            // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
             clearTimeout(_previewDisplayStateTimeout);
-            if (state === states.COMPLETE || state === states.IDLE) {
-                _previewDisplayStateTimeout = setTimeout(_updateStateClass, 100);
+
+            if (state === states.PLAYING) {
+                _stateUpdate(model, state);
             } else {
-                _updateStateClass();
+                _previewDisplayStateTimeout = setTimeout(function() {
+                    _stateUpdate(model, state);
+                }, 33);
             }
+        }
+
+        function _stateUpdate(model, state) {
+
+            utils.toggleClass(_playerElement, 'jw-flag-dragging', model.get('scrubbing'));
+
+            _updateStateClass();
 
             // cast.display
             if (_isCasting()) {
-                // TODO: needs to be done in the provider.setVisibility
                 utils.addClass(_videoLayer, 'jw-media-show');
-
                 return;
             }
             // player display
@@ -998,6 +985,10 @@ define([
                     _userActivity();
                     break;
             }
+        }
+
+        function _dragging(model) {
+            _stateHandler(model, model.get('state'));
         }
 
         function _resizeAspectModeCaptions() {
@@ -1088,6 +1079,9 @@ define([
         };
 
         this.destroy = function() {
+            clearTimeout(_previewDisplayStateTimeout);
+            clearTimeout(_resizeMediaTimeout);
+            clearTimeout(_controlsTimeout);
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {

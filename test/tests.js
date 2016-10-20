@@ -19,7 +19,7 @@ define([
     'unit/playlist-filtering-test',
     'unit/playlist-item-test',
     'unit/playlist-test',
-    'unit/provider-test',
+    'unit/providers-test',
     'unit/scriptloader-test',
     'unit/setup-test',
     'unit/simplemodel-test',
@@ -32,5 +32,6 @@ define([
     'unit/utils-test',
     'unit/validator-test',
     'unit/playlist-loader-test',
-    'unit/captionsrenderer-test'
+    'unit/captionsrenderer-test',
+    'unit/tracks-helper-test'
 ]);

@@ -177,7 +177,6 @@ define([
                 this.elements.mute.show();
             }
             this.onVolume(this._model, this._model.get('volume'));
-            this.onPlaylist(this._model, this._model.get('playlist'));
             this.onPlaylistItem();
             this.onMediaModel(this._model, this._model.get('mediaModel'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
@@ -187,7 +186,6 @@ define([
             // Listen for model changes
             this._model.on('change:volume', this.onVolume, this);
             this._model.on('change:mute', this.onMute, this);
-            this._model.on('change:playlist', this.onPlaylist, this);
             this._model.on('change:playlistItem', this.onPlaylistItem, this);
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
@@ -197,6 +195,7 @@ define([
             this._model.on('change:fullscreen', this.onFullscreen, this);
             this._model.on('change:captionsList', this.onCaptionsList, this);
             this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
+            this._model.on('change:streamType', this.onStreamTypeChange, this);
 
             // Event listeners
 
@@ -237,7 +236,7 @@ define([
             }, this);
 
             new UI(this.elements.duration).on('click tap', function(){
-                if (utils.adaptiveType(this._model.get('duration')) === 'DVR') {
+                if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
                     var currentPosition = this._model.get('position');
                     this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
@@ -258,10 +257,6 @@ define([
         },
         onCaptionsIndex: function(model, index) {
             this.elements.cc.selectItem(index);
-        },
-        onPlaylist : function(model, playlist) {
-            var display = (playlist.length > 1);
-            this.elements.next.toggle(display);
         },
         onPlaylistItem : function() {
             this.elements.time.updateBuffer(0);
@@ -315,7 +310,7 @@ define([
         onElapsed : function(model, val) {
             var elapsedTime;
             var duration = model.get('duration');
-            if (utils.adaptiveType(duration) === 'DVR') {
+            if (model.get('streamType') === 'DVR') {
                 elapsedTime = '-' + utils.timeFormat(-duration);
             } else {
                 elapsedTime = utils.timeFormat(val);
@@ -324,15 +319,12 @@ define([
         },
         onDuration : function(model, val) {
             var totalTime;
-            if (utils.adaptiveType(val) === 'DVR') {
+            if (model.get('streamType') === 'DVR') {
                 totalTime = 'Live';
             } else {
                 totalTime = utils.timeFormat(val);
             }
             this.elements.duration.innerHTML = totalTime;
-
-            // Hide rewind button when in LIVE mode
-            this.elements.rewind.toggle(utils.adaptiveType(val) !== 'LIVE');
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
@@ -340,23 +332,6 @@ define([
 
         element: function() {
             return this.el;
-        },
-
-        getVisibleBounds : function (){
-            var el = this.el,
-                // getComputedStyle for modern browsers, currentStyle is for IE8
-                curStyle = (getComputedStyle) ? getComputedStyle(el) : el.currentStyle,
-                bounds;
-
-            if(curStyle.display === 'table'){
-                return utils.bounds(el);
-            } else {
-                el.style.visibility = 'hidden';
-                el.style.display = 'table';
-                bounds = utils.bounds(el);
-                el.style.visibility = el.style.display = '';
-                return bounds;
-            }
         },
         setAltText : function(altText) {
             this.elements.alt.innerHTML = altText;
@@ -387,11 +362,15 @@ define([
                 startPosition = 0;
 
             // duration is negative in DVR mode
-            if (utils.adaptiveType(duration) === 'DVR') {
+            if (this._model.get('streamType') === 'DVR') {
                 startPosition = duration;
             }
             // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
             this._api.seek(Math.max(rewindPosition, startPosition));
+        },
+        onStreamTypeChange : function(model) {
+            // Hide rewind button when in LIVE mode
+            this.elements.rewind.toggle(model.get('streamType') !== 'LIVE');
         }
     });
 

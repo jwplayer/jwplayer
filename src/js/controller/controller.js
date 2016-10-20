@@ -82,7 +82,6 @@ define([
 
             _model.setup(config, storage);
             _view  = this._view  = new View(_api, _model);
-            _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
@@ -179,6 +178,9 @@ define([
                 });
             });
 
+            // Ensure captionsList event is raised after playlistItem
+            _captions = new Captions(_api, _model);
+
             function _triggerAfterReady(type, e) {
                 _this.triggerAfterReady(type, e);
             }
@@ -210,6 +212,11 @@ define([
                     _this.trigger(event.type, event.args);
                 }
 
+                var related = _api.getPlugin('related');
+                if (related) {
+                    related.on('nextUp', _model.setNextUp, _model);
+                }
+
                 if (_model.get('autostart')) {
                     _this.play({reason: 'autostart'});
                 }
@@ -224,7 +231,7 @@ define([
 
             function _loadProvidersForPlaylist(playlist) {
                 var providersManager = _model.getProviders();
-                var providersNeeded = providersManager.required(playlist);
+                var providersNeeded = providersManager.required(playlist, _model.get('primary'));
                 return providersManager.load(providersNeeded)
                     .then(function() {
                         if (!_this.getProvider()) {
@@ -623,6 +630,13 @@ define([
                 }
             }
 
+            function _nextUp() {
+                var related = _api.getPlugin('related');
+                if (related) {
+                    related.next();
+                }
+            }
+
             /** Controller API / public methods **/
             this._play = _play;
             this._pause = _pause;
@@ -664,6 +678,8 @@ define([
             //this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
             this.setCaptions = _view.setCaptions;
+
+            this.next = _nextUp;
 
 
             this.addButton = function(img, tooltip, callback, id, btnClass) {

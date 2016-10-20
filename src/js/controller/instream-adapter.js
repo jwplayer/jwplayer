@@ -82,7 +82,7 @@ define([
 
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
-            _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemComplete, this);
+            _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemNext, this);
             _instream.init();
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
@@ -157,7 +157,7 @@ define([
             _instream._adModel.set('position', evt.position);
         }
 
-        function _instreamItemComplete(e) {
+        var _instreamItemNext = function(e) {
             var data = {};
             if (_options.tag) {
                 data.tag = _options.tag;
@@ -175,7 +175,7 @@ define([
                 }
                 this.destroy();
             }
-        }
+        };
 
         this.loadItem = function(item, options) {
             if (utils.isAndroid(2.3)) {
@@ -200,7 +200,9 @@ define([
 
             var _this = this;
             var providersManager = _model.getProviders();
-            var providersNeeded = providersManager.required(playlist);
+            var primary = (InstreamMethod === InstreamFlash)? 'flash' : undefined;
+            var providersNeeded = providersManager.required(playlist, primary);
+
             _model.set('hideAdsControls', false);
             providersManager.load(providersNeeded)
                 .then(function() {
@@ -220,13 +222,20 @@ define([
 
                     var skipoffset = item.skipoffset || _options.skipoffset;
                     if (skipoffset) {
-                        _instream._adModel.set('skipMessage', _options.skipMessage);
-                        _instream._adModel.set('skipText', _options.skipText);
-                        _instream._adModel.set('skipOffset', skipoffset);
-
-                        _model.set('skipButton', true);
+                        _this.setupSkipButton(skipoffset, _options);
                     }
                 });
+        };
+
+        this.setupSkipButton = function(skipoffset, options, customNext) {
+            _model.set('skipButton', false);
+            if (customNext) {
+                _instreamItemNext = customNext;
+            }
+            _instream._adModel.set('skipMessage', options.skipMessage);
+            _instream._adModel.set('skipText', options.skipText);
+            _instream._adModel.set('skipOffset', skipoffset);
+            _model.set('skipButton', true);
         };
 
         this.applyProviderListeners = function(provider){
@@ -253,7 +262,7 @@ define([
         this.skipAd = function(evt) {
             var skipAdType = events.JWPLAYER_AD_SKIPPED;
             this.trigger(skipAdType, evt);
-            _instreamItemComplete.call(this, {
+            _instreamItemNext.call(this, {
                 type: skipAdType
             });
         };

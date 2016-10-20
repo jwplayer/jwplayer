@@ -1,7 +1,7 @@
 @import "../imports/mixins";
 
 .jw-skin-vapor {
-	@active-color: #fff;
+		@active-color: #fff;
     @inactive-color: rgba(0, 0, 0, 0.5);
    	@hover-color: @active-color;
 
@@ -11,7 +11,7 @@
     @display-bkgd-hover-color: #000;
 
     @controlbar-background: @rail-color;
-	@progress-color: #0f9e60;
+		@progress-color: #0f9e60;
     @buffer-color: @inactive-color;
     @rail-color: rgba(255, 255, 255, 0.4);
     @thumb-color: @progress-color;
@@ -25,12 +25,18 @@
 
     @controlbar-height: 2em;
 
+    @nextup-border-radius: @ui-padding / 2;
+    @nextup-header-background: fade(mix(white, black, 50%), 90%);
+    @nextup-body-background: darken(@nextup-header-background, 20%);
+    @nextup-body-text-color-overflow: darken(mix(white, black, 50%), 20%);
+
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+		#namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
-	
+
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
@@ -46,13 +52,13 @@
     /* Styles for menu list items */
     .jw-option {
         color: @active-color;
-        
+
         &:hover,
         &.jw-active-option {
             color: @progress-color;
         }
     }
-    
+
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
@@ -79,7 +85,7 @@
                 height: @cue-size;
 		}
 	}
-    
+
     /* Volume slider */
 	.jw-slider-vertical {
 		padding: .4em;
@@ -102,20 +108,20 @@
 		}
 
 	}
-       
+
     /* Toggle icons */
     .jw-icon-cc {
         &.jw-off:before {
             content: "\e604";
         }
     }
-    
+
     .jw-icon-hd {
         &.jw-off:before {
             content: "\e609";
         }
     }
-    
+
     /* Audio player only */
     &.jw-flag-audio-player {
         .jw-controlbar {

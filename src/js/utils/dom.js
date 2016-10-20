@@ -122,7 +122,7 @@ define([
         if (!element || !document.body.contains(element)) {
             return bounds;
         }
-        var rect = element.getBoundingClientRect(element),
+        var rect = element.getBoundingClientRect(),
             scrollOffsetY = window.pageYOffset,
             scrollOffsetX = window.pageXOffset;
         if (!rect.width && !rect.height && !rect.left && !rect.top) {

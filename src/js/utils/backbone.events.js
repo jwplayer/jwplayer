@@ -101,8 +101,8 @@ define([
             if (!eventsApi(this, 'trigger', name, args)) return this;
             var events = this._events[name];
             var allEvents = this._events.all;
-            if (events) safeTriggerEvents(events, args, this);
-            if (allEvents) safeTriggerEvents(allEvents, arguments, this);
+            if (events) safeTriggerEvents(events, args, this, name);
+            if (allEvents) safeTriggerEvents(allEvents, arguments, this, name);
             return this;
         }
 
@@ -181,12 +181,14 @@ define([
     };
 
     // This is a deconstruction of the above default while loop, with try/catch inserted
-    var safeTriggerEvents = function(events, args, context) {
+    var safeTriggerEvents = function(events, args, context, name) {
         var ev, i = -1, l = events.length;
         while (++i < l) {
             try {
                 (ev = events[i]).callback.apply(ev.context || context, args);
-            } catch(e) {}
+            } catch(e) {
+                console.log('Error in "' + name + '" event handler:', e);
+            }
         }
     };
 

@@ -270,8 +270,8 @@ define([
             this.mediaModel = new MediaModel();
             this.set('mediaModel', this.mediaModel);
             this.set('position', item.starttime || 0);
-            this.set('duration', item.duration || 0);
-
+            this.set('minDvrWindow', item.minDvrWindow);
+            this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
             this.setProvider(item);
         };
 
@@ -344,7 +344,7 @@ define([
                 item = this.get('playlist')[idx];
             }
             this.set('position', item.starttime || 0);
-            this.set('duration', item.duration || 0);
+            this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
             this.mediaModel.set('playAttempt', true);
             this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
 
@@ -366,7 +366,7 @@ define([
 
             if (track) {
                 // update preference if an option was selected
-                this.set('captionLabel', track.label);
+                this.set('captionLabel', track.name);
             } else {
                 this.set('captionLabel', 'Off');
             }
@@ -392,6 +392,10 @@ define([
         this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
             this.setVideoSubtitleTrack(trackIndex, tracks);
             this.persistCaptionsTrack();
+        };
+
+        this.setNextUp = function (nextUp) {
+            this.set('nextUp', nextUp);
         };
     };
 

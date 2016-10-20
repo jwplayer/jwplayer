@@ -10,11 +10,11 @@ define([
         //mediaid: undefined,
         //title: undefined,
         sources: [],
-        tracks: []
+        tracks: [],
+        minDvrWindow: 120
     };
 
-    var PlaylistItem = function (config) {
-
+    return function (config) {
         config = config || {};
         if (!_.isArray(config.tracks)) {
             delete config.tracks;
@@ -69,6 +69,4 @@ define([
 
         return _playlistItem;
     };
-
-    return PlaylistItem;
 });

@@ -18,8 +18,14 @@
 
     @controlbar-height: 2em;
 
+    @nextup-border-radius: 0.3em;
+    @nextup-header-background: fade(#131415, 90%);
+    @nextup-body-background: darken(@nextup-header-background, 20%);
+    @nextup-body-text-color-overflow: darken(#131415, 20%);
+
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
@@ -40,7 +46,7 @@
     .jw-menu {
         bottom: .3em;
     }
-    
+
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
@@ -57,11 +63,11 @@
     .jw-knob {
         display: none;
     }
-    
+
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
         background: transparent;
-        
+
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
 
@@ -71,7 +77,7 @@
             border-radius: 1em;
         }
     }
-    
+
     /* Volume slider */
     .jw-slider-vertical {
         bottom: 5px;
@@ -85,4 +91,5 @@
             width: .4em;
         }
     }
+
 }

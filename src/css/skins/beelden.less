@@ -16,7 +16,6 @@
 
     @controlbar-background-color: #6c6c6c;
     @controlbar-background-gradient: linear-gradient(to bottom,  #6c6c6c 0%,#444444 100%);
-
     @controlbar-background: @controlbar-background-gradient;
 
     @volume-padding: 0.4em;;
@@ -35,8 +34,18 @@
     @slider-height: @rail-height;
 
     @controlbar-height: 2em;
+
+    @nextup-position-bottom: @controlbar-height + 0.7em + 0.5em;
+    @nextup-position-bottom-touch: (@controlbar-height * 1.5em) + 0.7em + 0.8em;
+    @nextup-position-right: 2%;
+    @nextup-border-radius: 0.3em;
+    @nextup-header-background: fade(@controlbar-background-color, 90%);
+    @nextup-body-background: darken(fade(@controlbar-background-color, 90%), 20%);
+    @nextup-body-text-color-overflow: darken(@controlbar-background-color, 20%);
+
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
@@ -51,7 +60,7 @@
     /* Container styles for controlbar play/pause button */
     .jw-icon-playback {
         padding-left: 0;
-        
+
         &:before {
             background-color: #333;
             background: linear-gradient(
@@ -69,7 +78,7 @@
             box-sizing: border-box;
         }
     }
-    
+
     /* Keep the play/pause container from collapsing on toggle */
     &.jw-state-playing {
         .jw-icon-playback {
@@ -78,7 +87,7 @@
             }
         }
     }
-    
+
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
@@ -194,5 +203,5 @@
             color: @cc-inactive;
         }
     }
-}
 
+}

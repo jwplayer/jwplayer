@@ -40,6 +40,30 @@
     }
 }
 
+.jwplayer.jw-flag-ads-freewheel {
+    &.jw-state-idle {
+        .jw-media {
+            video {
+                pointer-events: none;
+            }
+        }
+    }
+
+    &.jw-flag-user-inactive.jw-state-playing {
+        .jw-freewheel-nonlinear-container {
+            bottom: 0.5em;
+        }
+    }
+
+    .jw-freewheel-nonlinear-container {
+        bottom: 2.5em;
+        pointer-events: none;
+        iframe {
+            pointer-events: all;
+        }
+    }
+}
+
 .jwplayer.jw-flag-ads-googleima {
     .jw-controlbar {
         display: table;
