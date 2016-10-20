@@ -451,12 +451,6 @@ define([
         }
 
         function _play() {
-            // Wait until the canplay event - readystate === 4 (HAVE_ENOUGH_DATA) - fires to play on iOS.
-            // Otherwise, calling play will result in an AbortError
-            if (utils.isIOS() && _videotag.readyState !== 4) {
-                return;
-            }
-
             var promise = _videotag.play();
             if (promise && promise.catch) {
                 promise.catch(function(err) {
@@ -727,6 +721,11 @@ define([
 
         this.mute = function(state) {
             _videotag.muted = !!state;
+            if (!_videotag.muted) {
+                // Remove muted attribute once user unmutes so the video element doesn't get
+                // muted by the browser when the src changes or on replay
+                _videotag.removeAttribute('muted');
+            }
         };
 
         function _checkPlaybackStalled() {
