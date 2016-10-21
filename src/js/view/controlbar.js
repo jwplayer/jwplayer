@@ -319,6 +319,7 @@ define([
         },
         onDuration : function(model, val) {
             var totalTime;
+            console.info(model.get('streamType'));
             if (model.get('streamType') === 'DVR') {
                 totalTime = 'Live';
             } else {
@@ -370,7 +371,11 @@ define([
         },
         onStreamTypeChange : function(model) {
             // Hide rewind button when in LIVE mode
-            this.elements.rewind.toggle(model.get('streamType') !== 'LIVE');
+            var streamType = model.get('streamType');
+            this.elements.rewind.toggle(streamType !== 'LIVE');
+            if (streamType === 'DVR') {
+                this.elements.duration.innerHTML = 'Live';
+            }
         }
     });
 
