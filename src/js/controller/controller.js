@@ -216,8 +216,8 @@ define([
                 if (related) {
                     related.on('nextUp', _model.setNextUp, _model);
                 }
-                // Start playback on desktop and mobile browsers
-                if (_model.get('autostart')) {
+                // Start playback on desktop and mobile browsers when allowed
+                if (_canAutoStart()) {
                     _this.play({reason: 'autostart'});
                 }
             }
@@ -257,7 +257,7 @@ define([
                 }
                 _stop(true);
 
-                if (_model.get('autostart')) {
+                if (_canAutoStart()) {
                     _model.once('itemReady', _play);
                 }
 
@@ -635,6 +635,10 @@ define([
                 if (related) {
                     related.next();
                 }
+            }
+
+            function _canAutoStart() {
+                return _model.get('autostart') && (!utils.isMobile() || _model.autoStartOnMobile());
             }
 
             /** Controller API / public methods **/
