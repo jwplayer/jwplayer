@@ -319,7 +319,6 @@ define([
         },
         onDuration : function(model, val) {
             var totalTime;
-            console.info(model.get('streamType'));
             if (model.get('streamType') === 'DVR') {
                 totalTime = 'Live';
             } else {
