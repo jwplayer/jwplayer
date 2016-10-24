@@ -115,7 +115,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast jw-off', this._api.castToggle, this._localization.cast),
+                cast: document.createElement('button', 'google-cast-button'),
                 airplay: button('jw-icon-airplay jw-off', this._api.castToggle, this._localization.airplay),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
@@ -306,11 +306,11 @@ define([
                 utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
             }
         },
-        onCastAvailable : function(model, val) {
-            this.elements.cast.toggle(val);
+        onCastAvailable : function() {
+            // this.elements.cast.toggle(val);
         },
-        onCastActive : function(model, val) {
-            utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
+        onCastActive : function() {
+            // utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
         },
         onAirplayAvailable : function(model, val) {
             this.elements.airplay.toggle(val);
