@@ -146,8 +146,13 @@ define(['utils/helpers',
                     break;
                 } else if (track['default'] || track.defaulttrack || track._id === 'default') {
                     captionsMenuIndex = i + 1;
-                } else if (track.autoselect) {
-                    // TODO: auto select track by comparing track.language to system lang
+                } else if (track.autoselect && track.language) {
+                    // auto select track by comparing track.language to browser language
+                    var browserLanguage = window.navigator.language;
+                    if (browserLanguage && (browserLanguage === track.language ||
+                        track.language.indexOf(browserLanguage.split('-')[0]) === 0)) {
+                        captionsMenuIndex = i + 1;
+                    }
                 }
             }
             // set the index without the side effect of storing the Off label in _selectCaptions
