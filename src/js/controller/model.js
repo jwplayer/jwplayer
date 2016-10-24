@@ -40,8 +40,7 @@ define([
                 buffer: 0
             });
 
-            // Videos autostart on mobile when the `muted` and `autoplay` attributes are set.
-            // Mute the player on a mobile device if autostart is set to true
+            // Videos can autoplay on mobile when the `muted` and `autoplay` attributes are set.
             if (this.autoStartOnMobile()) {
                 this.set('mute', true);
             }
@@ -407,7 +406,8 @@ define([
         };
 
         this.autoStartOnMobile = function() {
-            return this.get('autostart') && utils.isMobile() && !this.get('mobileSdk');
+            return this.get('autostart') && utils.isMobile() && !this.get('mobileSdk') &&
+                (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
     };
 
