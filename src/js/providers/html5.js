@@ -346,7 +346,8 @@ define([
         }
 
         function _sendBufferFull() {
-            if (!_bufferFull || (utils.isIOS() && _canPlay)) {
+            // Wait until the canplay event on iOS to send the bufferFull event
+            if (!_bufferFull && (!utils.isIOS() || _canPlay)) {
                 _bufferFull = true;
                 _canPlay = false;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
