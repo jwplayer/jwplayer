@@ -154,7 +154,6 @@ define([
                     break;
 
                 case 'autoplayFailed':
-                    _provider.removeAutoplayAttributes();
                     this.setMute(false);
                     break;
             }

@@ -469,6 +469,7 @@ define([
 
         function _undoAutoplaySetup() {
             if (_this.video.autoplay) {
+                _this.removeAutoplayAttributes();
                 _this.trigger('autoplayFailed');
             }
         }
