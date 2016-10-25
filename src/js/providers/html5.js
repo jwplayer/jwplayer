@@ -368,8 +368,8 @@ define([
                 return;
             }
 
-            // If "pause" fires before "complete", we still don't want to propagate it
-            if (_videotag.currentTime === _videotag.duration) {
+            // If "pause" fires before "complete" or before playback starts, we don't want to propagate it
+            if (_videotag.currentTime === 0 || _videotag.currentTime === _videotag.duration) {
                 return;
             }
 
