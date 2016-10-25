@@ -27,7 +27,11 @@
         }
 
         .jw-text-alt {
-            display: inline;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            margin: 0 -0.5em;
+            display: inline-block;
+            white-space: nowrap;
         }
 
         .jw-slider-volume.jw-slider-horizontal,
@@ -38,6 +42,29 @@
             display : none;
         }
     }
+
+    &.jw-breakpoint-0 .jw-text-alt {
+      max-width: 80px;
+    }
+    &.jw-breakpoint-1 .jw-text-alt {
+      max-width: 150px;
+    }
+    &.jw-breakpoint-2 .jw-text-alt {
+      max-width: 250px;
+    }
+    &.jw-breakpoint-3 .jw-text-alt {
+      max-width: 370px;
+    }
+    &.jw-breakpoint-4 .jw-text-alt {
+      max-width: 470px;
+    }
+    &.jw-breakpoint-5 .jw-text-alt {
+      max-width: 630px;
+    }
+    &.jw-breakpoint-6 .jw-text-alt {
+      max-width: 790px;
+    }
+
 }
 
 .jwplayer.jw-flag-ads-freewheel {
@@ -102,4 +129,3 @@
         display : none !important;
     }
 }
-
