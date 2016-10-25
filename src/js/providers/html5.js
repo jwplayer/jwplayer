@@ -461,7 +461,7 @@ define([
                         _undoAutoplaySetup();
                     }
                 });
-            } else {
+            } else if (!_videotag.hasAttribute('jw-played')) {
                 // Autoplay isn't allowed in browsers that don't support promises
                 _undoAutoplaySetup();
             }
