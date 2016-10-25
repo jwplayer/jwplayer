@@ -1,12 +1,12 @@
 @import "vars";
 
-
 .jw-slider-container {
-    display : inline-block;
-    height: 1em;
+    height: 1em; // For easy grabbability - does not affect positioning of slider itself
+    width: 100%;
     position: relative;
     touch-action: none;
 }
+
 .jw-rail,
 .jw-buffer,
 .jw-progress {
@@ -15,7 +15,7 @@
 }
 
 .jw-progress {
-    background-color: #fff;
+    background-color: @progress-color;
 }
 
 .jw-rail {
@@ -33,95 +33,73 @@
 }
 
 .jw-cue {
-    background-color: #fff;
-    width: .1em;
-    height: .4em;
+    height: @rail-height;
+    background-color: rgba(33,33,33,.9);
+    border-radius:25%;
+    width: @ui-padding;
 }
 
 .jw-knob {
-    background-color: #aaa;
-    width: .4em;
-    height: .4em;
+    background-color: @active-color;
+    width: @thumb-size;
+    height: @thumb-size;
+    border-radius: @ui-corner-round;
 }
 
 .jw-slider-horizontal {
-    width: @volume-rail-length;
-    height: 1em;
+    height: @slider-height;
 
     &.jw-slider-volume {
-        margin-right: 5px;
+        width: @volume-rail-length;
+    }
+
+    .jw-rail {
+        width: 100%;
+    }
+
+    .jw-knob {
+        top: (@rail-height - @thumb-size) / 2;
+        margin-left: @thumb-size / -2;
     }
 
     .jw-rail,
     .jw-buffer,
     .jw-progress {
-        width: 100%;
-        height: .4em;
-    }
-
-    .jw-progress,
-    .jw-buffer {
-        width: 0;   // Default width, overridden by player.
-    }
-
-    .jw-rail,
-    .jw-progress,
-    .jw-slider-container {
-        width: 100%;
-    }
-
-    .jw-knob {
-        left: 0;    // Default position, overridden by player.
-        margin-left: @thumb-size/-2;
+        height: @rail-height;
     }
 }
 
 .jw-slider-vertical {
-    width: @def-rail-width;
-    height: @volume-rail-length;
-    bottom: 0em;
+    padding: @volume-padding @volume-padding 0 @volume-padding;
     position: absolute;
-    padding: 1em;
 
     .jw-rail,
     .jw-buffer,
     .jw-progress {
         bottom: 0;
         height: 100%;
-    }
-
-    .jw-progress,
-    .jw-buffer {
-        height: 0;   // Default height, overridden by player.
+        left: 0;
+        right: 0;
+        margin: 0 auto;
     }
 
     .jw-slider-container,
     .jw-rail,
     .jw-progress {
-        bottom: 0;
         width: @def-rail-width;
-        height: 100%;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
     }
 
     .jw-slider-container {
-        height: 4em;
-        position: relative;
+        height: @volume-rail-length;
     }
 
     .jw-knob {
-        bottom: 0;  // Default position, overridden by player.
-        left: 0;
         right: 0;
-        margin: 0 auto;
+        left: (@def-rail-width - @thumb-size) / 2;
     }
 }
 
 .jw-slider-time {
-    right: 0;
-    left: 0;
     width: 100%;
 }
 

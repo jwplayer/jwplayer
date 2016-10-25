@@ -119,14 +119,7 @@ public class View extends Sprite {
 
     private function resizeMedia(width:Number, height:Number):void {
         if (_mediaLayer.numChildren > 0 && _model.media.display) {
-            var preserveAspect:Boolean = (_model.fullscreen && _model.stretching === Stretcher.EXACTFIT);
-            if (preserveAspect) {
-                _model.config.stretching = Stretcher.UNIFORM;
-                _model.media.resize(width, height);
-                _model.config.stretching = Stretcher.EXACTFIT;
-            } else {
-                _model.media.resize(width, height);
-            }
+            _model.media.resize(width, height);
         }
     }
 

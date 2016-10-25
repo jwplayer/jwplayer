@@ -19,7 +19,29 @@ define([
         mute: false,
         volume: 90,
         width: 480,
-        height: 270
+        height: 270,
+        localization: {
+            play: 'Play',
+            playback: 'Start playback',
+            pause: 'Pause',
+            volume: 'Volume',
+            prev: 'Previous',
+            next: 'Next',
+            cast: 'Chromecast',
+            fullscreen: 'Fullscreen',
+            playlist: 'Playlist',
+            hd: 'Quality',
+            cc: 'Closed captions',
+            audioTracks: 'Audio tracks',
+            replay: 'Replay',
+            buffer: 'Loading',
+            more: 'More',
+            liveBroadcast: 'Live broadcast',
+            loadingAd: 'Loading ad',
+            rewind: 'Rewind 10s',
+            nextUp: 'Next Up',
+            related: 'Related'
+        }
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
     };
@@ -37,10 +59,13 @@ define([
         return val;
     }
 
-    var config = function(options) {
-        var allOptions = _.extend({}, (window.jwplayer || {}).defaults, options);
+    var config = function(options, storage) {
+        var persisted = storage && storage.getAllItems();
+        var allOptions = _.extend({}, (window.jwplayer || {}).defaults, persisted, options);
 
         _deserialize(allOptions);
+
+        allOptions.localization = _.extend({}, Defaults.localization, allOptions.localization);
 
         var config = _.extend({}, Defaults, allOptions);
         if (config.base === '.') {

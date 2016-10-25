@@ -3,7 +3,9 @@ define([
     'utils/helpers'
 ], function ( _, utils) {
     /* jshint qunit: true */
-    module('utils');
+
+    QUnit.module('utils');
+    var test = QUnit.test.bind(QUnit);
 
     test('utils.log', function(assert) {
         assert.expect(2);

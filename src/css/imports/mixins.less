@@ -43,6 +43,10 @@
     top: (@rail-height - @element-height)/2;
 }
 
+.horizontally-centered-rail-element(@rail-width, @element-width) {
+    left: (@rail-width - @element-width)/2;
+}
+
 .hover(@color:@hover-color) {
     &:hover {
         color: @color;
@@ -63,7 +67,6 @@
 /* Mixin for common skin styles with variable colors */
 #namespace() {
     .basic-skin-styles() {
-        
         .jw-background-color {
             background: @display-bkgd-color;
         }
@@ -75,10 +78,11 @@
         .jw-text {
             color: @inactive-color;
         }
-        
+
         /* Text color in thumbnail that appears upon hovering on the timeline slider */
         .jw-tooltip-title {
             color: @inactive-color;
+            border-bottom: 1px solid @inactive-color;
         }
 
         .jw-knob {
@@ -88,6 +92,10 @@
         .jw-button-color {
             color: @inactive-color;
             .hover(@hover-color);
+            &:focus {
+                outline: none;
+                color: @hover-color;
+            }
         }
 
         .jw-toggle {
@@ -95,8 +103,11 @@
             &.jw-off {
                 color: @inactive-color;
             }
+            &:focus {
+                outline: none;
+            }
         }
-        
+
         /* Color for list item text in menu lists */
         .jw-option {
             color: @inactive-color;
@@ -104,7 +115,7 @@
                 color: @hover-color;
             }
         }
-        
+
         /* Colors for center play and buffering icons */
         .jw-icon-display {
             color: @display-icon-color;
@@ -138,6 +149,13 @@
 
         .jw-slider-horizontal {
             background: @controlbar-background;
+            height: @rail-height;
+
+            .jw-rail,
+            .jw-buffer,
+            .jw-progress {
+                height: @rail-height;
+            }
 
             .jw-knob {
                 margin-left: @thumb-size/-2;
@@ -145,12 +163,17 @@
         }
 
         .jw-slider-vertical {
-
             .jw-knob {
                 margin-bottom: @thumb-size/-2;
             }
+
+            .jw-slider-container,
+            .jw-rail,
+            .jw-progress {
+                width: @def-rail-width;
+            }
         }
-        
+
         /* Styles for menu elements, volume, slider thumbnail */
         .jw-time-tip,
         .jw-volume-tip,
@@ -162,7 +185,7 @@
 
         .jw-skip {
             background: @controlbar-background;
-            padding: @volume-padding;
+            padding: @ui-padding;
 
             .jw-skip-icon {
                 color: @inactive-color;
@@ -181,10 +204,6 @@
             }
         }
 
-        .jw-time-tip {
-            bottom: 1em;
-        }
-        
         /* Dock button styles */
         .jw-dock-button {
             background: @display-bkgd-color;
@@ -194,10 +213,134 @@
                 background: @display-bkgd-hover-color;
             }
         }
-        
-        /* Reset padding on .jw-menu's that are playlists */
-        .jw-playlist-container {
-            padding: 0;
+
+        /* Next up display */
+        .jw-nextup-container {
+          bottom: @nextup-position-bottom;
+          right: @nextup-position-right;
+        }
+
+        .jw-nextup {
+          border-radius: @nextup-border-radius;
+        }
+
+        .jw-nextup-header {
+          background: @nextup-header-background;
+          color: @nextup-header-text-color;
+        }
+
+        .jw-nextup-body {
+          background: @nextup-body-background;
+          color: @nextup-body-text-color;
+        }
+
+        .jw-nextup-thumbnail-visible + .jw-nextup-title::after {
+          background: linear-gradient(
+            -180deg,
+            fade(@nextup-body-text-color-overflow, 0%) 0%,
+            @nextup-body-text-color-overflow 100%
+          );
+        }
+
+        .jw-nextup-close {
+          color: @nextup-close-button-color-inactive;
+        }
+
+        .jw-nextup-close:active {
+          color: @nextup-close-button-color-active;
+        }
+
+        .jw-nextup-close:hover {
+          color: @nextup-close-button-color-hover;
+        }
+
+    }
+
+    /* Override default touch flag styles */
+    .touch-flag-skin-styles() {
+        &.jw-flag-touch {
+            &.jw-breakpoint-3,
+            &.jw-breakpoint-4,
+            &.jw-breakpoint-5,
+            &.jw-breakpoint-6 {
+                .jw-nextup-container {
+                    bottom: @nextup-position-bottom-touch;
+                }
+            }
+        }
+    }
+
+    .controlbar-height() {
+        .jw-controlbar {
+            height: @controlbar-height;
+        }
+
+        .jw-time-tip {
+            bottom: (@controlbar-height / 2);
+        }
+
+        .jw-controlbar {
+            .jw-overlay {
+                bottom: @controlbar-height;
+            }
+        }
+
+        .jw-captions {
+            max-height: calc(97% - 6.25 * (@controlbar-height));
+        }
+
+        .jwplayer {
+            video::-webkit-media-text-track-container {
+                max-height: calc(97% - 6.25 * (@controlbar-height));
+            }
+        }
+
+        .jw-controls {
+            .jw-controls-right {
+                bottom: @controlbar-height;
+            }
+        }
+        .jw-icon-inline,
+        .jw-icon-tooltip,
+        .jw-text-elapsed,
+        .jw-text-duration {
+            height: @controlbar-height;
+            line-height: @controlbar-height;
+        }
+
+        .jw-icon-inline,
+        .jw-icon-tooltip {
+            min-width: @controlbar-height * 5/8;
+        }
+    }
+    // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
+    .set-global-color-classes() {
+        .jw-color-active {
+            color: @active-color;
+            stroke: @active-color;
+            border-color: @active-color;
+        }
+
+        .jw-color-active-hover {
+            &:hover {
+                color: @active-color;
+                stroke: @active-color;
+                border-color: @active-color;
+            }
+        }
+
+        .jw-color-inactive {
+            color: @inactive-color;
+            stroke: @inactive-color;
+            border-color: @inactive-color;
+        }
+
+        .jw-color-inactive-hover {
+            &:hover {
+                color: @inactive-color;
+                stroke: @inactive-color;
+                border-color: @inactive-color;
+            }
         }
     }
 }

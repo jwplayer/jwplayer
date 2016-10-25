@@ -1,4 +1,3 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-five {
@@ -13,6 +12,7 @@
     @buffer-color: #9c9a9d;
     @rail-color: #b8b6b7;
     @thumb-color: @progress-color;
+    @volume-background: #333;
 
     @display-icon-color: @controlbar-background;
     @display-icon-hover-color: #fff;
@@ -21,17 +21,27 @@
 
     @cc-inactive: @rail-color;
     @cc-active: @active-color;
-    
+
     @rail-height: .2em;
     @thumb-size: 1em;
     @cue-height: .4em;
     @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
-    
+
     @five-border-radius: 0;
 
-    #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
+    @controlbar-height: 2em;
 
+    @nextup-header-background: fade(#eee, 90%);
+    @nextup-body-background: darken(@nextup-header-background, 10%);
+    @nextup-body-text-color: @active-color;
+    @nextup-body-text-color-overflow: darken(#eee, 10%);
+
+    #namespace > .controlbar-height();
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .touch-flag-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
+    .skin-element-padding();
     /* Styles for play button container on idle */
     .jw-display-icon-container {
         border-radius: @five-border-radius;
@@ -46,50 +56,7 @@
             color: #fff;
         }
     }
-    
-    /* Playlist */
-    .jw-playlist-container {
-        left: -42%;
-        background-color: #fff;
 
-        .jw-option {
-            border-bottom: 1px solid #ECECEC;
-            background-color: #fff;
-            margin-right: 8px;
-            color: @inactive-color;
-
-            // Menu items are black when active, or hovered
-            &:hover,
-            &.jw-active-option {
-                background-color: #ECECEC;
-                color: @hover-color;
-            }
-
-            // Number turn red when li is hovered
-            &:hover {              
-                color: @active-color;
-            }
-        }
-
-        // play icon is always red
-        .jw-label .jw-icon-play {
-            color: @active-color;
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #ECECEC;
-        }
-
-        ::-webkit-scrollbar {
-            width: 2px;
-            border: 10px solid #fff;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: @active-color;
-        }
-    }
-    
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
@@ -99,7 +66,7 @@
     /* Slider styles */
     .jw-slider-horizontal {
         background: transparent;
-        
+
         .jw-slider-container {
             height: .9em;
         }
@@ -153,17 +120,15 @@
         .jw-knob {
             margin-bottom: 2px/-2;
             width: .6em;
-
+            height: 2px;
             background: @rail-vert-gradient;
             border-radius: @five-border-radius;
-            height: 2px;
-            width: 100%;
+            .horizontally-centered-rail-element(@rail-height, 0.6em);
         }
     }
-    
+
     /* Five border-radius for the dock, in the upper right corner */
     .jw-dock-button {
         border-radius: @five-border-radius;
     }
 }
-

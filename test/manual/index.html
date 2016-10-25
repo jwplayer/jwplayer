@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>MP4 video file</title>
+    <meta charset="utf-8">
     <script type="text/javascript" src="../../bin-debug/jwplayer.js"></script>
     <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
 </head>
@@ -9,7 +10,7 @@
 
 <h1>Setup Examples</h1>
 
-<h2>Video Playlist</h2>
+<h2>Video Playlist (with aria-label translated in French)</h2>
 
 <div id="video-container">before set up</div>
 <script type="text/javascript">
@@ -18,6 +19,26 @@
         // autostart: true,
 
         width: '50%',
+
+        localization: {
+            play: 'Lecture',
+            playback: 'Lancer la lecture',
+            pause: 'Pause',
+            volume: 'Volume',
+            prev: 'Précédent',
+            next: 'Suivant',
+            cast: 'Chromecast',
+            fullscreen: 'Plein écran',
+            playlist: 'Liste de lecture',
+            hd: 'Qualité',
+            cc: 'Sous-titres',
+            audioTracks: 'Pistes audio',
+            replay: 'Rejouer',
+            buffer: 'Chargement',
+            more: 'Plus',
+            liveBroadcast: 'Diffusion en direct',
+            loadingAd: 'Chargement de la publicité'
+        },
 
         // primary: 'flash',
         logo: {

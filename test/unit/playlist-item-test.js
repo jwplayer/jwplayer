@@ -4,7 +4,8 @@ define([
 ], function (_, item) {
     /* jshint qunit: true */
 
-    module('playlist item');
+    QUnit.module('playlist item');
+    var test = QUnit.test.bind(QUnit);
 
     // http://support.jwplayer.com/customer/portal/articles/1413113-configuration-options-reference
     function testItem(assert, config) {
@@ -20,7 +21,7 @@ define([
     function testItemComplete(assert, config) {
         var item = testItem(assert, config);
 
-        var attrs = ['image', 'description', 'mediaid', 'title'];
+        var attrs = ['image', 'description', 'mediaid', 'title', 'minDvrWindow'];
         _.each(attrs, function(a) {
             assert.ok(_.has(item, a), 'Item has ' + a + ' attribute');
         });

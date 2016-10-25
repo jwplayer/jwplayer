@@ -37,7 +37,6 @@ define([
         return true;
     };
 
-
     playerUtils.loadFrom = function () {
         if (__DEBUG__ || __SELF_HOSTED__) {
             return parser.getScriptPath('jwplayer.js');

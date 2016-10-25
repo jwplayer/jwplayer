@@ -1,27 +1,26 @@
 @import "mixins";
+@import "vars";
 
 .jw-controlbar {
     display: table;
     position: absolute;
-    right: 0;
-    left: 0;
     bottom: 0;
     height: @controlbar-height;
+    width: 100%;
     padding: 0 @ui-padding;
 
     .jw-hidden {
         display: none;
     }
-
-    &.jw-drawer-expanded .jw-controlbar-left-group,
-    &.jw-drawer-expanded .jw-controlbar-center-group {
-        opacity: 0;
-    }
 }
 
 .jw-background-color {
-    background-color: rgb(65, 64, 64);
+    background-color: @background-color;
 }
+
+.jw-slider-horizontal {
+  background-color: transparent;
+} 
 
 .jw-group {
     display: table-cell;
@@ -55,7 +54,6 @@
     .hover(@hover-color);
 }
 
-
 .jw-icon-inline,
 .jw-icon-tooltip,
 .jw-slider-horizontal,
@@ -67,6 +65,7 @@
     line-height: @controlbar-height;
     vertical-align: middle;
     cursor: pointer;
+    padding: 0 @ui-padding;
 }
 
 .jw-icon-inline,
@@ -84,17 +83,9 @@
     text-align: left;
 }
 
-
 .jw-time-tip {
     line-height: 1em;
     pointer-events: none;
-}
-
-.jw-icon-inline:after,
-.jw-icon-tooltip:after {
-    width: 100%;
-    height: 100%;
-    font-size: @controlbar-icon-size;
 }
 
 .jw-icon-cast {
@@ -106,3 +97,22 @@
     display: none;
 }
 
+.jw-button-color {
+    color: @inactive-color;
+    .hover(@hover-color);
+    &:focus {
+      outline: none;
+      color: @hover-color;
+    }
+}
+
+.jw-toggle {
+    color: @toggle-active;
+    &.jw-off {
+        color: @toggle-inactive;
+    }
+    &:focus {
+      outline: none;
+      color: @hover-color;
+    }
+}

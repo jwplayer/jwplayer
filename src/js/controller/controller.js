@@ -1,11 +1,11 @@
 define([
     'api/config',
-    'api/api-deprecate',
     'controller/instream-adapter',
     'utils/underscore',
     'controller/Setup',
     'controller/captions',
     'controller/model',
+    'controller/storage',
     'playlist/playlist',
     'playlist/loader',
     'utils/helpers',
@@ -15,13 +15,18 @@ define([
     'events/states',
     'events/events',
     'view/error'
-], function(Config, deprecateInit, InstreamAdapter, _, Setup, Captions,
-            Model, Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
+], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
 
-    function _queue(command) {
-        return function() {
+    function _queueCommand(command) {
+        return function(){
             var args = Array.prototype.slice.call(arguments, 0);
-            this.eventsQueue.push([command, args]);
+
+            if (!this._model.getVideo()) {
+                this.eventsQueue.push([command, args]);
+            } else {
+                this['_'+command].apply(this, args);
+            }
         };
     }
 
@@ -42,23 +47,22 @@ define([
     };
 
     Controller.prototype = {
-        play : _queue('play'),
-        pause : _queue('pause'),
-        setVolume : _queue('setVolume'),
-        setMute : _queue('setMute'),
-        seek : _queue('seek'),
-        stop : _queue('stop'),
-        load : _queue('load'),
-        playlistNext : _queue('playlistNext'),
-        playlistPrev : _queue('playlistPrev'),
-        playlistItem : _queue('playlistItem'),
-        setFullscreen : _queue('setFullscreen'),
-        setCurrentCaptions : _queue('setCurrentCaptions'),
-        setCurrentQuality : _queue('setCurrentQuality'),
+        /** Controller API / public methods **/
+        play : _queueCommand('play'),
+        pause : _queueCommand('pause'),
+        seek : _queueCommand('seek'),
+        stop : _queueCommand('stop'),
+        load : _queueCommand('load'),
+        playlistNext : _queueCommand('next'),
+        playlistPrev : _queueCommand('prev'),
+        playlistItem : _queueCommand('item'),
+        setCurrentCaptions : _queueCommand('setCurrentCaptions'),
+        setCurrentQuality : _queueCommand('setCurrentQuality'),
+        setFullscreen : _queueCommand('setFullscreen'),
 
         setup : function(options, _api) {
 
-            var _model,
+            var _model = this._model,
                 _view,
                 _captions,
                 _setup,
@@ -70,16 +74,20 @@ define([
 
             var _video = function() { return _model.getVideo(); };
 
-            var config = new Config(options);
+            var storage = new Storage();
+            storage.track(_model);
+            var config = new Config(options, storage);
 
-            _model = this._model.setup(config);
+            var _eventQueuedUntilReady = [];
+
+            _model.setup(config, storage);
             _view  = this._view  = new View(_api, _model);
-            _captions = new Captions(_api, _model);
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
             _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);
 
+            _model.mediaController.on('all', _triggerAfterReady, this);
             _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 _.defer(_completeHandler);
@@ -104,94 +112,85 @@ define([
                 this._model.set('errorEvent', errorEvent);
             }, this);
 
-            function initMediaModel() {
-                _model.mediaModel.on('change:state', function(mediaModel, state) {
-                    var modelState = normalizeState(state);
-                    _model.set('state', modelState);
+            _model.on('change:state', changeStateEvent, this);
+
+            _model.on('change:castState', function(model, evt) {
+                _this.trigger(events.JWPLAYER_CAST_SESSION, evt);
+            });
+            _model.on('change:fullscreen', function(model, bool) {
+                _this.trigger(events.JWPLAYER_FULLSCREEN, {
+                    fullscreen: bool
                 });
+            });
+            _model.on('itemReady', function() {
+                _this.triggerAfterReady(events.JWPLAYER_PLAYLIST_ITEM, {
+                    index: _model.get('item'),
+                    item: _model.get('playlistItem')
+                });
+            });
+            _model.on('change:playlist', function(model, playlist) {
+                if (playlist.length) {
+                    _this.triggerAfterReady(events.JWPLAYER_PLAYLIST_LOADED, {
+                        playlist: playlist
+                    });
+                }
+            });
+            _model.on('change:volume', function(model, vol) {
+                _this.trigger(events.JWPLAYER_MEDIA_VOLUME, {
+                    volume: vol
+                });
+            });
+            _model.on('change:mute', function(model, mute) {
+                _this.trigger(events.JWPLAYER_MEDIA_MUTE, {
+                    mute: mute
+                });
+            });
+            _model.on('change:controls', function(model, mode) {
+                _this.trigger(events.JWPLAYER_CONTROLS, {
+                    controls: mode
+                });
+            });
+
+            _model.on('change:scrubbing', function(model, state) {
+                if (state) {
+                    _pause();
+                } else {
+                    _play();
+                }
+            });
+
+            // For onCaptionsList and onCaptionsChange
+            _model.on('change:captionsList', function(model, captionsList) {
+                try {
+                    _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
+                        tracks: captionsList,
+                        track: _getCurrentCaptions()
+                    });
+                } catch (e) {
+                    utils.log('Error with captionsList event:', e);
+                }
+            });
+
+            _model.on('change:mediaModel', function(model) {
+                model.mediaModel.on('change:state', function(mediaModel, state) {
+                    var modelState = normalizeState(state);
+                    model.set('state', modelState);
+                });
+            });
+
+            // Ensure captionsList event is raised after playlistItem
+            _captions = new Captions(_api, _model);
+
+            function _triggerAfterReady(type, e) {
+                _this.triggerAfterReady(type, e);
             }
-            initMediaModel();
-            _model.on('change:mediaModel', initMediaModel);
 
             function _playerReady() {
                 _setup = null;
 
-                // Set up provider and allow preload
-                _setItem(_model.get('item'));
+                _view.on('all', _triggerAfterReady, _this);
 
-                _model.on('change:state', changeStateEvent, this);
-
-                // For 'onCast' callback
-                _model.on('change:castState', function(model, evt) {
-                    _this.trigger(events.JWPLAYER_CAST_SESSION, evt);
-                });
-                // For 'onFullscreen' callback
-                _model.on('change:fullscreen', function(model, bool) {
-                    _this.trigger(events.JWPLAYER_FULLSCREEN, {
-                        fullscreen: bool
-                    });
-                });
-                // For onItem callback
-                _model.on('itemReady', function() {
-                    _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                        index: _model.get('item'),
-                        item: _model.get('playlistItem')
-                    });
-                });
-                // For onPlaylist callback
-                _model.on('change:playlist', function(model, playlist) {
-                    if (playlist.length) {
-                        _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                            playlist: playlist
-                        });
-                    }
-                });
-                _model.on('change:volume', function(model, vol) {
-                    _this.trigger(events.JWPLAYER_MEDIA_VOLUME, {
-                        volume: vol
-                    });
-                });
-                _model.on('change:mute', function(model, mute) {
-                    _this.trigger(events.JWPLAYER_MEDIA_MUTE, {
-                        mute: mute
-                    });
-                });
-                _model.on('change:controls', function(model, mode) {
-                    _this.trigger(events.JWPLAYER_CONTROLS, {
-                        controls: mode
-                    });
-                });
-
-                _model.on('change:scrubbing', function(model, state) {
-                    if (state) {
-                        _pause();
-                    } else {
-                        _play();
-                    }
-                });
-
-                // For onCaptionsList and onCaptionsChange
-                _model.on('change:captionsList', function(model, captionsList) {
-                    _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
-                        tracks: captionsList,
-                        track: _getCurrentCaptions()
-                    });
-                });
-
-                _model.mediaController.on('all', _this.trigger.bind(_this));
-                _view.on('all', _this.trigger.bind(_this));
-
-                this.showView(_view.element());
-
-                // prevent video error in display on window close
-                window.addEventListener('beforeunload', function() {
-                    if (_setup) {
-                        _setup.destroy();
-                    }
-                    if (_model) {
-                        _model.destroy();
-                    }
-                });
+                _this.showView(_view.element());
 
                 // Defer triggering of events until they can be registered
                 _.defer(_playerReadyNotify);
@@ -204,28 +203,51 @@ define([
                     setupTime: 0
                 });
 
-                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, {
-                    playlist: _model.get('playlist')
-                });
-                _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
-                    index: _model.get('item'),
-                    item: _model.get('playlistItem')
-                });
-                
-                _this.trigger(events.JWPLAYER_CAPTIONS_LIST, {
-                    tracks: _model.get('captionsList'),
-                    track: _model.get('captionsIndex')
-                });
+                // Stop queueing certain events
+                _this.triggerAfterReady = _this.trigger;
 
-                if (_model.get('autostart')) {
-                    _play({reason: 'autostart'});
+                // Send queued events
+                for (var i = 0; i < _eventQueuedUntilReady.length; i++) {
+                    var event = _eventQueuedUntilReady[i];
+                    _this.trigger(event.type, event.args);
                 }
 
+                var related = _api.getPlugin('related');
+                if (related) {
+                    related.on('nextUp', _model.setNextUp, _model);
+                }
+
+                if (_model.get('autostart')) {
+                    _this.play({reason: 'autostart'});
+                }
+            }
+
+            this.triggerAfterReady = function(type, args) {
+                _eventQueuedUntilReady.push({
+                    type: type,
+                    args: args
+                });
+            };
+
+            function _loadProvidersForPlaylist(playlist) {
+                var providersManager = _model.getProviders();
+                var providersNeeded = providersManager.required(playlist, _model.get('primary'));
+                return providersManager.load(providersNeeded)
+                    .then(function() {
+                        if (!_this.getProvider()) {
+                            _model.setProvider(_model.get('playlistItem'));
+
+                            _executeQueuedEvents();
+                        }
+                    });
+            }
+
+            function _executeQueuedEvents() {
                 while (_this.eventsQueue.length > 0) {
                     var q = _this.eventsQueue.shift();
                     var method = q[0];
                     var args = q[1] || [];
-                    _this[method].apply(_this, args);
+                    _this['_'+method].apply(_this, args);
                 }
             }
 
@@ -267,8 +289,12 @@ define([
                 loader.load(toLoad);
             }
 
+            function _getAdState() {
+                return _this._instreamAdapter && _this._instreamAdapter.getState();
+            }
+
             function _getState() {
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     return adState;
                 }
@@ -286,7 +312,7 @@ define([
                     return;
                 }
 
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     // this will resume the ad. _api.playAd would load a new ad
                     return _api.pauseAd(false);
@@ -307,12 +333,14 @@ define([
                     }
                 }
 
+                // TODO: The state is idle while providers load
                 if (_isIdle()) {
                     if (_model.get('playlist').length === 0) {
                         return false;
                     }
 
                     status = utils.tryCatch(function() {
+                        // FIXME: playAttempt is not triggered until this is called. Should be on play()
                         _model.loadVideo();
                     });
                 } else if (_model.get('state') === states.PAUSED) {
@@ -360,7 +388,7 @@ define([
             function _pause() {
                 _actionOnAttach = null;
 
-                var adState = _this._instreamAdapter && _this._instreamAdapter.getState();
+                var adState = _getAdState();
                 if (_.isString(adState)) {
                     return _api.pauseAd(true);
                 }
@@ -404,6 +432,9 @@ define([
 
             function _item(index, meta) {
                 _stop(true);
+                if(_model.get('state') === states.ERROR) {
+                    _model.set('state', states.IDLE);
+                }
                 _setItem(index);
                 _play(meta);
             }
@@ -411,7 +442,7 @@ define([
             function _setPlaylist(p) {
                 var playlist = Playlist(p);
                 playlist = Playlist.filterPlaylist(playlist, _model.getProviders(), _model.get('androidhls'),
-                    _model.get('drm'), _model.get('preload'));
+                    _model.get('drm'), _model.get('preload'), _model.get('feedid'), _model.get('withCredentials'));
 
                 _model.set('playlist', playlist);
 
@@ -422,18 +453,13 @@ define([
                     return false;
                 }
 
+                _loadProvidersForPlaylist(playlist);
+
                 return true;
             }
 
             function _setItem(index) {
-                var playlist = _model.get('playlist');
-
-                // If looping past the end, or before the beginning
-                index = (index + playlist.length) % playlist.length;
-
-                _model.set('item', index);
-                _model.set('playlistItem', playlist[index]);
-                _model.setActiveItem(playlist[index]);
+                _model.setItemIndex(index);
             }
 
             function _prev(meta) {
@@ -473,8 +499,11 @@ define([
                 _next({reason: 'playlist'});
             }
 
-            function _setCurrentQuality(quality) {
-                _video().setCurrentQuality(quality);
+            function _setCurrentQuality(index) {
+                if (_video()) {
+                    index = parseInt(index, 10) || 0;
+                    _video().setCurrentQuality(index);
+                }
             }
 
             function _getCurrentQuality() {
@@ -522,6 +551,7 @@ define([
 
             function _setCurrentAudioTrack(index) {
                 if(_video()) {
+                    index = parseInt(index, 10) || 0;
                     _video().setCurrentAudioTrack(index);
                 }
             }
@@ -541,6 +571,8 @@ define([
             }
 
             function _setCurrentCaptions(index) {
+                index = parseInt(index, 10) || 0;
+
                 // update provider subtitle track
                 _model.persistVideoSubtitleTrack(index);
 
@@ -587,17 +619,36 @@ define([
                 }
             }
 
+            function _setFullscreen(state) {
+                if (!_.isBoolean(state)) {
+                    state = !_model.get('fullscreen');
+                }
+
+                _model.set('fullscreen', state);
+                if (this._instreamAdapter && this._instreamAdapter._adModel) {
+                    this._instreamAdapter._adModel.set('fullscreen', state);
+                }
+            }
+
+            function _nextUp() {
+                var related = _api.getPlugin('related');
+                if (related) {
+                    related.next();
+                }
+            }
+
             /** Controller API / public methods **/
-            this.play = _play;
-            this.pause = _pause;
-            this.seek = _seek;
-            this.stop = _stop;
-            this.load = _load;
-            this.playlistNext = _next;
-            this.playlistPrev = _prev;
-            this.playlistItem = _item;
-            this.setCurrentCaptions = _setCurrentCaptions;
-            this.setCurrentQuality = _setCurrentQuality;
+            this._play = _play;
+            this._pause = _pause;
+            this._seek = _seek;
+            this._stop = _stop;
+            this._load = _load;
+            this._next = _next;
+            this._prev = _prev;
+            this._item = _item;
+            this._setCurrentCaptions = _setCurrentCaptions;
+            this._setCurrentQuality = _setCurrentQuality;
+            this._setFullscreen = _setFullscreen;
 
             this.detachMedia = _detachMedia;
             this.attachMedia = _attachMedia;
@@ -613,8 +664,8 @@ define([
             this.getState = _getState;
 
             // Model passthroughs
-            this.setVolume = _model.setVolume;
-            this.setMute = _model.setMute;
+            this.setVolume = _model.setVolume.bind(_model);
+            this.setMute = _model.setMute.bind(_model);
             this.getProvider = function(){ return _model.get('provider'); };
             this.getWidth = function() { return _model.get('containerWidth'); };
             this.getHeight = function() { return _model.get('containerHeight'); };
@@ -626,17 +677,10 @@ define([
             //this.forceState = _view.forceState;
             //this.releaseState = _view.releaseState;
             this.setCues = _view.addCues;
+            this.setCaptions = _view.setCaptions;
 
-            this.setFullscreen = function(state) {
-                if (!_.isBoolean(state)) {
-                    state = !_model.get('fullscreen');
-                }
+            this.next = _nextUp;
 
-                _model.set('fullscreen', state);
-                if (this._instreamAdapter && this._instreamAdapter._adModel) {
-                    this._instreamAdapter._adModel.set('fullscreen', state);
-                }
-            };
 
             this.addButton = function(img, tooltip, callback, id, btnClass) {
                 var btn = {
@@ -722,9 +766,6 @@ define([
                 }
             };
 
-            // This is here because it binds to the methods declared above
-            deprecateInit(_api, this);
-
             _setup.start();
         },
 
@@ -755,7 +796,7 @@ define([
             this.trigger(events.JWPLAYER_ERROR, evt);
         },
 
-        setupError: function(evt){
+        setupError: function(evt) {
             var message = evt.message;
             var errorElement = utils.createElement(error(this._model.get('id'), this._model.get('skin'), message));
 
@@ -780,4 +821,3 @@ define([
 
     return Controller;
 });
-
