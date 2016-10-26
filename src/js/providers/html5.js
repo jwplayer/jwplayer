@@ -457,7 +457,7 @@ define([
                 promise.catch(function(err) {
                     console.warn(err);
                     // User gesture required to start playback
-                    if(err.name === 'NotAllowedError') {
+                    if (err.name === 'NotAllowedError') {
                         _undoAutoplaySetup();
                     }
                 });

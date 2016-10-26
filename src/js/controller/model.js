@@ -411,7 +411,7 @@ define([
 
         this.autoStartOnMobile = function() {
             return this.get('autostart') && !this.get('mobileSdk') &&
-                ((utils.isIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome()))
+                ((utils.isIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome())) &&
                 (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
     };
