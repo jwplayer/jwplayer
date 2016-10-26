@@ -60,17 +60,12 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  .jw-display-icon-container {
-    .jw-breakpoint-0 & {
-      .jw-icon {
-        font-size: 22px;
-      }
-    }
-    .jw-breakpoint-1 & {
-      .jw-icon {
-        font-size: 28px;
-      }
-    }
+  &.jw-breakpoint-0 .jw-display-icon-container .jw-icon {
+    font-size: (@mobile-touch-target / 2);
+  }
+
+  &.jw-breakpoint-1 .jw-display-icon-container .jw-icon {
+    font-size: (@mobile-touch-target / 1.25);
   }
 
 }
