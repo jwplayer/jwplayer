@@ -8,16 +8,18 @@ define([
         var height = playerHeight;
 
         if (width >= 1280) {
-            className += '6';
+            className += '7';
         } else if (width >= 960) {
-            className += '5';
+            className += '6';
         } else if (width >= 800) {
-            className += '4';
+            className += '5';
         } else if (width >= 640) {
-            className += '3';
+            className += '4';
         } else if (width >= 540) {
-            className += '2';
+            className += '3';
         } else if (width >= 420) {
+            className += '2';
+        } else if (width >= 320) {
             className += '1';
         } else {
             className += '0';
