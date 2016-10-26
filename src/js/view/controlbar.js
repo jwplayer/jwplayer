@@ -343,7 +343,6 @@ define([
             }
         },
         onCastAvailable : function(model, val) {
-            console.log('onCastAvailable', val);
             this.elements.cast.toggle(val);
         },
         onCastActive : function(model, val) {
