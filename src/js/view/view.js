@@ -17,9 +17,10 @@ define([
     'utils/underscore',
     'templates/player.html',
     'view/breakpoint',
+    'view/components/button'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint) {
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -50,6 +51,7 @@ define([
             _logo,
             _title,
             _nextuptooltip,
+            _mute,
             _captionsRenderer,
             _audioMode,
             _showing = false,
@@ -640,6 +642,12 @@ define([
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
 
+            if (_model.autoStartOnMobile()) {
+                _mute = button('jw-autostart-mute jw-off', _autoplayUnmute, _model.get('localization').volume);
+                _mute.show();
+                _controlsLayer.appendChild(_mute.element());
+            }
+
             _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
             _nextuptooltip.setup();
 
@@ -801,6 +809,12 @@ define([
             }
 
             _captionsRenderer.resize();
+        }
+
+        function _autoplayUnmute() {
+            _mute.hide();
+            _this.api.setMute(false);
+            utils.removeClass(_mute.element(), 'jw-autostart-mute');
         }
 
         this.resize = function(width, height) {
