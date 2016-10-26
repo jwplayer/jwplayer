@@ -224,6 +224,9 @@ define([
             if (this.get('instreamMode') === true) {
                 _provider.instreamMode = true;
             }
+
+            console.log('%c' + _provider._renderNatively, 'color: cyan');
+            this.set('renderCaptionsNatively', _provider._renderNatively);
         };
 
         this.destroy = function() {
