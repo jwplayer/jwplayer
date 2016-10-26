@@ -7,37 +7,9 @@ define([
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
-    'view/components/volumetooltip'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip) {
-
-    function button(icon, apiAction, ariaText) {
-        var element = document.createElement('div');
-        element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
-        element.setAttribute('role', 'button');
-        element.setAttribute('tabindex', '0');
-        if (ariaText) {
-            element.setAttribute('aria-label', ariaText);
-        }
-        element.style.display = 'none';
-
-        if (apiAction) {
-            // Don't send the event to the handler so we don't have unexpected results. (e.g. play)
-            new UI(element).on('click tap', function() { apiAction(); });
-        }
-
-        return {
-            element : function() { return element; },
-            toggle : function(m) {
-                if (m) {
-                    this.show();
-                } else {
-                    this.hide();
-                }
-            },
-            show : function() { element.style.display = '';},
-            hide : function() { element.style.display = 'none';}
-        };
-    }
+    'view/components/volumetooltip',
+    'view/components/button'
+], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button) {
 
     function text(name, role) {
         var element = document.createElement('span');
