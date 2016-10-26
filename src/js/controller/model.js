@@ -225,7 +225,6 @@ define([
                 _provider.instreamMode = true;
             }
 
-            console.log('%c' + _provider._renderNatively, 'color: cyan');
             this.set('renderCaptionsNatively', _provider._renderNatively);
         };
 
