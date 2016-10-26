@@ -60,7 +60,7 @@ define(['utils/helpers',
                 len = tracks && tracks.length;
 
             // Sideload tracks when not rendering natively
-            if (!tracksHelper.renderNatively(_model.get('provider').name) && len) {
+            if (!_model.get('renderCaptionsNatively') && len) {
                 var i, track;
 
                 for (i = 0; i < len; i++) {

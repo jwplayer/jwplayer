@@ -58,9 +58,11 @@ define([
             });
         }
 
-        var F = function(){};
-        F.prototype = Default;
-        provider.prototype = new F();
+        if (name !== 'hlsjs') {
+            var F = function () {};
+            F.prototype = Default;
+            provider.prototype = new F();
+        }
 
         // After registration, it is loaded
         ProvidersLoaded[name] = provider;

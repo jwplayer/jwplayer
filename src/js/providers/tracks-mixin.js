@@ -44,8 +44,6 @@ define(['utils/underscore',
             return;
         }
 
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
-
         if (!this._textTracks) {
             this._initTextTracks();
         } else {
@@ -141,7 +139,6 @@ define(['utils/underscore',
 
     function setupSideloadedTracks(itemTracks) {
         // Add tracks if we're starting playback or resuming after a midroll
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
         if (!this._renderNatively) {
             return;
@@ -415,8 +412,6 @@ define(['utils/underscore',
         if (!this._textTracks) {
             this._initTextTracks();
         }
-
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];

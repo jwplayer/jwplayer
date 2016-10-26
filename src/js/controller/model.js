@@ -224,6 +224,8 @@ define([
             if (this.get('instreamMode') === true) {
                 _provider.instreamMode = true;
             }
+
+            this.set('renderCaptionsNatively', _provider._renderNatively);
         };
 
         this.destroy = function() {
