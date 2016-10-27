@@ -9,7 +9,7 @@ define([
     'utils/backbone.events',
     'providers/tracks-mixin',
     'utils/browser'
-], function(cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks, browser) {
+], function(cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -66,7 +66,7 @@ define([
 
         _.extend(this, Events, Tracks);
 
-        this.renderNatively = browser.isChrome() || browser.isIOS() || browser.isSafari() || browser.isEdge();
+        this.renderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari() || utils.isEdge();
 
         // Overwrite the event dispatchers to block on certain occasions
         this.trigger = function(type, args) {
