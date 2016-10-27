@@ -2,9 +2,8 @@ define([
     'utils/helpers',
     'utils/css',
     'events/states',
-    'utils/underscore',
-    'controller/tracks-helper'
-], function(utils, cssUtils, states, _, tracksHelper) {
+    'utils/underscore'
+], function(utils, cssUtils, states, _) {
     var _style = cssUtils.style;
 
     var _defaults = {

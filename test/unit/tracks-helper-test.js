@@ -1,8 +1,7 @@
 define([
     'controller/tracks-helper',
-    'utils/browser',
     'utils/underscore'
-], function (tracksHelper, browser, _) {
+], function (tracksHelper, _) {
     var test = QUnit.test.bind(QUnit);
 
     var isTrue = function() {

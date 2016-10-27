@@ -1,6 +1,5 @@
 define([
-    'utils/browser'
-], function(browser) {
+], function() {
     return {
         createId: function (track, tracksCount) {
             var trackId;
