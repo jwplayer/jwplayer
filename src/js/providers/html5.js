@@ -368,8 +368,8 @@ define([
                 return;
             }
 
-            // If "pause" fires before "complete", we still don't want to propagate it
-            if (_videotag.currentTime === _videotag.duration) {
+            // If "pause" fires before "complete" or before we've started playback, we still don't want to propagate it
+            if (!_videotag.hasAttribute('jw-played') || _videotag.currentTime === _videotag.duration) {
                 return;
             }
 
@@ -456,7 +456,21 @@ define([
             if (promise && promise.catch) {
                 promise.catch(function(err) {
                     console.warn(err);
+                    // User gesture required to start playback
+                    if (err.name === 'NotAllowedError') {
+                        _undoAutoplaySetup();
+                    }
                 });
+            } else if (!_videotag.hasAttribute('jw-played')) {
+                // Autoplay isn't allowed in browsers that don't support promises
+                _undoAutoplaySetup();
+            }
+        }
+
+        function _undoAutoplaySetup() {
+            if (_this.video.autoplay) {
+                _this.removeAutoplayAttributes();
+                _this.trigger('autoplayFailed');
             }
         }
 

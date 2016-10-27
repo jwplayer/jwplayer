@@ -95,11 +95,14 @@ define([
             var rewind = this._localization.rewind;
 
             // Do not initialize volume slider or tooltip on mobile
-            if(!this._isMobile){
+            if (!this._isMobile) {
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');//, vol);
                 volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume', vol);
             }
-            muteButton = button('jw-icon-volume', this._api.setMute, vol);
+            // Do not show the volume toggle in the mobile SDKs
+            if (!this._model.get('mobileSdk')) {
+                muteButton = button('jw-icon-volume', this._api.setMute, vol);
+            }
 
             this.elements = {
                 alt: text('jw-text-alt', 'status'),

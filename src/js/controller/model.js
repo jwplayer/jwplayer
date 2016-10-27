@@ -152,6 +152,10 @@ define([
                     var visualQuality = _.extend({}, data);
                     this.mediaModel.set('visualQuality', visualQuality);
                     break;
+
+                case 'autoplayFailed':
+                    this.setMute(false);
+                    break;
             }
 
             this.mediaController.trigger(type, evt);
@@ -406,7 +410,8 @@ define([
         };
 
         this.autoStartOnMobile = function() {
-            return this.get('autostart') && utils.isMobile() && !this.get('mobileSdk') &&
+            return this.get('autostart') && !this.get('mobileSdk') &&
+                ((utils.isIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome())) &&
                 (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
     };
