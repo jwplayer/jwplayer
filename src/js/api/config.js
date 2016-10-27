@@ -42,7 +42,7 @@ define([
             nextUp: 'Next Up',
             related: 'Related'
         },
-        renderCaptionsNatively: 'false'
+        renderCaptionsNatively: false
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
     };
