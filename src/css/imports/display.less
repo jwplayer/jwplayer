@@ -19,7 +19,7 @@
 }
 
 .jwplayer,
-.jw-error, 
+.jw-error,
 .jw-stretch-uniform {
     .jw-preview {
         background-size: contain;
@@ -62,6 +62,26 @@
         background-position: 50% 50%;
         background-repeat: no-repeat;
         font-size: 2.5em;
+    }
+
+    .jw-breakpoint-0 & {
+      height: @mobile-touch-target;
+      width: @mobile-touch-target;
+      margin: (@mobile-touch-target / -2) auto 0;
+
+      .jw-icon {
+        font-size: (@mobile-touch-target / 2);
+      }
+    }
+
+    .jw-breakpoint-1 & {
+      height: @mobile-touch-target * 1.25;
+      width: @mobile-touch-target * 1.25;
+      margin: ((@mobile-touch-target * 1.25) / -2) auto 0;
+
+      .jw-icon {
+        font-size: (@mobile-touch-target / 1.25);
+      }
     }
 }
 

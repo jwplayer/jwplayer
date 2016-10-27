@@ -1,12 +1,18 @@
 @import "vars";
 
 .jw-dock {
-    margin: @ui-margin/2;
+    clear: right; // This allows it to be positioned beneath the logo
+    margin: @ui-margin / 2;
     display: block;
     opacity: 1;
 
-    // This allows it to be positioned beneath the logo
-    clear : right;
+    .jw-breakpoint-0 & {
+      margin: (@ui-margin * 0.15) ((@ui-margin * 0.15) / 2);
+    }
+
+    .jw-breakpoint-1 & {
+      margin: (@ui-margin * 0.3) ((@ui-margin * 0.3) / 2);
+    }
 
     &:after {
         content: '';
@@ -18,10 +24,22 @@
 .jw-dock-button {
     cursor:pointer;
     float: right;
-    position: relative;
-    width: 2.5em;
     height: 2.5em;
     margin: 0.5em;
+    position: relative;
+    width: 2.5em;
+
+    .jw-breakpoint-0 & {
+      margin: 0 ((@ui-margin * 0.15) / 2);
+      height: @mobile-touch-target;
+      width: @mobile-touch-target;
+    }
+
+    .jw-breakpoint-1 & {
+      margin: 0 ((@ui-margin * 0.3) / 2);
+      height: @mobile-touch-target;
+      width: @mobile-touch-target;
+    }
 
     .jw-arrow {
         display: none;
@@ -47,7 +65,7 @@
     &:hover .jw-arrow {
         display: block;
     }
-    
+
 }
 
 .jw-dock-image {
@@ -57,5 +75,3 @@
     background-repeat: no-repeat;
     opacity: 0.75;
 }
-
-
