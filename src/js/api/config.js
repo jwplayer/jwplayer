@@ -41,7 +41,8 @@ define([
             rewind: 'Rewind 10s',
             nextUp: 'Next Up',
             related: 'Related'
-        }
+        },
+        renderCaptionsNatively: false
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
     };
