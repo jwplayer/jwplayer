@@ -130,46 +130,4 @@ define([
         time = parser.timeFormat('test');
         assert.equal(time, '00:00', 'timeFormat with minutes seconds');
     });
-
-    test('parser.streamType', function(assert) {
-        var minDvrWindow = 120;
-        var type = parser.streamType(0, minDvrWindow);
-        assert.equal(type, 'VOD', 'streamType with 0 and 120');
-
-        type = parser.streamType(0, 0);
-        assert.equal(type, 'VOD', 'streamType with 0 and 0');
-
-        type = parser.streamType(10, minDvrWindow);
-        assert.equal(type, 'VOD', 'streamType with 10 and 120');
-
-        type = parser.streamType(10, undefined);
-        assert.equal(type, 'VOD', 'streamType with 10 and undefined');
-
-        type = parser.streamType(-120, minDvrWindow);
-        assert.equal(type, 'DVR', 'streamType with -120 and 120');
-
-        type = parser.streamType(-120, -10);
-        assert.equal(type, 'DVR', 'streamType with 120 and -10');
-
-        type = parser.streamType(-120, 0);
-        assert.equal(type, 'DVR', 'streamType with 120 and 0');
-
-        type = parser.streamType(-120, 0);
-        assert.equal(type, 'DVR', 'streamType with -120 and 0');
-
-        type = parser.streamType(-120, undefined);
-        assert.equal(type, 'DVR', 'streamType with 120 and undefined');
-
-        type = parser.streamType(-20, minDvrWindow);
-        assert.equal(type, 'LIVE', 'streamType with -20 and 120');
-
-        type = parser.streamType(-1, minDvrWindow);
-        assert.equal(type, 'LIVE', 'streamType with -1 and 120');
-
-        type = parser.streamType(Infinity, minDvrWindow);
-        assert.equal(type, 'LIVE', 'streamType with Infinity');
-
-        type = parser.streamType(-20, undefined);
-        assert.equal(type, 'LIVE', 'streamType with -20 and undefined');
-    });
 });

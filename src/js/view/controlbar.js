@@ -381,7 +381,11 @@ define([
         },
         onStreamTypeChange : function(model) {
             // Hide rewind button when in LIVE mode
-            this.elements.rewind.toggle(model.get('streamType') !== 'LIVE');
+            var streamType = model.get('streamType');
+            this.elements.rewind.toggle(streamType !== 'LIVE');
+            if (streamType === 'DVR') {
+                this.elements.duration.innerHTML = 'Live';
+            }
         }
     });
 
