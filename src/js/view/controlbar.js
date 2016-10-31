@@ -54,6 +54,42 @@ define([
         return createdMenu;
     }
 
+    function castButton(ariaText) {
+        var element = document.createElement('div');
+        var button = document.createElement('button', 'google-cast-button');
+
+        element.className = 'jw-icon jw-icon-inline jw-reset jw-icon-cast';
+        element.setAttribute('role', 'button');
+        element.setAttribute('tabindex', '0');
+        element.setAttribute('tabindex', '0');
+        button.className = 'jw-button-color';
+        if (ariaText) {
+            element.setAttribute('aria-label', ariaText);
+        }
+        element.style.display = 'none';
+
+        element.appendChild(button);
+
+        return {
+            element : function() {
+                return element;
+            },
+            toggle : function(m) {
+                if (m) {
+                    this.show();
+                } else {
+                    this.hide();
+                }
+            },
+            show : function() {
+                element.style.display = '';
+            },
+            hide : function() {
+                element.style.display = 'none';
+            }
+        };
+    }
+
     function buildGroup(group, elements) {
         var elem = document.createElement('div');
         elem.className = 'jw-group jw-controlbar-' + group+'-group jw-reset';
@@ -115,7 +151,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast jw-off', this._api.castToggle, this._localization.cast),
+                cast: castButton(this._localization.cast),
                 airplay: button('jw-icon-airplay jw-off', this._api.castToggle, this._localization.airplay),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
