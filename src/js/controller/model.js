@@ -42,7 +42,7 @@ define([
 
             // Videos can autoplay on mobile when the `muted` and `autoplay` attributes are set.
             if (this.autoStartOnMobile()) {
-                this.set('mute', true);
+                this.set('autostartmute', true);
             }
 
             this.updateProviders();
@@ -154,7 +154,7 @@ define([
                     break;
 
                 case 'autoplayFailed':
-                    this.setMute(false);
+                    this.set('autostartmute', false);
                     break;
             }
 
@@ -222,13 +222,13 @@ define([
             _provider.volume(_this.get('volume'));
             _provider.mute(_this.get('mute'));
 
-            if (_provider.removeAutoplayAttributes) {
-                _provider.removeAutoplayAttributes();
+            if (_provider.removeAutoplayAttribute) {
+                _provider.removeAutoplayAttribute();
             }
 
             // set autoplay attributes if on a mobile device and autostart is true
-            if (this.autoStartOnMobile() && _provider.setAutoplayAttributes) {
-                _provider.setAutoplayAttributes();
+            if (this.autoStartOnMobile() && _provider.setAutoplayAttribute) {
+                _provider.setAutoplayAttribute();
             }
             _provider.on('all', _videoEventHandler, this);
 
@@ -410,8 +410,9 @@ define([
         };
 
         this.autoStartOnMobile = function() {
-            return this.get('autostart') && !this.get('mobileSdk') &&
-                ((utils.isIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome())) &&
+            return this.get('autostart') && !this.get('sdkplatform') &&
+                ((utils.isIOS() && utils.isSafari()) ||
+                (utils.isAndroid() && utils.isChrome())) &&
                 (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
     };

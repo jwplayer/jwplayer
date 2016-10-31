@@ -152,15 +152,23 @@ define([
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
-        _videotag = _videotag || document.createElement('video');
-        _videotag.className = 'jw-video jw-reset';
-
-        this.isSDK = _isSDK;
-        this.video = _videotag;
 
         function _setAttribute(name, value) {
             _videotag.setAttribute(name, value || '');
         }
+
+        if (!_videotag) {
+            _videotag = document.createElement('video');
+
+            if (_isMobile) {
+                _setAttribute('jw-gesture-required');
+            }
+        }
+
+        _videotag.className = 'jw-video jw-reset';
+
+        this.isSDK = _isSDK;
+        this.video = _videotag;
 
         // prevent browser from showing second cast icon
         // https://w3c.github.io/remote-playback/
@@ -359,6 +367,9 @@ define([
             if(!_videotag.hasAttribute('jw-played')) {
                 _setAttribute('jw-played','');
             }
+            if (_videotag.hasAttribute('jw-gesture-required')) {
+                _videotag.removeAttribute('jw-gesture-required');
+            }
             _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
@@ -457,19 +468,19 @@ define([
                 promise.catch(function(err) {
                     console.warn(err);
                     // User gesture required to start playback
-                    if (err.name === 'NotAllowedError') {
+                    if (err.name === 'NotAllowedError' && _videotag.hasAttribute('jw-gesture-required')) {
                         _undoAutoplaySetup();
                     }
                 });
-            } else if (!_videotag.hasAttribute('jw-played')) {
-                // Autoplay isn't allowed in browsers that don't support promises
+            } else if (_videotag.hasAttribute('jw-gesture-required')) {
+                // Autoplay isn't allowed in older versions of Safari (<10) and Chrome (<53)
                 _undoAutoplaySetup();
             }
         }
 
         function _undoAutoplaySetup() {
             if (_this.video.autoplay) {
-                _this.removeAutoplayAttributes();
+                _this.removeAutoplayAttribute();
                 _this.trigger('autoplayFailed');
             }
         }
@@ -736,11 +747,6 @@ define([
 
         this.mute = function(state) {
             _videotag.muted = !!state;
-            if (!_videotag.muted) {
-                // Remove muted attribute once user unmutes so the video element doesn't get
-                // muted by the browser when the src changes or on replay
-                _videotag.removeAttribute('muted');
-            }
         };
 
         function _checkPlaybackStalled() {
@@ -1033,14 +1039,13 @@ define([
 
         this.getCurrentAudioTrack = _getCurrentAudioTrack;
 
-        this.setAutoplayAttributes = function() {
+        this.setAutoplayAttribute = function() {
             _setAttribute('autoplay');
-            _setAttribute('muted');
+            _videotag.muted = true;
         };
 
-        this.removeAutoplayAttributes = function() {
+        this.removeAutoplayAttribute = function() {
             _videotag.removeAttribute('autoplay');
-            _videotag.removeAttribute('muted');
         };
 
         function _setAudioTracks(tracks) {

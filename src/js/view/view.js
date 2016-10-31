@@ -642,10 +642,16 @@ define([
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
 
-            if (_model.autoStartOnMobile()) {
+            // Ignore iOS9. Muted autoplay is supported in iOS 10+
+            if (_model.autoStartOnMobile() && !utils.isIOS(9)) {
                 _mute = button('jw-autostart-mute jw-off', _autoplayUnmute, _model.get('localization').volume);
                 _mute.show();
                 _controlsLayer.appendChild(_mute.element());
+                // Set mute state in the controlbar
+                _controlbar.renderVolume(true, _model.get('volume'));
+                // Hide the controlbar until the autostart flag is removed
+                utils.addClass(_playerElement, 'jw-flag-autostart');
+                _model.on('change:autostartmute', _autoplayUnmute);
             }
 
             _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
@@ -654,9 +660,6 @@ define([
             // NextUp needs to be behind the controlbar to not block other tooltips
             _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
-
-
-
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
@@ -694,7 +697,6 @@ define([
                 provider.setFullscreen(state);
             }
         };
-
 
         /**
          * Resize the player
@@ -811,10 +813,23 @@ define([
             _captionsRenderer.resize();
         }
 
-        function _autoplayUnmute() {
+        function _autoplayUnmute () {
+            var autostartMute = _model.get('autostartmute');
+            var mute = _model.get('mute');
+
+            // Unmuted by user interaction, so set the player's mute state to false
+            if (autostartMute) {
+                mute = false;
+            }
+
+            _model.off('change:autostartmute', _autoplayUnmute);
+            _model.set('autostartmute', false);
+
+            _api.setMute(mute);
+            // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state
+            _controlbar.renderVolume(mute, _model.get('volume'));
             _mute.hide();
-            _this.api.setMute(false);
-            utils.removeClass(_mute.element(), 'jw-autostart-mute');
+            utils.removeClass(_playerElement, 'jw-flag-autostart');
         }
 
         this.resize = function(width, height) {
