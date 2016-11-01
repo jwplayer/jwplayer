@@ -37,6 +37,14 @@
     &.jw-flag-audio-player .jw-controlbar {
         bottom: 0; // overwrite the inset-controlbar mixin
     }
+    &.jw-breakpoint-0 .jw-controlbar {
+        border-radius: 0;
+        bottom: 0;
+        left: 0;
+        padding: 0 0.3em;
+        right: 0;
+        width: 100%;
+    }
 }
 
 .vertically-centered-rail-element(@rail-height, @element-height) {
@@ -259,10 +267,10 @@
     /* Override default touch flag styles */
     .touch-flag-skin-styles() {
         &.jw-flag-touch {
-            &.jw-breakpoint-3,
-            &.jw-breakpoint-4,
+            &.jw-breakpoint-7,
+            &.jw-breakpoint-6,
             &.jw-breakpoint-5,
-            &.jw-breakpoint-6 {
+            &.jw-breakpoint-4 {
                 .jw-nextup-container {
                     bottom: @nextup-position-bottom-touch;
                 }

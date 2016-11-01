@@ -41,7 +41,8 @@ define([
             rewind: 'Rewind 10s',
             nextUp: 'Next Up',
             related: 'Related'
-        }
+        },
+        renderCaptionsNatively: false
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
     };
@@ -75,7 +76,7 @@ define([
         __webpack_public_path__ = config.base;
         config.width  = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
-        config.flashplayer = config.flashplayer || utils.getScriptPath('jwplayer.js') + 'jwplayer.flash.swf';
+        config.flashplayer = config.flashplayer || (utils.getScriptPath('jwplayer.js') || config.base) + 'jwplayer.flash.swf';
 
         // Non ssl pages can only communicate with flash when it is loaded
         //   from a non ssl location

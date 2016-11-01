@@ -12,43 +12,48 @@ define([
         return mockPlayer.className;
     }
 
-    test('width >= 1280 sets jw-breakpoint-6', function (assert) {
+    test('width >= 1280 sets jw-breakpoint-7', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(1280), 'jw-breakpoint-6');
+        assert.equal(breakpointClassname(1280), 'jw-breakpoint-7');
     });
 
-    test('width >= 960 sets jw-breakpoint-5', function (assert) {
+    test('width >= 960 sets jw-breakpoint-6', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(960), 'jw-breakpoint-5');
+        assert.equal(breakpointClassname(960), 'jw-breakpoint-6');
     });
 
-    test('width >= 800 sets jw-breakpoint-4', function (assert) {
+    test('width >= 800 sets jw-breakpoint-5', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(800), 'jw-breakpoint-4');
+        assert.equal(breakpointClassname(800), 'jw-breakpoint-5');
     });
 
-    test('width >= 640 sets jw-breakpoint-3', function (assert) {
+    test('width >= 640 sets jw-breakpoint-4', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(640), 'jw-breakpoint-3');
+        assert.equal(breakpointClassname(640), 'jw-breakpoint-4');
     });
 
-    test('width >= 540 sets jw-breakpoint-2', function (assert) {
+    test('width >= 540 sets jw-breakpoint-3', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(540), 'jw-breakpoint-2');
+        assert.equal(breakpointClassname(540), 'jw-breakpoint-3');
     });
 
-    test('width >= 420 sets jw-breakpoint-1', function (assert) {
+    test('width >= 420 sets jw-breakpoint-2', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(420), 'jw-breakpoint-1');
+        assert.equal(breakpointClassname(420), 'jw-breakpoint-2');
     });
 
-    test('width < 420 sets jw-breakpoint-0', function (assert) {
+    test('width >= 320 sets jw-breakpoint-1', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(419), 'jw-breakpoint-0');
+        assert.equal(breakpointClassname(320), 'jw-breakpoint-1');
+    });
+
+    test('width < 320 sets jw-breakpoint-0', function (assert) {
+        expect(1);
+        assert.equal(breakpointClassname(319), 'jw-breakpoint-0');
     });
 
     test('if height > width jw-orientation-portrait is set', function (assert) {
         expect(1);
-        assert.equal(breakpointClassname(419, 420), 'jw-breakpoint-0 jw-orientation-portrait');
+        assert.equal(breakpointClassname(319, 320), 'jw-breakpoint-0 jw-orientation-portrait');
     })
 });
