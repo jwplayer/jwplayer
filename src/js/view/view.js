@@ -651,7 +651,7 @@ define([
                 _controlbar.renderVolume(true, _model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
                 utils.addClass(_playerElement, 'jw-flag-autostart');
-                _model.on('change:autostartmute', _autoplayUnmute);
+                _model.on('change:autostartFailed', _autoplayUnmute);
             }
 
             _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
@@ -814,16 +814,17 @@ define([
         }
 
         function _autoplayUnmute () {
-            var autostartMute = _model.get('autostartmute');
+            var autostartSucceeded = !_model.get('autostartFailed');
             var mute = _model.get('mute');
 
-            // Unmuted by user interaction, so set the player's mute state to false
-            if (autostartMute) {
+            // If autostart succeeded, it means the user has chosen to unmute the video,
+            // so we should update the model, setting mute to false
+            if (autostartSucceeded) {
                 mute = false;
             }
 
-            _model.off('change:autostartmute', _autoplayUnmute);
-            _model.set('autostartmute', false);
+            _model.off('change:autostartFailed', _autoplayUnmute);
+            _model.set('autostartFailed', undefined);
 
             _api.setMute(mute);
             // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state
