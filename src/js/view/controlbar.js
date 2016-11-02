@@ -55,19 +55,18 @@ define([
     }
 
     function castButton(ariaText) {
-        var element = document.createElement('div');
         var button = document.createElement('button', 'google-cast-button');
+        var element = document.createElement('div');
 
+        button.className = 'jw-button-color';
         element.className = 'jw-icon jw-icon-inline jw-reset jw-icon-cast';
+        element.style.display = 'none';
+        element.style.cursor = 'pointer';
         element.setAttribute('role', 'button');
         element.setAttribute('tabindex', '0');
-        element.setAttribute('tabindex', '0');
-        button.className = 'jw-button-color';
         if (ariaText) {
             element.setAttribute('aria-label', ariaText);
         }
-        element.style.display = 'none';
-
         element.appendChild(button);
 
         return {
