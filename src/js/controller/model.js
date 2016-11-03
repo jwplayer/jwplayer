@@ -70,8 +70,12 @@ define([
                     return;
 
                 case 'volume':
-                case 'mute':
                     this.set(type, data[type]);
+                    return;
+                case 'mute':
+                    if (!this.get('autostartMuted')) {
+                        this.set(type, data[type]);
+                    }
                     return;
 
                 case events.JWPLAYER_MEDIA_TYPE:
@@ -215,16 +219,10 @@ define([
 
             _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
-            _provider.mute(_this.get('mute'));
 
-            if (_provider.removeAutoplayAttribute) {
-                _provider.removeAutoplayAttribute();
-            }
+            // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
+            _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
-            // set autoplay attributes if on a mobile device and autostart is true
-            if (this.autoStartOnMobile() && _provider.setAutoplayAttribute) {
-                _provider.setAutoplayAttribute();
-            }
             _provider.on('all', _videoEventHandler, this);
 
             if (this.get('instreamMode') === true) {
@@ -408,8 +406,7 @@ define([
 
         this.autoStartOnMobile = function() {
             return this.get('autostart') && !this.get('sdkplatform') &&
-                ((utils.isIOS() && utils.isSafari()) ||
-                (utils.isAndroid() && utils.isChrome())) &&
+                ((utils.isIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome())) &&
                 (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
     };

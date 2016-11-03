@@ -71,8 +71,8 @@ define([
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');//, vol);
                 volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume', vol);
             }
-            // Do not show the volume toggle in the mobile SDKs or iOS9
-            if (!this._model.get('sdkplatform') && !utils.isIOS(9)) {
+            // Do not show the volume toggle in the mobile SDKs or <iOS10
+            if (!this._model.get('sdkplatform') && !(utils.isIOS(8) || utils.isIOS(9))) {
                 muteButton = button('jw-icon-volume', this._api.setMute, vol);
             }
 

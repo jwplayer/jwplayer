@@ -643,7 +643,7 @@ define([
             _model.on('change:scrubbing', _dragging);
 
             // Ignore iOS9. Muted autoplay is supported in iOS 10+
-            if (_model.autoStartOnMobile() && !utils.isIOS(9)) {
+            if (_model.autoStartOnMobile() && !(utils.isIOS(8) || utils.isIOS(9))) {
                 _mute = button('jw-autostart-mute jw-off', _autoplayUnmute, _model.get('localization').volume);
                 _mute.show();
                 _controlsLayer.appendChild(_mute.element());
@@ -651,10 +651,11 @@ define([
                 _controlbar.renderVolume(true, _model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
                 utils.addClass(_playerElement, 'jw-flag-autostart');
+                _model.set('autostartMuted', true);
                 _model.on('change:autostartFailed', _autoplayUnmute);
             }
 
-            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
+            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next, _playerElement);
             _nextuptooltip.setup();
 
             // NextUp needs to be behind the controlbar to not block other tooltips
@@ -673,6 +674,12 @@ define([
 
             // If it supports DOM fullscreen
             var provider = _model.getVideo();
+
+            // Unmute the video so volume can be adjusted with native controls in fullscreen
+            if (state && _model.get('autostartMuted')) {
+                _autoplayUnmute();
+            }
+
             if (_elementSupportsFullscreen) {
                 if (state) {
                     _requestFullscreen.apply(_playerElement);
@@ -825,6 +832,7 @@ define([
 
             _model.off('change:autostartFailed', _autoplayUnmute);
             _model.set('autostartFailed', undefined);
+            _model.set('autostartMuted', undefined);
 
             _api.setMute(mute);
             // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state

@@ -70,7 +70,8 @@ define([
                 _actionOnAttach,
                 _stopPlaylist = false, // onComplete, should we play next item or not?
                 _interruptPlay,
-                _this = this;
+                _this = this,
+                _xo; // Intersection Observer - used for playing video on mobile when visible
 
             var _video = function() { return _model.getVideo(); };
 
@@ -121,6 +122,9 @@ define([
                 _this.trigger(events.JWPLAYER_FULLSCREEN, {
                     fullscreen: bool
                 });
+               if (bool && _xo) {
+                   _stopObserving();
+               }
             });
             _model.on('itemReady', function() {
                 _this.triggerAfterReady(events.JWPLAYER_PLAYLIST_ITEM, {
@@ -218,7 +222,49 @@ define([
                 }
                 // Start playback on desktop and mobile browsers when allowed
                 if (_canAutoStart()) {
-                    _this.play({reason: 'autostart'});
+                    if (utils.isMobile() && _video().video) {
+                        _observeVideo(_video().video);
+                    } else {
+                        _this.play({reason: 'autostart'});
+                    }
+                }
+            }
+
+            function _observeVideo(video) {
+                if ('IntersectionObserver' in window &&
+                    'IntersectionObserverEntry' in window &&
+                    'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
+                    _startObserving(video);
+                } else {
+                    require.ensure(['polyfills/intersection-observer'], function (require) {
+                        require('polyfills/intersection-observer');
+                        _startObserving(video);
+                    }, 'polyfills.intersectionObserver');
+                }
+            }
+
+            function _startObserving(video) {
+                _xo = new window.IntersectionObserver(_toggleVideoPlayback, { threshold: 0.5 });
+                _xo.observe(video);
+            }
+
+            function _stopObserving() {
+                _xo.disconnect();
+                _xo = undefined;
+            }
+
+            function _toggleVideoPlayback(entries) {
+                var maxCallback = function (pre, cur) {
+                    return (pre.intersectionRatio > cur.intersectionRatio) ? pre : cur;
+                };
+                var maxView = entries.reduce(maxCallback);
+                var video = _video().video;
+                var meta = {reason: 'autoplay'};
+
+                if(maxView.target === video && maxView.intersectionRatio >= 0.5) {
+                    _this.play(meta);
+                } else {
+                    _this.pause(meta);
                 }
             }
 
@@ -385,8 +431,15 @@ define([
                 return true;
             }
 
-            function _pause() {
+            function _pause(meta) {
                 _actionOnAttach = null;
+
+                if (meta) {
+                    _model.set('pauseReason', meta.reason);
+                    if(_xo && (meta.reason === 'interaction' || meta.reason === 'external')) {
+                        _stopObserving();
+                    }
+                }
 
                 var adState = _getAdState();
                 if (_.isString(adState)) {
@@ -488,6 +541,9 @@ define([
                     if (_model.get('repeat')) {
                         _next({reason: 'repeat'});
                     } else {
+                        if (_xo) {
+                            _stopObserving();
+                        }
                         _model.set('state', states.COMPLETE);
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
