@@ -638,7 +638,7 @@ define([
             }
 
             function _canAutoStart() {
-                return _model.get('autostart') && (!utils.isMobile() || _model.autoStartOnMobile());
+                return (_model.get('autostart') && !utils.isMobile()) || _model.autoStartOnMobile();
             }
 
             /** Controller API / public methods **/
