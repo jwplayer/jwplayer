@@ -74,6 +74,7 @@ define([
                     return;
                 case 'mute':
                     if (!this.get('autostartMuted')) {
+                        // Don't persist mute state with muted autostart
                         this.set(type, data[type]);
                     }
                     return;

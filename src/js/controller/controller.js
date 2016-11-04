@@ -123,6 +123,7 @@ define([
                     fullscreen: bool
                 });
                if (bool && _xo) {
+                   // Stop autoplay behavior when the player enters fullscreen
                    _stopObserving();
                }
             });
@@ -223,6 +224,7 @@ define([
                 // Start playback on desktop and mobile browsers when allowed
                 if (_canAutoStart()) {
                     if (utils.isMobile() && _video().video) {
+                        // Only play if the video is in the viewport
                         _observeVideo(_video().video);
                     } else {
                         _this.play({reason: 'autostart'});
@@ -254,17 +256,16 @@ define([
             }
 
             function _toggleVideoPlayback(entries) {
-                var maxCallback = function (pre, cur) {
-                    return (pre.intersectionRatio > cur.intersectionRatio) ? pre : cur;
-                };
-                var maxView = entries.reduce(maxCallback);
-                var video = _video().video;
-                var meta = {reason: 'autoplay'};
+                if (entries && entries.length) {
+                    var video = _video().video;
+                    var entry = entries[0];
+                    var meta = {reason: 'autoplay'};
 
-                if(maxView.target === video && maxView.intersectionRatio >= 0.5) {
-                    _this.play(meta);
-                } else {
-                    _this.pause(meta);
+                    if (entry.target === video && entry.intersectionRatio >= 0.5) {
+                        _this.play(meta);
+                    } else {
+                        _this.pause(meta);
+                    }
                 }
             }
 
@@ -354,7 +355,7 @@ define([
                     _model.set('playReason', meta.reason);
                 }
 
-                if(_model.get('state') === states.ERROR) {
+                if (_model.get('state') === states.ERROR) {
                     return;
                 }
 
@@ -436,7 +437,8 @@ define([
 
                 if (meta) {
                     _model.set('pauseReason', meta.reason);
-                    if(_xo && (meta.reason === 'interaction' || meta.reason === 'external')) {
+                    // Stop autoplay behavior if the video is paused by the user or an api call
+                    if (_xo && (meta.reason === 'interaction' || meta.reason === 'external')) {
                         _stopObserving();
                     }
                 }
@@ -474,7 +476,7 @@ define([
             }
 
             function _seek(pos) {
-                if(_model.get('state') === states.ERROR) {
+                if (_model.get('state') === states.ERROR) {
                     return;
                 }
                 if (!_model.get('scrubbing') && _model.get('state') !== states.PLAYING) {
@@ -485,7 +487,7 @@ define([
 
             function _item(index, meta) {
                 _stop(true);
-                if(_model.get('state') === states.ERROR) {
+                if (_model.get('state') === states.ERROR) {
                     _model.set('state', states.IDLE);
                 }
                 _setItem(index);
@@ -542,6 +544,8 @@ define([
                         _next({reason: 'repeat'});
                     } else {
                         if (_xo) {
+                            // Autoplay/pause no longer needed since there's no more media to play
+                            // This prevents media from replaying when a completed video scrolls into view
                             _stopObserving();
                         }
                         _model.set('state', states.COMPLETE);
@@ -606,7 +610,7 @@ define([
             }
 
             function _setCurrentAudioTrack(index) {
-                if(_video()) {
+                if (_video()) {
                     index = parseInt(index, 10) || 0;
                     _video().setCurrentAudioTrack(index);
                 }
@@ -839,7 +843,7 @@ define([
                 }
             }
 
-            if(this.currentContainer.parentElement) {
+            if (this.currentContainer.parentElement) {
                 this.currentContainer.parentElement.replaceChild(viewElement, this.currentContainer);
             }
             this.currentContainer = viewElement;
