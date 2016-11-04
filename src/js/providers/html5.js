@@ -473,18 +473,11 @@ define([
                     console.warn(err);
                     // User gesture required to start playback
                     if (err.name === 'NotAllowedError' && _videotag.hasAttribute('jw-gesture-required')) {
-                        _undoAutoplaySetup();
+                        _this.trigger('autoplayFailed');
                     }
                 });
             } else if (_videotag.hasAttribute('jw-gesture-required')) {
-                // Autoplay isn't allowed in older versions of Safari (<10) and Chrome (<53)
-                _undoAutoplaySetup();
-            }
-        }
-
-        function _undoAutoplaySetup() {
-            if (_this.video.autoplay) {
-                _this.removeAutoplayAttribute();
+                // Autoplay isn't supported in older versions of Safari (<10) and Chrome (<53)
                 _this.trigger('autoplayFailed');
             }
         }
@@ -1042,15 +1035,6 @@ define([
         this.getAudioTracks = _getAudioTracks;
 
         this.getCurrentAudioTrack = _getCurrentAudioTrack;
-
-        this.setAutoplayAttribute = function() {
-            _setAttribute('autoplay');
-            _videotag.muted = true;
-        };
-
-        this.removeAutoplayAttribute = function() {
-            _videotag.removeAttribute('autoplay');
-        };
 
         function _setAudioTracks(tracks) {
             _audioTracks = null;
