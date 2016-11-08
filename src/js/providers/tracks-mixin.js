@@ -19,6 +19,7 @@ define(['utils/underscore',
         _activeCuePosition: null,
         _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
+        clearCues: clearCues,
         clearTracks: clearTracks,
         disableTextTrack: disableTextTrack,
         enableTextTrack: enableTextTrack,
@@ -460,6 +461,17 @@ define(['utils/underscore',
 
         while((cue = vttCues.shift())) {
             _addCueToTrack(textTrack, cue);
+        }
+    }
+
+    function clearCues() {
+        var tracks = this.video.textTracks;
+        if (tracks.length) {
+            _.each(tracks, function(track) {
+                for (var i = track.cues.length; i--;) {
+                    track.removeCue(track.cues[i]);
+                }
+            });
         }
     }
 
