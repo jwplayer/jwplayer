@@ -177,11 +177,6 @@ define([
         };
 
         this.load = function (toLoad) {
-            var plugin = this.getPlugin('vast') || this.getPlugin('googima') || this.getPlugin('freewheel');
-            if (plugin) {
-                _controller._model.set('preInstreamState', 'instream-idle');
-                plugin.destroy();
-            }
             _controller.load(toLoad);
             return _this;
         };

@@ -302,11 +302,14 @@ define([
                 if (_model.get('state') === states.ERROR) {
                     _model.set('state', states.IDLE);
                 }
+                _model.set('preInstreamState', 'instream-idle');
+
                 _stop(true);
 
                 if (_canAutoStart()) {
                     _model.once('itemReady', _play);
                 }
+                _this.trigger('destroyPlugin', {});
 
                 switch (typeof item) {
                     case 'string':
