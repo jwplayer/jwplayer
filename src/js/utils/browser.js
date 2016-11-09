@@ -67,7 +67,7 @@ define([
     };
 
     browser.isSafari = function() {
-        return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) &&
+        return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) && !_userAgentMatch(/crios/i) &&
         !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
     };
 
