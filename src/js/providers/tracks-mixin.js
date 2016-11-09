@@ -19,6 +19,7 @@ define(['utils/underscore',
         _activeCuePosition: null,
         _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
+        clearCues: clearCues,
         clearTracks: clearTracks,
         disableTextTrack: disableTextTrack,
         enableTextTrack: enableTextTrack,
@@ -460,6 +461,18 @@ define(['utils/underscore',
 
         while((cue = vttCues.shift())) {
             _addCueToTrack(textTrack, cue);
+        }
+    }
+
+    function clearCues() {
+        var tracks = this.video.textTracks;
+        if (tracks && tracks.length) {
+            _.each(tracks, function(track) {
+                var cueArrayLength = track.cues ? track.cues.length : 0;
+                for (var i = cueArrayLength; i--;) {
+                    track.removeCue(track.cues[i]);
+                }
+            });
         }
     }
 
