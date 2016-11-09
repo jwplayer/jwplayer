@@ -405,9 +405,17 @@ define([
             this.set('nextUp', nextUp);
         };
 
+        function _autoStartSupportedIOS() {
+            if (!utils.isIOS()) {
+                return false;
+            }
+            // Autostart only supported in iOS 10 or higher - check if the version is 9 or less
+            return !(utils.isIOS(6) || utils.isIOS(7) || utils.isIOS(8) || utils.isIOS(9));
+        }
+
         this.autoStartOnMobile = function() {
             return this.get('autostart') && !this.get('sdkplatform') &&
-                ((utils.isIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome())) &&
+                ((_autoStartSupportedIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome())) &&
                 (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
     };
