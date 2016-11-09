@@ -94,9 +94,18 @@
     margin: 0;
     button {
         height: 40px;
-        width: 35px;
+        width: 29px;
+        cursor: pointer;
         background-color: transparent;
         border: none;
+        --disconnected-color: @inactive-color;
+        &:hover {
+            --disconnected-color: @hover-color;
+        }
+        &:focus {
+            outline: none;
+            --disconnected-color: @hover-color;
+        }
     }
 }
 
