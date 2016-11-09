@@ -466,9 +466,10 @@ define(['utils/underscore',
 
     function clearCues() {
         var tracks = this.video.textTracks;
-        if (tracks.length) {
+        if (tracks && tracks.length) {
             _.each(tracks, function(track) {
-                for (var i = track.cues.length; i--;) {
+                var cueArrayLength = track.cues ? track.cues.length : 0;
+                for (var i = cueArrayLength; i--;) {
                     track.removeCue(track.cues[i]);
                 }
             });
