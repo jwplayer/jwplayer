@@ -398,6 +398,10 @@ define([
 
         this.setNextUp = function (nextUp) {
             this.set('nextUp', nextUp);
+
+            if (_provider && _provider.next) {
+                _provider.next(nextUp);
+            }
         };
     };
 
