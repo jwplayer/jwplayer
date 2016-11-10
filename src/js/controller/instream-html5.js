@@ -28,7 +28,7 @@ define([
                 id: _model.get('id'),
                 volume: _model.get('volume'),
                 fullscreen: _model.get('fullscreen'),
-                mute: _model.get('mute'),
+                mute: _model.get('mute') || _model.get('autostartMuted'),
                 instreamMode: true
             });
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
