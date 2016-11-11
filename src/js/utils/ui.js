@@ -4,7 +4,7 @@ define([
     'utils/underscore',
     'utils/helpers'
 ], function(Events, events, _, utils) {
-    var _usePointerEvents = !_.isUndefined(window.PointerEvent);
+    var _usePointerEvents = !_.isUndefined(window.PointerEvent) && !utils.isChrome();
     var _useTouchEvents = !_usePointerEvents && utils.isMobile();
     var _useMouseEvents = !_usePointerEvents && ! _useTouchEvents;
     var _isOSXFirefox = utils.isFF() && utils.isOSX();
