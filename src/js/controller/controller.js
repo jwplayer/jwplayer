@@ -241,7 +241,7 @@ define([
                     require.ensure(['polyfills/intersection-observer'], function (require) {
                         require('polyfills/intersection-observer');
                         _startObserving(video);
-                    }, 'polyfills.intersectionObserver');
+                    }, 'polyfills.intersection-observer');
                 }
             }
 
