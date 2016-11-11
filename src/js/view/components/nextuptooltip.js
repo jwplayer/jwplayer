@@ -5,10 +5,11 @@ define([
     'utils/helpers',
     'templates/nextup.html'
 ], function(dom, UI, _, utils, nextUpTemplate) {
-    var NextUpTooltip = function(_model, _api, nextButton) {
+    var NextUpTooltip = function(_model, _api, nextButton, playerElement) {
         this._model = _model;
         this._api = _api;
         this._nextButton = nextButton;
+        this._playerElement = playerElement;
         this.nextUpText = _model.get('localization').nextUp;
         this.state = 'tooltip';
     };
@@ -74,10 +75,12 @@ define([
                 return;
             }
             dom.addClass(this.container, 'jw-nextup-container-visible');
+            dom.addClass(this._playerElement, 'jw-flag-nextup');
         },
         hide: function() {
             dom.removeClass(this.container, 'jw-nextup-container-visible');
             dom.removeClass(this.container, 'jw-nextup-sticky');
+            dom.removeClass(this._playerElement, 'jw-flag-nextup');
 
             if (this.state === 'opened') {
                 this.state = 'closed';

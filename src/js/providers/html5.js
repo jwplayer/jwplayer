@@ -149,20 +149,30 @@ define([
             _audioTracks = null,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _visualQuality = { level: {} };
+            _visualQuality = { level: {} },
+            // whether playback can start on iOS
+            _canPlay = false;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
-        _videotag = _videotag || document.createElement('video');
-        _videotag.className = 'jw-video jw-reset';
-
-        this.isSDK = _isSDK;
-        this.video = _videotag;
 
         function _setAttribute(name, value) {
             _videotag.setAttribute(name, value || '');
         }
+
+        if (!_videotag) {
+            _videotag = document.createElement('video');
+
+            if (_isMobile) {
+                _setAttribute('jw-gesture-required');
+            }
+        }
+
+        _videotag.className = 'jw-video jw-reset';
+
+        this.isSDK = _isSDK;
+        this.video = _videotag;
 
         // prevent browser from showing second cast icon
         // https://w3c.github.io/remote-playback/
@@ -321,7 +331,7 @@ define([
                 return;
             }
 
-            _canSeek = true;
+            _canSeek = _canPlay = true;
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
@@ -348,8 +358,10 @@ define([
         }
 
         function _sendBufferFull() {
-            if (!_bufferFull) {
+            // Wait until the canplay event on iOS to send the bufferFull event
+            if (!_bufferFull && (!utils.isIOS() || _canPlay)) {
                 _bufferFull = true;
+                _canPlay = false;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
@@ -358,6 +370,9 @@ define([
             _this.setState(states.PLAYING);
             if(!_videotag.hasAttribute('jw-played')) {
                 _setAttribute('jw-played','');
+            }
+            if (_videotag.hasAttribute('jw-gesture-required')) {
+                _videotag.removeAttribute('jw-gesture-required');
             }
             _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
@@ -368,8 +383,8 @@ define([
                 return;
             }
 
-            // If "pause" fires before "complete", we still don't want to propagate it
-            if (_videotag.currentTime === _videotag.duration) {
+            // If "pause" fires before "complete" or before we've started playback, we still don't want to propagate it
+            if (!_videotag.hasAttribute('jw-played') || _videotag.currentTime === _videotag.duration) {
                 return;
             }
 
@@ -456,7 +471,14 @@ define([
             if (promise && promise.catch) {
                 promise.catch(function(err) {
                     console.warn(err);
+                    // User gesture required to start playback
+                    if (err.name === 'NotAllowedError' && _videotag.hasAttribute('jw-gesture-required')) {
+                        _this.trigger('autoplayFailed');
+                    }
                 });
+            } else if (_videotag.hasAttribute('jw-gesture-required')) {
+                // Autoplay isn't supported in older versions of Safari (<10) and Chrome (<53)
+                _this.trigger('autoplayFailed');
             }
         }
 

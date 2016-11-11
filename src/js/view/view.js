@@ -17,9 +17,10 @@ define([
     'utils/underscore',
     'templates/player.html',
     'view/breakpoint',
+    'view/components/button'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint) {
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -41,7 +42,6 @@ define([
             _lastWidth,
             _lastHeight,
             _instreamModel,
-            _instreamMode = false,
             _controlbar,
             _preview,
             _displayClickHandler,
@@ -50,6 +50,7 @@ define([
             _logo,
             _title,
             _nextuptooltip,
+            _mute,
             _captionsRenderer,
             _audioMode,
             _showing = false,
@@ -150,7 +151,7 @@ define([
             }
 
             // On keypress show the controlbar for a few seconds
-            if (!_instreamMode) {
+            if (!_instreamModel) {
                 _userActivity();
             }
 
@@ -163,12 +164,12 @@ define([
                     _api.play({reason: 'interaction'});
                     break;
                 case 37: // left-arrow, if not adMode
-                    if (!_instreamMode) {
+                    if (!_instreamModel) {
                         adjustSeek(-5);
                     }
                     break;
                 case 39: // right-arrow, if not adMode
-                    if (!_instreamMode) {
+                    if (!_instreamModel) {
                         adjustSeek(5);
                     }
                     break;
@@ -231,7 +232,7 @@ define([
             }
 
             // On tab-focus, show the control bar for a few seconds
-            if (!_instreamMode) {
+            if (!_instreamModel) {
                 _userActivity();
             }
         }
@@ -544,7 +545,7 @@ define([
 
         var _onChangeControls = function(model, bool) {
             if (bool) {
-                var state = (_instreamMode) ? _instreamModel.get('state') : _model.get('state');
+                var state = (_instreamModel) ? _instreamModel.get('state') : _model.get('state');
                 // model may be instream or normal depending on who triggers this
                 _stateHandler(model, state);
             }
@@ -640,15 +641,27 @@ define([
             _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
             _model.on('change:scrubbing', _dragging);
 
-            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next);
+            // Ignore iOS9. Muted autoplay is supported in iOS 10+
+            if (_model.autoStartOnMobile()) {
+                _mute = button('jw-autostart-mute jw-off', _autoplayUnmute, _model.get('localization').volume);
+                _mute.show();
+                _controlsLayer.appendChild(_mute.element());
+                // Set mute state in the controlbar
+                _controlbar.renderVolume(true, _model.get('volume'));
+                // Hide the controlbar until the autostart flag is removed
+                utils.addClass(_playerElement, 'jw-flag-autostart');
+                _model.set('autostartMuted', true);
+                _model.on('change:autostartFailed', _autoplayUnmute);
+                _model.on('change:autostartMuted', _autoplayUnmute);
+                _model.on('change:mute', _autoplayUnmute);
+            }
+
+            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next, _playerElement);
             _nextuptooltip.setup();
 
             // NextUp needs to be behind the controlbar to not block other tooltips
             _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
-
-
-
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
@@ -662,6 +675,12 @@ define([
 
             // If it supports DOM fullscreen
             var provider = _model.getVideo();
+
+            // Unmute the video so volume can be adjusted with native controls in fullscreen
+            if (state && _model.get('autostartMuted')) {
+                _autoplayUnmute();
+            }
+
             if (_elementSupportsFullscreen) {
                 if (state) {
                     _requestFullscreen.apply(_playerElement);
@@ -686,7 +705,6 @@ define([
                 provider.setFullscreen(state);
             }
         };
-
 
         /**
          * Resize the player
@@ -735,7 +753,7 @@ define([
             _audioMode = _isAudioMode(height);
             if (_controlbar) {
                 if (!_audioMode) {
-                    var model = _instreamMode ? _instreamModel : _model;
+                    var model = _instreamModel ? _instreamModel : _model;
                     _stateHandler(model, model.get('state'));
                 }
             }
@@ -803,6 +821,27 @@ define([
             _captionsRenderer.resize();
         }
 
+        function _autoplayUnmute () {
+            var autostartSucceeded = !_model.get('autostartFailed');
+            var mute = _model.get('mute');
+
+            // If autostart succeeded, it means the user has chosen to unmute the video,
+            // so we should update the model, setting mute to false
+            if (autostartSucceeded) {
+                mute = false;
+            }
+            _model.off('change:autostartFailed', _autoplayUnmute);
+            _model.off('change:mute', _autoplayUnmute);
+            _model.off('change:autostartMuted', _autoplayUnmute);
+            _model.set('autostartFailed', undefined);
+            _model.set('autostartMuted', undefined);
+            _api.setMute(mute);
+            // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state
+            _controlbar.renderVolume(mute, _model.get('volume'));
+            _mute.hide();
+            utils.removeClass(_playerElement, 'jw-flag-autostart');
+        }
+
         this.resize = function(width, height) {
             var resetAspectMode = true;
             _resize(width, height, resetAspectMode);
@@ -829,7 +868,7 @@ define([
                 return !!(fsElement && fsElement.id === _model.get('id'));
             }
             // if player element view fullscreen not available, return video fullscreen state
-            return  _instreamMode ? _instreamModel.getVideo().getFullScreen() :
+            return  _instreamModel ? _instreamModel.getVideo().getFullScreen() :
                         _model.getVideo().getFullScreen();
         }
 
@@ -1001,7 +1040,6 @@ define([
             _instreamModel.on('change:controls', _onChangeControls, this);
             _instreamModel.on('change:state', _stateHandler, this);
 
-            _instreamMode = true;
             utils.addClass(_playerElement, 'jw-flag-ads');
 
             // trigger _userActivity to display the UI temporarily for the start of the ad
@@ -1013,7 +1051,6 @@ define([
         };
 
         this.destroyInstream = function() {
-            _instreamMode = false;
             if (_instreamModel) {
                 _instreamModel.off(null, null, this);
                 _instreamModel = null;
@@ -1099,7 +1136,7 @@ define([
                 _castDisplay.destroy();
                 _castDisplay = null;
             }
-            if (_instreamMode) {
+            if (_instreamModel) {
                 this.destroyInstream();
             }
             if (_logo) {

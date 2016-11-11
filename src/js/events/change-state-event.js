@@ -25,9 +25,11 @@ define([
                 oldstate: oldstate,
                 reason: model.mediaModel.get('state')
             };
-            // add reason for play if the event type is play
+            // add reason for play/pause events
             if (eventType === 'play') {
                 evt.playReason = model.get('playReason');
+            } else if (eventType === 'pause') {
+                evt.pauseReason = model.get('pauseReason');
             }
             this.trigger(eventType, evt);
         }
