@@ -332,7 +332,7 @@ define([
 
         this.setMute = function(mute) {
             if (!utils.exists(mute)) {
-                mute = !this.get('mute');
+                mute = !(this.get('autostartMuted') || this.get('mute'));
             }
             this.set('mute', mute);
             if (_provider) {
@@ -340,6 +340,7 @@ define([
             }
             if (!mute) {
                 var volume = Math.max(10, this.get('volume'));
+                this.set('autostartMuted', false);
                 this.setVolume(volume);
             }
         };
