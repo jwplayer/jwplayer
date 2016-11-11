@@ -27,8 +27,8 @@
 }
 
 .jw-controlbar-center-group {
-    width: 100%;
     padding: 0 @ui-padding;
+    width: 100%;
 
     .jw-slider-time, .jw-text-alt {
         padding: 0;
@@ -37,11 +37,27 @@
     .jw-text-alt {
         display: none;
     }
+
+    .jw-breakpoint-0 &,
+    .jw-breakpoint-1 & {
+        left: 0;
+        padding: 0 15px;
+        position: absolute;
+        top: -@mobile-touch-target;
+    }
+
 }
 
 .jw-controlbar-left-group,
 .jw-controlbar-right-group {
     white-space: nowrap;
+}
+
+.jw-controlbar-right-group {
+  .jw-breakpoint-0 &,
+  .jw-breakpoint-1 & {
+    text-align: right;
+  }
 }
 
 // control bar content (icons/text)
