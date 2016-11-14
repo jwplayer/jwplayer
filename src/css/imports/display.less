@@ -64,10 +64,16 @@
         font-size: 2.5em;
     }
 
+    .jw-breakpoint-0 &,
+    .jw-breakpoint-1 & {
+      display: inline-table;
+      top: 50%;
+    }
+
     .jw-breakpoint-0 & {
-      height: @mobile-touch-target;
-      width: @mobile-touch-target;
-      margin: (@mobile-touch-target / -2) auto 0;
+      height: (@mobile-touch-target);
+      margin: (@mobile-touch-target / -2) 5px 0;
+      width: (@mobile-touch-target);
 
       .jw-icon {
         font-size: (@mobile-touch-target / 2);
@@ -75,9 +81,9 @@
     }
 
     .jw-breakpoint-1 & {
-      height: @mobile-touch-target * 1.25;
-      width: @mobile-touch-target * 1.25;
-      margin: ((@mobile-touch-target * 1.25) / -2) auto 0;
+      height: (@mobile-touch-target * 1.25);
+      margin: ((@mobile-touch-target * 1.25) / -2) 5px 0;
+      width: (@mobile-touch-target * 1.25);
 
       .jw-icon {
         font-size: (@mobile-touch-target / 1.25);
