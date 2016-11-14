@@ -79,8 +79,20 @@
             background: @display-bkgd-color;
         }
 
+        &.jw-flag-time-slider-above .jw-controls,
+        &.jw-breakpoint-0 .jw-controls,
+        &.jw-breakpoint-1 .jw-controls {
+          background: linear-gradient(180deg, transparent, black);
+        }
+
         .jw-controlbar {
-            background: red;
+            background: @controlbar-background;
+        }
+
+        &.jw-flag-time-slider-above .jw-controlbar,
+        &.jw-breakpoint-0 .jw-controlbar,
+        &.jw-breakpoint-1 .jw-controlbar {
+          background: transparent;
         }
 
         .jw-text {
@@ -308,6 +320,7 @@
                 bottom: @controlbar-height;
             }
         }
+
         .jw-icon-inline,
         .jw-icon-tooltip,
         .jw-text-elapsed,
