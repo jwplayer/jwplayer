@@ -7,37 +7,9 @@ define([
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
-    'view/components/volumetooltip'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip) {
-
-    function button(icon, apiAction, ariaText) {
-        var element = document.createElement('div');
-        element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
-        element.setAttribute('role', 'button');
-        element.setAttribute('tabindex', '0');
-        if (ariaText) {
-            element.setAttribute('aria-label', ariaText);
-        }
-        element.style.display = 'none';
-
-        if (apiAction) {
-            // Don't send the event to the handler so we don't have unexpected results. (e.g. play)
-            new UI(element).on('click tap', function() { apiAction(); });
-        }
-
-        return {
-            element : function() { return element; },
-            toggle : function(m) {
-                if (m) {
-                    this.show();
-                } else {
-                    this.hide();
-                }
-            },
-            show : function() { element.style.display = '';},
-            hide : function() { element.style.display = 'none';}
-        };
-    }
+    'view/components/volumetooltip',
+    'view/components/button'
+], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button) {
 
     function text(name, role) {
         var element = document.createElement('span');
@@ -94,11 +66,14 @@ define([
             var vol = this._localization.volume;
             var rewind = this._localization.rewind;
 
-            // Do not initialize volume sliders on mobile.
-            if(!this._isMobile){
-                muteButton = button('jw-icon-volume', this._api.setMute, vol);
+            // Do not initialize volume slider or tooltip on mobile
+            if (!this._isMobile) {
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');//, vol);
                 volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume', vol);
+            }
+            // Do not show the volume toggle in the mobile SDKs or <iOS10
+            if (!this._model.get('sdkplatform') && !(utils.isIOS(8) || utils.isIOS(9))) {
+                muteButton = button('jw-icon-volume', this._api.setMute, vol);
             }
 
             this.elements = {

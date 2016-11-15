@@ -4,15 +4,6 @@ define([
 ], function (tracksHelper, _) {
     var test = QUnit.test.bind(QUnit);
 
-    var isTrue = function() {
-        return true;
-    };
-
-    var providersWithVideoElement = ['html5', 'shaka', 'caterpillar'];
-    var providersWithoutVideoElement = ['flash', 'flash_adaptive', 'SDKProvider', 'custom_provider'];
-
-    var assertionCount = providersWithVideoElement.length + providersWithoutVideoElement.length;
-
     var tracks,
         itemTrack,
         prop,

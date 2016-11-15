@@ -126,8 +126,8 @@ define(['utils/underscore',
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-            if (utils.isEdge()) {
-                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge
+            if (utils.isEdge() || utils.isFF()) {
+                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
                 this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
             }
