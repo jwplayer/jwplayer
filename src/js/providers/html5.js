@@ -329,12 +329,6 @@ define([
             if (!_attached) {
                 return;
             }
-
-            //fixes Chrome bug where it doesn't like being muted before video is loaded
-            if (_videotag.muted) {
-                _videotag.muted = false;
-                _videotag.muted = true;
-            }
             _setAttribute('jw-loaded', 'meta');
             _sendMetaEvent();
         }
