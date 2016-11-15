@@ -2,6 +2,7 @@
 @import "icons";
 
 .jw-nextup-container {
+
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
   background-color: transparent;
@@ -16,6 +17,13 @@
   transition: all 150ms ease;
   visibility: hidden;
   width: 40%;
+
+  .jw-flag-time-slider-above &,
+  .jw-breakpoint-0 &,
+  .jw-breakpoint-1 & {
+    bottom: @nextup-position-bottom + ((@mobile-touch-target / @default-em-size) / 2);
+  }
+
 }
 
 .jw-nextup-container-visible {
