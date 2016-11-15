@@ -12,6 +12,14 @@
     .jw-hidden {
         display: none;
     }
+
+    .jw-flag-time-slider-above &,
+    .jw-breakpoint-0 &,
+    .jw-breakpoint-1 & {
+        background: linear-gradient(180deg, transparent, mix(black, white, 90%));
+        height: @controlbar-height + (@mobile-touch-target / @default-em-size);
+    }
+
 }
 
 .jw-background-color {
@@ -41,10 +49,13 @@
     .jw-flag-time-slider-above &,
     .jw-breakpoint-0 &,
     .jw-breakpoint-1 & {
-        left: 0;
-        padding: 0 15px;
-        position: absolute;
-        top: -@mobile-touch-target;
+      align-items: center;
+      display: flex;
+      height: (@mobile-touch-target / 2);
+      left: 0;
+      padding: 0 @ui-padding;
+      position: absolute;
+      top: (@mobile-touch-target / 2);
     }
 
 }
@@ -52,14 +63,21 @@
 .jw-controlbar-left-group,
 .jw-controlbar-right-group {
     white-space: nowrap;
+
+    .jw-flag-time-slider-above &,
+    .jw-breakpoint-0 &,
+    .jw-breakpoint-1 & {
+      vertical-align: bottom;
+    }
 }
 
 .jw-controlbar-right-group {
-  .jw-flag-time-slider-above &,
-  .jw-breakpoint-0 &,
-  .jw-breakpoint-1 & {
-    text-align: right;
-  }
+
+    .jw-flag-time-slider-above &,
+    .jw-breakpoint-0 &,
+    .jw-breakpoint-1 & {
+      text-align: right;
+    }
 }
 
 // control bar content (icons/text)

@@ -8,7 +8,7 @@
     .jw-flag-time-slider-above &,
     .jw-breakpoint-0 &,
     .jw-breakpoint-1 & {
-      height: 2px;
+      height: @rail-height;
     }
 }
 
@@ -65,31 +65,17 @@
     .jw-knob {
         top: (@rail-height - @thumb-size) / 2;
         margin-left: @thumb-size / -2;
-        .jw-flag-time-slider-above &,
-        .jw-breakpoint-0 &,
-        .jw-breakpoint-1 & {
-          border-radius: 100%;
-          height: 16px;
-          margin-left: -8px;
-          top: -7px;
-          width: 16px;
-        }
     }
 
     .jw-rail,
     .jw-buffer,
     .jw-progress {
         height: @rail-height;
-        .jw-flag-time-slider-above &,
-        .jw-breakpoint-0 &,
-        .jw-breakpoint-1 & {
-          height: 2px;
-        }
     }
 }
 
 .jw-slider-vertical {
-    padding: @volume-padding @volume-padding 0 @volume-padding;
+    padding: (@volume-padding / 1.5) @volume-padding;
     position: absolute;
 
     .jw-rail,
@@ -115,18 +101,12 @@
     .jw-knob {
         right: 0;
         left: (@def-rail-width - @thumb-size) / 2;
+        margin-bottom: @thumb-size/-2;
     }
 }
 
 .jw-slider-time {
     width: 100%;
-    .jw-flag-time-slider-above &,
-    .jw-breakpoint-0 &,
-    .jw-breakpoint-1 & {
-      align-items: center;
-      display: flex;
-      height: @mobile-touch-target;
-    }
 }
 
 .jw-tooltip-time {

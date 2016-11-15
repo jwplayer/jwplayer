@@ -23,7 +23,7 @@
 }
 
 .inset-controlbar() {
-    .jw-controlbar {
+    &.jw-flag-time-slider-inline .jw-controlbar {
         // for correct display in IE browsers
         display: inline-block;
         // width assignment is required for IE11 to center correctly
@@ -37,10 +37,19 @@
     &.jw-flag-audio-player .jw-controlbar {
         bottom: 0; // overwrite the inset-controlbar mixin
     }
-    &.jw-breakpoint-0 .jw-controlbar {
-        border-radius: 0;
+    &.jw-flag-time-slider-above .jw-controlbar,
+    &.jw-breakpoint-0 .jw-controlbar,
+    &.jw-breakpoint-1 .jw-controlbar {
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    &.jw-breakpoint-0 .jw-controlbar,
+    &.jw-breakpoint-1 .jw-controlbar {
+        display: table;
         bottom: 0;
         left: 0;
+        margin: 0;
         padding: 0 0.3em;
         right: 0;
         width: 100%;
@@ -79,20 +88,34 @@
             background: @display-bkgd-color;
         }
 
-        &.jw-flag-time-slider-above .jw-controls,
-        &.jw-breakpoint-0 .jw-controls,
-        &.jw-breakpoint-1 .jw-controls {
-          background: linear-gradient(180deg, transparent, black);
-        }
-
         .jw-controlbar {
             background: @controlbar-background;
         }
 
-        &.jw-flag-time-slider-above .jw-controlbar,
-        &.jw-breakpoint-0 .jw-controlbar,
-        &.jw-breakpoint-1 .jw-controlbar {
-          background: transparent;
+        &.jw-flag-time-slider-above,
+        &.jw-breakpoint-0,
+        &.jw-breakpoint-1 {
+
+          .jw-controlbar {
+            background: linear-gradient(180deg, transparent, mix(black, white, 90%));
+          }
+
+          .jw-controlbar-center-group {
+            left: 0;
+            padding: 0 @ui-padding;
+            position: absolute;
+            top: (@mobile-touch-target / 2);
+          }
+
+          .jw-controlbar-left-group,
+          .jw-controlbar-right-group {
+            vertical-align: bottom;
+          }
+
+          .jw-controlbar-right-group {
+            text-align: right;
+          }
+
         }
 
         .jw-text {
@@ -240,6 +263,14 @@
           right: @nextup-position-right;
         }
 
+        &.jw-flag-time-slider-above,
+        &.jw-breakpoint-0,
+        &.jw-breakpoint-1 {
+          .jw-nextup-container {
+            bottom: @nextup-position-bottom + ((@mobile-touch-target / @default-em-size) / 2);
+          }
+        }
+
         .jw-nextup {
           border-radius: @nextup-border-radius;
         }
@@ -291,18 +322,19 @@
     }
 
     .controlbar-height() {
+
         .jw-controlbar {
-            height: @controlbar-height;
+
+          height: @controlbar-height;
+
+          .jw-overlay {
+            bottom: @controlbar-height;
+          }
+
         }
 
         .jw-time-tip {
             bottom: (@controlbar-height / 2);
-        }
-
-        .jw-controlbar {
-            .jw-overlay {
-                bottom: @controlbar-height;
-            }
         }
 
         .jw-captions {
@@ -333,6 +365,18 @@
         .jw-icon-tooltip {
             min-width: @controlbar-height * 5/8;
         }
+
+        // modifiers for small player sizes/time slider above
+        &.jw-flag-time-slider-above,
+        &.jw-breakpoint-0,
+        &.jw-breakpoint-1 {
+
+          .jw-controlbar {
+            height: @controlbar-height + (@mobile-touch-target / @default-em-size);
+          }
+
+        }
+
     }
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
