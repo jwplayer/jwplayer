@@ -6,7 +6,9 @@ define([
     'events/states',
     'view/captionsrenderer',
     'view/clickhandler',
-    'view/displayicon',
+    'view/rewind-display-icon',
+    'view/play-display-icon',
+    'view/next-display-icon',
     'view/dock',
     'view/logo',
     'view/controlbar',
@@ -17,10 +19,11 @@ define([
     'utils/underscore',
     'templates/player.html',
     'view/breakpoint',
-    'view/components/button'
+    'view/components/button',
+    'view/display-container',
 ], function(utils, events, Events, Constants, states,
-            CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button) {
+            CaptionsRenderer, ClickHandler, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, Dock, Logo,
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -578,37 +581,7 @@ define([
             _displayClickHandler.on('move', _userActivity);
             _displayClickHandler.on('over', _userActivity);
 
-            var displayIcon = new DisplayIcon(_model);
-            //toggle playback
-            displayIcon.on('click', function() {
-                forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _api.play({reason: 'interaction'});
-            });
-            displayIcon.on('tap', function() {
-                forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _touchHandler();
-            });
-
-            // make displayIcon clickthrough on chrome for flash to avoid power safe throttle
-            if (utils.isChrome() && !utils.isMobile()) {
-                displayIcon.el.addEventListener('mousedown', function() {
-                    var provider = _model.getVideo();
-                    var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
-
-                    if (!isFlash) {
-                        return;
-                    }
-
-                    var resetPointerEvents = function() {
-                        document.removeEventListener('mouseup', resetPointerEvents);
-                        displayIcon.el.style.pointerEvents = 'auto';
-                    };
-
-                    this.style.pointerEvents = 'none';
-                    document.addEventListener('mouseup', resetPointerEvents);
-                });
-            }
-            _controlsLayer.appendChild(displayIcon.element());
+            _controlsLayer.appendChild(createDisplayContainer());
 
             _dock = new Dock(_model);
 
@@ -1033,6 +1006,55 @@ define([
         function _resizeAspectModeCaptions() {
             var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
             _captionsRenderer.setContainerHeight(aspectRatioContainer.offsetHeight);
+        }
+
+        function createDisplayContainer() {
+          var displayContainer = new DisplayContainer();
+          var rewindDisplayIcon = new RewindDisplayIcon(_model, _api);
+          var playDisplayIcon = createPlayDisplayIcon();
+          var nextDisplayIcon = new NextDisplayIcon(_model, _api);
+
+          displayContainer.addButton(rewindDisplayIcon);
+          displayContainer.addButton(playDisplayIcon);
+          displayContainer.addButton(nextDisplayIcon);
+
+          return displayContainer.element();
+        }
+
+        function createPlayDisplayIcon() {
+          var playDisplayIcon = new PlayDisplayIcon(_model);
+          //toggle playback
+          playDisplayIcon.on('click', function() {
+              forward({type : events.JWPLAYER_DISPLAY_CLICK});
+              _api.play({reason: 'interaction'});
+          });
+          playDisplayIcon.on('tap', function() {
+              forward({type : events.JWPLAYER_DISPLAY_CLICK});
+              _touchHandler();
+          });
+
+          // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
+          if (utils.isChrome() && !utils.isMobile()) {
+              playDisplayIcon.el.addEventListener('mousedown', function() {
+                  var provider = _model.getVideo();
+                  var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+
+                  if (!isFlash) {
+                      return;
+                  }
+
+                  var resetPointerEvents = function() {
+                      document.removeEventListener('mouseup', resetPointerEvents);
+                      playDisplayIcon.el.style.pointerEvents = 'auto';
+                  };
+
+                  this.style.pointerEvents = 'none';
+                  document.addEventListener('mouseup', resetPointerEvents);
+              });
+          }
+
+          return playDisplayIcon;
+
         }
 
         this.setupInstream = function(instreamModel) {

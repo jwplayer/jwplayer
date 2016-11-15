@@ -97,7 +97,7 @@
         map: {
             // make sure the text plugin is used to load templates
             '*': {
-                'templates/displayicon.html': 'handlebars-loader!templates/displayicon.html',
+                'templates/display-icon.html': 'handlebars-loader!templates/display-icon.html',
                 'templates/dock.html': 'handlebars-loader!templates/dock.html',
                 'templates/logo.html': 'handlebars-loader!templates/logo.html',
                 'templates/player.html': 'handlebars-loader!templates/player.html',
