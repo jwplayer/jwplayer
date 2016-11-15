@@ -128,6 +128,11 @@ define([
             }
         }
 
+        function setEventListener(element, eventName, callback) {
+            element.removeEventListener(eventName, callback);
+            element.addEventListener(eventName, callback);
+        }
+
         function interactStartHandler(evt) {
             _touchListenerTarget = evt.target;
             _startX = getCoord(evt, 'X');
@@ -140,28 +145,28 @@ define([
                         _pointerId = evt.pointerId;
                         elem.setPointerCapture(_pointerId);
                     }
-                    elem.addEventListener('pointermove', interactDragHandler);
-                    elem.addEventListener('pointercancel', interactEndHandler);
+                    setEventListener(elem, 'pointermove', interactDragHandler);
+                    setEventListener(elem, 'pointercancel', interactEndHandler);
 
                     // Listen for mouseup after mouse pointer down because pointerup doesn't fire on swf objects
-                    if (evt.pointerType === 'mouse') {
-                        document.addEventListener('mouseup', interactEndHandler);
+                    if (evt.pointerType === 'mouse' && _touchListenerTarget.nodeName === 'OBJECT') {
+                        setEventListener(document, 'mouseup', interactEndHandler);
                     } else {
-                        elem.addEventListener('pointerup', interactEndHandler);
+                        setEventListener(elem, 'pointerup', interactEndHandler);
                     }
                 } else if (evt.type === 'mousedown') {
-                    document.addEventListener('mousemove', interactDragHandler);
+                    setEventListener(document, 'mousemove', interactDragHandler);
 
                     // Handle clicks in OSX Firefox over Flash 'object'
                     if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
-                        elem.addEventListener('click', interactEndHandler);
+                        setEventListener(elem, 'click', interactEndHandler);
                     } else {
-                        document.addEventListener('mouseup', interactEndHandler);
+                        setEventListener(document, 'mouseup', interactEndHandler);
                     }
                 } else if (evt.type === 'touchstart') {
-                    _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
-                    _touchListenerTarget.addEventListener('touchcancel', interactEndHandler);
-                    _touchListenerTarget.addEventListener('touchend', interactEndHandler);
+                    setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler);
+                    setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
+                    setEventListener(_touchListenerTarget, 'touchend', interactEndHandler);
                 }
 
                 // Prevent scrolling the screen dragging while dragging on mobile.
