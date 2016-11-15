@@ -1,4 +1,5 @@
 define([
+    'providers/html5-android-hls',
     'utils/css',
     'utils/helpers',
     'utils/dom',
@@ -9,7 +10,7 @@ define([
     'utils/backbone.events',
     'providers/tracks-mixin',
     'utils/browser'
-], function(cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks) {
+], function(getIsAndroidHLS, cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -35,25 +36,6 @@ define([
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.removeEventListener(evt, evtCallback, false);
         });
-    }
-
-    function _useAndroidHLS(source) {
-        if (source.type === 'hls') {
-            //when androidhls is not set to false, allow HLS playback on Android 4.1 and up
-            if (source.androidhls !== false) {
-                var isAndroidNative = utils.isAndroidNative;
-                if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
-                    return false;
-                } else if (utils.isAndroid()) { //utils.isAndroidNative()) {
-                    // skip canPlayType check
-                    // canPlayType returns '' in native browser even though HLS will play
-                    return true;
-                }
-            } else if (utils.isAndroid()) {
-                return false;
-            }
-        }
-        return null;
     }
 
     function VideoProvider(_playerId, _playerConfig) {
@@ -542,7 +524,7 @@ define([
             }
             _canSeek = false;
             _bufferFull = false;
-            _isAndroidHLS = _useAndroidHLS(source);
+            _isAndroidHLS = getIsAndroidHLS(source);
             if (source.preload && source.preload !== _videotag.getAttribute('preload')) {
                 _setAttribute('preload', source.preload);
             }
