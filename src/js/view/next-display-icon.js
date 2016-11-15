@@ -10,7 +10,6 @@ define([
             iconName: 'next',
             ariaLabel: model.get('localization').next
         }));
-        // evt
         this.iconUI = new UI (this.el).on('click tap', function() {
             api.next();
         });
