@@ -44,51 +44,124 @@
     }
 }
 
-// DisplayIcon
+// ========== Display Icons ========== //
+
+.jw-display-container {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+}
+
 .jw-display-icon-container {
-    position: relative;
-    top: 50%;
-    display: table;
-    height: @display-icon-container-size;
-    width: @display-icon-container-size;
-    margin: @display-icon-container-size/-2 auto 0;
-    cursor: pointer;
+  cursor: pointer;
+  margin: 0 (@ui-padding * 0.25);
 
-    .jw-icon-display {
-        position: relative;
-        display: table-cell;
-        text-align: center;
-        vertical-align: middle !important;
-        background-position: 50% 50%;
-        background-repeat: no-repeat;
-        font-size: 2.5em;
+  .jw-breakpoint-2 &,
+  .jw-breakpoint-3 & {
+    margin: 0 (@ui-padding * 0.5);
+  }
+
+  .jw-breakpoint-4 &,
+  .jw-breakpoint-5 & {
+    margin: 0 (@ui-padding * 0.75);
+  }
+
+  .jw-breakpoint-6 &,
+  .jw-breakpoint-7 & {
+    margin: 0 @ui-padding;
+  }
+
+  .jw-icon {
+    align-items: center;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    display: flex;
+    height: @mobile-touch-target;
+    justify-content: center;
+    width: @mobile-touch-target;
+
+    &::before {
+      font-size: @mobile-touch-target / 2;
     }
 
-    .jw-breakpoint-0 &,
-    .jw-breakpoint-1 & {
-      display: inline-table;
-      top: 50%;
-    }
-
-    .jw-breakpoint-0 & {
-      height: (@mobile-touch-target);
-      margin: (@mobile-touch-target / -2) 5px 0;
-      width: (@mobile-touch-target);
-
-      .jw-icon {
-        font-size: (@mobile-touch-target / 2);
+    &.jw-icon-display {
+      height: @mobile-touch-target * 1.25;
+      width: @mobile-touch-target * 1.25;
+      &::before {
+        font-size: (@mobile-touch-target * 1.25) / 2;
       }
     }
 
-    .jw-breakpoint-1 & {
-      height: (@mobile-touch-target * 1.25);
-      margin: ((@mobile-touch-target * 1.25) / -2) 5px 0;
-      width: (@mobile-touch-target * 1.25);
-
-      .jw-icon {
-        font-size: (@mobile-touch-target / 1.25);
+    .jw-breakpoint-2 &,
+    .jw-breakpoint-3 &,
+    .jw-breakpoint-4 &,
+    .jw-breakpoint-5 &,
+    .jw-breakpoint-6 &,
+    .jw-breakpoint-7 & {
+      display: none;
+      &.jw-icon-display {
+        display: flex;
       }
     }
+
+    .jw-breakpoint-2 &,
+    .jw-breakpoint-3 & {
+      height: @mobile-touch-target * 1.25;
+      width: @mobile-touch-target * 1.25;
+
+      &::before {
+        font-size: (@mobile-touch-target * 1.25) / 2;
+      }
+
+      &.jw-icon-display {
+        height: @mobile-touch-target * 1.5;
+        width: @mobile-touch-target * 1.5;
+        &::before {
+          font-size: (@mobile-touch-target * 1.5) / 2;
+        }
+      }
+    }
+
+    .jw-breakpoint-4 &,
+    .jw-breakpoint-5 & {
+      height: @mobile-touch-target * 1.5;
+      width: @mobile-touch-target * 1.5;
+
+      &::before {
+        font-size: (@mobile-touch-target * 1.5) / 2;
+      }
+
+      &.jw-icon-display {
+        height: @mobile-touch-target * 1.75;
+        width: @mobile-touch-target * 1.75;
+        &::before {
+          font-size: (@mobile-touch-target * 1.75) / 2;
+        }
+      }
+    }
+
+    .jw-breakpoint-6 &,
+    .jw-breakpoint-7 & {
+      height: @mobile-touch-target * 1.75;
+      width: @mobile-touch-target * 1.75;
+
+      &::before {
+        font-size: (@mobile-touch-target * 1.75) / 2;
+      }
+
+      &.jw-icon-display {
+        height: @mobile-touch-target * 2;
+        width: @mobile-touch-target * 2;
+        &::before {
+          font-size: @mobile-touch-target;
+        }
+      }
+    }
+
+  }
+
 }
 
 // Hide the player when,
