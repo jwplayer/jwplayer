@@ -111,7 +111,7 @@
 }
 
 .jw-icon-playback {
-    min-width: 2.25em;
+  min-width: 2.25em;
 }
 
 .jw-icon-volume {
@@ -151,4 +151,15 @@
       outline: none;
       color: @hover-color;
     }
+}
+
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+  .jw-controlbar {
+    .jw-icon-playback,
+    .jw-icon-rewind,
+    .jw-icon-next {
+      display: none;
+    }
+  }
 }

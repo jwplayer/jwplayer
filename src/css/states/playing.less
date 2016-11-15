@@ -1,15 +1,31 @@
 @import "../imports/icons";
 
 .jwplayer.jw-state-playing {
+
+  .jw-display-icon-container {
+    display: none;
+
+    .jw-icon-display {
+      .jw-icon-pause;
+    }
+
+  }
+
+  .jw-icon-playback {
+    .jw-icon-pause;
+  }
+
+  &.jw-breakpoint-0,
+  &.jw-breakpoint-1 {
     .jw-display-icon-container {
-        .jw-icon-display {
-            .jw-icon-pause;
-        }
-
-        display: none;
+      display: block;
     }
+  }
 
-    .jw-icon-playback {
-        .jw-icon-pause;
+  &.jw-flag-user-inactive {
+    .jw-display-icon-container {
+      display: none;
     }
+  }
+
 }
