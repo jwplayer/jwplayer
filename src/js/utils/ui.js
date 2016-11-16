@@ -4,9 +4,10 @@ define([
     'utils/underscore',
     'utils/helpers'
 ], function(Events, events, _, utils) {
-    var _usePointerEvents = !_.isUndefined(window.PointerEvent);
-    var _useTouchEvents = !_usePointerEvents && utils.isMobile();
-    var _useMouseEvents = !_usePointerEvents && ! _useTouchEvents;
+    var JW_TOUCH_EVENTS = events.touchEvents;
+    var _supportsPointerEvents = ('PointerEvent' in window);
+    var _supportsTouchEvents = ('ontouchstart' in window);
+    var _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && utils.isMobile());
     var _isOSXFirefox = utils.isFF() && utils.isOSX();
 
     function getCoord(e, c) {
@@ -16,7 +17,7 @@ define([
     function isRightClick(evt) {
         var e = evt || window.event;
 
-        if(!(evt instanceof MouseEvent)){
+        if (!(evt instanceof MouseEvent)) {
             return false;
         }
 
@@ -33,7 +34,7 @@ define([
 
     function normalizeUIEvent(type, srcEvent, target) {
         var source;
-        if(srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
+        if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
             source = srcEvent;
         } else {
             if (srcEvent.touches && srcEvent.touches.length) {
@@ -58,7 +59,6 @@ define([
         if (! (evt instanceof MouseEvent) && ! (evt instanceof window.TouchEvent)) {
             return;
         }
-
         if (evt.preventManipulation) {
             evt.preventManipulation();
         }
@@ -82,48 +82,55 @@ define([
 
         // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
         // (windows phones) still get listeners just in case they want to use them.
-        if(_usePointerEvents) {
+        if (_supportsPointerEvents) {
             elem.addEventListener('pointerdown', interactStartHandler);
-            if(options.useHover){
+            if (options.useHover) {
                 elem.addEventListener('pointerover', overHandler);
                 elem.addEventListener('pointerout', outHandler);
             }
-            if(options.useMove){
+            if (options.useMove) {
                 elem.addEventListener('pointermove', moveHandler);
             }
-        } else if(_useMouseEvents){
-            elem.addEventListener('mousedown', interactStartHandler);
-            if(options.useHover) {
-                elem.addEventListener('mouseover', overHandler);
-                elem.addEventListener('mouseout', outHandler);
+        } else {
+            if (_useMouseEvents) {
+                elem.addEventListener('mousedown', interactStartHandler);
+                if (options.useHover) {
+                    elem.addEventListener('mouseover', overHandler);
+                    elem.addEventListener('mouseout', outHandler);
+                }
+                if (options.useMove) {
+                    elem.addEventListener('mousemove', moveHandler);
+                }
             }
-            if(options.useMove) {
-                elem.addEventListener('mousemove', moveHandler);
-            }
-        }
 
-        // Always add this, in case we don't properly identify the device as mobile
-        elem.addEventListener('touchstart', interactStartHandler);
+            // Always add this, in case we don't properly identify the device as mobile
+            elem.addEventListener('touchstart', interactStartHandler);
+        }
 
         // overHandler and outHandler not assigned in touch situations
-        function overHandler(evt){
-            if (_useMouseEvents || (_usePointerEvents && evt.pointerType !== 'touch')) {
-                triggerEvent(events.touchEvents.OVER, evt);
+        function overHandler(evt) {
+            if (evt.pointerType !== 'touch') {
+                triggerEvent(JW_TOUCH_EVENTS.OVER, evt);
             }
         }
 
-        function moveHandler(evt){
-            if (_useMouseEvents || (_usePointerEvents && evt.pointerType !== 'touch')) {
-                triggerEvent(events.touchEvents.MOVE, evt);
+        function moveHandler(evt) {
+            if (evt.pointerType !== 'touch') {
+                triggerEvent(JW_TOUCH_EVENTS.MOVE, evt);
             }
         }
 
-        function outHandler(evt){
+        function outHandler(evt) {
             // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
-            if (_useMouseEvents || (_usePointerEvents && evt.pointerType !== 'touch' &&
+            if (_useMouseEvents || (_supportsPointerEvents && evt.pointerType !== 'touch' &&
                 !elem.contains(document.elementFromPoint(evt.x, evt.y)))) {
-                triggerEvent(events.touchEvents.OUT, evt);
+                triggerEvent(JW_TOUCH_EVENTS.OUT, evt);
             }
+        }
+
+        function setEventListener(element, eventName, callback) {
+            element.removeEventListener(eventName, callback);
+            element.addEventListener(eventName, callback);
         }
 
         function interactStartHandler(evt) {
@@ -131,32 +138,37 @@ define([
             _startX = getCoord(evt, 'X');
             _startY = getCoord(evt, 'Y');
 
-            if(!isRightClick(evt)){
-                if(_usePointerEvents){
-                    if(evt.isPrimary){
-                        if(options.preventScrolling){
-                            _pointerId = evt.pointerId;
-                            elem.setPointerCapture(_pointerId);
-                        }
-                        elem.addEventListener('pointermove', interactDragHandler);
-                        elem.addEventListener('pointercancel', interactEndHandler);
-                        elem.addEventListener('pointerup', interactEndHandler);
+            if (!isRightClick(evt)) {
+
+                if (evt.type === 'pointerdown' && evt.isPrimary) {
+                    if (options.preventScrolling) {
+                        _pointerId = evt.pointerId;
+                        elem.setPointerCapture(_pointerId);
                     }
-                } else if(_useMouseEvents){
-                    document.addEventListener('mousemove', interactDragHandler);
+                    setEventListener(elem, 'pointermove', interactDragHandler);
+                    setEventListener(elem, 'pointercancel', interactEndHandler);
+
+                    // Listen for mouseup after mouse pointer down because pointerup doesn't fire on swf objects
+                    if (evt.pointerType === 'mouse' && _touchListenerTarget.nodeName === 'OBJECT') {
+                        setEventListener(document, 'mouseup', interactEndHandler);
+                    } else {
+                        setEventListener(elem, 'pointerup', interactEndHandler);
+                    }
+                } else if (evt.type === 'mousedown') {
+                    setEventListener(document, 'mousemove', interactDragHandler);
 
                     // Handle clicks in OSX Firefox over Flash 'object'
                     if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
-                        elem.addEventListener('click', interactEndHandler);
+                        setEventListener(elem, 'click', interactEndHandler);
                     } else {
-                        document.addEventListener('mouseup', interactEndHandler);
+                        setEventListener(document, 'mouseup', interactEndHandler);
                     }
+                } else if (evt.type === 'touchstart') {
+                    setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler);
+                    setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
+                    setEventListener(_touchListenerTarget, 'touchend', interactEndHandler);
                 }
 
-                _touchListenerTarget.addEventListener('touchmove', interactDragHandler);
-                _touchListenerTarget.addEventListener('touchcancel', interactEndHandler);
-                _touchListenerTarget.addEventListener('touchend', interactEndHandler);
-                
                 // Prevent scrolling the screen dragging while dragging on mobile.
                 if (options.preventScrolling) {
                     preventDefault(evt);
@@ -165,20 +177,19 @@ define([
         }
 
         function interactDragHandler(evt) {
-            var touchEvents = events.touchEvents;
             var movementThreshhold = 6;
 
             if (_hasMoved) {
-                triggerEvent(touchEvents.DRAG, evt);
+                triggerEvent(JW_TOUCH_EVENTS.DRAG, evt);
             } else {
                 var endX = getCoord(evt, 'X');
                 var endY = getCoord(evt, 'Y');
                 var moveX = endX - _startX;
                 var moveY = endY - _startY;
                 if (moveX * moveX + moveY * moveY > movementThreshhold * movementThreshhold) {
-                    triggerEvent(touchEvents.DRAG_START, evt);
+                    triggerEvent(JW_TOUCH_EVENTS.DRAG_START, evt);
                     _hasMoved = true;
-                    triggerEvent(touchEvents.DRAG, evt);
+                    triggerEvent(JW_TOUCH_EVENTS.DRAG, evt);
                 }
             }
 
@@ -189,43 +200,33 @@ define([
         }
 
         function interactEndHandler(evt) {
-            var touchEvents = events.touchEvents;
-
-            if(_usePointerEvents) {
-                if (options.preventScrolling) {
-                    elem.releasePointerCapture(_pointerId);
-                }
-                elem.removeEventListener('pointermove', interactDragHandler);
-                elem.removeEventListener('pointercancel', interactEndHandler);
-                elem.removeEventListener('pointerup', interactEndHandler);
-            } else if (_useMouseEvents) {
-                document.removeEventListener('mousemove', interactDragHandler);
-                document.removeEventListener('mouseup', interactEndHandler);
+            var isPointerEvent = (evt.type === 'pointerup' || evt.type === 'pointercancel');
+            if (isPointerEvent && options.preventScrolling) {
+                elem.releasePointerCapture(_pointerId);
             }
-            if (_touchListenerTarget) {
-                _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
-                _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
-                _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
-            }
+            elem.removeEventListener('pointermove', interactDragHandler);
+            elem.removeEventListener('pointercancel', interactEndHandler);
+            elem.removeEventListener('pointerup', interactEndHandler);
+            document.removeEventListener('mousemove', interactDragHandler);
+            document.removeEventListener('mouseup', interactEndHandler);
+            _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
+            _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
+            _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
 
             if (_hasMoved) {
-                triggerEvent(touchEvents.DRAG_END, evt);
+                triggerEvent(JW_TOUCH_EVENTS.DRAG_END, evt);
             } else {
                 // Skip if we're not directly selecting the target and if its a cancel
-                if((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
-                    if (_usePointerEvents && evt instanceof window.PointerEvent) {
-                        if (evt.pointerType === 'touch') {
-                            triggerEvent(touchEvents.TAP, evt);
-                        } else {
-                            triggerEvent(touchEvents.CLICK, evt);
-                        }
-                    } else if (_useMouseEvents) {
-                        triggerEvent(touchEvents.CLICK, evt);
-                    } else {
-                        triggerEvent(touchEvents.TAP, evt);
+                if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
 
-                        // preventDefault to not dispatch the 300ms delayed click after a tap
-                        preventDefault(evt);
+                    if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
+                        triggerEvent(JW_TOUCH_EVENTS.CLICK, evt);
+                    } else {
+                        triggerEvent(JW_TOUCH_EVENTS.TAP, evt);
+                        if (evt.type === 'touchend') {
+                            // preventDefault to not dispatch the 300ms delayed click after a tap
+                            preventDefault(evt);
+                        }
                     }
                 }
             }
@@ -237,10 +238,10 @@ define([
         var self = this;
         function triggerEvent(type, srcEvent) {
             var evt;
-            if( options.enableDoubleTap && (type === events.touchEvents.CLICK || type === events.touchEvents.TAP)){
-                if(_.now() - _lastClickTime < _doubleClickDelay) {
-                    var doubleType = (type === events.touchEvents.CLICK) ?
-                        events.touchEvents.DOUBLE_CLICK : events.touchEvents.DOUBLE_TAP;
+            if (options.enableDoubleTap && (type === JW_TOUCH_EVENTS.CLICK || type === JW_TOUCH_EVENTS.TAP)) {
+                if (_.now() - _lastClickTime < _doubleClickDelay) {
+                    var doubleType = (type === JW_TOUCH_EVENTS.CLICK) ?
+                        JW_TOUCH_EVENTS.DOUBLE_CLICK : JW_TOUCH_EVENTS.DOUBLE_TAP;
                     evt = normalizeUIEvent(doubleType, srcEvent, _elem);
                     self.trigger(doubleType, evt);
                     _lastClickTime = 0;
@@ -258,13 +259,14 @@ define([
             elem.removeEventListener('touchstart', interactStartHandler);
             elem.removeEventListener('mousedown', interactStartHandler);
 
-            if(_touchListenerTarget){
+            if (_touchListenerTarget) {
                 _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
                 _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
                 _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+                _touchListenerTarget = null;
             }
 
-            if(_usePointerEvents) {
+            if (_supportsPointerEvents) {
                 if (options.preventScrolling) {
                     elem.releasePointerCapture(_pointerId);
                 }

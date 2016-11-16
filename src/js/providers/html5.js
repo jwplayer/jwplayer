@@ -1,4 +1,5 @@
 define([
+    'providers/html5-android-hls',
     'utils/css',
     'utils/helpers',
     'utils/dom',
@@ -9,7 +10,7 @@ define([
     'utils/backbone.events',
     'providers/tracks-mixin',
     'utils/browser'
-], function(cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks) {
+], function(getIsAndroidHLS, cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -35,25 +36,6 @@ define([
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.removeEventListener(evt, evtCallback, false);
         });
-    }
-
-    function _useAndroidHLS(source) {
-        if (source.type === 'hls') {
-            //when androidhls is not set to false, allow HLS playback on Android 4.1 and up
-            if (source.androidhls !== false) {
-                var isAndroidNative = utils.isAndroidNative;
-                if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
-                    return false;
-                } else if (utils.isAndroid()) { //utils.isAndroidNative()) {
-                    // skip canPlayType check
-                    // canPlayType returns '' in native browser even though HLS will play
-                    return true;
-                }
-            } else if (utils.isAndroid()) {
-                return false;
-            }
-        }
-        return null;
     }
 
     function VideoProvider(_playerId, _playerConfig) {
@@ -149,20 +131,30 @@ define([
             _audioTracks = null,
             _currentAudioTrackIndex = -1,
             _activeCuePosition = -1,
-            _visualQuality = { level: {} };
+            _visualQuality = { level: {} },
+            // whether playback can start on iOS
+            _canPlay = false;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
-        _videotag = _videotag || document.createElement('video');
-        _videotag.className = 'jw-video jw-reset';
-
-        this.isSDK = _isSDK;
-        this.video = _videotag;
 
         function _setAttribute(name, value) {
             _videotag.setAttribute(name, value || '');
         }
+
+        if (!_videotag) {
+            _videotag = document.createElement('video');
+
+            if (_isMobile) {
+                _setAttribute('jw-gesture-required');
+            }
+        }
+
+        _videotag.className = 'jw-video jw-reset';
+
+        this.isSDK = _isSDK;
+        this.video = _videotag;
 
         // prevent browser from showing second cast icon
         // https://w3c.github.io/remote-playback/
@@ -319,7 +311,7 @@ define([
                 return;
             }
 
-            _canSeek = true;
+            _canSeek = _canPlay = true;
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
@@ -335,19 +327,15 @@ define([
             if (!_attached) {
                 return;
             }
-
-            //fixes Chrome bug where it doesn't like being muted before video is loaded
-            if (_videotag.muted) {
-                _videotag.muted = false;
-                _videotag.muted = true;
-            }
             _setAttribute('jw-loaded', 'meta');
             _sendMetaEvent();
         }
 
         function _sendBufferFull() {
-            if (!_bufferFull) {
+            // Wait until the canplay event on iOS to send the bufferFull event
+            if (!_bufferFull && (!utils.isIOS() || _canPlay)) {
                 _bufferFull = true;
+                _canPlay = false;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
@@ -356,6 +344,9 @@ define([
             _this.setState(states.PLAYING);
             if(!_videotag.hasAttribute('jw-played')) {
                 _setAttribute('jw-played','');
+            }
+            if (_videotag.hasAttribute('jw-gesture-required')) {
+                _videotag.removeAttribute('jw-gesture-required');
             }
             _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
@@ -366,8 +357,8 @@ define([
                 return;
             }
 
-            // If "pause" fires before "complete", we still don't want to propagate it
-            if (_videotag.currentTime === _videotag.duration) {
+            // If "pause" fires before "complete" or before we've started playback, we still don't want to propagate it
+            if (!_videotag.hasAttribute('jw-played') || _videotag.currentTime === _videotag.duration) {
                 return;
             }
 
@@ -391,6 +382,12 @@ define([
 
             // During seek we stay in paused state
             if (_this.seeking) {
+                return;
+            }
+
+            // Workaround for iOS not completing after midroll with HLS streams
+            if (utils.isIOS() && (_videotag.duration - _videotag.currentTime <= 0.1)) {
+                _endedHandler();
                 return;
             }
 
@@ -454,7 +451,14 @@ define([
             if (promise && promise.catch) {
                 promise.catch(function(err) {
                     console.warn(err);
+                    // User gesture required to start playback
+                    if (err.name === 'NotAllowedError' && _videotag.hasAttribute('jw-gesture-required')) {
+                        _this.trigger('autoplayFailed');
+                    }
                 });
+            } else if (_videotag.hasAttribute('jw-gesture-required')) {
+                // Autoplay isn't supported in older versions of Safari (<10) and Chrome (<53)
+                _this.trigger('autoplayFailed');
             }
         }
 
@@ -518,7 +522,7 @@ define([
             }
             _canSeek = false;
             _bufferFull = false;
-            _isAndroidHLS = _useAndroidHLS(source);
+            _isAndroidHLS = getIsAndroidHLS(source);
             if (source.preload && source.preload !== _videotag.getAttribute('preload')) {
                 _setAttribute('preload', source.preload);
             }

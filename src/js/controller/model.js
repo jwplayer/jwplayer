@@ -40,13 +40,6 @@ define([
                 buffer: 0
             });
 
-            // Mobile doesn't support autostart
-            // This check should be replaced with something that detects whether the current system
-            // requires a user interaction to start playback
-            if (utils.isMobile() && !config.mobileSdk) {
-                this.set('autostart', false);
-            }
-
             this.updateProviders();
 
             return this;
@@ -77,8 +70,13 @@ define([
                     return;
 
                 case 'volume':
-                case 'mute':
                     this.set(type, data[type]);
+                    return;
+                case 'mute':
+                    if (!this.get('autostartMuted')) {
+                        // Don't persist mute state with muted autostart
+                        this.set(type, data[type]);
+                    }
                     return;
 
                 case events.JWPLAYER_MEDIA_TYPE:
@@ -154,6 +152,10 @@ define([
                     var visualQuality = _.extend({}, data);
                     this.mediaModel.set('visualQuality', visualQuality);
                     break;
+
+                case 'autoplayFailed':
+                    this.set('autostartFailed', true);
+                    break;
             }
 
             this.mediaController.trigger(type, evt);
@@ -218,7 +220,10 @@ define([
 
             _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
-            _provider.mute(_this.get('mute'));
+
+            // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
+            _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
+
             _provider.on('all', _videoEventHandler, this);
 
             if (this.get('instreamMode') === true) {
@@ -327,7 +332,7 @@ define([
 
         this.setMute = function(mute) {
             if (!utils.exists(mute)) {
-                mute = !this.get('mute');
+                mute = !(this.get('autostartMuted') || this.get('mute'));
             }
             this.set('mute', mute);
             if (_provider) {
@@ -335,6 +340,7 @@ define([
             }
             if (!mute) {
                 var volume = Math.max(10, this.get('volume'));
+                this.set('autostartMuted', false);
                 this.setVolume(volume);
             }
         };
@@ -398,6 +404,20 @@ define([
 
         this.setNextUp = function (nextUp) {
             this.set('nextUp', nextUp);
+        };
+
+        function _autoStartSupportedIOS() {
+            if (!utils.isIOS()) {
+                return false;
+            }
+            // Autostart only supported in iOS 10 or higher - check if the version is 9 or less
+            return !(utils.isIOS(6) || utils.isIOS(7) || utils.isIOS(8) || utils.isIOS(9));
+        }
+
+        this.autoStartOnMobile = function() {
+            return this.get('autostart') && !this.get('sdkplatform') &&
+                ((_autoStartSupportedIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome())) &&
+                (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
     };
 
