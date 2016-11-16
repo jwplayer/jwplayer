@@ -7,37 +7,9 @@ define([
     'view/components/slider',
     'view/components/timeslider',
     'view/components/menu',
-    'view/components/volumetooltip'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip) {
-
-    function button(icon, apiAction, ariaText) {
-        var element = document.createElement('div');
-        element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
-        element.setAttribute('role', 'button');
-        element.setAttribute('tabindex', '0');
-        if (ariaText) {
-            element.setAttribute('aria-label', ariaText);
-        }
-        element.style.display = 'none';
-
-        if (apiAction) {
-            // Don't send the event to the handler so we don't have unexpected results. (e.g. play)
-            new UI(element).on('click tap', function() { apiAction(); });
-        }
-
-        return {
-            element : function() { return element; },
-            toggle : function(m) {
-                if (m) {
-                    this.show();
-                } else {
-                    this.hide();
-                }
-            },
-            show : function() { element.style.display = ''; },
-            hide : function() { element.style.display = 'none'; }
-        };
-    }
+    'view/components/volumetooltip',
+    'view/components/button'
+], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button) {
 
     function text(name, role) {
         var element = document.createElement('span');
@@ -129,11 +101,14 @@ define([
             var vol = this._localization.volume;
             var rewind = this._localization.rewind;
 
-            // Do not initialize volume sliders on mobile.
-            if(!this._isMobile){
-                muteButton = button('jw-icon-volume', this._api.setMute, vol);
+            // Do not initialize volume slider or tooltip on mobile
+            if (!this._isMobile) {
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');//, vol);
                 volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume', vol);
+            }
+            // Do not show the volume toggle in the mobile SDKs or <iOS10
+            if (!this._model.get('sdkplatform') && !(utils.isIOS(8) || utils.isIOS(9))) {
+                muteButton = button('jw-icon-volume', this._api.setMute, vol);
             }
 
             this.elements = {
@@ -173,9 +148,9 @@ define([
                     this.elements.audiotracks,
                     this.elements.mute,
                     this.elements.cast,
-                    this.elements.airplay,
                     this.elements.volume,
                     this.elements.volumetooltip,
+                    // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
                 ]
             };
@@ -217,8 +192,6 @@ define([
             this.onMediaModel(this._model, this._model.get('mediaModel'));
             this.onCastAvailable(this._model, this._model.get('castAvailable'));
             this.onCastActive(this._model, this._model.get('castActive'));
-            this.onAirplayAvailable(this._model, this._model.get('airplayAvailable'));
-            this.onAirplayActive(this._model, this._model.get('airplayActive'));
             this.onCaptionsList(this._model, this._model.get('captionsList'));
 
             // Listen for model changes
@@ -228,8 +201,6 @@ define([
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
             this._model.on('change:castActive', this.onCastActive, this);
-            this._model.on('change:airplayAvailable', this.onAirplayAvailable, this);
-            this._model.on('change:airplayActive', this.onAirplayActive, this);
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
             this._model.on('change:fullscreen', this.onFullscreen, this);
@@ -346,12 +317,6 @@ define([
         },
         onCastActive : function(model, val) {
             utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
-        },
-        onAirplayAvailable : function(model, val) {
-            this.elements.airplay.toggle(val);
-        },
-        onAirplayActive : function(model, val) {
-            utils.toggleClass(this.elements.airplay.element(), 'jw-off', !val);
         },
         onElapsed : function(model, val) {
             var elapsedTime;

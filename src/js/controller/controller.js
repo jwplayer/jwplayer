@@ -70,7 +70,8 @@ define([
                 _actionOnAttach,
                 _stopPlaylist = false, // onComplete, should we play next item or not?
                 _interruptPlay,
-                _this = this;
+                _this = this,
+                _xo; // Intersection Observer - used for playing video on mobile when visible
 
             var _video = function() { return _model.getVideo(); };
 
@@ -121,6 +122,10 @@ define([
                 _this.trigger(events.JWPLAYER_FULLSCREEN, {
                     fullscreen: bool
                 });
+               if (bool && _xo) {
+                   // Stop autoplay behavior when the player enters fullscreen
+                   _stopObserving();
+               }
             });
             _model.on('itemReady', function() {
                 _this.triggerAfterReady(events.JWPLAYER_PLAYLIST_ITEM, {
@@ -216,9 +221,51 @@ define([
                 if (related) {
                     related.on('nextUp', _model.setNextUp, _model);
                 }
+                // Start playback on desktop and mobile browsers when allowed
+                if (_canAutoStart()) {
+                    if (utils.isMobile() && _video().video) {
+                        // Only play if the video is in the viewport
+                        _observeVideo(_video().video);
+                    } else {
+                        _this.play({reason: 'autostart'});
+                    }
+                }
+            }
 
-                if (_model.get('autostart')) {
-                    _this.play({reason: 'autostart'});
+            function _observeVideo(video) {
+                if ('IntersectionObserver' in window &&
+                    'IntersectionObserverEntry' in window &&
+                    'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
+                    _startObserving(video);
+                } else {
+                    require.ensure(['polyfills/intersection-observer'], function (require) {
+                        require('polyfills/intersection-observer');
+                        _startObserving(video);
+                    }, 'polyfills.intersection-observer');
+                }
+            }
+
+            function _startObserving(video) {
+                _xo = new window.IntersectionObserver(_toggleVideoPlayback, { threshold: 0.5 });
+                _xo.observe(video);
+            }
+
+            function _stopObserving() {
+                _xo.disconnect();
+                _xo = undefined;
+            }
+
+            function _toggleVideoPlayback(entries) {
+                if (entries && entries.length) {
+                    var video = _video().video;
+                    var entry = entries[0];
+                    var meta = {reason: 'autoplay'};
+
+                    if (entry.target === video && entry.intersectionRatio >= 0.5) {
+                        _this.play(meta);
+                    } else {
+                        _this.pause(meta);
+                    }
                 }
             }
 
@@ -259,7 +306,7 @@ define([
 
                 _stop(true);
 
-                if (_model.get('autostart')) {
+                if (_canAutoStart()) {
                     _model.once('itemReady', _play);
                 }
                 _this.trigger('destroyPlugin', {});
@@ -311,7 +358,7 @@ define([
                     _model.set('playReason', meta.reason);
                 }
 
-                if(_model.get('state') === states.ERROR) {
+                if (_model.get('state') === states.ERROR) {
                     return;
                 }
 
@@ -388,8 +435,16 @@ define([
                 return true;
             }
 
-            function _pause() {
+            function _pause(meta) {
                 _actionOnAttach = null;
+
+                if (meta) {
+                    _model.set('pauseReason', meta.reason);
+                    // Stop autoplay behavior if the video is paused by the user or an api call
+                    if (_xo && (meta.reason === 'interaction' || meta.reason === 'external')) {
+                        _stopObserving();
+                    }
+                }
 
                 var adState = _getAdState();
                 if (_.isString(adState)) {
@@ -424,7 +479,7 @@ define([
             }
 
             function _seek(pos) {
-                if(_model.get('state') === states.ERROR) {
+                if (_model.get('state') === states.ERROR) {
                     return;
                 }
                 if (!_model.get('scrubbing') && _model.get('state') !== states.PLAYING) {
@@ -435,7 +490,7 @@ define([
 
             function _item(index, meta) {
                 _stop(true);
-                if(_model.get('state') === states.ERROR) {
+                if (_model.get('state') === states.ERROR) {
                     _model.set('state', states.IDLE);
                 }
                 _setItem(index);
@@ -491,6 +546,11 @@ define([
                     if (_model.get('repeat')) {
                         _next({reason: 'repeat'});
                     } else {
+                        if (_xo) {
+                            // Autoplay/pause no longer needed since there's no more media to play
+                            // This prevents media from replaying when a completed video scrolls into view
+                            _stopObserving();
+                        }
                         _model.set('state', states.COMPLETE);
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
@@ -553,7 +613,7 @@ define([
             }
 
             function _setCurrentAudioTrack(index) {
-                if(_video()) {
+                if (_video()) {
                     index = parseInt(index, 10) || 0;
                     _video().setCurrentAudioTrack(index);
                 }
@@ -638,6 +698,10 @@ define([
                 if (related) {
                     related.next();
                 }
+            }
+
+            function _canAutoStart() {
+                return (_model.get('autostart') && !utils.isMobile()) || _model.autoStartOnMobile();
             }
 
             /** Controller API / public methods **/
@@ -782,7 +846,7 @@ define([
                 }
             }
 
-            if(this.currentContainer.parentElement) {
+            if (this.currentContainer.parentElement) {
                 this.currentContainer.parentElement.replaceChild(viewElement, this.currentContainer);
             }
             this.currentContainer = viewElement;

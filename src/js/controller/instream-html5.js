@@ -28,7 +28,7 @@ define([
                 id: _model.get('id'),
                 volume: _model.get('volume'),
                 fullscreen: _model.get('fullscreen'),
-                mute: _model.get('mute'),
+                mute: _model.get('mute') || _model.get('autostartMuted'),
                 instreamMode: true
             });
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
@@ -143,7 +143,7 @@ define([
                 provider.on(events.JWPLAYER_PLAYER_STATE, stateHandler);
                 provider.attachMedia();
                 provider.volume(_model.get('volume'));
-                provider.mute(_model.get('mute'));
+                provider.mute(_model.get('mute') || _model.get('autostartMuted'));
 
                 _adModel.on('change:state', changeStateEvent, _this);
             }
