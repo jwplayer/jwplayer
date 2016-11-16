@@ -387,6 +387,12 @@ define([
                 return;
             }
 
+            // Workaround for iOS not completing after midroll with HLS streams
+            if (utils.isIOS() && (_videotag.duration - _videotag.currentTime <= 0.1)) {
+                _endedHandler();
+                return;
+            }
+
             _this.setState(states.STALLED);
         }
 
