@@ -79,6 +79,10 @@ define(['utils/underscore',
                     } else {
                         track._id = tracksHelper.createId(track, this._textTracks.length);
                     }
+                    if (this._tracksById[track._id]) {
+                        // tracks without unique ids must not be marked as "inuse"
+                        continue;
+                    }
                     track.inuse = true;
                 }
                 if (!track.inuse || this._tracksById[track._id]) {
