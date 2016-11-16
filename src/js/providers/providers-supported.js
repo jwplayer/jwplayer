@@ -1,27 +1,9 @@
 define([
+    'providers/html5-android-hls',
     'utils/helpers',
     'utils/underscore',
     'utils/video'
-], function(utils, _, video) {
-
-    function _useAndroidHLS(source) {
-        if (source.type === 'hls') {
-            //when androidhls is not set to false, allow HLS playback on Android 4.1 and up
-            if (source.androidhls !== false) {
-                var isAndroidNative = utils.isAndroidNative;
-                if (isAndroidNative(2) || isAndroidNative(3) || isAndroidNative('4.0')) {
-                    return false;
-                } else if (utils.isAndroid()) { //utils.isAndroidNative()) {
-                    // skip canPlayType check
-                    // canPlayType returns '' in native browser even though HLS will play
-                    return true;
-                }
-            } else if (utils.isAndroid()) {
-                return false;
-            }
-        }
-        return null;
-    }
+], function(getIsAndroidHLS, utils, _, video) {
 
     var SupportsMatrix = [
         {
@@ -58,7 +40,7 @@ define([
                 var file = source.file;
                 var type = source.type;
 
-                var isAndroidHLS = _useAndroidHLS(source);
+                var isAndroidHLS = getIsAndroidHLS(source);
                 if (isAndroidHLS !== null) {
                     return isAndroidHLS;
                 }

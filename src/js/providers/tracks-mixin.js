@@ -19,6 +19,7 @@ define(['utils/underscore',
         _activeCuePosition: null,
         _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
+        clearCues: clearCues,
         clearTracks: clearTracks,
         disableTextTrack: disableTextTrack,
         enableTextTrack: enableTextTrack,
@@ -125,8 +126,8 @@ define(['utils/underscore',
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-            if (utils.isEdge()) {
-                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge
+            if (utils.isEdge() || utils.isFF()) {
+                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
                 this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
             }
@@ -460,6 +461,18 @@ define(['utils/underscore',
 
         while((cue = vttCues.shift())) {
             _addCueToTrack(textTrack, cue);
+        }
+    }
+
+    function clearCues() {
+        var tracks = this.video.textTracks;
+        if (tracks && tracks.length) {
+            _.each(tracks, function(track) {
+                var cueArrayLength = track.cues ? track.cues.length : 0;
+                for (var i = cueArrayLength; i--;) {
+                    track.removeCue(track.cues[i]);
+                }
+            });
         }
     }
 

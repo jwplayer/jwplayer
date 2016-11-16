@@ -68,6 +68,9 @@ define([
         swf.style.right = 0;
         swf.style.top = 0;
         swf.style.bottom = 0;
+        if (utils.isIE() && ('PointerEvent' in window)) {
+            swf.style.pointerEvents = 'none';
+        }
 
         // flash can trigger events
         _.extend(swf, Events);

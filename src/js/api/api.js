@@ -192,7 +192,7 @@ define([
                 _controller.play(meta);
                 return _this;
             } else if (state === false) {
-                _controller.pause();
+                _controller.pause(meta);
                 return _this;
             }
 
@@ -200,7 +200,7 @@ define([
             switch (state) {
                 case states.PLAYING:
                 case states.BUFFERING:
-                    _controller.pause();
+                    _controller.pause(meta);
                     break;
                 default:
                     _controller.play(meta);
