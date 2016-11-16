@@ -25,8 +25,8 @@ define([
                     this.hide();
                 }
             },
-            show : function() { element.style.display = '';},
-            hide : function() { element.style.display = 'none';}
+            show : function() { element.style.display = ''; },
+            hide : function() { element.style.display = 'none'; }
         };
     };
 
