@@ -177,6 +177,10 @@ define([
             }
         };
 
+        this.clearAutostartMute = function() {
+            _model.set('autostartMuted', false);
+        };
+
         this.loadItem = function(item, options) {
             if (utils.isAndroid(2.3)) {
                 this.trigger({
