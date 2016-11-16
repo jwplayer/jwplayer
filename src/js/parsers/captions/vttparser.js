@@ -188,7 +188,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             // Apply default values for any missing fields.
             cue.region = settings.get('region', null);
             cue.vertical = settings.get('vertical', '');
-            cue.line = settings.get('line', -1);
+            cue.line = settings.get('line', 'auto');
             cue.lineAlign = settings.get('lineAlign', 'start');
             cue.snapToLines = settings.get('snapToLines', true);
             cue.size = settings.get('size', 100);
