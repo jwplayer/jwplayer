@@ -5,7 +5,6 @@ define([
     'templates/display-container.html',
     'utils/underscore'
 ], function(utils, Events, UI, Template, _) {
-    // model
     var DisplayContainer = function() {
         this.el = utils.createElement(Template());
         this.addButton = function (button) {
