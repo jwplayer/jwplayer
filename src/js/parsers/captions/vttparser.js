@@ -199,7 +199,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             cue.size = settings.get('size', 100);
             cue.align = settings.get('align', center);
             var position = settings.get('position', 'auto');
-            if (position == 'auto' && defaults.position == 50) position = cue.align == 'left' ? 0 : cue.align == 'right' ? 100 : 50;
+            if (position == 'auto' && defaults.position == 50) position = cue.align == 'start' || cue.align == 'left' ? 0 : cue.align == 'end' || cue.align == 'right' ? 100 : 50;
             cue.position = position;
             cue.positionAlign = settings.get('positionAlign', 'auto');
         }
