@@ -166,21 +166,21 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                         }
                         settings.alt(k, vals0, ['auto']);
                         if (vals.length === 2) {
-                            settings.alt('lineAlign', vals[1], ['start', 'center', 'end']);
+                            settings.alt('lineAlign', vals[1], ['start', 'middle', 'end']);
                         }
                         break;
                     case 'position':
                         vals = v.split(',');
                         settings.percent(k, vals[0]);
                         if (vals.length === 2) {
-                            settings.alt('positionAlign', vals[1], ['line-left', 'center', 'line-right', 'auto']);
+                            settings.alt('positionAlign', vals[1], ['line-left', 'middle', 'line-right', 'auto']);
                         }
                         break;
                     case 'size':
                         settings.percent(k, v);
                         break;
                     case 'align':
-                        settings.alt(k, v, ['start', 'center', 'end', 'left', 'right']);
+                        settings.alt(k, v, ['start', 'middle', 'end', 'left', 'right']);
                         break;
                 }
             }, /:/, /\s/);
@@ -192,7 +192,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             cue.lineAlign = settings.get('lineAlign', 'start');
             cue.snapToLines = settings.get('snapToLines', true);
             cue.size = settings.get('size', 100);
-            cue.align = settings.get('align', 'center');
+            cue.align = settings.get('align', 'middle');
             cue.position = settings.get('position', 'auto');
             cue.positionAlign = settings.get('positionAlign', 'auto');
         }
