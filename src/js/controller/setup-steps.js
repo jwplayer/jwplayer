@@ -153,7 +153,7 @@ define([
             var parentElement = originalContainer.parentElement;
             if (!parentElement) {
                 // Cannot perform test when player container has no parent
-                return _flashCheckComplete(resolve, _model);
+                resolve();
             }
             var testContainer = document.createElement('div');
             var flashHealthCheckSwf = _model.get('flashloader');
@@ -170,22 +170,18 @@ define([
             var done = function() {
                 clearTimeout(embedTimeout);
                 parentElement.replaceChild(originalContainer, testContainer);
-                _flashCheckComplete(resolve, _model);
+                resolve();
             };
             swf.embedCallback = done;
             // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
             var embedTimeout = setTimeout(function() {
                 _model.set('primary', undefined);
+                _model.updateProviders();
                 done();
             }, 1500);
         } else {
-            _flashCheckComplete(resolve, _model);
+            resolve();
         }
-    }
-
-    function _flashCheckComplete(resolve, _model) {
-        _model.updateProviders();
-        resolve();
     }
 
     function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
