@@ -57,6 +57,13 @@
 .jw-display-icon-container {
   cursor: pointer;
   margin: 0 (@ui-padding * 0.25);
+  transition: transform 250ms ease-out;
+
+  .jw-state-playing &,
+  .jw-state-paused &,
+  .jw-state-buffering & {
+    transform: translateY(-@mobile-touch-target * 0.5);
+  }
 
   .jw-breakpoint-2 &,
   .jw-breakpoint-3 & {
@@ -77,7 +84,7 @@
     align-items: center;
     background-position: 50%;
     background-repeat: no-repeat;
-    display: flex;
+    display: none;
     height: @mobile-touch-target;
     justify-content: center;
     width: @mobile-touch-target;
@@ -87,11 +94,11 @@
     }
 
     &.jw-icon-display {
-      height: @mobile-touch-target * 1.25;
-      width: @mobile-touch-target * 1.25;
-      &::before {
-        font-size: (@mobile-touch-target * 1.25) / 2;
-      }
+      display: flex;
+    }
+
+    .jw-breakpoint-1 & {
+      display: flex;
     }
 
     .jw-breakpoint-2 &,
@@ -110,17 +117,8 @@
     .jw-breakpoint-3 & {
       height: @mobile-touch-target * 1.25;
       width: @mobile-touch-target * 1.25;
-
       &::before {
         font-size: (@mobile-touch-target * 1.25) / 2;
-      }
-
-      &.jw-icon-display {
-        height: @mobile-touch-target * 1.5;
-        width: @mobile-touch-target * 1.5;
-        &::before {
-          font-size: (@mobile-touch-target * 1.5) / 2;
-        }
       }
     }
 
@@ -128,17 +126,8 @@
     .jw-breakpoint-5 & {
       height: @mobile-touch-target * 1.5;
       width: @mobile-touch-target * 1.5;
-
       &::before {
         font-size: (@mobile-touch-target * 1.5) / 2;
-      }
-
-      &.jw-icon-display {
-        height: @mobile-touch-target * 1.75;
-        width: @mobile-touch-target * 1.75;
-        &::before {
-          font-size: (@mobile-touch-target * 1.75) / 2;
-        }
       }
     }
 
@@ -146,17 +135,8 @@
     .jw-breakpoint-7 & {
       height: @mobile-touch-target * 1.75;
       width: @mobile-touch-target * 1.75;
-
       &::before {
         font-size: (@mobile-touch-target * 1.75) / 2;
-      }
-
-      &.jw-icon-display {
-        height: @mobile-touch-target * 2;
-        width: @mobile-touch-target * 2;
-        &::before {
-          font-size: @mobile-touch-target;
-        }
       }
     }
 
