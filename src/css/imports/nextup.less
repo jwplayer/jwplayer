@@ -18,10 +18,15 @@
   visibility: hidden;
   width: 40%;
 
-  .jw-flag-time-slider-above &,
+  .jw-flag-time-slider-fixed &,
   .jw-breakpoint-0 &,
   .jw-breakpoint-1 & {
     bottom: @nextup-position-bottom + ((@mobile-touch-target / @default-em-size) / 2);
+  }
+
+  .jw-breakpoint-0 &,
+  .jw-breakpoint-1 & {
+    display: none;
   }
 
 }

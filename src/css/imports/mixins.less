@@ -23,7 +23,7 @@
 }
 
 .inset-controlbar() {
-    &.jw-flag-time-slider-inline .jw-controlbar {
+    &.jw-flag-time-slider-static .jw-controlbar {
         // for correct display in IE browsers
         display: inline-block;
         // width assignment is required for IE11 to center correctly
@@ -37,7 +37,7 @@
     &.jw-flag-audio-player .jw-controlbar {
         bottom: 0; // overwrite the inset-controlbar mixin
     }
-    &.jw-flag-time-slider-above .jw-controlbar,
+    &.jw-flag-time-slider-fixed .jw-controlbar,
     &.jw-breakpoint-0 .jw-controlbar,
     &.jw-breakpoint-1 .jw-controlbar {
       border: none;
@@ -92,7 +92,7 @@
             background: @controlbar-background;
         }
 
-        &.jw-flag-time-slider-above,
+        &.jw-flag-time-slider-fixed,
         &.jw-breakpoint-0,
         &.jw-breakpoint-1 {
 
@@ -263,7 +263,7 @@
           right: @nextup-position-right;
         }
 
-        &.jw-flag-time-slider-above,
+        &.jw-flag-time-slider-fixed,
         &.jw-breakpoint-0,
         &.jw-breakpoint-1 {
           .jw-nextup-container {
@@ -367,7 +367,7 @@
         }
 
         // modifiers for small player sizes/time slider above
-        &.jw-flag-time-slider-above,
+        &.jw-flag-time-slider-fixed,
         &.jw-breakpoint-0,
         &.jw-breakpoint-1 {
 
