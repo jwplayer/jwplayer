@@ -17,7 +17,7 @@
     .jw-breakpoint-0 &,
     .jw-breakpoint-1 & {
         background: linear-gradient(180deg, fade(mix(black, white, 80%), 0%), fade(mix(black, white, 80%), 25%), fade(mix(black, white, 80%), 75%));
-        height: @controlbar-height + (@mobile-touch-target / @default-em-size);
+        height: (@mobile-touch-target * 1.5) + 5px;
     }
 
 }
@@ -55,7 +55,7 @@
       left: 0;
       padding: 0 @ui-padding;
       position: absolute;
-      top: (@mobile-touch-target / 2);
+      top: 5px;
     }
 
 }
