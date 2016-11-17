@@ -2,11 +2,12 @@ define([
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
+    'utils/embedswf',
     'utils/constants',
     'utils/underscore',
     'utils/helpers',
     'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events) {
 
     var _pluginLoader,
         _playlistLoader;
@@ -50,9 +51,13 @@ define([
                 method: _loadPlaylist,
                 depends: ['LOADED_POLYFILLS']
             },
+            CHECK_FLASH: {
+                method: _checkFlash,
+                depends : ['LOADED_POLYFILLS']
+            },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
-                depends : ['LOAD_PLAYLIST']
+                depends : ['LOAD_PLAYLIST', 'CHECK_FLASH']
             },
             SETUP_VIEW : {
                 method: _setupView,
@@ -137,6 +142,50 @@ define([
         } else {
             resolve();
         }
+    }
+
+    function _checkFlash(resolve, _model, _api) {
+        var primaryFlash = _model.get('primary') === 'flash';
+        var flashVersion = utils.flashVersion();
+        if (primaryFlash && flashVersion) {
+            var flashHealthCheckId = '' + _model.get('id') + '-' + Math.random().toString(16).substr(2);
+            var originalContainer = _api.getContainer();
+            var parentElement = originalContainer.parentElement;
+            if (!parentElement) {
+                // Cannot perform test when player container has no parent
+                return _flashCheckComplete(resolve, _model);
+            }
+            var testContainer = document.createElement('div');
+            var flashHealthCheckSwf = _model.get('flashloader');
+            var width = _model.get('width');
+            var height = _model.get('height');
+            utils.style(testContainer, {
+                visibility: 'hidden',
+                position: 'relative',
+                width: width.toString().indexOf('%') > 0 ? width : (width+ 'px'),
+                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
+            });
+            var swf = EmbedSwf.embed(flashHealthCheckSwf, testContainer, flashHealthCheckId, null);
+            parentElement.replaceChild(testContainer, originalContainer);
+            var done = function() {
+                clearTimeout(embedTimeout);
+                parentElement.replaceChild(originalContainer, testContainer);
+                _flashCheckComplete(resolve, _model);
+            };
+            swf.embedCallback = done;
+            // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
+            var embedTimeout = setTimeout(function() {
+                _model.set('primary', undefined);
+                done();
+            }, 1500);
+        } else {
+            _flashCheckComplete(resolve, _model);
+        }
+    }
+
+    function _flashCheckComplete(resolve, _model) {
+        _model.updateProviders();
+        resolve();
     }
 
     function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
