@@ -40,6 +40,10 @@ define([
                 buffer: 0
             });
 
+            if (config.instreamMode) {
+                this.updateProviders();
+            }
+
             return this;
         };
 
