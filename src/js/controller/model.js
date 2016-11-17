@@ -40,6 +40,8 @@ define([
                 buffer: 0
             });
 
+            this.updateProviders();
+
             return this;
         };
 
