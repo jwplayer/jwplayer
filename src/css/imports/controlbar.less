@@ -123,22 +123,6 @@
     }
 }
 
-
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
-
-  .jw-controlbar {
-
-    .jw-icon-playback,
-    .jw-icon-rewind,
-    .jw-icon-next {
-      display: none;
-    }
-
-  }
-
-}
-
 .jw-flag-time-slider-fixed,
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
@@ -159,11 +143,34 @@
     position: static;
   }
 
+  &.jw-breakpoint-7 .jw-controlbar {
+    height: @slider-fixed-control-bar-height + 25px;
+    padding: 15px 40px;
+  }
+
   .jw-controlbar-left-group,
   .jw-controlbar-right-group {
     align-items: center;
     display: flex;
     height: @mobile-touch-target;
+
+    .jw-icon {
+      align-items: center;
+      display: flex;
+      height: @mobile-touch-target;
+      justify-content: center;
+      width: @mobile-touch-target;
+      &::before {
+        height: auto;
+      }
+    }
+
+    .jw-hidden,
+    .jw-slider-volume.jw-slider-horizontal,
+    .jw-icon-inline.jw-icon-volume {
+      display: none;
+    }
+
   }
 
   .jw-controlbar-left-group {
@@ -191,11 +198,21 @@
     }
   }
 
-  .jw-text {
-    padding: 0;
-    + .jw-text {
-      margin-left: @ui-padding * 2;
+  .jw-text-duration,
+  .jw-text-elapsed {
+    color: @toggle-inactive;
+    font-weight: bold;
+  }
+
+  &.jw-breakpoint-0,
+  &.jw-breakpoint-1 {
+
+    .jw-icon-playback,
+    .jw-icon-rewind,
+    .jw-icon-next {
+      display: none;
     }
+
   }
 
 }
