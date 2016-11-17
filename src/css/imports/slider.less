@@ -121,11 +121,10 @@
 
   .jw-slider-horizontal,
   .jw-slider-container {
-    height: @mobile-touch-target / 2;
+    height: @slider-fixed-height;
   }
 
   .jw-controlbar-center-group {
-    padding: 0 20px;
     .jw-slider-container {
       align-items: center;
       display: flex;
@@ -148,10 +147,11 @@
   }
 
   .jw-tooltip-time {
-    bottom: (@mobile-touch-target / 2) + 5px;
+    bottom: @slider-fixed-height + 5px;
     height: auto;
     line-height: normal;
     padding: 0;
+    pointer-events: none;
     transform: translateX(-50%);
     .jw-overlay {
       bottom: auto;

@@ -49,21 +49,23 @@
 .jw-display-container {
   align-items: center;
   display: flex;
-  height: 100%;
+  flex-grow: 1;
   justify-content: center;
-  width: 100%;
+  .jw-breakpoint-0.jw-state-playing &,
+  .jw-breakpoint-0.jw-state-paused &,
+  .jw-breakpoint-0.jw-state-buffering & {
+    align-items: flex-end;
+  }
+  .jw-breakpoint-1.jw-state-playing &,
+  .jw-breakpoint-1.jw-state-paused &,
+  .jw-breakpoint-1.jw-state-buffering & {
+    padding-top: @slider-fixed-control-bar-height;
+  }
 }
 
 .jw-display-icon-container {
   cursor: pointer;
   margin: 0 (@ui-padding * 0.25);
-  transition: transform 250ms ease-out;
-
-  .jw-state-playing &,
-  .jw-state-paused &,
-  .jw-state-buffering & {
-    transform: translateY(-@mobile-touch-target * 0.5);
-  }
 
   .jw-breakpoint-2 &,
   .jw-breakpoint-3 & {

@@ -12,14 +12,6 @@
     .jw-hidden {
         display: none;
     }
-
-    .jw-flag-time-slider-fixed &,
-    .jw-breakpoint-0 &,
-    .jw-breakpoint-1 & {
-        background: linear-gradient(180deg, fade(mix(black, white, 80%), 0%), fade(mix(black, white, 80%), 25%), fade(mix(black, white, 80%), 75%));
-        height: (@mobile-touch-target * 1.5) + 5px;
-    }
-
 }
 
 .jw-background-color {
@@ -45,39 +37,11 @@
     .jw-text-alt {
         display: none;
     }
-
-    .jw-flag-time-slider-fixed &,
-    .jw-breakpoint-0 &,
-    .jw-breakpoint-1 & {
-      align-items: center;
-      display: flex;
-      height: (@mobile-touch-target / 2);
-      left: 0;
-      padding: 0 @ui-padding;
-      position: absolute;
-      top: 5px;
-    }
-
 }
 
 .jw-controlbar-left-group,
 .jw-controlbar-right-group {
     white-space: nowrap;
-
-    .jw-flag-time-slider-fixed &,
-    .jw-breakpoint-0 &,
-    .jw-breakpoint-1 & {
-      vertical-align: bottom;
-    }
-}
-
-.jw-controlbar-right-group {
-
-    .jw-flag-time-slider-fixed &,
-    .jw-breakpoint-0 &,
-    .jw-breakpoint-1 & {
-      text-align: right;
-    }
 }
 
 // control bar content (icons/text)
@@ -159,6 +123,7 @@
     }
 }
 
+
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
 
@@ -171,21 +136,65 @@
     }
 
   }
+
 }
 
 .jw-flag-time-slider-fixed,
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
 
+  .jw-controls {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .jw-controlbar {
+    align-items: flex-end;
+    background: linear-gradient(180deg, fade(mix(black, white, 80%), 0%), fade(mix(black, white, 80%), 25%), fade(mix(black, white, 80%), 75%));
+    display: flex;
+    flex-wrap: wrap;
+    height: @slider-fixed-control-bar-height;
+    justify-content: space-between;
+    padding: 5px 15px 0;
+    position: static;
+  }
+
+  .jw-controlbar-left-group,
+  .jw-controlbar-right-group {
+    align-items: center;
+    display: flex;
+    height: @mobile-touch-target;
+  }
+
   .jw-controlbar-left-group {
+    order: 2;
     .jw-text-duration {
       display: inline-block;
     }
   }
 
+  .jw-controlbar-center-group {
+    align-items: center;
+    display: flex;
+    height: @slider-fixed-height;
+    order: 1;
+    padding: 0;
+    width: 100%;
+  }
+
   .jw-controlbar-right-group {
+    display: flex;
+    justify-content: flex-end;
+    order: 3;
     .jw-text-duration {
       display: none;
+    }
+  }
+
+  .jw-text {
+    padding: 0;
+    + .jw-text {
+      margin-left: @ui-padding * 2;
     }
   }
 
