@@ -50,16 +50,19 @@
   align-items: center;
   display: flex;
   flex-grow: 1;
+  height: 100%;
   justify-content: center;
   .jw-breakpoint-0.jw-state-playing &,
   .jw-breakpoint-0.jw-state-paused &,
   .jw-breakpoint-0.jw-state-buffering & {
     align-items: flex-end;
+    height: auto;
   }
   .jw-breakpoint-1.jw-state-playing &,
   .jw-breakpoint-1.jw-state-paused &,
   .jw-breakpoint-1.jw-state-buffering & {
     padding-top: @slider-fixed-control-bar-height;
+    height: auto;
   }
 }
 
