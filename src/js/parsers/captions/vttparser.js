@@ -126,7 +126,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
     }
     
     var defaults = new VTTCue(0,0,0);
-    var center = defaults.align == 'middle' ? 'middle' : 'center';
+    var center = defaults.align === 'middle' ? 'middle' : 'center';
 
     function parseCue(input, cue, regionList) {
         // Remember the original input if we need to throw an error.
@@ -192,14 +192,18 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             cue.region = settings.get('region', null);
             cue.vertical = settings.get('vertical', '');
             var line = settings.get('line', 'auto');
-            if (line == 'auto' && defaults.line == -1) line = -1;
+            if (line === 'auto' && defaults.line === -1) {
+                line = -1;
+            }
             cue.line = line;
             cue.lineAlign = settings.get('lineAlign', 'start');
             cue.snapToLines = settings.get('snapToLines', true);
             cue.size = settings.get('size', 100);
             cue.align = settings.get('align', center);
             var position = settings.get('position', 'auto');
-            if (position == 'auto' && defaults.position == 50) position = cue.align == 'start' || cue.align == 'left' ? 0 : cue.align == 'end' || cue.align == 'right' ? 100 : 50;
+            if (position == 'auto' && defaults.position == 50) {
+                position = cue.align === 'start' || cue.align === 'left' ? 0 : cue.align === 'end' || cue.align === 'right' ? 100 : 50;
+            }
             cue.position = position;
             cue.positionAlign = settings.get('positionAlign', 'auto');
         }
