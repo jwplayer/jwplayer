@@ -13,7 +13,7 @@
         display: none;
     }
 
-    .jw-flag-time-slider-above &,
+    .jw-flag-time-slider-fixed &,
     .jw-breakpoint-0 &,
     .jw-breakpoint-1 & {
         background: linear-gradient(180deg, fade(mix(black, white, 80%), 0%), fade(mix(black, white, 80%), 25%), fade(mix(black, white, 80%), 75%));
@@ -46,7 +46,7 @@
         display: none;
     }
 
-    .jw-flag-time-slider-above &,
+    .jw-flag-time-slider-fixed &,
     .jw-breakpoint-0 &,
     .jw-breakpoint-1 & {
       align-items: center;
@@ -64,7 +64,7 @@
 .jw-controlbar-right-group {
     white-space: nowrap;
 
-    .jw-flag-time-slider-above &,
+    .jw-flag-time-slider-fixed &,
     .jw-breakpoint-0 &,
     .jw-breakpoint-1 & {
       vertical-align: bottom;
@@ -73,7 +73,7 @@
 
 .jw-controlbar-right-group {
 
-    .jw-flag-time-slider-above &,
+    .jw-flag-time-slider-fixed &,
     .jw-breakpoint-0 &,
     .jw-breakpoint-1 & {
       text-align: right;
@@ -102,6 +102,12 @@
     vertical-align: middle;
     cursor: pointer;
     padding: 0 @ui-padding;
+}
+
+.jw-controlbar-left-group {
+  .jw-text-duration {
+    display: none;
+  }
 }
 
 .jw-icon-inline,
@@ -155,11 +161,26 @@
 
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
+
   .jw-controlbar {
+
     .jw-icon-playback,
     .jw-icon-rewind,
     .jw-icon-next {
       display: none;
     }
+
+    .jw-controlbar-left-group {
+      .jw-text-duration {
+        display: inline-block;
+      }
+    }
+
+    .jw-controlbar-right-group {
+      .jw-text-duration {
+        display: none;
+      }
+    }
+
   }
 }
