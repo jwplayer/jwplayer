@@ -13,10 +13,7 @@ define([
              providerHtml5, providerFlash) {
     /* jshint qunit: true */
 
-    // polyfill webpack require.ensure
-    //window.jwplayer.api = Api;
-    require.ensure = function(array, callback, moduleName) {
-        console.log('Unit test polyfill for webpack require.ensure', '"'+ moduleName + '"');
+    require.ensure = function(array, callback) {
         callback(function webpackRequire(modulePath) {
             return ({
                 'providers/html5': providerHtml5,
@@ -83,7 +80,14 @@ define([
         api.on('x', update);
         api.on('x', bad);
 
+        var log = console.log;
+        console.log = function() {
+            assert.ok(arguments[1] === 'x', 'Should output error');
+        };
+
         api.trigger('x');
+
+        console.log = log;
 
         assert.ok(check, 'When events blow up, handler continues');
     });

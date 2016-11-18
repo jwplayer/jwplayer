@@ -57,7 +57,7 @@ define([
     test('error "File not found" (404)', function (assert) {
         var done = assert.async();
 
-        utils.fetch('failUrl')
+        utils.fetch(require.toUrl('./failUrl'))
             .then(function(response) {
                 assert.notOk(response.ok, 'fetch response is not ok');
                 assert.equal(response.status, 404, 'fetch resolves with 404 status');

@@ -8,9 +8,14 @@ define([
     var test = QUnit.test.bind(QUnit);
 
     test('utils.log', function(assert) {
+        var log = console.log;
+        console.log = utils.noop;
+
         assert.expect(2);
         assert.equal(typeof utils.log, 'function', 'is defined');
         assert.strictEqual(utils.log(), undefined, 'utils.log returns undefined');
+
+        console.log = log;
     });
 
     test('utils.indexOf', function (assert) {

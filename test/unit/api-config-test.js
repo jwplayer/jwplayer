@@ -1,6 +1,6 @@
 define([
     'test/underscore',
-    'api/config'
+    'api/config',
 ], function (_, Config) {
     /* jshint qunit: true */
 
@@ -19,8 +19,15 @@ define([
     }
 
     function testConfig(assert, obj) {
-        var x = new Config(obj);
+        var log = console.log;
+        console.log = function(message) {
+            assert.ok(
+                message === 'JW Player does not support XML skins, please update your config',
+                'should output warning'
+            );
+        };
 
+        var x = new Config(obj);
 
         var attrs = ['width', 'height', 'base'];
 
@@ -29,6 +36,7 @@ define([
         _.each(attrs, function(a) {
             assert.ok(_.has(x, a), 'Config has ' + a + ' attribute');
         });
+        console.log = log;
         return x;
     }
 

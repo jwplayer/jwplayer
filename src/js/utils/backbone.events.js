@@ -185,9 +185,10 @@ define([
         var ev, i = -1, l = events.length;
         while (++i < l) {
             try {
-                (ev = events[i]).callback.apply(ev.context || context, args);
+                ev = events[i];
+                ev.callback.apply(ev.context || context, args);
             } catch(e) {
-                console.log('Error in "' + name + '" event handler:', e);
+                console.log('Error in "', name, '" event handler:', e);
             }
         }
     };

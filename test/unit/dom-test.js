@@ -138,11 +138,11 @@ define([
     });
 
     test('addStyleSheet test', function(assert) {
-        var url = 'testUrl';
+        var url = require.toUrl('./data/playlist.json');
         dom.addStyleSheet(url);
 
         // check that stylesheet with testUrl href has been added to the head
-        assert.ok(document.getElementsByTagName('head')[0].lastChild.href.indexOf('testUrl') >= 0);
+        assert.ok(document.getElementsByTagName('head')[0].lastChild.href.indexOf('playlist') >= 0);
     });
 
     test('bounds test', function(assert) {
