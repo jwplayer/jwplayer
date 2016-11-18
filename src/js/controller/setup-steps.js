@@ -161,7 +161,6 @@ define([
             var width = _model.get('width');
             var height = _model.get('height');
             utils.style(testContainer, {
-                visibility: 'hidden',
                 position: 'relative',
                 width: width.toString().indexOf('%') > 0 ? width : (width+ 'px'),
                 height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
@@ -170,7 +169,7 @@ define([
             parentElement.replaceChild(testContainer, originalContainer);
             var done = function() {
                 clearTimeout(embedTimeout);
-                parentElement.replaceChild(originalContainer, testContainer);
+                swf.embedCallback = null;
                 resolve();
             };
             swf.embedCallback = done;
