@@ -1,7 +1,6 @@
 {
     "env": {
         "browser": true,
-        "mocha": true,
         "amd": true
     },
     "globals": {
