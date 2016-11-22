@@ -5,6 +5,7 @@
         "amd": true
     },
     "globals": {
+        "define": true
     },
     "parserOptions": {
         "ecmaVersion": 5,
@@ -24,7 +25,6 @@
         "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
         "no-console": 0,
         "prefer-rest-params": 0,
-        "prefer-arrow-callback": 0,
-        "import/no-amd": 0
+        "prefer-arrow-callback": 0
     }
 }
