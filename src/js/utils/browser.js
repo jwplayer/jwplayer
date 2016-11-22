@@ -23,7 +23,7 @@ define([
         return flashVersion && flashVersion >= __FLASH_VERSION__;
     };
 
-    browser.isFF = _browserCheck(/firefox/i);
+    browser.isFF = _browserCheck(/gecko\//i);
     browser.isIPod = _browserCheck(/iP(hone|od)/i);
     browser.isIPad = _browserCheck(/iPad/i);
     browser.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);

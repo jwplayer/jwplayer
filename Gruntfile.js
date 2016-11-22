@@ -164,7 +164,7 @@ module.exports = function(grunt) {
                     'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
-                tasks: ['build-flash']
+                tasks: ['flash:debug', 'flash:debugLoader']
             }
         },
 
@@ -205,6 +205,16 @@ module.exports = function(grunt) {
             release : {
                 files : {
                     'bin-release/jwplayer.flash.swf': 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
+                }
+            },
+            debugLoader : {
+                files : {
+                    'bin-debug/jwplayer.loader.swf' : 'src/flash/com/longtailvideo/jwplayer/FlashHealthCheck.as'
+                }
+            },
+            releaseLoader : {
+                files : {
+                    'bin-release/jwplayer.loader.swf': 'src/flash/com/longtailvideo/jwplayer/FlashHealthCheck.as'
                 }
             },
             library: {
@@ -326,7 +336,9 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build-flash', [
         'flash:debug',
-        'flash:release'
+        'flash:release',
+        'flash:debugLoader',
+        'flash:releaseLoader'
     ]);
 
     grunt.registerTask('build', [

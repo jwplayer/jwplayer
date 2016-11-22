@@ -72,6 +72,11 @@ define([
             _model.on('change:mute', function(data, value) {
                 _currentProvider.mute(value);
             }, _this);
+            _model.on('change:autostartMuted', function(data, value) {
+                if (!value) {
+                    _currentProvider.mute(_model.get('mute'));
+                }
+            }, _this);
         };
 
         /** Stop the instream playback and revert the main player back to its original state **/
