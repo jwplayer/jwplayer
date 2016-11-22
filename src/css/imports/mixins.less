@@ -23,37 +23,32 @@
 }
 
 .inset-controlbar() {
-    &.jw-flag-time-slider-static .jw-controlbar {
-        // for correct display in IE browsers
-        display: inline-block;
-        // width assignment is required for IE11 to center correctly
-        width: 96%;
+
+  &.jw-breakpoint-2,
+  &.jw-breakpoint-3,
+  &.jw-breakpoint-4,
+  &.jw-breakpoint-5,
+  &.jw-breakpoint-6,
+  &.jw-breakpoint-7 {
+
+    &.jw-flag-time-slider-static {
+      .jw-controlbar {
+        bottom: .7em;
+        display: inline-block; // for correct display in IE browsers
         max-width: 50em;
         margin: 0 auto;
-        bottom: .7em;
         left: 2%;
         right: 2%;
+        width: 96%; // width assignment is required for IE11 to center correctly
+      }
     }
-    &.jw-flag-audio-player .jw-controlbar {
-        bottom: 0; // overwrite the inset-controlbar mixin
-    }
-    &.jw-flag-time-slider-fixed .jw-controlbar,
-    &.jw-breakpoint-0 .jw-controlbar,
-    &.jw-breakpoint-1 .jw-controlbar {
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-    }
-    &.jw-breakpoint-0 .jw-controlbar,
-    &.jw-breakpoint-1 .jw-controlbar {
-        display: table;
-        bottom: 0;
-        left: 0;
-        margin: 0;
-        padding: 0 0.3em;
-        right: 0;
-        width: 100%;
-    }
+
+  }
+
+  &.jw-flag-audio-player .jw-controlbar {
+    bottom: 0; // overwrite the inset-controlbar mixin
+  }
+
 }
 
 .vertically-centered-rail-element(@rail-height, @element-height) {
@@ -84,38 +79,13 @@
 /* Mixin for common skin styles with variable colors */
 #namespace() {
     .basic-skin-styles() {
+
         .jw-background-color {
             background: @display-bkgd-color;
         }
 
         .jw-controlbar {
             background: @controlbar-background;
-        }
-
-        &.jw-flag-time-slider-fixed,
-        &.jw-breakpoint-0,
-        &.jw-breakpoint-1 {
-
-          .jw-controlbar {
-            background: linear-gradient(180deg, transparent, mix(black, white, 90%));
-          }
-
-          .jw-controlbar-center-group {
-            left: 0;
-            padding: 0 @ui-padding;
-            position: absolute;
-            top: (@mobile-touch-target / 2);
-          }
-
-          .jw-controlbar-left-group,
-          .jw-controlbar-right-group {
-            vertical-align: bottom;
-          }
-
-          .jw-controlbar-right-group {
-            text-align: right;
-          }
-
         }
 
         .jw-text {
@@ -159,21 +129,19 @@
             }
         }
 
-        /* Colors for center play and buffering icons */
-        .jw-icon-display {
-            color: @display-icon-color;
-        }
-
+        /* Colors for display icons */
         .jw-display-icon-container {
-            border-radius: @ui-corner-round;
-
-            &:hover {
-                background: @display-bkgd-hover-color;
-
-                .jw-icon-display {
-                    color: @display-icon-hover-color;
-                }
+          background: @display-bkgd-color;
+          border-radius: @ui-corner-round;
+          .jw-icon {
+            color: @display-icon-color;
+          }
+          &:hover {
+            background: @display-bkgd-hover-color;
+            .jw-icon {
+              color: @display-icon-hover-color;
             }
+          }
         }
 
         /* Slider colors */
@@ -263,14 +231,6 @@
           right: @nextup-position-right;
         }
 
-        &.jw-flag-time-slider-fixed,
-        &.jw-breakpoint-0,
-        &.jw-breakpoint-1 {
-          .jw-nextup-container {
-            bottom: @nextup-position-bottom + ((@mobile-touch-target / @default-em-size) / 2);
-          }
-        }
-
         .jw-nextup {
           border-radius: @nextup-border-radius;
         }
@@ -305,6 +265,30 @@
           color: @nextup-close-button-color-hover;
         }
 
+        // static time slider
+        &.jw-flag-time-slider-static:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+
+        }
+
+        // fixed time slider
+        &.jw-flag-time-slider-fixed,
+        &.jw-breakpoint-0,
+        &.jw-breakpoint-1 {
+
+          .jw-nextup-container {
+            bottom: @nextup-position-bottom + ((@mobile-touch-target / @default-em-size) / 2);
+          }
+
+          .jw-tooltip-time {
+
+            .jw-time-tip {
+              border-radius: @ui-corner-round;
+            }
+
+          }
+
+        }
+
     }
 
     /* Override default touch flag styles */
@@ -322,6 +306,8 @@
     }
 
     .controlbar-height() {
+
+      &.jw-flag-time-slider-static:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
 
         .jw-controlbar {
 
@@ -366,16 +352,29 @@
             min-width: @controlbar-height * 5/8;
         }
 
-        // modifiers for small player sizes/time slider above
-        &.jw-flag-time-slider-fixed,
-        &.jw-breakpoint-0,
-        &.jw-breakpoint-1 {
+      }
 
-          .jw-controlbar {
-            height: @controlbar-height + (@mobile-touch-target / @default-em-size);
+      &.jw-flag-time-slider-fixed,
+      &.jw-breakpoint-0,
+      &.jw-breakpoint-1 {
+
+        .jw-controlbar-left-group,
+        .jw-controlbar-right-group {
+
+          .jw-icon {
+            color: @fixed-time-slider-inactive-color;
+            &:hover {
+              color: @fixed-time-slider-hover-color;
+            }
+          }
+
+          .jw-text {
+            color: @fixed-time-slider-inactive-color;
           }
 
         }
+
+      }
 
     }
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)

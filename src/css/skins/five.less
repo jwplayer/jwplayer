@@ -1,6 +1,7 @@
 @import "../imports/mixins";
 
 .jw-skin-five {
+
     @active-color: #000;
     @inactive-color: #464646;
     @hover-color: @active-color;
@@ -36,12 +37,16 @@
     @nextup-body-text-color: @active-color;
     @nextup-body-text-color-overflow: darken(#eee, 10%);
 
+    @fixed-time-slider-inactive-color: @display-icon-color;
+    @fixed-time-slider-hover-color: @display-icon-hover-color;
+
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
     #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
+
     /* Styles for play button container on idle */
     .jw-display-icon-container {
         border-radius: @five-border-radius;
@@ -63,72 +68,77 @@
         background-color : #ECECEC;
     }
 
-    /* Slider styles */
-    .jw-slider-horizontal {
-        background: transparent;
+    &.jw-flag-time-slider-static:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
 
-        .jw-slider-container {
-            height: .9em;
-        }
+      /* Slider styles */
+      .jw-slider-horizontal {
+          background: transparent;
 
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress {
-            height: @rail-height;
-            border-radius: @five-border-radius;
-        }
+          .jw-slider-container {
+              height: .9em;
+          }
 
-        .jw-rail {
-            box-shadow: none;
-        }
+          .jw-rail,
+          .jw-buffer,
+          .jw-progress {
+              height: @rail-height;
+              border-radius: @five-border-radius;
+          }
 
-        .jw-knob {
-            .vertically-centered-rail-element(@rail-height, @thumb-size);
-            margin: 0;
+          .jw-rail {
+              box-shadow: none;
+          }
 
-            background-color: #000;
-            border-radius: @five-border-radius;
-            width: 1px;
-            height: @thumb-size;
-        }
+          .jw-knob {
+              .vertically-centered-rail-element(@rail-height, @thumb-size);
+              margin: 0;
 
-        .jw-cue {
-            .vertically-centered-rail-element(@rail-height, @cue-height);
+              background-color: #000;
+              border-radius: @five-border-radius;
+              width: 1px;
+              height: @thumb-size;
+          }
 
-            width: .1em;
-            height: @cue-height;
-            background-color: #000;
-            border-left: 1px solid #fff;
-            border-right: 1px solid #fff;
-        }
-    }
+          .jw-cue {
+              .vertically-centered-rail-element(@rail-height, @cue-height);
 
-    .jw-slider-vertical {
-        .jw-rail,
-        .jw-progress {
-            width: @rail-height;
-        }
+              width: .1em;
+              height: @cue-height;
+              background-color: #000;
+              border-left: 1px solid #fff;
+              border-right: 1px solid #fff;
+          }
+      }
 
-        .jw-progress {
-            background: #fff;
-        }
+      .jw-slider-vertical {
+          .jw-rail,
+          .jw-progress {
+              width: @rail-height;
+          }
 
-        .jw-rail {
-            background: #737373;
-        }
+          .jw-progress {
+              background: #fff;
+          }
 
-        .jw-knob {
-            margin-bottom: 2px/-2;
-            width: .6em;
-            height: 2px;
-            background: @rail-vert-gradient;
-            border-radius: @five-border-radius;
-            .horizontally-centered-rail-element(@rail-height, 0.6em);
-        }
+          .jw-rail {
+              background: #737373;
+          }
+
+          .jw-knob {
+              margin-bottom: 2px/-2;
+              width: .6em;
+              height: 2px;
+              background: @rail-vert-gradient;
+              border-radius: @five-border-radius;
+              .horizontally-centered-rail-element(@rail-height, 0.6em);
+          }
+      }
+
     }
 
     /* Five border-radius for the dock, in the upper right corner */
     .jw-dock-button {
         border-radius: @five-border-radius;
     }
+
 }

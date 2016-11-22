@@ -2,20 +2,22 @@
 @import "vars";
 
 .jw-controlbar {
-    display: table;
-    position: absolute;
-    bottom: 0;
-    height: @controlbar-height;
-    width: 100%;
-    padding: 0 @ui-padding;
 
-    .jw-hidden {
-        display: none;
-    }
+  display: table;
+  position: absolute;
+  bottom: 0;
+  height: @controlbar-height;
+  width: 100%;
+  padding: 0 @ui-padding;
+
+  .jw-hidden {
+    display: none;
+  }
+
 }
 
 .jw-background-color {
-    background-color: @background-color;
+  background-color: @background-color;
 }
 
 .jw-slider-horizontal {
@@ -23,35 +25,35 @@
 }
 
 .jw-group {
-    display: table-cell;
+  display: table-cell;
 }
 
 .jw-controlbar-center-group {
-    padding: 0 @ui-padding;
-    width: 100%;
 
-    .jw-slider-time, .jw-text-alt {
-        padding: 0;
-    }
+  padding: 0 @ui-padding;
+  width: 100%;
 
-    .jw-text-alt {
-        display: none;
-    }
+  .jw-slider-time, .jw-text-alt {
+    padding: 0;
+  }
+
+  .jw-text-alt {
+    display: none;
+  }
+
 }
 
 .jw-controlbar-left-group,
 .jw-controlbar-right-group {
-    white-space: nowrap;
+  white-space: nowrap;
 }
-
-// control bar content (icons/text)
 
 .jw-knob,
 .jw-icon-inline,
 .jw-icon-tooltip,
 .jw-icon-display,
 .jw-option:before {
-    .hover(@hover-color);
+  .hover(@hover-color);
 }
 
 .jw-icon-inline,
@@ -59,25 +61,27 @@
 .jw-slider-horizontal,
 .jw-text-elapsed,
 .jw-text-duration {
-    display: inline-block;
-    height: @controlbar-height;
-    position: relative;
-    line-height: @controlbar-height;
-    vertical-align: middle;
-    cursor: pointer;
-    padding: 0 @ui-padding;
+  display: inline-block;
+  height: @controlbar-height;
+  position: relative;
+  line-height: @controlbar-height;
+  vertical-align: middle;
+  cursor: pointer;
+  padding: 0 @ui-padding;
 }
 
 .jw-controlbar-left-group {
+
   .jw-text-duration {
     display: none;
   }
+
 }
 
 .jw-icon-inline,
 .jw-icon-tooltip {
-    min-width: @controlbar-height * 5/8;
-    text-align: center;
+  min-width: @controlbar-height * 5/8;
+  text-align: center;
 }
 
 .jw-icon-playback {
@@ -85,42 +89,49 @@
 }
 
 .jw-icon-volume {
-    min-width: 1.75em;
-    text-align: left;
+  min-width: 1.75em;
+  text-align: left;
 }
 
 .jw-time-tip {
-    line-height: 1em;
-    pointer-events: none;
+  line-height: 1em;
+  pointer-events: none;
 }
 
 .jw-icon-cast {
-    display: none;
+  display: none;
 }
 
 .jw-slider-volume.jw-slider-horizontal,
 .jw-icon-inline.jw-icon-volume {
-    display: none;
+  display: none;
 }
 
 .jw-button-color {
-    color: @inactive-color;
-    .hover(@hover-color);
-    &:focus {
-      outline: none;
-      color: @hover-color;
-    }
+
+  color: @inactive-color;
+  .hover(@hover-color);
+
+  &:focus {
+    outline: none;
+    color: @hover-color;
+  }
+
 }
 
 .jw-toggle {
-    color: @toggle-active;
-    &.jw-off {
-        color: @toggle-inactive;
-    }
-    &:focus {
-      outline: none;
-      color: @hover-color;
-    }
+
+  color: @toggle-active;
+
+  &.jw-off {
+    color: @toggle-inactive;
+  }
+
+  &:focus {
+    outline: none;
+    color: @hover-color;
+  }
+
 }
 
 .jw-flag-time-slider-fixed,
@@ -128,18 +139,19 @@
 .jw-breakpoint-1 {
 
   .jw-controls {
+    background: linear-gradient(180deg, fade(mix(black, white, 90%), 0%), fade(mix(black, white, 90%), 25%), fade(mix(black, white, 90%), 75%));
     display: flex;
     flex-direction: column;
   }
 
   .jw-controlbar {
     align-items: flex-end;
-    background: linear-gradient(180deg, fade(mix(black, white, 80%), 0%), fade(mix(black, white, 80%), 25%), fade(mix(black, white, 80%), 75%));
+    background: none;
     display: flex;
     flex-wrap: wrap;
     height: @slider-fixed-control-bar-height;
     justify-content: space-between;
-    padding: 5px 15px 0;
+    padding: 5px 20px 0;
     position: static;
   }
 
@@ -150,6 +162,7 @@
 
   .jw-controlbar-left-group,
   .jw-controlbar-right-group {
+
     align-items: center;
     display: flex;
     height: @mobile-touch-target;
@@ -157,12 +170,24 @@
     .jw-icon {
       align-items: center;
       display: flex;
+      color: @fixed-time-slider-inactive-color;
       height: @mobile-touch-target;
       justify-content: center;
+      padding: 0;
       width: @mobile-touch-target;
       &::before {
         height: auto;
       }
+      &:hover {
+        color: @fixed-time-slider-hover-color;
+      }
+    }
+
+    .jw-text {
+      color: @fixed-time-slider-inactive-color;
+      height: auto;
+      line-height: normal;
+      padding: 0 5px;
     }
 
     .jw-hidden,
@@ -174,10 +199,14 @@
   }
 
   .jw-controlbar-left-group {
+
+    margin-left: -5px;
     order: 2;
+
     .jw-text-duration {
       display: inline-block;
     }
+
   }
 
   .jw-controlbar-center-group {
@@ -190,22 +219,29 @@
   }
 
   .jw-controlbar-right-group {
+
     display: flex;
     justify-content: flex-end;
+    margin-right: -5px;
     order: 3;
+
     .jw-text-duration {
       display: none;
     }
+
   }
 
-  .jw-text-duration,
-  .jw-text-elapsed {
-    color: @toggle-inactive;
-    font-weight: bold;
-  }
+  // .jw-text-duration,
+  // .jw-text-elapsed {
+  //   color: @toggle-inactive;
+  // }
 
-  &.jw-breakpoint-0,
-  &.jw-breakpoint-1 {
+}
+
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+
+  .jw-controlbar {
 
     .jw-icon-playback,
     .jw-icon-rewind,
@@ -213,6 +249,10 @@
       display: none;
     }
 
+  }
+
+  .jw-icon-volume .jw-overlay {
+    display: none;
   }
 
 }

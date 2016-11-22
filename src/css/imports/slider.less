@@ -119,11 +119,9 @@
 .jw-breakpoint-1,
 .jw-flag-time-slider-fixed {
 
-  .jw-slider-time {
-    background-color: transparent;
-  }
-
   .jw-slider-horizontal {
+    background: none;
+    background-color: transparent;
     height: @slider-fixed-height;
 
     .jw-slider-container {
@@ -136,8 +134,21 @@
       height: @slider-fixed-rail-height;
     }
 
+    .jw-progress {
+      background-color: @progress-color;
+    }
+
+    .jw-rail {
+      background: none;
+      background-color: fade(white, 25%);
+    }
+
+    .jw-buffer {
+      background: none;
+      background-color: fade(white, 50%);
+    }
+
     .jw-knob {
-      background: none; // removes any linear gradients (like in stormtrooper skin)
       background-color: #fff;
       border-radius: @slider-fixed-knob-border-radius;
       box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);

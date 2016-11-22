@@ -40,6 +40,9 @@
     @nextup-body-background: darken(@nextup-header-background, 5%);
     @nextup-body-text-color-overflow: darken(#182335, 5%);
 
+    @fixed-time-slider-inactive-color: @inactive-color;
+    @fixed-time-slider-hover-color: @active-color;
+
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
     #namespace > .touch-flag-skin-styles(); // Using the above local variables
@@ -47,76 +50,82 @@
 
     .skin-element-padding();
     .inset-controlbar();
-    .jw-controlbar {
-        border-radius: .3em;
-    }
 
-    .jw-tooltip-title {
-        border-bottom: 1px solid @controlbar-background;
-        background-color: @controlbar-background;
-    }
+    &.jw-flag-time-slider-static:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
 
-    .jw-slider-horizontal,
-    .jw-slider-vertical {
-
-        .jw-rail,
-        .jw-progress,
-        .jw-buffer {
-            border-radius: @ui-corner-round;
+        .jw-controlbar {
+            border-radius: .3em;
         }
 
-        .jw-knob {
-            background-color: #fff;
-            width: .7em;
-            height: .7em;
-            border-radius: 50%;
-            .horizontally-centered-rail-element(@def-rail-width, 0.7em);
+        .jw-tooltip-title {
+            border-bottom: 1px solid @controlbar-background;
+            background-color: @controlbar-background;
         }
+
+        .jw-time-tip,
+        .jw-volume-tip,
+        .jw-menu,
+        .jw-skip {
+            border-radius: .3em;
+        }
+
+        .jw-volume-tip,
+        .jw-menu {
+            bottom: .2em;
+        }
+
+        .jw-slider-horizontal,
+        .jw-slider-vertical {
+
+            .jw-rail,
+            .jw-progress,
+            .jw-buffer {
+                border-radius: @ui-corner-round;
+            }
+
+            .jw-knob {
+                background-color: #fff;
+                width: .7em;
+                height: .7em;
+                border-radius: 50%;
+                .horizontally-centered-rail-element(@def-rail-width, 0.7em);
+            }
+        }
+
+        .jw-slider-horizontal {
+            background: transparent;
+
+            .jw-cue {
+                .vertically-centered-rail-element(@rail-height, @cue-size);
+
+                background-color: #fff;
+                width: @cue-size;
+                height: @cue-size;
+                border-radius: 1em;
+            }
+
+            .jw-knob {
+                .vertically-centered-rail-element(@rail-height, .7em);
+            }
+        }
+
+        .jw-slider-vertical {
+
+            .jw-rail,
+            .jw-progress {
+                width: @rail-height;
+            }
+
+            .jw-rail {
+                background: @rail-vert-gradient;
+            }
+
+            .jw-progress {
+                background: @progress-vert-gradient;
+            }
+
+        }
+
     }
 
-    .jw-slider-horizontal {
-        background: transparent;
-
-        .jw-cue {
-            .vertically-centered-rail-element(@rail-height, @cue-size);
-
-            background-color: #fff;
-            width: @cue-size;
-            height: @cue-size;
-            border-radius: 1em;
-        }
-
-        .jw-knob {
-            .vertically-centered-rail-element(@rail-height, .7em);
-        }
-    }
-
-    .jw-slider-vertical {
-
-        .jw-rail,
-        .jw-progress {
-            width: @rail-height;
-        }
-
-        .jw-rail {
-            background: @rail-vert-gradient;
-        }
-
-        .jw-progress {
-            background: @progress-vert-gradient;
-        }
-
-    }
-
-    .jw-time-tip,
-    .jw-volume-tip,
-    .jw-menu,
-    .jw-skip {
-        border-radius: .3em;
-    }
-
-    .jw-volume-tip,
-    .jw-menu {
-        bottom: .2em;
-    }
 }
