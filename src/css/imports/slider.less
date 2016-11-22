@@ -115,9 +115,13 @@
 }
 
 
-.jw-flag-time-slider-fixed,
 .jw-breakpoint-0,
-.jw-breakpoint-1 {
+.jw-breakpoint-1,
+.jw-flag-time-slider-fixed {
+
+  .jw-slider-time {
+    background-color: transparent;
+  }
 
   .jw-slider-horizontal {
     height: @slider-fixed-height;
@@ -133,8 +137,11 @@
     }
 
     .jw-knob {
+      background: none; // removes any linear gradients (like in stormtrooper skin)
+      background-color: #fff;
       border-radius: @slider-fixed-knob-border-radius;
       box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+      display: block;
       height: @slider-fixed-knob-height;
       margin-left: @slider-fixed-knob-width / -2;
       top: auto;
