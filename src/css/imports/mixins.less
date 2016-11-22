@@ -275,6 +275,30 @@
         &.jw-breakpoint-0,
         &.jw-breakpoint-1 {
 
+          .jw-controlbar-left-group,
+          .jw-controlbar-right-group {
+
+            .jw-icon {
+              color: @fixed-time-slider-inactive-color;
+              &:hover {
+                color: @fixed-time-slider-hover-color;
+              }
+            }
+
+            .jw-text {
+              color: @fixed-time-slider-inactive-color;
+            }
+
+          }
+
+          .jw-slider-horizontal {
+
+            .jw-progress {
+              background-color: @fixed-time-slider-progress-color;
+            }
+
+          }
+
           .jw-nextup-container {
             bottom: @nextup-position-bottom + ((@mobile-touch-target / @default-em-size) / 2);
           }
@@ -358,21 +382,7 @@
       &.jw-breakpoint-0,
       &.jw-breakpoint-1 {
 
-        .jw-controlbar-left-group,
-        .jw-controlbar-right-group {
 
-          .jw-icon {
-            color: @fixed-time-slider-inactive-color;
-            &:hover {
-              color: @fixed-time-slider-hover-color;
-            }
-          }
-
-          .jw-text {
-            color: @fixed-time-slider-inactive-color;
-          }
-
-        }
 
       }
 

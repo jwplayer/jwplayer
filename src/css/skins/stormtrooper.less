@@ -33,6 +33,9 @@
     @nextup-body-background: darken(@nextup-header-background, 20%);
     @nextup-body-text-color-overflow: darken(@controlbar-background, 20%);
 
+    @fixed-time-slider-inactive-color: @display-icon-color;
+    @fixed-time-slider-hover-color: @display-icon-hover-color;
+
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
     #namespace > .touch-flag-skin-styles(); // Using the above local variables
@@ -60,62 +63,66 @@
         background-color: @rail-color;
     }
 
-    /* Rail/slider styles */
-    .jw-rail,
-    .jw-buffer,
-    .jw-progress,
-    .jw-knob {
-        box-sizing: border-box;
-        border: 1.5px solid #000;
-        border-radius: 2px;
-    }
+    &.jw-flag-time-slider-static:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
 
-    .jw-progress,
-    .jw-knob {
-        background: @rail-color;
-    }
+      /* Rail/slider styles */
+      .jw-rail,
+      .jw-buffer,
+      .jw-progress,
+      .jw-knob {
+          box-sizing: border-box;
+          border: 1.5px solid #000;
+          border-radius: 2px;
+      }
 
-    /* Timeline and horizontal volume slider */
-    .jw-slider-horizontal {
-        .jw-progress {
-            background: @horiz-rail-gradient;
-        }
+      .jw-progress,
+      .jw-knob {
+          background: @rail-color;
+      }
 
-        .jw-knob {
-            .vertically-centered-rail-element(.3em,.5em);
+      /* Timeline and horizontal volume slider */
+      .jw-slider-horizontal {
+          .jw-progress {
+              background: @horiz-rail-gradient;
+          }
 
-            background: @vertical-rail-gradient;
-            width: .3em;
-            height: .5em;
-            border-width: 1px;
-            border-radius: 0;
-        }
+          .jw-knob {
+              .vertically-centered-rail-element(.3em,.5em);
 
-        .jw-cue {
-            .vertically-centered-rail-element(.3em,.4em);
-            background-color: @inactive-color;
-            border: 1px solid #000;
-        }
-    }
+              background: @vertical-rail-gradient;
+              width: .3em;
+              height: .5em;
+              border-width: 1px;
+              border-radius: 0;
+          }
 
-    /* Volume slider */
-    .jw-slider-vertical {
-        .jw-rail,
-        .jw-progress {
-            width: @rail-height;
-        }
+          .jw-cue {
+              .vertically-centered-rail-element(.3em,.4em);
+              background-color: @inactive-color;
+              border: 1px solid #000;
+          }
+      }
 
-        .jw-progress {
-            background: @vertical-rail-gradient;
-        }
+      /* Volume slider */
+      .jw-slider-vertical {
+          .jw-rail,
+          .jw-progress {
+              width: @rail-height;
+          }
 
-        .jw-knob {
-            width: .5em;
-            height: .2em;
-            background: @horiz-rail-gradient;
-            border-width: 1px;
-            .horizontally-centered-rail-element(@rail-height, 0.5em);
-        }
+          .jw-progress {
+              background: @vertical-rail-gradient;
+          }
+
+          .jw-knob {
+              width: .5em;
+              height: .2em;
+              background: @horiz-rail-gradient;
+              border-width: 1px;
+              .horizontally-centered-rail-element(@rail-height, 0.5em);
+          }
+      }
+
     }
 
     /* Toggle icons */
