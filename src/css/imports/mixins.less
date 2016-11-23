@@ -311,6 +311,31 @@
 
           }
 
+          .jw-nextup-container {
+            bottom: @mobile-touch-target * 1.5;
+          }
+
+          &.jw-breakpoint-2,
+          &.jw-breakpoint-3 {
+            .jw-nextup-container {
+              bottom: (@mobile-touch-target * 1.5) + 7px;
+            }
+          }
+
+          &.jw-breakpoint-4,
+          &.jw-breakpoint-5 {
+            .jw-nextup-container {
+              bottom: (@mobile-touch-target * 1.5) + 10px;
+            }
+          }
+
+          &.jw-breakpoint-6,
+          &.jw-breakpoint-7 {
+            .jw-nextup-container {
+              bottom: (@mobile-touch-target * 2) + 15px;
+            }
+          }
+
         }
 
     }

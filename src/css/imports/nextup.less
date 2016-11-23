@@ -18,15 +18,30 @@
   visibility: hidden;
   width: 40%;
 
-  .jw-flag-time-slider-fixed &,
-  .jw-breakpoint-0 &,
-  .jw-breakpoint-1 & {
-    bottom: @nextup-position-bottom + ((@mobile-touch-target / @default-em-size) / 2);
+  .jw-flag-time-slider-fixed {
+    bottom: @mobile-touch-target * 1.5;
+    right: 20px;
   }
 
   .jw-breakpoint-0 &,
   .jw-breakpoint-1 & {
     display: none;
+  }
+
+  .jw-flag-time-slider-fixed.jw-breakpoint-2 &,
+  .jw-flag-time-slider-fixed.jw-breakpoint-3 & {
+    bottom: (@mobile-touch-target * 1.5) + 5px;
+  }
+
+  .jw-flag-time-slider-fixed.jw-breakpoint-4 &,
+  .jw-flag-time-slider-fixed.jw-breakpoint-5 & {
+    bottom: (@mobile-touch-target * 1.5) + 10px;
+  }
+
+  .jw-flag-time-slider-fixed.jw-breakpoint-6 &,
+  .jw-flag-time-slider-fixed.jw-breakpoint-7 & {
+    bottom: (@mobile-touch-target * 2) + 15px;
+    right: 40px;
   }
 
 }
