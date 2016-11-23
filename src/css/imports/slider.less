@@ -190,8 +190,11 @@
     }
   }
 
+  // very large player
   &.jw-breakpoint-7 {
+
     .jw-tooltip-time {
+      bottom: @mobile-touch-target + 5px;
       .jw-time-tip {
         padding: 4px 6px;
       }
@@ -199,6 +202,14 @@
         font-size: 1.25em;
       }
     }
+
+    .jw-slider-horizontal {
+      height: @mobile-touch-target;
+      .jw-slider-container {
+        height: @mobile-touch-target;
+      }
+    }
+
   }
 
 

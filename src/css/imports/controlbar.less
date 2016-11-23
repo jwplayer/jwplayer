@@ -151,13 +151,8 @@
     flex-wrap: wrap;
     height: @slider-fixed-control-bar-height;
     justify-content: space-between;
-    padding: 5px 20px 0;
+    padding: 0 20px;
     position: static;
-  }
-
-  &.jw-breakpoint-7 .jw-controlbar {
-    height: @slider-fixed-control-bar-height + 25px;
-    padding: 15px 40px;
   }
 
   .jw-controlbar-left-group,
@@ -227,6 +222,29 @@
 
     .jw-text-duration {
       display: none;
+    }
+
+  }
+
+  // very large player
+  &.jw-breakpoint-7 {
+
+    .jw-controlbar {
+      height: (@mobile-touch-target * 2) + 15px;
+      padding: 0 40px 15px;
+    }
+
+    .jw-controlbar-center-group {
+      height: @mobile-touch-target;
+    }
+
+    .jw-controlbar-left-group,
+    .jw-controlbar-right-group {
+
+      .jw-icon {
+        font-size: @mobile-touch-target / 2;
+      }
+
     }
 
   }
