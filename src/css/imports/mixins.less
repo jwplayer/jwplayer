@@ -32,15 +32,33 @@
   &.jw-breakpoint-7 {
 
     &.jw-flag-time-slider-static {
+
       .jw-controlbar {
         bottom: .7em;
         display: inline-block; // for correct display in IE browsers
-        max-width: 50em;
+        max-width: @min-breakpoint-5-width;
         margin: 0 auto;
         left: 2%;
         right: 2%;
         width: 96%; // width assignment is required for IE11 to center correctly
       }
+
+      .jw-nextup-container {
+        bottom: @controlbar-height + .7em;
+        padding-left: 0;
+        padding-right: 0;
+        max-width: @min-breakpoint-5-width;
+      }
+
+      &.jw-breakpoint-2,
+      &.jw-breakpoint-3,
+      &.jw-breakpoint-4 {
+        .jw-nextup-container {
+          padding-left: 2%;
+          padding-right: 2%;
+        }
+      }
+
     }
 
   }
@@ -227,8 +245,8 @@
 
         /* Next up display */
         .jw-nextup-container {
-          bottom: @nextup-position-bottom;
-          right: @nextup-position-right;
+          bottom: @controlbar-height;
+          padding: 0 @ui-padding;
         }
 
         .jw-nextup {
@@ -299,10 +317,6 @@
 
           }
 
-          .jw-nextup-container {
-            bottom: @nextup-position-bottom + ((@mobile-touch-target / @default-em-size) / 2);
-          }
-
           .jw-tooltip-time {
 
             .jw-time-tip {
@@ -312,7 +326,7 @@
           }
 
           .jw-nextup-container {
-            bottom: @mobile-touch-target * 1.5;
+            bottom: (@mobile-touch-target * 1.5);
           }
 
           &.jw-breakpoint-2,
@@ -343,14 +357,7 @@
     /* Override default touch flag styles */
     .touch-flag-skin-styles() {
         &.jw-flag-touch {
-            &.jw-breakpoint-7,
-            &.jw-breakpoint-6,
-            &.jw-breakpoint-5,
-            &.jw-breakpoint-4 {
-                .jw-nextup-container {
-                    bottom: @nextup-position-bottom-touch;
-                }
-            }
+            //
         }
     }
 
