@@ -149,7 +149,7 @@
     background: none;
     display: flex;
     flex-wrap: wrap;
-    height: @slider-fixed-control-bar-height;
+    height: @mobile-touch-target * 1.5;
     justify-content: space-between;
     padding: 0 20px;
     position: static;
@@ -164,6 +164,7 @@
 
     .jw-icon {
       align-items: center;
+      box-sizing: border-box;
       display: flex;
       color: @fixed-time-slider-inactive-color;
       height: @mobile-touch-target;
@@ -226,7 +227,26 @@
 
   }
 
-  // very large player
+  // md player
+  &.jw-breakpoint-2,
+  &.jw-breakpoint-3 {
+    .jw-controlbar {
+      height: (@mobile-touch-target * 1.5) + 7px;
+      padding: 0 20px 7px;
+    }
+  }
+
+  // lg player
+  &.jw-breakpoint-4,
+  &.jw-breakpoint-5 {
+    .jw-controlbar {
+      height: (@mobile-touch-target * 1.5) + 10px;
+      padding: 0 20px 10px;
+    }
+  }
+
+  // xl player
+  &.jw-breakpoint-6,
   &.jw-breakpoint-7 {
 
     .jw-controlbar {
@@ -269,6 +289,7 @@
 
     .jw-icon {
       font-size: @mobile-touch-target / 2;
+      padding-bottom: 7px;
     }
 
   }
