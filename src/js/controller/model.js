@@ -87,6 +87,9 @@ define([
                     return;
 
                 case events.JWPLAYER_PLAYER_STATE:
+                    if (this.get('scrubbing')) {
+                        return;
+                    }
                     this.mediaModel.set('state', data.newstate);
 
                     // This "return" is important because
