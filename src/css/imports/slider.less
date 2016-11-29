@@ -155,15 +155,17 @@
       display: block;
       height: @slider-fixed-knob-height;
       margin-left: @slider-fixed-knob-width / -2;
-      top: auto;
+      margin-top: @slider-fixed-knob-height / -2;
+      top: 50%;
       width: @slider-fixed-knob-width;
     }
   }
 
   .jw-controlbar-center-group {
     .jw-slider-container {
-      align-items: center;
       display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
   }
 
