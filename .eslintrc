@@ -1,0 +1,29 @@
+{
+    "env": {
+        "browser": true,
+        "amd": true
+    },
+    "globals": {
+        "define": true
+    },
+    "parserOptions": {
+        "ecmaVersion": 5,
+        "sourceType": "module"
+    },
+    "extends": "jwplayer-base",
+    "rules": {
+        "no-var": 0,
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+        "prefer-spread": "off",
+        "vars-on-top": "off",
+        "max-len": ["error", 120, { "ignoreComments": true }],
+        "object-shorthand": 0,
+        "no-use-before-define": 0,
+        "func-names": 0,
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
+        "no-console": 0,
+        "prefer-rest-params": 0,
+        "prefer-arrow-callback": 0
+    }
+}

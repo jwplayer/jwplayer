@@ -210,7 +210,7 @@ define([
         var done = assert.async();
 
         utils.ajax({
-            url: 'failUrl',
+            url: 'foobar',
             oncomplete: function() {
                 assert.ok(false, 'expected error callback with invalid "File not found"');
                 done();
