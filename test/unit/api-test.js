@@ -21,12 +21,26 @@ define([
             })[modulePath];
         });
     };
+    var log = console.log;
 
     var vid = document.createElement('video');
     var BROWSER_SUPPORTS_VIDEO = (!!vid.load);
-
-    QUnit.module('Api');
     var test = QUnit.test.bind(QUnit);
+
+    QUnit.module('Api', {
+        beforeEach: beforeEach,
+        afterEach: afterEach,
+    });
+
+    function beforeEach() {
+        console.log = sinon.stub().returns(function() {
+            assert.ok(arguments[1] === 'x', 'Should output error');
+        });
+    }
+
+    function afterEach() {
+        console.log = log;
+    }
 
     test('extends Events', function(assert) {
         var api = createApi('player');
@@ -80,14 +94,7 @@ define([
         api.on('x', update);
         api.on('x', bad);
 
-        var log = console.log;
-        console.log = function() {
-            assert.ok(arguments[1] === 'x', 'Should output error');
-        };
-
         api.trigger('x');
-
-        console.log = log;
 
         assert.ok(check, 'When events blow up, handler continues');
     });
