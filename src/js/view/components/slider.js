@@ -5,6 +5,18 @@ define([
     'utils/helpers'
 ], function(Extendable, UI, SliderTemplate, utils) {
 
+    var getRailBounds = function(elementRail) {
+        var bounds = utils.bounds(elementRail);
+        // Partial workaround of Android 'inert-visual-viewport'
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=489206
+        var pageXOffset = window.pageXOffset;
+        if (pageXOffset && utils.isAndroid() && document.body.parentElement.getBoundingClientRect().left >= 0) {
+            bounds.left -= pageXOffset;
+            bounds.right -= pageXOffset;
+        }
+        return bounds;
+    };
+
     var Slider = Extendable.extend({
         constructor : function(className, orientation) {
             this.className = className + ' jw-background-color jw-reset';
@@ -41,7 +53,7 @@ define([
         },
         dragStart : function() {
             this.trigger('dragStart');
-            this.railBounds = utils.bounds(this.elementRail);
+            this.railBounds = getRailBounds(this.elementRail);
         },
         dragEnd : function(evt) {
             this.dragMove(evt);
@@ -49,7 +61,7 @@ define([
         },
         dragMove : function(evt) {
             var dimension,
-                bounds = this.railBounds = (this.railBounds) ? this.railBounds : utils.bounds(this.elementRail),
+                bounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail),
                 percentage;
 
             if (this.orientation === 'horizontal'){
@@ -80,7 +92,7 @@ define([
             return false;
         },
         tap : function(evt){
-            this.railBounds = utils.bounds(this.elementRail);
+            this.railBounds = getRailBounds(this.elementRail);
             this.dragMove(evt);
         },
 
