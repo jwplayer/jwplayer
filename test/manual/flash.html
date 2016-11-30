@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flash Primary Test</title>
+    <script type="text/javascript" src="../../bin-debug/jwplayer.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
+</head>
+<body>
+
+<h2>Flash Primary Test</h2>
+<p>When primary "flash" is set in the config,
+    test if the Flash plugin is blocked on setup,
+    and if it is use html5.</p>
+
+<div id="container">[PLAYER CONTAINER]</div>
+<script type="text/javascript">
+    jwplayer("container").setup({
+        primary: 'flash',
+        playlist: [
+            {
+                sources: [
+                    { file: "http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4" },
+                    { file: "http://content.bitsontherun.com/videos/q1fx20VZ-27m5HpIu.webm" }
+                ],
+                image: "http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg"
+            },
+            {
+                sources: [
+                    { file: "http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" },
+                    { file: "http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm" }
+                ],
+                image: "http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg"
+            }
+        ]
+    });
+</script>
+</body>
+</html>

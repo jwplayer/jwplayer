@@ -79,6 +79,10 @@ define(['utils/underscore',
                     } else {
                         track._id = tracksHelper.createId(track, this._textTracks.length);
                     }
+                    if (this._tracksById[track._id]) {
+                        // tracks without unique ids must not be marked as "inuse"
+                        continue;
+                    }
                     track.inuse = true;
                 }
                 if (!track.inuse || this._tracksById[track._id]) {
@@ -464,15 +468,12 @@ define(['utils/underscore',
         }
     }
 
+    // Clear the cues from all tracks
     function clearCues() {
         var tracks = this.video.textTracks;
-        if (tracks && tracks.length) {
-            _.each(tracks, function(track) {
-                var cueArrayLength = track.cues ? track.cues.length : 0;
-                for (var i = cueArrayLength; i--;) {
-                    track.removeCue(track.cues[i]);
-                }
-            });
+        if (tracks) {
+            // Second argument allows tracks to be reused
+            _removeCues(tracks, true);
         }
     }
 
@@ -492,11 +493,13 @@ define(['utils/underscore',
         track.addCue(textTrackCue);
     }
 
-    function _removeCues(tracks) {
+    function _removeCues(tracks, keepTracks) {
         if (tracks.length) {
             _.each(tracks, function(track) {
                 // Cues are inaccessible if the track is disabled. While hidden,
                 // we can remove cues while the track is in a non-visible state
+                // Set to disabled before hidden to ensure active cues disappear
+                track.mode = 'disabled';
                 track.mode = 'hidden';
                 for (var i = track.cues.length; i--;) {
                     track.removeCue(track.cues[i]);
@@ -504,7 +507,9 @@ define(['utils/underscore',
                 if (!track.embedded) {
                     track.mode = 'disabled';
                 }
-                track.inuse = false;
+                if (!keepTracks) {
+                    track.inuse = false;
+                }
             });
         }
     }
