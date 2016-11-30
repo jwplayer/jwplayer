@@ -18,6 +18,7 @@
     "eslint-plugin-import": "^1.16.0",
     "esprima": "2.7.2",
     "file-loader": "^0.8.5",
+    "flow-bin": "^0.36.0",
     "grunt": "1.0.1",
     "grunt-cli": "1.2.0",
     "grunt-contrib-clean": "1.0.0",
@@ -64,7 +65,8 @@
     "webpack": "1.13.1"
   },
   "scripts": {
-    "test": "karma start"
+    "test": "karma start",
+    "flow": "flow; test $? -eq 0 -o $? -eq 2"
   },
   "engines": {
     "node": ">=4.3.1"
