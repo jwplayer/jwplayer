@@ -1,7 +1,7 @@
-(function () {
+(function() {
 
     // This allows us to test modules without loading full player
-    window.__BUILD_VERSION__ = '7.3.0';
+    window.__BUILD_VERSION__ = '7.8.0';
     window.__FLASH_VERSION__ = 11.2;
     window.__REPO__ = '';
     window.__SELF_HOSTED__ = true;
@@ -20,14 +20,21 @@
     if (!('Promise' in window)) {
         deps.push('polyfills/promise');
     }
-    if (!('console' in window) || !('log' in window.console) ) {
+    if (!('console' in window) || !('log' in window.console)) {
         window.console = {
-            log: function() {}
+            log: function() {
+            }
         };
     }
 
-
-    if (window.__karma__) {
+    if (window.wallaby) {
+        window.wallaby.delayStart();
+        base = '../../';
+        for (var file in window.wallaby.tests) {
+            deps.push(window.wallaby.tests[file]);
+        }
+        callback = window.wallaby.start;
+    } else if (window.__karma__) {
         base = '/base/';
         for (var file in window.__karma__.files) {
             if (/test\/unit\/[^\/]+\.js$/.test(file)) {
