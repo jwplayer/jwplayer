@@ -1,7 +1,8 @@
 define([
     'test/underscore',
-    'utils/helpers'
-], function ( _, utils) {
+    'utils/helpers',
+    'sinon',
+], function ( _, utils, sinon) {
     /* jshint qunit: true */
     var test = QUnit.test.bind(QUnit);
     var log = console.log;

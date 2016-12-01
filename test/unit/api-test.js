@@ -1,6 +1,7 @@
 define([
     'test/underscore',
     'jquery',
+    'sinon',
     'api/api',
     'data/api-members',
     'data/api-methods',
@@ -8,8 +9,8 @@ define([
     'data/config-small',
     'utils/backbone.events',
     'providers/html5',
-    'providers/flash'
-], function (_, $, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events,
+    'providers/flash',
+], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events,
              providerHtml5, providerFlash) {
     /* jshint qunit: true */
 

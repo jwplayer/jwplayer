@@ -188,7 +188,7 @@ define([
                 ev = events[i];
                 ev.callback.apply(ev.context || context, args);
             } catch(e) {
-                console.log('Error in "', name, '" event handler:', e);
+                console.log('Error in "' + name + '" event handler:', e);
             }
         }
     };

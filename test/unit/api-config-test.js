@@ -1,7 +1,8 @@
 define([
     'test/underscore',
     'api/config',
-], function (_, Config) {
+    'sinon',
+], function (_, Config, sinon) {
     /* jshint qunit: true */
     var test = QUnit.test.bind(QUnit);
     var log = console.log;
