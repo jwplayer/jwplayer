@@ -102,9 +102,26 @@ define([
         };
 
         this.getCurrentCues = function(allCues, pos) {
-            return _.filter(allCues, function (cue) {
-                return pos >= (cue.startTime) && (!cue.endTime || pos <= cue.endTime);
-            });
+            function getEndTime(cue, i) {
+                if (cue.endTime ||  _.last(allCues) === cue) {
+                    return cue.endTime;
+                }
+
+                if (cue.startTime < allCues[i+1].startTime) {
+                    return allCues[i+1].startTime;
+                }
+
+                return getEndTime(cue, i+1);
+            }
+
+            return _.reduce(allCues, function (cues, cue, i) {
+                var endTime = getEndTime(cue, i);
+
+                if (pos >= cue.startTime && (!endTime || pos <= endTime)) {
+                    cues.push(cue);
+                }
+                return cues;
+            }, []);
         };
 
         this.updateCurrentCues = function(cues) {
