@@ -89,12 +89,16 @@ define([
 
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
+        // set time slider location (static or fixed) at top level
+        if (config.timeSliderFixed) {
+            config.timeSliderFixed = _.isBoolean(config.timeSliderFixed) ? config.timeSliderFixed : false;
+        }
+
         if (_.isObject(config.skin)) {
             config.skinUrl = config.skin.url;
             config.skinColorInactive = config.skin.inactive; // default icon color
             config.skinColorActive = config.skin.active;  // icon hover, on, slider color
             config.skinColorBackground = config.skin.background; // control elements background
-            config.skinTimeSliderFixed = _.isBoolean(config.skin.timeSliderFixed) ? config.skin.timeSliderFixed : false; // time slider location (inline or above)
             config.skin = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
         }
 
