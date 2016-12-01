@@ -490,7 +490,8 @@ define([
         function _touchHandler() {
             if( (_model.get('state') === states.IDLE ||
                 _model.get('state') === states.COMPLETE ||
-                _model.get('state') === states.PAUSED) &&
+                _model.get('state') === states.PAUSED ||
+                _model.get('state') === states.BUFFERING) &&
                 _model.get('controls')) {
                 _api.play({reason: 'interaction'});
             }
