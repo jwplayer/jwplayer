@@ -103,10 +103,20 @@
 
     &::before {
       font-size: @mobile-touch-target / 2;
+      position: relative;
     }
 
     &.jw-icon-display {
       display: flex;
+    }
+
+    &.jw-icon-rewind::before {
+      top: 1px;
+    }
+
+    .jw-state-idle &.jw-icon-display::before,
+    .jw-state-paused &.jw-icon-display::before {
+      left: 1px;
     }
 
     .jw-breakpoint-1 & {
