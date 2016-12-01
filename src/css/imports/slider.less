@@ -48,6 +48,7 @@
 
 .jw-slider-horizontal {
     height: @slider-height;
+    padding: 0;
 
     &.jw-slider-volume {
         width: @volume-rail-length;
@@ -114,12 +115,12 @@
     }
 }
 
-
+// small player overrides
 .jw-breakpoint-0,
 .jw-breakpoint-1,
 .jw-flag-time-slider-fixed {
 
-  .jw-slider-horizontal {
+  .jw-controlbar-center-group .jw-slider-horizontal {
     background: none;
     background-color: transparent;
     height: @slider-fixed-height;
