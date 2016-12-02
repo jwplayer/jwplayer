@@ -156,14 +156,9 @@ define([
         this.isSDK = _isSDK;
         this.video = _videotag;
 
-        // prevent browser from showing second cast icon
-        // https://w3c.github.io/remote-playback/
-        if (_.isObject(_playerConfig.cast) && _playerConfig.cast.appid) {
-            _setAttribute('disableRemotePlayback', '');
-        }
-
         _setupListeners(_mediaEvents, _videotag);
 
+        _setAttribute('disableRemotePlayback', '');
         _setAttribute('webkit-playsinline');
         _setAttribute('playsinline');
 
@@ -272,7 +267,7 @@ define([
             }
             _position = currentTime;
         }
-        
+
         function _getDuration() {
             var duration = _videotag.duration;
             var end = _getSeekableEnd();
@@ -285,7 +280,7 @@ define([
             }
             return duration;
         }
-        
+
         function _updateDuration(duration) {
             _duration = duration;
             if (_delayedSeek && duration && duration !== Infinity) {
