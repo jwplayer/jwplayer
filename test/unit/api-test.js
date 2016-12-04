@@ -6,14 +6,30 @@ define([
     'data/api-methods',
     'data/api-methods-chainable',
     'data/config-small',
-    'utils/backbone.events'
-], function (_, $, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events) {
+    'utils/backbone.events',
+    'providers/html5',
+    'providers/flash'
+], function (_, $, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events,
+             providerHtml5, providerFlash) {
     /* jshint qunit: true */
+
+    // polyfill webpack require.ensure
+    //window.jwplayer.api = Api;
+    require.ensure = function(array, callback, moduleName) {
+        console.log('Unit test polyfill for webpack require.ensure', '"'+ moduleName + '"');
+        callback(function webpackRequire(modulePath) {
+            return ({
+                'providers/html5': providerHtml5,
+                'providers/flash': providerFlash
+            })[modulePath];
+        });
+    };
 
     var vid = document.createElement('video');
     var BROWSER_SUPPORTS_VIDEO = (!!vid.load);
 
-    module('Api');
+    QUnit.module('Api');
+    var test = QUnit.test.bind(QUnit);
 
     test('extends Events', function(assert) {
         var api = createApi('player');
@@ -274,8 +290,8 @@ define([
             assert.strictEqual( api.getPlaylistIndex(), 0,
                 'getPlaylistIndex aliases getItem after setup');
 
-            assert.strictEqual( api.callInternal('jwSetCues'), undefined,
-                'deprecated method callInternal is added after setup');
+            assert.strictEqual( api.callInternal, undefined,
+                'deprecated method callInternal has been removed');
 
             assert.ok(typeof api.createInstream() === 'object',
                 'createInstream returns an object after setup');
@@ -311,6 +327,25 @@ define([
             assert.ok(false, 'FAIL');
             done();
         });
+    });
+
+    test('queues commands called after setup before ready', function(assert) {
+        var done = assert.async();
+
+        var api = createApi('player');
+
+        var config = _.extend(configSmall, {});
+
+        api.setup(config)
+            .play()
+            .pause()
+            .on('ready', function() {
+                assert.ok(true, 'ready event fired after setup');
+                done();
+            }).on('setupError', function() {
+                assert.ok(false, 'FAIL');
+                done();
+            });
     });
 
     function createApi(id, globalRemoveCallback) {

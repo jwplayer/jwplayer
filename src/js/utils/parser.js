@@ -1,8 +1,7 @@
 define([
     'utils/underscore',
-    'utils/validator',
-    'utils/trycatch'
-], function(_, validator, trycatch) {
+    'utils/validator'
+], function(_, validator) {
     var parser = {};
 
     /** Gets an absolute file path based on a relative filepath * */
@@ -63,9 +62,9 @@ define([
     /** Takes an XML string and returns an XML object **/
     parser.parseXML = function (input) {
         var parsedXML = null;
-        trycatch.tryCatch(function() {
+        try {
             // Parse XML in FF/Chrome/Safari/Opera
-            if (window.DOMParser) {
+            if ('DOMParser' in window) {
                 parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
                 // In Firefox the XML doc may contain the parsererror, other browsers it's further down
                 if (containsParserErrors(parsedXML.childNodes) ||
@@ -78,7 +77,7 @@ define([
                 parsedXML.async = 'false';
                 parsedXML.loadXML(input);
             }
-        });
+        } catch(e) {/* Expected when content is not XML */}
 
         return parsedXML;
     };
@@ -123,7 +122,7 @@ define([
 
     /** Format the elapsed / remaining text. **/
     parser.timeFormat = function(sec, allowNegative) {
-        if (sec <= 0 && !allowNegative) {
+        if ((sec <= 0 && !allowNegative) || _.isNaN(parseInt(sec))) {
             return '00:00';
         }
 
@@ -140,18 +139,27 @@ define([
 
     /**
      * Determine the adaptive type
+     * Duration can be positive or negative, but minDvrWindow should always be positive
      */
-    parser.adaptiveType = function(duration) {
-        if (duration !== 0) {
-            var MIN_DVR_DURATION = -120;
-            if (duration <= MIN_DVR_DURATION) {
-                return 'DVR';
-            }
-            if (duration < 0 || duration === Infinity) {
-                return 'LIVE';
+    parser.streamType = function(duration, _minDvrWindow) {
+        var minDvrWindow = _.isUndefined(_minDvrWindow) ? 120 : _minDvrWindow;
+        var streamType = 'VOD';
+
+        if (duration === Infinity) {
+            // Live streams are always Infinity duration
+            streamType = 'LIVE';
+        } else if (duration < 0) {
+            // Negative durations are always either DVR or Live
+            // It's DVR if the duration is above the minDvrWindow, live otherwise
+            if (Math.abs(duration) >= Math.max(minDvrWindow, 0)) {
+                streamType = 'DVR';
+            } else {
+                streamType = 'LIVE';
             }
         }
-        return 'VOD';
+
+        // Default option is VOD (i.e. positive or non-infinite)
+        return streamType;
     };
 
     return parser;

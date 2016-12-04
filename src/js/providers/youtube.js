@@ -397,7 +397,8 @@ define([
                 return;
             }
 
-            var currentVideoId = _youtubePlayer.getVideoData().video_id;
+            var videoData = _youtubePlayer.getVideoData();
+            var currentVideoId = videoData && videoData.video_id;
 
             if (currentVideoId !== videoId) {
                 // An exception is thrown by the iframe_api - but the call works
@@ -604,19 +605,17 @@ define([
             }
         };
 
-        this.getName = function() {
-            return { name: 'youtube' };
-        };
+        this.getName = YoutubeProvider.getName;
     }
 
     YoutubeProvider.getName = function() {
         return { name: 'youtube' };
     };
 
-    return {
-        register : function(jwplayer) {
-            jwplayer.api.registerProvider(YoutubeProvider);
-        }
+    YoutubeProvider.register = function(jwplayer) {
+        jwplayer.api.registerProvider(YoutubeProvider);
     };
+
+    return YoutubeProvider;
 
 });

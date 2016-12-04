@@ -1,21 +1,27 @@
 @import "../imports/icons";
 
 .jw-flag-touch {
-    .jw-controlbar, .jw-skip, .jw-plugin {
-        font-size: 1.5em;
-    }
-
-    .jw-captions {
-        // control bar is (1.5*2.5 = 3.75)em for mobile, so bottom should be 0.5 above that
-        bottom: 4.25em;
-    }
-
-    .jw-icon-tooltip.jw-open-drawer {
-        &:before {
-            display: inline;
+    &.jw-breakpoint-3,
+    &.jw-breakpoint-4,
+    &.jw-breakpoint-5,
+    &.jw-breakpoint-6 {
+        .jw-controlbar, .jw-skip, .jw-plugin {
+            font-size: 1.5em;
         }
 
-        .jw-icon-close;
+        .jw-captions {
+            // control bar is (1.5*2.5 = 3.75)em for mobile, so bottom should be 0.5 above that
+            bottom: 4.25em;
+        }
+        video::-webkit-media-text-track-container {
+            // need to compensate for the control bar being 3.75em on mobile
+            // 97% - 6.25 * 4.25em
+            max-height: 70%;
+        }
+
+        .jw-nextup-container {
+            bottom: @nextup-position-bottom-touch;
+        }
     }
 
     .jw-display-icon-container {

@@ -1,8 +1,7 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-vapor {
-	@active-color: #fff;
+		@active-color: #fff;
     @inactive-color: rgba(0, 0, 0, 0.5);
    	@hover-color: @active-color;
 
@@ -12,19 +11,32 @@
     @display-bkgd-hover-color: #000;
 
     @controlbar-background: @rail-color;
-	@progress-color: #0f9e60;
+		@progress-color: #0f9e60;
     @buffer-color: @inactive-color;
     @rail-color: rgba(255, 255, 255, 0.4);
     @thumb-color: @progress-color;
-    
+
+    @controlbar-height: 2em;
     @rail-height: 2em;
     @cue-size: .66em;
+    @def-rail-width: 0.5em;
 
-    @volume-background: @inactive-color;
+    @volume-background: #333;
 
+    @controlbar-height: 2em;
+
+    @nextup-border-radius: @ui-padding / 2;
+    @nextup-header-background: fade(mix(white, black, 50%), 90%);
+    @nextup-body-background: darken(@nextup-header-background, 20%);
+    @nextup-body-text-color-overflow: darken(mix(white, black, 50%), 20%);
+
+    #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
-	.skin-element-padding();
-	
+		#namespace > .touch-flag-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
+    .skin-element-padding();
+
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
@@ -40,52 +52,13 @@
     /* Styles for menu list items */
     .jw-option {
         color: @active-color;
-        
+
         &:hover,
         &.jw-active-option {
             color: @progress-color;
         }
     }
 
-    /* Playlist */
-	.jw-playlist-container {
-        left: -42%;
-        bottom: 0;
-        border-radius: 0;
-        background-color: #1e1e1e;
-
-        .jw-option,
-        .jw-text,
-        .jw-icon {
-            color: #A0A0A0;
-        }
-
-        .jw-option {
-            border-bottom: 1px solid #000;
-            background-color: #1E1E1E;
-            color: #a8a8a8;
-            
-           /* Menu items are green when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                color: @progress-color;
-            }
-        }
-      
-        ::-webkit-scrollbar-track {
-            background-color: #000;
-        }
-
-        ::-webkit-scrollbar {
-            width: 2px;
-            border: 10px solid #1E1E1E;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #A0A0A0;
-        }
-    }
-    
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
@@ -94,18 +67,6 @@
 
     /* Horizontal (timeline & horz volume) slider */
 	.jw-slider-horizontal {
-		height: @rail-height;
-
-        .jw-slider-container {
-            height: @rail-height;
-        }
-
-		.jw-rail,
-		.jw-progress,
-		.jw-buffer {
-			height: @rail-height;
-		}
-
 		.jw-knob,
 		.jw-cue {
 			height: 2em;
@@ -113,9 +74,9 @@
 
 		.jw-knob {
 			margin-left: 0;
-
             background-color: #fff;
             width: .2em;
+            .vertically-centered-rail-element(@rail-height, 2em);
 		}
 
 		.jw-cue {
@@ -124,13 +85,14 @@
                 height: @cue-size;
 		}
 	}
-    
+
     /* Volume slider */
 	.jw-slider-vertical {
 		padding: .4em;
 		bottom: 3px;
 		border-radius: 2px;
 		border: 0;
+        background-color: #333333;
 
         .jw-knob {
             display: none;
@@ -142,30 +104,41 @@
 
 		.jw-rail,
 		.jw-progress {
-			width: .5em;
 			border: 1px solid #000;
 		}
 
 	}
-       
+
     /* Toggle icons */
     .jw-icon-cc {
         &.jw-off:before {
             content: "\e604";
         }
     }
-    
+
     .jw-icon-hd {
         &.jw-off:before {
             content: "\e609";
         }
     }
-    
+
     /* Audio player only */
     &.jw-flag-audio-player {
         .jw-controlbar {
             background: @inactive-color;
         }
+      .jw-controlbar-center-group {
+        padding-bottom: 0;
+      }
     }
+
+  .jw-icon-inline,
+  .jw-icon-tooltip,
+  .jw-slider-horizontal,
+  .jw-text-elapsed,
+  .jw-text-duration {
+      height: @controlbar-height;
+      line-height: @controlbar-height;
+  }
 
 }

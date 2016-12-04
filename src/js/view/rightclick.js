@@ -1,6 +1,6 @@
 define([
     'utils/helpers',
-    'handlebars-loader!templates/rightclick.html',
+    'templates/rightclick.html',
     'utils/underscore',
     'utils/ui',
     'version'
@@ -18,7 +18,7 @@ define([
                     title: 'Powered by JW Player ' + majorMinorPatchPre,
                     featured : true,
                     showLogo : true,
-                    link: 'https://jwplayer.com/learn-more/?m=h&e=o&v=' + version
+                    link: 'https://jwplayer.com/learn-more'
                 }]
             };
 
@@ -32,8 +32,8 @@ define([
                 });
             }
 
-            var _provider = this.model.get('provider').name;
-            if (_provider.indexOf('flash') >= 0) {
+            var _provider = this.model.get('provider');
+            if (_provider && _provider.name.indexOf('flash') >= 0) {
                 var text = 'Flash Version ' + utils.flashVersion();
                 obj.items.push({
                     title : text,
@@ -88,12 +88,16 @@ define([
 
             utils.addClass(this.playerElement, 'jw-flag-rightclick-open');
             utils.addClass(this.el, 'jw-open');
+            clearTimeout(this._menuTimeout);
+            this._menuTimeout = setTimeout(this.hideMenu.bind(this), 3000);
             return false;
         },
 
         hideMenu : function() {
+            this.elementUI.off('out', this.hideMenu, this);
             if (this.mouseOverContext) {
-                // If mouse is over the menu, do nothing
+                // If mouse is over the menu, hide the menu when mouse moves out
+                this.elementUI.on('out', this.hideMenu, this);
                 return;
             }
             utils.removeClass(this.playerElement, 'jw-flag-rightclick-open');
@@ -145,6 +149,7 @@ define([
         },
 
         destroy : function() {
+            clearTimeout(this._menuTimeout);
             if(this.el) {
                 this.hideMenu();
                 this.elementUI.off();

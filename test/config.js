@@ -8,8 +8,9 @@
     window.__DEBUG__ = false;
 
     var base = '';
+    var callback;
     var deps = [
-        'bind-polyfill'
+        'phantomjs-polyfill'
     ];
 
     // Add polyfills for phantomjs 1.x and IE9
@@ -25,15 +26,8 @@
         };
     }
 
-    var callback;
 
-    if (!window.__karma__) {
-        base = document.location.href.replace(/[^\/]+\/[^\/]*$/, '');
-        // this path is relative to the baseUrl src/js folder
-        deps.push('../../test/tests');
-        callback = window.QUnit.start;
-
-    } else {
+    if (window.__karma__) {
         base = '/base/';
         for (var file in window.__karma__.files) {
             if (/test\/unit\/[^\/]+\.js$/.test(file)) {
@@ -41,7 +35,16 @@
             }
         }
         callback = window.__karma__.start;
+    } else if (window.QUnit) {
+        base = document.location.href.replace(/[^\/]+\/[^\/]*$/, '');
+        // this path is relative to the baseUrl src/js folder
+        deps.push('../../test/tests');
+        callback = window.QUnit.start;
+    } else if (window.requireBaseUrl || window.requireCallback) {
+        base = window.requireBaseUrl || base;
+        callback = window.requireCallback || undefined;
     }
+
 
     // Add qunit-fixture to page if not present
     if (!document.getElementById('qunit-fixture')) {
@@ -50,7 +53,7 @@
         document.body.appendChild(qunitFixture);
     }
 
-    var components = base + 'bower_components';
+    var components = base + 'node_modules';
     var data = base + 'test/data';
     var mock = base + 'test/mock';
     var unit = base + 'test/unit';
@@ -69,21 +72,22 @@
             'templates': '../' + 'templates',
             'css': '../' + 'css',
 
-            'handlebars': components + '/handlebars/handlebars.amd',
+            'handlebars': components + '/handlebars/dist/handlebars.amd',
             'text': components + '/requirejs-text/text',
             'handlebars-loader': components + '/requirejs-handlebars/hb',
             'less': components + '/require-less/less',
             'lessc': components + '/require-less/lessc',
             'normalize': components + '/require-less/normalize',
             'jquery': components + '/jquery/dist/jquery',
-            'bind-polyfill': components + '/bind-polyfill/index',
+            'phantomjs-polyfill': components + '/phantomjs-polyfill/bind-polyfill',
 
             // always use test/underscore in test scripts
             'test/underscore': components + '/underscore/underscore',
 
             'data': data,
             'mock': mock,
-            'unit': unit
+            'unit': unit,
+            'simple-style-loader': base + 'node_modules/simple-style-loader'
         },
         shim: {
             'test/underscore': {
@@ -93,7 +97,17 @@
         map: {
             // make sure the text plugin is used to load templates
             '*': {
-                '../css/jwplayer.less': 'less!css/jwplayer',
+                'templates/displayicon.html': 'handlebars-loader!templates/displayicon.html',
+                'templates/dock.html': 'handlebars-loader!templates/dock.html',
+                'templates/logo.html': 'handlebars-loader!templates/logo.html',
+                'templates/player.html': 'handlebars-loader!templates/player.html',
+                'templates/error.html': 'handlebars-loader!templates/error.html',
+                'templates/rightclick.html': 'handlebars-loader!templates/rightclick.html',
+                'templates/slider.html': 'handlebars-loader!templates/slider.html',
+                'templates/menu.html': 'handlebars-loader!templates/menu.html',
+                'templates/playlist.html': 'handlebars-loader!templates/playlist.html',
+                'templates/nextup.html': 'handlebars-loader!templates/nextup.html',
+                'css/jwplayer.less': 'less!css/jwplayer',
                 'utils/video': mock + '/video.js'
             }
         },

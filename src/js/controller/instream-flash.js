@@ -51,16 +51,7 @@ define([
                 }, this);
             }
 
-            this.swf.on('instream:state', function(evt) {
-                switch (evt.newstate) {
-                    case states.PLAYING:
-                        this._adModel.set('state', evt.newstate);
-                        break;
-                    case states.PAUSED:
-                        this._adModel.set('state', evt.newstate);
-                        break;
-                }
-            }, this)
+            this.swf.on('instream:state', this.stateHandler, this)
             .on('instream:time', function(evt) {
                 this._adModel.set('position', evt.position);
                 this._adModel.set('duration', evt.duration);
@@ -82,7 +73,23 @@ define([
                 this.model.on('change:mute', function(data, value) {
                     provider.mute(value);
                 }, this);
+
+                provider.volume(this.model.get('volume'));
+                provider.mute(this.model.get('mute'));
+
+                // update admodel state when set from from googima
+                provider.off();
+                provider.on(events.JWPLAYER_PLAYER_STATE, this.stateHandler, this);
             };
+        },
+
+        stateHandler: function(evt) {
+            switch (evt.newstate) {
+            case states.PLAYING:
+            case states.PAUSED:
+                this._adModel.set('state', evt.newstate);
+                break;
+            }
         },
 
         instreamDestroy: function() {

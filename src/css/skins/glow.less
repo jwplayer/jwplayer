@@ -1,4 +1,3 @@
-@import "../imports/vars";
 @import "../imports/mixins";
 
 .jw-skin-glow {
@@ -9,6 +8,7 @@
     @buffer-color: #3B3D41;
     @rail-color: #2A2C2E;
     @controlbar-background: fade(#131415, 80%);
+    @volume-background: #333;
 
     @cc-inactive: @buffer-color;
     @cc-active: @active-color;
@@ -16,13 +16,24 @@
     @rail-height: .4em;
     @cue-size: .25em;
 
+    @controlbar-height: 2em;
+
+    @nextup-border-radius: 0.3em;
+    @nextup-header-background: fade(#131415, 90%);
+    @nextup-body-background: darken(@nextup-header-background, 20%);
+    @nextup-body-text-color-overflow: darken(#131415, 20%);
+
+    #namespace > .controlbar-height();
+    #namespace > .basic-skin-styles(); // Using the above local variables
+    #namespace > .touch-flag-skin-styles(); // Using the above local variables
+    #namespace > .set-global-color-classes();
+
+    .skin-element-padding();
+
     .jw-background-color {
         background: fade(#333, 80%);
     }
-    
-    #namespace > .basic-skin-styles(); // Using the above local variables
-    .skin-element-padding();
-    
+
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
@@ -35,39 +46,7 @@
     .jw-menu {
         bottom: .3em;
     }
-    
-    /* Playlist */
-    .jw-playlist-container {
-        left: -42%;
-        bottom: 0;
-        border-radius: 0;
 
-        .jw-option {
-            border-bottom: 1px solid #000;
-            color: @active-color;
-            
-
-            /* Menu items are active when active or hovered */
-            &:hover,
-            &.jw-active-option {
-                background-color: @controlbar-background;
-                color: @active-color;
-            }
-        }
-
-        ::-webkit-scrollbar-track {
-            background-color: #000;
-        }
-
-        ::-webkit-scrollbar {
-            border: 10px solid #3B3D41;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: @active-color;
-        }
-    }
-    
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
@@ -84,11 +63,11 @@
     .jw-knob {
         display: none;
     }
-    
+
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
         background: transparent;
-        
+
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
 
@@ -98,7 +77,7 @@
             border-radius: 1em;
         }
     }
-    
+
     /* Volume slider */
     .jw-slider-vertical {
         bottom: 5px;
@@ -112,4 +91,5 @@
             width: .4em;
         }
     }
+
 }

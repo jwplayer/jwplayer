@@ -4,7 +4,8 @@ define([
 ], function ($, EmbedSwf) {
     /* jshint qunit: true */
 
-    module('Embed SWF Util');
+    QUnit.module('Embed SWF Util');
+    var test = QUnit.test.bind(QUnit);
 
     test('embeds a swf', function(assert) {
         var parent = $('<div id="container"></div>')[0];

@@ -27,14 +27,17 @@ define([
         // regex to check if mimetype is given
         var mimetypeRegEx = /^[^\/]+\/(?:x-)?([^\/]+)$/;
 
+        if (mimetypeRegEx.test(_source.type)) {
+            // if type is given as a mimetype
+            _source.mimeType = _source.type;
+            _source.type = _source.type.replace(mimetypeRegEx, '$1');
+        }
+
         // check if the source is youtube or rtmp
         if (utils.isYouTube(_source.file)) {
             _source.type = 'youtube';
         } else if (utils.isRtmp(_source.file)) {
             _source.type = 'rtmp';
-        } else if (mimetypeRegEx.test(_source.type)) {
-            // if type is given as a mimetype
-            _source.type = _source.type.replace(mimetypeRegEx, '$1');
         } else if (!_source.type) {
             _source.type = strings.extension(_source.file);
         }
@@ -44,16 +47,22 @@ define([
         }
 
         // normalize types
-        if (_source.type === 'm3u8') {
-            _source.type = 'hls';
-        }
-        if (_source.type === 'smil') {
-            _source.type = 'rtmp';
-        }
-        // Although m4a is a container format, it is most often used for aac files
-        // http://en.wikipedia.org/w/index.php?title=MPEG-4_Part_14
-        if (_source.type === 'm4a') {
-            _source.type = 'aac';
+        switch (_source.type) {
+            case 'm3u8':
+            case 'vnd.apple.mpegurl':
+                _source.type = 'hls';
+                break;
+            case 'dash+xml':
+                _source.type = 'dash';
+                break;
+            case 'smil':
+                _source.type = 'rtmp';
+                break;
+            // Although m4a is a container format, it is most often used for aac files
+            // http://en.wikipedia.org/w/index.php?title=MPEG-4_Part_14
+            case 'm4a':
+                _source.type = 'aac';
+                break;
         }
 
         // remove empty strings

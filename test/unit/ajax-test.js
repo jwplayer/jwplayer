@@ -4,7 +4,8 @@ define([
 ], function (_, utils) {
     /* jshint qunit: true */
 
-    module('utils.ajax');
+    QUnit.module('utils.ajax');
+    var test = QUnit.test.bind(QUnit);
 
     function validXHR(xhr) {
         if ('XDomainRequest' in window && xhr instanceof window.XDomainRequest) {

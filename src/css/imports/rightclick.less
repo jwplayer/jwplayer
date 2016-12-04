@@ -5,7 +5,7 @@
 @rightclick-hover-bg: #1a1a1a;
 @rightclick-border: #444;
 
-.jw-rightclick {
+.jwplayer .jw-rightclick {
     display: none;
     position: absolute;
     white-space: nowrap;
@@ -20,50 +20,52 @@
         border-radius: 0.15em;
         margin: 0;
         border: 1px solid @rightclick-border;
-        padding-left:0;
-    }
+        padding: 0;
 
-    .jw-rightclick-logo {
-        font-size: 2em;
-        color : #ff0147;
-        vertical-align: middle;
+        li {
+            background-color: @rightclick-bg;
+            border-bottom: 1px solid @rightclick-border;
+            margin: 0;
 
-        padding-right: .3em;
-        margin-right: .3em;
-        border-right: 1px solid @rightclick-border;
-    }
+            .jw-rightclick-logo {
+                font-size: 2em;
+                color : #ff0147;
+                vertical-align: middle;
 
-    li {
-        background-color: @rightclick-bg;
-        border-bottom: 1px solid @rightclick-border;
-        margin: 0;
-    }
+                padding-right: .3em;
+                margin-right: .3em;
+                border-right: 1px solid @rightclick-border;
+            }
 
-    a {
-        color: @rightclick-primary-text;
-        text-decoration: none;
+            a {
+                color: @rightclick-primary-text;
+                text-decoration: none;
 
-        // padding comes from the anchor, so that the whole item is clickable
-        padding: 1em;
-        display: block;
-        font-size: 11/16em;
-    }
+                // padding comes from the anchor, so that the whole item is clickable
+                padding: 1em;
+                display: block;
+                font-size: 11/16em;
+                line-height: 1em;
+            }
+        }
 
-    li:last-child {
-        border-bottom: none;
-    }
 
-    li:hover {
-        background-color: @rightclick-hover-bg;
-        cursor: pointer;
-    }
+        li:last-child {
+            border-bottom: none;
+        }
 
-    .jw-featured {
-        background-color: @rightclick-light-bg;
-        vertical-align: middle;
+        li:hover {
+            background-color: @rightclick-hover-bg;
+            cursor: pointer;
+        }
 
-        & a {
-            color: @rightclick-secondary-text;
+        .jw-featured {
+            background-color: @rightclick-light-bg;
+            vertical-align: middle;
+
+            & a {
+                color: @rightclick-secondary-text;
+            }
         }
     }
 }

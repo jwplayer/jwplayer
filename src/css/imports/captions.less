@@ -1,13 +1,21 @@
+@import "vars";
+
 .jw-captions {
     position: absolute;
-    display: none;
-    margin: 0 auto;
     width: 100%;
-    left: 0;
-    bottom: 3em;
-    right: 0;
-    max-width: 90%;
+    height: inherit;
     text-align: center;
+    display: none;
+    max-height: calc(97% - 6.25 * (@controlbar-height));
+    line-height: 1.3em;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0;
+    text-decoration: none;
+    pointer-events: none;
+    overflow: hidden;
+    top: 0;
 
     &.jw-captions-enabled {
         display: block;
@@ -28,7 +36,8 @@
     display: inline-block;
     color: white;
     background-color: black;
-    word-wrap: break-word;
+    word-wrap: normal;
+    word-break: normal;
     white-space: pre-line;
     font-style: normal;
     font-weight: normal;
@@ -36,4 +45,20 @@
     text-decoration: none;
     line-height: 1.3em;
     padding: 0.1em 0.8em;
+}
+.jw-text-track-display {
+    // Override vtt.js font-size so text resizes as the player size changes
+    font-size: inherit;
+    line-height: 1.3em;
+}
+
+.jwplayer {
+    video::-webkit-media-controls {
+        justify-content: flex-start;
+    }
+    video::-webkit-media-text-track-container {
+        // With 16 lines of captions, 1em ~= 6.25% of height
+        max-height: calc(97% - 6.25 * (@controlbar-height));
+        line-height: 1.3em;
+    }
 }

@@ -13,13 +13,18 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm, preload) {
+    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm, preload, feedid, withCredentials) {
         var list = [];
 
         _.each(playlist, function(item) {
             item = _.extend({}, item);
-            item.allSources = _formatSources(item.sources, androidhls,
-                item.drm || configDrm, item.preload || preload);
+
+            item.allSources = _formatSources(item.sources,
+                androidhls,
+                item.drm || configDrm,
+                item.preload || preload,
+                _fallbackIfUndefined(item.withCredentials, withCredentials));
+
             item.sources = _filterSources(item.allSources, providers);
 
             if (!item.sources.length) {
@@ -34,13 +39,18 @@ define([
                 item.preload = item.preload || preload;
             }
 
+            // set feedid for the item, if it is defined
+            if (item.feedid || feedid) {
+                item.feedid = item.feedid || feedid;
+            }
+
             list.push(item);
         });
 
         return list;
     };
 
-    var _formatSources = function(sources, androidhls, itemDrm, preload) {
+    var _formatSources = function(sources, androidhls, itemDrm, preload, withCredentials) {
         return _.compact(_.map(sources, function(originalSource) {
             if (! _.isObject(originalSource)) {
                 return;
@@ -57,34 +67,51 @@ define([
                 originalSource.preload = originalSource.preload || preload;
             }
 
+            // withCredentials is assigned in ascending priority order, source > playlist > model
+            // a false value that is a higher priority than true must result in a false withCredentials value
+            // we don't want undefined if all levels have withCredentials as undefined
+            var cascadedWithCredentials = _fallbackIfUndefined(originalSource.withCredentials, withCredentials);
+            if (!_.isUndefined(cascadedWithCredentials)) {
+                originalSource.withCredentials = cascadedWithCredentials;
+            }
+
             return Source(originalSource);
         }));
     };
 
     // A playlist item may have multiple different sources, but we want to stick with one.
     var _filterSources = function(sources, providers) {
-
         // legacy plugin support
         if (!providers || !providers.choose) {
             providers = new Providers({primary : providers ? 'flash' : null});
         }
 
-        var bestType = _chooseType(sources, providers);
-
-        return _.where(sources, {type : bestType});
+        var chosenProviderAndType = _chooseProviderAndType(sources, providers);
+        if (!chosenProviderAndType) {
+            return [];
+        }
+        var provider = chosenProviderAndType.provider;
+        var bestType = chosenProviderAndType.type;
+        return _.filter(sources, function(source) {
+            return source.type === bestType && providers.providerSupports(provider, source);
+        });
     };
 
     //  Choose from the sources a type which matches our most preferred provider
-    function _chooseType(sources, providers) {
+    function _chooseProviderAndType(sources, providers) {
         for (var i = 0; i < sources.length; i++) {
             var source = sources[i];
             var chosenProvider = providers.choose(source);
             if (chosenProvider) {
-                return source.type;
+                return {type: source.type, provider: chosenProvider.providerToCheck};
             }
         }
 
         return null;
+    }
+
+    function _fallbackIfUndefined(value, fallback) {
+        return _.isUndefined(value) ? fallback : value;
     }
 
     return Playlist;

@@ -7,14 +7,15 @@ define([
     // This is to provide a first frame event even when
     //  a provider does not give us one.
     var onTimeIncreasesGenerator = (function(callback) {
-        var lastVal = Number.MIN_VALUE;
+        var lastVal = 0;
         return function (evt) {
-            if (evt.position > lastVal) {
+            var pos = evt.position;
+            if (pos > lastVal) {
                 callback();
             }
             // sometimes the number will wrap around (ie 100 down to 0)
             //  so always update
-            lastVal = evt.position;
+            lastVal = pos;
         };
     });
 

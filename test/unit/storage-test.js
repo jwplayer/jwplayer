@@ -6,22 +6,17 @@ define([
     /* jshint qunit: true */
 
 
-    module('Storage');
+    QUnit.module('Storage');
 
     function mockModel() {
         _.extend(this, SimpleModel);
-
     }
 
-    test('provides persistent storage', function(assert) {
-        var PERSIST = [
-            'volume',
-            'mute'
-        ];
+    QUnit.test('provides persistent storage', function(assert) {
 
         var model = new mockModel();
         var storage = new Storage();
-        storage.track(PERSIST, model);
+        storage.track(model);
 
         model.set('volume', 70);
         data = storage.getAllItems();
