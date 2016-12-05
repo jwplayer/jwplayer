@@ -54,6 +54,7 @@ define([
             _captionsRenderer,
             _audioMode,
             _showing = false,
+            _controlsHidden = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _resizeContainerRequestId = -1,
@@ -487,20 +488,25 @@ define([
             }
         }
 
-        function _touchHandler() {
-            if( (_model.get('state') === states.IDLE ||
+        function _touchHandler(displayIcon) {
+            if ((_model.get('state') === states.IDLE ||
                 _model.get('state') === states.COMPLETE ||
-                _model.get('state') === states.PAUSED ||
+                (displayIcon && _model.get('state') === states.PAUSED) ||
                 (_instreamModel && _instreamModel.get('state') === states.PAUSED)) &&
                 _model.get('controls')) {
                 _api.play({reason: 'interaction'});
             }
 
-            // Toggle visibility of the controls when clicking the media or play icon
-            if(!_showing) {
-                _userActivity();
+            if (_model.get('state') === states.PAUSED && !displayIcon) {
+                // Toggle visibility of the controls when tapping the media
+                _toggleControls();
             } else {
-                _userInactive();
+                // Toggle visibility of the controls when tapping the media or play icon
+                if(!_showing) {
+                    _userActivity();
+                } else {
+                    _userInactive();
+                }
             }
         }
 
@@ -587,7 +593,7 @@ define([
             });
             displayIcon.on('tap', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _touchHandler();
+                _touchHandler(true);
             });
 
             // make displayIcon clickthrough on chrome for flash to avoid power safe throttle
@@ -928,6 +934,18 @@ define([
             _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
         }
 
+        function _toggleControls() {
+            if (_controlsHidden){
+                utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
+                _captionsRenderer.renderCues(true);
+                _controlsHidden = false;
+            } else {
+                utils.addClass(_playerElement, 'jw-flag-controls-hidden');
+                _captionsRenderer.renderCues(true);
+                _controlsHidden = true;
+            }
+        }
+
         function _playlistCompleteHandler() {
             _api.setFullscreen(false);
         }
@@ -1002,6 +1020,9 @@ define([
                 _previewDisplayStateTimeout = setTimeout(function() {
                     _stateUpdate(model, state);
                 }, 33);
+            }
+            if (state !== states.PAUSED && _controlsHidden) {
+                utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
             }
         }
 
