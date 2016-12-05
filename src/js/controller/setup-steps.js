@@ -168,8 +168,11 @@ define([
             var swf = EmbedSwf.embed(flashHealthCheckSwf, testContainer, flashHealthCheckId, null);
             parentElement.replaceChild(testContainer, originalContainer);
             var done = function() {
+                if (embedTimeout === -1) {
+                    return;
+                }
                 clearTimeout(embedTimeout);
-                swf.embedCallback = null;
+                embedTimeout = -1;
                 resolve();
             };
             swf.embedCallback = done;
