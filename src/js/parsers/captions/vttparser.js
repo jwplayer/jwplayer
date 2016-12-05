@@ -124,6 +124,11 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             callback(k, v);
         }
     }
+    
+    var defaults = new VTTCue(0,0,0);
+    // 'middle' was changed to 'center' in the spec: https://github.com/w3c/webvtt/pull/244
+    // Chrome and Safari don't yet support this change, but FF does
+    var center = defaults.align === 'middle' ? 'middle' : 'center';
 
     function parseCue(input, cue, regionList) {
         // Remember the original input if we need to throw an error.
@@ -166,21 +171,21 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                         }
                         settings.alt(k, vals0, ['auto']);
                         if (vals.length === 2) {
-                            settings.alt('lineAlign', vals[1], ['start', 'middle', 'end']);
+                            settings.alt('lineAlign', vals[1], ['start', center, 'end']);
                         }
                         break;
                     case 'position':
                         vals = v.split(',');
                         settings.percent(k, vals[0]);
                         if (vals.length === 2) {
-                            settings.alt('positionAlign', vals[1], ['line-left', 'middle', 'line-right', 'auto']);
+                            settings.alt('positionAlign', vals[1], ['start', center, 'end', 'line-left', 'line-right', 'auto']);
                         }
                         break;
                     case 'size':
                         settings.percent(k, v);
                         break;
                     case 'align':
-                        settings.alt(k, v, ['start', 'middle', 'end', 'left', 'right']);
+                        settings.alt(k, v, ['start', center, 'end', 'left', 'right']);
                         break;
                 }
             }, /:/, /\s/);
@@ -188,13 +193,22 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             // Apply default values for any missing fields.
             cue.region = settings.get('region', null);
             cue.vertical = settings.get('vertical', '');
-            cue.line = settings.get('line', 'auto');
+            var line = settings.get('line', 'auto');
+            if (line === 'auto' && defaults.line === -1) {
+                // set numeric line number for Safari
+                line = -1;
+            }
+            cue.line = line;
             cue.lineAlign = settings.get('lineAlign', 'start');
             cue.snapToLines = settings.get('snapToLines', true);
             cue.size = settings.get('size', 100);
-            cue.align = settings.get('align', 'middle');
-            cue.position = settings.get('position', 'auto');
-            cue.positionAlign = settings.get('positionAlign', 'auto');
+            cue.align = settings.get('align', center);
+            var position = settings.get('position', 'auto');
+            if (position === 'auto' && defaults.position === 50) {
+                // set numeric position for Safari
+                position = cue.align === 'start' || cue.align === 'left' ? 0 : cue.align === 'end' || cue.align === 'right' ? 100 : 50;
+            }
+            cue.position = position;
         }
 
         function skipWhitespace() {
