@@ -13,6 +13,9 @@ define([
         this.iconUI = new UI (this.el).on('click tap', function() {
             api.next();
         });
+        model.on('change:nextUp', function(model, nextUp) {
+            this.el.style.display = nextUp ? '' : 'none';
+        }, this);
     };
 
     _.extend(NextDisplayIcon.prototype, {
