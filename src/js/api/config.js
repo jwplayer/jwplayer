@@ -90,8 +90,8 @@ define([
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
         // set time slider location (static or fixed) at top level
-        if (config.timeSliderFixed) {
-            config.timeSliderFixed = _.isBoolean(config.timeSliderFixed) ? config.timeSliderFixed : false;
+        if (config.timeSliderAbove) {
+            config.timeSliderAbove = _.isBoolean(config.timeSliderAbove) ? config.timeSliderAbove : false;
         }
 
         if (_.isObject(config.skin)) {

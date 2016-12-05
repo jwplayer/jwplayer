@@ -379,10 +379,10 @@ define([
             }
 
             // display time slider above control bar if configured
-            if (_model.get('timeSliderFixed')) {
-              utils.addClass(_playerElement, 'jw-flag-time-slider-fixed');
+            if (_model.get('timeSliderAbove')) {
+              utils.addClass(_playerElement, 'jw-flag-time-slider-above');
             } else {
-              utils.addClass(_playerElement, 'jw-flag-time-slider-static');
+              utils.addClass(_playerElement, 'jw-flag-time-slider-inline');
             }
 
             this.onChangeSkin(_model, _model.get('skin'), '');

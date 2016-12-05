@@ -31,7 +31,7 @@
   &.jw-breakpoint-6,
   &.jw-breakpoint-7 {
 
-    &.jw-flag-time-slider-static {
+    &.jw-flag-time-slider-inline {
 
       .jw-controlbar {
         bottom: .7em;
@@ -288,12 +288,12 @@
         }
 
         // static time slider
-        &.jw-flag-time-slider-static:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+        &.jw-flag-time-slider-inline:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
 
         }
 
         // fixed time slider
-        &.jw-flag-time-slider-fixed,
+        &.jw-flag-time-slider-above,
         &.jw-breakpoint-0,
         &.jw-breakpoint-1 {
 
@@ -385,7 +385,7 @@
 
     .controlbar-height() {
 
-      &.jw-flag-time-slider-static:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+      &.jw-flag-time-slider-inline:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
 
         .jw-controlbar {
 
@@ -432,7 +432,7 @@
 
       }
 
-      &.jw-flag-time-slider-fixed,
+      &.jw-flag-time-slider-above,
       &.jw-breakpoint-0,
       &.jw-breakpoint-1 {
 
@@ -485,7 +485,7 @@
         }
       }
 
-      &.jw-flag-time-slider-fixed:not(.jw-state-idle),
+      &.jw-flag-time-slider-above:not(.jw-state-idle),
       &.jw-breakpoint-0:not(.jw-state-idle),
       &.jw-breakpoint-1:not(.jw-state-idle) {
         .jw-display-icon-container {
