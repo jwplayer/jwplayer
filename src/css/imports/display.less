@@ -46,7 +46,7 @@
 
 // ========== Display Icons ========== //
 
-.jw-display-icon-container {
+.jw-display-container {
   align-items: center;
   display: flex;
   flex-grow: 1;
@@ -61,7 +61,7 @@
   }
 }
 
-.jw-display-icon {
+.jw-display-icon-container {
   background: @display-bkgd-color;
   border-radius: @ui-corner-round;
   cursor: pointer;
@@ -160,7 +160,7 @@
 // Hide the player when,
 .jw-flag-audio-player, // Audio only mode
 .jw-flag-dragging {     // Scrubbing
-  .jw-display-icon {
+  .jw-display-icon-container {
     display:none;
   }
 }
