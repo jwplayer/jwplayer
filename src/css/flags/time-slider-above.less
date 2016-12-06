@@ -10,7 +10,17 @@
     justify-content: flex-end;
   }
 
-  // override default display icons container display value for flags
+  // do not show the controls background linear gradient when video is idle state
+  // or playing state when user inactive (the gradient in other scenarios blocks video
+  // from clashing with the video colors, making it easy to see/use)
+  &.jw-state-idle,
+  &.jw-state-playing.jw-flag-user-inactive {
+    .jw-controls {
+      background: none;
+    }
+  }
+
+  // override default display icons container display value for certain states
   &.jwplayer.jw-state-paused,
   &.jwplayer.jw-state-playing {
     .jw-display-icon-container {
@@ -29,13 +39,9 @@
     position: static;
   }
 
-  &.jw-state-idle,
-  &.jw-state-playing.jw-flag-user-inactive {
-    .jw-controls {
-      background: none;
-    }
-  }
-
+  // do not show control bar in idle state (this is already defined in the default
+  // flag styles, however, this UI mode overrides it by setting control bar to flex,
+  // forcing us to define it again here)
   &.jw-state-idle {
     .jw-controlbar {
       display: none;
@@ -46,6 +52,49 @@
   &.jwplayer.jw-flag-cast-available {
     .jw-controlbar {
       display: flex;
+    }
+  }
+
+  // md player
+  &.jw-breakpoint-2,
+  &.jw-breakpoint-3 {
+    .jw-controlbar {
+      height: (@mobile-touch-target * 1.5) + 7px;
+      padding: 0 20px 7px;
+    }
+  }
+
+  // lg player
+  &.jw-breakpoint-4,
+  &.jw-breakpoint-5 {
+    .jw-controlbar {
+      height: (@mobile-touch-target * 1.5) + 10px;
+      padding: 0 20px 10px;
+    }
+  }
+
+  // xl player
+  &.jw-breakpoint-6,
+  &.jw-breakpoint-7 {
+    .jw-controlbar {
+      height: (@mobile-touch-target * 2) + 15px;
+      padding: 0 40px 15px;
+    }
+  }
+
+  .jw-controlbar-center-group {
+    align-items: center;
+    display: flex;
+    height: @slider-fixed-height;
+    order: 1;
+    padding: 0;
+    width: 100%;
+  }
+
+  &.jw-breakpoint-6,
+  &.jw-breakpoint-7 {
+    .jw-controlbar-center-group {
+      height: @mobile-touch-target;
     }
   }
 
@@ -89,79 +138,32 @@
   }
 
   .jw-controlbar-left-group {
-
     margin-left: -5px;
     order: 2;
-
     .jw-text-duration {
       display: inline-block;
     }
-
-  }
-
-  .jw-controlbar-center-group {
-    align-items: center;
-    display: flex;
-    height: @slider-fixed-height;
-    order: 1;
-    padding: 0;
-    width: 100%;
   }
 
   .jw-controlbar-right-group {
-
     display: flex;
     justify-content: flex-end;
     margin-right: -5px;
     order: 3;
-
     .jw-text-duration {
       display: none;
     }
-
   }
 
-  // md player
-  &.jw-breakpoint-2,
-  &.jw-breakpoint-3 {
-    .jw-controlbar {
-      height: (@mobile-touch-target * 1.5) + 7px;
-      padding: 0 20px 7px;
-    }
-  }
-
-  // lg player
-  &.jw-breakpoint-4,
-  &.jw-breakpoint-5 {
-    .jw-controlbar {
-      height: (@mobile-touch-target * 1.5) + 10px;
-      padding: 0 20px 10px;
-    }
-  }
-
-  // xl player
   &.jw-breakpoint-6,
   &.jw-breakpoint-7 {
-
-    .jw-controlbar {
-      height: (@mobile-touch-target * 2) + 15px;
-      padding: 0 40px 15px;
-    }
-
-    .jw-controlbar-center-group {
-      height: @mobile-touch-target;
-    }
-
     .jw-controlbar-left-group,
     .jw-controlbar-right-group {
-
       .jw-icon {
         font-size: @mobile-touch-target / 2;
         width: @mobile-touch-target * 1.25;
       }
-
     }
-
   }
 
 }
