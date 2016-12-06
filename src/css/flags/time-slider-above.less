@@ -166,4 +166,31 @@
     }
   }
 
+  .jw-captions,
+  video::-webkit-media-text-track-container {
+    max-height: calc(100% - 6.25em * (4.125em));
+  }
+
+  &.jw-breakpoint-2,
+  &.jw-breakpoint-3 {
+    .jw-captions,
+    video::-webkit-media-text-track-container {
+      max-height: calc(100% - 6.25em * (4.125em + 0.5em));
+    }
+  }
+  &.jw-breakpoint-4,
+  &.jw-breakpoint-5 {
+    .jw-captions,
+    video::-webkit-media-text-track-container {
+      max-height: calc(100% - 6.25em * (4.125em + 1em));
+    }
+  }
+  &.jw-breakpoint-6,
+  &.jw-breakpoint-7 {
+    .jw-captions,
+    video::-webkit-media-text-track-container {
+      max-height: calc(100% - 6.25em * (4.125em + 2em));
+    }
+  }
+
 }
