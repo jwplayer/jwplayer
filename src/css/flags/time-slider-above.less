@@ -1,8 +1,7 @@
 @import "../imports/vars";
 
-.jw-flag-time-slider-above,
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
+// time slider above or small player (both override player into same UI)
+.jw-flag-time-slider-above, .jw-breakpoint-0, .jw-breakpoint-1 {
 
   .jw-controls {
     background: linear-gradient(180deg, fade(mix(black, white, 90%), 0%), fade(mix(black, white, 90%), 25%), fade(mix(black, white, 90%), 75%));
@@ -30,7 +29,13 @@
     position: static;
   }
 
-  // don't show control bar in idle state
+  &.jw-state-idle,
+  &.jw-flag-user-inactive {
+    .jw-controls {
+      background: none;
+    }
+  }
+
   &.jw-state-idle {
     .jw-controlbar {
       display: none;
