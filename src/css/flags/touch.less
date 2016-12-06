@@ -27,17 +27,17 @@
         }
     }
 
-    .jw-display-icon-container {
+    .jw-display-icon {
         pointer-events: none;
     }
 
-    // This has higher specificity to overwrite jw-state-paused jw-display-icon-container that hides the display
-    &.jw-state-paused .jw-display-icon-container {
+    // This has higher specificity to overwrite jw-state-paused jw-display-icon that hides the display
+    &.jw-state-paused .jw-display-icon {
         display: table;
     }
 
     &.jw-state-paused.jw-flag-dragging {
-        .jw-display-icon-container {
+        .jw-display-icon {
             display: none;
         }
     }

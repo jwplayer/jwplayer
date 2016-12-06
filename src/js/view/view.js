@@ -382,7 +382,7 @@ define([
             if (_model.get('timeSliderAbove')) {
               utils.addClass(_playerElement, 'jw-flag-time-slider-above');
             } else {
-              utils.addClass(_playerElement, 'jw-flag-time-slider-inline');
+              utils.addClass(_playerElement, 'jw-flag-time-slider-default');
             }
 
             this.onChangeSkin(_model, _model.get('skin'), '');
