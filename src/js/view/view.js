@@ -935,15 +935,9 @@ define([
         }
 
         function _toggleControls() {
-            if (_controlsHidden){
-                utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
-                _captionsRenderer.renderCues(true);
-                _controlsHidden = false;
-            } else {
-                utils.addClass(_playerElement, 'jw-flag-controls-hidden');
-                _captionsRenderer.renderCues(true);
-                _controlsHidden = true;
-            }
+            _controlsHidden = !_controlsHidden;
+            utils.toggleClass(_playerElement, 'jw-flag-controls-hidden', _controlsHidden);
+            _captionsRenderer.renderCues(true);
         }
 
         function _playlistCompleteHandler() {
