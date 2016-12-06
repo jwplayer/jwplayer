@@ -1023,6 +1023,7 @@ define([
             }
             if (state !== states.PAUSED && _controlsHidden) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
+                _controlsHidden = false;
             }
         }
 
