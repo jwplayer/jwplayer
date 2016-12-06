@@ -77,6 +77,7 @@ define({
     on: null,
     once: null,
     skipAd: null,
+    clickAd: null,
     trigger: null,
     triggerSafe: null,
     onAdClick: null,

@@ -827,6 +827,12 @@ define([
                 }
             };
 
+            this.clickAd = function() {
+                if (this._instreamAdapter) {
+                    this._instreamAdapter.clickAd();
+                }
+            };
+
             this.instreamDestroy = function() {
                 if (_this._instreamAdapter) {
                     _this._instreamAdapter.destroy();
