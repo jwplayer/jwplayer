@@ -11,7 +11,7 @@
     justify-content: flex-end;
   }
 
-  // override display container
+  // override default display icons container display value for flags
   &.jwplayer.jw-state-paused,
   &.jwplayer.jw-state-playing {
     .jw-display-icon-container {
@@ -28,6 +28,13 @@
     justify-content: space-between;
     padding: 0 20px;
     position: static;
+  }
+
+  // don't show control bar in idle state
+  &.jw-state-idle {
+    .jw-controlbar {
+      display: none;
+    }
   }
 
   // override flags that set controlbar to display: table by default
