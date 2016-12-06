@@ -54,7 +54,6 @@ define([
             _captionsRenderer,
             _audioMode,
             _showing = false,
-            _controlsHidden = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
             _resizeContainerRequestId = -1,
@@ -489,15 +488,17 @@ define([
         }
 
         function _touchHandler(displayIcon) {
-            if ((_model.get('state') === states.IDLE ||
-                _model.get('state') === states.COMPLETE ||
-                (displayIcon && _model.get('state') === states.PAUSED) ||
+            var state = _model.get('state');
+
+            if ((state === states.IDLE ||
+                state === states.COMPLETE ||
+                (displayIcon && state === states.PAUSED) ||
                 (_instreamModel && _instreamModel.get('state') === states.PAUSED)) &&
                 _model.get('controls')) {
                 _api.play({reason: 'interaction'});
             }
 
-            if (_model.get('state') === states.PAUSED && !displayIcon) {
+            if (state === states.PAUSED && !displayIcon) {
                 // Toggle visibility of the controls when tapping the media
                 _toggleControls();
             } else {
@@ -935,8 +936,7 @@ define([
         }
 
         function _toggleControls() {
-            _controlsHidden = !_controlsHidden;
-            utils.toggleClass(_playerElement, 'jw-flag-controls-hidden', _controlsHidden);
+            utils.toggleClass(_playerElement, 'jw-flag-controls-hidden');
             _captionsRenderer.renderCues(true);
         }
 
@@ -1015,9 +1015,8 @@ define([
                     _stateUpdate(model, state);
                 }, 33);
             }
-            if (state !== states.PAUSED && _controlsHidden) {
+            if (state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
-                _controlsHidden = false;
             }
         }
 
