@@ -180,8 +180,18 @@
     margin-left: -5px;
     order: 2;
 
+    .jw-text-elapsed {
+      padding-right: 7px;
+    }
+
     .jw-text-duration {
       display: inline-block;
+      padding-left: 0;
+      &::before {
+        content: '/';
+        display: inline-block;
+        padding-right: 6px;
+      }
     }
 
   }
