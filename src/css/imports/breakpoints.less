@@ -1,10 +1,16 @@
 @import "mixins";
 @import "vars";
 
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
+/*
 
-  .jw-controlbar {
+control bar
+
+*/
+
+.jw-controlbar {
+
+  .jw-breakpoint-0 &,
+  .jw-breakpoint-1 & {
 
     .jw-icon-playback,
     .jw-icon-rewind,
@@ -15,8 +21,19 @@
 
   }
 
-  .jw-controlbar-left-group,
-  .jw-controlbar-right-group {
+}
+
+/*
+
+control bar groups
+
+*/
+
+.jw-controlbar-left-group,
+.jw-controlbar-right-group {
+
+  .jw-breakpoint-0 &,
+  .jw-breakpoint-1 & {
 
     .jw-icon {
       font-size: @mobile-touch-target / 2;
@@ -25,8 +42,75 @@
 
   }
 
-  .jw-icon-volume .jw-overlay {
+}
+
+/*
+
+volume overlay
+
+*/
+
+.jw-icon-volume .jw-overlay {
+
+  .jw-breakpoint-0 &,
+  .jw-breakpoint-1 & {
     display: none;
+  }
+
+}
+
+/*
+
+display icons
+
+*/
+
+.jw-display-icon-container {
+
+  .jw-breakpoint-4 &,
+  .jw-breakpoint-5 &,
+  .jw-breakpoint-6 &,
+  .jw-breakpoint-7 & {
+    margin: 0 @ui-padding;
+  }
+
+}
+
+.jw-display-container {
+
+  .jw-breakpoint-0:not(.jw-state-idle) &,
+  .jw-breakpoint-1:not(.jw-state-idle) & {
+    padding-top: 14px;
+  }
+
+}
+
+/*
+
+ads flag
+
+*/
+
+.jwplayer.jw-flag-ads {
+
+  &.jw-breakpoint-2 .jw-text-alt {
+    max-width: 250px;
+  }
+
+  &.jw-breakpoint-3 .jw-text-alt {
+    max-width: 370px;
+  }
+
+  &.jw-breakpoint-4 .jw-text-alt {
+    max-width: 470px;
+  }
+
+  &.jw-breakpoint-5 .jw-text-alt {
+    max-width: 630px;
+  }
+
+  &.jw-breakpoint-6 .jw-text-alt {
+    max-width: 790px;
   }
 
 }

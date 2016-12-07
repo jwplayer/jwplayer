@@ -44,21 +44,17 @@
     }
 }
 
-// ========== Display Icons ========== //
+/*
+
+display icons
+
+*/
 
 .jw-display-container {
   align-items: center;
   display: flex;
   flex-grow: 1;
   justify-content: center;
-  .jw-breakpoint-0.jw-state-playing &,
-  .jw-breakpoint-0.jw-state-paused &,
-  .jw-breakpoint-0.jw-state-buffering &,
-  .jw-breakpoint-1.jw-state-playing &,
-  .jw-breakpoint-1.jw-state-paused &,
-  .jw-breakpoint-1.jw-state-buffering & {
-    padding-top: 14px;
-  }
 }
 
 .jw-display-icon-container {
@@ -66,13 +62,6 @@
   border-radius: @ui-corner-round;
   cursor: pointer;
   margin: 0 (@ui-padding * 0.5);
-
-  .jw-breakpoint-4 &,
-  .jw-breakpoint-5 &,
-  .jw-breakpoint-6 &,
-  .jw-breakpoint-7 & {
-    margin: 0 @ui-padding;
-  }
 
   .jw-icon {
     align-items: center;
