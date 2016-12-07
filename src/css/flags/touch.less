@@ -31,9 +31,11 @@
         pointer-events: none;
     }
 
-    // This has higher specificity to overwrite jw-state-paused jw-display-icon-container that hides the display
-    &.jw-state-paused .jw-display-icon-container {
-        display: table;
+    // This has higher specificity to overwrite jw-state-paused jw-display-container that hides the display
+    &.jw-state-paused .jw-display-container,
+    &.jw-state-playing .jw-display-container
+    {
+        display: flex;
     }
 
     &.jw-state-paused.jw-flag-dragging {
