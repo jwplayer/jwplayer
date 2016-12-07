@@ -53,7 +53,9 @@
 .jw-icon-tooltip,
 .jw-icon-display,
 .jw-option:before {
-  .hover(@hover-color);
+  &:hover {
+    color: @hover-color;
+  }
 }
 
 .jw-icon-inline,
@@ -110,7 +112,10 @@
 .jw-button-color {
 
   color: @inactive-color;
-  .hover(@hover-color);
+
+  &:hover {
+    color: @hover-color;
+  }
 
   &:focus {
     outline: none;

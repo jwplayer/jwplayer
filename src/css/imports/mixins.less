@@ -80,12 +80,6 @@
     left: (@rail-width - @element-width)/2;
 }
 
-.hover(@color:@hover-color) {
-    &:hover {
-        color: @color;
-    }
-}
-
 .skin-element-padding() {
     .jw-icon-inline,
     .jw-icon-tooltip,
@@ -125,7 +119,9 @@
 
         .jw-button-color {
             color: @inactive-color;
-            .hover(@hover-color);
+            &:hover {
+              color: @hover-color;
+            }
             &:focus {
                 outline: none;
                 color: @hover-color;
