@@ -4,18 +4,9 @@
     display: none;
   }
 
-  .jw-logo.jw-hide {
-    display: none;
-  }
-
   .jw-plugin,
   .jw-nextup-container {
     bottom: 0.5em;
-  }
-
-  .jw-media {
-    cursor: none;
-    -webkit-cursor-visibility: auto-hide;
   }
 
   .jw-captions {
@@ -23,5 +14,15 @@
   }
   video::-webkit-media-text-track-container {
     max-height: none;
+  }
+}
+
+.jw-flag-controls-hidden {
+  .jw-controls {
+    visibility: hidden;
+  }
+
+  .jw-logo {
+    visibility: visible;
   }
 }
