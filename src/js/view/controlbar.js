@@ -323,11 +323,8 @@ define([
             this.elements.cast.toggle(val);
         },
         onCastActive: function(model, val) {
-            // utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
+            this.elements.fullscreen.toggle(!val);
         },
-        // onCastClick: function(model, val) {
-        //     utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
-        // },
         onElapsed: function(model, val) {
             var elapsedTime;
             var duration = model.get('duration');
