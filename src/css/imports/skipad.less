@@ -7,8 +7,12 @@
     float: right;
     display: inline-block;
     right: 0.75em;
-    bottom : 3em;
+    bottom: 3em;
     padding: @ui-padding;
+
+    .jw-state-playing.jw-flag-user-inactive & {
+      bottom: @ui-padding;
+    }
 
     &.jw-skippable {
       cursor: pointer;
