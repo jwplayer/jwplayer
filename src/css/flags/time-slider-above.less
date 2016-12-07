@@ -1,7 +1,15 @@
 @import "../imports/vars";
 
-// time slider above or small player (both override player into same UI)
-.jw-flag-time-slider-above, .jw-breakpoint-0, .jw-breakpoint-1 {
+/* time slider above or small player (both override player into same UI) */
+.jw-flag-time-slider-above,
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+
+  /*
+
+  controls container
+
+  */
 
   .jw-controls {
     background: linear-gradient(180deg, fade(mix(black, white, 90%), 0%), fade(mix(black, white, 90%), 25%), fade(mix(black, white, 90%), 75%));
@@ -10,23 +18,39 @@
     justify-content: flex-end;
   }
 
-  // do not show the controls background linear gradient when video is idle state
-  // or playing state when user inactive (the gradient in other scenarios blocks video
-  // from clashing with the video colors, making it easy to see/use)
+  /* do not show the controls background linear gradient when video is idle state
+  or playing state when user inactive (the gradient in other scenarios blocks video
+  from clashing with the video colors, making it easy to see/use) */
   &.jw-state-idle,
   &.jw-state-playing.jw-flag-user-inactive {
+
     .jw-controls {
       background: none;
     }
+
   }
 
-  // override default display icons container display value for certain states
+  /*
+
+  display icons
+
+  */
+
+  /* override default display icons container display value for certain states */
   &.jwplayer.jw-state-paused,
   &.jwplayer.jw-state-playing {
+
     .jw-display-icon-container {
       display: flex;
     }
+
   }
+
+  /*
+
+  control bar
+
+  */
 
   .jw-controlbar {
     align-items: flex-end;
@@ -39,48 +63,61 @@
     position: static;
   }
 
-  // do not show control bar in idle state (this is already defined in the default
-  // flag styles, however, this UI mode overrides it by setting control bar to flex,
-  // forcing us to define it again here)
+  /* do not show control bar in idle state (this is already defined in the default
+  flag styles, however, this UI mode overrides it by setting control bar to flex,
+  forcing us to define it again here) */
   &.jw-state-idle {
+
     .jw-controlbar {
       display: none;
     }
+
   }
 
-  // override flags that set controlbar to display: table by default
+  /* override flags that set controlbar to display: table by default */
   &.jwplayer.jw-flag-cast-available {
+
     .jw-controlbar {
       display: flex;
     }
+
   }
 
-  // md player
   &.jw-breakpoint-2,
   &.jw-breakpoint-3 {
+
     .jw-controlbar {
       height: (@mobile-touch-target * 1.5) + 7px;
       padding: 0 20px 7px;
     }
+
   }
 
-  // lg player
   &.jw-breakpoint-4,
   &.jw-breakpoint-5 {
+
     .jw-controlbar {
       height: (@mobile-touch-target * 1.5) + 10px;
       padding: 0 20px 10px;
     }
+
   }
 
-  // xl player
   &.jw-breakpoint-6,
   &.jw-breakpoint-7 {
+
     .jw-controlbar {
       height: (@mobile-touch-target * 2) + 15px;
       padding: 0 40px 15px;
     }
+
   }
+
+  /*
+
+  control bar groups
+
+  */
 
   .jw-controlbar-center-group {
     align-items: center;
@@ -88,19 +125,19 @@
     height: @slider-fixed-height;
     order: 1;
     padding: 0;
-    width: 100%;
   }
 
   &.jw-breakpoint-6,
   &.jw-breakpoint-7 {
+
     .jw-controlbar-center-group {
       height: @mobile-touch-target;
     }
+
   }
 
   .jw-controlbar-left-group,
   .jw-controlbar-right-group {
-
     align-items: center;
     display: flex;
     height: @mobile-touch-target;
@@ -114,12 +151,15 @@
       justify-content: center;
       padding: 0;
       width: @mobile-touch-target;
+
       &::before {
         height: auto;
       }
+
       &:hover {
         color: @fixed-time-slider-hover-color;
       }
+
     }
 
     .jw-text {
@@ -140,9 +180,11 @@
   .jw-controlbar-left-group {
     margin-left: -5px;
     order: 2;
+
     .jw-text-duration {
       display: inline-block;
     }
+
   }
 
   .jw-controlbar-right-group {
@@ -150,21 +192,74 @@
     justify-content: flex-end;
     margin-right: -5px;
     order: 3;
+
     .jw-text-duration {
       display: none;
     }
+
   }
 
   &.jw-breakpoint-6,
   &.jw-breakpoint-7 {
+
     .jw-controlbar-left-group,
     .jw-controlbar-right-group {
+
       .jw-icon {
         font-size: @mobile-touch-target / 2;
         width: @mobile-touch-target * 1.25;
       }
+
     }
+
   }
+
+  &.jw-flag-ads {
+
+    .jw-controlbar-left-group {
+      display: none;
+    }
+
+    .jw-controlbar-center-group {
+      height: @mobile-touch-target;
+      width: auto;
+
+      .jw-text-alt {
+        align-items: center;
+        color: #fff;
+        display: flex;
+        height: @mobile-touch-target;
+        padding-bottom: 7px;
+      }
+
+    }
+
+    .jw-controlbar {
+      .jw-icon-playback,
+      .jw-icon-volume,
+      .jw-slider-volume,
+      .jw-icon-fullscreen,
+      .jw-slider-volume.jw-slider-horizontal,
+      .jw-icon-inline.jw-icon-volume {
+        display: flex;
+      }
+    }
+
+    &.jw-breakpoint-0,
+    &.jw-breakpoint-1 {
+      .jw-controlbar .jw-icon-playback,
+      .jw-slider-volume.jw-slider-horizontal {
+        display: none;
+      }
+    }
+
+  }
+
+  /*
+
+  captions
+
+  */
 
   .jw-captions,
   video::-webkit-media-text-track-container {
@@ -173,24 +268,32 @@
 
   &.jw-breakpoint-2,
   &.jw-breakpoint-3 {
+
     .jw-captions,
     video::-webkit-media-text-track-container {
       max-height: calc(100% - 6.25em * (4.125em + 0.5em));
     }
+
   }
+
   &.jw-breakpoint-4,
   &.jw-breakpoint-5 {
+
     .jw-captions,
     video::-webkit-media-text-track-container {
       max-height: calc(100% - 6.25em * (4.125em + 1em));
     }
+
   }
+
   &.jw-breakpoint-6,
   &.jw-breakpoint-7 {
+
     .jw-captions,
     video::-webkit-media-text-track-container {
       max-height: calc(100% - 6.25em * (4.125em + 2em));
     }
+
   }
 
 }
