@@ -60,36 +60,33 @@ display icons
 }
 
 .jw-display-icon-container {
+  align-items: center;
   background: @display-bkgd-color;
+  background-position: 50%;
+  background-repeat: no-repeat;
   border-radius: @ui-corner-round;
+  color: @display-icon-color;
   cursor: pointer;
+  display: flex;
+  height: @mobile-touch-target;
+  justify-content: center;
   margin: 0 (@ui-padding * 0.5);
+  width: @mobile-touch-target;
 
-  .jw-icon {
-    align-items: center;
-    background-position: 50%;
-    background-repeat: no-repeat;
-    color: @display-icon-color;
-    display: flex;
-    height: @mobile-touch-target;
-    justify-content: center;
-    width: @mobile-touch-target;
-
-    &::before {
-      font-size: @mobile-touch-target * 0.4;
-      position: relative;
-    }
-
-    &.jw-icon-rewind::before {
-      top: 1px;
-    }
-
-    .jw-state-idle &.jw-icon-display::before,
-    .jw-state-paused &.jw-icon-display::before {
-      left: 1px;
-    }
-
+  &::before {
+    font-size: @mobile-touch-target * 0.4;
+    position: relative;
   }
+
+  &.jw-icon-rewind::before {
+    top: 1px;
+  }
+
+  .jw-state-idle &.jw-icon-display::before,
+  .jw-state-paused &.jw-icon-display::before {
+    left: 1px;
+  }
+
 
   &:hover {
     background: @display-bkgd-hover-color;
