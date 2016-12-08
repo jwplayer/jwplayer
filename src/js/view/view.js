@@ -379,7 +379,7 @@ define([
             }
 
             // display time slider above control bar if configured
-            if (_model.get('timeSliderAbove')) {
+            if (_model.get('timeSliderAbove') && !utils.hasClass(_playerElement, 'jw-flag-audio-player')) {
               utils.addClass(_playerElement, 'jw-flag-time-slider-above');
             } else {
               utils.addClass(_playerElement, 'jw-flag-time-slider-default');
