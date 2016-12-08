@@ -2,27 +2,26 @@
 
 .jwplayer.jw-state-buffering {
 
-    .jw-display-icon-container {
-        &.jw-icon-display {
-            .jw-icon-buffer;
-            &::before {
-              -webkit-animation:spin 2s linear infinite;
-              -moz-animation:spin 2s linear infinite;
-              animation:spin 2s linear infinite;
+  .jw-display-icon-display {
 
-              @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-              @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-              @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
-            }
-        }
+    .jw-icon {
+      .jw-icon-buffer;
 
-        .jw-text {
-            display: none;
-        }
+      &::before {
+        -webkit-animation:spin 2s linear infinite;
+        -moz-animation:spin 2s linear infinite;
+        animation:spin 2s linear infinite;
+        @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+        @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+        @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+      }
 
     }
 
-    .jw-icon-playback {
-        .jw-icon-pause;
+    .jw-text {
+      display: none;
     }
+
+  }
+
 }
