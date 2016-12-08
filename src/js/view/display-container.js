@@ -7,8 +7,9 @@ define([
 ], function(utils, Events, UI, Template, _) {
     var DisplayContainer = function() {
         this.el = utils.createElement(Template());
+        this.container = this.el.children[0];
         this.addButton = function (button) {
-            this.el.appendChild(button.el);
+            this.container.appendChild(button.el);
         };
     };
 
