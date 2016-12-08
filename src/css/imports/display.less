@@ -82,6 +82,10 @@ display icons
     top: 1px;
   }
 
+  &.jw-icon-display {
+    // .jw-icon-buffer;
+  }
+
   .jw-state-idle &.jw-icon-display::before,
   .jw-state-paused &.jw-icon-display::before {
     left: 1px;
@@ -100,7 +104,7 @@ display icons
 // Hide the player when,
 .jw-flag-audio-player, // Audio only mode
 .jw-flag-dragging {     // Scrubbing
-  .jw-display-icon-container {
+  .jw-display-container {
     display:none;
   }
 }
