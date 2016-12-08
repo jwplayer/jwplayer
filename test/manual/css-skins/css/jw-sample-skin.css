@@ -62,7 +62,7 @@
 
 /* Sets the shape of the display icon container. This is a circle.*/
 
-.jw-skin-seven .jw-display-container {
+.jw-skin-seven .jw-display-icon-container {
     background: #000;
     border-radius: 50%;
     padding: 0 .4em;
@@ -70,7 +70,7 @@
 }
 
 
-.jw-skin-seven.jw-state-idle .jw-display-container {
+.jw-skin-seven.jw-state-idle .jw-display-icon-container {
     padding: 0 0 0 .5em;
 }
 
