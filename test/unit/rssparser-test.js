@@ -7,7 +7,7 @@ define([
     var test = QUnit.test.bind(QUnit);
 
     test('adds mediaTypes array to source object when at least one jwplayer:mediaTypes element is present', function (assert) {
-        expect(2);
+        assert.expect(2);
         var data =
             '<rss xmlns:jwplayer="http://rss.jwpcdn.com/" xmlns:media="http://search.yahoo.com/mrss">' +
                 '<media:channel>' +
@@ -34,7 +34,7 @@ define([
     });
 
     test('does not add a mediaTypes array to source object when no jwplayer:mediaTypes elements are present', function (assert) {
-        expect(1);
+        assert.expect(1);
         var data =
             '<rss xmlns:jwplayer="http://rss.jwpcdn.com/" xmlns:media="http://search.yahoo.com/mrss">' +
                 '<media:channel>' +

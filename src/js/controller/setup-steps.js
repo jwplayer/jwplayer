@@ -181,7 +181,7 @@ define([
                 _model.set('primary', undefined);
                 _model.updateProviders();
                 done();
-            }, 1500);
+            }, 3000);
         } else {
             resolve();
         }

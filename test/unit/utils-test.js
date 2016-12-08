@@ -1,11 +1,24 @@
 define([
     'test/underscore',
-    'utils/helpers'
-], function ( _, utils) {
+    'utils/helpers',
+    'sinon',
+], function ( _, utils, sinon) {
     /* jshint qunit: true */
-
-    QUnit.module('utils');
     var test = QUnit.test.bind(QUnit);
+    var log = console.log;
+
+    QUnit.module('utils', {
+        beforeEach: beforeEach,
+        afterEach: afterEach,
+    });
+
+    function beforeEach() {
+        console.log = sinon.stub().returns(utils.noop);
+    }
+
+    function afterEach() {
+        console.log = log;
+    }
 
     test('utils.log', function(assert) {
         assert.expect(2);
