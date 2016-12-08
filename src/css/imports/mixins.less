@@ -20,9 +20,9 @@
     font-feature-settings: "liga";
     -moz-osx-font-smoothing: grayscale;
 
-    .jw-flag-time-slider-above & {
-      display: flex;
-    }
+    // .jw-flag-time-slider-above & {
+    //   display: flex;
+    // }
 }
 
 .inset-controlbar() {
@@ -154,14 +154,10 @@
         .jw-display-icon-container {
           background: @display-bkgd-color;
           border-radius: @ui-corner-round;
-          .jw-icon {
-            color: @display-icon-color;
-          }
+          color: @display-icon-color;
           &:hover {
             background: @display-bkgd-hover-color;
-            .jw-icon {
-              color: @display-icon-hover-color;
-            }
+            color: @display-icon-hover-color;
           }
         }
 
