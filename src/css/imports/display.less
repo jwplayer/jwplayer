@@ -55,6 +55,8 @@ display icons
   display: flex;
   flex-grow: 1;
   justify-content: center;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .jw-display-icon-container {
@@ -68,7 +70,7 @@ display icons
     background-position: 50%;
     background-repeat: no-repeat;
     color: @display-icon-color;
-    display: none;
+    display: flex;
     height: @mobile-touch-target;
     justify-content: center;
     width: @mobile-touch-target;
@@ -78,10 +80,6 @@ display icons
       position: relative;
     }
 
-    &.jw-icon-display {
-      display: flex;
-    }
-
     &.jw-icon-rewind::before {
       top: 1px;
     }
@@ -89,50 +87,6 @@ display icons
     .jw-state-idle &.jw-icon-display::before,
     .jw-state-paused &.jw-icon-display::before {
       left: 1px;
-    }
-
-    .jw-breakpoint-1 & {
-      display: flex;
-    }
-
-    .jw-state-idle &,
-    .jw-breakpoint-2 &,
-    .jw-breakpoint-3 &,
-    .jw-breakpoint-4 &,
-    .jw-breakpoint-5 &,
-    .jw-breakpoint-6 &,
-    .jw-breakpoint-7 & {
-      display: none;
-      &.jw-icon-display {
-        display: flex;
-      }
-    }
-
-    .jw-breakpoint-2 &,
-    .jw-breakpoint-3 & {
-      height: @mobile-touch-target * 1.25;
-      width: @mobile-touch-target * 1.25;
-      &::before {
-        font-size: (@mobile-touch-target * 1.25) / 2;
-      }
-    }
-
-    .jw-breakpoint-4 &,
-    .jw-breakpoint-5 & {
-      height: @mobile-touch-target * 1.5;
-      width: @mobile-touch-target * 1.5;
-      &::before {
-        font-size: (@mobile-touch-target * 1.5) / 2;
-      }
-    }
-
-    .jw-breakpoint-6 &,
-    .jw-breakpoint-7 & {
-      height: @mobile-touch-target * 1.75;
-      width: @mobile-touch-target * 1.75;
-      &::before {
-        font-size: (@mobile-touch-target * 1.75) / 2;
-      }
     }
 
   }
