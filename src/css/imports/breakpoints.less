@@ -2,47 +2,16 @@
 @import "vars";
 @import "../flags/time-slider-above";
 
-// do not add additional modifier rules to this rule set
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
-  .jw-flag-time-slider-above; // replace this with &:extend(.jw-flag-time-slider-above); later
+  /* do not add additional modifier rules to this rule set */
+  // replace this with &:extend(.jw-flag-time-slider-above); later
+  .jw-flag-time-slider-above;
 }
 
-// add additional modifier rules to this rule set
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
-
-  &.jw-state-playing,
-  &.jw-state-paused,
-  &.jw-state-buffering {
-    .jw-display-container {
-      display: flex;
-    }
-  }
-
-}
-
-/*
-
+/* ==================================================
 control bar
-
 */
-
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
-
-  .jw-controlbar {
-
-    .jw-icon-playback,
-    .jw-icon-rewind,
-    .jw-icon-next,
-    .jw-icon-hd {
-      display: none;
-    }
-
-  }
-
-}
 
 .jw-breakpoint-2,
 .jw-breakpoint-3 {
@@ -50,8 +19,8 @@ control bar
   &.jw-flag-time-slider-above {
 
     .jw-controlbar {
-      height: (@mobile-touch-target * 1.5) + 7px;
-      padding: 0 20px 7px;
+      // height: (@mobile-touch-target * 1.5) + 7px;
+      // padding: 0 20px 7px;
     }
 
   }
@@ -64,8 +33,8 @@ control bar
   &.jw-flag-time-slider-above {
 
     .jw-controlbar {
-      height: (@mobile-touch-target * 1.5) + 10px;
-      padding: 0 20px 10px;
+      // height: (@mobile-touch-target * 1.5) + 10px;
+      // padding: 0 20px 10px;
     }
 
   }
@@ -78,18 +47,37 @@ control bar
   &.jw-flag-time-slider-above {
 
     .jw-controlbar {
-      height: (@mobile-touch-target * 2) + 15px;
-      padding: 0 40px 15px;
+      // height: (@mobile-touch-target * 2) + 15px;
+      // padding: 0 40px 15px;
     }
 
   }
 
 }
 
-/*
+/* ==================================================
+control bar items
+*/
 
+.jw-breakpoint-0,
+.jw-breakpoint-1,
+.jw-breakpoint-2,
+.jw-breakpoint-3 {
+
+  .jw-group {
+
+    > .jw-icon-rewind,
+    > .jw-icon-next,
+    > .jw-icon-playback {
+      display: none;
+    }
+
+  }
+
+}
+
+/* ==================================================
 control bar groups
-
 */
 
 .jw-breakpoint-0,
@@ -98,7 +86,7 @@ control bar groups
   &.jw-flag-ads {
 
     .jw-controlbar-left-group,
-    &.jw-flag-time-slider-above .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+    .jw-slider-volume.jw-slider-horizontal {
       display: none;
     }
 
@@ -108,8 +96,8 @@ control bar groups
   .jw-controlbar-right-group {
 
     .jw-icon {
-      font-size: @mobile-touch-target / 2;
-      padding-bottom: 7px;
+      // font-size: @mobile-touch-target / 2;
+      // padding-bottom: 7px;
     }
 
   }
@@ -117,7 +105,7 @@ control bar groups
   .jw-controlbar-center-group {
 
     .jw-text-alt {
-      padding-bottom: 7px;
+      // padding-bottom: 7px;
     }
 
   }
@@ -130,15 +118,15 @@ control bar groups
   &.jw-flag-time-slider-above {
 
     .jw-controlbar-center-group {
-      height: @mobile-touch-target;
+      // height: @mobile-touch-target;
     }
 
     .jw-controlbar-left-group,
     .jw-controlbar-right-group {
 
       .jw-icon {
-        font-size: @mobile-touch-target / 2;
-        width: @mobile-touch-target * 1.25;
+        // font-size: @mobile-touch-target / 2;
+        // width: @mobile-touch-target * 1.25;
       }
 
     }
@@ -147,10 +135,8 @@ control bar groups
 
 }
 
-/*
-
+/* ==================================================
 slider
-
 */
 
 .jw-breakpoint-6,
@@ -158,47 +144,82 @@ slider
 
   &.jw-flag-time-slider-above {
 
-    .jw-tooltip-time {
-      bottom: @mobile-touch-target + 5px;
-      .jw-time-tip {
-        padding: 4px 6px;
-      }
-      .jw-text {
-        font-size: 1.25em;
-      }
-    }
-
-    .jw-slider-horizontal {
-      height: @mobile-touch-target;
-      .jw-slider-container {
-        height: @mobile-touch-target;
-      }
-    }
+    // .jw-tooltip-time {
+    //   bottom: @mobile-touch-target + 5px;
+    //   .jw-time-tip {
+    //     padding: 4px 6px;
+    //   }
+    //   .jw-text {
+    //     font-size: 1.25em;
+    //   }
+    // }
+    //
+    // .jw-slider-horizontal {
+    //   height: @mobile-touch-target;
+    //   .jw-slider-container {
+    //     height: @mobile-touch-target;
+    //   }
+    // }
 
   }
 
 }
 
-/*
-
+/* ==================================================
 volume overlay
-
 */
 
-.jw-icon-volume .jw-overlay {
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
 
-  .jw-breakpoint-0 &,
-  .jw-breakpoint-1 & {
+  .jw-icon-volume .jw-overlay {
     display: none;
   }
 
 }
 
-/*
-
-display icons
-
+/* ==================================================
+display
 */
+
+.jw-breakpoint-0,
+.jw-breakpoint-1,
+.jw-breakpoint-2,
+.jw-breakpoint-3 {
+
+  &.jw-state-playing,
+  &.jw-state-paused,
+  &.jw-state-buffering {
+
+    .jw-display {
+      display: table;
+    }
+
+  }
+
+  &:not(.jw-state-idle) {
+
+    .jw-display {
+      padding-top: 14px; // knob height - rail height (replace with vars)
+    }
+
+  }
+
+}
+
+.jw-breakpoint-2,
+.jw-breakpoint-3 {
+
+  .jw-display {
+
+    .jw-display-icon-rewind,
+    .jw-display-icon-next {
+      display: inline-block;
+    }
+
+  }
+
+}
 
 .jw-breakpoint-4,
 .jw-breakpoint-5,
@@ -211,35 +232,15 @@ display icons
 
 }
 
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
-
-  &.jw-state-paused {
-
-    .jw-display-container {
-      display: flex;
-    }
-
-  }
-
-  &:not(.jw-state-idle) {
-
-    .jw-display-container {
-      padding-top: 14px;
-    }
-
-  }
-
-}
-
 .jw-breakpoint-2,
 .jw-breakpoint-3 {
 
-  .jw-display-icon-container .jw-icon {
+  .jw-display .jw-icon {
     height: @mobile-touch-target * 1.25;
+    line-height: @mobile-touch-target * 1.25;
     width: @mobile-touch-target * 1.25;
     &::before {
-      font-size: (@mobile-touch-target * 1.25) / 2;
+      font-size: @mobile-touch-target * 0.625;
     }
   }
 
@@ -248,11 +249,12 @@ display icons
 .jw-breakpoint-4,
 .jw-breakpoint-5 {
 
-  .jw-display-icon-container .jw-icon {
+  .jw-display .jw-icon {
     height: @mobile-touch-target * 1.5;
+    line-height: @mobile-touch-target * 1.5;
     width: @mobile-touch-target * 1.5;
     &::before {
-      font-size: (@mobile-touch-target * 1.5) / 2;
+      font-size: @mobile-touch-target * 0.75;
     }
   }
 
@@ -261,34 +263,19 @@ display icons
 .jw-breakpoint-6,
 .jw-breakpoint-7 {
 
-  .jw-display-icon-container .jw-icon {
+  .jw-display .jw-icon {
     height: @mobile-touch-target * 1.75;
+    line-height: @mobile-touch-target * 1.75;
     width: @mobile-touch-target * 1.75;
     &::before {
-      font-size: (@mobile-touch-target * 1.75) / 2;
+      font-size: @mobile-touch-target * 0.875;
     }
   }
 
 }
 
-.jw-breakpoint-2,
-.jw-breakpoint-3,
-.jw-breakpoint-4,
-.jw-breakpoint-5,
-.jw-breakpoint-6,
-.jw-breakpoint-7 {
-
-  .jw-icon-rewind,
-  .jw-icon-next {
-    display: none;
-  }
-
-}
-
-/*
-
+/* ==================================================
 ads flag
-
 */
 
 .jwplayer.jw-flag-live,
@@ -349,7 +336,7 @@ captions
   &.jw-flag-time-slider-above {
     .jw-captions,
     video::-webkit-media-text-track-container {
-      max-height: calc(100% - 6.25em * (4.125em + 0.5em));
+      // max-height: calc(100% - 6.25em * (4.125em + 0.5em));
     }
   }
 
@@ -361,7 +348,7 @@ captions
   &.jw-flag-time-slider-above {
     .jw-captions,
     video::-webkit-media-text-track-container {
-      max-height: calc(100% - 6.25em * (4.125em + 1em));
+      // max-height: calc(100% - 6.25em * (4.125em + 1em));
     }
   }
 
@@ -373,7 +360,7 @@ captions
   &.jw-flag-time-slider-above {
     .jw-captions,
     video::-webkit-media-text-track-container {
-      max-height: calc(100% - 6.25em * (4.125em + 2em));
+      // max-height: calc(100% - 6.25em * (4.125em + 2em));
     }
   }
 

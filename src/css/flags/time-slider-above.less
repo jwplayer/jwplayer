@@ -3,17 +3,12 @@
 /* time slider above or small player (both override player into same UI) */
 .jw-flag-time-slider-above {
 
-  /*
-
+  /* ==================================================
   controls container
-
   */
 
   .jw-controls {
     background: linear-gradient(180deg, fade(mix(black, white, 90%), 0%), fade(mix(black, white, 90%), 25%), fade(mix(black, white, 90%), 75%));
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
   }
 
   /* do not show the controls background linear gradient when video is idle state
@@ -28,21 +23,14 @@
 
   }
 
-  /*
-
+  /* ==================================================
   control bar
-
   */
 
   .jw-controlbar {
-    align-items: flex-end;
     background: none;
-    display: flex;
-    flex-wrap: wrap;
     height: @mobile-touch-target;
-    justify-content: space-between;
     padding: 0 20px;
-    position: static;
   }
 
   /* by default, the control bar height is set to the height needed for live
@@ -55,45 +43,21 @@
 
     .jw-controlbar {
       height: @mobile-touch-target * 1.5;
+      padding-top: @slider-fixed-height;
     }
 
   }
 
-  /* override flags that set controlbar to display: table by default */
-  &.jwplayer.jw-flag-cast-available {
-
-    .jw-controlbar {
-      display: flex;
-    }
-
-  }
-
-  /*
-
-  control bar groups
-
+  /* ==================================================
+  control bar items
   */
 
-  .jw-controlbar-center-group {
-    align-items: center;
-    display: flex;
-    height: @slider-fixed-height;
-    order: 1;
-    padding: 0;
-  }
+  .jw-group {
 
-  .jw-controlbar-left-group,
-  .jw-controlbar-right-group {
-    align-items: center;
-    display: flex;
-    height: @mobile-touch-target;
-
-    .jw-icon {
-      align-items: center;
-      box-sizing: border-box;
+    > .jw-icon {
       color: @fixed-time-slider-inactive-color;
       height: @mobile-touch-target;
-      justify-content: center;
+      line-height: @mobile-touch-target * 0.9;
       padding: 0;
       text-align: center;
       width: @mobile-touch-target;
@@ -108,18 +72,30 @@
 
     }
 
-    .jw-text {
+    > .jw-text {
       color: @fixed-time-slider-inactive-color;
-      height: auto;
-      line-height: normal;
-      padding: 0 5px;
+      height: @mobile-touch-target;
+      line-height: @mobile-touch-target * 0.9;
     }
 
   }
 
+  /* ==================================================
+  control bar groups
+  */
+
+  .jw-controlbar-center-group {
+    height: @slider-fixed-height;
+    left: 0;
+    padding: 0 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+  }
+
   .jw-controlbar-left-group {
     margin-left: -5px;
-    order: 2;
 
     .jw-text-elapsed {
       padding-right: 7px;
@@ -138,10 +114,8 @@
   }
 
   .jw-controlbar-right-group {
-    display: flex;
-    justify-content: flex-end;
     margin-right: -5px;
-    order: 3;
+    text-align: right;
 
     .jw-text-duration {
       display: none;
@@ -149,10 +123,8 @@
 
   }
 
-  /*
-
+  /* ==================================================
   slider
-
   */
 
   .jw-controlbar-center-group {
@@ -236,27 +208,20 @@
 
   }
 
-  /*
-
+  /* ==================================================
   ads
-
   */
 
   &.jw-flag-ads,
   &.jw-flag-live {
 
-    .jw-controlbar-left-group {
-      order: 1;
-    }
-
     .jw-controlbar-center-group {
-      flex: 1;
       height: @mobile-touch-target;
-      position: relative;
+      position: static;
       text-overflow: ellipsis;
-      order: 2;
+      padding: 0;
       overflow: hidden;
-      width: auto;
+      width: 100%;
 
       .jw-text-alt {
         color: #fff;
@@ -268,10 +233,8 @@
 
   }
 
-  /*
-
+  /* ==================================================
   captions
-
   */
 
   .jw-captions,

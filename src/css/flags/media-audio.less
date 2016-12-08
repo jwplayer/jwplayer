@@ -1,16 +1,16 @@
 @import "../imports/vars";
 
 .jwplayer.jw-flag-media-audio {
-  
+
     .jw-controlbar {
         display: table;
     }
 
-    &.jw-flag-time-slider-above {
-      .jw-controlbar {
-        display: flex;
-      }
-    }
+    // &.jw-flag-time-slider-above {
+    //   .jw-controlbar {
+    //     display: flex;
+    //   }
+    // }
 
     // This has higher specificity to overwrite jw-flag-user-inactive in pause state
     &.jw-flag-user-inactive {
@@ -19,11 +19,11 @@
             display: table;
         }
 
-        &.jw-flag-time-slider-above {
-          .jw-controlbar {
-            display: flex;
-          }
-        }
+        // &.jw-flag-time-slider-above {
+        //   .jw-controlbar {
+        //     display: flex;
+        //   }
+        // }
 
         .jw-nextup-container {
           bottom: calc(@controlbar-height + 0.5em);

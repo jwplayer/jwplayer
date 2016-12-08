@@ -27,27 +27,27 @@
         }
     }
 
-    &.jw-flag-time-slider-above {
-      .jw-controlbar {
-          .jw-icon-volume {
-              display: flex;
-          }
-      }
-    }
+    // &.jw-flag-time-slider-above {
+    //   .jw-controlbar {
+    //       .jw-icon-volume {
+    //           display: flex;
+    //       }
+    //   }
+    // }
 
+    .jw-display,
     .jw-display-container {
         pointer-events: none;
     }
 
     // This has higher specificity to overwrite jw-state-paused jw-display-container that hides the display
-    &.jw-state-paused .jw-display-container,
-    &.jw-state-playing .jw-display-container
-    {
-        display: flex;
+    &.jw-state-paused .jw-display,
+    &.jw-state-playing .jw-display {
+        display: table;
     }
 
     &.jw-state-paused.jw-flag-dragging {
-        .jw-display-container {
+        .jw-display {
             display: none;
         }
     }
