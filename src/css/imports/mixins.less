@@ -19,6 +19,10 @@
     -o-font-feature-settings: "liga";
     font-feature-settings: "liga";
     -moz-osx-font-smoothing: grayscale;
+
+    .jw-flag-time-slider-above & {
+      display: flex;
+    }
 }
 
 .inset-controlbar() {
@@ -215,6 +219,7 @@
             background: @controlbar-background;
             padding: @ui-padding;
 
+            .jw-skiptext,
             .jw-skip-icon {
                 color: @inactive-color;
             }
@@ -454,26 +459,4 @@
         }
     }
 
-    .set-animation-styles() {
-
-      @keyframes jw-display-icon-container-slide-up {
-        from {
-          opacity: 0;
-          transform: translateY(5px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      &.jw-flag-time-slider-above:not(.jw-state-idle),
-      &.jw-breakpoint-0:not(.jw-state-idle),
-      &.jw-breakpoint-1:not(.jw-state-idle) {
-        .jw-display-icon-container {
-          animation: jw-display-icon-container-slide-up 150ms ease-out forwards;
-        }
-      }
-
-    }
 }
