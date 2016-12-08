@@ -1,6 +1,7 @@
 define([
     'test/underscore',
     'jquery',
+    'sinon',
     'api/api',
     'data/api-members',
     'data/api-methods',
@@ -8,15 +9,12 @@ define([
     'data/config-small',
     'utils/backbone.events',
     'providers/html5',
-    'providers/flash'
-], function (_, $, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events,
+    'providers/flash',
+], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events,
              providerHtml5, providerFlash) {
     /* jshint qunit: true */
 
-    // polyfill webpack require.ensure
-    //window.jwplayer.api = Api;
-    require.ensure = function(array, callback, moduleName) {
-        console.log('Unit test polyfill for webpack require.ensure', '"'+ moduleName + '"');
+    require.ensure = function(array, callback) {
         callback(function webpackRequire(modulePath) {
             return ({
                 'providers/html5': providerHtml5,
@@ -24,12 +22,26 @@ define([
             })[modulePath];
         });
     };
+    var log = console.log;
 
     var vid = document.createElement('video');
     var BROWSER_SUPPORTS_VIDEO = (!!vid.load);
-
-    QUnit.module('Api');
     var test = QUnit.test.bind(QUnit);
+
+    QUnit.module('Api', {
+        beforeEach: beforeEach,
+        afterEach: afterEach,
+    });
+
+    function beforeEach() {
+        console.log = sinon.stub().returns(function() {
+            assert.ok(arguments[1] === 'x', 'Should output error');
+        });
+    }
+
+    function afterEach() {
+        console.log = log;
+    }
 
     test('extends Events', function(assert) {
         var api = createApi('player');

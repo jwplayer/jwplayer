@@ -26,7 +26,7 @@ module.exports = function( config ) {
             'karma-firefox-launcher',
             'karma-safari-launcher',
             'karma-browserstack-launcher',
-            'karma-sinon'
+            'karma-sinon',
         ],
         frameworks: ['requirejs', 'qunit', 'sinon'],
         reporters: testReporters,
@@ -86,6 +86,7 @@ module.exports = function( config ) {
             {pattern: 'node_modules/require-less/*.js', included: false},
             {pattern: 'node_modules/simple-style-loader/addStyles.js', included: false},
             {pattern: 'node_modules/underscore/*.js', included: false},
+            {pattern: 'node_modules/sinon/**/*.js', included: false},
 
             // Require Config
             {pattern: 'test/config.js', included: true},

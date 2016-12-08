@@ -16,7 +16,7 @@ define([
 
     test('scriptloader.getStatus', function(assert) {
         // check status new
-        var script = new scriptloader('styleTag', true);
+        var script = new scriptloader(require.toUrl('./data/mp4.js'), true);
         assert.equal(script.getStatus(), STATUS.NEW, 'newly created scriptloader has state new');
 
         script.load();
@@ -29,13 +29,13 @@ define([
 
     test('scriptloader with style', function(assert) {
         // check style tag true creates stylesheet
-        var script = new scriptloader('styleTag', true);
+        var script = new scriptloader(require.toUrl('./data/playlists.js'), true);
         var tag = script.makeTag('styleTag');
         assert.ok(tag.href.indexOf('styleTag') >= 0, 'makeTag with isStyle true creates style tag');
     });
 
     test('scriptloader with script', function(assert) {
-        var script = new scriptloader('scriptTag', false);
+        var script = new scriptloader(require.toUrl('./data/mixed.js'), false);
         var tag = script.makeTag('scriptTag');
         script.load();
 
@@ -43,18 +43,18 @@ define([
     });
 
     test('scriptloader load same script', function(assert) {
-        var script = new scriptloader('scriptTag1', false);
+        var script = new scriptloader(require.toUrl('./data/mp4.js'), false);
         script.load();
 
-        //try to load a seconds script
-        var script2 = new scriptloader('scriptTag2', false);
+        // try to load a seconds script
+        var script2 = new scriptloader(require.toUrl('./data/mixed.js'), false);
         script2.load();
 
         // try to load the same script
-        var sameScript = new scriptloader('scriptTag1', false);
+        var sameScript = new scriptloader(require.toUrl('./data/playlists.js'), false);
         sameScript.load();
 
-        assert.ok(document.getElementsByTagName('head')[0].firstChild.src.indexOf('scriptTag2') >= 0,
+        assert.ok(document.getElementsByTagName('head')[0].firstChild.src.indexOf('playlists.js') >= 0,
             'adding same tag should not add the tag');
     });
 

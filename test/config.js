@@ -87,14 +87,14 @@
             'normalize': components + '/require-less/normalize',
             'jquery': components + '/jquery/dist/jquery',
             'phantomjs-polyfill': components + '/phantomjs-polyfill/bind-polyfill',
-
+            'simple-style-loader': components + '/simple-style-loader',
+            'sinon': components + '/sinon/pkg/sinon-1.17.6',
             // always use test/underscore in test scripts
             'test/underscore': components + '/underscore/underscore',
 
             'data': data,
             'mock': mock,
             'unit': unit,
-            'simple-style-loader': base + 'node_modules/simple-style-loader'
         },
         shim: {
             'test/underscore': {
