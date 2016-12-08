@@ -39,10 +39,19 @@
     background: none;
     display: flex;
     flex-wrap: wrap;
-    height: @mobile-touch-target * 1.5;
+    height: @mobile-touch-target;
     justify-content: space-between;
     padding: 0 20px;
     position: static;
+  }
+
+  &:not(.jw-flag-ads),
+  &:not(.jw-flag-live) {
+
+    .jw-controlbar {
+      height: @mobile-touch-target * 1.5;
+    }
+
   }
 
   /* override flags that set controlbar to display: table by default */
