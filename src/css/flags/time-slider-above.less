@@ -1,9 +1,7 @@
 @import "../imports/vars";
 
 /* time slider above or small player (both override player into same UI) */
-.jw-flag-time-slider-above,
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
+.jw-flag-time-slider-above {
 
   /*
 
@@ -32,22 +30,6 @@
 
   /*
 
-  display icons
-
-  */
-
-  /* override default display icons container display value for certain states */
-  &.jwplayer.jw-state-paused,
-  &.jwplayer.jw-state-playing {
-
-    .jw-display-icon-container {
-      display: flex;
-    }
-
-  }
-
-  /*
-
   control bar
 
   */
@@ -63,52 +45,11 @@
     position: static;
   }
 
-  /* do not show control bar in idle state (this is already defined in the default
-  flag styles, however, this UI mode overrides it by setting control bar to flex,
-  forcing us to define it again here) */
-  &.jw-state-idle {
-
-    .jw-controlbar {
-      display: none;
-    }
-
-  }
-
   /* override flags that set controlbar to display: table by default */
   &.jwplayer.jw-flag-cast-available {
 
     .jw-controlbar {
       display: flex;
-    }
-
-  }
-
-  &.jw-breakpoint-2,
-  &.jw-breakpoint-3 {
-
-    .jw-controlbar {
-      height: (@mobile-touch-target * 1.5) + 7px;
-      padding: 0 20px 7px;
-    }
-
-  }
-
-  &.jw-breakpoint-4,
-  &.jw-breakpoint-5 {
-
-    .jw-controlbar {
-      height: (@mobile-touch-target * 1.5) + 10px;
-      padding: 0 20px 10px;
-    }
-
-  }
-
-  &.jw-breakpoint-6,
-  &.jw-breakpoint-7 {
-
-    .jw-controlbar {
-      height: (@mobile-touch-target * 2) + 15px;
-      padding: 0 40px 15px;
     }
 
   }
@@ -127,15 +68,6 @@
     padding: 0;
   }
 
-  &.jw-breakpoint-6,
-  &.jw-breakpoint-7 {
-
-    .jw-controlbar-center-group {
-      height: @mobile-touch-target;
-    }
-
-  }
-
   .jw-controlbar-left-group,
   .jw-controlbar-right-group {
     align-items: center;
@@ -145,11 +77,11 @@
     .jw-icon {
       align-items: center;
       box-sizing: border-box;
-      display: flex;
       color: @fixed-time-slider-inactive-color;
       height: @mobile-touch-target;
       justify-content: center;
       padding: 0;
+      text-align: center;
       width: @mobile-touch-target;
 
       &::before {
@@ -167,11 +99,6 @@
       height: auto;
       line-height: normal;
       padding: 0 5px;
-    }
-
-    .jw-hidden,
-    .jw-slider-volume.jw-slider-horizontal {
-      display: none;
     }
 
   }
@@ -208,58 +135,120 @@
 
   }
 
-  &.jw-breakpoint-6,
-  &.jw-breakpoint-7 {
+  /*
 
-    .jw-controlbar-left-group,
-    .jw-controlbar-right-group {
+  slider
 
-      .jw-icon {
-        font-size: @mobile-touch-target / 2;
-        width: @mobile-touch-target * 1.25;
+  */
+
+  .jw-controlbar-center-group {
+
+    .jw-slider-horizontal {
+      background: none;
+      background-color: transparent;
+      height: @slider-fixed-height;
+
+      .jw-slider-container {
+        display: flex;
+        flex-direction: column;
+        height: @slider-fixed-height;
+        justify-content: center;
+      }
+
+      .jw-cue {
+        top: auto;
+      }
+
+      .jw-rail,
+      .jw-buffer,
+      .jw-progress {
+        height: @slider-fixed-rail-height;
+      }
+
+      .jw-progress {
+        background-color: @fixed-time-slider-progress-color;
+      }
+
+      .jw-rail {
+        background: none;
+        background-color: fade(white, 25%);
+      }
+
+      .jw-buffer {
+        background: none;
+        background-color: fade(white, 50%);
+      }
+
+      .jw-knob {
+        background-color: #fff;
+        border-radius: @slider-fixed-knob-border-radius;
+        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+        display: block;
+        height: @slider-fixed-knob-height;
+        margin-left: @slider-fixed-knob-width / -2;
+        margin-top: @slider-fixed-knob-height / -2;
+        top: 50%;
+        width: @slider-fixed-knob-width;
       }
 
     }
 
   }
 
+  .jw-tooltip-time {
+    bottom: @slider-fixed-height + 5px;
+    height: auto;
+    line-height: normal;
+    padding: 0;
+    pointer-events: none;
+    transform: translateX(-50%);
+
+    .jw-overlay {
+      bottom: auto;
+      left: auto;
+      position: static;
+    }
+
+    .jw-time-tip {
+      border-radius: @ui-corner-round;
+      left: auto;
+      padding: 1px 5px;
+      position: static;
+    }
+
+    .jw-text {
+      height: auto;
+    }
+
+  }
+
+  /*
+
+  ads
+
+  */
+
   &.jw-flag-ads {
 
     .jw-controlbar-left-group {
-      display: none;
+      order: 1;
     }
 
     .jw-controlbar-center-group {
+      flex: 1;
       height: @mobile-touch-target;
+      position: relative;
+      text-overflow: ellipsis;
+      order: 2;
+      overflow: hidden;
       width: auto;
 
       .jw-text-alt {
-        align-items: center;
         color: #fff;
-        display: flex;
-        height: @mobile-touch-target;
-        padding-bottom: 7px;
+        display: block;
+        max-width: none;
       }
 
-    }
-
-    .jw-controlbar {
-      .jw-icon-playback,
-      .jw-icon-volume,
-      .jw-slider-volume,
-      .jw-icon-fullscreen,
-      .jw-slider-volume.jw-slider-horizontal,
-      .jw-icon-inline.jw-icon-volume {
-        display: flex;
-      }
-    }
-
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
-      .jw-controlbar .jw-icon-playback,
-      .jw-slider-volume.jw-slider-horizontal {
-        display: none;
-      }
     }
 
   }
@@ -273,36 +262,6 @@
   .jw-captions,
   video::-webkit-media-text-track-container {
     max-height: calc(100% - 6.25em * (4.125em));
-  }
-
-  &.jw-breakpoint-2,
-  &.jw-breakpoint-3 {
-
-    .jw-captions,
-    video::-webkit-media-text-track-container {
-      max-height: calc(100% - 6.25em * (4.125em + 0.5em));
-    }
-
-  }
-
-  &.jw-breakpoint-4,
-  &.jw-breakpoint-5 {
-
-    .jw-captions,
-    video::-webkit-media-text-track-container {
-      max-height: calc(100% - 6.25em * (4.125em + 1em));
-    }
-
-  }
-
-  &.jw-breakpoint-6,
-  &.jw-breakpoint-7 {
-
-    .jw-captions,
-    video::-webkit-media-text-track-container {
-      max-height: calc(100% - 6.25em * (4.125em + 2em));
-    }
-
   }
 
 }
