@@ -135,7 +135,7 @@ define([
         var done = assert.async();
 
         utils.ajax({
-            url: '//playertest.longtailvideo.com/vast/preroll.xml',
+            url: require.toUrl('./data/playlist.xml'),
             oncomplete: function(xhrResult) {
                 if (xhrResult.withCredentials === false) {
                     assert.ok(true,

@@ -1,11 +1,29 @@
 define([
     'test/underscore',
-    'api/config'
-], function (_, Config) {
+    'api/config',
+    'sinon',
+], function (_, Config, sinon) {
     /* jshint qunit: true */
-
-    QUnit.module('API config');
     var test = QUnit.test.bind(QUnit);
+    var log = console.log;
+
+    QUnit.module('API config', {
+        beforeEach: beforeEach,
+        afterEach: afterEach,
+    });
+
+    function beforeEach() {
+        console.log = sinon.stub().returns(function(message) {
+            assert.ok(
+                message === 'JW Player does not support XML skins, please update your config',
+                'should output warning'
+            );
+        });
+    }
+
+    function afterEach() {
+        console.log = log;
+    }
 
     function validWidth(val) {
 
@@ -20,7 +38,6 @@ define([
 
     function testConfig(assert, obj) {
         var x = new Config(obj);
-
 
         var attrs = ['width', 'height', 'base'];
 
