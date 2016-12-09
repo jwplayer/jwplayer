@@ -5,27 +5,13 @@
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
   /* do not add additional modifier rules to this rule set */
-  // replace this with &:extend(.jw-flag-time-slider-above); later
+  /* replace this with &:extend(.jw-flag-time-slider-above); later */
   .jw-flag-time-slider-above;
 }
 
 /* ==================================================
 control bar
 */
-
-.jw-breakpoint-2,
-.jw-breakpoint-3 {
-
-  &.jw-flag-time-slider-above {
-
-    .jw-controlbar {
-      // height: (@mobile-touch-target * 1.5) + 7px;
-      // padding: 0 20px 7px;
-    }
-
-  }
-
-}
 
 .jw-breakpoint-6,
 .jw-breakpoint-7 {
@@ -41,6 +27,15 @@ control bar
       padding: 0 40px;
     }
 
+    &.jw-flag-ads,
+    &.jw-flag-live {
+
+      .jw-controlbar-center-group {
+        padding: 0;
+      }
+
+    }
+
   }
 
 }
@@ -50,9 +45,7 @@ control bar items
 */
 
 .jw-breakpoint-0,
-.jw-breakpoint-1,
-.jw-breakpoint-2,
-.jw-breakpoint-3 {
+.jw-breakpoint-1 {
 
   .jw-group {
 
@@ -69,25 +62,42 @@ control bar items
 .jw-breakpoint-6,
 .jw-breakpoint-7 {
 
-  .jw-group {
+  &.jw-flag-time-slider-above {
 
-    > .jw-icon,
-    > .jw-text {
-      height: @mobile-touch-target * 1.5;
-      line-height: (@mobile-touch-target * 1.5) - 7px;
-      width: @mobile-touch-target * 1.5;
+    .jw-group {
+
+      > .jw-icon,
+      > .jw-text {
+        height: @mobile-touch-target * 1.5;
+        line-height: (@mobile-touch-target * 1.5) - 7px;
+        width: @mobile-touch-target * 1.5;
+      }
+
+      > .jw-text {
+        font-size: 18px;
+      }
+
     }
 
-    > .jw-text {
-      font-size: 18px;
+    &.jw-flag-ads,
+    &.jw-flag-live {
+
+      .jw-group {
+
+        > .jw-text {
+          line-height: (@mobile-touch-target * 1.5) - 26px;
+        }
+
+      }
+
     }
 
-  }
+    .jw-controlbar {
 
-  .jw-controlbar {
+      .jw-slider-volume.jw-slider-horizontal {
+        margin-bottom: 7px;
+      }
 
-    .jw-slider-volume.jw-slider-horizontal {
-      margin-bottom: 7px;
     }
 
   }
@@ -101,11 +111,15 @@ control bar groups
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
 
-  &.jw-flag-ads {
+  &.jw-flag-time-slider-above {
 
-    .jw-controlbar-left-group,
-    &.jw-flag-time-slider-above .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
-      display: none;
+    &.jw-flag-ads {
+
+      .jw-controlbar-left-group,
+      &.jw-flag-time-slider-above .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+        display: none;
+      }
+
     }
 
   }
@@ -123,12 +137,15 @@ slider
 
     .jw-tooltip-time {
       bottom: (@mobile-touch-target * 0.75) + 5px;
+
       .jw-time-tip {
         padding: 4px 6px;
       }
+
       .jw-text {
         font-size: 1.25em;
       }
+
     }
 
   }
@@ -152,10 +169,21 @@ volume overlay
 display
 */
 
+.jw-breakpoint-0 {
+
+  .jw-display-icon-next,
+  .jw-display-icon-rewind {
+    display: none;
+  }
+
+}
+
 .jw-breakpoint-0,
-.jw-breakpoint-1,
-.jw-breakpoint-2,
-.jw-breakpoint-3 {
+.jw-breakpoint-1 {
+
+  .jw-display {
+    display: table;
+  }
 
   &.jw-state-playing,
   &.jw-state-paused,
@@ -177,27 +205,17 @@ display
 
 }
 
-.jw-breakpoint-4,
-.jw-breakpoint-5,
-.jw-breakpoint-6,
-.jw-breakpoint-7 {
-
-  .jw-display-icon-container {
-    margin: 0 @ui-padding;
-  }
-
-}
-
-.jw-breakpoint-2,
 .jw-breakpoint-3 {
 
   .jw-display .jw-icon {
     height: @mobile-touch-target * 1.25;
     line-height: @mobile-touch-target * 1.25;
     width: @mobile-touch-target * 1.25;
+
     &::before {
       font-size: @mobile-touch-target * 0.625;
     }
+
   }
 
 }
@@ -209,9 +227,11 @@ display
     height: @mobile-touch-target * 1.5;
     line-height: @mobile-touch-target * 1.5;
     width: @mobile-touch-target * 1.5;
+
     &::before {
       font-size: @mobile-touch-target * 0.75;
     }
+
   }
 
 }
@@ -223,9 +243,11 @@ display
     height: @mobile-touch-target * 1.75;
     line-height: @mobile-touch-target * 1.75;
     width: @mobile-touch-target * 1.75;
+
     &::before {
       font-size: @mobile-touch-target * 0.875;
     }
+
   }
 
 }
@@ -285,30 +307,30 @@ ads flag
 captions
 
 */
-
-.jw-breakpoint-2,
-.jw-breakpoint-3 {
-
-  &.jw-flag-time-slider-above {
-    .jw-captions,
-    video::-webkit-media-text-track-container {
-      // max-height: calc(100% - 6.25em * (4.125em + 0.5em));
-    }
-  }
-
-}
-
-.jw-breakpoint-4,
-.jw-breakpoint-5 {
-
-  &.jw-flag-time-slider-above {
-    .jw-captions,
-    video::-webkit-media-text-track-container {
-      // max-height: calc(100% - 6.25em * (4.125em + 1em));
-    }
-  }
-
-}
+// 
+// .jw-breakpoint-2,
+// .jw-breakpoint-3 {
+//
+//   &.jw-flag-time-slider-above {
+//     .jw-captions,
+//     video::-webkit-media-text-track-container {
+//       // max-height: calc(100% - 6.25em * (4.125em + 0.5em));
+//     }
+//   }
+//
+// }
+//
+// .jw-breakpoint-4,
+// .jw-breakpoint-5 {
+//
+//   &.jw-flag-time-slider-above {
+//     .jw-captions,
+//     video::-webkit-media-text-track-container {
+//       // max-height: calc(100% - 6.25em * (4.125em + 1em));
+//     }
+//   }
+//
+// }
 
 .jw-breakpoint-6,
 .jw-breakpoint-7 {
@@ -316,7 +338,7 @@ captions
   &.jw-flag-time-slider-above {
     .jw-captions,
     video::-webkit-media-text-track-container {
-      // max-height: calc(100% - 6.25em * (4.125em + 2em));
+      max-height: calc(100% - 6.25em * (4.125em + 2em));
     }
   }
 
