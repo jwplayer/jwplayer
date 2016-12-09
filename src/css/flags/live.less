@@ -2,6 +2,10 @@
 
 .jwplayer.jw-flag-live {
 
+    .jw-display-icon-rewind {
+      display: none;
+    }
+
     .jw-controlbar {
         .jw-text-elapsed,
         .jw-text-duration,
@@ -18,6 +22,12 @@
             vertical-align: middle;
             white-space: nowrap;
         }
+    }
+
+    &.jw-flag-time-slider-above .jw-controlbar .jw-text-alt {
+      height: @mobile-touch-target;
+      line-height: @mobile-touch-target - 2px;
+      margin: 0;
     }
 
 }

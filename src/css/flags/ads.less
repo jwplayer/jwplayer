@@ -15,6 +15,11 @@
         display: none;
     }
 
+    .jw-display-icon-rewind,
+    .jw-display-icon-next {
+      display: none;
+    }
+
     .jw-controlbar {
         .jw-icon-inline,
         .jw-icon-tooltip,
@@ -48,6 +53,12 @@
         .jw-icon-tooltip.jw-icon-volume {
             display: none;
         }
+    }
+
+    &.jw-flag-time-slider-above .jw-controlbar .jw-text-alt {
+      height: @mobile-touch-target;
+      line-height: @mobile-touch-target - 2px;
+      margin: 0;
     }
 
 }

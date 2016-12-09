@@ -30,7 +30,7 @@
   .jw-controlbar {
     background: none;
     height: @mobile-touch-target;
-    padding: 0 20px;
+    padding: 0 (@mobile-touch-target / 2);
   }
 
   /* by default, the control bar height is set to the height needed for live
@@ -43,7 +43,7 @@
 
     .jw-controlbar {
       height: @mobile-touch-target * 1.5;
-      padding-top: @slider-fixed-height;
+      padding: @slider-fixed-height (@mobile-touch-target / 4) 0;
     }
 
   }
@@ -54,10 +54,15 @@
 
   .jw-group {
 
+    > .jw-icon,
+    > .jw-text {
+      height: @mobile-touch-target;
+      line-height: @mobile-touch-target - 4px;
+    }
+
     > .jw-icon {
       color: @fixed-time-slider-inactive-color;
-      height: @mobile-touch-target;
-      line-height: @mobile-touch-target * 0.9;
+      font-size: 20px;
       padding: 0;
       text-align: center;
       width: @mobile-touch-target;
@@ -70,12 +75,6 @@
         color: @fixed-time-slider-hover-color;
       }
 
-    }
-
-    > .jw-text {
-      color: @fixed-time-slider-inactive-color;
-      height: @mobile-touch-target;
-      line-height: @mobile-touch-target * 0.9;
     }
 
   }
@@ -127,56 +126,52 @@
   slider
   */
 
-  .jw-controlbar-center-group {
+  .jw-slider-time {
+    background: none;
+    background-color: transparent;
+    height: @slider-fixed-height;
 
-    .jw-slider-horizontal {
-      background: none;
-      background-color: transparent;
+    .jw-slider-container {
+      display: flex;
+      flex-direction: column;
       height: @slider-fixed-height;
+      justify-content: center;
+    }
 
-      .jw-slider-container {
-        display: flex;
-        flex-direction: column;
-        height: @slider-fixed-height;
-        justify-content: center;
-      }
+    .jw-cue {
+      top: auto;
+    }
 
-      .jw-cue {
-        top: auto;
-      }
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+      height: @slider-fixed-rail-height;
+    }
 
-      .jw-rail,
-      .jw-buffer,
-      .jw-progress {
-        height: @slider-fixed-rail-height;
-      }
+    .jw-progress {
+      background-color: @fixed-time-slider-progress-color;
+    }
 
-      .jw-progress {
-        background-color: @fixed-time-slider-progress-color;
-      }
+    .jw-rail {
+      background: none;
+      background-color: fade(white, 25%);
+    }
 
-      .jw-rail {
-        background: none;
-        background-color: fade(white, 25%);
-      }
+    .jw-buffer {
+      background: none;
+      background-color: fade(white, 50%);
+    }
 
-      .jw-buffer {
-        background: none;
-        background-color: fade(white, 50%);
-      }
-
-      .jw-knob {
-        background-color: #fff;
-        border-radius: @slider-fixed-knob-border-radius;
-        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
-        display: block;
-        height: @slider-fixed-knob-height;
-        margin-left: @slider-fixed-knob-width / -2;
-        margin-top: @slider-fixed-knob-height / -2;
-        top: 50%;
-        width: @slider-fixed-knob-width;
-      }
-
+    .jw-knob {
+      background-color: #fff;
+      border-radius: @slider-fixed-knob-border-radius;
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+      display: block;
+      height: @slider-fixed-knob-height;
+      margin-left: @slider-fixed-knob-width / -2;
+      margin-top: @slider-fixed-knob-height / -2;
+      top: 50%;
+      width: @slider-fixed-knob-width;
     }
 
   }
@@ -216,17 +211,26 @@
   &.jw-flag-live {
 
     .jw-controlbar-center-group {
-      height: @mobile-touch-target;
+      height: auto;
+      overflow: hidden;
+      padding: 0;
       position: static;
       text-overflow: ellipsis;
-      padding: 0;
-      overflow: hidden;
       width: 100%;
 
       .jw-text-alt {
         color: #fff;
         display: block;
         max-width: none;
+        text-align: left;
+      }
+
+    }
+
+    .jw-controlbar {
+
+      .jw-slider-volume.jw-slider-horizontal {
+        margin-bottom: 2px;
       }
 
     }

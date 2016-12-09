@@ -27,28 +27,18 @@ control bar
 
 }
 
-.jw-breakpoint-4,
-.jw-breakpoint-5 {
-
-  &.jw-flag-time-slider-above {
-
-    .jw-controlbar {
-      // height: (@mobile-touch-target * 1.5) + 10px;
-      // padding: 0 20px 10px;
-    }
-
-  }
-
-}
-
 .jw-breakpoint-6,
 .jw-breakpoint-7 {
 
   &.jw-flag-time-slider-above {
 
     .jw-controlbar {
-      // height: (@mobile-touch-target * 2) + 15px;
-      // padding: 0 40px 15px;
+      height: (@slider-fixed-height * 1.5) + (@mobile-touch-target * 1.5);
+      padding: (@slider-fixed-height * 1.5) 40px 0;
+    }
+
+    .jw-controlbar-center-group {
+      padding: 0 40px;
     }
 
   }
@@ -76,6 +66,34 @@ control bar items
 
 }
 
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+
+  .jw-group {
+
+    > .jw-icon,
+    > .jw-text {
+      height: @mobile-touch-target * 1.5;
+      line-height: (@mobile-touch-target * 1.5) - 7px;
+      width: @mobile-touch-target * 1.5;
+    }
+
+    > .jw-text {
+      font-size: 18px;
+    }
+
+  }
+
+  .jw-controlbar {
+
+    .jw-slider-volume.jw-slider-horizontal {
+      margin-bottom: 7px;
+    }
+
+  }
+
+}
+
 /* ==================================================
 control bar groups
 */
@@ -86,49 +104,8 @@ control bar groups
   &.jw-flag-ads {
 
     .jw-controlbar-left-group,
-    .jw-slider-volume.jw-slider-horizontal {
+    &.jw-flag-time-slider-above .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
       display: none;
-    }
-
-  }
-
-  .jw-controlbar-left-group,
-  .jw-controlbar-right-group {
-
-    .jw-icon {
-      // font-size: @mobile-touch-target / 2;
-      // padding-bottom: 7px;
-    }
-
-  }
-
-  .jw-controlbar-center-group {
-
-    .jw-text-alt {
-      // padding-bottom: 7px;
-    }
-
-  }
-
-}
-
-.jw-breakpoint-6,
-.jw-breakpoint-7 {
-
-  &.jw-flag-time-slider-above {
-
-    .jw-controlbar-center-group {
-      // height: @mobile-touch-target;
-    }
-
-    .jw-controlbar-left-group,
-    .jw-controlbar-right-group {
-
-      .jw-icon {
-        // font-size: @mobile-touch-target / 2;
-        // width: @mobile-touch-target * 1.25;
-      }
-
     }
 
   }
@@ -144,22 +121,15 @@ slider
 
   &.jw-flag-time-slider-above {
 
-    // .jw-tooltip-time {
-    //   bottom: @mobile-touch-target + 5px;
-    //   .jw-time-tip {
-    //     padding: 4px 6px;
-    //   }
-    //   .jw-text {
-    //     font-size: 1.25em;
-    //   }
-    // }
-    //
-    // .jw-slider-horizontal {
-    //   height: @mobile-touch-target;
-    //   .jw-slider-container {
-    //     height: @mobile-touch-target;
-    //   }
-    // }
+    .jw-tooltip-time {
+      bottom: (@mobile-touch-target * 0.75) + 5px;
+      .jw-time-tip {
+        padding: 4px 6px;
+      }
+      .jw-text {
+        font-size: 1.25em;
+      }
+    }
 
   }
 
@@ -201,20 +171,6 @@ display
 
     .jw-display {
       padding-top: 14px; // knob height - rail height (replace with vars)
-    }
-
-  }
-
-}
-
-.jw-breakpoint-2,
-.jw-breakpoint-3 {
-
-  .jw-display {
-
-    .jw-display-icon-rewind,
-    .jw-display-icon-next {
-      display: inline-block;
     }
 
   }
