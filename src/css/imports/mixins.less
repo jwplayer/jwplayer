@@ -95,6 +95,12 @@
 #namespace() {
     .basic-skin-styles() {
 
+        &.jwplayer:hover {
+            .jw-display-icon-container {
+                background-color: @display-bkgd-hover-color;
+            }
+        }
+
         .jw-background-color {
             background: @display-bkgd-color;
         }
@@ -148,13 +154,23 @@
 
         /* Colors for display icons */
         .jw-display-icon-container {
-          background: @display-bkgd-color;
+          background-color: @display-bkgd-color;
           border-radius: @ui-corner-round;
-          color: @display-icon-color;
+          margin: 0 (@ui-padding * 0.5);
+
+          .jw-icon {
+            color: @display-icon-color;
+          }
+
           &:hover {
             background: @display-bkgd-hover-color;
-            color: @display-icon-hover-color;
+
+            .jw-icon {
+              color: @display-icon-hover-color;
+            }
+
           }
+
         }
 
         /* Slider colors */
@@ -410,6 +426,21 @@
         .jw-text-duration {
             height: @controlbar-height;
             line-height: @controlbar-height;
+        }
+
+        &.jw-flag-audio-player {
+
+          .jw-controlbar {
+            height: 100%;
+          }
+
+          .jw-icon-inline,
+          .jw-icon-tooltip,
+          .jw-text-elapsed,
+          .jw-text-duration {
+              height: auto;
+              line-height: normal;
+          }
         }
 
         .jw-icon-inline,
