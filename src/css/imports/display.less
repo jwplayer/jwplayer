@@ -75,37 +75,43 @@ display icons
 }
 
 .jw-display-icon-container {
+  background-color: @display-bkgd-color;
+  border-radius: @ui-corner-round;
   display: inline-block;
   margin: 0 (@ui-padding * 0.5);
-}
 
-.jw-display .jw-icon {
-  border-radius: @ui-corner-round;
-  cursor: pointer;
-  height: @mobile-touch-target;
-  line-height: @mobile-touch-target;
-  text-align: center;
-  width: @mobile-touch-target;
+  .jw-icon {
+    color: @display-icon-color;
+    cursor: pointer;
+    height: @mobile-touch-target;
+    line-height: @mobile-touch-target;
+    text-align: center;
+    width: @mobile-touch-target;
 
-  &::before {
-    font-size: @mobile-touch-target * 0.5;
-    position: relative;
-    top: 1px;
+    &::before {
+      font-size: @mobile-touch-target * 0.5;
+      position: relative;
+      top: 1px;
+    }
+
+    &.jw-icon-rewind::before {
+      top: 2px;
+    }
+
+    .jw-state-idle &.jw-icon-display::before,
+    .jw-state-paused &.jw-icon-display::before {
+      left: 1px;
+    }
+
   }
-
-  &.jw-icon-rewind::before {
-    top: 2px;
-  }
-
-  .jw-state-idle &.jw-icon-display::before,
-  .jw-state-paused &.jw-icon-display::before {
-    left: 1px;
-  }
-
 
   &:hover {
-    // background: @display-bkgd-hover-color;
-    // color: @display-icon-hover-color;
+    background: @display-bkgd-hover-color;
+
+    .jw-icon {
+      color: @display-icon-hover-color;
+    }
+
   }
 
 }
