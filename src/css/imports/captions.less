@@ -6,7 +6,6 @@
     height: inherit;
     text-align: center;
     display: none;
-    max-height: calc(97% - 6.25 * (@controlbar-height));
     line-height: 1.3em;
     letter-spacing: normal;
     word-spacing: normal;
@@ -58,7 +57,71 @@
     }
     video::-webkit-media-text-track-container {
         // With 16 lines of captions, 1em ~= 6.25% of height
-        max-height: calc(97% - 6.25 * (@controlbar-height));
         line-height: 1.3em;
+    }
+
+    &.jw-breakpoint-7 {
+        video::-webkit-media-text-track-container {
+            max-height: calc(95%);
+        }
+        .jw-captions {
+            max-height: calc(95%);
+        }
+    }
+    &.jw-breakpoint-6 {
+        video::-webkit-media-text-track-container {
+            max-height: calc(93%);
+        }
+        .jw-captions {
+            max-height: calc(93%);
+        }
+    }
+    &.jw-breakpoint-5 {
+        video::-webkit-media-text-track-container {
+            max-height: calc(91%);
+        }
+        .jw-captions {
+            max-height: calc(91%);
+        }
+    }
+    &.jw-breakpoint-4 {
+        video::-webkit-media-text-track-container {
+            max-height: calc(89%);
+        }
+        .jw-captions {
+            max-height: calc(89%);
+        }
+    }
+    &.jw-breakpoint-3 {
+        video::-webkit-media-text-track-container {
+            max-height: calc(87%);
+        }
+        .jw-captions {
+            max-height: calc(87%);
+        }
+    }
+    &.jw-breakpoint-2 {
+        video::-webkit-media-text-track-container {
+            max-height: calc(83%);
+        }
+        .jw-captions {
+            max-height: calc(83%);
+        }
+    }
+    &.jw-breakpoint-1 {
+        video::-webkit-media-text-track-container {
+            max-height: calc(77%);
+        }
+        .jw-captions {
+            max-height: calc(77%);
+        }
+    }
+    &.jw-breakpoint-0 {
+        video::-webkit-media-text-track-container {
+            max-height: calc(71%);
+        }
+        .jw-captions {
+            max-height: calc(71%);
+        }
     }
 }
