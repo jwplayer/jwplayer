@@ -17,7 +17,7 @@ define([
         var a = document.createElement('a');
         a.href = config.flashplayer;
 
-        var sameHost = (a.hostname === window.location.host);
+        var sameHost = (a.host === window.location.host);
 
         return utils.isChrome() && !sameHost;
     }
