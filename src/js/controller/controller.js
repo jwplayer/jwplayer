@@ -82,7 +82,7 @@ define([
             var _eventQueuedUntilReady = [];
 
             _model.setup(config, storage);
-            _view  = this._view  = new View(_api, _model);
+            _view  = this._view = new View(_api, _model);
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
