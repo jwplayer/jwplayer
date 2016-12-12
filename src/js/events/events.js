@@ -53,7 +53,6 @@ define([], function() {
         JWPLAYER_ERROR: 'error',
         JWPLAYER_PLAYER_STATE: 'state',
         JWPLAYER_CAST_AVAILABLE: 'castAvailable',
-        JWPLAYER_AIRPLAY_AVAILABLE: 'airplayAvailable',
 
         // Model Changes
         JWPLAYER_MEDIA_BUFFER: 'bufferChange',

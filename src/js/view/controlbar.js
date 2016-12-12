@@ -26,6 +26,42 @@ define([
         return createdMenu;
     }
 
+    function castButton(ariaText) {
+        var button = document.createElement('button', 'google-cast-button');
+        var element = document.createElement('div');
+
+        button.className = 'jw-button-color';
+        element.className = 'jw-icon jw-icon-inline jw-reset jw-icon-cast jw-off';
+        element.style.display = 'none';
+        element.style.cursor = 'pointer';
+        element.setAttribute('role', 'button');
+        element.setAttribute('tabindex', '0');
+        if (ariaText) {
+            element.setAttribute('aria-label', ariaText);
+        }
+        element.appendChild(button);
+
+        return {
+            element: function() {
+                return element;
+            },
+            toggle: function(m) {
+                if (m) {
+                    this.show();
+                } else {
+                    this.hide();
+                }
+            },
+            show: function() {
+                element.style.display = '';
+            },
+            hide: function() {
+                element.style.display = 'none';
+            },
+            button: button
+        };
+    }
+
     function buildGroup(group, elements) {
         var elem = document.createElement('div');
         elem.className = 'jw-group jw-controlbar-' + group+'-group jw-reset';
@@ -90,7 +126,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast jw-off', this._api.castToggle, this._localization.cast),
+                cast: !utils.isSafari()? castButton(this._localization.cast) : button('jw-icon-airplay jw-off', this._api.castToggle, this._localization.airplay),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
 
@@ -276,13 +312,13 @@ define([
                 utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
             }
         },
-        onCastAvailable : function(model, val) {
+        onCastAvailable: function(model, val) {
             this.elements.cast.toggle(val);
         },
-        onCastActive : function(model, val) {
-            utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
+        onCastActive: function(model, val) {
+            this.elements.fullscreen.toggle(!val);
         },
-        onElapsed : function(model, val) {
+        onElapsed: function(model, val) {
             var elapsedTime;
             var duration = model.get('duration');
             if (model.get('streamType') === 'DVR') {
