@@ -150,7 +150,6 @@ define([
                     this.elements.cast,
                     this.elements.volume,
                     this.elements.volumetooltip,
-                    // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
                 ]
             };
@@ -201,7 +200,6 @@ define([
             this._model.on('change:mediaModel', this.onMediaModel, this);
             this._model.on('change:castAvailable', this.onCastAvailable, this);
             this._model.on('change:castActive', this.onCastActive, this);
-            // this._model.on('change:castClick', this.onCastClick, this);
             this._model.on('change:duration', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
             this._model.on('change:fullscreen', this.onFullscreen, this);
@@ -225,6 +223,12 @@ define([
                 }, this);
                 this.elements.volumetooltip.on('toggleValue', function(){
                     this._api.setMute();
+                }, this);
+            }
+
+            if (this.elements.cast.button) {
+                new UI(this.elements.cast.button).on('click tap', function () {
+                    this._model.set('castClicked', true);
                 }, this);
             }
 
@@ -254,12 +258,6 @@ define([
                     this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
                 }
             }, this);
-
-            // if (this.elements.cast.button) {
-            //     new UI(this.elements.cast.button).on('click tap', function () {
-            //         this._model.set('castClick', true);
-            //     }, this);
-            // }
 
             // When the control bar is interacted with, trigger a user action event
             new UI(this.el).on('click tap drag', function(){ this.trigger('userAction'); }, this);
@@ -324,6 +322,9 @@ define([
         },
         onCastActive: function(model, val) {
             this.elements.fullscreen.toggle(!val);
+            if (this.elements.cast.button) {
+                utils.toggleClass(this.elements.cast.button, 'jw-off', !val);
+            }
         },
         onElapsed: function(model, val) {
             var elapsedTime;

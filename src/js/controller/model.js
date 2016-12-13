@@ -245,10 +245,6 @@ define([
             return _provider;
         };
 
-        this.getProvider = function() {
-            return _provider;
-        };
-
         this.setFullscreen = function(state) {
             state = !!state;
             if (state !== _this.get('fullscreen')) {
