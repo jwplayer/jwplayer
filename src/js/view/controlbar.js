@@ -26,6 +26,10 @@ define([
         return createdMenu;
     }
 
+    function reasonInteraction() {
+        return {reason: 'interaction'};
+    }
+
     function buildGroup(group, elements) {
         var elem = document.createElement('div');
         elem.className = 'jw-group jw-controlbar-' + group+'-group jw-reset';
@@ -78,7 +82,7 @@ define([
 
             this.elements = {
                 alt: text('jw-text-alt', 'status'),
-                play: button('jw-icon-playback', this._api.play.bind(this, {reason: 'interaction'}), play),
+                play: button('jw-icon-playback', this._api.play.bind(this, reasonInteraction()), play),
                 rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
                 next: button('jw-icon-next', null, next), // the click/tap event listener is in the nextup tooltip
                 elapsed: text('jw-text-elapsed', 'timer'),
@@ -218,7 +222,7 @@ define([
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
                     var currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
+                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition), reasonInteraction());
                 }
             }, this);
 
@@ -355,7 +359,7 @@ define([
                 startPosition = duration;
             }
             // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
-            this._api.seek(Math.max(rewindPosition, startPosition));
+            this._api.seek(Math.max(rewindPosition, startPosition), reasonInteraction());
         },
         onStreamTypeChange : function(model) {
             // Hide rewind button when in LIVE mode

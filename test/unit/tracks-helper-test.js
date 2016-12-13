@@ -45,7 +45,7 @@ define([
         func = 'createId';
         count = 0;
 
-        expect(8);
+        assert.expect(8);
 
         assertProperty(assert, '', 'default', 'track.default is 1st priority even if other properties are set');
         assertProperty(assert, 'default', 'default',
@@ -81,7 +81,7 @@ define([
         func = 'createLabel';
         count = 0;
 
-        expect(5);
+        assert.expect(5);
 
         assertProperty(assert, '', 'label', 'track.label is 1st priority');
         assertProperty(assert, 'label', 'name', 'track.name is 2nd priority');

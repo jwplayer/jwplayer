@@ -35,6 +35,10 @@ define([
         }
     });
 
+    function reasonInteraction() {
+        return {reason: 'interaction'};
+    }
+
     var TimeSlider = Slider.extend({
         constructor : function(_model, _api) {
             this._model = _model;
@@ -151,13 +155,13 @@ define([
             var streamType = this._model.get('streamType');
             var position;
             if (duration === 0) {
-                this._api.play();
+                this._api.play(reasonInteraction());
             } else if (streamType === 'DVR') {
                 position = (100 - percent) / 100 * duration;
-                this._api.seek(position);
+                this._api.seek(position, reasonInteraction());
             } else {
                 position = percent / 100 * duration;
-                this._api.seek(Math.min(position, duration - 0.25));
+                this._api.seek(Math.min(position, duration - 0.25), reasonInteraction());
             }
         },
         showTimeTooltip: function(evt) {

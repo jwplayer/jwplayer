@@ -11,5 +11,4 @@ before_script:
   - npm install -g grunt-cli
 
 script:
-  - grunt build-js
-  - grunt karma:local
+  - grunt
