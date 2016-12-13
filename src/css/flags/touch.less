@@ -19,9 +19,6 @@
             max-height: 70%;
         }
 
-        .jw-nextup-container {
-            bottom: @nextup-position-bottom-touch;
-        }
     }
 
     .jw-controlbar {
@@ -30,17 +27,19 @@
         }
     }
 
-    .jw-display-icon-container {
+    .jw-display,
+    .jw-display-container {
         pointer-events: none;
     }
 
-    // This has higher specificity to overwrite jw-state-paused jw-display-icon-container that hides the display
-    &.jw-state-paused .jw-display-icon-container {
+    // This has higher specificity to overwrite jw-state-paused jw-display-container that hides the display
+    &.jw-state-paused .jw-display,
+    &.jw-state-playing .jw-display {
         display: table;
     }
 
     &.jw-state-paused.jw-flag-dragging {
-        .jw-display-icon-container {
+        .jw-display {
             display: none;
         }
     }

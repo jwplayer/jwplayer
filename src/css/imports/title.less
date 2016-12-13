@@ -32,3 +32,24 @@
     margin-top: -.5em;
 }
 
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+
+  .jw-title {
+    background: linear-gradient(180deg, fade(mix(black, white, 80%), 75%), fade(mix(black, white, 80%), 0%));
+    height: auto;
+    padding: @default-em-size 0;
+  }
+
+  .jw-title-primary,
+  .jw-title-secondary {
+    min-height: inherit;
+    padding: 0 @default-em-size;
+  }
+
+  .jw-title-secondary {
+    display: none;
+    margin-top: 5px;
+  }
+
+}

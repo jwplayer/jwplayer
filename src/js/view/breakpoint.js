@@ -3,6 +3,11 @@ define([
     'utils/underscore',
 ], function (utils) {
     return function setBreakpoint(playerElement, playerWidth, playerHeight) {
+
+        if (utils.hasClass(playerElement, 'jw-flag-audio-player')) {
+          return;
+        }
+
         var className = 'jw-breakpoint-';
         var width = playerWidth;
         var height = playerHeight;

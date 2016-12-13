@@ -1,0 +1,345 @@
+@import "mixins";
+@import "vars";
+@import "../flags/time-slider-above";
+
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+  /* do not add additional modifier rules to this rule set */
+  /* replace this with &:extend(.jw-flag-time-slider-above); later */
+  .jw-flag-time-slider-above;
+}
+
+/* ==================================================
+control bar
+*/
+
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+
+  &.jw-flag-time-slider-above {
+
+    .jw-controlbar {
+      height: (@slider-fixed-height * 1.5) + (@mobile-touch-target * 1.5);
+      padding: (@slider-fixed-height * 1.5) 40px 0;
+    }
+
+    .jw-controlbar-center-group {
+      padding: 0 40px;
+    }
+
+    &.jw-flag-ads,
+    &.jw-flag-live {
+
+      .jw-controlbar-center-group {
+        padding: 0;
+      }
+
+    }
+
+  }
+
+}
+
+/* ==================================================
+control bar items
+*/
+
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+
+  .jw-group {
+
+    > .jw-icon-rewind,
+    > .jw-icon-next,
+    > .jw-icon-playback {
+      display: none;
+    }
+
+  }
+
+}
+
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+
+  &.jw-flag-time-slider-above {
+
+    .jw-group {
+
+      > .jw-icon,
+      > .jw-text {
+        height: @mobile-touch-target * 1.5;
+        line-height: (@mobile-touch-target * 1.5) - 7px;
+        width: @mobile-touch-target * 1.5;
+      }
+
+      > .jw-text {
+        font-size: 18px;
+      }
+
+    }
+
+    &.jw-flag-ads,
+    &.jw-flag-live {
+
+      .jw-group {
+
+        > .jw-text {
+          line-height: (@mobile-touch-target * 1.5) - 26px;
+        }
+
+      }
+
+    }
+
+    .jw-controlbar {
+
+      .jw-slider-volume.jw-slider-horizontal {
+        margin-bottom: 7px;
+      }
+
+    }
+
+  }
+
+}
+
+/* ==================================================
+control bar groups
+*/
+
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+
+  &.jw-flag-time-slider-above {
+
+    &.jw-flag-ads {
+
+      .jw-controlbar-left-group,
+      &.jw-flag-time-slider-above .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+        display: none;
+      }
+
+    }
+
+  }
+
+}
+
+/* ==================================================
+slider
+*/
+
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+
+  &.jw-flag-time-slider-above {
+
+    .jw-tooltip-time {
+      bottom: (@mobile-touch-target * 0.75) + 5px;
+
+      .jw-time-tip {
+        padding: 4px 6px;
+      }
+
+      .jw-text {
+        font-size: 1.25em;
+      }
+
+    }
+
+  }
+
+}
+
+/* ==================================================
+volume overlay
+*/
+
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+
+  .jw-icon-volume .jw-overlay {
+    display: none;
+  }
+
+}
+
+/* ==================================================
+display
+*/
+
+.jw-breakpoint-0 {
+
+  .jw-display-icon-next,
+  .jw-display-icon-rewind {
+    display: none;
+  }
+
+}
+
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
+
+  .jw-display {
+    display: table;
+  }
+
+  &.jw-state-playing,
+  &.jw-state-paused,
+  &.jw-state-buffering {
+
+    .jw-display {
+      display: table;
+    }
+
+  }
+
+  &:not(.jw-state-idle) {
+
+    .jw-display {
+      padding-top: 14px; // knob height - rail height (replace with vars)
+    }
+
+  }
+
+}
+
+.jw-breakpoint-3 {
+
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 1.25;
+    line-height: @mobile-touch-target * 1.25;
+    width: @mobile-touch-target * 1.25;
+
+    &::before {
+      font-size: @mobile-touch-target * 0.625;
+    }
+
+  }
+
+}
+
+.jw-breakpoint-4,
+.jw-breakpoint-5 {
+
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 1.5;
+    line-height: @mobile-touch-target * 1.5;
+    width: @mobile-touch-target * 1.5;
+
+    &::before {
+      font-size: @mobile-touch-target * 0.75;
+    }
+
+  }
+
+}
+
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 1.75;
+    line-height: @mobile-touch-target * 1.75;
+    width: @mobile-touch-target * 1.75;
+
+    &::before {
+      font-size: @mobile-touch-target * 0.875;
+    }
+
+  }
+
+}
+
+/* ==================================================
+ads flag
+*/
+
+.jwplayer.jw-flag-live,
+.jwplayer.jw-flag-ads {
+
+  &.jw-breakpoint-2 {
+
+    .jw-controlbar-center-group .jw-text-alt {
+      max-width: 250px;
+    }
+
+  }
+
+  &.jw-breakpoint-3 {
+
+    .jw-controlbar-center-group .jw-text-alt {
+      max-width: 370px;
+    }
+
+  }
+
+  &.jw-breakpoint-4 {
+
+    .jw-controlbar-center-group .jw-text-alt {
+      max-width: 470px;
+    }
+
+  }
+
+  &.jw-breakpoint-5 {
+
+    .jw-controlbar-center-group .jw-text-alt {
+      max-width: 630px;
+    }
+
+  }
+
+  &.jw-breakpoint-6 {
+
+    .jw-controlbar-center-group .jw-text-alt {
+      max-width: 790px;
+    }
+
+  }
+
+}
+
+
+/*
+
+captions
+
+*/
+// 
+// .jw-breakpoint-2,
+// .jw-breakpoint-3 {
+//
+//   &.jw-flag-time-slider-above {
+//     .jw-captions,
+//     video::-webkit-media-text-track-container {
+//       // max-height: calc(100% - 6.25em * (4.125em + 0.5em));
+//     }
+//   }
+//
+// }
+//
+// .jw-breakpoint-4,
+// .jw-breakpoint-5 {
+//
+//   &.jw-flag-time-slider-above {
+//     .jw-captions,
+//     video::-webkit-media-text-track-container {
+//       // max-height: calc(100% - 6.25em * (4.125em + 1em));
+//     }
+//   }
+//
+// }
+
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+
+  &.jw-flag-time-slider-above {
+    .jw-captions,
+    video::-webkit-media-text-track-container {
+      max-height: calc(100% - 6.25em * (4.125em + 2em));
+    }
+  }
+
+}
