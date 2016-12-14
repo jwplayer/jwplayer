@@ -64,6 +64,10 @@ define([
         };
     }
 
+    function reasonInteraction() {
+        return {reason: 'interaction'};
+    }
+
     function buildGroup(group, elements) {
         var elem = document.createElement('div');
         elem.className = 'jw-group jw-controlbar-' + group+'-group jw-reset';
