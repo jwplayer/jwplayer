@@ -160,7 +160,7 @@ define([
                 if (state) {
                     _pause();
                 } else {
-                    _play();
+                    _play({ reason: 'interaction' });
                 }
             });
 
@@ -227,7 +227,7 @@ define([
                         // Only play if the video is in the viewport
                         _observeVideo(_video().video);
                     } else {
-                        _this.play({reason: 'autostart'});
+                        _autoStart();
                     }
                 }
             }
@@ -307,7 +307,7 @@ define([
                 _stop(true);
 
                 if (_canAutoStart()) {
-                    _model.once('itemReady', _play);
+                    _model.once('itemReady', _autoStart);
                 }
                 _this.trigger('destroyPlugin', {});
 
@@ -407,9 +407,13 @@ define([
                 return true;
             }
 
+            function _autoStart() {
+                _play({ reason: 'autostart' });
+            }
+
             function _stop(internal) {
                 // Reset the autostart play
-                _model.off('itemReady', _play);
+                _model.off('itemReady', _autoStart);
 
                 var fromApi = !internal;
 
@@ -478,12 +482,12 @@ define([
                 return (state === states.IDLE || state === states.COMPLETE || state === states.ERROR);
             }
 
-            function _seek(pos) {
+            function _seek(pos, meta) {
                 if (_model.get('state') === states.ERROR) {
                     return;
                 }
                 if (!_model.get('scrubbing') && _model.get('state') !== states.PLAYING) {
-                    _play(true);
+                    _play(meta);
                 }
                 _video().seek(pos);
             }
