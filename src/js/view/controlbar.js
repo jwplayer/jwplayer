@@ -26,15 +26,12 @@ define([
 
     function castButton(castToggle, localization) {
         if (!utils.isChrome() || utils.isIOS()) {
-            console.log('Airplay Icon');
             return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
         }
 
         var castButton = document.createElement('button', 'google-cast-button');
         var element = document.createElement('div');
         var ariaText = localization.cast;
-
-        console.log('Chromecast Icon');
 
         button.className = 'jw-button-color';
         element.className = 'jw-icon jw-icon-inline jw-reset jw-icon-cast jw-off';
