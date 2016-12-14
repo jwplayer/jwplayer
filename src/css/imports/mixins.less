@@ -226,19 +226,23 @@
         Chromecast
         */
 
-        .jw-icon-cast button {
-          --disconnected-color: @inactive-color;
+        .jw-icon-cast {
 
-          &:hover {
-            --disconnected-color: @hover-color;
+          button {
+            --disconnected-color: @inactive-color;
+
+            &:focus {
+              --disconnected-color: @hover-color;
+            }
+
+            &.jw-off {
+              --connected-color: @inactive-color;
+            }
+
           }
 
-          &:focus {
+          &:hover button {
             --disconnected-color: @hover-color;
-          }
-
-          &.jw-off {
-            --connected-color: @inactive-color;
           }
 
         }
