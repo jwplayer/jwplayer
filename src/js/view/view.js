@@ -114,6 +114,10 @@ define([
             document.msExitFullscreen;
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
+        function reasonInteraction() {
+            return {reason: 'interaction'};
+        }
+
         function adjustSeek(amount) {
             var min = 0;
             var max = _model.get('duration');
@@ -123,7 +127,7 @@ define([
                 max = Math.max(position, Constants.dvrSeekLimit);
             }
             var newSeek = utils.between(position + amount, min, max);
-            _api.seek(newSeek);
+            _api.seek(newSeek, reasonInteraction());
         }
 
         function adjustVolume(amount) {
@@ -161,7 +165,7 @@ define([
                     break;
                 case 13: // enter
                 case 32: // space
-                    _api.play({reason: 'interaction'});
+                    _api.play(reasonInteraction());
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!_instreamModel) {
@@ -198,7 +202,7 @@ define([
                         // if 0-9 number key, move to n/10 of the percentage of the video
                         var number = evt.keyCode - 48;
                         var newSeek = (number / 10) * _model.get('duration');
-                        _api.seek(newSeek);
+                        _api.seek(newSeek, reasonInteraction());
                     }
                     break;
             }
@@ -477,7 +481,7 @@ define([
                 _model.get('state') === states.PAUSED ||
                 (_instreamModel && _instreamModel.get('state') === states.PAUSED)) &&
                 _model.get('controls')) {
-                _api.play({reason: 'interaction'});
+                _api.play(reasonInteraction());
             }
 
             // Toggle visibility of the controls when clicking the media or play icon
@@ -492,10 +496,10 @@ define([
             if (!evt.link) {
                 //_togglePlay();
                 if (_model.get('controls')) {
-                    _api.play({reason: 'interaction'});
+                    _api.play(reasonInteraction());
                 }
             } else {
-                _api.pause(true);
+                _api.pause(true, reasonInteraction());
                 _api.setFullscreen(false);
                 window.open(evt.link, evt.linktarget);
             }
@@ -552,7 +556,7 @@ define([
             _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 if(_model.get('controls')) {
-                    _api.play({reason: 'interaction'});
+                    _api.play(reasonInteraction());
                 }
             });
             _displayClickHandler.on('tap', function() {
@@ -567,7 +571,7 @@ define([
             //toggle playback
             displayIcon.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _api.play({reason: 'interaction'});
+                _api.play(reasonInteraction());
             });
             displayIcon.on('tap', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});

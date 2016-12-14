@@ -182,11 +182,11 @@ define([
         };
 
         this.play = function (state, meta) {
-            if (!_.isBoolean(state)) {
+            if (_.isObject(state) && state.reason) {
                 meta = state;
             }
             if (!meta) {
-                meta = {reason: 'external'};
+                meta = { reason: 'external' };
             }
             if (state === true) {
                 _controller.play(meta);
@@ -209,12 +209,12 @@ define([
             return _this;
         };
 
-        this.pause = function (state) {
+        this.pause = function (state, meta) {
             if (_.isBoolean(state)) {
-                return this.play(!state);
+                return this.play(!state, meta);
             }
 
-            return this.play();
+            return this.play(meta);
         };
 
         this.createInstream = function () {
