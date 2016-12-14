@@ -39,21 +39,26 @@
 
     @controlbar-height: 2em;
 
-    @nextup-position-bottom: @controlbar-height + 0.7em + 0.5em;
-    @nextup-position-bottom-touch: (@controlbar-height * 1.5em) + 0.7em + 0.7em;
-    @nextup-position-right: 2%;
+    // @nextup-container-position-bottom: @controlbar-height + 0.7em + 0.5em;
+    // @nextup-container-position-bottom-touch: (@controlbar-height * 1.5em) + 0.7em + 0.7em;
+    // @nextup-container-padding-top-bottom: 5px;
+    // @nextup-container-padding-left-right: 2%;
     @nextup-border-radius: 0.3em;
     @nextup-header-background: fade(@def-background-color, 90%);
     @nextup-body-background: darken(@nextup-header-background, 20%);
     @nextup-body-text-color-overflow: darken(@def-background-color, 20%);
+
+    @fixed-time-slider-inactive-color: @inactive-color;
+    @fixed-time-slider-hover-color: @active-color;
+    @fixed-time-slider-progress-color: @rail-color;
 
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables
     #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
-
     .skin-element-padding();
+
     /* Controlbar styles */
     .inset-controlbar();
 
@@ -61,20 +66,98 @@
         background-color: @def-background-color;
     }
 
-    .jw-controlbar {
-        border: @def-border;
-        border-radius: .3em;
-        background-size: @def-background-size;
+    &.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
 
-        .jw-overlay {
-            bottom: 2em;
-            padding-bottom: .25em;
-        }
+      .jw-controlbar {
+          border: @def-border;
+          border-radius: .3em;
+          background-size: @def-background-size;
+
+          .jw-overlay {
+              bottom: 2em;
+              padding-bottom: .25em;
+          }
+      }
+
+      /* Rail/slider styles */
+      .jw-rail,
+      .jw-buffer,
+      .jw-progress {
+          border-radius: 0.5em;
+      }
+
+      .jw-progress,
+      .jw-buffer {
+          border: @def-border;
+      }
+
+      .jw-progress {
+          background: @def-progress-color;
+      }
+
+      .jw-rail {
+          border: @def-border;
+          box-shadow: @rail-glow;
+      }
+
+      .jw-knob {
+          width: @thumb-size;
+          height: @thumb-size;
+          border-radius: 1em;
+          background: @thumb-color;
+          box-shadow: 0px 1px 10px 1px rgba(0,0,0,0.75);
+      }
+
+      /* Timeline and horizontal volume slider */
+      .jw-slider-horizontal {
+          .jw-knob {
+              .vertically-centered-rail-element(@rail-height, @thumb-size);
+          }
+
+          .jw-progress {
+              border-radius: 0.5em 0 0 0.5em;
+          }
+
+          .jw-progress,
+          .jw-buffer {
+              border: @def-border;
+              border-style: solid none #000;
+          }
+
+          .jw-cue {
+              .vertically-centered-rail-element(@rail-height, @cue-size);
+
+              width: @cue-size;
+              height: @cue-size;
+              background-color: #616164;
+              border-radius: 50%;
+              box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.75);
+          }
+      }
+
+      /* Volume slider */
+      .jw-slider-vertical {
+          .jw-rail,
+          .jw-progress {
+              width: @rail-height;
+          }
+
+          .jw-progress {
+              background: linear-gradient(to right, rgba(255, 255, 255, 1) 0, rgba(204, 204, 204, 1) 50%, rgba(255, 255, 255, 1) 100%);
+              border-top-right-radius: 0;
+              border-bottom-right-radius: 0.5em;
+              border-bottom-left-radius: 0.5em;
+              border-top-left-radius: 0;
+          }
+
+          .jw-knob {
+              .horizontally-centered-rail-element(@rail-height, @thumb-size);
+          }
+      }
+
     }
 
-    &.jw-breakpoint-0 .jw-controlbar {
-      height: 2.1em;
-    }
+
 
     /* Styles for play button on idle */
     .jw-display-icon-container {
@@ -105,82 +188,6 @@
             font-size: .4em;
             vertical-align: middle;
             margin-right: .4em;
-        }
-    }
-
-    /* Rail/slider styles */
-    .jw-rail,
-    .jw-buffer,
-    .jw-progress {
-        border-radius: 0.5em;
-    }
-
-    .jw-progress,
-    .jw-buffer {
-        border: @def-border;
-    }
-
-    .jw-progress {
-        background: @def-progress-color;
-    }
-
-    .jw-rail {
-        border: @def-border;
-        box-shadow: @rail-glow;
-    }
-
-    .jw-knob {
-        width: @thumb-size;
-        height: @thumb-size;
-        border-radius: 1em;
-        background: @thumb-color;
-        box-shadow: 0px 1px 10px 1px rgba(0,0,0,0.75);
-    }
-
-    /* Timeline and horizontal volume slider */
-    .jw-slider-horizontal {
-        .jw-knob {
-            .vertically-centered-rail-element(@rail-height, @thumb-size);
-        }
-
-        .jw-progress {
-            border-radius: 0.5em 0 0 0.5em;
-        }
-
-        .jw-progress,
-        .jw-buffer {
-            border: @def-border;
-            border-style: solid none #000;
-        }
-
-        .jw-cue {
-            .vertically-centered-rail-element(@rail-height, @cue-size);
-
-            width: @cue-size;
-            height: @cue-size;
-            background-color: #616164;
-            border-radius: 50%;
-            box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.75);
-        }
-    }
-
-    /* Volume slider */
-    .jw-slider-vertical {
-        .jw-rail,
-        .jw-progress {
-            width: @rail-height;
-        }
-
-        .jw-progress {
-            background: linear-gradient(to right, rgba(255, 255, 255, 1) 0, rgba(204, 204, 204, 1) 50%, rgba(255, 255, 255, 1) 100%);
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0.5em;
-            border-bottom-left-radius: 0.5em;
-            border-top-left-radius: 0;
-        }
-
-        .jw-knob {
-            .horizontally-centered-rail-element(@rail-height, @thumb-size);
         }
     }
 

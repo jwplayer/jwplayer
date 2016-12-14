@@ -8,10 +8,6 @@
     height: @controlbar-height;
     width: 100%;
     padding: 0 @ui-padding;
-
-    .jw-hidden {
-        display: none;
-    }
 }
 
 .jw-background-color {
@@ -44,14 +40,14 @@
     white-space: nowrap;
 }
 
-// control bar content (icons/text)
-
 .jw-knob,
 .jw-icon-inline,
 .jw-icon-tooltip,
 .jw-icon-display,
 .jw-option:before {
-    .hover(@hover-color);
+  &:hover {
+    color: @hover-color;
+  }
 }
 
 .jw-icon-inline,
@@ -66,6 +62,12 @@
     vertical-align: middle;
     cursor: pointer;
     padding: 0 @ui-padding;
+}
+
+.jw-controlbar-left-group {
+  .jw-text-duration {
+    display: none;
+  }
 }
 
 .jw-icon-inline,
@@ -124,10 +126,14 @@
 
 .jw-button-color {
     color: @inactive-color;
-    .hover(@hover-color);
+
+    &:hover {
+        color: @hover-color;
+    }
+
     &:focus {
-      outline: none;
-      color: @hover-color;
+        outline: none;
+        color: @hover-color;
     }
 }
 

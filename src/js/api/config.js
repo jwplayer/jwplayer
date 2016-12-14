@@ -90,6 +90,11 @@ define([
 
         config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
+        // set time slider location (static or fixed) at top level
+        if (config.timeSliderAbove) {
+            config.timeSliderAbove = _.isBoolean(config.timeSliderAbove) ? config.timeSliderAbove : false;
+        }
+
         if (_.isObject(config.skin)) {
             config.skinUrl = config.skin.url;
             config.skinColorInactive = config.skin.inactive; // default icon color
