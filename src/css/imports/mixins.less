@@ -222,6 +222,27 @@
             }
         }
 
+        /*
+        Chromecast
+        */
+
+        .jw-icon-cast button {
+          --disconnected-color: @inactive-color;
+
+          &:hover {
+            --disconnected-color: @hover-color;
+          }
+
+          &:focus {
+            --disconnected-color: @hover-color;
+          }
+
+          &.jw-off {
+            --connected-color: @inactive-color;
+          }
+
+        }
+
         /* Next up display */
         .jw-nextup-container {
           bottom: @nextup-position-bottom;
