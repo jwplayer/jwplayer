@@ -95,28 +95,33 @@
 }
 
 .jw-icon-cast {
-    display: none;
-    padding: 0;
-    margin: 0;
-    button {
-        height: 40px;
-        width: 29px;
-        cursor: pointer;
-        background-color: transparent;
-        border: none;
-        --disconnected-color: @inactive-color;
-        &:hover {
-            --disconnected-color: @hover-color;
-        }
-        &:focus {
-            outline: none;
-            --disconnected-color: @hover-color;
-        }
+  display: none;
+  margin: 0;
+  padding: 0;
+
+  button {
+    --connected-color: @active-color;
+    --disconnected-color: @inactive-color;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: auto;
+    vertical-align: middle;
+    width: 32px;
+
+    &:focus {
+      --connected-color: @active-color;
+      --disconnected-color: @hover-color;
+      outline: none;
     }
 
-    button.jw-off {
-        --connected-color: @inactive-color;
-    }
+  }
+
+  &:hover button {
+    --connected-color: @hover-color;
+    --disconnected-color: @hover-color;
+  }
+
 }
 
 .jw-icon-airplay {
