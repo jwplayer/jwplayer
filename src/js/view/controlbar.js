@@ -126,7 +126,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: !utils.isSafari()? castButton(this._localization.cast) : button('jw-icon-airplay jw-off', this._api.castToggle, this._localization.airplay),
+                cast: utils.isChrome && !utils.isIOS()? castButton(this._localization.cast) : button('jw-icon-airplay jw-off', this._api.castToggle, this._localization.airplay),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
 
