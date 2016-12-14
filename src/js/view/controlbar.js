@@ -24,10 +24,6 @@ define([
         return new Menu(name, ariaText);
     }
 
-    function reasonInteraction() {
-        return {reason: 'interaction'};
-    }
-
     function castButton(castToggle, localization) {
         if (!utils.isChrome() || utils.isIOS()) {
             console.log('Airplay Icon');
