@@ -73,7 +73,7 @@ define([
 
         this.type = 'instream';
 
-        this.init = function(sharedVideoTag) {
+        this.init = function() {
 
             // Keep track of the original player state
             _oldProvider = _model.getVideo();
@@ -102,7 +102,7 @@ define([
 
             // If the player's currently playing, pause the video tag
             var currState = _model.get('state');
-            if (!sharedVideoTag && (currState === states.PLAYING || currState === states.BUFFERING)) {
+            if (currState === states.PLAYING || currState === states.BUFFERING) {
                 _oldProvider.pause();
             }
 
