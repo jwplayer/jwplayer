@@ -24,10 +24,6 @@ define([
         return new Menu(name, ariaText);
     }
 
-    function reasonInteraction() {
-        return {reason: 'interaction'};
-    }
-
     function castButton(ariaText) {
         var button = document.createElement('button', 'google-cast-button');
         var element = document.createElement('div');
