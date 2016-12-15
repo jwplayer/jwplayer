@@ -176,6 +176,19 @@ display
     display: none;
   }
 
+  &:not(.jw-state-idle) {
+
+    .jw-display {
+      padding-top: 0;
+    }
+
+    .jw-display-container {
+      margin-bottom: 5px;
+      vertical-align: bottom;
+    }
+
+  }
+
 }
 
 .jw-breakpoint-0,
@@ -191,14 +204,6 @@ display
 
     .jw-display {
       display: table;
-    }
-
-  }
-
-  &:not(.jw-state-idle) {
-
-    .jw-display {
-      padding-top: 14px; // knob height - rail height (replace with vars)
     }
 
   }
@@ -307,7 +312,7 @@ ads flag
 captions
 
 */
-// 
+//
 // .jw-breakpoint-2,
 // .jw-breakpoint-3 {
 //
