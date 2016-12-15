@@ -54,7 +54,7 @@ display icons
 
   display: table;
   height: 100%;
-  padding-bottom: 66px;
+  padding: @mobile-touch-target 0 66px;
   position: relative;
   width: 100%;
 
@@ -63,7 +63,7 @@ display icons
   }
 
   .jw-state-idle & {
-    padding-bottom: 0;
+    padding: 0;
   }
 
 }
@@ -91,7 +91,6 @@ display icons
     &::before {
       font-size: @mobile-touch-target * 0.5;
       position: relative;
-      top: 1px;
     }
 
     &.jw-icon-rewind::before {
