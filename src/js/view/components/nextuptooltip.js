@@ -11,6 +11,7 @@ define([
         this._nextButton = nextButton;
         this._playerElement = playerElement;
         this.nextUpText = _model.get('localization').nextUp;
+        this.nextUpClose = _model.get('localization').nextUpClose;
         this.state = 'tooltip';
     };
 
@@ -22,6 +23,7 @@ define([
             this.addContent(element);
 
             this.closeButton = this.content.querySelector('.jw-nextup-close');
+            this.closeButton.setAttribute('aria-label', this.nextUpClose);
             this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
 
             // Next Up is hidden until we get a valid NextUp item from the nextUp event
