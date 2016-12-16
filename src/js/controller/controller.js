@@ -259,7 +259,7 @@ define([
                 if (entries && entries.length) {
                     var video = _video().video;
                     var entry = entries[0];
-                    var meta = {reason: 'autoplay'};
+                    var meta = { reason: 'autostart' };
 
                     if (entry.target === video && entry.intersectionRatio >= 0.5) {
                         _this.play(meta);
