@@ -13,7 +13,8 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm, preload, feedid, withCredentials) {
+    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm,
+                                       preload, feedid, withCredentials, hlsjsdefault) {
         var list = [];
 
         _.each(playlist, function(item) {
@@ -23,7 +24,7 @@ define([
                 androidhls,
                 item.drm || configDrm,
                 item.preload || preload,
-                _fallbackIfUndefined(item.withCredentials, withCredentials));
+                _fallbackIfUndefined(item.withCredentials, withCredentials), hlsjsdefault);
 
             item.sources = _filterSources(item.allSources, providers);
 
@@ -50,7 +51,7 @@ define([
         return list;
     };
 
-    var _formatSources = function(sources, androidhls, itemDrm, preload, withCredentials) {
+    var _formatSources = function(sources, androidhls, itemDrm, preload, withCredentials, hlsjsdefault) {
         return _.compact(_.map(sources, function(originalSource) {
             if (! _.isObject(originalSource)) {
                 return;
@@ -73,6 +74,10 @@ define([
             var cascadedWithCredentials = _fallbackIfUndefined(originalSource.withCredentials, withCredentials);
             if (!_.isUndefined(cascadedWithCredentials)) {
                 originalSource.withCredentials = cascadedWithCredentials;
+            }
+
+            if (hlsjsdefault) {
+                originalSource.hlsjsdefault = hlsjsdefault;
             }
 
             return Source(originalSource);

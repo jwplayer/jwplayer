@@ -8,7 +8,7 @@ define([
 
     function Providers(config) {
         this.config = config || {};
-        this.providers = this.reorderProviders(this.config.primary);
+        this.providers = this.reorderProviders(this.config.primary, this.config.hlsjsdefault);
     }
 
     Providers.loaders = {
@@ -81,7 +81,7 @@ define([
             }));
         },
 
-        reorderProviders: function (primary) {
+        reorderProviders: function (primary, hlsjsdefault) {
             var providers = _.clone(ProvidersSupported);
 
             if (primary === 'flash') {
@@ -90,6 +90,11 @@ define([
                 var html5Idx = _.indexOf(providers, _.findWhere(providers, {name: 'html5'}));
                 providers.splice(html5Idx, 0, flashProvider);
             }
+            if (hlsjsdefault) {
+                var hlsIndex =  _.indexOf(providers, _.findWhere(providers, {name: 'hlsjs'}));
+                var hlsjsProvider = providers.splice(hlsIndex, 1)[0];
+                providers.unshift(hlsjsProvider);
+            }
             return providers;
         },
 
@@ -97,9 +102,9 @@ define([
             return provider.supports(source);
         },
 
-        required: function(playlist, primary) {
+        required: function(playlist) {
             var _this = this;
-            var providers = this.reorderProviders(primary);
+            var providers = this.providers;
 
             playlist = playlist.slice();
             return _.compact(_.map(providers, function(provider) {
@@ -125,10 +130,11 @@ define([
         choose : function(source) {
             // prevent throw on missing source
             source = _.isObject(source) ? source : {};
+            var providers = this.providers;
+            var count = providers.length;
 
-            var count = this.providers.length;
             for (var i = 0; i < count; i++) {
-                var provider = this.providers[i];
+                var provider = providers[i];
                 if (this.providerSupports(provider, source)) {
                     // prefer earlier providers
                     var priority = count - i - 1;
