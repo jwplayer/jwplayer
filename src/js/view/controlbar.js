@@ -24,9 +24,14 @@ define([
         return new Menu(name, ariaText);
     }
 
-    function castButton(ariaText) {
-        var button = document.createElement('button', 'google-cast-button');
+    function castButton(castToggle, localization) {
+        if (!utils.isChrome() || utils.isIOS()) {
+            return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
+        }
+
+        var castButton = document.createElement('button', 'google-cast-button');
         var element = document.createElement('div');
+        var ariaText = localization.cast;
 
         button.className = 'jw-button-color';
         element.className = 'jw-icon jw-icon-inline jw-reset jw-icon-cast jw-off';
@@ -37,7 +42,7 @@ define([
         if (ariaText) {
             element.setAttribute('aria-label', ariaText);
         }
-        element.appendChild(button);
+        element.appendChild(castButton);
 
         return {
             element: function() {
@@ -56,7 +61,7 @@ define([
             hide: function() {
                 element.style.display = 'none';
             },
-            button: button
+            button: castButton
         };
     }
 
@@ -128,7 +133,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: utils.isChrome && !utils.isIOS()? castButton(this._localization.cast) : button('jw-icon-airplay jw-off', this._api.castToggle, this._localization.airplay),
+                cast: castButton(this._api.castToggle, this._localization),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
 
