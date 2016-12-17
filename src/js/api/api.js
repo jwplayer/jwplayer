@@ -176,6 +176,11 @@ define([
             return 'html5';
         };
 
+        this.getMute = function () {
+            var model = _controller._model;
+            return model.get('autostartMuted') || model.get('mute');
+        };
+
         this.load = function (toLoad) {
             _controller.load(toLoad);
             return _this;

@@ -325,7 +325,7 @@ define([
                 _provider.volume(volume);
             }
             var mute = (volume === 0);
-            if (mute !== this.get('mute')) {
+            if (mute !== (this.get('autostartMuted') || this.get('mute'))) {
                 this.setMute(mute);
             }
         };
