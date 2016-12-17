@@ -32,6 +32,16 @@
         pointer-events: none;
     }
 
+    &.jw-state-paused,
+    &.jw-state-playing {
+        &:not(.jw-breakpoint-1) {
+            .jw-display-icon-next,
+            .jw-display-icon-rewind {
+                display: none;
+            }
+        }
+    }
+
     &.jw-state-paused.jw-flag-dragging {
         .jw-display {
             display: none;
