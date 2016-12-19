@@ -24,9 +24,14 @@ define([
         return new Menu(name, ariaText);
     }
 
-    function castButton(ariaText) {
-        var button = document.createElement('button', 'google-cast-button');
+    function castButton(castToggle, localization) {
+        if (!utils.isChrome() || utils.isIOS()) {
+            return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
+        }
+
+        var castButton = document.createElement('button', 'google-cast-button');
         var element = document.createElement('div');
+        var ariaText = localization.cast;
 
         button.className = 'jw-button-color';
         element.className = 'jw-icon jw-icon-inline jw-reset jw-icon-cast jw-off';
@@ -37,7 +42,7 @@ define([
         if (ariaText) {
             element.setAttribute('aria-label', ariaText);
         }
-        element.appendChild(button);
+        element.appendChild(castButton);
 
         return {
             element: function() {
@@ -56,7 +61,7 @@ define([
             hide: function() {
                 element.style.display = 'none';
             },
-            button: button
+            button: castButton
         };
     }
 
@@ -122,13 +127,14 @@ define([
                 elapsed: text('jw-text-elapsed', 'timer'),
                 time: timeSlider,
                 duration: text('jw-text-duration', 'timer'),
+                durationLeft: text('jw-text-duration', 'timer'),
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: utils.isChrome && !utils.isIOS()? castButton(this._localization.cast) : button('jw-icon-airplay jw-off', this._api.castToggle, this._localization.airplay),
+                cast: castButton(this._api.castToggle, this._localization),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
 
@@ -136,7 +142,8 @@ define([
                 left: [
                     this.elements.play,
                     this.elements.rewind,
-                    this.elements.elapsed
+                    this.elements.elapsed,
+                    this.elements.durationLeft
                 ],
                 center: [
                     this.elements.time,
@@ -179,6 +186,7 @@ define([
             this.el.appendChild(this.elements.left);
             this.el.appendChild(this.elements.center);
             this.el.appendChild(this.elements.right);
+
         },
 
         initialize : function() {
@@ -203,6 +211,7 @@ define([
             this._model.on('change:castAvailable', this.onCastAvailable, this);
             this._model.on('change:castActive', this.onCastActive, this);
             this._model.on('change:duration', this.onDuration, this);
+            this._model.on('change:durationLeft', this.onDuration, this);
             this._model.on('change:position', this.onElapsed, this);
             this._model.on('change:fullscreen', this.onFullscreen, this);
             this._model.on('change:captionsList', this.onCaptionsList, this);
@@ -261,6 +270,14 @@ define([
                 }
             }, this);
 
+            new UI(this.elements.durationLeft).on('click tap', function(){
+                if (this._model.get('streamType') === 'DVR') {
+                    // Seek to "Live" position within live buffer, but not before current position
+                    var currentPosition = this._model.get('position');
+                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
+                }
+            }, this);
+
             // When the control bar is interacted with, trigger a user action event
             new UI(this.el).on('click tap drag', function(){ this.trigger('userAction'); }, this);
 
@@ -280,6 +297,7 @@ define([
             this.elements.time.updateBuffer(0);
             this.elements.time.render(0);
             this.elements.duration.innerHTML = '00:00';
+            this.elements.durationLeft.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
 
             this.elements.audiotracks.setup();
@@ -346,6 +364,7 @@ define([
                 totalTime = utils.timeFormat(val);
             }
             this.elements.duration.innerHTML = totalTime;
+            this.elements.durationLeft.innerHTML = totalTime;
         },
         onFullscreen : function(model, val) {
             utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
@@ -395,6 +414,7 @@ define([
             this.elements.rewind.toggle(streamType !== 'LIVE');
             if (streamType === 'DVR') {
                 this.elements.duration.innerHTML = 'Live';
+                this.elements.durationLeft.innerHTML = 'Live';
             }
         }
     });

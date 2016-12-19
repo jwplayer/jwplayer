@@ -9,7 +9,7 @@
     @display-icon-color: rgba(255, 255, 255, 0.5);
     @display-icon-hover-color: rgb(255, 255, 255);
     @display-bkgd-color: @inactive-color;
-    @display-bkgd-hover-color: @hover-color;
+    @display-bkgd-hover-color: @active-color;
 
     @progress-color: @active-color;
     @buffer-color: #9c9a9d;
@@ -31,13 +31,13 @@
 
     @controlbar-height: 2em;
 
-    @nextup-position-bottom: @controlbar-height + 0.7em + 0.5em;
-    @nextup-position-bottom-touch: (@controlbar-height * 1.5em) + 0.7em + 0.8em;
-    @nextup-position-right: 2%;
     @nextup-border-radius: @roundster-corners / 2;
     @nextup-header-background: fade(@controlbar-background, 80%);
     @nextup-body-background: darken(@nextup-header-background, 20%);
     @nextup-body-text-color-overflow: darken(@controlbar-background, 20%);
+
+    @fixed-time-slider-inactive-color: @display-bkgd-color;
+    @fixed-time-slider-hover-color: @display-icon-hover-color;
 
     #namespace > .controlbar-height();
     #namespace > .basic-skin-styles(); // Using the above local variables

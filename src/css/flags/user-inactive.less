@@ -1,47 +1,39 @@
-.jwplayer.jw-flag-user-inactive
-:not(.jw-flag-casting)
-:not(.jw-flag-media-audio)
-:not(.jw-flag-audio-player) {
-    &.jw-state-playing {
-        .jw-controlbar,
-        .jw-dock {
-            display: none;
-        }
+@import "controls-hidden";
 
-        .jw-logo.jw-hide {
-            display: none;
-        }
+.jwplayer.jw-flag-user-inactive.jw-state-playing {
+    .jwplayer.jw-flag-controls-hidden;
 
-        .jw-plugin,
-        .jw-nextup-container {
-            bottom: 0.5em;
-        }
-
-        .jw-media {
-            cursor: none;
-            -webkit-cursor-visibility: auto-hide;
-        }
-
-        .jw-captions {
-            max-height: none;
-        }
-        video::-webkit-media-text-track-container {
-            max-height: none;
-        }
-    }
-
-    &.jw-state-buffering {
-        .jw-controlbar {
-            display: none;
-        }
-        .jw-nextup-container {
-            bottom: 0.5em;
-        }
+    .jw-media {
+        cursor: none;
+        -webkit-cursor-visibility: auto-hide;
     }
 
     &.jw-flag-casting {
-        .jw-controlbar {
-            display: table;
-        }
+      .jw-controlbar {
+        display: table;
+      }
+      .jw-display {
+        display: table;
+      }
+      .jw-dock {
+        display: block;
+      }
+      .jw-nextup-container {
+        bottom: @controlbar-height
+      }
+      &.jw-flag-time-slider-above .jw-nextup-container {
+        bottom: @mobile-touch-target * 1.5;
+      }
     }
+}
+
+.jwplayer.jw-flag-user-inactive.jw-state-buffering {
+
+    .jw-controlbar {
+        display: none;
+    }
+    .jw-nextup-container {
+        bottom: 0.5em;
+    }
+
 }

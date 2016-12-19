@@ -1,0 +1,276 @@
+@import "../imports/vars";
+
+/* time slider above or small player (both override player into same UI) */
+.jw-flag-time-slider-above {
+
+  // when not audio player mode
+  &:not(.jw-flag-audio-player) {
+
+
+    /* ==================================================
+    controls container
+    */
+
+    .jw-controls {
+      background: linear-gradient(180deg, fade(mix(black, white, 90%), 0%), fade(mix(black, white, 90%), 25%), fade(mix(black, white, 90%), 75%));
+    }
+
+    /* do not show the controls background linear gradient when video is idle state
+    or playing state when user inactive (the gradient in other scenarios blocks video
+    from clashing with the video colors, making it easy to see/use) */
+    &.jw-state-idle,
+    &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
+
+      .jw-controls {
+        background: none;
+      }
+
+    }
+
+
+    /* ==================================================
+    display
+    */
+
+    &:not(.jw-state-idle) .jw-display {
+      padding-bottom: @mobile-touch-target * 1.5;
+    }
+
+
+    /* ==================================================
+    control bar
+    */
+
+    .jw-controlbar {
+      background: none;
+      height: @mobile-touch-target;
+      padding: 0 10px;
+    }
+
+    /* by default, the control bar height is set to the height needed for live
+    broadcast and the override sets it to the height needed for anything that isn't
+    a live broadcast. the delay the player has before it detects a live broadcast
+    and adds causes a flicker. Handling control bar in this way fixes that experience
+    in time slider above mode. */
+    &:not(.jw-flag-ads),
+    &:not(.jw-flag-live) {
+
+      .jw-controlbar {
+        height: @mobile-touch-target * 1.5;
+        padding: @slider-fixed-height (@mobile-touch-target / 4) 0;
+      }
+
+    }
+
+
+    /* ==================================================
+    control bar items
+    */
+
+    .jw-group {
+
+      > .jw-icon,
+      > .jw-text {
+        height: @mobile-touch-target;
+        line-height: @mobile-touch-target - 4px;
+      }
+
+      > .jw-icon {
+        color: @fixed-time-slider-inactive-color;
+        font-size: 20px;
+        padding: 0;
+        text-align: center;
+        width: @mobile-touch-target;
+
+        &::before {
+          height: auto;
+        }
+
+        &:hover {
+          color: @fixed-time-slider-hover-color;
+        }
+
+      }
+
+      .jw-icon-cast button {
+        width: 37px;
+      }
+
+    }
+
+
+    /* ==================================================
+    control bar groups
+    */
+
+    .jw-controlbar-center-group {
+      height: @slider-fixed-height;
+      left: 0;
+      padding: 0 20px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 100%;
+    }
+
+    .jw-controlbar-left-group {
+      margin-left: -5px;
+
+      .jw-text-elapsed,
+      .jw-text-duration {
+        padding: 0 10px;
+      }
+
+      .jw-text-duration {
+        display: inline-block;
+        padding-left: 0;
+        &::before {
+          content: '/';
+          display: inline-block;
+          padding-right: 6px;
+        }
+      }
+
+    }
+
+    .jw-controlbar-right-group {
+      margin-right: -5px;
+      text-align: right;
+
+      .jw-text-duration {
+        display: none;
+      }
+
+    }
+
+
+    /* ==================================================
+    slider
+    */
+
+    .jw-slider-time {
+      background: none;
+      background-color: transparent;
+      height: @slider-fixed-height;
+
+      .jw-slider-container {
+        display: flex;
+        flex-direction: column;
+        height: @slider-fixed-height;
+        justify-content: center;
+      }
+
+      .jw-cue {
+        top: auto;
+      }
+
+      .jw-rail,
+      .jw-buffer,
+      .jw-progress {
+        height: @slider-fixed-rail-height;
+      }
+
+      .jw-progress {
+        background-color: @fixed-time-slider-progress-color;
+      }
+
+      .jw-rail {
+        background: none;
+        background-color: fade(white, 25%);
+      }
+
+      .jw-buffer {
+        background: none;
+        background-color: fade(white, 50%);
+      }
+
+      .jw-knob {
+        background-color: #fff;
+        border-radius: @slider-fixed-knob-border-radius;
+        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+        display: block;
+        height: @slider-fixed-knob-height;
+        margin-left: @slider-fixed-knob-width / -2;
+        margin-top: @slider-fixed-knob-height / -2;
+        top: 50%;
+        width: @slider-fixed-knob-width;
+      }
+
+    }
+
+    .jw-tooltip-time {
+      bottom: @slider-fixed-height + 5px;
+      height: auto;
+      line-height: normal;
+      padding: 0;
+      pointer-events: none;
+      transform: translateX(-50%);
+
+      .jw-overlay {
+        bottom: auto;
+        left: auto;
+        position: static;
+      }
+
+      .jw-time-tip {
+        border-radius: @ui-corner-round;
+        left: auto;
+        padding: 1px 5px;
+        position: static;
+      }
+
+      .jw-text {
+        height: auto;
+      }
+
+    }
+
+
+    /* ==================================================
+    ads
+    */
+
+    &.jw-flag-ads,
+    &.jw-flag-live {
+
+      .jw-controlbar-center-group {
+        height: auto;
+        overflow: hidden;
+        padding: 0;
+        position: static;
+        text-overflow: ellipsis;
+        width: 100%;
+
+        .jw-text-alt {
+          color: #fff;
+          display: block;
+          max-width: none;
+          text-align: left;
+        }
+
+      }
+
+      .jw-controlbar {
+
+        .jw-slider-volume.jw-slider-horizontal {
+          margin-bottom: 2px;
+        }
+
+      }
+
+    }
+
+
+    /* ==================================================
+    captions
+    */
+
+    .jw-captions,
+    video::-webkit-media-text-track-container {
+      max-height: calc(100% - 6.25em * (4.125em));
+    }
+
+
+  }
+
+}

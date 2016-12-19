@@ -1,6 +1,5 @@
 @import "vars";
 
-
 // Mixin for icon default formatting
 .jw-icon {
     font-family: 'jw-icons';
@@ -23,28 +22,54 @@
 }
 
 .inset-controlbar() {
-    .jw-controlbar {
-        // for correct display in IE browsers
-        display: inline-block;
-        // width assignment is required for IE11 to center correctly
-        width: 96%;
-        max-width: 50em;
-        margin: 0 auto;
+
+  &.jw-breakpoint-2,
+  &.jw-breakpoint-3,
+  &.jw-breakpoint-4,
+  &.jw-breakpoint-5,
+  &.jw-breakpoint-6,
+  &.jw-breakpoint-7 {
+
+    &.jw-flag-time-slider-default:not(.jw-flag-audio-player) {
+
+      .jw-controlbar {
         bottom: .7em;
+        display: inline-block; // for correct display in IE browsers
+        max-width: @min-breakpoint-5-width;
+        margin: 0 auto;
         left: 2%;
         right: 2%;
+        width: 96%; // width assignment is required for IE11 to center correctly
+      }
+
+      &.jw-state-idle .jw-controlbar {
+        display: none;
+      }
+
+      .jw-nextup-container {
+        bottom: @controlbar-height + .7em;
+        padding-left: 0;
+        padding-right: 0;
+        max-width: @min-breakpoint-5-width;
+      }
+
+      &.jw-breakpoint-2,
+      &.jw-breakpoint-3,
+      &.jw-breakpoint-4 {
+        .jw-nextup-container {
+          padding-left: 2%;
+          padding-right: 2%;
+        }
+      }
+
     }
-    &.jw-flag-audio-player .jw-controlbar {
-        bottom: 0; // overwrite the inset-controlbar mixin
-    }
-    &.jw-breakpoint-0 .jw-controlbar {
-        border-radius: 0;
-        bottom: 0;
-        left: 0;
-        padding: 0 0.3em;
-        right: 0;
-        width: 100%;
-    }
+
+  }
+
+  &.jw-flag-audio-player .jw-controlbar {
+    bottom: 0; // overwrite the inset-controlbar mixin
+  }
+
 }
 
 .vertically-centered-rail-element(@rail-height, @element-height) {
@@ -53,12 +78,6 @@
 
 .horizontally-centered-rail-element(@rail-width, @element-width) {
     left: (@rail-width - @element-width)/2;
-}
-
-.hover(@color:@hover-color) {
-    &:hover {
-        color: @color;
-    }
 }
 
 .skin-element-padding() {
@@ -75,6 +94,13 @@
 /* Mixin for common skin styles with variable colors */
 #namespace() {
     .basic-skin-styles() {
+
+        &.jwplayer:hover {
+            .jw-display-icon-container {
+                background-color: @display-bkgd-hover-color;
+            }
+        }
+
         .jw-background-color {
             background: @display-bkgd-color;
         }
@@ -99,7 +125,9 @@
 
         .jw-button-color {
             color: @inactive-color;
-            .hover(@hover-color);
+            &:hover {
+              color: @hover-color;
+            }
             &:focus {
                 outline: none;
                 color: @hover-color;
@@ -124,21 +152,25 @@
             }
         }
 
-        /* Colors for center play and buffering icons */
-        .jw-icon-display {
-            color: @display-icon-color;
-        }
-
+        /* Colors for display icons */
         .jw-display-icon-container {
-            border-radius: @ui-corner-round;
+          background-color: @display-bkgd-color;
+          border-radius: @ui-corner-round;
+          margin: 0 (@ui-padding * 0.5);
 
-            &:hover {
-                background: @display-bkgd-hover-color;
+          .jw-icon {
+            color: @display-icon-color;
+          }
 
-                .jw-icon-display {
-                    color: @display-icon-hover-color;
-                }
+          &:hover {
+            background: @display-bkgd-hover-color;
+
+            .jw-icon {
+              color: @display-icon-hover-color;
             }
+
+          }
+
         }
 
         /* Slider colors */
@@ -195,6 +227,7 @@
             background: @controlbar-background;
             padding: @ui-padding;
 
+            .jw-skiptext,
             .jw-skip-icon {
                 color: @inactive-color;
             }
@@ -248,8 +281,8 @@
 
         /* Next up display */
         .jw-nextup-container {
-          bottom: @nextup-position-bottom;
-          right: @nextup-position-right;
+          bottom: @controlbar-height;
+          padding: 0 @ui-padding;
         }
 
         .jw-nextup {
@@ -286,35 +319,113 @@
           color: @nextup-close-button-color-hover;
         }
 
+        // fixed time slider
+        &.jw-flag-time-slider-above,
+        &.jw-breakpoint-0,
+        &.jw-breakpoint-1 {
+
+          .jw-controlbar-center-group {
+
+            .jw-slider-horizontal {
+
+              .jw-progress {
+                background-color: @fixed-time-slider-progress-color;
+              }
+
+              .jw-knob {
+                border-radius: @slider-fixed-knob-border-radius;
+                height: @slider-fixed-knob-height;
+                margin-left: @slider-fixed-knob-width / -2;
+                margin-top: @slider-fixed-knob-height / -2;
+                width: @slider-fixed-knob-width;
+              }
+            }
+          }
+
+          .jw-controlbar-left-group,
+          .jw-controlbar-right-group {
+
+            .jw-icon {
+              color: @fixed-time-slider-inactive-color;
+              &:hover {
+                color: @fixed-time-slider-hover-color;
+              }
+            }
+
+            .jw-text {
+              color: @fixed-time-slider-inactive-color;
+            }
+
+          }
+
+          .jw-slider-horizontal {
+
+            .jw-progress {
+              background-color: @fixed-time-slider-progress-color;
+            }
+
+          }
+
+          .jw-tooltip-time {
+
+            .jw-time-tip {
+              border-radius: @ui-corner-round;
+            }
+
+          }
+
+          .jw-nextup-container {
+            bottom: (@mobile-touch-target * 1.5);
+          }
+
+          &.jw-breakpoint-2,
+          &.jw-breakpoint-3 {
+            .jw-nextup-container {
+              bottom: (@mobile-touch-target * 1.5) + 7px;
+            }
+          }
+
+          &.jw-breakpoint-4,
+          &.jw-breakpoint-5 {
+            .jw-nextup-container {
+              bottom: (@mobile-touch-target * 1.5) + 10px;
+            }
+          }
+
+          &.jw-breakpoint-6,
+          &.jw-breakpoint-7 {
+            .jw-nextup-container {
+              bottom: (@mobile-touch-target * 2) + 15px;
+            }
+          }
+
+        }
+
     }
 
     /* Override default touch flag styles */
     .touch-flag-skin-styles() {
         &.jw-flag-touch {
-            &.jw-breakpoint-7,
-            &.jw-breakpoint-6,
-            &.jw-breakpoint-5,
-            &.jw-breakpoint-4 {
-                .jw-nextup-container {
-                    bottom: @nextup-position-bottom-touch;
-                }
-            }
+            //
         }
     }
 
     .controlbar-height() {
+
+      &.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+
         .jw-controlbar {
-            height: @controlbar-height;
+
+          height: @controlbar-height;
+
+          .jw-overlay {
+            bottom: @controlbar-height;
+          }
+
         }
 
         .jw-time-tip {
             bottom: (@controlbar-height / 2);
-        }
-
-        .jw-controlbar {
-            .jw-overlay {
-                bottom: @controlbar-height;
-            }
         }
 
         .jw-captions {
@@ -332,6 +443,7 @@
                 bottom: @controlbar-height;
             }
         }
+
         .jw-icon-inline,
         .jw-icon-tooltip,
         .jw-text-elapsed,
@@ -340,10 +452,28 @@
             line-height: @controlbar-height;
         }
 
+        &.jw-flag-audio-player {
+
+          .jw-controlbar {
+            height: 100%;
+          }
+
+          .jw-icon-inline,
+          .jw-icon-tooltip,
+          .jw-text-elapsed,
+          .jw-text-duration {
+              height: auto;
+              line-height: normal;
+          }
+        }
+
         .jw-icon-inline,
         .jw-icon-tooltip {
             min-width: @controlbar-height * 5/8;
         }
+
+      }
+
     }
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
@@ -375,4 +505,5 @@
             }
         }
     }
+
 }

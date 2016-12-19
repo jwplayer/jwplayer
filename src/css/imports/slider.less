@@ -48,6 +48,7 @@
 
 .jw-slider-horizontal {
     height: @slider-height;
+    padding: 0;
 
     &.jw-slider-volume {
         width: @volume-rail-length;
@@ -70,7 +71,7 @@
 }
 
 .jw-slider-vertical {
-    padding: @volume-padding @volume-padding 0 @volume-padding;
+    padding: (@volume-padding / 1.5) @volume-padding;
     position: absolute;
 
     .jw-rail,
@@ -96,6 +97,7 @@
     .jw-knob {
         right: 0;
         left: (@def-rail-width - @thumb-size) / 2;
+        margin-bottom: @thumb-size/-2;
     }
 }
 
