@@ -44,17 +44,14 @@
     }
 }
 
-/*
-
+/* ==================================================
 display icons
-
 */
 
 .jw-display {
-
   display: table;
   height: 100%;
-  padding: @mobile-touch-target 0 @controlbar-height;
+  padding-bottom: @controlbar-height;
   position: relative;
   width: 100%;
 
@@ -62,6 +59,10 @@ display icons
     display: none;
   }
 
+  .jw-breakpoint-1:not(.jw-state-idle) &,
+  .jw-breakpoint-1.jw-flag-cast-available & {
+    padding-top: @mobile-touch-target;
+  }
 }
 
 .jw-display-container {
@@ -69,14 +70,16 @@ display icons
   height: 100%;
   text-align: center;
   vertical-align: middle;
+
+  .jw-breakpoint-0:not(.jw-state-idle) &,
+  .jw-breakpoint-0.jw-flag-cast-available & {
+    padding-bottom: 5px;
+    vertical-align: bottom;
+  }
 }
 
 .jw-display-controls {
   display: inline-block;
-
-  .jw-breakpoint-0 & {
-    margin-top: 10px;
-  }
 }
 
 .jw-display-icon-container {
