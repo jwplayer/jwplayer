@@ -16,6 +16,8 @@ define([
         return _.extend(config, {autostart: true, mute: mute});
     }
 
+    // Test autostart mute behavior in Safari Desktop and iOS
+
     function assertMuteState (assert, mobile, mute, result) {
         var done = assert.async();
         assert.expect(2);

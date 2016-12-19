@@ -20,9 +20,6 @@
     if (!('Promise' in window)) {
         deps.push('polyfills/promise');
     }
-    if (!('IntersectionObserver' in window)) {
-        deps.push('polyfills/intersection-observer');
-    }
     if (!('console' in window) || !('log' in window.console)) {
         window.console = {
             log: function() {

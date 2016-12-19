@@ -177,8 +177,7 @@ define([
         };
 
         this.getMute = function () {
-            var model = _controller._model;
-            return model.get('autostartMuted') || model.get('mute');
+            return _controller._model.getMute();
         };
 
         this.load = function (toLoad) {
