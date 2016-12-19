@@ -32,10 +32,14 @@
         pointer-events: none;
     }
 
-    // This has higher specificity to overwrite jw-state-paused jw-display-container that hides the display
-    &.jw-state-paused .jw-display,
-    &.jw-state-playing .jw-display {
-        display: table;
+    &.jw-state-paused,
+    &.jw-state-playing {
+        &:not(.jw-breakpoint-1) {
+            .jw-display-icon-next,
+            .jw-display-icon-rewind {
+                display: none;
+            }
+        }
     }
 
     &.jw-state-paused.jw-flag-dragging {
