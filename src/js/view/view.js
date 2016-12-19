@@ -37,6 +37,7 @@ define([
 
     var View = function(_api, _model) {
         var _playerElement,
+            _mediaLayer,
             _controlsLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
@@ -394,6 +395,7 @@ define([
 
             _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
 
+            _mediaLayer = _playerElement.querySelector('.jw-media');
             _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
 
             var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
@@ -1108,6 +1110,10 @@ define([
 
         this.clickHandler = function() {
             return _displayClickHandler;
+        };
+
+        this.mediaContainer = function() {
+            return _mediaLayer;
         };
 
         this.controlsContainer = function() {

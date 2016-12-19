@@ -9,12 +9,26 @@
     }
 
     &.jw-flag-casting {
-        .jw-controlbar {
-            display: table;
-        }
+      .jw-controlbar {
+        display: table;
+      }
+      .jw-display {
+        display: table;
+      }
+      .jw-dock {
+        display: block;
+      }
+      .jw-nextup-container {
+        bottom: @controlbar-height
+      }
+      &.jw-flag-time-slider-above .jw-nextup-container {
+        bottom: @mobile-touch-target * 1.5;
+      }
     }
 }
+
 .jwplayer.jw-flag-user-inactive.jw-state-buffering {
+
     .jw-controlbar {
         display: none;
     }
@@ -22,9 +36,4 @@
         bottom: 0.5em;
     }
 
-    &.jw-flag-casting {
-        .jw-controlbar {
-            display: table;
-        }
-    }
 }

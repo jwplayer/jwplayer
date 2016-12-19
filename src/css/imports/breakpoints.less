@@ -9,6 +9,7 @@
   .jw-flag-time-slider-above;
 }
 
+
 /* ==================================================
 control bar
 */
@@ -40,6 +41,7 @@ control bar
 
 }
 
+
 /* ==================================================
 control bar items
 */
@@ -55,6 +57,10 @@ control bar items
       display: none;
     }
 
+  }
+
+  .jw-icon-cast button {
+    width: 37px;
   }
 
 }
@@ -104,6 +110,7 @@ control bar items
 
 }
 
+
 /* ==================================================
 control bar groups
 */
@@ -125,6 +132,7 @@ control bar groups
   }
 
 }
+
 
 /* ==================================================
 slider
@@ -152,6 +160,7 @@ slider
 
 }
 
+
 /* ==================================================
 volume overlay
 */
@@ -165,6 +174,7 @@ volume overlay
 
 }
 
+
 /* ==================================================
 display
 */
@@ -176,15 +186,17 @@ display
     display: none;
   }
 
-  &:not(.jw-state-idle) {
+  .jw-display {
+    padding-top: 0;
+  }
 
-    .jw-display {
-      padding-top: 0;
-    }
+  &.jw-state-idle:not(.jw-flag-audio-player) {
 
-    .jw-display-container {
-      margin-bottom: 5px;
-      vertical-align: bottom;
+
+
+    .jw-display-controls {
+      // margin-bottom: 5px;
+      // vertical-align: bottom;
     }
 
   }
@@ -196,6 +208,12 @@ display
 
   .jw-display {
     display: table;
+    // padding-top: @mobile-touch-target;
+  }
+
+  .jw-display-container {
+    // padding-bottom: @mobile-touch-target;
+    // vertical-align: bottom;
   }
 
   &.jw-state-playing,
@@ -348,3 +366,14 @@ captions
   }
 
 }
+
+/* =====
+Casting
+*/
+
+
+// .jw-breakpoint-1
+// .jw-display-container {
+//   padding-bottom: 5px;
+//   vertical-align: bottom;
+// }

@@ -2,7 +2,10 @@
 
 /* time slider above or small player (both override player into same UI) */
 .jw-flag-time-slider-above {
+
+  // when not audio player mode
   &:not(.jw-flag-audio-player) {
+
 
     /* ==================================================
     controls container
@@ -16,13 +19,23 @@
     or playing state when user inactive (the gradient in other scenarios blocks video
     from clashing with the video colors, making it easy to see/use) */
     &.jw-state-idle,
-    &.jw-state-playing.jw-flag-user-inactive {
+    &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
 
       .jw-controls {
         background: none;
       }
 
     }
+
+
+    /* ==================================================
+    display
+    */
+
+    .jw-display {
+      padding-bottom: @mobile-touch-target * 1.5;
+    }
+
 
     /* ==================================================
     control bar
@@ -48,6 +61,7 @@
       }
 
     }
+
 
     /* ==================================================
     control bar items
@@ -78,11 +92,12 @@
 
       }
 
+      .jw-icon-cast button {
+        width: 37px;
+      }
+
     }
 
-    .jw-icon-cast button {
-      width: 34px;
-    }
 
     /* ==================================================
     control bar groups
@@ -101,8 +116,9 @@
     .jw-controlbar-left-group {
       margin-left: -5px;
 
-      .jw-text-elapsed {
-        padding-right: 7px;
+      .jw-text-elapsed,
+      .jw-text-duration {
+        padding: 0 10px;
       }
 
       .jw-text-duration {
@@ -126,6 +142,7 @@
       }
 
     }
+
 
     /* ==================================================
     slider
@@ -208,6 +225,7 @@
 
     }
 
+
     /* ==================================================
     ads
     */
@@ -242,6 +260,7 @@
 
     }
 
+
     /* ==================================================
     captions
     */
@@ -250,5 +269,8 @@
     video::-webkit-media-text-track-container {
       max-height: calc(100% - 6.25em * (4.125em));
     }
+
+
   }
+
 }

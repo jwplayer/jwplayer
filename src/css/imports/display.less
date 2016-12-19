@@ -54,7 +54,7 @@ display icons
 
   display: table;
   height: 100%;
-  padding: @mobile-touch-target 0 66px;
+  padding: @mobile-touch-target 0 @controlbar-height;
   position: relative;
   width: 100%;
 
@@ -62,16 +62,21 @@ display icons
     display: none;
   }
 
-  .jw-state-idle & {
-    padding: 0;
-  }
-
 }
 
 .jw-display-container {
   display: table-cell;
+  height: 100%;
   text-align: center;
   vertical-align: middle;
+}
+
+.jw-display-controls {
+  display: inline-block;
+
+  .jw-breakpoint-0 & {
+    margin-top: 10px;
+  }
 }
 
 .jw-display-icon-container {
