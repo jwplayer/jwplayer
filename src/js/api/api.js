@@ -37,9 +37,16 @@ define([
             args.type = type;
             var jwplayer = window.jwplayer;
             if (jwplayer && jwplayer.debug) {
-                return Events.trigger.call(_this, type, args);
+                Events.trigger.call(_this, type, args);
+                if (type === 'playlistItem') {
+                    _controller.trigger('apiPlaylistItem');
+                }
+                return;
             }
-            return Events.triggerSafe.call(_this, type, args);
+            Events.triggerSafe.call(_this, type, args);
+            if (type === 'playlistItem') {
+                _controller.trigger('apiPlaylistItem');
+            }
         };
 
         // Required by vast
