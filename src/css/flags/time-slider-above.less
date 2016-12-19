@@ -18,7 +18,7 @@
     /* do not show the controls background linear gradient when video is idle state
     or playing state when user inactive (the gradient in other scenarios blocks video
     from clashing with the video colors, making it easy to see/use) */
-    &.jw-state-idle,
+    &.jw-state-idle:not(.jw-flag-cast-available),
     &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
 
       .jw-controls {

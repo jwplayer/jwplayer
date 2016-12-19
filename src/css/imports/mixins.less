@@ -324,6 +324,23 @@
         &.jw-breakpoint-0,
         &.jw-breakpoint-1 {
 
+          .jw-group {
+
+            > .jw-icon {
+              color: @fixed-time-slider-inactive-color;
+
+              &:hover {
+                color: @fixed-time-slider-hover-color;
+              }
+
+            }
+
+            > .jw-text {
+              color: @fixed-time-slider-inactive-color;
+            }
+
+          }
+
           .jw-controlbar-center-group {
 
             .jw-slider-horizontal {
@@ -340,22 +357,6 @@
                 width: @slider-fixed-knob-width;
               }
             }
-          }
-
-          .jw-controlbar-left-group,
-          .jw-controlbar-right-group {
-
-            .jw-icon {
-              color: @fixed-time-slider-inactive-color;
-              &:hover {
-                color: @fixed-time-slider-hover-color;
-              }
-            }
-
-            .jw-text {
-              color: @fixed-time-slider-inactive-color;
-            }
-
           }
 
           .jw-slider-horizontal {
