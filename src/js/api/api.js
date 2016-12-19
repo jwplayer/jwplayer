@@ -176,6 +176,10 @@ define([
             return 'html5';
         };
 
+        this.getMute = function () {
+            return _controller._model.getMute();
+        };
+
         this.load = function (toLoad) {
             _controller.load(toLoad);
             return _this;
