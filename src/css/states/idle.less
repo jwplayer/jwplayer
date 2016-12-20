@@ -14,10 +14,6 @@
       display: none;
     }
 
-    .jw-controlbar {
-        display: none;
-    }
-
     .jw-captions {
         display: none;
     }
@@ -25,6 +21,16 @@
     // While idle, we show title
     .jw-title {
         display: block;
+    }
+
+    /* hide control bar and clear display container padding on idle state unless
+    cast available flag is set */
+    &:not(.jw-flag-cast-available) {
+
+      .jw-controlbar {
+        display: none;
+      }
+
     }
 
 }
