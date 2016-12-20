@@ -379,6 +379,13 @@ define([
                 });
             }
 
+            // display time slider above control bar if configured
+            if (_model.get('skinTimeSliderAbove')) {
+              utils.addClass(_playerElement, 'jw-flag-time-slider-above');
+            } else {
+              utils.addClass(_playerElement, 'jw-flag-time-slider-inline');
+            }
+
             this.onChangeSkin(_model, _model.get('skin'), '');
             _model.on('change:skin', this.onChangeSkin, this);
 
