@@ -17,7 +17,7 @@
 
     // then give dock some padding
     .jw-dock {
-      padding: 0 2px;
+      padding: 0 1%;
     }
 
   }
@@ -33,7 +33,7 @@
 
     // then give dock buttons some space between each other
     .jw-dock-button {
-      margin: 4px 2px;
+      margin: 2% 1%;
     }
 
   }
@@ -51,39 +51,16 @@
   // if breakpoint 0
   &.jw-breakpoint-0 {
 
-    // and NOT flagged aspect mode
-    &:not(.jw-flag-aspect-mode) {
-      // and paused and NOT in aspect mode
-      &.jw-state-paused,
-      // or playing and user is NOT inactive
-      &.jw-state-playing:not(.jw-flag-user-inactive) {
+    // and paused and NOT in aspect mode
+    &.jw-state-paused,
+    // or playing and user is NOT inactive
+    &.jw-state-playing:not(.jw-flag-user-inactive) {
 
-        // then add padding to top that equals height of dock icons if the video is not in aspect mode
-        .jw-display {
-          padding-top: @mobile-touch-target;
-        }
-
+      // then add padding to top that equals height of dock icons if the video is not in aspect mode
+      .jw-display {
+        padding-top: @mobile-touch-target;
       }
-    }
 
-    // and flagged aspect mode
-    &.jw-flag-aspect-mode {
-      // and paused
-      &.jw-state-paused,
-      // or playing and user is NOT inactive
-      &.jw-state-playing:not(.jw-flag-user-inactive),
-      // or casting is available
-      &.jw-flag-cast-available,
-      // or casting
-      &.jw-flag-casting {
-
-        // then vertically align the display container to bottom when in aspect mode
-        .jw-display-container {
-          padding-bottom: 10px;
-          vertical-align: bottom;
-        }
-
-      }
     }
 
   }
@@ -100,9 +77,15 @@
     // or casting
     &.jw-flag-casting {
 
-      // then add padding to top that equals height of dock icons
+      // then add top padding to display that equals height of dock icons
       .jw-display {
-        padding-top: @mobile-touch-target + 8px;
+        padding-top: @mobile-touch-target;
+      }
+
+      // and add top padding to display-container to cover total of dock button top and bottom margins
+      // goal here is to clear the dock icon outer height
+      .jw-display-container {
+        padding-top: 4%;
       }
 
     }
