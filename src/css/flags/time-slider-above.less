@@ -49,6 +49,18 @@
 
     }
 
+    // adjust overlay bottom padding to match height of touch target
+    .jw-overlay {
+      bottom: @mobile-touch-target;
+      
+      &::after {
+        content: '';
+        display: block;
+        height: @mobile-touch-target * 0.5;
+      }
+
+    }
+
     /* ==================================================
     control bar items
     */
