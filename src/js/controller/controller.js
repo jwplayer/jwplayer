@@ -504,7 +504,8 @@ define([
             function _setPlaylist(p) {
                 var playlist = Playlist(p);
                 playlist = Playlist.filterPlaylist(playlist, _model.getProviders(), _model.get('androidhls'),
-                    _model.get('drm'), _model.get('preload'), _model.get('feedid'), _model.get('withCredentials'));
+                    _model.get('drm'), _model.get('preload'), _model.get('feedid'), _model.get('withCredentials'),
+                    _model.get('hlsjsdefault'));
 
                 _model.set('playlist', playlist);
 
