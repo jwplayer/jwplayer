@@ -49,6 +49,37 @@
 
     }
 
+
+    /* ==================================================
+    control bar tooltip overlays
+    */
+
+    // adjust overlay bottom padding to match height of touch target
+    .jw-controlbar {
+
+      .jw-overlay {
+        bottom: @mobile-touch-target;
+
+        &::after {
+          content: '';
+          display: block;
+          height: @mobile-touch-target * 0.5;
+        }
+
+      }
+
+      &.jw-flag-ads,
+      &.jw-flag-live {
+
+        .jw-overlay::after {
+          display: none;
+        }
+
+      }
+
+    }
+
+
     /* ==================================================
     control bar items
     */
