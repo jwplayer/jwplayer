@@ -40,35 +40,15 @@ define([
             _olditem,
             _this = this;
 
-        var _clickHandler = _.bind(function(evt) {
-            evt = evt || {};
-            evt.hasControls = !!_model.get('controls');
-
-            this.trigger(events.JWPLAYER_INSTREAM_CLICK, evt);
-
-            // toggle playback after click event
-            if (!_instream || !_instream._adModel) {
-                return;
-            }
-            if (_instream._adModel.get('state') === states.PAUSED) {
-                if (evt.hasControls) {
-                    _instream.instreamPlay();
-                }
-            } else {
-                _instream.instreamPause();
-            }
+        var _clickHandler = _.bind(function() {
+            _model.set('controls', !_model.get('controls'));
         }, this);
 
         var _doubleClickHandler = _.bind(function() {
             if (!_instream || !_instream._adModel) {
                 return;
             }
-            if (_instream._adModel.get('state') === states.PAUSED) {
-                if (_model.get('controls')) {
-                    _controller.setFullscreen();
-                    _controller.play();
-                }
-            }
+            _controller.setFullscreen();
         }, this);
 
         this.type = 'instream';
@@ -123,6 +103,9 @@ define([
 
             // destroy skip button
             _model.set('skipButton', false);
+
+            // destroy clickthrough button
+            _model.set('clickthroughButton', false);
 
             _arrayIndex++;
             var item = _array[_arrayIndex];
@@ -219,12 +202,16 @@ define([
                     _instream.load(item);
 
                     _this.addClickHandler();
-
+                    _this.setupClickthroughButton();
                     var skipoffset = item.skipoffset || _options.skipoffset;
                     if (skipoffset) {
                         _this.setupSkipButton(skipoffset, _options);
                     }
                 });
+        };
+
+        this.setupClickthroughButton = function() {
+            _model.set('clickthroughButton', true);
         };
 
         this.setupSkipButton = function(skipoffset, options, customNext) {
@@ -267,6 +254,20 @@ define([
             });
         };
 
+        this.clickAd = function(evt) {
+            evt = evt || {};
+            evt.hasControls = !!_model.get('controls');
+
+            this.trigger(events.JWPLAYER_INSTREAM_CLICK, evt);
+
+            if (!_instream || !_instream._adModel) {
+                return;
+            }
+            if (_instream._adModel.get('state') !== states.PAUSED) {
+                _instream.instreamPause();
+            }
+        };
+
         /** Handle the JWPLAYER_MEDIA_META event **/
         this.metaHandler = function (evt) {
             // If we're getting video dimension metadata from the provider, allow the view to resize the media
@@ -279,6 +280,7 @@ define([
             this.off();
 
             _model.set('skipButton', false);
+            _model.set('clickthroughButton', false);
 
             if (_instream) {
                 if (_view.clickHandler()) {
