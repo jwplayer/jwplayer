@@ -2,20 +2,16 @@
 @import "vars";
 
 .jw-controlbar {
-    display: table;
-    position: absolute;
-    bottom: 0;
-    height: @controlbar-height;
-    width: 100%;
-    padding: 0 @ui-padding;
-
-    .jw-hidden {
-        display: none;
-    }
+  display: table;
+  position: absolute;
+  bottom: 0;
+  height: @controlbar-height;
+  width: 100%;
+  padding: 0 @ui-padding;
 }
 
 .jw-background-color {
-    background-color: @background-color;
+  background-color: @background-color;
 }
 
 .jw-slider-horizontal {
@@ -23,35 +19,37 @@
 }
 
 .jw-group {
-    display: table-cell;
+  display: table-cell;
 }
 
 .jw-controlbar-center-group {
-    width: 100%;
-    padding: 0 @ui-padding;
 
-    .jw-slider-time, .jw-text-alt {
-        padding: 0;
-    }
+  padding: 0 @ui-padding;
+  width: 100%;
 
-    .jw-text-alt {
-        display: none;
-    }
+  .jw-slider-time, .jw-text-alt {
+    padding: 0;
+  }
+
+  .jw-text-alt {
+    display: none;
+  }
+
 }
 
 .jw-controlbar-left-group,
 .jw-controlbar-right-group {
-    white-space: nowrap;
+  white-space: nowrap;
 }
-
-// control bar content (icons/text)
 
 .jw-knob,
 .jw-icon-inline,
 .jw-icon-tooltip,
 .jw-icon-display,
 .jw-option:before {
-    .hover(@hover-color);
+  &:hover {
+    color: @hover-color;
+  }
 }
 
 .jw-icon-inline,
@@ -59,39 +57,49 @@
 .jw-slider-horizontal,
 .jw-text-elapsed,
 .jw-text-duration {
-    display: inline-block;
-    height: @controlbar-height;
-    position: relative;
-    line-height: @controlbar-height;
-    vertical-align: middle;
-    cursor: pointer;
-    padding: 0 @ui-padding;
+  display: inline-block;
+  height: @controlbar-height;
+  position: relative;
+  line-height: @controlbar-height;
+  vertical-align: middle;
+  cursor: pointer;
+  padding: 0 @ui-padding;
+}
+
+.jw-controlbar-left-group {
+
+  .jw-text-duration {
+    display: none;
+  }
+
 }
 
 .jw-icon-inline,
 .jw-icon-tooltip {
-    min-width: @controlbar-height * 5/8;
-    text-align: center;
+  min-width: @controlbar-height * 5/8;
+  text-align: center;
 }
 
 .jw-icon-playback {
-    min-width: 2.25em;
+  min-width: 2.25em;
 }
 
 .jw-icon-volume {
-    min-width: 1.75em;
-    text-align: left;
+  min-width: 1.75em;
+  text-align: left;
 }
 
 .jw-time-tip {
-    line-height: 1em;
-    pointer-events: none;
+  line-height: 1em;
+  pointer-events: none;
 }
 
 .jw-icon-cast {
   display: none;
   margin: 0;
   padding: 0;
+  position: relative;
+  top: -1px;
 
   button {
     --connected-color: @active-color;
@@ -124,25 +132,35 @@
 
 .jw-slider-volume.jw-slider-horizontal,
 .jw-icon-inline.jw-icon-volume {
-    display: none;
+  display: none;
 }
 
 .jw-button-color {
-    color: @inactive-color;
-    .hover(@hover-color);
-    &:focus {
-      outline: none;
-      color: @hover-color;
-    }
+
+  color: @inactive-color;
+
+  &:hover {
+    color: @hover-color;
+  }
+
+  &:focus {
+    outline: none;
+    color: @hover-color;
+  }
+
 }
 
 .jw-toggle {
-    color: @toggle-active;
-    &.jw-off {
-        color: @toggle-inactive;
-    }
-    &:focus {
-      outline: none;
-      color: @hover-color;
-    }
+
+  color: @toggle-active;
+
+  &.jw-off {
+    color: @toggle-inactive;
+  }
+
+  &:focus {
+    outline: none;
+    color: @hover-color;
+  }
+
 }

@@ -1,15 +1,24 @@
 @import "../imports/icons";
 
 .jwplayer.jw-state-playing {
-    .jw-display-icon-container {
-        .jw-icon-display {
-            .jw-icon-pause;
-        }
 
-        display: none;
+  .jw-display {
+    display: none;
+
+    .jw-icon-display {
+      .jw-icon-pause;
     }
 
-    .jw-icon-playback {
-        .jw-icon-pause;
+  }
+
+  .jw-icon-playback {
+    .jw-icon-pause;
+  }
+
+  &.jw-flag-user-inactive {
+    .jw-display {
+      display: none;
     }
+  }
+
 }

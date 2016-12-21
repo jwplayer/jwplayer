@@ -44,51 +44,70 @@
     }
 }
 
-// DisplayIcon
-.jw-display-icon-container {
-    position: relative;
-    top: 50%;
-    display: table;
-    height: @display-icon-container-size;
-    width: @display-icon-container-size;
-    margin: @display-icon-container-size/-2 auto 0;
-    cursor: pointer;
+/* ==================================================
+display icons
+*/
 
-    .jw-icon-display {
-        position: relative;
-        display: table-cell;
-        text-align: center;
-        vertical-align: middle !important;
-        background-position: 50% 50%;
-        background-repeat: no-repeat;
-        font-size: 2.5em;
-    }
+.jw-display {
+  display: table;
+  height: 100%;
+  padding-bottom: @controlbar-height;
+  position: relative;
+  width: 100%;
 
-    .jw-breakpoint-0 & {
-      height: @mobile-touch-target;
-      width: @mobile-touch-target;
-      margin: (@mobile-touch-target / -2) auto 0;
-
-      .jw-icon {
-        font-size: (@mobile-touch-target / 2);
-      }
-    }
-
-    .jw-breakpoint-1 & {
-      height: @mobile-touch-target * 1.25;
-      width: @mobile-touch-target * 1.25;
-      margin: ((@mobile-touch-target * 1.25) / -2) auto 0;
-
-      .jw-icon {
-        font-size: (@mobile-touch-target / 1.25);
-      }
-    }
+  .jw-flag-dragging & {
+    display: none;
+  }
 }
 
-// Hide the player when,
-.jw-flag-audio-player, // Audio only mode
-.jw-flag-dragging {     // Scrubbing
-  .jw-display-icon-container {
-    display:none;
+.jw-display-container {
+  display: table-cell;
+  height: 100%;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.jw-display-controls {
+  display: inline-block;
+}
+
+.jw-display-icon-container {
+  background-color: @display-bkgd-color;
+  border-radius: @ui-corner-round;
+  display: inline-block;
+  margin: 0 (@ui-padding * 0.5);
+
+  .jw-icon {
+    color: @display-icon-color;
+    cursor: pointer;
+    height: @mobile-touch-target;
+    line-height: @mobile-touch-target;
+    text-align: center;
+    width: @mobile-touch-target;
+
+    &::before {
+      font-size: @mobile-touch-target * 0.5;
+      position: relative;
+    }
+
+    &.jw-icon-rewind::before {
+      top: 2px;
+    }
+
+    .jw-state-idle &.jw-icon-display::before,
+    .jw-state-paused &.jw-icon-display::before {
+      left: 1px;
+    }
+
   }
+
+  &:hover {
+    background: @display-bkgd-hover-color;
+
+    .jw-icon {
+      color: @display-icon-hover-color;
+    }
+
+  }
+
 }

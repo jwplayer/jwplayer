@@ -1,20 +1,23 @@
 @import "../imports/icons";
 
 .jwplayer.jw-state-paused {
-    .jw-display-icon-container {
-        .jw-icon-display {
-            .jw-icon-play;
-        }
 
-        display: none;
+  .jw-display {
+    display: none;
+
+    .jw-icon-display {
+      .jw-icon-play;
     }
 
-    .jw-icon-playback {
-        .jw-icon-play;
-    }
+  }
 
-    // Hide autostart mute button when paused by the browser
-    .jw-autostart-mute {
-        display: none;
-    }
+  .jw-icon-playback {
+    .jw-icon-play;
+  }
+
+  // Hide autostart mute button when paused by the browser
+  .jw-autostart-mute {
+    display: none;
+  }
+
 }
