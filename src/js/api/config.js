@@ -28,6 +28,7 @@ define([
             prev: 'Previous',
             next: 'Next',
             cast: 'Chromecast',
+            airplay: 'Airplay',
             fullscreen: 'Fullscreen',
             playlist: 'Playlist',
             hd: 'Quality',

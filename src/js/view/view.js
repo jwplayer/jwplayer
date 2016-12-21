@@ -335,7 +335,7 @@ define([
                 // menu active option
                 '.jw-active-option',
                 // slider fill color
-                '.jw-progress',
+                '.jw-progress'
             ], 'background', activeColor);
 
             // Apply inactive color
@@ -429,11 +429,6 @@ define([
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on('change:castAvailable', _onCastAvailable);
-            _onCastAvailable(_model, _model.get('castAvailable'));
-            _model.on('change:castActive', _onCastActive);
-            _onCastActive(_model, _model.get('castActive'));
-
             _model.on('change:hideAdsControls', function(model, val) {
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
             });
@@ -468,17 +463,6 @@ define([
                 _resize(_model.get('width'), _model.get('height'));
             });
         };
-
-        function _onCastActive(model, val) {
-            // if undefined it will simply alternate
-            val = val || false;
-
-            utils.toggleClass(_playerElement, 'jw-flag-casting', val);
-        }
-        function _onCastAvailable(model, val) {
-            utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
-            utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
-        }
 
         function _onStretchChange(model, newVal) {
             utils.replaceClass(_playerElement, /jw-stretch-\S+/, 'jw-stretch-' + newVal);
