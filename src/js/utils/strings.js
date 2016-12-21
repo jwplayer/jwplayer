@@ -42,6 +42,8 @@ define([
     function getAzureFileFormat(path) {
         if ((/[\(,]format=m3u8-/i).test(path)) {
             return 'm3u8';
+        } else if ((/[\(,]format=mpd-/i).test(path)) {
+            return 'mpd';
         } else {
             return false;
         }
