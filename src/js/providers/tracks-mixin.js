@@ -366,7 +366,11 @@ define(['utils/underscore',
         if (this._textTracks) {
             var track = this._textTracks[this._currentTextTrackIndex];
             if (track) {
-                track.mode = (track.embedded || track._id === 'nativecaptions') ? 'hidden' : 'disabled';
+                // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
+                track.mode = 'disabled';
+                if (track.embedded || track._id === 'nativecaptions') {
+                    track.mode = 'hidden';
+                }
             }
         }
     }
