@@ -7,7 +7,7 @@ define([
 ], function(utils, Events, UI, Template, _) {
     var DisplayContainer = function() {
         this.el = utils.createElement(Template());
-        this.container = this.el.querySelector('.jw-display-container');
+        this.container = this.el.querySelector('.jw-display-controls');
         this.addButton = function (button) {
             this.container.appendChild(button.el);
         };
