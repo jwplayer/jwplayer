@@ -34,16 +34,24 @@
       padding: 0 10px;
     }
 
-    &:not(.jw-flag-ads) {
+    &.jw-flag-ads {
+
       .jw-controlbar {
         pointer-events: none;
+
+        .jw-icon,
+        .jw-slider-horizontal {
+          pointer-events: all;
+        }
+
       }
+
     }
 
     /* by default, the control bar height is set to the height needed for live
     broadcast and the override sets it to the height needed for anything that isn't
     a live broadcast. the delay the player has before it detects a live broadcast
-    and adds causes a flicker. Handling control bar in this way fixes that experience
+    and adds causes a flicker. handling control bar in this way fixes that experience
     in time slider above mode. */
     &:not(.jw-flag-ads),
     &:not(.jw-flag-live) {
@@ -82,6 +90,11 @@
           color: @fixed-time-slider-hover-color;
         }
 
+      }
+
+      > .jw-text {
+        position: relative;
+        top: -1px;
       }
 
     }
