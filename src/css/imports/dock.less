@@ -6,14 +6,6 @@
     display: block;
     opacity: 1;
 
-    .jw-breakpoint-0 & {
-      margin: 0;
-    }
-
-    .jw-breakpoint-1 & {
-      margin: (@ui-margin * 0.3) ((@ui-margin * 0.3) / 2);
-    }
-
     &:after {
         content: '';
         clear: both;
@@ -28,18 +20,6 @@
     margin: 0.5em;
     position: relative;
     width: 2.5em;
-
-    .jw-breakpoint-0 & {
-      margin: 0;
-      height: @mobile-touch-target;
-      width: @mobile-touch-target;
-    }
-
-    .jw-breakpoint-1 & {
-      margin: 0 ((@ui-margin * 0.3) / 2);
-      height: @mobile-touch-target;
-      width: @mobile-touch-target;
-    }
 
     .jw-arrow {
         display: none;
