@@ -32,5 +32,6 @@ define([
     'unit/validator-test',
     'unit/playlist-loader-test',
     'unit/captionsrenderer-test',
-    'unit/tracks-helper-test'
+    'unit/tracks-helper-test',
+    'unit/autostart-mute-test'
 ]);

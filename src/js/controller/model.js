@@ -325,14 +325,18 @@ define([
                 _provider.volume(volume);
             }
             var mute = (volume === 0);
-            if (mute !== this.get('mute')) {
+            if (mute !== (this.getMute())) {
                 this.setMute(mute);
             }
         };
 
+        this.getMute = function() {
+            return this.get('autostartMuted') || this.get('mute');
+        };
+
         this.setMute = function(mute) {
             if (!utils.exists(mute)) {
-                mute = !(this.get('autostartMuted') || this.get('mute'));
+                mute = !(this.getMute());
             }
             this.set('mute', mute);
             if (_provider) {
