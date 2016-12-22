@@ -54,7 +54,7 @@ display icons
 
   display: table;
   height: 100%;
-  padding: @mobile-touch-target 0 66px;
+  padding-bottom: @controlbar-height;
   position: relative;
   width: 100%;
 
@@ -62,7 +62,7 @@ display icons
     display: none;
   }
 
-  .jw-state-idle & {
+  .jw-state-idle:not(.jw-flag-cast-available) & {
     padding: 0;
   }
 
@@ -114,4 +114,10 @@ display icons
 
   }
 
+}
+
+// hide next and rewind buttons on extra small player
+.jw-breakpoint-0 .jw-display-icon-next,
+.jw-breakpoint-0 .jw-display-icon-rewind {
+  display: none;
 }
