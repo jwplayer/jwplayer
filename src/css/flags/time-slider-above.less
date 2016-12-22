@@ -117,9 +117,13 @@
     state (except when cast available and we show controls on idle state) or
     playing state when user inactive (the gradient in other scenarios blocks
     video from clashing with the video colors, making it easy to see/use) */
-    &.jw-state-idle:not(.jw-flag-cast-available) .jw-controls,
-    &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) .jw-controls {
-      background: none;
+    &.jw-state-idle:not(.jw-flag-cast-available),
+    &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
+
+      .jw-controls {
+        background: none;
+      }
+
     }
 
 
@@ -138,10 +142,14 @@
     isn't a live broadcast. the delay the player has before it detects a live
     broadcast and adds causes a flicker. Handling control bar in this way fixes
     that experience in time slider above mode. */
-    &:not(.jw-flag-ads) .jw-controlbar,
-    &:not(.jw-flag-live) .jw-controlbar {
-      height: @mobile-touch-target * 1.5;
-      padding: @slider-fixed-height (@mobile-touch-target / 4) 0;
+    &:not(.jw-flag-ads),
+    &:not(.jw-flag-live) {
+
+      .jw-controlbar {
+        height: @mobile-touch-target * 1.5;
+        padding: @slider-fixed-height (@mobile-touch-target / 4) 0;
+      }
+
     }
 
 
