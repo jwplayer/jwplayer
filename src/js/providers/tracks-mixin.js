@@ -19,7 +19,6 @@ define(['utils/underscore',
         _activeCuePosition: null,
         _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
-        clearCues: clearCues,
         clearTracks: clearTracks,
         disableTextTrack: disableTextTrack,
         enableTextTrack: enableTextTrack,
@@ -367,7 +366,11 @@ define(['utils/underscore',
         if (this._textTracks) {
             var track = this._textTracks[this._currentTextTrackIndex];
             if (track) {
-                track.mode = (track.embedded || track._id === 'nativecaptions') ? 'hidden' : 'disabled';
+                // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
+                track.mode = 'disabled';
+                if (track.embedded || track._id === 'nativecaptions') {
+                    track.mode = 'hidden';
+                }
             }
         }
     }
@@ -468,15 +471,6 @@ define(['utils/underscore',
         }
     }
 
-    // Clear the cues from all tracks
-    function clearCues() {
-        var tracks = this.video.textTracks;
-        if (tracks) {
-            // Second argument allows tracks to be reused
-            _removeCues(tracks, true);
-        }
-    }
-
     //////////////////////
     ////// PRIVATE METHODS
     //////////////////////
@@ -493,7 +487,7 @@ define(['utils/underscore',
         track.addCue(textTrackCue);
     }
 
-    function _removeCues(tracks, keepTracks) {
+    function _removeCues(tracks) {
         if (tracks.length) {
             _.each(tracks, function(track) {
                 // Cues are inaccessible if the track is disabled. While hidden,
@@ -507,9 +501,7 @@ define(['utils/underscore',
                 if (!track.embedded) {
                     track.mode = 'disabled';
                 }
-                if (!keepTracks) {
-                    track.inuse = false;
-                }
+                track.inuse = false;
             });
         }
     }

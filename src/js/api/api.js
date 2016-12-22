@@ -137,7 +137,7 @@ define([
             var qoeItem = _controller.getItemQoe();
 
             var setupTime = _qoe.between('setup', 'ready');
-            var firstFrame = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var firstFrame = qoeItem.getFirstFrame();
 
             return {
                 setupTime : setupTime,
@@ -174,6 +174,10 @@ define([
 
         this.getRenderingMode = function () {
             return 'html5';
+        };
+
+        this.getMute = function () {
+            return _controller._model.getMute();
         };
 
         this.load = function (toLoad) {

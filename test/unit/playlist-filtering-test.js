@@ -37,9 +37,19 @@ define([
             assert.ok(true, 'Ignore flash test when plugin is unavailable');
             return;
         }
-
+        var model = {
+            getProviders: function() {
+                return new Providers({primary:primary});
+            },
+            get: function(attribute) {
+                switch(attribute) {
+                    case 'androidhls':
+                        return !!isAndroidHls;
+                }
+            }
+        };
         var pl = playlist(playlists[sourceName]);
-        var filtered = playlist.filterPlaylist(pl, new Providers({primary:primary}), !!isAndroidHls);
+        var filtered = playlist.filterPlaylist(pl, model);
 
         var title = isFlash ? 'Flash only with ' : 'Html5 only with ';
         assert.ok(sourcesMatch(filtered), title + sourceName + ' has only matching sources');
@@ -73,29 +83,46 @@ define([
 
     test('filterPlaylist', function(assert) {
         var pl;
-        pl = playlist.filterPlaylist(playlists['webm_mp4'], new Providers());
+        var androidhls = true;
+        var model = {
+            getProviders: function() {
+                return new Providers();
+            },
+            get: function(attribute) {
+                switch(attribute) {
+                    case 'androidhls':
+                        return androidhls;
+                }
+            }
+        };
+        pl = playlist.filterPlaylist(playlists['webm_mp4'], model);
         assert.equal(pl[0].sources[0].type, 'webm', 'Webm mp4 first source is webm');
         assert.equal(pl[1].sources[0].type, 'mp4', 'Webm mp4 second source is mp4');
 
-        pl = playlist.filterPlaylist(playlists['mp4_webm'], new Providers());
+        pl = playlist.filterPlaylist(playlists['mp4_webm'], model);
         assert.equal(pl[0].sources[0].type, 'mp4', 'Mp4 webm, first source is mp4');
         assert.equal(pl[1].sources[0].type, 'webm', 'mp4 webm, second source is webm');
 
-        var androidhls = true;
-        pl = playlist.filterPlaylist(playlists['mp4_webm'], new Providers(), androidhls);
+        pl = playlist.filterPlaylist(playlists['mp4_webm'], model);
         assert.equal(pl[0].sources[0].androidhls, androidhls, 'androidhls is copied to sources');
 
         var empty = [];
-        pl = playlist.filterPlaylist(empty, new Providers());
+        pl = playlist.filterPlaylist(empty, model);
         assert.equal(pl.length, 0, 'returns an empty array when playlist is empty');
 
-        pl = playlist.filterPlaylist([{sources:[]}], new Providers());
+        pl = playlist.filterPlaylist([{sources:[]}], model);
         assert.equal(pl.length, 0, 'filters items with empty sources');
 
-        pl = playlist.filterPlaylist(playlists['mp4_webm']);
+        model.getProviders = function() {
+            return null;
+        };
+        pl = playlist.filterPlaylist(playlists['mp4_webm'], model);
         assert.equal(pl.length, 2, 'supports legacy plugins with providers not set');
 
-        pl = playlist.filterPlaylist(playlists['mp4_webm'], {no: 'choose'});
+        model.getProviders = function() {
+            return {no: 'choose'};
+        };
+        pl = playlist.filterPlaylist(playlists['mp4_webm'], model);
         assert.equal(pl.length, 2, 'supports legacy plugins with providers.choose not available');
     });
 
@@ -136,8 +163,20 @@ define([
         };
 
         var withCredentialsOnModel = true;
-        
-        var pl = playlist.filterPlaylist(withCredentialsPlaylist, new Providers(providersConfig), undefined, undefined, undefined, undefined, withCredentialsOnModel);
+
+        var model = {
+            getProviders: function() {
+                return new Providers(providersConfig);
+            },
+            get: function(attribute) {
+                switch(attribute) {
+                    case 'withCredentials':
+                        return withCredentialsOnModel;
+                }
+            }
+        };
+
+        var pl = playlist.filterPlaylist(withCredentialsPlaylist, model);
 
         assert.equal(pl.length, 3);
         assert.equal(pl[0].allSources[0].withCredentials, false);
@@ -158,8 +197,14 @@ define([
                 ]
             }
         ];
+        var model = {
+            getProviders: function() {
+                return new Providers();
+            },
+            get: function(attribute) {}
+        };
 
-        var pl = playlist.filterPlaylist(undefinedCredentialsPlaylist, new Providers(), undefined, undefined, undefined, undefined, undefined);
+        var pl = playlist.filterPlaylist(undefinedCredentialsPlaylist, model);
         assert.equal(pl.length, 1);
         assert.equal(pl[0].allSources[0].withCredentials, undefined);
     });
