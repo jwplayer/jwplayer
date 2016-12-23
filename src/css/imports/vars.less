@@ -3,6 +3,23 @@
 // mobile touch target size (iOS standard)
 @mobile-touch-target: 44px;
 
+// breakpoint width references
+@min-breakpoint-7-width: 1280px;
+@max-breakpoint-6-width: 1279px;
+@min-breakpoint-6-width: 960px;
+@max-breakpoint-5-width: 959px;
+@min-breakpoint-5-width: 800px;
+@max-breakpoint-4-width: 799px;
+@min-breakpoint-4-width: 640px;
+@max-breakpoint-3-width: 639px;
+@min-breakpoint-3-width: 540px;
+@max-breakpoint-2-width: 539px;
+@min-breakpoint-2-width: 420px;
+@max-breakpoint-1-width: 419px;
+@min-breakpoint-1-width: 320px;
+@max-breakpoint-0-width: 319px;
+@min-breakpoint-0-width: 0px;
+
 // (160,160,160)
 // Colors
 @active-color: rgba(255, 255, 255, 1);
@@ -53,6 +70,14 @@
 @volume-rail-length: 4em;
 @thumb-size: @rail-height * 2;
 
+// fixed slider
+
+@slider-fixed-height: @mobile-touch-target / 2;
+@slider-fixed-rail-height: 2px;
+@slider-fixed-knob-height: 16px;
+@slider-fixed-knob-width: @slider-fixed-knob-height;
+@slider-fixed-knob-border-radius: 100%;
+
 // Volume tooltip
 @volume-background: @background-color;
 @volume-border: 0;
@@ -62,15 +87,16 @@
 @dock-corner-radius: 0;
 
 // Next up display
-@nextup-position-bottom: @controlbar-height + 0.5em;
-@nextup-position-bottom-touch: (@controlbar-height * 1.5em) + 0.5em;
-@nextup-position-right: 0.5em;
 @nextup-border-radius: 0;
 @nextup-header-background: @controlbar-background;
 @nextup-header-text-color: @active-color;
 @nextup-body-background: darken(@nextup-header-background, 20%);
-@nextup-body-text-color: white;
+@nextup-body-text-color: #fff;
 @nextup-body-text-color-overflow: darken(fade(@controlbar-background, 100%), 20%);
 @nextup-close-button-color-inactive: @inactive-color;
 @nextup-close-button-color-active: @active-color;
 @nextup-close-button-color-hover: @hover-color;
+
+@fixed-time-slider-inactive-color: rgba(255, 255, 255, 0.8);
+@fixed-time-slider-hover-color: rgba(255, 255, 255, 1);
+@fixed-time-slider-progress-color: @progress-color;

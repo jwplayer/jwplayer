@@ -1,20 +1,21 @@
 @import "../imports/icons";
 
 .jwplayer.jw-state-paused {
-    .jw-display-icon-container {
-        .jw-icon-display {
-            .jw-icon-play;
-        }
 
-        display: none;
+  &:not(.jw-flag-touch):not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+    .jw-display {
+      display: none;
     }
+  }
 
-    .jw-icon-playback {
-        .jw-icon-play;
-    }
+  .jw-display .jw-icon-display,
+  .jw-icon-playback {
+    .jw-icon-play;
+  }
 
-    // Hide autostart mute button when paused by the browser
-    .jw-autostart-mute {
-        display: none;
-    }
+  // Hide autostart mute button when paused by the browser
+  .jw-autostart-mute {
+    display: none;
+  }
+
 }
