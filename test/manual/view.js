@@ -349,10 +349,13 @@ window.requireCallback = function(){
             mediaModel.trigger('change:levels', mockModel, mediaModel.get('levels'));
             mediaModel.trigger('change:audioTracks', mockModel, mediaModel.get('audioTracks'));
 
-            // view.resize(400, 300);
-
             var $wrapper = $('<div id="' + configuration.id+  '-wrapper" class="wrapper"></div>').append(view.element());
             $('body').append($wrapper);
+
+            setTimeout(function() {
+                view.resize(mockModel.get('width'), mockModel.get('height'));
+                // provider.seek(11);
+            }, 10 * 1000 + Math.random() * 5000);
 
             if (!configuration.castActive &&
                 (configuration.state === 'playing'||  configuration.state === 'paused')) {
