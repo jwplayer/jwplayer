@@ -85,9 +85,9 @@
             'handlebars': components + '/handlebars/dist/handlebars.amd',
             'text': components + '/requirejs-text/text',
             'handlebars-loader': components + '/requirejs-handlebars/hb',
-            'less': components + '/require-less/less',
-            'lessc': components + '/require-less/lessc',
-            'normalize': components + '/require-less/normalize',
+            'less': '../../test/require-less/less',
+            'lessc': '../../test/require-less/lessc',
+            'normalize': '../../test/require-less/normalize',
             'jquery': components + '/jquery/dist/jquery',
             'phantomjs-polyfill': components + '/phantomjs-polyfill/bind-polyfill',
             'simple-style-loader': components + '/simple-style-loader',
@@ -117,7 +117,6 @@
                 'templates/menu.html': 'handlebars-loader!templates/menu.html',
                 'templates/playlist.html': 'handlebars-loader!templates/playlist.html',
                 'templates/nextup.html': 'handlebars-loader!templates/nextup.html',
-                'css/jwplayer.less': 'less!css/jwplayer',
                 'utils/video': mock + '/video.js'
             }
         },

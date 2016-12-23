@@ -5,19 +5,27 @@ window.requireCallback = function(){
         'mock/mock-api',
         'mock/mock-model',
         'view/view',
-        'css/jwplayer.less'
-    ], function(mockApi, mockModel, View) {
+        'less!css/jwplayer.less',
+        'less!css/skins/beelden.less',
+        'less!css/skins/bekle.less',
+        'less!css/skins/five.less',
+        'less!css/skins/glow.less',
+        'less!css/skins/roundster.less',
+        'less!css/skins/six.less',
+        'less!css/skins/stormtrooper.less',
+        'less!css/skins/vapor.less'
+    ], function(mockApi, MockModel, View) {
 
         function makePlayer(state) {
-            var m = _.extend({}, mockModel);
-            m.setup();
+            var mockModel = new MockModel();
+            mockModel.setup();
 
-            var view = new View(mockApi, m);
+            var view = new View(mockApi, mockModel);
             view.setup();
-            m.set('state', state);
-            view.resize(400, 300);
+            mockModel.set('state', state);
+            // view.resize(400, 300);
 
-            window[state] = m;
+            window[state] = mockModel;
 
             var $wrapper = $('<div class="wrapper"></div>')
                 .append('<h2>' + state + '</h3>')
