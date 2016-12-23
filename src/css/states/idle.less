@@ -9,8 +9,9 @@
         .jw-icon-play;
     }
 
-    .jw-controlbar {
-        display : none;
+    .jw-display-icon-rewind,
+    .jw-display-icon-next {
+      display: none;
     }
 
     .jw-captions {
@@ -21,4 +22,15 @@
     .jw-title {
         display: block;
     }
+
+    /* hide control bar and clear display container padding on idle state unless
+    cast available flag is set */
+    &:not(.jw-flag-cast-available) {
+
+      .jw-controlbar {
+        display: none;
+      }
+
+    }
+
 }

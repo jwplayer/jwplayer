@@ -1,6 +1,11 @@
 @import "../imports/vars";
 
 .jwplayer.jw-flag-live {
+
+    .jw-display-icon-rewind {
+      display: none;
+    }
+
     .jw-controlbar {
         .jw-text-elapsed,
         .jw-text-duration,
@@ -19,25 +24,25 @@
         }
     }
 
-    &.jw-breakpoint-0 .jw-text-alt {
-      max-width: 80px;
+    &.jw-flag-time-slider-above {
+
+      .jw-controlbar {
+
+        .jw-text-alt {
+          margin: 0;
+        }
+
+        .jw-group {
+
+          > .jw-text {
+            height: @mobile-touch-target;
+            line-height: @mobile-touch-target - 2px;
+          }
+
+        }
+
+      }
+
     }
-    &.jw-breakpoint-1 .jw-text-alt {
-      max-width: 150px;
-    }
-    &.jw-breakpoint-2 .jw-text-alt {
-      max-width: 250px;
-    }
-    &.jw-breakpoint-3 .jw-text-alt {
-      max-width: 370px;
-    }
-    &.jw-breakpoint-4 .jw-text-alt {
-      max-width: 470px;
-    }
-    &.jw-breakpoint-5 .jw-text-alt {
-      max-width: 630px;
-    }
-    &.jw-breakpoint-6 .jw-text-alt {
-      max-width: 790px;
-    }
+
 }

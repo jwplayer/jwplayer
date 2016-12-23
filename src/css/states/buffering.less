@@ -1,25 +1,30 @@
 @import "../imports/icons";
 
 .jwplayer.jw-state-buffering {
-    .jw-display-icon-container {
-        .jw-icon-display {
-            .jw-icon-buffer;
 
-            -webkit-animation:spin 2s linear infinite;
-            -moz-animation:spin 2s linear infinite;
-            animation:spin 2s linear infinite;
+  .jw-display-icon-rewind,
+  .jw-display-icon-next {
+    display: none;
+  }
 
-            @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-            @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-            @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
-        }
+  .jw-display-icon-display {
 
-        .jw-text {
-            display: none;
-        }
+    .jw-icon {
+      .jw-icon-buffer;
+
+      -webkit-animation:spin 2s linear infinite;
+      -moz-animation:spin 2s linear infinite;
+      animation:spin 2s linear infinite;
+      @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+      @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+      @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
     }
 
-    .jw-icon-playback {
-        .jw-icon-pause;
+    .jw-text {
+      display: none;
     }
+
+  }
+
 }
