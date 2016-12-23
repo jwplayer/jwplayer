@@ -3,14 +3,27 @@ define([
     'utils/backbone.events',
     'test/underscore'
 ], function(SimpleModel, Events, _) {
-    var MockModel = function() {
-
-    };
+    var MockModel = function() {};
 
     _.extend(MockModel.prototype, SimpleModel, {
-        setup : function() {
-            this.mediaController = _.extend({}, Events);
-            this.mediaModel = new MediaModel();
+        setup : function(configuration) {
+            var self = this;
+            var playlistItem = _.extend({
+                file: '//playertest.longtailvideo.com/bunny.mp4',
+                image: '//d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
+                title: 'Big Buck Bunny',
+                description: 'One caption track',
+                tracks: [
+                    {
+                        file: '//playertest.longtailvideo.com/assets/os/captions/bunny-en.srt',
+                        label: 'English'
+                    },
+                    {
+                        file: '//playertest.longtailvideo.com/assets/os/chapters/bunny-chapters.vtt',
+                        kind: 'chapters'
+                    }
+                ]
+            }, configuration.playlistItem);
             this.attributes = _.extend({}, {
                 id: '',
                 // See api/config `Defaults`:
@@ -78,51 +91,13 @@ define([
                     windowOpacity: 0
                 },
                 nextupoffset: -10,
-                mediaModel: this.mediaModel,
                 streamType: 'VOD', // 'DVR', 'Live'
-                position: 15,
-                buffer: 30,
-                duration: 60,
+                position: 0,
+                buffer: 0,
+                duration: 0,
                 minDvrWindow: 60,
                 scrubbing: false,
-                provider: { name: 'flash' },
-                sdkplatform: false,
-                playlist : [{
-                    file: '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
-                    image: '//d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
-                    title: 'Big Buck Bunny',
-                    description: 'One caption track',
-                    tracks: [
-                        {
-                            file: '//playertest.longtailvideo.com/assets/os/captions/bunny-en.srt',
-                            label: 'English'
-                        },
-                        {
-                            file: '//playertest.longtailvideo.com/assets/os/chapters/bunny-chapters.vtt',
-                            kind: 'chapters'
-                        }
-                    ]
-                }, {
-                    file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4',
-                    image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
-                }],
-                config: {},
-                playlistItem: {
-                    file: '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4',
-                    image: '//d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
-                    title: 'Big Buck Bunny',
-                    description: 'One caption track',
-                    tracks: [
-                        {
-                            file: '//playertest.longtailvideo.com/assets/os/captions/bunny-en.srt',
-                            label: 'English'
-                        },
-                        {
-                            file: '//playertest.longtailvideo.com/assets/os/chapters/bunny-chapters.vtt',
-                            kind: 'chapters'
-                        }
-                    ]
-                },
+                playlistItem: playlistItem,
                 logo: {
                     position: 'top-right',
                     margin: 2
@@ -130,25 +105,94 @@ define([
                 logoWidth: 50,
                 dock: [
                     {
-                        id: 'abc',
+                        id: 'related',
                         img: 'css-skins/icons/both.png',
                         btnClass: 'jw-custom-btn-class',
-                        tooltip: 'sample tooltip text'
+                        tooltip: 'Related'
+                    },
+                    {
+                        id: 'sharing',
+                        img: 'css-skins/icons/both.png',
+                        tooltip: 'Share Video'
                     }
                 ],
                 related: null,
-                sharing: null
+                sharing: null,
+                playlist : [
+                    playlistItem,
+                    {
+                        file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4',
+                        image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+                    }
+                ],
+                config: {},
+                sdkplatform: false,
+            }, configuration);
+
+
+            if (configuration.autostartMobile) {
+                this.autoStartOnMobile = function() {
+                    return true;
+                };
+            }
+
+            this.mediaController = _.extend({}, Events);
+            this.mediaModel = new MediaModel(this);
+            this.set('mediaModel', this.mediaModel);
+
+            var $mediaElement = $('<video src="//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" preload="none"></video>');
+            this.set('provider', {
+                name: 'flash',
+                getName: function() {
+                    return {
+                        name: 'flash'
+                    };
+                },
+                setContainer: function(element) {
+                    element.appendChild($mediaElement[0]);
+                },
+                setVisibility: function(state) {
+                    $mediaElement.css({
+                        visibility: state ? 'visible': '',
+                        opacity: state ? 1 : 0
+                    })
+                },
+                seek: function(time) {
+                    $mediaElement[0].load();
+                    $mediaElement[0].currentTime = time;
+                    $mediaElement[0].pause();
+                },
+                resize: function(width, height, stretching) {
+                    if (!width || !height || !$mediaElement.videoWidth || !$mediaElement.videoHeight) {
+                        return false;
+                    }
+                    var style = {
+                        objectFit: '',
+                        width: '',
+                        height: ''
+                    };
+                    if (stretching === 'uniform') {
+                        // snap video to edges when the difference in aspect ratio is less than 9%
+                        var playerAspectRatio = width / height;
+                        var videoAspectRatio = $mediaElement.videoWidth / $mediaElement.videoHeight;
+                        if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
+                            style.objectFit = 'fill';
+                        }
+                    }
+                    $mediaElement.css(style);
+                },
+                setCurrentQuality: function(value) {
+                    self.mediaModel.set('currentLevel', value);
+                },
+                setCurrentAudioTrack: function(value) {
+                    self.mediaModel.set('currentAudioTrack', value);
+                },
+                setControls: function() {}
             });
         },
 
         getVideo: function() {
-            return {
-                setControls : function() {},
-                setContainer : function(){},
-                resize : function(){},
-                setVisibility: function() {},
-                isAudioFile : function() { return true; }
-            };
+            return this.get('provider');
         },
 
         autoStartOnMobile: function() {
@@ -158,16 +202,23 @@ define([
     });
 
     // Represents the state of the provider/media element
-    var MediaModel = MockModel.MediaModel = function() {
-        _.extend(this, {
-            state: 'idle',
-            duration: 60,
+    var MediaModel = MockModel.MediaModel = function(parentModel) {
+        this.attributes = _.extend({}, {
+            state: parentModel.get('state'),
+            duration: parentModel.get('duration'),
             mediaType: 'video', // 'audio',
-            levels: [ { label: 'Auto' } ],
-            currentLevel: { label: 'Auto' },
-            audioTracks: [],
-            currentAudioTrack: {}
-        });
+            levels: [
+                { label: 'Auto' },
+                { label: '720p' },
+                { label: '480p' },
+            ],
+            currentLevel: 0,
+            audioTracks: [
+                { name: 'English' },
+                { name: 'Spanish' },
+            ],
+            currentAudioTrack: 0
+        }, parentModel.get('playlistItem'));
     };
     _.extend(MediaModel.prototype, SimpleModel);
 
