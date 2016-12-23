@@ -366,6 +366,31 @@
       }
     }
 
+    /* Move non-linear ad display above the time slider */
+    .jw-plugin {
+      bottom: 5em;
+    }
+
+    &.jw-breakpoint-6,
+    &.jw-breakpoint-7 {
+      .jw-plugin {
+        bottom: 6.5em;
+      }
+    }
+
+    /* font-size increases on touch devices */
+    &.jw-flag-touch {
+      .jw-plugin {
+        bottom: 3em;
+      }
+
+      &.jw-breakpoint-6,
+      &.jw-breakpoint-7 {
+        .jw-plugin {
+          bottom: 4em;
+        }
+      }
+    }
 
     /* ==================================================
     captions
