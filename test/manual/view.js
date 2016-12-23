@@ -126,6 +126,9 @@ window.requireCallback = function(){
                         position: position,
                         duration: duration,
                         buffer: bufferPercent,
+                        skinColorActive: 'yellow',
+                        skinColorBackground: 'black',
+                        skinColorInactive: 'gray',
                     });
                     // muted
                     makePlayer({
@@ -353,9 +356,9 @@ window.requireCallback = function(){
 
             if (!configuration.castActive &&
                 (configuration.state === 'playing'||  configuration.state === 'paused')) {
-                setTimeout(function() {
-                    provider.seek(11);
-                }, 10 * 1000 + Math.random() * 5000);
+                // setTimeout(function() {
+                //     provider.seek(11);
+                // }, 10 * 1000 + Math.random() * 5000);
             }
 
             //view.setAltText(_model.get('localization').loadingAd);
