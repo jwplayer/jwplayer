@@ -39,8 +39,9 @@ define([
                 stretching: 'uniform',
                 mute: false,
                 volume: 90,
-                width: 480,
+                width: '100%',
                 height: 270,
+                aspectratio : '56.25%',
                 localization: {
                     play: 'Play',
                     playback: 'Start playback',
@@ -67,7 +68,6 @@ define([
                 renderCaptionsNatively: false,
                 // These are set elsewhere
                 castActive: false,
-                aspectratio : '',
                 containerWidth: 480,
                 containerHeight: 270,
                 fullscreen: false,
@@ -149,7 +149,7 @@ define([
                     };
                 },
                 setContainer: function(element) {
-                    element.appendChild($mediaElement[0]);
+                    // element.appendChild($mediaElement[0]);
                 },
                 setVisibility: function(state) {
                     $mediaElement.css({
@@ -158,9 +158,9 @@ define([
                     })
                 },
                 seek: function(time) {
-                    $mediaElement[0].load();
-                    $mediaElement[0].currentTime = time;
-                    $mediaElement[0].pause();
+                    // $mediaElement[0].load();
+                    // $mediaElement[0].currentTime = time;
+                    // $mediaElement[0].pause();
                 },
                 resize: function(width, height, stretching) {
                     if (!width || !height || !$mediaElement.videoWidth || !$mediaElement.videoHeight) {

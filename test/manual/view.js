@@ -42,15 +42,15 @@ window.requireCallback = function(){
         // Create Player Views
         _.each([
             'seven',
-            'beelden',
+            // 'beelden',
             'bekle',
-            'five',
-            'glow',
-            'roundster',
-            'six',
-            'stormtrooper',
-            'vapor',
-            'un-skinned'
+            // 'five',
+            // 'glow',
+            // 'roundster',
+            // 'six',
+            // 'stormtrooper',
+            // 'vapor',
+            // 'un-skinned',
         ], function(skin) {
             $('body').append('<h1>' + skin + '</h1>');
             _.each([
@@ -352,10 +352,17 @@ window.requireCallback = function(){
             var $wrapper = $('<div id="' + configuration.id+  '-wrapper" class="wrapper"></div>').append(view.element());
             $('body').append($wrapper);
 
+            // resize after layout to update breakpoint css
             setTimeout(function() {
                 view.resize(mockModel.get('width'), mockModel.get('height'));
                 // provider.seek(11);
-            }, 10 * 1000 + Math.random() * 5000);
+            }, 100);
+
+            // show next up
+            var playlist = mockModel.get('playlist');
+            if (playlist.length > 1) {
+                mockModel.set('nextUp', playlist[1]);
+            }
 
             if (!configuration.castActive &&
                 (configuration.state === 'playing'||  configuration.state === 'paused')) {
