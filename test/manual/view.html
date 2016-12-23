@@ -1,51 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>JW7 View Demo</title>
+    <title>JW7 View States</title>
     <link type="text/css" rel="stylesheet" href="styles/tests.css"  media="all" />
-    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/beelden.css"  media="all" />
-    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/bekle.css"  media="all" />
-    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/five.css"  media="all" />
-    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/glow.css"  media="all" />
-    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/roundster.css"  media="all" />
-    <!--<link type="text/css" rel="stylesheet" href="../../bin-debug/skins/seven.css"  media="all" />-->
-    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/six.css"  media="all" />
-    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/stormtrooper.css"  media="all" />
-    <link type="text/css" rel="stylesheet" href="../../bin-debug/skins/vapor.css"  media="all" />
     <style>
+        body {
+            margin: 5px;
+            padding: 0;
+        }
         .wrapper {
-            float:left;
-            width: 450px;
-        }
-
-        .jwplayer .jw-preview {
-            background-color: aquamarine;
-        }
-        .jwplayer .jw-video {
-            background-color: blueviolet;
+            display: inline-block;
+            /*background-color: gray;*/
+            margin: 5px;
         }
     </style>
-
-    <!--<script src="../../bin-debug/jwplayer.js"></script>-->
     <script src="../../node_modules/jquery/dist/jquery.js"></script>
     <script src="../../node_modules/underscore/underscore.js"></script>
 </head>
 <body>
-
-<h1>JW Player Style Guide</h1>
-
-<h2> Top Level Classes </h2>
-<ul id="classes"></ul>
-
-<h2> Flags </h2>
-<div id="flagButtons"></div>
-
-<h2> Skins </h2>
-<div id="skinButtons"></div>
-
-<h2> Stretch Mode </h2>
-<div id="stretchButtons"></div>
-
 <!-- load requirejs library and run config.js -->
 <script data-main="../config" src="../../node_modules/requirejs/require.js"></script>
 <script src="view.js"></script>
