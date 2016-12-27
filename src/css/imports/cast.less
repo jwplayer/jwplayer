@@ -11,6 +11,18 @@
     display: none;
 }
 
+.jwplayer.jw-flag-casting {
+    .jw-icon-cc, .jw-icon-audio-tracks, .jw-icon-hd, .jw-icon-fullscreen {
+        display: none;
+    }
+
+    &.jw-flag-airplay-casting {
+        .jw-icon-volume {
+            display: none;
+        }
+    }
+}
+
 .jwplayer.jw-flag-casting .jw-display-icon-container {
     border-radius: 0;
     border: 1px solid white;
