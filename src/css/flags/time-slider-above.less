@@ -1,8 +1,9 @@
 @import "../imports/vars";
 
 /* time slider above or small player (both override player into same UI) */
-.jw-flag-time-slider-above {
-
+.jw-flag-time-slider-above,
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
 
   /* ==================================================
   dock
@@ -36,11 +37,9 @@
 
   }
 
-
   /* ==================================================
   display
   */
-
 
   .jw-display {
     padding-bottom: @mobile-touch-target * 1.5;
@@ -82,13 +81,11 @@
 
   }
 
-
   /* ==================================================
   to avoid overriding audio player on small size
   */
 
   &:not(.jw-flag-audio-player) {
-
 
     /* ==================================================
     controls
@@ -116,7 +113,6 @@
 
     }
 
-
     /* ==================================================
     control bar
     */
@@ -125,20 +121,6 @@
       background: none;
       height: @mobile-touch-target;
       padding: 0 10px;
-    }
-
-    &.jw-flag-ads {
-
-      .jw-controlbar {
-        pointer-events: none;
-
-        .jw-icon,
-        .jw-slider-horizontal {
-          pointer-events: all;
-        }
-
-      }
-
     }
 
     /* by default, the control bar height is set to the height needed for live
@@ -155,7 +137,6 @@
       }
 
     }
-
 
     /* ==================================================
     control bar tooltip overlays
@@ -175,17 +156,7 @@
 
       }
 
-      &.jw-flag-ads,
-      &.jw-flag-live {
-
-        .jw-overlay::after {
-          display: none;
-        }
-
-      }
-
     }
-
 
     /* ==================================================
     control bar icons and text
@@ -219,6 +190,20 @@
 
     }
 
+    &.jw-breakpoint-0,
+    &.jw-breakpoint-1 {
+
+      .jw-group {
+
+        > .jw-icon-rewind,
+        > .jw-icon-next,
+        > .jw-icon-playback {
+          display: none;
+        }
+
+      }
+
+    }
 
     /* ==================================================
     control bar groups
@@ -264,7 +249,6 @@
       }
 
     }
-
 
     /* ==================================================
     slider
@@ -347,13 +331,17 @@
 
     }
 
-
     /* ==================================================
-    ads
+    ads and live
     */
 
     &.jw-flag-ads,
     &.jw-flag-live {
+
+      .jw-controlbar {
+        padding-left: 5px;
+        padding-right: 5px;
+      }
 
       .jw-controlbar-center-group {
         height: auto;
@@ -362,29 +350,90 @@
         position: static;
         text-overflow: ellipsis;
         width: 100%;
-
-        .jw-text-alt {
-          color: #fff;
-          display: block;
-          max-width: none;
-          text-align: left;
-        }
-
       }
 
-      .jw-controlbar {
-
-        .jw-slider-volume.jw-slider-horizontal {
-          margin-bottom: 2px;
-        }
-
+      .jw-group > .jw-text-alt {
+        color: #fff;
+        display: block;
+        margin: 0;
+        position: relative;
+        text-align: left;
+        top: -1px;
       }
 
       .jw-text-duration {
         display: none;
       }
+
+      .jw-controlbar .jw-overlay::after {
+        display: none;
+      }
+
+      .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+        margin-bottom: 2px;
+      }
+
+      &.jw-breakpoint-0,
+      &.jw-breakpoint-1 {
+
+        .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+          display: none;
+        }
+
+      }
+
     }
 
+    &.jw-flag-live {
+
+      &.jw-breakpoint-0,
+      &.jw-breakpoint-1 {
+
+        .jw-controlbar {
+          padding-left: 15px;
+        }
+
+      }
+
+      .jw-text-elapsed,
+      .jw-text-duration {
+        display: none;
+      }
+
+    }
+
+    &.jw-flag-ads {
+
+      .jw-controlbar {
+        padding-left: 5px;
+        padding-right: 5px;
+        pointer-events: none;
+
+        .jw-icon,
+        .jw-slider-horizontal {
+          pointer-events: all;
+        }
+
+      }
+
+      .jw-controlbar-left-group {
+        display: table-cell;
+      }
+
+      .jw-group > .jw-icon-playback {
+        display: inline-block;
+      }
+
+      &.jw-breakpoint-0,
+      &.jw-breakpoint-1 {
+
+        .jw-group > .jw-text-alt {
+          display: none;
+        }
+
+      }
+
+    }
 
     /* ==================================================
     captions
