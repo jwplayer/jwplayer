@@ -2,27 +2,120 @@
 
 /* time slider above or small player (both override player into same UI) */
 .jw-flag-time-slider-above {
+
+
+  /* ==================================================
+  dock
+  */
+
+  .jw-dock {
+    margin: 0;
+  }
+
+  &:not(.jw-breakpoint-0) {
+
+    // give dock some padding
+    .jw-dock {
+      padding: 0 1%;
+    }
+
+  }
+
+  .jw-dock-button {
+    margin: 0;
+    height: @mobile-touch-target;
+    width: @mobile-touch-target;
+  }
+
+  &:not(.jw-breakpoint-0) {
+
+    // give dock buttons some space between each other above smallest breakpoint
+    .jw-dock-button {
+      margin: 2% 1%;
+    }
+
+  }
+
+
+  /* ==================================================
+  display
+  */
+
+
+  .jw-display {
+    padding-bottom: @mobile-touch-target * 1.5;
+  }
+
+  &.jw-breakpoint-0 {
+
+    &.jw-state-paused,
+    &.jw-state-playing:not(.jw-flag-user-inactive) {
+
+      // add padding to top that equals height of dock icons if the video is not in aspect mode
+      .jw-display {
+        padding-top: @mobile-touch-target;
+      }
+
+    }
+
+  }
+
+  &:not(.jw-breakpoint-0) {
+
+    &.jw-state-paused,
+    &.jw-state-playing:not(.jw-flag-user-inactive),
+    &.jw-flag-cast-available,
+    &.jw-flag-casting {
+
+      // add top padding to display that equals height of dock icons
+      .jw-display {
+        padding-top: @mobile-touch-target;
+      }
+
+      // and add top padding to display-container to cover total of dock button top and bottom margins
+      // goal here is to clear the dock icon outer height
+      .jw-display-container {
+        padding-top: 4%;
+      }
+
+    }
+
+  }
+
+
+  /* ==================================================
+  to avoid overriding audio player on small size
+  */
+
   &:not(.jw-flag-audio-player) {
 
+
     /* ==================================================
-    controls container
+    controls
     */
 
     .jw-controls {
-      background: linear-gradient(180deg, fade(mix(black, white, 90%), 0%), fade(mix(black, white, 90%), 25%), fade(mix(black, white, 90%), 75%));
+      background: linear-gradient(
+        180deg,
+        fade(mix(black, white, 90%), 0%),
+        fade(mix(black, white, 90%), 25%),
+        fade(mix(black, white, 90%), 75%)
+      );
     }
 
-    /* do not show the controls background linear gradient when video is idle state
-    or playing state when user inactive (the gradient in other scenarios blocks video
-    from clashing with the video colors, making it easy to see/use) */
-    &.jw-state-idle,
-    &.jw-state-playing.jw-flag-user-inactive {
+    /* do not show the controls background linear gradient when video is idle
+    state (except when cast available and we show controls on idle state) or
+    playing state when user inactive (the gradient in other scenarios blocks
+    video from clashing with the video colors, making it easy to see/use) */
+    &.jw-state-idle:not(.jw-flag-cast-available),
+    &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
 
       .jw-controls {
         background: none;
       }
 
     }
+
 
     /* ==================================================
     control bar
@@ -58,38 +151,65 @@
 
       .jw-controlbar {
         height: @mobile-touch-target * 1.5;
-        padding: @slider-fixed-height (@mobile-touch-target / 4) 0;
+        padding: @slider-fixed-height 15px 0;
       }
 
     }
 
+
     /* ==================================================
-    control bar items
+    control bar tooltip overlays
     */
 
-    .jw-group {
+    // adjust overlay bottom padding to match height of touch target
+    .jw-controlbar {
 
-      > .jw-icon,
-      > .jw-text {
-        height: @mobile-touch-target;
-        line-height: @mobile-touch-target - 4px;
+      .jw-overlay {
+        bottom: @mobile-touch-target;
+
+        &::after {
+          content: '';
+          display: block;
+          height: @mobile-touch-target * 0.5;
+        }
+
       }
 
-      > .jw-icon {
-        color: @fixed-time-slider-inactive-color;
-        font-size: 20px;
-        padding: 0;
-        text-align: center;
-        width: @mobile-touch-target;
+      &.jw-flag-ads,
+      &.jw-flag-live {
 
-        &::before {
-          height: auto;
+        .jw-overlay::after {
+          display: none;
         }
 
-        &:hover {
-          color: @fixed-time-slider-hover-color;
-        }
+      }
 
+    }
+
+
+    /* ==================================================
+    control bar icons and text
+    */
+
+    .jw-group > .jw-icon,
+    .jw-group > .jw-text {
+      height: @mobile-touch-target;
+      line-height: @mobile-touch-target - 4px;
+    }
+
+    .jw-group > .jw-icon {
+      color: @fixed-time-slider-inactive-color;
+      font-size: 20px;
+      padding: 0;
+      text-align: center;
+      width: @mobile-touch-target;
+
+      &::before {
+        height: auto;
+      }
+
+      &:hover {
+        color: @fixed-time-slider-hover-color;
       }
 
       > .jw-text {
@@ -99,10 +219,12 @@
 
     }
 
+
     /* ==================================================
     control bar groups
     */
 
+    // position the time slider group above other control bar elements
     .jw-controlbar-center-group {
       height: @slider-fixed-height;
       left: 0;
@@ -116,8 +238,9 @@
     .jw-controlbar-left-group {
       margin-left: -5px;
 
-      .jw-text-elapsed {
-        padding-right: 7px;
+      .jw-text-elapsed,
+      .jw-text-duration {
+        padding: 0 10px;
       }
 
       .jw-text-duration {
@@ -141,6 +264,7 @@
       }
 
     }
+
 
     /* ==================================================
     slider
@@ -223,6 +347,7 @@
 
     }
 
+
     /* ==================================================
     ads
     */
@@ -255,7 +380,11 @@
 
       }
 
+      .jw-text-duration {
+        display: none;
+      }
     }
+
 
     /* ==================================================
     captions
@@ -265,5 +394,25 @@
     video::-webkit-media-text-track-container {
       max-height: calc(100% - 6.25em * (4.125em));
     }
+
+    /* ==================================================
+    next up
+    */
+
+    .jw-nextup-container {
+      bottom: (@mobile-touch-target * 1.5);
+      padding: 5px 20px;
+    }
+
+    &.jw-flag-ads,
+    &.jw-flag-live {
+
+      .jw-nextup-container {
+        bottom: @mobile-touch-target;
+      }
+
+    }
+
   }
+
 }

@@ -2,7 +2,6 @@
 @import "icons";
 
 .jw-nextup-container {
-
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
   background-color: transparent;
@@ -20,22 +19,9 @@
   visibility: hidden;
   width: 100%;
 
-  .jw-flag-time-slider-above &,
-  .jw-breakpoint-0 &,
-  .jw-breakpoint-1 & {
-    bottom: (@mobile-touch-target * 1.5);
-    padding: 5px 20px;
-  }
-
   .jw-breakpoint-0 &,
   .jw-breakpoint-1 & {
     display: none;
-  }
-
-  .jw-flag-time-slider-above.jw-breakpoint-6 &,
-  .jw-flag-time-slider-above.jw-breakpoint-7 & {
-    height: @slider-fixed-height + (@mobile-touch-target * 1.5);
-    padding: 0 40px;
   }
 
 }
