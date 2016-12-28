@@ -160,7 +160,7 @@ define([
                 if (state) {
                     _pause();
                 } else {
-                    _play();
+                    _play({ reason: 'interaction' });
                 }
             });
 
@@ -227,7 +227,7 @@ define([
                         // Only play if the video is in the viewport
                         _observeVideo(_video().video);
                     } else {
-                        _this.play({reason: 'autostart'});
+                        _autoStart();
                     }
                 }
             }
@@ -246,6 +246,9 @@ define([
             }
 
             function _startObserving(video) {
+                if (!window.IntersectionObserver) {
+                    return;
+                }
                 _xo = new window.IntersectionObserver(_toggleVideoPlayback, { threshold: 0.5 });
                 _xo.observe(video);
             }
@@ -259,7 +262,7 @@ define([
                 if (entries && entries.length) {
                     var video = _video().video;
                     var entry = entries[0];
-                    var meta = {reason: 'autoplay'};
+                    var meta = { reason: 'autostart' };
 
                     if (entry.target === video && entry.intersectionRatio >= 0.5) {
                         _this.play(meta);
@@ -307,7 +310,7 @@ define([
                 _stop(true);
 
                 if (_canAutoStart()) {
-                    _model.once('itemReady', _play);
+                    _model.once('itemReady', _autoStart);
                 }
                 _this.trigger('destroyPlugin', {});
 
@@ -407,9 +410,13 @@ define([
                 return true;
             }
 
+            function _autoStart() {
+                _play({ reason: 'autostart' });
+            }
+
             function _stop(internal) {
                 // Reset the autostart play
-                _model.off('itemReady', _play);
+                _model.off('itemReady', _autoStart);
 
                 var fromApi = !internal;
 
@@ -478,12 +485,12 @@ define([
                 return (state === states.IDLE || state === states.COMPLETE || state === states.ERROR);
             }
 
-            function _seek(pos) {
+            function _seek(pos, meta) {
                 if (_model.get('state') === states.ERROR) {
                     return;
                 }
                 if (!_model.get('scrubbing') && _model.get('state') !== states.PLAYING) {
-                    _play(true);
+                    _play(meta);
                 }
                 _video().seek(pos);
             }
@@ -499,8 +506,7 @@ define([
 
             function _setPlaylist(p) {
                 var playlist = Playlist(p);
-                playlist = Playlist.filterPlaylist(playlist, _model.getProviders(), _model.get('androidhls'),
-                    _model.get('drm'), _model.get('preload'), _model.get('feedid'), _model.get('withCredentials'));
+                playlist = Playlist.filterPlaylist(playlist, _model);
 
                 _model.set('playlist', playlist);
 

@@ -189,10 +189,7 @@ module.exports = function(grunt) {
             options: {
                 targetCompilerOptions : [
                     '-define+=JWPLAYER::version,\'' + packageInfo.version + '\''
-                ],
-                // prefer AIR_HOME for faster compilation and JRE 7 64-bit support
-                sdk: env.AIR_HOME || env.FLEX_HOME,
-                ascshdPort: 11123
+                ]
             },
             debug : {
                 options : {

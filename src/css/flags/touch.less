@@ -19,9 +19,6 @@
             max-height: 70%;
         }
 
-        .jw-nextup-container {
-            bottom: @nextup-position-bottom-touch;
-        }
     }
 
     .jw-controlbar {
@@ -30,17 +27,24 @@
         }
     }
 
-    .jw-display-icon-container {
+    .jw-display,
+    .jw-display-container,
+    .jw-display-controls {
         pointer-events: none;
     }
 
-    // This has higher specificity to overwrite jw-state-paused jw-display-icon-container that hides the display
-    &.jw-state-paused .jw-display-icon-container {
-        display: table;
+    &.jw-state-paused,
+    &.jw-state-playing {
+        &:not(.jw-breakpoint-1) {
+            .jw-display-icon-next,
+            .jw-display-icon-rewind {
+                display: none;
+            }
+        }
     }
 
     &.jw-state-paused.jw-flag-dragging {
-        .jw-display-icon-container {
+        .jw-display {
             display: none;
         }
     }

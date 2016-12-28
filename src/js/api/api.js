@@ -137,7 +137,7 @@ define([
             var qoeItem = _controller.getItemQoe();
 
             var setupTime = _qoe.between('setup', 'ready');
-            var firstFrame = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var firstFrame = qoeItem.getFirstFrame();
 
             return {
                 setupTime : setupTime,
@@ -176,17 +176,21 @@ define([
             return 'html5';
         };
 
+        this.getMute = function () {
+            return _controller._model.getMute();
+        };
+
         this.load = function (toLoad) {
             _controller.load(toLoad);
             return _this;
         };
 
         this.play = function (state, meta) {
-            if (!_.isBoolean(state)) {
+            if (_.isObject(state) && state.reason) {
                 meta = state;
             }
             if (!meta) {
-                meta = {reason: 'external'};
+                meta = { reason: 'external' };
             }
             if (state === true) {
                 _controller.play(meta);
@@ -209,12 +213,12 @@ define([
             return _this;
         };
 
-        this.pause = function (state) {
+        this.pause = function (state, meta) {
             if (_.isBoolean(state)) {
-                return this.play(!state);
+                return this.play(!state, meta);
             }
 
-            return this.play();
+            return this.play(meta);
         };
 
         this.createInstream = function () {

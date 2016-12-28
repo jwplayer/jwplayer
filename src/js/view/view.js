@@ -6,7 +6,9 @@ define([
     'events/states',
     'view/captionsrenderer',
     'view/clickhandler',
-    'view/displayicon',
+    'view/rewind-display-icon',
+    'view/play-display-icon',
+    'view/next-display-icon',
     'view/dock',
     'view/logo',
     'view/controlbar',
@@ -17,10 +19,11 @@ define([
     'utils/underscore',
     'templates/player.html',
     'view/breakpoint',
-    'view/components/button'
+    'view/components/button',
+    'view/display-container',
 ], function(utils, events, Events, Constants, states,
-            CaptionsRenderer, ClickHandler, DisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button) {
+            CaptionsRenderer, ClickHandler, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, Dock, Logo,
+            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
 
     var _styles = utils.style,
         _bounds = utils.bounds,
@@ -114,6 +117,10 @@ define([
             document.msExitFullscreen;
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
+        function reasonInteraction() {
+            return {reason: 'interaction'};
+        }
+
         function adjustSeek(amount) {
             var min = 0;
             var max = _model.get('duration');
@@ -123,7 +130,7 @@ define([
                 max = Math.max(position, Constants.dvrSeekLimit);
             }
             var newSeek = utils.between(position + amount, min, max);
-            _api.seek(newSeek);
+            _api.seek(newSeek, reasonInteraction());
         }
 
         function adjustVolume(amount) {
@@ -161,7 +168,7 @@ define([
                     break;
                 case 13: // enter
                 case 32: // space
-                    _api.play({reason: 'interaction'});
+                    _api.play(reasonInteraction());
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!_instreamModel) {
@@ -198,7 +205,7 @@ define([
                         // if 0-9 number key, move to n/10 of the percentage of the video
                         var number = evt.keyCode - 48;
                         var newSeek = (number / 10) * _model.get('duration');
-                        _api.seek(newSeek);
+                        _api.seek(newSeek, reasonInteraction());
                     }
                     break;
             }
@@ -375,6 +382,13 @@ define([
                 });
             }
 
+            // display time slider above control bar if configured
+            if (_model.get('timeSliderAbove') && !utils.hasClass(_playerElement, 'jw-flag-audio-player')) {
+              utils.addClass(_playerElement, 'jw-flag-time-slider-above');
+            } else {
+              utils.addClass(_playerElement, 'jw-flag-time-slider-default');
+            }
+
             this.onChangeSkin(_model, _model.get('skin'), '');
             _model.on('change:skin', this.onChangeSkin, this);
 
@@ -487,20 +501,27 @@ define([
             }
         }
 
-        function _touchHandler() {
-            if( (_model.get('state') === states.IDLE ||
-                _model.get('state') === states.COMPLETE ||
-                _model.get('state') === states.PAUSED ||
+        function _touchHandler(playDisplayIcon) {
+            var state = _model.get('state');
+
+            if ((state === states.IDLE ||
+                state === states.COMPLETE ||
+                (playDisplayIcon && (state === states.PAUSED || state === states.PLAYING)) ||
                 (_instreamModel && _instreamModel.get('state') === states.PAUSED)) &&
                 _model.get('controls')) {
-                _api.play({reason: 'interaction'});
+                _api.play(reasonInteraction());
             }
 
-            // Toggle visibility of the controls when clicking the media or play icon
-            if(!_showing) {
-                _userActivity();
+            if (state === states.PAUSED && !playDisplayIcon) {
+                // Toggle visibility of the controls when tapping the media
+                _toggleControls();
             } else {
-                _userInactive();
+                // Toggle visibility of the controls when tapping the media or play icon
+                if(!_showing) {
+                    _userActivity();
+                } else {
+                    _userInactive();
+                }
             }
         }
 
@@ -508,10 +529,10 @@ define([
             if (!evt.link) {
                 //_togglePlay();
                 if (_model.get('controls')) {
-                    _api.play({reason: 'interaction'});
+                    _api.play(reasonInteraction());
                 }
             } else {
-                _api.pause(true);
+                _api.pause(true, reasonInteraction());
                 _api.setFullscreen(false);
                 window.open(evt.link, evt.linktarget);
             }
@@ -568,7 +589,7 @@ define([
             _displayClickHandler.on('click', function() {
                 forward({type : events.JWPLAYER_DISPLAY_CLICK});
                 if(_model.get('controls')) {
-                    _api.play({reason: 'interaction'});
+                    _api.play(reasonInteraction());
                 }
             });
             _displayClickHandler.on('tap', function() {
@@ -579,37 +600,7 @@ define([
             _displayClickHandler.on('move', _userActivity);
             _displayClickHandler.on('over', _userActivity);
 
-            var displayIcon = new DisplayIcon(_model);
-            //toggle playback
-            displayIcon.on('click', function() {
-                forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _api.play({reason: 'interaction'});
-            });
-            displayIcon.on('tap', function() {
-                forward({type : events.JWPLAYER_DISPLAY_CLICK});
-                _touchHandler();
-            });
-
-            // make displayIcon clickthrough on chrome for flash to avoid power safe throttle
-            if (utils.isChrome() && !utils.isMobile()) {
-                displayIcon.el.addEventListener('mousedown', function() {
-                    var provider = _model.getVideo();
-                    var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
-
-                    if (!isFlash) {
-                        return;
-                    }
-
-                    var resetPointerEvents = function() {
-                        document.removeEventListener('mouseup', resetPointerEvents);
-                        displayIcon.el.style.pointerEvents = 'auto';
-                    };
-
-                    this.style.pointerEvents = 'none';
-                    document.addEventListener('mouseup', resetPointerEvents);
-                });
-            }
-            _controlsLayer.appendChild(displayIcon.element());
+            _controlsLayer.appendChild(createDisplayContainer());
 
             _dock = new Dock(_model);
 
@@ -928,6 +919,11 @@ define([
             _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
         }
 
+        function _toggleControls() {
+            utils.toggleClass(_playerElement, 'jw-flag-controls-hidden');
+            _captionsRenderer.renderCues(true);
+        }
+
         function _playlistCompleteHandler() {
             _api.setFullscreen(false);
         }
@@ -1003,6 +999,9 @@ define([
                     _stateUpdate(model, state);
                 }, 33);
             }
+            if (state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
+                utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
+            }
         }
 
         function _stateUpdate(model, state) {
@@ -1034,6 +1033,55 @@ define([
         function _resizeAspectModeCaptions() {
             var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
             _captionsRenderer.setContainerHeight(aspectRatioContainer.offsetHeight);
+        }
+
+        function createDisplayContainer() {
+          var displayContainer = new DisplayContainer();
+          var rewindDisplayIcon = new RewindDisplayIcon(_model, _api);
+          var playDisplayIcon = createPlayDisplayIcon();
+          var nextDisplayIcon = new NextDisplayIcon(_model, _api);
+
+          displayContainer.addButton(rewindDisplayIcon);
+          displayContainer.addButton(playDisplayIcon);
+          displayContainer.addButton(nextDisplayIcon);
+
+          return displayContainer.element();
+        }
+
+        function createPlayDisplayIcon() {
+          var playDisplayIcon = new PlayDisplayIcon(_model);
+          //toggle playback
+          playDisplayIcon.on('click', function() {
+              forward({type : events.JWPLAYER_DISPLAY_CLICK});
+              _api.play({reason: 'interaction'});
+          });
+          playDisplayIcon.on('tap', function() {
+              forward({type : events.JWPLAYER_DISPLAY_CLICK});
+              _touchHandler(true);
+          });
+
+          // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
+          if (utils.isChrome() && !utils.isMobile()) {
+              playDisplayIcon.el.addEventListener('mousedown', function() {
+                  var provider = _model.getVideo();
+                  var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+
+                  if (!isFlash) {
+                      return;
+                  }
+
+                  var resetPointerEvents = function() {
+                      document.removeEventListener('mouseup', resetPointerEvents);
+                      playDisplayIcon.el.style.pointerEvents = 'auto';
+                  };
+
+                  this.style.pointerEvents = 'none';
+                  document.addEventListener('mouseup', resetPointerEvents);
+              });
+          }
+
+          return playDisplayIcon;
+
         }
 
         this.setupInstream = function(instreamModel) {

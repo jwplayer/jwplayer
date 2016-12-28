@@ -17,7 +17,8 @@
 
 .jw-flag-autostart {
   .jw-controlbar,
-  .jw-nextup {
+  .jw-nextup,
+  &:not(.jw-state-buffering):not(.jw-state-error):not(.jw-state-complete) .jw-display {
     display: none;
   }
 }

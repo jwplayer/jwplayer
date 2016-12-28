@@ -13,17 +13,16 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm, preload, feedid, withCredentials) {
+    Playlist.filterPlaylist = function(playlist, model) {
         var list = [];
+        var providers = model.getProviders();
+        var preload = model.get('preload');
+        var feedid = model.get('feedid');
 
         _.each(playlist, function(item) {
             item = _.extend({}, item);
 
-            item.allSources = _formatSources(item.sources,
-                androidhls,
-                item.drm || configDrm,
-                item.preload || preload,
-                _fallbackIfUndefined(item.withCredentials, withCredentials));
+            item.allSources = _formatSources(item, model);
 
             item.sources = _filterSources(item.allSources, providers);
 
@@ -50,7 +49,14 @@ define([
         return list;
     };
 
-    var _formatSources = function(sources, androidhls, itemDrm, preload, withCredentials) {
+    var _formatSources = function(item, model) {
+        var sources = item.sources;
+        var androidhls = model.get('androidhls');
+        var itemDrm = item.drm || model.get('drm');
+        var preload = item.preload || model.get('preload');
+        var withCredentials = _fallbackIfUndefined(item.withCredentials, model.get('withCredentials'));
+        var hlsjsdefault = model.get('hlsjsdefault');
+
         return _.compact(_.map(sources, function(originalSource) {
             if (! _.isObject(originalSource)) {
                 return;
@@ -73,6 +79,10 @@ define([
             var cascadedWithCredentials = _fallbackIfUndefined(originalSource.withCredentials, withCredentials);
             if (!_.isUndefined(cascadedWithCredentials)) {
                 originalSource.withCredentials = cascadedWithCredentials;
+            }
+
+            if (hlsjsdefault) {
+                originalSource.hlsjsdefault = hlsjsdefault;
             }
 
             return Source(originalSource);
