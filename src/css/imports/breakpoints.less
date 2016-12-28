@@ -15,17 +15,15 @@ control bar items
 
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
-
-  .jw-group {
-
-    > .jw-icon-rewind,
-    > .jw-icon-next,
-    > .jw-icon-playback {
-      display: none;
+  &:not(.jw-flag-audio-player) {
+    .jw-group {
+      > .jw-icon-rewind,
+      > .jw-icon-next,
+      > .jw-icon-playback {
+        display: none;
+      }
     }
-
   }
-
 }
 
 /* ==================================================
