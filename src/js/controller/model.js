@@ -61,14 +61,12 @@ define([
                     this.set('flashThrottle', throttled);
                     this.set('flashBlocked', throttled);
                     break;
-
                 case 'flashBlocked':
                     this.set('flashBlocked', true);
                     return;
                 case 'flashUnblocked':
                     this.set('flashBlocked', false);
                     return;
-
                 case 'volume':
                     this.set(type, data[type]);
                     return;
@@ -78,14 +76,12 @@ define([
                         this.set(type, data[type]);
                     }
                     return;
-
                 case events.JWPLAYER_MEDIA_TYPE:
                     if (this.mediaModel.get('mediaType') !== data.mediaType) {
                         this.mediaModel.set('mediaType', data.mediaType);
                         this.mediaController.trigger(type, evt);
                     }
                     return;
-
                 case events.JWPLAYER_PLAYER_STATE:
                     this.mediaModel.set('state', data.newstate);
 
@@ -93,10 +89,8 @@ define([
                     //  we are choosing to not propagate this event.
                     //  Instead letting the master controller do so
                     return;
-
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', data.bufferPercent);
-
                 /* falls through */
                 case events.JWPLAYER_MEDIA_META:
                     var duration = data.duration;
@@ -105,7 +99,6 @@ define([
                         this.set('duration', duration);
                     }
                     break;
-
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
                     if (this.mediaModel.get('playAttempt')) {
@@ -116,7 +109,6 @@ define([
                         }, this);
                     }
                     break;
-
                 case events.JWPLAYER_MEDIA_TIME:
                     this.mediaModel.set('position', data.position);
                     this.set('position', data.position);
@@ -128,7 +120,6 @@ define([
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
                     break;
-
                 case events.JWPLAYER_MEDIA_LEVELS:
                     this.setQualityLevel(data.currentQuality, data.levels);
                     this.mediaModel.set('levels', data.levels);
@@ -147,14 +138,15 @@ define([
                 case 'subtitlesTrackChanged':
                     this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
                     break;
-
                 case 'visualQuality':
                     var visualQuality = _.extend({}, data);
                     this.mediaModel.set('visualQuality', visualQuality);
                     break;
-
                 case 'autoplayFailed':
                     this.set('autostartFailed', true);
+                    if (this.mediaModel.get('state') === states.PLAYING) {
+                        this.mediaModel.set('state', states.PAUSED);
+                    }
                     break;
             }
 
