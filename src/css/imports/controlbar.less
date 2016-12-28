@@ -96,6 +96,35 @@
 
 .jw-icon-cast {
   display: none;
+  margin: 0;
+  padding: 0;
+
+  button {
+    --connected-color: @active-color;
+    --disconnected-color: @inactive-color;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: auto;
+    vertical-align: middle;
+    width: 32px;
+
+    &:focus {
+      --connected-color: @active-color;
+      --disconnected-color: @hover-color;
+      outline: none;
+    }
+
+    &.jw-off {
+      --connected-color: @inactive-color;
+    }
+  }
+
+  &:hover button {
+    --connected-color: @hover-color;
+    --disconnected-color: @hover-color;
+  }
+
 }
 
 .jw-slider-volume.jw-slider-horizontal,
