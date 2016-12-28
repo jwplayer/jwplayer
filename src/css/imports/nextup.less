@@ -5,29 +5,40 @@
   -webkit-font-smoothing: antialiased;
   -moz-font-smoothing: antialiased;
   background-color: transparent;
-  bottom: @nextup-position-bottom;
+  bottom: @controlbar-height;
   cursor: pointer;
-  max-width: 300px;
-  min-width: 200px;
+  left: 0;
+  margin: 0 auto;
   opacity: 0;
+  padding: 5px @ui-padding;
   position: absolute;
-  right: @nextup-position-right;
-  transform: translateY(5px);
+  right: 0;
+  text-align: right;
+  transform: translateY(0);
   transition: all 150ms ease;
   visibility: hidden;
-  width: 40%;
+  width: 100%;
+
+  .jw-breakpoint-0 &,
+  .jw-breakpoint-1 & {
+    display: none;
+  }
+
 }
 
 .jw-nextup-container-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(5px);
   visibility: visible;
 }
 
 .jw-nextup {
   border-radius: @nextup-border-radius;
+  display: inline-block;
   overflow: hidden;
   position: relative;
+  max-width: 300px;
+  width: 100%;
 }
 
 .jw-nextup-header {

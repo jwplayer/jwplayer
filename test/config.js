@@ -85,9 +85,9 @@
             'handlebars': components + '/handlebars/dist/handlebars.amd',
             'text': components + '/requirejs-text/text',
             'handlebars-loader': components + '/requirejs-handlebars/hb',
-            'less': components + '/require-less/less',
-            'lessc': components + '/require-less/lessc',
-            'normalize': components + '/require-less/normalize',
+            'less': '../../test/require-less/less',
+            'lessc': '../../test/require-less/lessc',
+            'normalize': '../../test/require-less/normalize',
             'jquery': components + '/jquery/dist/jquery',
             'phantomjs-polyfill': components + '/phantomjs-polyfill/bind-polyfill',
             'simple-style-loader': components + '/simple-style-loader',
@@ -107,7 +107,6 @@
         map: {
             // make sure the text plugin is used to load templates
             '*': {
-                'templates/displayicon.html': 'handlebars-loader!templates/displayicon.html',
                 'templates/dock.html': 'handlebars-loader!templates/dock.html',
                 'templates/logo.html': 'handlebars-loader!templates/logo.html',
                 'templates/player.html': 'handlebars-loader!templates/player.html',
@@ -117,7 +116,8 @@
                 'templates/menu.html': 'handlebars-loader!templates/menu.html',
                 'templates/playlist.html': 'handlebars-loader!templates/playlist.html',
                 'templates/nextup.html': 'handlebars-loader!templates/nextup.html',
-                'css/jwplayer.less': 'less!css/jwplayer',
+                'templates/display-icon.html': 'handlebars-loader!templates/display-icon.html',
+                'templates/display-container.html': 'handlebars-loader!templates/display-container.html',
                 'utils/video': mock + '/video.js'
             }
         },

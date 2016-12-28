@@ -48,7 +48,7 @@
 
     &:hover {
         .jw-display-icon-container {
-            background-color: @display-bkgd-color;
+            background-color: @display-bkgd-hover-color;
         }
     }
 }
@@ -79,6 +79,8 @@
 
 .jw-controls {
 
+  // display: flex;
+
     &.jw-controls-disabled {
         display: none;
     }
@@ -91,6 +93,11 @@
         // this should be adjusted in different skins based on controlbar height
         bottom: @controlbar-height;
     }
+}
+
+.jw-breakpoint-0 .jw-controls,
+.jw-breakpoint-1 .jw-controls {
+  text-align: center;
 }
 
 .jw-text {
