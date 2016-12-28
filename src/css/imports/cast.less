@@ -2,12 +2,28 @@
 
 .jwplayer.jw-state-playing.jw-flag-casting,
 .jwplayer.jw-state-paused.jw-flag-casting {
-    .jw-display {
+    .jw-display-icon-container {
         display: table;
     }
 }
 
-/*.jwplayer.jw-flag-casting .jw-display-icon-container {
+.jwplayer.jw-flag-casting.jw-flag-airplay-casting .jw-display-icon-container {
+    display: none;
+}
+
+.jwplayer.jw-flag-casting {
+    .jw-icon-cc, .jw-icon-audio-tracks, .jw-icon-hd, .jw-icon-fullscreen {
+        display: none;
+    }
+
+    &.jw-flag-airplay-casting {
+        .jw-icon-volume {
+            display: none;
+        }
+    }
+}
+
+.jwplayer.jw-flag-casting .jw-display-icon-container {
     border-radius: 0;
     border: 1px solid white;
 
@@ -28,10 +44,6 @@
     .jw-icon {
         font-size: 3em;
     }
-}*/
-
-.jwplayer.jw-flag-casting.jw-state-complete .jw-preview {
-    display: none;
 }
 
 .jw-cast {
