@@ -2,16 +2,13 @@
 
 .jw-skin-glow {
     @active-color: #fff;
-    @inactive-color: #fff;
+    @inactive-color: #95979b;
     @hover-color: @active-color;
     @progress-color: #fff;
-    @buffer-color: #3B3D41;
+    @buffer-color: @inactive-color;
     @rail-color: #2A2C2E;
     @controlbar-background: fade(#131415, 80%);
     @volume-background: #333;
-
-    @cc-inactive: @buffer-color;
-    @cc-active: @active-color;
 
     @rail-height: .4em;
     @cue-size: .25em;
@@ -81,10 +78,6 @@
     /* Volume slider */
     .jw-slider-vertical {
         bottom: 5px;
-
-        .jw-rail {
-            background-color: #141516;
-        }
 
         .jw-rail,
         .jw-progress {
