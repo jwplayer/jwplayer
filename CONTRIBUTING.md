@@ -84,8 +84,9 @@ While far from comprehensive, following these guidelines will get the easy stuff
 1. **Code written must work across all supported browsers without transpilation - Chrome, FF, Safari, and IE 9-11**
     - Usually this means writing in pure ES5, but ES6 features are allowed if they work everywhere
 2. Ensure that your code follows our styleguide by passing our ESLint rules
-3. Do your best to match our naming conventions and conform to the style of the code around you
-4. If you have a large or messy commit history, please rebase & squash your commit history
+3. Ensure that your code passes static analysis by running Flow
+4. Do your best to match our naming conventions and conform to the style of the code around you
+5. If you have a large or messy commit history, please rebase & squash your commit history
 
 ##### Tests
 1. Ensure that all existing tests pass
