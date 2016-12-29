@@ -115,6 +115,7 @@
 
         .jw-knob {
             color: @inactive-color;
+            background-color: @active-color;
         }
 
         .jw-button-color {
@@ -132,9 +133,9 @@
             color: @hover-color;
             &.jw-off {
                 color: @inactive-color;
-            }
-            &:hover {
-              color: @hover-color;
+                &:hover {
+                  color: @hover-color;
+                }
             }
             &:focus {
                 outline: none;
