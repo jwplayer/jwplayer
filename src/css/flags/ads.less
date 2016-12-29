@@ -111,10 +111,14 @@
     .jw-controlbar, .jw-display-container, .jw-skip {
         display: none;
     }
+}
 
-    &.jw-breakpoint-0 .jw-controls,
-    &.jw-breakpoint-1 .jw-controls {
-        background: none;
+.jwplayer.jw-flag-ads-vpaid {
+    &.jw-breakpoint-0,
+    &.jw-breakpoint-1 {
+        .jw-controls {
+            background: none;
+        }
     }
 }
 
