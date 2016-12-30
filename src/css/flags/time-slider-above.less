@@ -94,13 +94,8 @@
     controls
     */
 
-    .jw-controls {
-      background: linear-gradient(
-        180deg,
-        fade(mix(black, white, 90%), 0%),
-        fade(mix(black, white, 90%), 25%),
-        fade(mix(black, white, 90%), 75%)
-      );
+    .jw-controlbar {
+
     }
 
     /* do not show the controls background linear gradient when video is idle
@@ -111,7 +106,7 @@
     &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
 
       .jw-controls {
-        background: none;
+        // background: none;
       }
 
     }
@@ -122,7 +117,11 @@
     */
 
     .jw-controlbar {
-      background: none;
+      background: linear-gradient(
+        180deg,
+        fade(black, 0%),
+        fade(black, 75%)
+      );
       height: @mobile-touch-target;
       padding: 0 10px;
     }
