@@ -89,29 +89,6 @@
 
   &:not(.jw-flag-audio-player) {
 
-
-    /* ==================================================
-    controls
-    */
-
-    .jw-controlbar {
-
-    }
-
-    /* do not show the controls background linear gradient when video is idle
-    state (except when cast available and we show controls on idle state) or
-    playing state when user inactive (the gradient in other scenarios blocks
-    video from clashing with the video colors, making it easy to see/use) */
-    &.jw-state-idle:not(.jw-flag-cast-available),
-    &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
-
-      .jw-controls {
-        // background: none;
-      }
-
-    }
-
-
     /* ==================================================
     control bar
     */
