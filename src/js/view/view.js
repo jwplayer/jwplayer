@@ -323,21 +323,19 @@ define([
                 return 'rgba(' + data[0] + ', ' + data[1] + ', ' + data[2] + ', ' + opacity + ')';
             }
 
-            function addStyle(elements, attr, value, bundle) {
+            function addStyle(elements, attr, value, extendParent) {
                 if (!value) {
                     return;
                 }
 
-                /* if bundle is true, bundle the first selector string to the
-                player element versus defaulting to setting as a child of. i.e.
-                #player1.jw-breakpoint-0 vs. #player1 .jw-breakpoint-0 */
-                elements = utils.prefix(elements, '#' + id + (bundle ? '' : ' '));
+                /* if extendParent is true, bundle the first selector of
+                element string to the player element instead of defining it as a
+                child of the player element (default). i.e. #player.sel-1 .sel-2 vs. #player .sel-1 .sel-2 */
+                elements = utils.prefix(elements, '#' + id + (extendParent ? '' : ' '));
 
                 var o = {};
                 o[attr] = value;
                 utils.css(elements.join(', '), o, id);
-
-                console.log(elements);
             }
 
             // We can assume that the user will define both an active and inactive color because otherwise it doesn't
@@ -345,9 +343,11 @@ define([
             var activeColor = _model.get('skinColorActive'),
                 inactiveColor = _model.get('skinColorInactive'),
                 backgroundColor = _model.get('skinColorBackground'),
-                backgroundColorGradient = 'linear-gradient(180deg, ' +
-                  getRgba(backgroundColor, 0) + ', ' +
-                  getRgba(backgroundColor, 50) + ')';
+                backgroundColorGradient = backgroundColor ? 'linear-gradient(180deg, ' +
+                    getRgba(backgroundColor, 0) + ', ' +
+                    getRgba(backgroundColor, 0.1) + ', ' +
+                    getRgba(backgroundColor, 0.2) + ', ' +
+                    getRgba(backgroundColor, 0.5) + ')' : '';
 
             // These will use standard style names for CSS since they are added directly to a style sheet
             // Using background instead of background-color so we don't have to clear gradients with background-image
