@@ -302,30 +302,24 @@
     }
 
     .jw-tooltip-time {
-      bottom: 5px;
-      height: auto;
+      bottom: 0;
+      height: @mobile-touch-target * 0.5;
       line-height: normal;
       padding: 0;
       pointer-events: none;
       transform: translateX(-50%);
 
       .jw-overlay {
-        bottom: auto;
-        left: auto;
-        position: static;
+        bottom: @mobile-touch-target * 0.5;
+
+        &:after {
+          content: none;
+        }
       }
 
       .jw-time-tip {
-        border-radius: @ui-corner-round;
-        left: auto;
-        padding: 1px 5px;
-        position: static;
+        bottom: 0;
       }
-
-      .jw-text {
-        height: auto;
-      }
-
     }
 
 
