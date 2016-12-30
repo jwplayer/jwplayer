@@ -57,71 +57,73 @@
     }
     video::-webkit-media-text-track-container {
         // With 16 lines of captions, 1em ~= 6.25% of height
-        line-height: 1.3em;
+        line-height: 1.2em;
     }
 
     &.jw-breakpoint-7 {
         video::-webkit-media-text-track-container {
-            max-height: calc(95%);
+            max-height: calc(93%);
         }
         .jw-captions {
-            max-height: calc(95%);
+            max-height: calc(93%);
         }
     }
     &.jw-breakpoint-6 {
         video::-webkit-media-text-track-container {
-            max-height: calc(93%);
+            max-height: calc(91%);
         }
         .jw-captions {
-            max-height: calc(93%);
+            max-height: calc(91%);
         }
     }
     &.jw-breakpoint-5 {
         video::-webkit-media-text-track-container {
-            max-height: calc(91%);
+            max-height: calc(89%);
         }
         .jw-captions {
-            max-height: calc(91%);
+            max-height: calc(89%);
         }
     }
     &.jw-breakpoint-4 {
         video::-webkit-media-text-track-container {
-            max-height: calc(89%);
+            max-height: calc(87%);
         }
         .jw-captions {
-            max-height: calc(89%);
+            max-height: calc(87%);
         }
     }
     &.jw-breakpoint-3 {
         video::-webkit-media-text-track-container {
-            max-height: calc(87%);
+            max-height: calc(83%);
         }
         .jw-captions {
-            max-height: calc(87%);
+            max-height: calc(83%);
         }
     }
     &.jw-breakpoint-2 {
         video::-webkit-media-text-track-container {
-            max-height: calc(83%);
+            max-height: calc(81%);
         }
         .jw-captions {
-            max-height: calc(83%);
+            max-height: calc(81%);
         }
     }
     &.jw-breakpoint-1 {
         video::-webkit-media-text-track-container {
-            max-height: calc(77%);
+            max-height: calc(73%);
         }
         .jw-captions {
-            max-height: calc(77%);
+            max-height: calc(73%);
         }
     }
+    // Give captions more real estate since the screen is so small.
+    //Captions will be above the controlbar but may overlap the timeslider.
     &.jw-breakpoint-0 {
         video::-webkit-media-text-track-container {
-            max-height: calc(71%);
+            max-height: calc(77%);
         }
         .jw-captions {
-            max-height: calc(71%);
+            max-height: calc(77%);
         }
     }
 }
