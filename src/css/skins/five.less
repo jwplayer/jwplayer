@@ -15,13 +15,14 @@
     @thumb-color: @progress-color;
     @volume-background: #333;
 
-    @display-icon-color: @controlbar-background;
-    @display-icon-hover-color: #fff;
-    @display-bkgd-color: rgba(51, 51, 51, 0.7);
-    @display-bkgd-hover-color: #333;
+    @display-icon-color: @inactive-color;
+    @display-icon-hover-color: @active-color;
+    @display-bkgd-color: @buffer-color;
+    @display-bkgd-hover-color: @rail-color;
 
-    @cc-inactive: @rail-color;
-    @cc-active: @active-color;
+    @option-active-bg-color: rgba(255, 255, 255, 0.6);
+
+
 
     @rail-height: .2em;
     @thumb-size: 1em;
@@ -55,16 +56,6 @@
     /* Styles for play button container on idle */
     .jw-display-icon-container {
         border-radius: @five-border-radius;
-    }
-
-    /* Styles for menu list items */
-    .jw-option {
-        color: #bbb;
-
-        &:hover,
-        &.jw-active-option {
-            color: #fff;
-        }
     }
 
     /* Playlist title */
@@ -121,12 +112,8 @@
               width: @rail-height;
           }
 
-          .jw-progress {
-              background: #fff;
-          }
-
           .jw-rail {
-              background: #737373;
+              background: @inactive-color;
           }
 
           .jw-knob {
