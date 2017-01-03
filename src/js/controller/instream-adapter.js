@@ -83,18 +83,21 @@ define([
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
             _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemNext, this);
+            _instream.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function() {
+                _instream.trigger(events.JWPLAYER_MEDIA_COMPLETE, {type: events.JWPLAYER_MEDIA_COMPLETE});
+            });
             _instream.init();
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
-            _oldProvider.detachMedia();
+            _controller.detachMedia();
 
             _model.mediaModel.set('state', states.BUFFERING);
 
-            if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
+            if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _model.set('preInstreamState', 'instream-preroll');
-            } else if (_oldProvider && _oldProvider.checkComplete() || _model.get('state') === states.COMPLETE) {
+            } else if (_oldProvider && _model.checkComplete() || _model.get('state') === states.COMPLETE) {
                 _model.set('preInstreamState', 'instream-postroll');
             } else {
                 _model.set('preInstreamState', 'instream-midroll');
@@ -286,6 +289,7 @@ define([
                 }
 
                 _model.off(null, null, _instream);
+                _instream.off(null, null, _this);
                 _instream.instreamDestroy();
 
                 // Must happen after instream.instreamDestroy()

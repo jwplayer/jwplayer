@@ -662,20 +662,13 @@ define([
 
             /** Used for the InStream API **/
             function _detachMedia() {
-                var provider = _model.getVideo();
-                if (provider) {
-                    var video = provider.detachMedia();
-                    if (video instanceof HTMLVideoElement) {
-                        return video;
-                    }
-                }
-                return null;
+                return _model.detachMedia();
             }
 
             function _attachMedia() {
                 // Called after instream ends
                 var status = utils.tryCatch(function() {
-                    _model.getVideo().attachMedia();
+                    _model.attachMedia();
                 });
 
                 if (status instanceof utils.Error) {
@@ -818,7 +811,7 @@ define([
             this.isBeforePlay = this.checkBeforePlay;
 
             this.isBeforeComplete = function () {
-                return _model.getVideo().checkComplete();
+                return _model.checkComplete();
             };
 
             this.createInstream = function() {

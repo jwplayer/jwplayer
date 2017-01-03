@@ -136,9 +136,14 @@ define([
                     return;
                 }
 
+                var isVpaidProvider = provider.type === 'vpaid';
+
                 provider.off();
 
                 provider.on('all', function(type, data) {
+                    if (isVpaidProvider && (type === events.JWPLAYER_MEDIA_COMPLETE)) {
+                        return;
+                    }
                     data = _.extend({}, data, {type: type});
                     this.trigger(type, data);
                 }, _this);
