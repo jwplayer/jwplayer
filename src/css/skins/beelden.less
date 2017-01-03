@@ -2,7 +2,7 @@
 
 .jw-skin-beelden {
 
-    @active-color: #fff;
+    @active-color: #C93835;
     @inactive-color: #c7c7c7;
     @hover-color: @active-color;
 
@@ -20,16 +20,18 @@
     @controlbar-background: @controlbar-background-gradient;
 
     @volume-padding: 0.4em;;
-    @volume-background: rgba(0, 0, 0, 0.5);
+    @volume-background: @controlbar-background-color;
     @volume-border: 1px solid #000;
 
     @display-icon-color: @inactive-color;
     @display-icon-hover-color: @active-color;
-    @display-bkgd-color: @volume-background;
-    @display-bkgd-hover-color: @controlbar-background-color;
+    @display-bkgd-color: @controlbar-background-color;
+    @display-bkgd-hover-color: @inactive-color;
 
-    @cc-inactive: #7d7d7d;
-    @cc-active: @active-color;
+    @option-active-bg-color: rgba(255, 255, 255, 0.6);
+
+    @toggle-active: @active-color;
+    @toggle-inactive: #7d7d7d;
 
     @rail-height: .5em;
     @slider-height: @rail-height;
@@ -99,11 +101,11 @@
         }
 
         .jw-rail {
-            background-color: #353535;
+            background-color: @rail-color;
         }
 
         .jw-progress {
-            background-color: #c93835;
+            background-color: @progress-color;
         }
 
         .jw-buffer {
@@ -151,7 +153,6 @@
         }
 
         .jw-slider-vertical {
-            //bottom: 5px;
 
             .jw-slider-container {
                 width: 0.4em;
@@ -203,14 +204,6 @@
     .jw-dock-button,
     .jw-skip {
         border-radius: @ui-padding;
-    }
-
-    .jw-toggle {
-        color: @cc-active;
-
-        &.jw-off {
-            color: @cc-inactive;
-        }
     }
 
 }

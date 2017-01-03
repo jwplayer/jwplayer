@@ -1,6 +1,6 @@
 {
   "name": "jwplayer",
-  "version": "7.8.4",
+  "version": "7.8.6",
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
   "repository": {
     "type": "git",
@@ -52,7 +52,6 @@
     "phantomjs-prebuilt": "2.1.7",
     "qunitjs": "1.23.1",
     "raw-loader": "0.5.1",
-    "require-less": "0.0.7",
     "requirejs": "2.3.2",
     "requirejs-handlebars": "0.1.1",
     "requirejs-text": "2.0.12",

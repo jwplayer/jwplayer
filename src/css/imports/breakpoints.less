@@ -9,107 +9,26 @@
   .jw-flag-time-slider-above;
 }
 
-
-/* ==================================================
-control bar
-*/
-
-.jw-breakpoint-6,
-.jw-breakpoint-7 {
-
-  &.jw-flag-time-slider-above {
-
-    .jw-controlbar {
-      height: (@slider-fixed-height * 1.5) + (@mobile-touch-target * 1.5);
-      padding: (@slider-fixed-height * 1.5) 40px 0;
-    }
-
-    .jw-controlbar-center-group {
-      padding: 0 40px;
-    }
-
-    &.jw-flag-ads,
-    &.jw-flag-live {
-
-      .jw-controlbar-center-group {
-        padding: 0;
-      }
-
-    }
-
-  }
-
-}
-
-
 /* ==================================================
 control bar items
 */
 
 .jw-breakpoint-0,
 .jw-breakpoint-1 {
-
-  .jw-group {
-
-    > .jw-icon-rewind,
-    > .jw-icon-next,
-    > .jw-icon-playback {
-      display: none;
-    }
-
-  }
-
-  .jw-icon-cast button {
-    width: 37px;
-  }
-
-}
-
-.jw-breakpoint-6,
-.jw-breakpoint-7 {
-
-  &.jw-flag-time-slider-above {
-
+  &:not(.jw-flag-audio-player) {
     .jw-group {
-
-      > .jw-icon,
-      > .jw-text {
-        height: @mobile-touch-target * 1.5;
-        line-height: (@mobile-touch-target * 1.5) - 7px;
-        width: @mobile-touch-target * 1.5;
+      > .jw-icon-rewind,
+      > .jw-icon-next,
+      > .jw-icon-playback {
+        display: none;
       }
 
-      > .jw-text {
-        font-size: 18px;
+      .jw-icon-cast button {
+        width: 37px;
       }
-
     }
-
-    &.jw-flag-ads,
-    &.jw-flag-live {
-
-      .jw-group {
-
-        > .jw-text {
-          line-height: (@mobile-touch-target * 1.5) - 26px;
-        }
-
-      }
-
-    }
-
-    .jw-controlbar {
-
-      .jw-slider-volume.jw-slider-horizontal {
-        margin-bottom: 7px;
-      }
-
-    }
-
   }
-
 }
-
 
 /* ==================================================
 control bar groups
@@ -132,7 +51,6 @@ control bar groups
   }
 
 }
-
 
 /* ==================================================
 slider
@@ -160,7 +78,6 @@ slider
 
 }
 
-
 /* ==================================================
 volume overlay
 */
@@ -174,7 +91,6 @@ volume overlay
 
 }
 
-
 /* ==================================================
 display
 */
@@ -184,6 +100,19 @@ display
   .jw-display-icon-next,
   .jw-display-icon-rewind {
     display: none;
+  }
+
+  &:not(.jw-state-idle) {
+
+    .jw-display {
+      padding-top: 0;
+    }
+
+    .jw-display-container {
+      margin-bottom: 5px;
+      vertical-align: bottom;
+    }
+
   }
 
 }
@@ -299,49 +228,6 @@ ads flag
       max-width: 790px;
     }
 
-  }
-
-}
-
-
-/*
-
-captions
-
-*/
-//
-// .jw-breakpoint-2,
-// .jw-breakpoint-3 {
-//
-//   &.jw-flag-time-slider-above {
-//     .jw-captions,
-//     video::-webkit-media-text-track-container {
-//       // max-height: calc(100% - 6.25em * (4.125em + 0.5em));
-//     }
-//   }
-//
-// }
-//
-// .jw-breakpoint-4,
-// .jw-breakpoint-5 {
-//
-//   &.jw-flag-time-slider-above {
-//     .jw-captions,
-//     video::-webkit-media-text-track-container {
-//       // max-height: calc(100% - 6.25em * (4.125em + 1em));
-//     }
-//   }
-//
-// }
-
-.jw-breakpoint-6,
-.jw-breakpoint-7 {
-
-  &.jw-flag-time-slider-above {
-    .jw-captions,
-    video::-webkit-media-text-track-container {
-      max-height: calc(100% - 6.25em * (4.125em + 2em));
-    }
   }
 
 }

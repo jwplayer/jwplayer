@@ -2,15 +2,13 @@
 
 .jwplayer.jw-state-paused {
 
-  .jw-display {
-    display: none;
-
-    .jw-icon-display {
-      .jw-icon-play;
+  &:not(.jw-flag-touch):not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+    .jw-display {
+      display: none;
     }
-
   }
 
+  .jw-display .jw-icon-display,
   .jw-icon-playback {
     .jw-icon-play;
   }

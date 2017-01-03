@@ -12,7 +12,7 @@
     }
 
     .jw-preview, // overrides 'block' from .jw-state-idle
-    .jw-display-controls, // overrides 'block' from .jw-flag-touch.jw-state-paused
+    .jw-display, // overrides 'block' from .jw-flag-touch.jw-state-paused
     .jw-title, // overrides 'block' from .jw-state-idle
     .jw-nextup-container,
     .jw-dock {
@@ -42,6 +42,11 @@
             display: none;
         }
     }
+    &.jw-flag-user-inactive {
+        .jw-controlbar {
+            display: table; // overrides 'none' from jw-flag-user-inactive
+        }
+    }
 
     // Setting height/line-height to their defaults allows the controls to responsively resize
     .jw-icon-inline {
@@ -56,5 +61,13 @@
     // Small hack to keep the seekbar properly centered with the other elemenets when vertical-align: middle'd
     .jw-controlbar-center-group {
         padding-bottom: 2px;
+    }
+
+    &.jw-breakpoint-1,
+    &.jw-breakpoint-0 {
+        .jw-text-elapsed,
+        .jw-text-duration {
+            display: none;
+        }
     }
 }

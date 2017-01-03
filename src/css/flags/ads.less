@@ -108,8 +108,17 @@
 
 .jwplayer.jw-flag-ads-vpaid,
 .jwplayer.jw-flag-touch.jw-flag-ads-vpaid {
-    .jw-controlbar, .jw-skip {
+    .jw-controlbar, .jw-display-container, .jw-skip {
         display: none;
+    }
+}
+
+.jwplayer.jw-flag-ads-vpaid {
+    &.jw-breakpoint-0,
+    &.jw-breakpoint-1 {
+        .jw-controls {
+            background: none;
+        }
     }
 }
 

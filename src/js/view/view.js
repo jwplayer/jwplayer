@@ -332,12 +332,16 @@ define([
             // Apply active color
             addStyle([
                 // Toggle and menu button active colors
-                '.jw-toggle',
-                '.jw-button-color:hover'
+                '.jw-button-color.jw-toggle',
+                '.jw-button-color:hover',
+                '.jw-button-color.jw-toggle.jw-off:hover',
+                '.jw-option:hover',
+                '.jw-option.jw-active-option',
+                '.jw-nextup-header'
             ], 'color', activeColor);
             addStyle([
                 // menu active option
-                '.jw-active-option',
+
                 // slider fill color
                 '.jw-progress'
             ], 'background', activeColor);
@@ -353,12 +357,15 @@ define([
                 // toggle button
                 '.jw-toggle.jw-off',
                 '.jw-tooltip-title',
-                '.jw-skip .jw-skip-icon'
+                '.jw-skip .jw-skip-icon',
+                '.jw-nextup-body'
             ], 'color', inactiveColor);
             addStyle([
                 // slider children
                 '.jw-cue',
-                '.jw-knob'
+                '.jw-knob',
+                '.jw-active-option',
+                '.jw-nextup-header'
             ], 'background', inactiveColor);
 
             // Apply background color
@@ -650,8 +657,6 @@ define([
 
         // Perform the switch to fullscreen
         var _fullscreen = function(model, state) {
-
-            // If it supports DOM fullscreen
             var provider = _model.getVideo();
 
             // Unmute the video so volume can be adjusted with native controls in fullscreen
@@ -659,6 +664,7 @@ define([
                 _autoplayUnmute();
             }
 
+            // Use DOM fullscreen if available
             if (_elementSupportsFullscreen) {
                 if (state) {
                     _requestFullscreen.apply(_playerElement);
@@ -669,17 +675,14 @@ define([
             } else {
                 if (utils.isIE()) {
                     _toggleDOMFullscreen(_playerElement, state);
-                } else {
-                    // else use native fullscreen
-                    if (_instreamModel && _instreamModel.getVideo()) {
-                       _instreamModel.getVideo().setFullscreen(state);
-                    }
-                    provider.setFullscreen(state);
+                } else if (_instreamModel && _instreamModel.getVideo()) {
+                    // Otherwise, use native fullscreen
+                    _instreamModel.getVideo().setFullscreen(state);
                 }
             }
-            // pass fullscreen state to Flash provider
-            // provider.getName() is the same as _api.getProvider() or _model.get('provider')
-            if (provider && provider.getName().name.indexOf('flash') === 0) {
+            // Inform the provider that the fullscreen state has changed
+            // The default implementation of setFullscreen does nothing and returns false
+            if (provider) {
                 provider.setFullscreen(state);
             }
         };

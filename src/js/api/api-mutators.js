@@ -12,7 +12,6 @@ define([
             'duration',
             'fullscreen',
             'volume',
-            'mute',
             'item', // this was playlistindex
             'stretching',
             'playlist',
