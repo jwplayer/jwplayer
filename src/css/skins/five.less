@@ -73,72 +73,68 @@
         background-color : #ECECEC;
     }
 
-    &.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+    /* Slider styles */
+    .jw-slider-horizontal {
+        background: transparent;
 
-      /* Slider styles */
-      .jw-slider-horizontal {
-          background: transparent;
+        .jw-slider-container {
+            height: .9em;
+        }
 
-          .jw-slider-container {
-              height: .9em;
-          }
+        .jw-rail,
+        .jw-buffer,
+        .jw-progress {
+            height: @rail-height;
+            border-radius: @five-border-radius;
+        }
 
-          .jw-rail,
-          .jw-buffer,
-          .jw-progress {
-              height: @rail-height;
-              border-radius: @five-border-radius;
-          }
+        .jw-rail {
+            box-shadow: none;
+        }
 
-          .jw-rail {
-              box-shadow: none;
-          }
+        .jw-knob {
+            .vertically-centered-rail-element(@rail-height, @thumb-size);
+            margin: 0;
 
-          .jw-knob {
-              .vertically-centered-rail-element(@rail-height, @thumb-size);
-              margin: 0;
+            background-color: #000;
+            border-radius: @five-border-radius;
+            width: 1px;
+            height: @thumb-size;
+        }
 
-              background-color: #000;
-              border-radius: @five-border-radius;
-              width: 1px;
-              height: @thumb-size;
-          }
+        .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-height);
 
-          .jw-cue {
-              .vertically-centered-rail-element(@rail-height, @cue-height);
+            width: .1em;
+            height: @cue-height;
+            background-color: #000;
+            border-left: 1px solid #fff;
+            border-right: 1px solid #fff;
+        }
+    }
 
-              width: .1em;
-              height: @cue-height;
-              background-color: #000;
-              border-left: 1px solid #fff;
-              border-right: 1px solid #fff;
-          }
-      }
+    .jw-slider-vertical {
+        .jw-rail,
+        .jw-progress {
+            width: @rail-height;
+        }
 
-      .jw-slider-vertical {
-          .jw-rail,
-          .jw-progress {
-              width: @rail-height;
-          }
+        .jw-progress {
+            background: #fff;
+        }
 
-          .jw-progress {
-              background: #fff;
-          }
+        .jw-rail {
+            background: #737373;
+        }
 
-          .jw-rail {
-              background: #737373;
-          }
-
-          .jw-knob {
-              margin-bottom: 2px/-2;
-              width: .6em;
-              height: 2px;
-              background: @rail-vert-gradient;
-              border-radius: @five-border-radius;
-              .horizontally-centered-rail-element(@rail-height, 0.6em);
-          }
-      }
-
+        .jw-knob {
+            margin-bottom: 2px/-2;
+            width: .6em;
+            height: 2px;
+            background: @rail-vert-gradient;
+            border-radius: @five-border-radius;
+            .horizontally-centered-rail-element(@rail-height, 0.6em);
+        }
     }
 
     /* Five border-radius for the dock, in the upper right corner */

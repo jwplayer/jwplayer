@@ -75,60 +75,56 @@
         background-color: #1E1E1E;
     }
 
-		&.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-slider-horizontal,
+    .jw-text-elapsed,
+    .jw-text-duration {
+        height: @controlbar-height;
+        line-height: @controlbar-height;
+    }
 
-			/* Horizontal (timeline & horz volume) slider */
-			.jw-slider-horizontal {
-				.jw-knob,
-				.jw-cue {
-					height: 2em;
-				}
-
-				.jw-knob {
-					margin-left: 0;
-		            background-color: #fff;
-		            width: .2em;
-		            .vertically-centered-rail-element(@rail-height, 2em);
-				}
-
-				.jw-cue {
-					.vertically-centered-rail-element(2em, @cue-size);
-		                background: @display-icon-color;
-		                height: @cue-size;
-				}
+		/* Horizontal (timeline & horz volume) slider */
+		.jw-slider-horizontal {
+			.jw-knob,
+			.jw-cue {
+				height: 2em;
 			}
 
-		    /* Volume slider */
-			.jw-slider-vertical {
-				padding: .4em;
-				bottom: 3px;
-				border-radius: 2px;
-				border: 0;
-		        background-color: #333333;
-
-		        .jw-knob {
-		            display: none;
-		        }
-
-				.jw-rail {
-					background-color: rgba(0, 0, 0, 0.8);
-				}
-
-				.jw-rail,
-				.jw-progress {
-					border: 1px solid #000;
-				}
-
+			.jw-knob {
+				margin-left: 0;
+							background-color: #fff;
+							width: .2em;
+							.vertically-centered-rail-element(@rail-height, 2em);
 			}
 
-			.jw-icon-inline,
-		  .jw-icon-tooltip,
-		  .jw-slider-horizontal,
-		  .jw-text-elapsed,
-		  .jw-text-duration {
-		      height: @controlbar-height;
-		      line-height: @controlbar-height;
-		  }
+			.jw-cue {
+				.vertically-centered-rail-element(2em, @cue-size);
+									background: @display-icon-color;
+									height: @cue-size;
+			}
+		}
+
+			/* Volume slider */
+		.jw-slider-vertical {
+			padding: .4em;
+			bottom: 3px;
+			border-radius: 2px;
+			border: 0;
+					background-color: #333333;
+
+					.jw-knob {
+							display: none;
+					}
+
+			.jw-rail {
+				background-color: rgba(0, 0, 0, 0.8);
+			}
+
+			.jw-rail,
+			.jw-progress {
+				border: 1px solid #000;
+			}
 
 		}
 

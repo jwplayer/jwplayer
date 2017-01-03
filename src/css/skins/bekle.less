@@ -48,79 +48,75 @@
     .skin-element-padding();
     .inset-controlbar();
 
-    &.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+    .jw-controlbar {
+        border-radius: .3em;
+    }
 
-        .jw-controlbar {
-            border-radius: .3em;
+    .jw-tooltip-title {
+        border-bottom: 1px solid @controlbar-background;
+        background-color: @controlbar-background;
+    }
+
+    .jw-time-tip,
+    .jw-volume-tip,
+    .jw-menu,
+    .jw-skip {
+        border-radius: .3em;
+    }
+
+    .jw-volume-tip,
+    .jw-menu {
+        bottom: .2em;
+    }
+
+    .jw-slider-horizontal,
+    .jw-slider-vertical {
+
+        .jw-rail,
+        .jw-progress,
+        .jw-buffer {
+            border-radius: @ui-corner-round;
         }
 
-        .jw-tooltip-title {
-            border-bottom: 1px solid @controlbar-background;
-            background-color: @controlbar-background;
+        .jw-knob {
+            background-color: #fff;
+            width: .7em;
+            height: .7em;
+            border-radius: 50%;
+            .horizontally-centered-rail-element(@def-rail-width, 0.7em);
+        }
+    }
+
+    .jw-slider-horizontal {
+        background: transparent;
+
+        .jw-cue {
+            .vertically-centered-rail-element(@rail-height, @cue-size);
+
+            background-color: #fff;
+            width: @cue-size;
+            height: @cue-size;
+            border-radius: 1em;
         }
 
-        .jw-time-tip,
-        .jw-volume-tip,
-        .jw-menu,
-        .jw-skip {
-            border-radius: .3em;
+        .jw-knob {
+            .vertically-centered-rail-element(@rail-height, .7em);
+        }
+    }
+
+    .jw-slider-vertical {
+
+        .jw-rail,
+        .jw-progress {
+            width: @rail-height;
         }
 
-        .jw-volume-tip,
-        .jw-menu {
-            bottom: .2em;
+        .jw-rail {
+            background: @rail-vert-gradient;
         }
 
-        .jw-slider-horizontal,
-        .jw-slider-vertical {
-
-            .jw-rail,
-            .jw-progress,
-            .jw-buffer {
-                border-radius: @ui-corner-round;
-            }
-
-            .jw-knob {
-                background-color: #fff;
-                width: .7em;
-                height: .7em;
-                border-radius: 50%;
-                .horizontally-centered-rail-element(@def-rail-width, 0.7em);
-            }
-        }
-
-        .jw-slider-horizontal {
-            background: transparent;
-
-            .jw-cue {
-                .vertically-centered-rail-element(@rail-height, @cue-size);
-
-                background-color: #fff;
-                width: @cue-size;
-                height: @cue-size;
-                border-radius: 1em;
-            }
-
-            .jw-knob {
-                .vertically-centered-rail-element(@rail-height, .7em);
-            }
-        }
-
-        .jw-slider-vertical {
-
-            .jw-rail,
-            .jw-progress {
-                width: @rail-height;
-            }
-
-            .jw-rail {
-                background: @rail-vert-gradient;
-            }
-
-            .jw-progress {
-                background: @progress-vert-gradient;
-            }
-
+        .jw-progress {
+            background: @progress-vert-gradient;
         }
 
     }

@@ -67,66 +67,62 @@
         background-color: @rail-color;
     }
 
-    &.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+    /* Rail/slider styles */
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress,
+    .jw-knob {
+        box-sizing: border-box;
+        border: 1.5px solid #000;
+        border-radius: 2px;
+    }
 
-      /* Rail/slider styles */
-      .jw-rail,
-      .jw-buffer,
-      .jw-progress,
-      .jw-knob {
-          box-sizing: border-box;
-          border: 1.5px solid #000;
-          border-radius: 2px;
-      }
+    .jw-progress,
+    .jw-knob {
+        background: @rail-color;
+    }
 
-      .jw-progress,
-      .jw-knob {
-          background: @rail-color;
-      }
+    /* Timeline and horizontal volume slider */
+    .jw-slider-horizontal {
+        .jw-progress {
+            background: @horiz-rail-gradient;
+        }
 
-      /* Timeline and horizontal volume slider */
-      .jw-slider-horizontal {
-          .jw-progress {
-              background: @horiz-rail-gradient;
-          }
+        .jw-knob {
+            .vertically-centered-rail-element(.3em,.5em);
 
-          .jw-knob {
-              .vertically-centered-rail-element(.3em,.5em);
+            background: @vertical-rail-gradient;
+            width: .3em;
+            height: .5em;
+            border-width: 1px;
+            border-radius: 0;
+        }
 
-              background: @vertical-rail-gradient;
-              width: .3em;
-              height: .5em;
-              border-width: 1px;
-              border-radius: 0;
-          }
+        .jw-cue {
+            .vertically-centered-rail-element(.3em,.4em);
+            background-color: @inactive-color;
+            border: 1px solid #000;
+        }
+    }
 
-          .jw-cue {
-              .vertically-centered-rail-element(.3em,.4em);
-              background-color: @inactive-color;
-              border: 1px solid #000;
-          }
-      }
+    /* Volume slider */
+    .jw-slider-vertical {
+        .jw-rail,
+        .jw-progress {
+            width: @rail-height;
+        }
 
-      /* Volume slider */
-      .jw-slider-vertical {
-          .jw-rail,
-          .jw-progress {
-              width: @rail-height;
-          }
+        .jw-progress {
+            background: @vertical-rail-gradient;
+        }
 
-          .jw-progress {
-              background: @vertical-rail-gradient;
-          }
-
-          .jw-knob {
-              width: .5em;
-              height: .2em;
-              background: @horiz-rail-gradient;
-              border-width: 1px;
-              .horizontally-centered-rail-element(@rail-height, 0.5em);
-          }
-      }
-
+        .jw-knob {
+            width: .5em;
+            height: .2em;
+            background: @horiz-rail-gradient;
+            border-width: 1px;
+            .horizontally-centered-rail-element(@rail-height, 0.5em);
+        }
     }
 
     /* Toggle icons */
