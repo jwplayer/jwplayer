@@ -331,12 +331,16 @@ define([
             // Apply active color
             addStyle([
                 // Toggle and menu button active colors
-                '.jw-toggle',
-                '.jw-button-color:hover'
+                '.jw-button-color.jw-toggle',
+                '.jw-button-color:hover',
+                '.jw-button-color.jw-toggle.jw-off:hover',
+                '.jw-option:hover',
+                '.jw-option.jw-active-option',
+                '.jw-nextup-header'
             ], 'color', activeColor);
             addStyle([
                 // menu active option
-                '.jw-active-option',
+
                 // slider fill color
                 '.jw-progress'
             ], 'background', activeColor);
@@ -352,12 +356,15 @@ define([
                 // toggle button
                 '.jw-toggle.jw-off',
                 '.jw-tooltip-title',
-                '.jw-skip .jw-skip-icon'
+                '.jw-skip .jw-skip-icon',
+                '.jw-nextup-body'
             ], 'color', inactiveColor);
             addStyle([
                 // slider children
                 '.jw-cue',
-                '.jw-knob'
+                '.jw-knob',
+                '.jw-active-option',
+                '.jw-nextup-header'
             ], 'background', inactiveColor);
 
             // Apply background color

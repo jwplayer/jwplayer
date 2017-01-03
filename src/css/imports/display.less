@@ -80,13 +80,11 @@ display icons
 }
 
 .jw-display-icon-container {
-  background-color: @display-bkgd-color;
   border-radius: @ui-corner-round;
   display: inline-block;
   margin: 0 (@ui-padding * 0.5);
 
   .jw-icon {
-    color: @display-icon-color;
     cursor: pointer;
     height: @mobile-touch-target;
     line-height: @mobile-touch-target;
@@ -106,15 +104,6 @@ display icons
     .jw-state-idle &.jw-icon-display::before,
     .jw-state-paused &.jw-icon-display::before {
       left: 1px;
-    }
-
-  }
-
-  &:hover {
-    background: @display-bkgd-hover-color;
-
-    .jw-icon {
-      color: @display-icon-hover-color;
     }
 
   }
