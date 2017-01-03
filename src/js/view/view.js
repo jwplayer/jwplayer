@@ -688,11 +688,6 @@ define([
         var _fullscreen = function(model, state) {
             var provider = _model.getVideo();
 
-            // Unmute the video so volume can be adjusted with native controls in fullscreen
-            if (state && _model.get('autostartMuted')) {
-                _autoplayUnmute();
-            }
-
             // Use DOM fullscreen if available
             if (_elementSupportsFullscreen) {
                 if (state) {
