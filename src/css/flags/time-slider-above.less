@@ -123,6 +123,9 @@
 
     .jw-controlbar {
       background: none;
+      border: none;
+      border-radius: 0;
+      background-size: auto;
       height: @mobile-touch-target;
       padding: 0 10px;
     }
@@ -149,6 +152,7 @@
 
     // adjust overlay bottom padding to match height of touch target
     .jw-controlbar {
+      box-shadow: none;
 
       .jw-overlay {
         bottom: @mobile-touch-target;
@@ -246,6 +250,13 @@
 
     }
 
+    /* ==================================================
+    vertical volume slider
+    */
+
+    .jw-slider-volume {
+      padding: 0.5em;
+    }
 
     /* ==================================================
     slider
@@ -268,6 +279,15 @@
       }
 
       .jw-rail,
+      .jw-progress,
+      .jw-buffer,
+      .jw-knob {
+        background: none;
+        border: none;
+        box-shadow: none;
+      }
+
+      .jw-rail,
       .jw-buffer,
       .jw-progress {
         height: @slider-fixed-rail-height;
@@ -278,12 +298,10 @@
       }
 
       .jw-rail {
-        background: none;
         background-color: fade(white, 25%);
       }
 
       .jw-buffer {
-        background: none;
         background-color: fade(white, 50%);
       }
 
@@ -302,7 +320,7 @@
     }
 
     .jw-tooltip-time {
-      bottom: @slider-fixed-height + 5px;
+      bottom: 5px;
       height: auto;
       line-height: normal;
       padding: 0;
