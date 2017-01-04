@@ -13,7 +13,7 @@ This guide is focused specifically for developers contributing towards this open
 A bug is a *demonstrable* problem caused by code in the repository. Bug reports are very helpful! If you think you've found a bug in the player we'd love to know about it (and fix it).
 
 #### Hold Up!
-Before submitting an issue, please do your best to confirm that your issue is *reproducable* and a problem with our player by running through this checklist. Afterwards, if you're still unsure about the cause of your problem, please feel free to submit an issue and we'll do our best to help. For issues building & developing the player, skip this guide and submit a report directly.
+Before submitting an issue, please do your best to confirm that your issue is *reproducible* and a problem with our player by running through this checklist. Afterwards, if you're still unsure about the cause of your problem, please feel free to submit an issue and we'll do our best to help. For issues building & developing the player, skip this guide and submit a report directly.
 
 ##### Issue Checklist
 1. Check the console:
@@ -29,7 +29,7 @@ Before submitting an issue, please do your best to confirm that your issue is *r
          critical bugs.
      - Is your [Configuration](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/) valid?
 3. Check your browser:
-    - Are you using a [supported browse](https://support.jwplayer.com/customer/portal/articles/1403653-browser-device-reference#desktop
+    - Are you using a [supported browser](https://support.jwplayer.com/customer/portal/articles/1403653-browser-device-reference#desktop
     )?
     - Are you using the latest version?
     - Does the browser support the feature you're trying to use?
@@ -53,12 +53,12 @@ Great! Please [create an issue](https://github.com/jwplayer/jwplayer/issues/new)
 <html>
     <head>
         <script src='LINK_TO_YOUR_PLAYER'></script>
-        <script>jwplayer.key="YOUR_KEY";</script>
+        <script>jwplayer.key='YOUR_KEY';</script>
     </head>
     <body>
-        <div id="playa">Loading the player...</div>
+        <div id="player">Loading the player...</div>
         <script>
-            const player1 = jwplayer('playa').setup({ ... });
+            const player = jwplayer('player').setup({ ... });
         </script>
     </body>
 </html>
