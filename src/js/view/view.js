@@ -307,12 +307,31 @@ define([
         this.handleColorOverrides = function() {
             var id = _model.get('id');
 
-            function addStyle(elements, attr, value) {
+            function getRgba(color, opacity) {
+                var canvas, context, data;
+
+                canvas = document.createElement('canvas');
+                canvas.height = 1;
+                canvas.width = 1;
+
+                context = canvas.getContext('2d');
+                context.fillStyle = color;
+                context.fillRect(0, 0, 1, 1);
+
+                data = context.getImageData(0, 0, 1, 1).data;
+
+                return 'rgba(' + data[0] + ', ' + data[1] + ', ' + data[2] + ', ' + opacity + ')';
+            }
+
+            function addStyle(elements, attr, value, extendParent) {
                 if (!value) {
                     return;
                 }
 
-                elements = utils.prefix(elements, '#' + id + ' ');
+                /* if extendParent is true, bundle the first selector of
+                element string to the player element instead of defining it as a
+                child of the player element (default). i.e. #player.sel-1 .sel-2 vs. #player .sel-1 .sel-2 */
+                elements = utils.prefix(elements, '#' + id + (extendParent ? '' : ' '));
 
                 var o = {};
                 o[attr] = value;
@@ -323,7 +342,12 @@ define([
             // look good.
             var activeColor = _model.get('skinColorActive'),
                 inactiveColor = _model.get('skinColorInactive'),
-                backgroundColor = _model.get('skinColorBackground');
+                backgroundColor = _model.get('skinColorBackground'),
+                backgroundColorGradient = backgroundColor ? 'linear-gradient(180deg, ' +
+                    getRgba(backgroundColor, 0) + ', ' +
+                    getRgba(backgroundColor, 0.1) + ', ' +
+                    getRgba(backgroundColor, 0.2) + ', ' +
+                    getRgba(backgroundColor, 0.5) + ')' : '';
 
             // These will use standard style names for CSS since they are added directly to a style sheet
             // Using background instead of background-color so we don't have to clear gradients with background-image
@@ -373,6 +397,20 @@ define([
                 '.jw-background-color',
                 '.jw-tooltip-title'
             ], 'background', backgroundColor);
+
+            addStyle([
+                // control bar gradient background color for small player size only
+                '.jw-breakpoint-0 .jw-background-color.jw-controlbar',
+                '.jw-breakpoint-1 .jw-background-color.jw-controlbar',
+                '.jw-flag-time-slider-above .jw-background-color.jw-controlbar',
+            ], 'background', backgroundColorGradient, true);
+
+            addStyle([
+                // time slider gradient background color for small player size only
+                '.jw-breakpoint-0 .jw-background-color.jw-slider-time',
+                '.jw-breakpoint-1 .jw-background-color.jw-slider-time',
+                '.jw-flag-time-slider-above .jw-background-color.jw-slider-time',
+            ], 'background', 'none', true);
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
