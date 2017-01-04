@@ -3,9 +3,8 @@
 [![Join the chat at https://gitter.im/jwplayer/jwplayer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jwplayer/jwplayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 > Plays everywhere, every time.
-> 
-> JW Player is -the- solution for making video playback seamless across browsers and file types. 
-> It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
+
+ Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. Open-source, hackable, and performant, it empowers the developer to interact with video programmatically to create unique and awesome user experiences.
   
  ## Official Documentation
  - [Developer Portal](https://developer.jwplayer.com/)
