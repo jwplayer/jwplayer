@@ -16,6 +16,7 @@ define([
 
     function embed(swfUrl, container, id, wmode) {
         var swf;
+        var queueCommands = true;
 
         wmode = wmode || 'opaque';
 
@@ -75,12 +76,14 @@ define([
         // flash can trigger events
         _.extend(swf, Events);
 
-        swf.queueCommands = true;
         // javascript can trigger SwfEventRouter callbacks
         swf.triggerFlash = function(name) {
-            var swfInstance = this;
-            if (name !== 'setup' && swfInstance.queueCommands || !swfInstance.__externalCall) {
-                var commandQueue = swfInstance.__commandQueue;
+            if (name === 'setupCommandQueue') {
+                queueCommands = false;
+            }
+
+            if (name !== 'setup' && queueCommands || !swf.__externalCall) {
+                var commandQueue = swf.__commandQueue;
                 // remove any earlier commands with the same name
                 for (var i = commandQueue.length; i--;) {
                     if (commandQueue[i][0] === name) {
@@ -88,8 +91,9 @@ define([
                     }
                 }
                 commandQueue.push(Array.prototype.slice.call(arguments));
-                return swfInstance;
+                return swf;
             }
+
             var args = Array.prototype.slice.call(arguments, 1);
             var status = utils.tryCatch(function() {
                 if (args.length) {
@@ -101,9 +105,9 @@ define([
                         }
                     }
                     var json = JSON.stringify(args);
-                    swfInstance.__externalCall(name, json);
+                    swf.__externalCall(name, json);
                 } else {
-                    swfInstance.__externalCall(name);
+                    swf.__externalCall(name);
                 }
             });
 
@@ -114,7 +118,7 @@ define([
                     return status;
                 }
             }
-            return swfInstance;
+            return swf;
         };
 
         // commands are queued when __externalCall is not available
