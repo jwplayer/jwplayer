@@ -71,7 +71,6 @@ cd jwplayer
 # Assign the original repo to a remote called "upstream"
 git remote add upstream https://github.com/jwplayer/jwplayer
 ````
-
 2. Install the dependencies:
 ````
 # Install grunt globally
@@ -80,7 +79,6 @@ npm install
 # Optionally, install webpack-dev-server
 npm install -g webpack-dev-server
 ````
-
 3. Build the player:
 ````
 # Build once, Flash and JS
@@ -90,7 +88,6 @@ grunt serve
 # Quick JS Watch - build only. Requires webpack-dev-server to be installed globally
  webpack-dev-server --only debug -w --port 8888 --output-public-path /bin-debug/
 ````
-
 4. Test your code:
 ```
 # All browsers
@@ -98,7 +95,6 @@ grunt test
 # Individual browsers - chrome, firefox, ie11, ie10, ie9
 grunt karma:{BROWSER} e.g. grunt karma:chrome
 ```
-
 5. Lint your code:
 ````
 npm run lint
