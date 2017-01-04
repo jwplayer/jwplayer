@@ -141,11 +141,10 @@ define([
                 provider.off();
 
                 provider.on('all', function(type, data) {
-                    data = _.extend({}, data, {type: type});
                     if (isVpaidProvider && (type === events.JWPLAYER_MEDIA_COMPLETE)) {
                         return;
                     }
-                    this.trigger(type, data);
+                    this.trigger(type, _.extend({}, data, {type: type}));
                 }, _this);
 
                 provider.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
