@@ -908,7 +908,7 @@ define([
             // object-fit is not implemented in IE or Android Browser in 4.4 and lower
             // http://caniuse.com/#feat=object-fit
             // feature detection may work for IE but not for browsers where object-fit works for images only
-            var fitVideoUsingTransforms = _isIE || _isAndroid || _isIOS7 || _isIOS8;
+            var fitVideoUsingTransforms = _isIE || _isIOS7 || _isIOS8 || (_isAndroid && !_isFirefox);
             if (fitVideoUsingTransforms) {
                 // Use transforms to center and scale video in container
                 var x = - Math.floor(_videotag.videoWidth  / 2 + 1);
