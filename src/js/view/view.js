@@ -493,8 +493,11 @@ define([
             utils.toggleClass(_playerElement, 'jw-flag-casting', val);
         }
         function _onCastAvailable(model, val) {
-            utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
-            utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
+            var cast = _model.get('cast');
+            if(cast && cast.appid){
+                utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
+                utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
+            }
         }
 
         function _onStretchChange(model, newVal) {
