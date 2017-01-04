@@ -671,6 +671,8 @@ define([
 
         // Perform the switch to fullscreen
         var _fullscreen = function(model, state) {
+
+            // If it supports DOM fullscreen
             var provider = _model.getVideo();
 
             // Unmute the video so volume can be adjusted with native controls in fullscreen
@@ -678,7 +680,6 @@ define([
                 _autoplayUnmute();
             }
 
-            // Use DOM fullscreen if available
             if (_elementSupportsFullscreen) {
                 if (state) {
                     _requestFullscreen.apply(_playerElement);
@@ -689,14 +690,17 @@ define([
             } else {
                 if (utils.isIE()) {
                     _toggleDOMFullscreen(_playerElement, state);
-                } else if (_instreamModel && _instreamModel.getVideo()) {
-                    // Otherwise, use native fullscreen
-                    _instreamModel.getVideo().setFullscreen(state);
+                } else {
+                    // else use native fullscreen
+                    if (_instreamModel && _instreamModel.getVideo()) {
+                       _instreamModel.getVideo().setFullscreen(state);
+                    }
+                    provider.setFullscreen(state);
                 }
             }
-            // Inform the provider that the fullscreen state has changed
-            // The default implementation of setFullscreen does nothing and returns false
-            if (provider) {
+            // pass fullscreen state to Flash provider
+            // provider.getName() is the same as _api.getProvider() or _model.get('provider')
+            if (provider && provider.getName().name.indexOf('flash') === 0) {
                 provider.setFullscreen(state);
             }
         };

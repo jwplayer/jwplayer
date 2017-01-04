@@ -144,8 +144,7 @@ define([
                     if (isVpaidProvider && (type === events.JWPLAYER_MEDIA_COMPLETE)) {
                         return;
                     }
-                    data = _.extend({}, data, {type: type});
-                    this.trigger(type, data);
+                    this.trigger(type, _.extend({}, data, {type: type}));
                 }, _this);
 
                 provider.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);

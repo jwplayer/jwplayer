@@ -23,12 +23,8 @@
 
 .inset-controlbar() {
 
-  &.jw-breakpoint-2,
-  &.jw-breakpoint-3,
-  &.jw-breakpoint-4,
-  &.jw-breakpoint-5,
-  &.jw-breakpoint-6,
-  &.jw-breakpoint-7 {
+  &:not(.jw-breakpoint-0),
+  &:not(.jw-breakpoint-1) {
 
     &.jw-flag-time-slider-default:not(.jw-flag-audio-player) {
 
@@ -290,32 +286,39 @@
           color: @nextup-close-button-color-hover;
         }
 
-        // time slider above
-        &.jw-flag-time-slider-above,
-        &.jw-breakpoint-0,
-        &.jw-breakpoint-1 {
 
-          .jw-controlbar-center-group {
+        &:not(.jw-flag-audio-player) {
+            // time slider above
+            &.jw-flag-time-slider-above,
+            &.jw-breakpoint-0,
+            &.jw-breakpoint-1 {
 
-            .jw-slider-horizontal {
-              .jw-knob {
-                border-radius: @slider-fixed-knob-border-radius;
-                height: @slider-fixed-knob-height;
-                margin-left: @slider-fixed-knob-width / -2;
-                margin-top: @slider-fixed-knob-height / -2;
-                width: @slider-fixed-knob-width;
-              }
+                .jw-controlbar-center-group {
+
+                    .jw-slider-horizontal {
+                        .jw-knob {
+                            border-radius: @slider-fixed-knob-border-radius;
+                            height: @slider-fixed-knob-height;
+                            margin-left: @slider-fixed-knob-width / -2;
+                            margin-top: @slider-fixed-knob-height / -2;
+                            width: @slider-fixed-knob-width;
+                        }
+                    }
+                }
+
+                .jw-progress {
+                    background: @fixed-time-slider-progress-color;
+                }
+
+                .jw-tooltip-time {
+
+                    .jw-time-tip {
+                        border-radius: @ui-corner-round;
+                    }
+
+                }
+
             }
-          }
-
-          .jw-tooltip-time {
-
-            .jw-time-tip {
-              border-radius: @ui-corner-round;
-            }
-
-          }
-
         }
 
     }
