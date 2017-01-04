@@ -6,14 +6,13 @@
   @inactive-color: #cecece;
 
   @controlbar-background: rgba(33, 33, 33, 0.8);
+  @display-bkgd-color: @controlbar-background;
+  @display-bkgd-hover-color: rgba(33, 33, 33, 1);
 
   @controlbar-height: 2.5em;
 
+  #namespace > .basic-skin-styles();
   #namespace > .set-global-color-classes();
-
-  .jw-active-option {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
 
   .jw-display-icon-container {
     border-radius: 3.5em;
@@ -30,6 +29,11 @@
   }
 
   .jw-dock-button {
+    // Seven skin dock buttons do not highlight, they only show the tooltip
+    &:hover{
+      background: @controlbar-background;
+    }
+    
     border-radius: 2.5em;
   }
 

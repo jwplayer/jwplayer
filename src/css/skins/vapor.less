@@ -1,7 +1,7 @@
 @import "../imports/mixins";
 
 .jw-skin-vapor {
-		@active-color: #fff;
+		@active-color: #0f9e60;
     @inactive-color: rgba(0, 0, 0, 0.5);
    	@hover-color: @active-color;
 
@@ -10,11 +10,10 @@
     @display-bkgd-color: @inactive-color;
     @display-bkgd-hover-color: #000;
 
-		@fixed-time-slider-inactive-color: @display-bkgd-color;
-    @fixed-time-slider-hover-color: @display-icon-hover-color;
+    @option-active-bg-color: rgba(255, 255, 255, 0.5);
 
     @controlbar-background: @rail-color;
-		@progress-color: #0f9e60;
+    @progress-color: #0f9e60;
     @buffer-color: @inactive-color;
     @rail-color: rgba(255, 255, 255, 0.4);
     @thumb-color: @progress-color;
@@ -59,16 +58,6 @@
         border-radius: @ui-padding;
     }
 
-    /* Styles for menu list items */
-    .jw-option {
-        color: @active-color;
-
-        &:hover,
-        &.jw-active-option {
-            color: @progress-color;
-        }
-    }
-
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
@@ -110,10 +99,6 @@
 		            display: none;
 		        }
 
-				.jw-rail {
-					background-color: rgba(0, 0, 0, 0.8);
-				}
-
 				.jw-rail,
 				.jw-progress {
 					border: 1px solid #000;
@@ -135,13 +120,13 @@
 
     /* Toggle icons */
     .jw-icon-cc {
-        &.jw-off:before {
+        &:before {
             content: "\e604";
         }
     }
 
     .jw-icon-hd {
-        &.jw-off:before {
+        &:before {
             content: "\e609";
         }
     }

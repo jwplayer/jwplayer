@@ -139,8 +139,7 @@ define([
                 this.showNextUp = false;
                 return;
             }
-
-            this.showNextUp = true;
+            this.showNextUp = nextUp.showNextUp;
             this._nextButton.toggle(true);
             this.setNextUpItem(nextUp);
         },

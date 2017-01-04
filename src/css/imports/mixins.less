@@ -95,14 +95,8 @@
 #namespace() {
     .basic-skin-styles() {
 
-        &.jwplayer:hover {
-            .jw-display-icon-container {
-                background-color: @display-bkgd-hover-color;
-            }
-        }
-
         .jw-background-color {
-            background: @display-bkgd-color;
+            background: @controlbar-background;
         }
 
         .jw-controlbar {
@@ -121,6 +115,7 @@
 
         .jw-knob {
             color: @inactive-color;
+            background-color: @active-color;
         }
 
         .jw-button-color {
@@ -138,17 +133,13 @@
             color: @hover-color;
             &.jw-off {
                 color: @inactive-color;
+                &:hover,
+                &:focus {
+                  color: @hover-color;
+                }
             }
             &:focus {
                 outline: none;
-            }
-        }
-
-        /* Color for list item text in menu lists */
-        .jw-option {
-            color: @inactive-color;
-            &.jw-active-option {
-                color: @hover-color;
             }
         }
 
@@ -218,9 +209,13 @@
         .jw-time-tip,
         .jw-volume-tip,
         .jw-menu {
-            background: @volume-background;
+            background: @controlbar-background;
             border: @volume-border;
             padding: @volume-padding;
+        }
+
+        .jw-menu.jw-background-color {
+          background: @controlbar-background;
         }
 
         .jw-skip {
@@ -241,7 +236,7 @@
         .jw-time-tip,
         .jw-dock-button {
             .jw-text {
-                color: #bbb;
+                color: @inactive-color;
             }
         }
 
@@ -295,61 +290,35 @@
           color: @nextup-close-button-color-hover;
         }
 
-        // fixed time slider
-        &.jw-flag-time-slider-above,
-        &.jw-breakpoint-0,
-        &.jw-breakpoint-1 {
 
-          .jw-controlbar-center-group {
+        &:not(.jw-flag-audio-player) {
+            // time slider above
+            &.jw-flag-time-slider-above,
+            &.jw-breakpoint-0,
+            &.jw-breakpoint-1 {
 
-            .jw-slider-horizontal {
+                .jw-controlbar-center-group {
 
-              .jw-progress {
-                background-color: @fixed-time-slider-progress-color;
-              }
+                    .jw-slider-horizontal {
+                        .jw-knob {
+                            border-radius: @slider-fixed-knob-border-radius;
+                            height: @slider-fixed-knob-height;
+                            margin-left: @slider-fixed-knob-width / -2;
+                            margin-top: @slider-fixed-knob-height / -2;
+                            width: @slider-fixed-knob-width;
+                        }
+                    }
+                }
 
-              .jw-knob {
-                border-radius: @slider-fixed-knob-border-radius;
-                height: @slider-fixed-knob-height;
-                margin-left: @slider-fixed-knob-width / -2;
-                margin-top: @slider-fixed-knob-height / -2;
-                width: @slider-fixed-knob-width;
-              }
+                .jw-tooltip-time {
+
+                    .jw-time-tip {
+                        border-radius: @ui-corner-round;
+                    }
+
+                }
+
             }
-          }
-
-          .jw-controlbar-left-group,
-          .jw-controlbar-right-group {
-
-            .jw-icon {
-              color: @fixed-time-slider-inactive-color;
-              &:hover {
-                color: @fixed-time-slider-hover-color;
-              }
-            }
-
-            .jw-text {
-              color: @fixed-time-slider-inactive-color;
-            }
-
-          }
-
-          .jw-slider-horizontal {
-
-            .jw-progress {
-              background-color: @fixed-time-slider-progress-color;
-            }
-
-          }
-
-          .jw-tooltip-time {
-
-            .jw-time-tip {
-              border-radius: @ui-corner-round;
-            }
-
-          }
-
         }
 
     }
@@ -428,6 +397,12 @@
     }
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
+        &.jwplayer:hover {
+          .jw-display-icon-container {
+            background-color: @display-bkgd-hover-color;
+          }
+        }
+
         .jw-color-active {
             color: @active-color;
             stroke: @active-color;
@@ -454,6 +429,17 @@
                 stroke: @inactive-color;
                 border-color: @inactive-color;
             }
+        }
+        /* Color for list item text in menu lists */
+        .jw-option {
+          color: @option-inactive-color;
+          &:hover {
+            color: @hover-color;
+          }
+          &.jw-active-option {
+            color: @option-active-color;
+            background-color: @option-active-bg-color;
+          }
         }
     }
 
