@@ -33,8 +33,8 @@ define([
         var element = document.createElement('div');
         var ariaText = localization.cast;
 
-        button.className = 'jw-button-color';
-        element.className = 'jw-icon jw-icon-inline jw-reset jw-icon-cast jw-off';
+        castButton.className = 'jw-button-color jw-icon-inline';
+        element.className = 'jw-reset jw-icon-cast';
         element.style.display = 'none';
         element.style.cursor = 'pointer';
         element.setAttribute('role', 'button');
