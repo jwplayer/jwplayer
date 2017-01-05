@@ -64,7 +64,7 @@ Great! Please [create an issue](https://github.com/jwplayer/jwplayer/issues/new)
 </html>
 ````
 
- ## Pull Requests
+## Pull Requests
 Pull requests are a great way to help out and improve JW Player. Before embarking on a large PR, please ask us first - we may not need your changes in the repo and don't want you to waste your energy.
 
 To get your repo up and running, please refer to BUILDING.md.
