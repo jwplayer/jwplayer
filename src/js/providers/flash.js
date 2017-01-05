@@ -262,7 +262,6 @@ define([
                         removeBlockedCheck();
                         // After plugins load, then execute commandqueue
                         _swf.once('pluginsLoaded', function() {
-                            _swf.queueCommands = false;
                             _flashCommand('setupCommandQueue', _swf.__commandQueue);
                             _swf.__commandQueue = [];
                         });
