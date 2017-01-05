@@ -4,7 +4,7 @@
 
 > Plays everywhere, every time.
 
- Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. Open-source, hackable, and performant, it empowers the developer to interact with video programmatically to create unique and awesome user experiences.
+ Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
   
 ## Official Documentation
  - [Developer Portal](https://developer.jwplayer.com/)
