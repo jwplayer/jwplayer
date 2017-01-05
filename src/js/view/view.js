@@ -352,10 +352,10 @@ define([
                 inactiveColor = _model.get('skinColorInactive'),
                 backgroundColor = _model.get('skinColorBackground'),
                 backgroundColorGradient = backgroundColor ? 'linear-gradient(180deg, ' +
-                    getRgba(backgroundColor, 0) + ', ' +
-                    getRgba(backgroundColor, 0.1) + ', ' +
-                    getRgba(backgroundColor, 0.2) + ', ' +
-                    getRgba(backgroundColor, 0.5) + ')' : '';
+                    getRgba(backgroundColor, 0) + ' 0%, ' +
+                    getRgba(backgroundColor, 0.05) + ' 25%, ' +
+                    getRgba(backgroundColor, 0.15) + ' 50%, ' +
+                    getRgba(backgroundColor, 0.5) + ') 100%' : '';
 
             // These will use standard style names for CSS since they are added directly to a style sheet
             // Using background instead of background-color so we don't have to clear gradients with background-image
