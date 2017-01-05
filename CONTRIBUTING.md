@@ -24,10 +24,10 @@ Before submitting an issue, please do your best to confirm that your issue is *r
     - Are you using the [latest version](https://developer.jwplayer.com/jw-player/docs/developer-guide/release_notes/release_notes_7)?
         - You can test streams with the latest version [here](https://developer.jwplayer.com/tools/stream-tester/).
     - Are you using Flash?
-         - Ensure you're using the latest version of Flash.
+        - Ensure you're using the latest version of Flash.
         - We're in the process of deprecating Flash and will only fix
          critical bugs.
-     - Is your [Configuration](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/) valid?
+    - Is your [Configuration](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/) valid?
 3. Check your browser:
     - Are you using a [supported browser](https://support.jwplayer.com/customer/portal/articles/1403653-browser-device-reference#desktop
     )?
