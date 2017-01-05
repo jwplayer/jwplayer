@@ -58,7 +58,7 @@ Great! Please [create an issue](https://github.com/jwplayer/jwplayer/issues/new)
     <body>
         <div id="player">Loading the player...</div>
         <script>
-            const player = jwplayer('player').setup({ ... });
+            var player = jwplayer('player').setup({ ... });
         </script>
     </body>
 </html>
