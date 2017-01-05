@@ -73,7 +73,7 @@ To get your repo up and running, please refer to BUILDING.md.
 If you've never contributed before, don't worry - we'll do the best we can to help you throughout the process. Unsure of where to begin? Check out our [begginer bugs](https://github.com/jwplayer/jwplayer/labels/beginner), or refer to the Questions/Discussions section and drop us a line. 
 
 #### General Guidelines
-While far from comprehensive, following these guidelines will get the easy stuff out of the way and speed the process along. Be sure to include a good
+While far from comprehensive, following these guidelines will get the easy stuff out of the way and speed the process along. In addition, please include a good description of what you've changed and why you've changed it.
 
 ##### Branch Naming
 - Bugfixes: `bugfix/your-branch`
