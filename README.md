@@ -54,6 +54,8 @@ You also have the power to programatically set any configuration within the play
     # First time set up
     npm install -g grunt
     npm install
+    npm install webpack minimist
+    export AIR_HOME={AIRSDK_Compiler}
     
     # Build using
     grunt
