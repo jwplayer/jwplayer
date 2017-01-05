@@ -233,35 +233,37 @@ module.exports = function(grunt) {
                 },
                 concurrency: 1
             },
-            phantomjs : {
+            phantomjs: {
                 browsers: ['PhantomJS']
             },
-            chrome : {
+            chrome: {
                 browsers: ['Chrome']
             },
-            firefox : {
+            firefox: {
                 browsers: ['Firefox']
             },
-            safari : {
+            safari: {
                 browsers: ['Safari']
             },
-            // browserstack_all: { browsers: Object.keys( require( './test/qunit/karma/browserstack-launchers' ) ) },
-            browserstack : {
+            browserstack: {
+                browsers: ['chrome', 'firefox', 'ie11_windows']
+            },
+            browserstack_chrome: {
                 browsers: ['chrome']
             },
-            browserstack_firefox : {
+            browserstack_firefox: {
                 browsers: ['firefox']
             },
-            browserstack_edge : {
+            browserstack_edge: {
                 browsers: ['edge']
             },
-            browserstack_ie11 : {
+            browserstack_ie11: {
                 browsers: ['ie11_windows']
             },
-            browserstack_ie10 : {
+            browserstack_ie10: {
                 browsers: ['ie10_windows']
             },
-            browserstack_ie9 : {
+            browserstack_ie9: {
                 browsers: ['ie9_windows']
             }
         },
