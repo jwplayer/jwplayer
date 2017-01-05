@@ -303,13 +303,14 @@
 
     .jw-tooltip-time {
       bottom: 0;
-      height: @mobile-touch-target * 0.5;
+      height: auto;
       line-height: normal;
       padding: 0;
       pointer-events: none;
       transform: translateX(-50%);
 
       .jw-overlay {
+        // Place the overlay above the time slider and aligned with the volume overlay
         bottom: @mobile-touch-target * 0.5;
 
         &:after {
