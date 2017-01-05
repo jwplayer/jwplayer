@@ -1,30 +1,50 @@
+@import "../imports/vars";
 @import "controls-hidden";
 
-.jwplayer.jw-flag-user-inactive.jw-state-playing {
-    .jwplayer.jw-flag-controls-hidden;
+.jwplayer.jw-flag-user-inactive {
 
-    .jw-media {
-        cursor: none;
-        -webkit-cursor-visibility: auto-hide;
-    }
+  &.jw-state-playing {
 
-    &.jw-flag-casting {
-        .jw-controlbar {
-            display: table;
+      .jwplayer.jw-flag-controls-hidden;
+
+      .jw-media {
+          cursor: none;
+          -webkit-cursor-visibility: auto-hide;
+      }
+
+      &.jw-flag-casting {
+        .jw-display {
+          display: table;
         }
-    }
-}
-.jwplayer.jw-flag-user-inactive.jw-state-buffering {
+        .jw-dock {
+          display: block;
+        }
+        .jw-nextup-container {
+          bottom: @controlbar-height;
+        }
+        &.jw-flag-time-slider-above .jw-nextup-container {
+          bottom: @mobile-touch-target * 1.5;
+        }
+      }
+  }
+
+  &.jw-state-buffering {
+
+      .jw-controlbar {
+          display: none;
+      }
+
+      .jw-nextup-container {
+          bottom: 0.5em;
+      }
+
+  }
+
+  &.jw-flag-audio-player,
+  &.jw-flag-casting {
     .jw-controlbar {
-        display: none;
+        display: table;
     }
-    .jw-nextup-container {
-        bottom: 0.5em;
-    }
+  }
 
-    &.jw-flag-casting {
-        .jw-controlbar {
-            display: table;
-        }
-    }
 }

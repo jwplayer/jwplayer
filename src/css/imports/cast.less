@@ -1,69 +1,34 @@
 @import "vars";
 
-.jwplayer.jw-state-playing.jw-flag-casting,
-.jwplayer.jw-state-paused.jw-flag-casting {
-    .jw-display-icon-container {
-        display: table;
-    }
-}
-
-.jwplayer.jw-flag-casting.jw-flag-airplay-casting .jw-display-icon-container {
-    display: none;
-}
-
-.jwplayer.jw-flag-casting {
-    .jw-icon-cc, .jw-icon-audio-tracks, .jw-icon-hd, .jw-icon-fullscreen {
-        display: none;
-    }
-
-    &.jw-flag-airplay-casting {
-        .jw-icon-volume {
-            display: none;
-        }
-    }
-}
-
-.jwplayer.jw-flag-casting .jw-display-icon-container {
-    border-radius: 0;
-    border: 1px solid white;
-
-    position: absolute;
-    top: auto;
-    left: 0.5em;
-    right: 0.5em;
-    bottom: 50%;
-
-    margin-bottom: -12.5%;
-    height: 50%;
-    width: 50%;
-    padding: 0;
-
-    background-repeat: no-repeat;
-    background-position: center;
-
-    .jw-icon {
-        font-size: 3em;
-    }
-}
-
 .jw-cast {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-repeat: no-repeat;
-    background-size: auto;
-    background-position: 50% 50%;
+  background-size: cover;
+  display: none;
+  height: 100%;
+  position: relative;
+  width: 100%;
 }
 
-.jw-cast-label {
-    position: absolute;
-    left: 0.5em;
-    right: 0.5em;
-    bottom: 75%;
-    margin-bottom: 1.5em;
-    text-align: center;
+.jw-cast-container {
+  background: linear-gradient(180deg, fade(mix(black, white, 90%), 75%), fade(mix(black, white, 90%), 25%), fade(mix(black, white, 90%), 0%));
+  left: 0;
+  padding: 20px 20px 80px;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
-.jw-cast-name {
-    color: rgb(204, 204, 204);
+.jw-cast-text {
+  color: #fff;
+  font-size: 1.6em;
+
+  .jw-breakpoint-0 & {
+    font-size: 1.15em;
+  }
+
+  .jw-breakpoint-1 &,
+  .jw-breakpoint-2 &,
+  .jw-breakpoint-3 & {
+    font-size: 1.3em;
+  }
+
 }
