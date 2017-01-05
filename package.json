@@ -52,7 +52,6 @@
     "phantomjs-prebuilt": "2.1.7",
     "qunitjs": "1.23.1",
     "raw-loader": "0.5.1",
-    "require-less": "0.0.7",
     "requirejs": "2.3.2",
     "requirejs-handlebars": "0.1.1",
     "requirejs-text": "2.0.12",
@@ -66,6 +65,7 @@
   },
   "scripts": {
     "test": "karma start",
+    "lint": "eslint ./src/js",
     "flow": "flow; test $? -eq 0 -o $? -eq 2"
   },
   "engines": {

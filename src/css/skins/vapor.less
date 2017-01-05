@@ -1,7 +1,7 @@
 @import "../imports/mixins";
 
 .jw-skin-vapor {
-		@active-color: #fff;
+		@active-color: #0f9e60;
     @inactive-color: rgba(0, 0, 0, 0.5);
    	@hover-color: @active-color;
 
@@ -10,11 +10,10 @@
     @display-bkgd-color: @inactive-color;
     @display-bkgd-hover-color: #000;
 
-		@fixed-time-slider-inactive-color: @display-bkgd-color;
-    @fixed-time-slider-hover-color: @display-icon-hover-color;
+    @option-active-bg-color: rgba(255, 255, 255, 0.5);
 
     @controlbar-background: @rail-color;
-		@progress-color: #0f9e60;
+    @progress-color: #0f9e60;
     @buffer-color: @inactive-color;
     @rail-color: rgba(255, 255, 255, 0.4);
     @thumb-color: @progress-color;
@@ -59,89 +58,75 @@
         border-radius: @ui-padding;
     }
 
-    /* Styles for menu list items */
-    .jw-option {
-        color: @active-color;
-
-        &:hover,
-        &.jw-active-option {
-            color: @progress-color;
-        }
-    }
-
     /* Playlist title */
     .jw-tooltip-title {
         border-bottom: 1px solid #000;
         background-color: #1E1E1E;
     }
 
-		&.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+    .jw-icon-inline,
+    .jw-icon-tooltip,
+    .jw-slider-horizontal,
+    .jw-text-elapsed,
+    .jw-text-duration {
+        height: @controlbar-height;
+        line-height: @controlbar-height;
+    }
 
-			/* Horizontal (timeline & horz volume) slider */
-			.jw-slider-horizontal {
-				.jw-knob,
-				.jw-cue {
-					height: 2em;
-				}
-
-				.jw-knob {
-					margin-left: 0;
-		            background-color: #fff;
-		            width: .2em;
-		            .vertically-centered-rail-element(@rail-height, 2em);
-				}
-
-				.jw-cue {
-					.vertically-centered-rail-element(2em, @cue-size);
-		                background: @display-icon-color;
-		                height: @cue-size;
-				}
+		/* Horizontal (timeline & horz volume) slider */
+		.jw-slider-horizontal {
+			.jw-knob,
+			.jw-cue {
+				height: 2em;
 			}
 
-		    /* Volume slider */
-			.jw-slider-vertical {
-				padding: .4em;
-				bottom: 3px;
-				border-radius: 2px;
-				border: 0;
-		        background-color: #333333;
+			.jw-knob {
+				margin-left: 0;
+							background-color: #fff;
+							width: .2em;
+							.vertically-centered-rail-element(@rail-height, 2em);
+			}
 
-		        .jw-knob {
-		            display: none;
-		        }
+			.jw-cue {
+				.vertically-centered-rail-element(2em, @cue-size);
+									background: @display-icon-color;
+									height: @cue-size;
+			}
+		}
 
-				.jw-rail {
+		/* Volume slider */
+		.jw-slider-vertical {
+			padding: .4em;
+			bottom: 3px;
+			border-radius: 2px;
+			border: 0;
+			background-color: #333333;
+
+			.jw-knob {
+					display: none;
+			}
+
+			.jw-rail {
 					background-color: rgba(0, 0, 0, 0.8);
-				}
-
-				.jw-rail,
-				.jw-progress {
-					border: 1px solid #000;
-				}
-
 			}
 
-			.jw-icon-inline,
-		  .jw-icon-tooltip,
-		  .jw-slider-horizontal,
-		  .jw-text-elapsed,
-		  .jw-text-duration {
-		      height: @controlbar-height;
-		      line-height: @controlbar-height;
-		  }
+			.jw-rail,
+			.jw-progress {
+					border: 1px solid #000;
+			}
 
 		}
 
 
     /* Toggle icons */
     .jw-icon-cc {
-        &.jw-off:before {
+        &:before {
             content: "\e604";
         }
     }
 
     .jw-icon-hd {
-        &.jw-off:before {
+        &:before {
             content: "\e609";
         }
     }
@@ -155,5 +140,22 @@
         padding-bottom: 0;
       }
     }
+
+		&.jw-flag-time-slider-above,
+		&.jw-breakpoint-0,
+		&.jw-breakpoint-1 {
+
+			.jw-slider-volume.jw-slider-horizontal {
+	      height: 0.5em;
+
+	      .jw-rail,
+	      .jw-progress,
+	      .jw-buffer,
+				.jw-knob {
+	        height: 0.5em;
+	      }
+
+	    }
+		}
 
 }

@@ -79,6 +79,9 @@ define([
             // Used to differentiate tab focus events from click events
             _focusFromClick = false,
 
+            // Colors written into this canvas to set maui color overrides
+            _canvasColorContext,
+
             _this = _.extend(this, Events);
 
         // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
@@ -307,12 +310,36 @@ define([
         this.handleColorOverrides = function() {
             var id = _model.get('id');
 
-            function addStyle(elements, attr, value) {
+            function getRgba(color, opacity) {
+                var data;
+
+                if (!_canvasColorContext) {
+                    var canvas = document.createElement('canvas');
+
+                    canvas.height = 1;
+                    canvas.width = 1;
+
+                    _canvasColorContext = canvas.getContext('2d');
+                }
+
+                _canvasColorContext.clearRect(0, 0, 1, 1);
+                _canvasColorContext.fillStyle = color;
+                _canvasColorContext.fillRect(0, 0, 1, 1);
+
+                data = _canvasColorContext.getImageData(0, 0, 1, 1).data;
+
+                return 'rgba(' + data[0] + ', ' + data[1] + ', ' + data[2] + ', ' + opacity + ')';
+            }
+
+            function addStyle(elements, attr, value, extendParent) {
                 if (!value) {
                     return;
                 }
 
-                elements = utils.prefix(elements, '#' + id + ' ');
+                /* if extendParent is true, bundle the first selector of
+                element string to the player element instead of defining it as a
+                child of the player element (default). i.e. #player.sel-1 .sel-2 vs. #player .sel-1 .sel-2 */
+                elements = utils.prefix(elements, '#' + id + (extendParent ? '' : ' '));
 
                 var o = {};
                 o[attr] = value;
@@ -323,7 +350,12 @@ define([
             // look good.
             var activeColor = _model.get('skinColorActive'),
                 inactiveColor = _model.get('skinColorInactive'),
-                backgroundColor = _model.get('skinColorBackground');
+                backgroundColor = _model.get('skinColorBackground'),
+                backgroundColorGradient = backgroundColor ? 'linear-gradient(180deg, ' +
+                    getRgba(backgroundColor, 0) + ', ' +
+                    getRgba(backgroundColor, 0.1) + ', ' +
+                    getRgba(backgroundColor, 0.2) + ', ' +
+                    getRgba(backgroundColor, 0.5) + ')' : '';
 
             // These will use standard style names for CSS since they are added directly to a style sheet
             // Using background instead of background-color so we don't have to clear gradients with background-image
@@ -331,12 +363,16 @@ define([
             // Apply active color
             addStyle([
                 // Toggle and menu button active colors
-                '.jw-toggle',
-                '.jw-button-color:hover'
+                '.jw-button-color.jw-toggle',
+                '.jw-button-color:hover',
+                '.jw-button-color.jw-toggle.jw-off:hover',
+                '.jw-option:hover',
+                '.jw-option.jw-active-option',
+                '.jw-nextup-header'
             ], 'color', activeColor);
             addStyle([
                 // menu active option
-                '.jw-active-option',
+
                 // slider fill color
                 '.jw-progress',
             ], 'background', activeColor);
@@ -352,12 +388,15 @@ define([
                 // toggle button
                 '.jw-toggle.jw-off',
                 '.jw-tooltip-title',
-                '.jw-skip .jw-skip-icon'
+                '.jw-skip .jw-skip-icon',
+                '.jw-nextup-body'
             ], 'color', inactiveColor);
             addStyle([
                 // slider children
                 '.jw-cue',
-                '.jw-knob'
+                '.jw-knob',
+                '.jw-active-option',
+                '.jw-nextup-header'
             ], 'background', inactiveColor);
 
             // Apply background color
@@ -366,6 +405,20 @@ define([
                 '.jw-background-color',
                 '.jw-tooltip-title'
             ], 'background', backgroundColor);
+
+            addStyle([
+                // for small player, set the control bar gradient to the config background color
+                '.jw-breakpoint-0 .jw-background-color.jw-controlbar',
+                '.jw-breakpoint-1 .jw-background-color.jw-controlbar',
+                '.jw-flag-time-slider-above .jw-background-color.jw-controlbar',
+            ], 'background', backgroundColorGradient, true);
+
+            addStyle([
+                // remove the config background color on time slider on small player
+                '.jw-breakpoint-0 .jw-background-color.jw-slider-time',
+                '.jw-breakpoint-1 .jw-background-color.jw-slider-time',
+                '.jw-flag-time-slider-above .jw-background-color.jw-slider-time',
+            ], 'background', 'none', true);
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
