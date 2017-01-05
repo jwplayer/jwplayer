@@ -7,9 +7,9 @@
  Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
   
 ## Official Documentation
- - [Developer Portal](https://developer.jwplayer.com/)
- - [API Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/api/javascript_api_reference/) 
- - [Configuration Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/)
+- [Developer Portal](https://developer.jwplayer.com/)
+- [API Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/api/javascript_api_reference/) 
+- [Configuration Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/)
 - [Demos](https://developer.jwplayer.com/jw-player/demos/)
 - [Support](http://support.jwplayer.com/)
 
@@ -59,46 +59,51 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
  2. [Java](https://java.com/en/download/)* 
  
  \* Optional, but required for building Flash. If not installed you must `grunt` with the `--force` flag. 
+ 
 #### Steps:
 
 1. Fork the project, clone your fork, and set up the remotes:
-````
-# Clone your fork of the repo into the current directory
-git clone https://github.com/<your-username>/jwplayer
-# Navigate to the newly cloned directory
-cd jwplayer
-# Assign the original repo to a remote called "upstream"
-git remote add upstream https://github.com/jwplayer/jwplayer
-````
+ ````
+ # Clone your fork of the repo into the current directory
+ git clone https://github.com/<your-username>/jwplayer
+ # Navigate to the newly cloned directory
+ cd jwplayer
+ # Assign the original repo to a remote called "upstream"
+ git remote add upstream https://github.com/jwplayer/jwplayer
+ ````
+ 
 2. Install the dependencies:
-````
-# Install grunt globally
-npm install -g grunt
-npm install
-# Optionally, install webpack-dev-server
-npm install -g webpack-dev-server
-````
+ ````
+ # Install grunt globally
+ npm install -g grunt
+ npm install
+ # Optionally, install webpack-dev-server
+ npm install -g webpack-dev-server
+ ````
+ 
 3. Build the player:
-````
-# Build once, Flash and JS
-grunt
-# Complete Watch - builds FLash and JS, lints, and tests on each change
-grunt serve
-# Quick JS Watch - build only. Requires webpack-dev-server to be installed globally
- webpack-dev-server --only debug -w --port 8888 --output-public-path /bin-debug/
-````
+ ````
+ # Build once, Flash and JS
+ grunt
+ # Complete Watch - builds FLash and JS, lints, and tests on each change
+ grunt serve
+ # Quick JS Watch - build only. Requires webpack-dev-server to be installed globally
+  webpack-dev-server --only debug -w --port 8888 --output-public-path /bin-debug/
+ ````
+ 
 4. Test your code:
-```
-# All browsers
-grunt test
-# Individual browsers - chrome, firefox, ie11, ie10, ie9
-grunt karma:{BROWSER} e.g. grunt karma:chrome
-```
+ ````
+ # All browsers
+ grunt test
+ # Individual browsers - chrome, firefox, ie11, ie10, ie9
+ grunt karma:{BROWSER} e.g. grunt karma:chrome
+ ````
+ 
 5. Lint your code:
-````
-npm run lint
-npm run flow
-````
+ ````
+ npm run lint
+ npm run flow
+ ````
 
 ## Software License
 The use of this library is governed by a [Creative Commons license](http://creativecommons.org/licenses/by-nc-sa/3.0/). You can use, modify, copy, and distribute this edition as long as it’s for non-commercial use, you provide attribution, and share under a similar license.
