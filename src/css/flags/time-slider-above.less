@@ -89,18 +89,23 @@
 
   &:not(.jw-flag-audio-player) {
 
-
     /* ==================================================
-    controls
+    control bar
     */
 
-    .jw-controls {
+    .jw-controlbar {
       background: linear-gradient(
         180deg,
-        fade(mix(black, white, 90%), 0%),
-        fade(mix(black, white, 90%), 25%),
-        fade(mix(black, white, 90%), 75%)
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.5)
       );
+      border: none;
+      border-radius: 0;
+      background-size: auto;
+      height: @mobile-touch-target;
+      padding: 0 10px;
     }
 
     /* do not show the controls background linear gradient when video is idle
@@ -114,20 +119,6 @@
         background: none;
       }
 
-    }
-
-
-    /* ==================================================
-    control bar
-    */
-
-    .jw-controlbar {
-      background: none;
-      border: none;
-      border-radius: 0;
-      background-size: auto;
-      height: @mobile-touch-target;
-      padding: 0 10px;
     }
 
     /* by default, the control bar height is set to the height needed for live
