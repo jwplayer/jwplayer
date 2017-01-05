@@ -21,9 +21,48 @@ define([
     }
 
     function menu(name, ariaText) {
-        var createdMenu = new Menu(name, ariaText);
+        return new Menu(name, ariaText);
+    }
 
-        return createdMenu;
+    function castButton(castToggle, localization) {
+        if (!utils.isChrome() || utils.isIOS()) {
+            return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
+        }
+
+        var castButton = document.createElement('button', 'google-cast-button');
+        var element = document.createElement('div');
+        var ariaText = localization.cast;
+
+        castButton.className = 'jw-button-color jw-icon-inline';
+        element.className = 'jw-reset jw-icon-cast';
+        element.style.display = 'none';
+        element.style.cursor = 'pointer';
+        element.setAttribute('role', 'button');
+        element.setAttribute('tabindex', '0');
+        if (ariaText) {
+            element.setAttribute('aria-label', ariaText);
+        }
+        element.appendChild(castButton);
+
+        return {
+            element: function() {
+                return element;
+            },
+            toggle: function(m) {
+                if (m) {
+                    this.show();
+                } else {
+                    this.hide();
+                }
+            },
+            show: function() {
+                element.style.display = '';
+            },
+            hide: function() {
+                element.style.display = 'none';
+            },
+            button: castButton
+        };
     }
 
     function reasonInteraction() {
@@ -95,7 +134,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: button('jw-icon-cast jw-off', this._api.castToggle, this._localization.cast),
+                cast: castButton(this._api.castToggle, this._localization),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
 
@@ -120,7 +159,6 @@ define([
                     this.elements.cast,
                     this.elements.volume,
                     this.elements.volumetooltip,
-                    // this.elements.cast, // hidden for jw7.0 release
                     this.elements.fullscreen
                 ]
             };
@@ -196,6 +234,12 @@ define([
                 }, this);
                 this.elements.volumetooltip.on('toggleValue', function(){
                     this._api.setMute();
+                }, this);
+            }
+
+            if (this.elements.cast.button) {
+                new UI(this.elements.cast.button).on('click tap', function () {
+                    this._model.set('castClicked', true);
                 }, this);
             }
 
@@ -293,13 +337,16 @@ define([
                 utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
             }
         },
-        onCastAvailable : function(model, val) {
+        onCastAvailable: function(model, val) {
             this.elements.cast.toggle(val);
         },
-        onCastActive : function(model, val) {
-            utils.toggleClass(this.elements.cast.element(), 'jw-off', !val);
+        onCastActive: function(model, val) {
+            this.elements.fullscreen.toggle(!val);
+            if (this.elements.cast.button) {
+                utils.toggleClass(this.elements.cast.button, 'jw-off', !val);
+            }
         },
-        onElapsed : function(model, val) {
+        onElapsed: function(model, val) {
             var elapsedTime;
             var duration = model.get('duration');
             if (model.get('streamType') === 'DVR') {

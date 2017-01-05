@@ -246,6 +246,34 @@
             }
         }
 
+        /*
+        Chromecast
+        */
+
+        .jw-icon-cast {
+
+          button {
+            --connected-color: @active-color;
+            --disconnected-color: @inactive-color;
+
+            &:focus {
+              --connected-color: @active-color;
+              --disconnected-color: @hover-color;
+            }
+
+            &.jw-off {
+              --connected-color: @inactive-color;
+            }
+
+          }
+
+          &:hover button {
+            --connected-color: @hover-color;
+            --disconnected-color: @hover-color;
+          }
+
+        }
+
         /* Next up display */
         .jw-nextup-container {
           bottom: @controlbar-height;
