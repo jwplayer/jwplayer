@@ -659,10 +659,6 @@ define([
             }
         };
 
-        this.playbackComplete = function() {
-            clearTimeout(_playbackTimeout);
-        };
-
         function _seekedHandler() {
             _this.seeking = false;
             _this.trigger(events.JWPLAYER_MEDIA_SEEKED);
@@ -709,7 +705,7 @@ define([
                 clearTimeout(_playbackTimeout);
                 _currentQuality = -1;
 
-                _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
             }
         }
 

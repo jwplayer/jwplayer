@@ -139,9 +139,9 @@ define([
                     this.setQualityLevel(data.currentQuality, data.levels);
                     this.persistQualityLevel(data.currentQuality, data.levels);
                     break;
-                case events.JWPLAYER_MEDIA_BEFORECOMPLETE:
+                case events.JWPLAYER_MEDIA_COMPLETE:
                     _beforecompleted = true;
-                    this.mediaController.trigger(type, evt);
+                    this.mediaController.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE, evt);
                     if (_attached) {
                         this.playbackComplete();
                     }
@@ -267,7 +267,7 @@ define([
         this.playbackComplete = function() {
             _beforecompleted = false;
             _provider.setState(states.COMPLETE);
-            _provider.trigger(events.JWPLAYER_MEDIA_COMPLETE);
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_COMPLETE, {});
             _provider.playbackComplete();
         };
 

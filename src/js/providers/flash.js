@@ -323,8 +323,8 @@ define([
                         this.trigger(e.type);
                     }, this);
 
-                    _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e) {
-                        this.trigger(e.type);
+                    _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function() {
+                        this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
                     }, this);
 
                     _swf.on('visualQuality', function(e) {

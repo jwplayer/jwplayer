@@ -156,7 +156,7 @@ define([
 
         function _ended() {
             if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
-                _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
+                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
             }
         }
 

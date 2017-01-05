@@ -83,9 +83,6 @@ define([
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
             _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemNext, this);
-            _instream.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function() {
-                _instream.trigger(events.JWPLAYER_MEDIA_COMPLETE, {type: events.JWPLAYER_MEDIA_COMPLETE});
-            });
             _instream.init();
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
