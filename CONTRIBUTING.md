@@ -81,7 +81,7 @@ While far from comprehensive, following these guidelines will get the easy stuff
 - Hotfixes: `hotfix/your-branch`
 
 ##### Style
-1. **Code written must work across all supported browsers without transpilation - Chrome, FF, Safari, and IE 9-11**
+1. **Code written must work across all supported browsers and devices without transpilation - Chrome, FF, Safari, Edge, and IE 9-11**
     - Usually this means writing in pure ES5, but ES6 features are allowed if they work everywhere
 2. Ensure that your code follows our styleguide by passing our ESLint rules
 3. Ensure that your code passes static analysis by running Flow
