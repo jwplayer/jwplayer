@@ -15,9 +15,10 @@
         display: none;
     }
 
-    .jw-display-icon-rewind,
-    .jw-display-icon-next {
-      display: none;
+    &:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+      .jw-display {
+        display: none;
+      }
     }
 
     .jw-controlbar {
@@ -53,27 +54,6 @@
         .jw-icon-tooltip.jw-icon-volume {
             display: none;
         }
-    }
-
-    &.jw-flag-time-slider-above {
-
-      .jw-controlbar {
-
-        .jw-text-alt {
-          margin: 0;
-        }
-
-        .jw-group {
-
-          > .jw-text {
-            height: @mobile-touch-target;
-            line-height: @mobile-touch-target - 2px;
-          }
-
-        }
-
-      }
-
     }
 
 }
