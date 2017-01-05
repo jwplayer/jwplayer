@@ -15,8 +15,10 @@
         display: none;
     }
 
-    .jw-display {
-      display: none;
+    &:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+      .jw-display {
+        display: none;
+      }
     }
 
     .jw-controlbar {
