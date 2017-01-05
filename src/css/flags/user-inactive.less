@@ -1,6 +1,6 @@
 @import "controls-hidden";
 
-.jwplayer.jw-flag-user-inactive.jw-state-playing {
+.jwplayer.jw-flag-user-inactive.jw-state-playing:not(.jw-flag-media-audio) {
     .jwplayer.jw-flag-controls-hidden;
 
     .jw-media {
@@ -8,7 +8,7 @@
         -webkit-cursor-visibility: auto-hide;
     }
 }
-.jwplayer.jw-flag-user-inactive.jw-state-buffering {
+.jwplayer.jw-flag-user-inactive.jw-state-buffering:not(.jw-flag-media-audio) {
     .jw-controlbar {
         display: none;
     }
