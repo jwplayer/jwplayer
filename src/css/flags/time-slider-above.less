@@ -89,18 +89,23 @@
 
   &:not(.jw-flag-audio-player) {
 
-
     /* ==================================================
-    controls
+    control bar
     */
 
-    .jw-controls {
+    .jw-controlbar {
       background: linear-gradient(
         180deg,
-        fade(mix(black, white, 90%), 0%),
-        fade(mix(black, white, 90%), 25%),
-        fade(mix(black, white, 90%), 75%)
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.5)
       );
+      border: none;
+      border-radius: 0;
+      background-size: auto;
+      height: @mobile-touch-target;
+      padding: 0 10px;
     }
 
     /* do not show the controls background linear gradient when video is idle
@@ -114,17 +119,6 @@
         background: none;
       }
 
-    }
-
-
-    /* ==================================================
-    control bar
-    */
-
-    .jw-controlbar {
-      background: none;
-      height: @mobile-touch-target;
-      padding: 0 10px;
     }
 
     /* by default, the control bar height is set to the height needed for live
@@ -149,6 +143,7 @@
 
     // adjust overlay bottom padding to match height of touch target
     .jw-controlbar {
+      box-shadow: none;
 
       .jw-overlay {
         bottom: @mobile-touch-target;
@@ -241,6 +236,13 @@
 
     }
 
+    /* ==================================================
+    vertical volume slider
+    */
+
+    .jw-slider-volume {
+      padding: 0.5em;
+    }
 
     /* ==================================================
     slider
@@ -263,18 +265,25 @@
       }
 
       .jw-rail,
+      .jw-progress,
+      .jw-buffer,
+      .jw-knob {
+        background: none;
+        border: none;
+        box-shadow: none;
+      }
+
+      .jw-rail,
       .jw-buffer,
       .jw-progress {
         height: @slider-fixed-rail-height;
       }
 
       .jw-rail {
-        background: none;
         background-color: fade(white, 25%);
       }
 
       .jw-buffer {
-        background: none;
         background-color: fade(white, 50%);
       }
 
@@ -293,7 +302,7 @@
     }
 
     .jw-tooltip-time {
-      bottom: @slider-fixed-height + 5px;
+      bottom: 5px;
       height: auto;
       line-height: normal;
       padding: 0;
