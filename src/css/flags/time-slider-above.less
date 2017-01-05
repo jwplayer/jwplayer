@@ -339,8 +339,8 @@
     &.jw-flag-live {
 
       .jw-controlbar {
-        padding-left: 5px;
-        padding-right: 5px;
+        padding-left: 10px;
+        padding-right: 0;
       }
 
       .jw-controlbar-center-group {
@@ -386,15 +386,6 @@
 
     &.jw-flag-live {
 
-      &.jw-breakpoint-0,
-      &.jw-breakpoint-1 {
-
-        .jw-controlbar {
-          padding-left: 15px;
-        }
-
-      }
-
       .jw-text-elapsed,
       .jw-text-duration {
         display: none;
@@ -405,8 +396,6 @@
     &.jw-flag-ads {
 
       .jw-controlbar {
-        padding-left: 5px;
-        padding-right: 5px;
         pointer-events: none;
 
         .jw-icon,
@@ -420,15 +409,15 @@
         display: table-cell;
       }
 
-      .jw-group > .jw-icon-playback {
-        display: inline-block;
-      }
-
       &.jw-breakpoint-0,
       &.jw-breakpoint-1 {
 
-        .jw-group > .jw-text-alt {
+        .jw-controlbar-left-group {
           display: none;
+        }
+
+        .jw-group > .jw-text-alt {
+          margin: 0;
         }
 
       }
