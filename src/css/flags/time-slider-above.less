@@ -1,8 +1,9 @@
 @import "../imports/vars";
 
 /* time slider above or small player (both override player into same UI) */
-.jw-flag-time-slider-above {
-
+.jw-flag-time-slider-above,
+.jw-breakpoint-0,
+.jw-breakpoint-1 {
 
   /* ==================================================
   dock
@@ -36,11 +37,18 @@
 
   }
 
+  /* ==================================================
+  plugin
+  */
+
+  /* Move non-linear ad display above the time slider */
+  .jw-plugin:not(.jw-plugin-related) {
+    bottom: (@mobile-touch-target * 1.5);
+  }
 
   /* ==================================================
   display
   */
-
 
   .jw-display {
     padding-bottom: @mobile-touch-target * 1.5;
@@ -82,7 +90,6 @@
 
   }
 
-
   /* ==================================================
   to avoid overriding audio player on small size
   */
@@ -122,10 +129,10 @@
     }
 
     /* by default, the control bar height is set to the height needed for live
-    broadcast and the override sets it to the height needed for anything that
-    isn't a live broadcast. the delay the player has before it detects a live
-    broadcast and adds causes a flicker. Handling control bar in this way fixes
-    that experience in time slider above mode. */
+    broadcast and the override sets it to the height needed for anything that isn't
+    a live broadcast. the delay the player has before it detects a live broadcast
+    and adds causes a flicker. handling control bar in this way fixes that experience
+    in time slider above mode. */
     &:not(.jw-flag-ads),
     &:not(.jw-flag-live) {
 
@@ -135,7 +142,6 @@
       }
 
     }
-
 
     /* ==================================================
     control bar tooltip overlays
@@ -156,17 +162,7 @@
 
       }
 
-      &.jw-flag-ads,
-      &.jw-flag-live {
-
-        .jw-overlay::after {
-          display: none;
-        }
-
-      }
-
     }
-
 
     /* ==================================================
     control bar icons and text
@@ -185,11 +181,32 @@
       width: @mobile-touch-target;
 
       &::before {
+        background-color: transparent;
+        background: none;
+        background-size: auto;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
         height: auto;
+        padding: 0;
       }
 
     }
 
+    &.jw-breakpoint-0,
+    &.jw-breakpoint-1 {
+
+      .jw-group {
+
+        > .jw-icon-rewind,
+        > .jw-icon-next,
+        > .jw-icon-playback {
+          display: none;
+        }
+
+      }
+
+    }
 
     /* ==================================================
     control bar groups
@@ -240,8 +257,16 @@
     vertical volume slider
     */
 
-    .jw-slider-volume {
+    .jw-slider-volume.jw-slider-vertical {
       padding: 0.5em;
+    }
+
+    /* ==================================================
+    horizontal volume slider
+    */
+
+    .jw-slider-volume.jw-slider-horizontal {
+      margin-bottom: 2px;
     }
 
     /* ==================================================
@@ -323,13 +348,17 @@
       }
     }
 
-
     /* ==================================================
-    ads
+    ads and live
     */
 
     &.jw-flag-ads,
     &.jw-flag-live {
+
+      .jw-controlbar {
+        padding-left: 10px;
+        padding-right: 0;
+      }
 
       .jw-controlbar-center-group {
         height: auto;
@@ -338,32 +367,74 @@
         position: static;
         text-overflow: ellipsis;
         width: 100%;
-
-        .jw-text-alt {
-          color: #fff;
-          display: block;
-          max-width: none;
-          text-align: left;
-        }
-
       }
 
-      .jw-controlbar {
-
-        .jw-slider-volume.jw-slider-horizontal {
-          margin-bottom: 2px;
-        }
-
+      .jw-group > .jw-text-alt {
+        color: #fff;
+        display: block;
+        margin: 0;
+        position: relative;
+        text-align: left;
+        top: -1px;
       }
 
       .jw-text-duration {
         display: none;
       }
+
+      .jw-controlbar .jw-overlay::after {
+        display: none;
+      }
+
+      &.jw-breakpoint-0,
+      &.jw-breakpoint-1 {
+
+        .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+          display: none;
+        }
+
+      }
+
     }
 
-    /* Move non-linear ad display above the time slider */
-    .jw-plugin {
-      bottom: (@mobile-touch-target * 1.5);
+    &.jw-flag-live {
+
+      .jw-text-elapsed,
+      .jw-text-duration {
+        display: none;
+      }
+
+    }
+
+    &.jw-flag-ads {
+
+      .jw-controlbar {
+        pointer-events: none;
+
+        .jw-icon,
+        .jw-slider-horizontal {
+          pointer-events: all;
+        }
+
+      }
+
+      .jw-controlbar-left-group {
+        display: table-cell;
+      }
+
+      &.jw-breakpoint-0,
+      &.jw-breakpoint-1 {
+
+        .jw-controlbar-left-group {
+          display: none;
+        }
+
+        .jw-group > .jw-text-alt {
+          margin: 0;
+        }
+
+      }
+
     }
 
     /* ==================================================
