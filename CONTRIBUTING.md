@@ -24,10 +24,10 @@ Before submitting an issue, please do your best to confirm that your issue is *r
     - Are you using the [latest version](https://developer.jwplayer.com/jw-player/docs/developer-guide/release_notes/release_notes_7)?
         - You can test streams with the latest version [here](https://developer.jwplayer.com/tools/stream-tester/).
     - Are you using Flash?
-         - Ensure you're using the latest version of Flash.
+        - Ensure you're using the latest version of Flash.
         - We're in the process of deprecating Flash and will only fix
          critical bugs.
-     - Is your [Configuration](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/) valid?
+    - Is your [Configuration](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/) valid?
 3. Check your browser:
     - Are you using a [supported browser](https://support.jwplayer.com/customer/portal/articles/1403653-browser-device-reference#desktop
     )?
@@ -58,13 +58,13 @@ Great! Please [create an issue](https://github.com/jwplayer/jwplayer/issues/new)
     <body>
         <div id="player">Loading the player...</div>
         <script>
-            const player = jwplayer('player').setup({ ... });
+            var player = jwplayer('player').setup({ ... });
         </script>
     </body>
 </html>
 ````
 
- ## Pull Requests
+## Pull Requests
 Pull requests are a great way to help out and improve JW Player. Before embarking on a large PR, please ask us first - we may not need your changes in the repo and don't want you to waste your energy.
 
 To get your repo up and running, please refer to BUILDING.md.
@@ -81,7 +81,7 @@ While far from comprehensive, following these guidelines will get the easy stuff
 - Hotfixes: `hotfix/your-branch`
 
 ##### Style
-1. **Code written must work across all supported browsers without transpilation - Chrome, FF, Safari, and IE 9-11**
+1. **Code written must work across all supported browsers and devices without transpilation - Chrome, FF, Safari, Edge, and IE 9-11**
     - Usually this means writing in pure ES5, but ES6 features are allowed if they work everywhere
 2. Ensure that your code follows our styleguide by passing our ESLint rules
 3. Ensure that your code passes static analysis by running Flow

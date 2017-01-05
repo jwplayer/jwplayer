@@ -4,9 +4,9 @@
 
 > Plays everywhere, every time.
 
- Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. Open-source, hackable, and performant, it empowers the developer to interact with video programmatically to create unique and awesome user experiences.
+ Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
   
- ## Official Documentation
+## Official Documentation
  - [Developer Portal](https://developer.jwplayer.com/)
  - [API Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/api/javascript_api_reference/) 
  - [Configuration Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/)
@@ -59,7 +59,7 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
  2. [Java](https://java.com/en/download/)* 
  
  \* Optional, but required for building Flash. If not installed you must `grunt` with the `--force` flag. 
- #### Steps:
+#### Steps:
 
 1. Fork the project, clone your fork, and set up the remotes:
 ````
