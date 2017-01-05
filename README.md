@@ -16,7 +16,7 @@
 
 ## A Simple Example
 
-The example below and render a video player into the div with the `player` id, listens to an event, and makes a few calls using the API.
+The example below will render a video player into the div with the `player` id, listens to an event, and makes a few calls using the API.
 
 ````
 <html>
