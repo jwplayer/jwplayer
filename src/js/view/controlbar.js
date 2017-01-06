@@ -125,6 +125,7 @@ define([
                 rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
                 next: button('jw-icon-next', null, next), // the click/tap event listener is in the nextup tooltip
                 elapsed: text('jw-text-elapsed', 'timer'),
+                countdown: text('jw-text-countdown', 'timer'),
                 time: timeSlider,
                 duration: text('jw-text-duration', 'timer'),
                 durationLeft: text('jw-text-duration', 'timer'),
@@ -143,7 +144,8 @@ define([
                     this.elements.play,
                     this.elements.rewind,
                     this.elements.elapsed,
-                    this.elements.durationLeft
+                    this.elements.durationLeft,
+                    this.elements.countdown
                 ],
                 center: [
                     this.elements.time,
@@ -299,6 +301,7 @@ define([
             this.elements.duration.innerHTML = '00:00';
             this.elements.durationLeft.innerHTML = '00:00';
             this.elements.elapsed.innerHTML = '00:00';
+            this.elements.countdown.innerHTML = '00:00';
 
             this.elements.audiotracks.setup();
         },
@@ -355,6 +358,7 @@ define([
                 elapsedTime = utils.timeFormat(val);
             }
             this.elements.elapsed.innerHTML = elapsedTime;
+            this.elements.countdown.innerHTML = '-' + utils.timeFormat(duration - val);
         },
         onDuration : function(model, val) {
             var totalTime;
