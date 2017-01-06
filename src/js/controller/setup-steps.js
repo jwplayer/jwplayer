@@ -166,7 +166,6 @@ define([
                 height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
             });
             var swf = EmbedSwf.embed(flashHealthCheckSwf, testContainer, flashHealthCheckId, null);
-            parentElement.replaceChild(testContainer, originalContainer);
             var done = function() {
                 if (embedTimeout === -1) {
                     return;
@@ -175,13 +174,19 @@ define([
                 embedTimeout = -1;
                 resolve();
             };
-            swf.embedCallback = done;
-            // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
-            var embedTimeout = setTimeout(function() {
+            var failed = function() {
                 _model.set('primary', undefined);
                 _model.updateProviders();
                 done();
-            }, 3000);
+            };
+            Object.defineProperty(swf, 'embedCallback', { get: function() { return done; } });
+            if (!swf.on) {
+                // Chrome bug where properties are not set on object element
+                return failed();
+            }
+            parentElement.replaceChild(testContainer, originalContainer);
+            // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
+            var embedTimeout = setTimeout(failed, 3000);
         } else {
             resolve();
         }

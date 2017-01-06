@@ -14,6 +14,10 @@ define([
         object.appendChild(param);
     }
 
+    function addGetter(obj, property, value) {
+        Object.defineProperty(obj, property, { get: function() { return value; } });
+    }
+
     function embed(swfUrl, container, id, wmode) {
         var swf;
         var queueCommands = true;
@@ -74,10 +78,14 @@ define([
         }
 
         // flash can trigger events
-        _.extend(swf, Events);
+        addGetter(swf, 'on', Events.on);
+        addGetter(swf, 'once', Events.once);
+        addGetter(swf, 'off', Events.off);
+        addGetter(swf, 'trigger', Events.trigger);
+        addGetter(swf, '_events', {});
 
         // javascript can trigger SwfEventRouter callbacks
-        swf.triggerFlash = function(name) {
+        addGetter(swf, 'triggerFlash', function(name) {
             if (name === 'setupCommandQueue') {
                 queueCommands = false;
             }
@@ -119,10 +127,10 @@ define([
                 }
             }
             return swf;
-        };
+        });
 
         // commands are queued when __externalCall is not available
-        swf.__commandQueue = [];
+        addGetter(swf, '__commandQueue', []);
 
         return swf;
     }
