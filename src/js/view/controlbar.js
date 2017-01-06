@@ -350,15 +350,17 @@ define([
             }
         },
         onElapsed: function(model, val) {
-            var elapsedTime;
+            var elapsedTime,
+                countdownTime;
             var duration = model.get('duration');
             if (model.get('streamType') === 'DVR') {
-                elapsedTime = '-' + utils.timeFormat(-duration);
+                elapsedTime = countdownTime = '-' + utils.timeFormat(-duration);
             } else {
                 elapsedTime = utils.timeFormat(val);
+                countdownTime = ((duration - val > 1) ? '-' : '') + utils.timeFormat(duration - val);
             }
             this.elements.elapsed.innerHTML = elapsedTime;
-            this.elements.countdown.innerHTML = '-' + utils.timeFormat(duration - val);
+            this.elements.countdown.innerHTML = countdownTime;
         },
         onDuration : function(model, val) {
             var totalTime;
