@@ -264,6 +264,13 @@
       margin-bottom: 2px;
     }
 
+    &.jw-breakpoint-0,
+    &.jw-breakpoint-1 {
+      .jw-slider-volume.jw-slider-horizontal {
+        display: none;
+      }
+    }
+
     /* ==================================================
     slider
     */
@@ -345,11 +352,16 @@
 
 
     /* ==================================================
-    ads
+    ads/live
     */
 
     &.jw-flag-ads,
     &.jw-flag-live {
+
+      .jw-controlbar {
+        padding-left: 10px;
+        padding-right: 5px;
+      }
 
       .jw-controlbar-center-group {
         height: auto;
@@ -358,27 +370,64 @@
         position: static;
         text-overflow: ellipsis;
         width: 100%;
-
-        .jw-text-alt {
-          color: #fff;
-          display: block;
-          max-width: none;
-          text-align: left;
-        }
-
       }
 
-      .jw-controlbar {
-
-        .jw-slider-volume.jw-slider-horizontal {
-          margin-bottom: 2px;
-        }
-
+      .jw-group > .jw-text-alt {
+        color: #fff;
+        display: block;
+        margin: 0;
+        position: relative;
+        text-align: left;
+        top: 1px;
       }
 
       .jw-text-duration {
         display: none;
       }
+
+      .jw-controlbar .jw-overlay::after {
+        display: none;
+      }
+
+    }
+
+    &.jw-flag-live {
+
+      .jw-text-elapsed,
+      .jw-text-duration {
+        display: none;
+      }
+
+    }
+
+    &.jw-flag-ads {
+
+      .jw-controlbar {
+        pointer-events: none;
+      }
+
+      .jw-icon,
+      .jw-slider-horizontal {
+        pointer-events: all;
+      }
+
+      .jw-controlbar-left-group {
+        display: table-cell;
+      }
+
+      &.jw-breakpoint-0,
+      &.jw-breakpoint-1 {
+
+        .jw-controlbar-left-group {
+          display: none;
+        }
+
+        .jw-group > .jw-text-alt {
+          margin: 0;
+        }
+
+      }
+
     }
 
     /* ==================================================
