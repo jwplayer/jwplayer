@@ -42,7 +42,6 @@
   display
   */
 
-
   .jw-display {
     padding-bottom: @mobile-touch-target * 1.5;
   }
@@ -82,7 +81,6 @@
     }
 
   }
-
 
   /* ==================================================
   to avoid overriding audio player on small size
@@ -194,6 +192,16 @@
       }
     }
 
+    &.jw-breakpoint-0,
+    &.jw-breakpoint-1 {
+      .jw-group {
+        > .jw-icon-rewind,
+        > .jw-icon-next,
+        > .jw-icon-playback {
+          display: none;
+        }
+      }
+    }
 
     /* ==================================================
     control bar groups
