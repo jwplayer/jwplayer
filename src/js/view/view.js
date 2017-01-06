@@ -79,6 +79,9 @@ define([
             // Used to differentiate tab focus events from click events
             _focusFromClick = false,
 
+            // Colors written into this canvas to set maui color overrides
+            _canvasColorContext,
+
             _this = _.extend(this, Events);
 
         // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
@@ -307,12 +310,36 @@ define([
         this.handleColorOverrides = function() {
             var id = _model.get('id');
 
-            function addStyle(elements, attr, value) {
+            function getRgba(color, opacity) {
+                var data;
+
+                if (!_canvasColorContext) {
+                    var canvas = document.createElement('canvas');
+
+                    canvas.height = 1;
+                    canvas.width = 1;
+
+                    _canvasColorContext = canvas.getContext('2d');
+                }
+
+                _canvasColorContext.clearRect(0, 0, 1, 1);
+                _canvasColorContext.fillStyle = color;
+                _canvasColorContext.fillRect(0, 0, 1, 1);
+
+                data = _canvasColorContext.getImageData(0, 0, 1, 1).data;
+
+                return 'rgba(' + data[0] + ', ' + data[1] + ', ' + data[2] + ', ' + opacity + ')';
+            }
+
+            function addStyle(elements, attr, value, extendParent) {
                 if (!value) {
                     return;
                 }
 
-                elements = utils.prefix(elements, '#' + id + ' ');
+                /* if extendParent is true, bundle the first selector of
+                element string to the player element instead of defining it as a
+                child of the player element (default). i.e. #player.sel-1 .sel-2 vs. #player .sel-1 .sel-2 */
+                elements = utils.prefix(elements, '#' + id + (extendParent ? '' : ' '));
 
                 var o = {};
                 o[attr] = value;
@@ -323,7 +350,12 @@ define([
             // look good.
             var activeColor = _model.get('skinColorActive'),
                 inactiveColor = _model.get('skinColorInactive'),
-                backgroundColor = _model.get('skinColorBackground');
+                backgroundColor = _model.get('skinColorBackground'),
+                backgroundColorGradient = backgroundColor ? 'linear-gradient(180deg, ' +
+                    getRgba(backgroundColor, 0) + ' 0%, ' +
+                    getRgba(backgroundColor, 0.05) + ' 25%, ' +
+                    getRgba(backgroundColor, 0.15) + ' 50%, ' +
+                    getRgba(backgroundColor, 0.5) + ') 100%' : '';
 
             // These will use standard style names for CSS since they are added directly to a style sheet
             // Using background instead of background-color so we don't have to clear gradients with background-image
@@ -342,7 +374,7 @@ define([
                 // menu active option
 
                 // slider fill color
-                '.jw-progress',
+                '.jw-progress'
             ], 'background', activeColor);
 
             // Apply inactive color
@@ -373,6 +405,20 @@ define([
                 '.jw-background-color',
                 '.jw-tooltip-title'
             ], 'background', backgroundColor);
+
+            addStyle([
+                // for small player, set the control bar gradient to the config background color
+                '.jw-breakpoint-0 .jw-background-color.jw-controlbar',
+                '.jw-breakpoint-1 .jw-background-color.jw-controlbar',
+                '.jw-flag-time-slider-above .jw-background-color.jw-controlbar',
+            ], 'background', backgroundColorGradient, true);
+
+            addStyle([
+                // remove the config background color on time slider on small player
+                '.jw-breakpoint-0 .jw-background-color.jw-slider-time',
+                '.jw-breakpoint-1 .jw-background-color.jw-slider-time',
+                '.jw-flag-time-slider-above .jw-background-color.jw-slider-time',
+            ], 'background', 'none', true);
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
@@ -446,11 +492,6 @@ define([
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on('change:castAvailable', _onCastAvailable);
-            _onCastAvailable(_model, _model.get('castAvailable'));
-            _model.on('change:castActive', _onCastActive);
-            _onCastActive(_model, _model.get('castActive'));
-
             _model.on('change:hideAdsControls', function(model, val) {
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
             });
@@ -485,17 +526,6 @@ define([
                 _resize(_model.get('width'), _model.get('height'));
             });
         };
-
-        function _onCastActive(model, val) {
-            // if undefined it will simply alternate
-            val = val || false;
-
-            utils.toggleClass(_playerElement, 'jw-flag-casting', val);
-        }
-        function _onCastAvailable(model, val) {
-            utils.toggleClass(_playerElement, 'jw-flag-cast-available', val);
-            utils.toggleClass(_controlsLayer, 'jw-flag-cast-available', val);
-        }
 
         function _onStretchChange(model, newVal) {
             utils.replaceClass(_playerElement, /jw-stretch-\S+/, 'jw-stretch-' + newVal);

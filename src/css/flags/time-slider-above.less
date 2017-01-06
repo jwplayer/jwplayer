@@ -89,18 +89,17 @@
 
   &:not(.jw-flag-audio-player) {
 
-
     /* ==================================================
-    controls
+    control bar
     */
 
-    .jw-controls {
-      background: linear-gradient(
-        180deg,
-        fade(mix(black, white, 90%), 0%),
-        fade(mix(black, white, 90%), 25%),
-        fade(mix(black, white, 90%), 75%)
-      );
+    .jw-controlbar {
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.5) 100%);
+      border: none;
+      border-radius: 0;
+      background-size: auto;
+      height: @mobile-touch-target;
+      padding: 0 10px;
     }
 
     /* do not show the controls background linear gradient when video is idle
@@ -114,20 +113,6 @@
         background: none;
       }
 
-    }
-
-
-    /* ==================================================
-    control bar
-    */
-
-    .jw-controlbar {
-      background: none;
-      border: none;
-      border-radius: 0;
-      background-size: auto;
-      height: @mobile-touch-target;
-      padding: 0 10px;
     }
 
     /* by default, the control bar height is set to the height needed for live
@@ -162,20 +147,16 @@
           display: block;
           height: @mobile-touch-target * 0.5;
         }
-
       }
-
-      &.jw-flag-ads,
-      &.jw-flag-live {
-
-        .jw-overlay::after {
-          display: none;
-        }
-
-      }
-
     }
 
+
+    &.jw-flag-ads,
+    &.jw-flag-live {
+      .jw-overlay::after {
+        display: none;
+      }
+    }
 
     /* ==================================================
     control bar icons and text
@@ -197,6 +178,12 @@
         height: auto;
       }
 
+    }
+
+    .jw-group {
+      .jw-icon-cast button {
+        width: 37px;
+      }
     }
 
 
@@ -311,7 +298,7 @@
     }
 
     .jw-tooltip-time {
-      bottom: 5px;
+      bottom: 0;
       height: auto;
       line-height: normal;
       padding: 0;
@@ -319,22 +306,17 @@
       transform: translateX(-50%);
 
       .jw-overlay {
-        bottom: auto;
-        left: auto;
-        position: static;
+        // Place the overlay above the time slider and aligned with the volume overlay
+        bottom: @mobile-touch-target * 0.5;
+
+        &:after {
+          content: none;
+        }
       }
 
       .jw-time-tip {
-        border-radius: @ui-corner-round;
-        left: auto;
-        padding: 1px 5px;
-        position: static;
+        bottom: 0;
       }
-
-      .jw-text {
-        height: auto;
-      }
-
     }
 
 
@@ -376,7 +358,7 @@
     }
 
     /* Move non-linear ad display above the time slider */
-    .jw-plugin {
+    .jw-plugin:not(.jw-plugin-related) {
       bottom: (@mobile-touch-target * 1.5);
     }
 

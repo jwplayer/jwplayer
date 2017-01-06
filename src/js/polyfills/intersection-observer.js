@@ -56,6 +56,9 @@ function IntersectionObserverEntry(entry) {
 
   // Calculates the intersection ratio. Sets it to 0 if the target area is 0.
   var targetRect = this.boundingClientRect;
+  if (!targetRect) {
+    return;
+  }
   var targetArea = targetRect.width * targetRect.height;
   var intersectionRect = this.intersectionRect;
   var intersectionArea = intersectionRect.width * intersectionRect.height;
@@ -631,7 +634,11 @@ function hasIntersection(rect) {
  * @return {Object} The (possibly shimmed) rect of the element.
  */
 function getBoundingClientRect(el) {
-  var rect = el.getBoundingClientRect();
+  var rect;
+  try {
+    rect = el.getBoundingClientRect();
+  }
+  catch(e) { return; }
   if (!rect) return;
 
   // Older IE

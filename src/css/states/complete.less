@@ -1,7 +1,7 @@
 @import "../imports/icons";
 
 .jwplayer.jw-state-complete {
-    .jw-preview {
+    .jw-preview:not(.jw-flag-casting) {
         display: block;
     }
 
@@ -18,7 +18,11 @@
     }
 
     .jw-icon-playback {
-        .jw-icon-play;
+        .jw-icon-replay;
+
+        &:before {
+            font-size: 1.55em;
+        }
     }
 
     .jw-captions {
