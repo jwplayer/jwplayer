@@ -261,7 +261,6 @@ define([
             _beforecompleted = false;
             _provider.setState(states.COMPLETE);
             this.mediaController.trigger(events.JWPLAYER_MEDIA_COMPLETE, {});
-            _provider.playbackComplete();
         };
 
         this.destroy = function() {

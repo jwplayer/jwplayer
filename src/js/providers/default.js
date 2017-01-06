@@ -48,7 +48,6 @@ define([
         setControls : noop,
         attachMedia : noop,
         detachMedia : noop,
-        playbackComplete : noop,
 
         setState: function(state) {
             var oldState = this.state || states.IDLE;
