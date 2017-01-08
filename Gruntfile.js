@@ -26,7 +26,9 @@ function getBuildVersion(packageInfo) {
 
 module.exports = function(grunt) {
 
-    require('load-grunt-tasks')(grunt);
+    require('load-grunt-tasks')(grunt, {
+        requireResolution: true
+    });
 
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
