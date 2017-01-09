@@ -22,8 +22,6 @@
 
     @option-active-bg-color: rgba(255, 255, 255, 0.6);
 
-
-
     @rail-height: .2em;
     @thumb-size: 1em;
     @cue-height: .4em;
@@ -131,6 +129,26 @@
     /* Five border-radius for the dock, in the upper right corner */
     .jw-dock-button {
         border-radius: @five-border-radius;
+    }
+
+    // override control bar element colors that don't look good in time slider above mode
+    &.jw-flag-time-slider-above,
+    &.jw-breakpoint-0,
+    &.jw-breakpoint-1 {
+      .jw-controlbar {
+        .jw-text {
+          color: rgba(255, 255, 255, 0.6);
+        }
+        .jw-button-color {
+          color: rgba(255, 255, 255, 0.6);
+          &:hover {
+            color: rgba(255, 255, 255, 1);
+          }
+          &:focus {
+            color: rgba(255, 255, 255, 1);
+          }
+        }
+      }
     }
 
 }
