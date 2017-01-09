@@ -3,7 +3,21 @@
   .jw-cast {
     display: block;
   }
-  
+
+  &.jw-flag-airplay-casting .jw-display-icon-container {
+    display: none;
+  }
+
+  .jw-icon-cc, .jw-icon-audio-tracks, .jw-icon-hd, .jw-icon-fullscreen {
+    display: none;
+  }
+
+  &.jw-flag-airplay-casting {
+    .jw-icon-volume {
+      display: none;
+    }
+  }
+
 }
 
 .jwplayer.jw-state-playing.jw-flag-casting,
@@ -14,3 +28,4 @@
   }
 
 }
+
