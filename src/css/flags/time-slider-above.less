@@ -187,8 +187,16 @@ of the file to be defined separately.
     }
 
     .jw-group {
-      .jw-icon-cast button {
-        width: 37px;
+      .jw-icon-cast {
+        width: auto;
+
+        button {
+          font-size: inherit;
+          height: 36px;
+          margin-bottom: 8px;
+          width: @mobile-touch-target;
+        }
+
       }
     }
 
