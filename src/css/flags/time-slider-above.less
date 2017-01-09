@@ -1,3 +1,12 @@
+/*
+Some refactoring is still necessary to prevent selectors such as:
+- .jw-breakpoint-0:not(.jw-flag-audio-player).jw-breakpoint-0
+- .jw-breakpoint-0:not(.jw-breakpoint-0)
+
+We can probably pull some of these breakpoint 0 and 1 styles down the the bottom
+of the file to be defined separately.
+*/
+
 @import "../imports/vars";
 
 /* time slider above or small player (both override player into same UI) */
