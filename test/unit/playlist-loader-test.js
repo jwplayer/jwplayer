@@ -63,6 +63,6 @@ define([
             done();
         });
 
-        loader.load(require.toUrl('failUrl'));
+        loader.load(require.toUrl('data/invalid.json'));
     });
 });
