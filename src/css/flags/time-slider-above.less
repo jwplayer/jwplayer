@@ -213,10 +213,13 @@
       margin-left: -5px;
 
       .jw-text-elapsed,
-      .jw-text-duration {
+      .jw-text-duration,
+      .jw-text-countdown {
         padding: 0 10px;
       }
+    }
 
+    &:not(.jw-breakpoint-0){
       .jw-text-duration {
         display: inline-block;
         padding-left: 0;
@@ -226,7 +229,6 @@
           padding-right: 6px;
         }
       }
-
     }
 
     .jw-controlbar-right-group {
@@ -426,7 +428,7 @@
     */
 
     /* Move non-linear ad display above the time slider */
-    .jw-plugin:not(.jw-plugin-related):not(.jw-plugin-sharing) {
+    .jw-plugin {
       bottom: (@mobile-touch-target * 1.5);
     }
 
