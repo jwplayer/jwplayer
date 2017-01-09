@@ -357,7 +357,7 @@ define([
                 elapsedTime = countdownTime = '-' + utils.timeFormat(-duration);
             } else {
                 elapsedTime = utils.timeFormat(val);
-                countdownTime = ((duration - val > 1) ? '-' : '') + utils.timeFormat(duration - val);
+                countdownTime = utils.timeFormat(duration - val);
             }
             this.elements.elapsed.innerHTML = elapsedTime;
             this.elements.countdown.innerHTML = countdownTime;
