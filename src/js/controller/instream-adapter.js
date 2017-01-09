@@ -163,7 +163,7 @@ define([
                 data.tag = _options.tag;
             }
             this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
-            _instreamItemNext(e);
+            _instreamItemNext.call(this, e);
         }
 
         var _instreamItemNext = function(e) {
