@@ -198,16 +198,24 @@
         }
 
         /* Styles for menu elements, volume, slider thumbnail */
+        .jw-menu,
         .jw-time-tip,
-        .jw-volume-tip,
-        .jw-menu {
+        .jw-volume-tip {
             background: @controlbar-background;
             border: @volume-border;
+        }
+
+        .jw-menu,
+        .jw-time-tip {
+            padding: @ui-padding;
+        }
+
+        .jw-volume-tip {
             padding: @volume-padding;
         }
 
         .jw-menu.jw-background-color {
-          background: @controlbar-background;
+            background: @controlbar-background;
         }
 
         .jw-skip {
