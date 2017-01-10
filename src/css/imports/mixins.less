@@ -23,41 +23,36 @@
 
 .inset-controlbar() {
 
-  &:not(.jw-breakpoint-0),
-  &:not(.jw-breakpoint-1) {
+  &.jw-flag-time-slider-default:not(.jw-flag-audio-player):not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
 
-    &.jw-flag-time-slider-default:not(.jw-flag-audio-player) {
+    .jw-controlbar {
+      bottom: .7em;
+      display: inline-block; // for correct display in IE browsers
+      max-width: @min-breakpoint-5-width;
+      margin: 0 auto;
+      left: 2%;
+      right: 2%;
+      width: 96%; // width assignment is required for IE11 to center correctly
+    }
 
-      .jw-controlbar {
-        bottom: .7em;
-        display: inline-block; // for correct display in IE browsers
-        max-width: @min-breakpoint-5-width;
-        margin: 0 auto;
-        left: 2%;
-        right: 2%;
-        width: 96%; // width assignment is required for IE11 to center correctly
-      }
+    &.jw-state-idle .jw-controlbar {
+      display: none;
+    }
 
-      &.jw-state-idle .jw-controlbar {
-        display: none;
-      }
+    .jw-nextup-container {
+      bottom: @controlbar-height + .7em;
+      padding-left: 0;
+      padding-right: 0;
+      max-width: @min-breakpoint-5-width;
+    }
 
+    &.jw-breakpoint-2,
+    &.jw-breakpoint-3,
+    &.jw-breakpoint-4 {
       .jw-nextup-container {
-        bottom: @controlbar-height + .7em;
-        padding-left: 0;
-        padding-right: 0;
-        max-width: @min-breakpoint-5-width;
+        padding-left: 2%;
+        padding-right: 2%;
       }
-
-      &.jw-breakpoint-2,
-      &.jw-breakpoint-3,
-      &.jw-breakpoint-4 {
-        .jw-nextup-container {
-          padding-left: 2%;
-          padding-right: 2%;
-        }
-      }
-
     }
 
   }
