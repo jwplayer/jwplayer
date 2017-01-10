@@ -19,25 +19,30 @@
         .jw-dock {
           display: block;
         }
-        .jw-nextup-container {
-          bottom: @controlbar-height;
-        }
-        &.jw-flag-time-slider-above .jw-nextup-container {
-          bottom: @mobile-touch-target * 1.5;
-        }
       }
   }
 
   &.jw-state-buffering {
-
       .jw-controlbar {
           display: none;
       }
+  }
+
+  &.jw-flag-casting {
 
       .jw-nextup-container {
-          bottom: 0.5em;
+          bottom: @controlbar-height;
       }
 
+      &.jw-flag-time-slider-above .jw-nextup-container {
+          bottom: @mobile-touch-target * 1.5;
+      }
+
+      &.jw-state-idle {
+          .jw-nextup-container {
+              display: none;
+          }
+      }
   }
 
   &.jw-flag-audio-player,
@@ -46,5 +51,4 @@
         display: table;
     }
   }
-
 }
