@@ -144,16 +144,16 @@
           .jw-icon {
             color: @display-icon-color;
           }
+        }
 
-          &:hover {
-            background: @display-bkgd-hover-color;
+        &:not(.jw-state-error) {
+            .jw-display-icon-container:hover {
+                background: @display-bkgd-hover-color;
 
-            .jw-icon {
-              color: @display-icon-hover-color;
+                .jw-icon {
+                    color: @display-icon-hover-color;
+                }
             }
-
-          }
-
         }
 
         /* Slider colors */
@@ -424,8 +424,10 @@
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
 
-        &.jwplayer .jw-media:hover ~ .jw-controls .jw-display-icon-display {
-            background-color: @display-bkgd-hover-color;
+        &.jwplayer:not(.jw-state-error) {
+            .jw-media:hover ~ .jw-controls .jw-display-icon-display {
+                background-color: @display-bkgd-hover-color;
+            }
         }
 
         .jw-color-active {
