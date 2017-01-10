@@ -61,4 +61,9 @@
         max-height: calc(97% - 6.25 * (@controlbar-height));
         line-height: 1.3em;
     }
+    video::-webkit-media-text-track-display {
+        // Ensure captions aren't cropped when the pseudo
+        // element's width cannot accommodate all the text
+        min-width: -webkit-min-content;
+    }
 }
