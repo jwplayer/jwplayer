@@ -52,7 +52,8 @@
 .jw-icon-tooltip,
 .jw-slider-horizontal,
 .jw-text-elapsed,
-.jw-text-duration {
+.jw-text-duration,
+.jw-text-countdown {
   display: inline-block;
   height: @controlbar-height;
   position: relative;
@@ -100,10 +101,22 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
+    font-size: inherit;
   }
 }
 
 .jw-slider-volume.jw-slider-horizontal,
 .jw-icon-inline.jw-icon-volume {
   display: none;
+}
+
+.jwplayer:not(.jw-breakpoint-0) .jw-text-countdown {
+  display: none;
+}
+
+.jw-breakpoint-0 .jw-controlbar {
+  .jw-text-duration,
+  .jw-text-elapsed {
+    display: none;
+  }
 }

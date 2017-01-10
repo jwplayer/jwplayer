@@ -82,7 +82,7 @@ define([
 
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
-            _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemNext, this);
+            _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemComplete, this);
             _instream.init();
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
@@ -157,19 +157,20 @@ define([
             _instream._adModel.set('position', evt.position);
         }
 
-        var _instreamItemNext = function(e) {
+        function _instreamItemComplete(e) {
             var data = {};
             if (_options.tag) {
                 data.tag = _options.tag;
             }
+            this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
+            _instreamItemNext.call(this, e);
+        }
 
+        var _instreamItemNext = function(e) {
             if (_array && _arrayIndex + 1 < _array.length) {
-                // fire complete event
-                this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
                 _loadNextItem();
             } else {
                 if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
-                    this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
                     // Dispatch playlist complete event for ad pods
                     this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                 }
