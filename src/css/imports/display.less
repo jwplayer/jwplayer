@@ -117,3 +117,40 @@ display icons
     display: none;
   }
 }
+
+// scale display icon sizes on larger breakpoints
+.jw-breakpoint-2 {
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 1.5;
+    line-height: @mobile-touch-target * 1.5;
+    width: @mobile-touch-target * 1.5;
+    &::before {
+      font-size: @mobile-touch-target * 0.75;
+    }
+  }
+}
+
+.jw-breakpoint-3 {
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 1.75;
+    line-height: @mobile-touch-target * 1.75;
+    width: @mobile-touch-target * 1.75;
+    &::before {
+      font-size: @mobile-touch-target * 0.875;
+    }
+  }
+}
+
+.jw-breakpoint-4,
+.jw-breakpoint-5,
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 2;
+    line-height: @mobile-touch-target * 2;
+    width: @mobile-touch-target * 2;
+    &::before {
+      font-size: @mobile-touch-target;
+    }
+  }
+}
