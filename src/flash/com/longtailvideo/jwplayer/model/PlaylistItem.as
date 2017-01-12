@@ -265,14 +265,14 @@ public dynamic class PlaylistItem {
 
     private static function levelType(level:Object):String {
         if (level) {
+            if (level.file) {
+                return extensionMap(Strings.extension(level.file));
+            }
             if (level.type) {
                 return level.type;
             }
             if (level.streamer || level.file.substr(0, 4) === 'rtmp') {
                 return "rtmp";
-            }
-            if (level.file) {
-                return extensionMap(Strings.extension(level.file));
             }
         }
         return null;
