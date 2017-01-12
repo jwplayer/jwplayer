@@ -214,7 +214,9 @@ define([
                 // Send queued events
                 for (var i = 0; i < _eventQueuedUntilReady.length; i++) {
                     var event = _eventQueuedUntilReady[i];
+                    _preplay = (event.type === events.JWPLAYER_MEDIA_BEFOREPLAY);
                     _this.trigger(event.type, event.args);
+                    _preplay = false;
                 }
 
                 var related = _api.getPlugin('related');
@@ -377,7 +379,7 @@ define([
                 }
                 if (!_preplay) {
                     _preplay = true;
-                    _this.trigger(events.JWPLAYER_MEDIA_BEFOREPLAY, {'playReason': _model.get('playReason')});
+                    _this.triggerAfterReady(events.JWPLAYER_MEDIA_BEFOREPLAY, {'playReason': _model.get('playReason')});
                     _preplay = false;
                     if (_interruptPlay) {
                         _interruptPlay = false;
