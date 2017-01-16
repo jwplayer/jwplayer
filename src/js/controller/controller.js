@@ -310,11 +310,11 @@ define([
                 _model.set('preInstreamState', 'instream-idle');
 
                 _stop(true);
+                _this.trigger('destroyPlugin', {});
 
                 if (_canAutoStart()) {
                     _model.once('itemReady', _autoStart);
                 }
-                _this.trigger('destroyPlugin', {});
 
                 switch (typeof item) {
                     case 'string':
