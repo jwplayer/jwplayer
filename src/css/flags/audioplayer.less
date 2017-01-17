@@ -1,3 +1,5 @@
+@import "../imports/vars";
+
 .jwplayer.jw-flag-audio-player {
     background-color: transparent;
 
@@ -40,6 +42,12 @@
         }
         .jw-icon-tooltip.jw-icon-volume {
             display: none;
+        }
+
+        video::-webkit-media-text-track-container {
+            // With 16 lines of captions, 1em ~= 6.25% of height
+            max-height: calc(97% - 6.25 * (@controlbar-height));
+            line-height: 1.3em;
         }
     }
 
