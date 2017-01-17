@@ -218,7 +218,7 @@ of the file to be defined separately.
     */
 
     // position the time slider group above other control bar elements
-    &:not(.jw-flag-ads) {
+    &:not(.jw-flag-ads):not(.jw-flag-live) {
       .jw-controlbar-center-group {
         height: @slider-fixed-height;
         left: 0;
@@ -376,6 +376,17 @@ of the file to be defined separately.
         padding-right: 5px;
       }
 
+      .jw-controlbar-center-group {
+        height: auto;
+        padding: 0;
+      }
+
+      .jw-group > .jw-text-alt {
+        display: inline-block;
+        margin: 0;
+        line-height: @mobile-touch-target;
+      }
+
       .jw-text-duration {
         display: none;
       }
@@ -416,13 +427,7 @@ of the file to be defined separately.
         .jw-controlbar-left-group {
           display: none;
         }
-
-        &:not(.jw-flag-ads) {
-          .jw-group > .jw-text-alt {
-            margin: 0;
-          }
-        }
-
+        
       }
 
     }
