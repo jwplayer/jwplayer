@@ -106,13 +106,13 @@ define([
                 dock: [
                     {
                         id: 'related',
-                        img: 'css-skins/icons/both.png',
-                        btnClass: 'jw-custom-btn-class',
+                        img: 'data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221024%22%20height%3D%221024%22%20viewBox%3D%220%200%201024%201024%22%3E%3Cpath%20fill%3D%22%23FFF%22%20d%3D%22M423.252%2068.266h532.48v88.748h-532.48V68.268zM423.252%20423.252h532.48V512h-532.48v-88.748zM423.252%20778.24h532.48v88.746h-532.48V778.24zM68.266%2068.266h177.492v177.492H68.266V68.266zM68.266%20423.252h177.492v177.492H68.266V423.252zM68.266%20778.24h177.492v177.492H68.266V778.24z%22%2F%3E%3C%2Fsvg%3E',
+                        btnClass: 'jw-related-dock-btn',
                         tooltip: 'Related'
                     },
                     {
                         id: 'sharing',
-                        img: 'css-skins/icons/both.png',
+                        img: 'data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2215%22%20height%3D%2212%22%20viewBox%3D%220%200%2015%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ctitle%3Eshare%3C%2Ftitle%3E%3Cpath%20d%3D%22M12.5%205c-.9%200-1.6-.5-2.1-1.1l-4.9%202%203.2%201.9c.4-.5%201.1-.8%201.8-.8C11.9%207%2013%208.1%2013%209.5S11.9%2012%2010.5%2012C9.2%2012%208.2%2011%208%209.8L4%207.5c-.4.3-.9.5-1.5.5C1.1%208%200%206.9%200%205.5S1.1%203%202.5%203c.9%200%201.6.5%202.1%201.1l5.5-2.3c.3-1%201.3-1.8%202.4-1.8C13.9%200%2015%201.1%2015%202.5S13.9%205%2012.5%205z%22%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E',
                         tooltip: 'Share Video'
                     }
                 ],
