@@ -218,23 +218,24 @@ of the file to be defined separately.
     */
 
     // position the time slider group above other control bar elements
-    .jw-controlbar-center-group {
-      height: @slider-fixed-height;
-      left: 0;
-      padding: 0 15px;
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 100%;
-    }
+    &:not(.jw-flag-ads) {
+      .jw-controlbar-center-group {
+        height: @slider-fixed-height;
+        left: 0;
+        padding: 0 15px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+      }
+      .jw-controlbar-left-group {
+        margin-left: -5px;
 
-    .jw-controlbar-left-group {
-      margin-left: -5px;
-
-      .jw-text-elapsed,
-      .jw-text-duration,
-      .jw-text-countdown {
-        padding: 0 10px;
+        .jw-text-elapsed,
+        .jw-text-duration,
+        .jw-text-countdown {
+          padding: 0 10px;
+        }
       }
     }
 
@@ -375,23 +376,6 @@ of the file to be defined separately.
         padding-right: 5px;
       }
 
-      .jw-controlbar-center-group {
-        height: auto;
-        overflow: hidden;
-        padding: 0;
-        position: static;
-        text-overflow: ellipsis;
-        width: 100%;
-      }
-
-      .jw-group > .jw-text-alt {
-        display: block;
-        margin: 0;
-        position: relative;
-        text-align: left;
-        top: -1px;
-      }
-
       .jw-text-duration {
         display: none;
       }
@@ -433,8 +417,10 @@ of the file to be defined separately.
           display: none;
         }
 
-        .jw-group > .jw-text-alt {
-          margin: 0;
+        &:not(.jw-flag-ads) {
+          .jw-group > .jw-text-alt {
+            margin: 0;
+          }
         }
 
       }

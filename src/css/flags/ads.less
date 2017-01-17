@@ -47,13 +47,18 @@
 
         .jw-text-alt {
             display: inline-block;
-            height: auto;
+            height: @controlbar-height;
             line-height: @controlbar-height;
-            margin: 0 -0.5em;
+            margin: auto -0.5em;
             overflow: hidden;
             text-overflow: ellipsis;
             vertical-align: middle;
             white-space: nowrap;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: left;
         }
 
         .jw-slider-volume.jw-slider-horizontal,
@@ -64,7 +69,9 @@
             display: none;
         }
     }
-
+    .jw-controlbar-center-group {
+        position: relative;
+    }
 }
 
 .jwplayer.jw-flag-ads-googleima {
