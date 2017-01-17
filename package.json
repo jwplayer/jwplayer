@@ -63,7 +63,7 @@
   "scripts": {
     "test": "karma start",
     "lint": "eslint ./src/js",
-    "flow": "flow; test $? -eq 0 -o $? -eq 2"
+    "flow": "flow check ./src/js"
   },
   "engines": {
     "node": ">=4.3.1"
