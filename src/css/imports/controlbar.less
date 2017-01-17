@@ -21,6 +21,7 @@
 .jw-controlbar-center-group {
 
   padding: 0 @ui-padding;
+  position: relative;
   width: 100%;
 
   .jw-slider-time, .jw-text-alt {
@@ -29,6 +30,19 @@
 
   .jw-text-alt {
     display: none;
+    position: absolute;
+    top: -1px;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    line-height: @controlbar-height;
+    margin: 0.5em 0;
+    padding-right: 0.5em;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
   }
 
 }
