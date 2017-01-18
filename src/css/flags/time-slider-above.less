@@ -51,26 +51,15 @@ of the file to be defined separately.
   display
   */
 
+
+  // Consistent padding for display icons so they don't interfere with the time slider touch target
+  // and don't get repositioned when the timeslider is not visible
   &.jw-breakpoint-1,
   &.jw-breakpoint-0 {
-    .jw-display {
-      padding-bottom: @mobile-touch-target * 1.5;
-    }
-  }
-
-  &.jw-breakpoint-0 {
-
-    &.jw-state-paused,
-    &.jw-state-buffering,
-    &.jw-state-playing:not(.jw-flag-user-inactive) {
-
-      // add padding to top that equals height of dock icons if the video is not in aspect mode
       .jw-display {
         padding-top: @mobile-touch-target;
+        padding-bottom: @mobile-touch-target * 1.5;
       }
-
-    }
-
   }
 
   /* ==================================================
