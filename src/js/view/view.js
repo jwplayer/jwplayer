@@ -522,10 +522,8 @@ define([
 
             // This setTimeout allows the player to actually get embedded into the player
             _api.on(events.JWPLAYER_READY, function() {
-                // Initialize values for containerWidth and containerHeight
-                _setContainerDimensions();
-
                 _resize(_model.get('width'), _model.get('height'));
+                _setContainerDimensions();
             });
         };
 
