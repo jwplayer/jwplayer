@@ -15,14 +15,13 @@
         display: none;
     }
 
-    &:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+    &:not(.jw-flag-small-player) {
       .jw-display {
         display: none;
       }
     }
 
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
+    &.jw-flag-small-player {
       .jw-display-icon-rewind,
       .jw-display-icon-next {
         display: none;
@@ -98,8 +97,7 @@
 }
 
 .jwplayer.jw-flag-ads-vpaid {
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
+    &.jw-flag-small-player {
         .jw-controls {
             background: none;
         }

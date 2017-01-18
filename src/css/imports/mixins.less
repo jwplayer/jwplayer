@@ -23,7 +23,7 @@
 
 .inset-controlbar() {
 
-  &.jw-flag-time-slider-default:not(.jw-flag-audio-player):not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
 
     .jw-controlbar {
       bottom: .7em;
@@ -323,9 +323,7 @@
 
         &:not(.jw-flag-audio-player) {
             // time slider above
-            &.jw-flag-time-slider-above,
-            &.jw-breakpoint-0,
-            &.jw-breakpoint-1 {
+            &.jw-flag-time-slider-above {
 
                 .jw-controlbar-center-group {
 
@@ -366,7 +364,7 @@
 
     .controlbar-height() {
 
-      &.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+      &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
 
         .jw-controlbar {
 

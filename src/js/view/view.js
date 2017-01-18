@@ -55,7 +55,6 @@ define([
             _nextuptooltip,
             _mute,
             _captionsRenderer,
-            _audioMode,
             _showing = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
@@ -267,12 +266,22 @@ define([
 
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
-            setBreakpoint(_playerElement, containerWidth, containerHeight);
+            var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
+            _setTimesliderFlags(breakPoint, _model.get('audioMode'));
 
             _this.trigger(events.JWPLAYER_RESIZE, {
                 width: containerWidth,
                 height: containerHeight
             });
+        }
+
+
+        function _setTimesliderFlags(breakPoint, audioMode) {
+            var smallPlayer = breakPoint < 2;
+            var timeSliderAbove = !audioMode && (_model.get('timeSliderAbove') || smallPlayer);
+            utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
+            utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
+            utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
         }
 
         function _responsiveListener() {
@@ -433,13 +442,6 @@ define([
                 _model.once('change:skin-loading', function() {
                     utils.removeClass(_playerElement, 'jw-flag-skin-loading');
                 });
-            }
-
-            // display time slider above control bar if configured
-            if (_model.get('timeSliderAbove') && !utils.hasClass(_playerElement, 'jw-flag-audio-player')) {
-              utils.addClass(_playerElement, 'jw-flag-time-slider-above');
-            } else {
-              utils.addClass(_playerElement, 'jw-flag-time-slider-default');
             }
 
             this.onChangeSkin(_model, _model.get('skin'), '');
@@ -779,15 +781,14 @@ define([
         }
 
         function _checkAudioMode(height) {
-            _audioMode = _isAudioMode(height);
+            var audioMode = _isAudioMode(height);
             if (_controlbar) {
-                if (!_audioMode) {
+                if (!audioMode) {
                     var model = _instreamModel ? _instreamModel : _model;
                     _stateHandler(model, model.get('state'));
                 }
             }
-
-            utils.toggleClass(_playerElement, 'jw-flag-audio-player', _audioMode);
+            _model.set('audioMode', audioMode);
         }
 
         function _isAudioMode(height) {
