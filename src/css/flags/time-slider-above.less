@@ -371,7 +371,6 @@ of the file to be defined separately.
     &.jw-flag-live {
 
       .jw-controlbar {
-        padding-left: 10px;
         padding-right: 5px;
       }
 
@@ -398,6 +397,10 @@ of the file to be defined separately.
 
     &.jw-flag-live {
 
+      .jw-controlbar {
+        padding-left: 10px;
+      }
+
       .jw-text-elapsed,
       .jw-text-duration {
         display: none;
@@ -423,8 +426,12 @@ of the file to be defined separately.
       &.jw-breakpoint-0,
       &.jw-breakpoint-1 {
 
-        .jw-controlbar-left-group {
+        .jw-display {
           display: none;
+        }
+
+        .jw-group .jw-icon-playback {
+          display: inline-block;
         }
         
       }
