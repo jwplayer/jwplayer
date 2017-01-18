@@ -266,6 +266,7 @@ define([
 
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
+            _checkAudioMode(containerHeight);
             var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
             _setTimesliderFlags(breakPoint, _model.get('audioMode'));
 
