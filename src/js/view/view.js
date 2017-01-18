@@ -1012,14 +1012,6 @@ define([
             }
         }
 
-        function _isCasting() {
-            var provider = _model.getVideo();
-            if (provider) {
-                return provider.isCaster;
-            }
-            return false;
-        }
-
         function _updateStateClass() {
             utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _currentState);
         }
@@ -1047,11 +1039,6 @@ define([
 
             _updateStateClass();
 
-            // cast.display
-            if (_isCasting()) {
-                utils.addClass(_videoLayer, 'jw-media-show');
-                return;
-            }
             // player display
             switch (state) {
                 case states.PLAYING:
