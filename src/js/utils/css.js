@@ -7,8 +7,15 @@ define([
         playerId = playerId || 'all-players';
         var cssText = '';
         if (typeof styles === 'object') {
+            var style;
+            for (style in styles) {
+                break;
+            }
+            if (!style) {
+                return;
+            }
             var el = document.createElement('div');
-            _style(el,styles);
+            _style(el, styles);
             cssText = '{' + el.style.cssText + '}';
         } else if (typeof styles === 'string') {
             cssText = styles;
