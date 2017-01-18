@@ -10,9 +10,7 @@ of the file to be defined separately.
 @import "../imports/vars";
 
 /* time slider above or small player (both override player into same UI) */
-.jw-flag-time-slider-above,
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
+.jw-flag-time-slider-above {
 
 
   /* ==================================================
@@ -30,21 +28,17 @@ of the file to be defined separately.
       padding: 0 1%;
     }
 
+    // give dock buttons some space between each other above smallest breakpoint
+    .jw-dock-button {
+      margin: 2% 1%;
+    }
+
   }
 
   .jw-dock-button {
     margin: 1px;
     height: @mobile-touch-target;
     width: @mobile-touch-target;
-  }
-
-  &:not(.jw-breakpoint-0) {
-
-    // give dock buttons some space between each other above smallest breakpoint
-    .jw-dock-button {
-      margin: 2% 1%;
-    }
-
   }
 
   /* ==================================================
@@ -66,7 +60,7 @@ of the file to be defined separately.
   to avoid overriding audio player on small size
   */
 
-  &:not(.jw-flag-audio-player) {
+  &.jwplayer {
 
     /* ==================================================
     control bar
@@ -402,7 +396,7 @@ of the file to be defined separately.
         .jw-group .jw-icon-playback {
           display: inline-block;
         }
-        
+
       }
 
     }
