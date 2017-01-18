@@ -1,12 +1,3 @@
-/*
-Some refactoring is still necessary to prevent selectors such as:
-- .jw-breakpoint-0:not(.jw-flag-audio-player).jw-breakpoint-0
-- .jw-breakpoint-0:not(.jw-breakpoint-0)
-
-We can probably pull some of these breakpoint 0 and 1 styles down the the bottom
-of the file to be defined separately.
-*/
-
 @import "../imports/vars";
 
 /* time slider above or small player (both override player into same UI) */
@@ -48,8 +39,7 @@ of the file to be defined separately.
 
   // Consistent padding for display icons so they don't interfere with the time slider touch target
   // and don't get repositioned when the timeslider is not visible
-  &.jw-breakpoint-1,
-  &.jw-breakpoint-0 {
+  &.jw-flag-small-player {
       .jw-display {
         padding-top: @mobile-touch-target;
         padding-bottom: @mobile-touch-target * 1.5;
@@ -164,8 +154,7 @@ of the file to be defined separately.
       }
     }
 
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
+    &.jw-flag-small-player {
       .jw-group {
         > .jw-icon-rewind,
         > .jw-icon-next,
@@ -239,8 +228,7 @@ of the file to be defined separately.
       margin-bottom: 2px;
     }
 
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
+    &.jw-flag-small-player {
       .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
         display: none;
       }
@@ -386,8 +374,7 @@ of the file to be defined separately.
         display: table-cell;
       }
 
-      &.jw-breakpoint-0,
-      &.jw-breakpoint-1 {
+      &.jw-flag-small-player {
 
         .jw-display {
           display: none;

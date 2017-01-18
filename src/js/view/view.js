@@ -277,10 +277,11 @@ define([
 
 
         function _setTimesliderFlags(breakPoint, audioMode) {
+            var smallPlayer = breakPoint < 2;
+            var timeSliderAbove = !audioMode && (_model.get('timeSliderAbove') || smallPlayer);
+            utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
-            var timeSliderAbove = !audioMode && (_model.get('timeSliderAbove') || breakPoint < 2);
             utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
-            utils.toggleClass(_playerElement, 'jw-flag-time-slider-default', !timeSliderAbove);
         }
 
         function _responsiveListener() {
