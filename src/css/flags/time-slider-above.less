@@ -183,9 +183,11 @@
         margin-left: -5px;
 
         .jw-text-elapsed,
-        .jw-text-duration,
         .jw-text-countdown {
-          padding: 0 10px;
+          padding: 0 0.5em;
+        }
+        .jw-text-duration {
+          padding: 0 0.5em 0 0;
         }
       }
     }
@@ -193,11 +195,10 @@
     &:not(.jw-breakpoint-0){
       .jw-text-duration {
         display: inline-block;
-        padding-left: 0;
         &::before {
           content: '/';
           display: inline-block;
-          padding-right: 6px;
+          padding-right: 0.5em;
         }
       }
     }
