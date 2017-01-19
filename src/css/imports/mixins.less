@@ -27,19 +27,11 @@
 
     .jw-controlbar {
       bottom: .7em;
-      display: inline-block; // for correct display in IE browsers
       max-width: @min-breakpoint-5-width;
       margin: 0 auto;
       left: 2%;
       right: 2%;
       width: 96%; // width assignment is required for IE11 to center correctly
-    }
-
-    &.jw-flag-user-inactive.jw-state-playing,
-    &.jw-flag-user-inactive.jw-state-buffering {
-      .jw-controlbar {
-        display: none;
-      }
     }
 
     &.jw-state-idle .jw-controlbar {
