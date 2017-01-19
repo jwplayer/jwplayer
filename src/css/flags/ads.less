@@ -15,16 +15,14 @@
         display: none;
     }
 
-    &:not(.jw-flag-small-player) {
-      .jw-display {
-        display: none;
-      }
-    }
-
     &.jw-flag-small-player {
       .jw-display-icon-rewind,
-      .jw-display-icon-next {
+      .jw-display-icon-next,
+      .jw-display-icon-display {
         display: none;
+      }
+      &.jw-state-buffering .jw-display-icon-display {
+        display: inline-block;
       }
     }
 
