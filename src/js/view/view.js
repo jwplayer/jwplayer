@@ -417,16 +417,12 @@ define([
 
             addStyle([
                 // for small player, set the control bar gradient to the config background color
-                '.jw-breakpoint-0 .jw-background-color.jw-controlbar',
-                '.jw-breakpoint-1 .jw-background-color.jw-controlbar',
-                '.jw-flag-time-slider-above .jw-background-color.jw-controlbar',
+                '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
             ], 'background', backgroundColorGradient, true);
 
             addStyle([
-                // remove the config background color on time slider on small player
-                '.jw-breakpoint-0 .jw-background-color.jw-slider-time',
-                '.jw-breakpoint-1 .jw-background-color.jw-slider-time',
-                '.jw-flag-time-slider-above .jw-background-color.jw-slider-time',
+                // remove the config background color on time slider
+                '.jw-flag-time-slider-above .jw-background-color.jw-slider-time'
             ], 'background', 'none', true);
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);

@@ -66,6 +66,10 @@
       padding: 0 10px;
     }
 
+    .jw-progress {
+      background: @fixed-time-slider-progress-color;
+    }
+
     /* do not show the controls background linear gradient when video is idle
     state (except when cast available and we show controls on idle state) or
     playing state when user inactive (the gradient in other scenarios blocks
@@ -179,6 +183,16 @@
         right: 0;
         top: 0;
         width: 100%;
+
+        .jw-slider-horizontal {
+          .jw-knob {
+            border-radius: @slider-fixed-knob-border-radius;
+            height: @slider-fixed-knob-height;
+            margin-left: @slider-fixed-knob-width / -2;
+            margin-top: @slider-fixed-knob-height / -2;
+            width: @slider-fixed-knob-width;
+          }
+        }
       }
       .jw-controlbar-left-group {
         margin-left: -5px;
@@ -312,6 +326,7 @@
 
       .jw-time-tip {
         bottom: 0;
+        border-radius: @ui-corner-round;
       }
     }
 
