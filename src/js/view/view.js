@@ -396,7 +396,6 @@ define([
                 '.jw-button-color',
                 // toggle button
                 '.jw-toggle.jw-off',
-                '.jw-tooltip-title',
                 '.jw-skip .jw-skip-icon',
                 '.jw-nextup-body'
             ], 'color', inactiveColor);
@@ -411,8 +410,7 @@ define([
             // Apply background color
             addStyle([
                 // general background color
-                '.jw-background-color',
-                '.jw-tooltip-title'
+                '.jw-background-color'
             ], 'background', backgroundColor);
 
             addStyle([
