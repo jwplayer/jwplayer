@@ -241,7 +241,7 @@ define([
             }
 
             // On tab-focus, show the control bar for a few seconds
-            if (!_instreamModel) {
+            if (!_instreamModel && !_isMobile) {
                 _userActivity();
             }
         }
@@ -532,18 +532,15 @@ define([
             }
         }
 
-        function _touchHandler(playDisplayIcon) {
+        function _touchHandler() {
             var state = _model.get('state');
 
-            if ((state === states.IDLE ||
-                state === states.COMPLETE ||
-                (playDisplayIcon && (state === states.PAUSED || state === states.PLAYING)) ||
-                (_instreamModel && _instreamModel.get('state') === states.PAUSED)) &&
-                _model.get('controls')) {
+            if (_model.get('controls') &&
+                ((state === states.IDLE ||state === states.COMPLETE) ||
+                (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
                 _api.play(reasonInteraction());
             }
-
-            if (state === states.PAUSED && !playDisplayIcon) {
+            if (state === states.PAUSED) {
                 // Toggle visibility of the controls when tapping the media
                 _toggleControls();
             } else {
@@ -937,7 +934,7 @@ define([
             _captionsRenderer.renderCues(true);
         }
 
-        function _userActivity() {
+        function _userActivity(timeout) {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _captionsRenderer.renderCues(true);
@@ -946,7 +943,7 @@ define([
             _showing = true;
 
             clearTimeout(_controlsTimeout);
-            _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
+            _controlsTimeout = setTimeout(_userInactive, timeout || _timeoutDuration);
         }
 
         function _toggleControls() {
@@ -1037,9 +1034,6 @@ define([
                 case states.PLAYING:
                     _resizeMedia();
                     break;
-                case states.PAUSED:
-                    _userActivity();
-                    break;
             }
         }
 
@@ -1068,13 +1062,10 @@ define([
         function createPlayDisplayIcon() {
           var playDisplayIcon = new PlayDisplayIcon(_model);
           //toggle playback
-          playDisplayIcon.on('click', function() {
+          playDisplayIcon.on('click tap', function() {
               forward({type : events.JWPLAYER_DISPLAY_CLICK});
-              _api.play({reason: 'interaction'});
-          });
-          playDisplayIcon.on('tap', function() {
-              forward({type : events.JWPLAYER_DISPLAY_CLICK});
-              _touchHandler(true);
+              _userActivity(1000);
+              _api.play(reasonInteraction());
           });
 
           // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
