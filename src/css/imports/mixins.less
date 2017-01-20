@@ -90,18 +90,8 @@
             background: @controlbar-background;
         }
 
-        .jw-controlbar {
-            background: @controlbar-background;
-        }
-
         .jw-text {
             color: @inactive-color;
-        }
-
-        /* Text color in thumbnail that appears upon hovering on the timeline slider */
-        .jw-tooltip-title {
-            color: @inactive-color;
-            border-bottom: 1px solid @inactive-color;
         }
 
         .jw-knob {
@@ -172,7 +162,6 @@
         }
 
         .jw-slider-horizontal {
-            background: @controlbar-background;
             height: @rail-height;
 
             .jw-rail,
@@ -202,7 +191,6 @@
         .jw-menu,
         .jw-time-tip,
         .jw-volume-tip {
-            background: @controlbar-background;
             border: @volume-border;
         }
 
@@ -215,12 +203,7 @@
             padding: @volume-padding;
         }
 
-        .jw-menu.jw-background-color {
-            background: @controlbar-background;
-        }
-
         .jw-skip {
-            background: @controlbar-background;
             padding: @ui-padding;
 
             .jw-skiptext,
@@ -319,49 +302,16 @@
           color: @nextup-close-button-color-hover;
         }
 
-
-        &:not(.jw-flag-audio-player) {
-            // time slider above
-            &.jw-flag-time-slider-above {
-
-                .jw-controlbar-center-group {
-
-                    .jw-slider-horizontal {
-                        .jw-knob {
-                            border-radius: @slider-fixed-knob-border-radius;
-                            height: @slider-fixed-knob-height;
-                            margin-left: @slider-fixed-knob-width / -2;
-                            margin-top: @slider-fixed-knob-height / -2;
-                            width: @slider-fixed-knob-width;
-                        }
-                    }
-                }
-
-                .jw-progress {
-                    background: @fixed-time-slider-progress-color;
-                }
-
-                .jw-tooltip-time {
-
-                    .jw-time-tip {
-                        border-radius: @ui-corner-round;
-                    }
-
-                }
-
-            }
-        }
-
-    }
-
-    /* Override default touch flag styles */
-    .touch-flag-skin-styles() {
-        &.jw-flag-touch {
-            //
-        }
     }
 
     .controlbar-height() {
+
+      .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
+        top: 50%;
+        transform: translateY(-50%);
+        margin: auto;
+        bottom: auto;
+      }
 
       &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
 
