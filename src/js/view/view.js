@@ -241,7 +241,7 @@ define([
             }
 
             // On tab-focus, show the control bar for a few seconds
-            if (!_instreamModel) {
+            if (!_instreamModel && !_isMobile) {
                 _userActivity();
             }
         }
@@ -934,7 +934,7 @@ define([
             _captionsRenderer.renderCues(true);
         }
 
-        function _userActivity() {
+        function _userActivity(timeout) {
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _captionsRenderer.renderCues(true);
@@ -943,7 +943,7 @@ define([
             _showing = true;
 
             clearTimeout(_controlsTimeout);
-            _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
+            _controlsTimeout = setTimeout(_userInactive, timeout || _timeoutDuration);
         }
 
         function _toggleControls() {
@@ -1034,9 +1034,6 @@ define([
                 case states.PLAYING:
                     _resizeMedia();
                     break;
-                case states.PAUSED:
-                    _userActivity();
-                    break;
             }
         }
 
@@ -1067,6 +1064,7 @@ define([
           //toggle playback
           playDisplayIcon.on('click tap', function() {
               forward({type : events.JWPLAYER_DISPLAY_CLICK});
+              _userActivity(1000);
               _api.play(reasonInteraction());
           });
 
