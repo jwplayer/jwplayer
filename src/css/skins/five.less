@@ -25,7 +25,6 @@
     @rail-height: .2em;
     @thumb-size: 1em;
     @cue-height: .4em;
-    @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
 
     @five-border-radius: 0;
 
@@ -77,9 +76,6 @@
         .jw-knob {
             .vertically-centered-rail-element(@rail-height, @thumb-size);
             margin: 0;
-
-            background-color: #000;
-            border-radius: @five-border-radius;
             width: 1px;
             height: @thumb-size;
         }
@@ -101,21 +97,12 @@
             width: @rail-height;
         }
 
-        .jw-progress {
-            background: #fff;
-        }
-
-        .jw-rail {
-            background: #737373;
-        }
-
         .jw-knob {
             margin-bottom: 2px/-2;
-            width: .6em;
-            height: 2px;
-            background: @rail-vert-gradient;
+            width: .8em;
+            height: 1px;
             border-radius: @five-border-radius;
-            .horizontally-centered-rail-element(@rail-height, 0.6em);
+            .horizontally-centered-rail-element(@rail-height, 0.8em);
         }
     }
 
