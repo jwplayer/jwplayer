@@ -180,6 +180,15 @@
         border-radius: .3em;
     }
 
+    // Remove the gradients used and show the hover styles
+    &:not(.jw-flag-touch) {
+        &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
+            .jw-display-icon-container:hover {
+                background: none;
+            }
+        }
+    }
+
     /* Styles for play button on idle */
     .jw-display-icon-container {
         border: @volume-border;

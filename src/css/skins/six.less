@@ -164,10 +164,20 @@
         border: @def-border;
     }
 
-    &:hover {
-        .jw-display-icon-container {
-            background: @def-background-style;
-            background-size: @def-background-size;
+    // Matching mixin code because we need to use background instead of background-color...
+    &:not(.jw-flag-touch) {
+        // When not in an error state or in a buffering state...
+        &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
+            // Highlight the display icon's background when hovering the media container
+            .jw-media:hover ~ .jw-controls .jw-display-icon-display
+            {
+                background: @def-background-style;
+                background-size: @def-background-size;
+            }
+
+            .jw-display-icon-container:hover {
+                background: rgba(0,0,0,0.8);
+            }
         }
     }
 

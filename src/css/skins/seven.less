@@ -14,38 +14,33 @@
   #namespace > .basic-skin-styles();
   #namespace > .set-global-color-classes();
 
-  .jw-display-icon-container {
-    border-radius: 3.5em;
+    .jw-display-icon-container {
+      border-radius: 3.5em;
 
-    &:hover {
-      .jw-icon {
-        color: @accent-color;
+      & > .jw-icon {
+        color: rgba(255, 255, 255, 0.9);
       }
     }
-  }
 
-  .jw-display-icon-container > .jw-icon {
-    color: rgba(255, 255, 255, 0.9);
-  }
+    .jw-dock-button {
+      // Seven skin dock buttons do not highlight, they only show the tooltip
+      &:hover{
+        background: @controlbar-background;
+      }
 
-  .jw-dock-button {
-    // Seven skin dock buttons do not highlight, they only show the tooltip
-    &:hover{
-      background: @controlbar-background;
+      border-radius: 2.5em;
     }
-    
-    border-radius: 2.5em;
-  }
 
   .jw-menu {
-      padding: 0;
-    }
+    padding: 0;
+  }
 
   .jw-dock {
     .jw-overlay {
       border-radius: @ui-padding;
     }
   }
+
   .jw-skip {
     border-radius: @ui-padding;
   }
@@ -55,5 +50,4 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-
 }
