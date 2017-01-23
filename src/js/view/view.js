@@ -935,6 +935,10 @@ define([
         }
 
         function _userActivity(timeout) {
+            if (isNaN(timeout)) {
+                timeout = 0;
+            }
+
             if(!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _captionsRenderer.renderCues(true);
