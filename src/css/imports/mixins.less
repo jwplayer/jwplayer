@@ -125,7 +125,6 @@
         /* Colors for display icons */
         .jw-display-icon-container {
           background-color: @display-bkgd-color;
-          border-radius: @ui-corner-round;
           margin: 0 (@ui-padding * 0.5);
 
           .jw-icon {
@@ -213,7 +212,6 @@
         /* Dock button styles */
         .jw-dock-button {
             background: @display-bkgd-color;
-            border-radius: @ui-corner-round;
         }
 
         &:not(.jw-flag-touch) .jw-dock-button:hover {
@@ -290,7 +288,15 @@
 
     }
 
-    .controlbar-height() {
+    .custom-skin-styles() {
+
+        .jw-display-icon-container {
+            border-radius: @ui-corner-round;
+        }
+
+        .jw-dock-button {
+            border-radius: @ui-corner-round;
+        }
 
       .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
         top: 50%;

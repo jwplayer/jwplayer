@@ -1,7 +1,7 @@
 @import "../imports/mixins";
 
 .jw-skin-vapor {
-		@active-color: #0f9e60;
+    @active-color: #0f9e60;
     @inactive-color: rgba(0, 0, 0, 0.5);
    	@hover-color: @active-color;
 
@@ -32,14 +32,14 @@
     @nextup-body-background: darken(@nextup-header-background, 20%);
     @nextup-body-text-color-overflow: darken(mix(white, black, 50%), 20%);
 
-		@fixed-time-slider-inactive-color: @display-icon-color;
+    @fixed-time-slider-inactive-color: @display-icon-color;
     @fixed-time-slider-hover-color: @display-icon-hover-color;
 
-		@slider-fixed-knob-border-radius: 0px;
+    @slider-fixed-knob-border-radius: 0px;
     @slider-fixed-knob-height: 16px;
     @slider-fixed-knob-width: 4px;
 
-    #namespace > .controlbar-height();
+    #namespace > .custom-skin-styles();
     #namespace > .basic-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
