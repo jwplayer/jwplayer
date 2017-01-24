@@ -292,7 +292,6 @@ opacity: 0;
 .jw-skin-rollingstone .jw-display-icon-container {
   border: 2px solid #fff;
   height: 14.22222%;
-  width: 8%;
   min-width: 44px;
   min-height: 44px;
   background: rgba(0,0,0,.62) !important;
@@ -509,4 +508,8 @@ border: none;
 
 .jwplayer.jw-state-buffering .jw-display-icon-container .jw-icon-display:before {
 content: ''!important;
+}
+
+.jw-skin-rollingstone .jw-display-icon-rewind {
+  display: none;
 }
