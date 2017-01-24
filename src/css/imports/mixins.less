@@ -133,16 +133,6 @@
           }
         }
 
-        &:not(.jw-flag-touch):not(.jw-state-error) {
-            .jw-display-icon-container:hover {
-                background: @display-bkgd-hover-color;
-
-                .jw-icon {
-                    color: @display-icon-hover-color;
-                }
-            }
-        }
-
         /* Slider colors */
 
         .jw-rail {
@@ -376,10 +366,37 @@
     }
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
+        // Set the highlight color of the center display icon when we are hovering the player.
+        &.jwplayer:not(.jw-flag-touch){
+            // When not in an error state or in a buffering state...
+            &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
+                // Highlight the display icon's background when hovering the media container
+                .jw-media:hover ~ .jw-controls .jw-display-icon-display {
+                    background-color: @display-bkgd-hover-color;
+                 }
 
-        &.jwplayer:not(.jw-flag-touch):not(.jw-state-error) {
-            .jw-media:hover ~ .jw-controls .jw-display-icon-display {
-                background-color: @display-bkgd-hover-color;
+                // Highlight the display icon and the display icon's background
+                .jw-display-icon-container:hover {
+                    background-color: @display-bkgd-hover-color;
+
+                    .jw-icon {
+                        color: @display-icon-hover-color;
+                    }
+                }
+            }
+
+            // When we're in an error or buffering state...
+            &.jw-error,
+            &.jw-state-error,
+            &.jw-state-buffering {
+                // Show the normal state for the icons so we do not imply its clickable
+                .jw-display-icon-container {
+                    background-color: @display-bkgd-color;
+
+                    .jw-icon {
+                        color: @display-icon-color;
+                    }
+                }
             }
         }
 
@@ -424,5 +441,4 @@
             color: @hover-color;
         }
     }
-
 }
