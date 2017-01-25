@@ -79,21 +79,15 @@
       padding: 0 10px;
     }
 
-    .jw-progress {
-      background: @fixed-time-slider-progress-color;
-    }
-
     /* do not show the controls background linear gradient when video is idle
     state (except when cast available and we show controls on idle state) or
     playing state when user inactive (the gradient in other scenarios blocks
     video from clashing with the video colors, making it easy to see/use) */
     &.jw-state-idle:not(.jw-flag-cast-available),
     &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
-
       .jw-controls {
         background: none;
       }
-
     }
 
     /* by default, the control bar height is set to the height needed for live
@@ -287,9 +281,12 @@
       .jw-progress,
       .jw-buffer,
       .jw-knob {
-        background: none;
         border: none;
         box-shadow: none;
+      }
+
+      .jw-knob {
+        background: none;
       }
 
       .jw-rail,

@@ -35,8 +35,6 @@
     @nextup-body-text-color: @active-color;
     @nextup-body-text-color-overflow: darken(#eee, 10%);
 
-    @fixed-time-slider-inactive-color: @display-icon-color;
-    @fixed-time-slider-hover-color: @display-icon-hover-color;
     @fixed-time-slider-progress-color: #fff;
 
     @slider-fixed-knob-border-radius: 0px;
@@ -113,20 +111,23 @@
 
     // override control bar element colors that don't look good in time slider above mode
     &.jw-flag-time-slider-above {
-      .jw-controlbar .jw-group {
-        > .jw-text {
-          color: rgba(255, 255, 255, 0.6);
+        .jw-progress {
+            background: @fixed-time-slider-progress-color;
         }
-        > .jw-button-color {
-          color: rgba(255, 255, 255, 0.6);
-          &:hover {
-            color: rgba(255, 255, 255, 1);
-          }
-          &:focus {
-            color: rgba(255, 255, 255, 1);
-          }
-        }
-      }
-    }
 
+        .jw-controlbar .jw-group {
+            > .jw-text {
+                color: rgba(255, 255, 255, 0.6);
+            }
+            > .jw-button-color {
+                color: rgba(255, 255, 255, 0.6);
+                &:hover {
+                    color: rgba(255, 255, 255, 1);
+                }
+                &:focus {
+                    color: rgba(255, 255, 255, 1);
+                }
+            }
+        }
+    }
 }
