@@ -360,7 +360,7 @@ define([
             var activeColor = _model.get('skinColorActive'),
                 inactiveColor = _model.get('skinColorInactive'),
                 backgroundColor = _model.get('skinColorBackground'),
-                backgroundColorGradient = backgroundColor ? 'linear-gradient(180deg, ' +
+                backgroundColorGradient = backgroundColor ? 'transparent linear-gradient(180deg, ' +
                     getRgba(backgroundColor, 0) + ' 0%, ' +
                     getRgba(backgroundColor, 0.25) + ' 30%, ' +
                     getRgba(backgroundColor, 0.4) + ' 70%, ' +
@@ -417,10 +417,10 @@ define([
                 '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
             ], 'background', backgroundColorGradient, true);
 
+            // remove the config background on time slider
             addStyle([
-                // remove the config background color on time slider
                 '.jw-flag-time-slider-above .jw-background-color.jw-slider-time'
-            ], 'background', 'none', true);
+            ], 'background', 'transparent', true);
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
