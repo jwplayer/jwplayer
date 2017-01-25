@@ -40,7 +40,7 @@ define([
             _controlsLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
-            _controlBarOnlyHeight = 40,
+            CONTOLBAR_ONLY_HEIGHT = 44,
             _videoLayer,
             _lastWidth,
             _lastHeight,
@@ -267,6 +267,7 @@ define([
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
             var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
+            _checkAudioMode(_model.get('height'));
             _setTimesliderFlags(breakPoint, _model.get('audioMode'));
 
             _this.trigger(events.JWPLAYER_RESIZE, {
@@ -649,7 +650,7 @@ define([
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             var height = _model.get('height');
-            if (_isMobile && (typeof height === 'string' || height >= _controlBarOnlyHeight * 1.5)){
+            if (_isMobile && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)){
                 utils.addClass(_playerElement, 'jw-flag-touch');
             } else {
                 _rightClickMenu = new RightClick();
@@ -787,14 +788,19 @@ define([
                 return false;
             }
 
-            var checkHeight = (_.isNumber(height) ? height : _model.get('containerHeight'));
+            // Coerce into Number (don't parse out CSS units)
+            var checkHeight = (height * 1) || null;
+            checkHeight = (_.isNumber(checkHeight) ? checkHeight : _model.get('containerHeight'));
+            if (!checkHeight) {
+                return false;
+            }
 
             return _isControlBarOnly(checkHeight);
         }
 
         function _isControlBarOnly(verticalPixels) {
             // 1.75 so there's a little wiggle room on mobile for the large UI to fit in
-            return verticalPixels && verticalPixels <= (_controlBarOnlyHeight * ((_isMobile)?1.75:1));
+            return verticalPixels && verticalPixels <= CONTOLBAR_ONLY_HEIGHT;
         }
 
         function _resizeMedia(width, height) {

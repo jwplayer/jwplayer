@@ -20,6 +20,7 @@ define([
         volume: 90,
         width: 480,
         height: 270,
+        audioMode: false,
         localization: {
             play: 'Play',
             playback: 'Start playback',
