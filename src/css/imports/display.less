@@ -13,10 +13,14 @@
 }
 
 .jwplayer,
-.jw-error,
-.jw-stretch-uniform {
+.jw-error {
     .jw-preview {
         background-size: contain;
+    }
+    /* Enforce auto container sizing to prevent custom skin errors in 7.9 */
+    .jw-display-icon-container {
+        width: auto;
+        height: auto;
     }
 }
 
@@ -73,20 +77,26 @@ display icons
   display: inline-block;
 }
 
+.jwplayer .jw-display-icon-container {
+    // float in case custom skin tries to override inline-block
+    float: left;
+}
+
 .jw-display-icon-container {
-  border-radius: @ui-corner-round;
   display: inline-block;
   margin: 0 (@ui-padding * 0.5);
 
   .jw-icon {
     cursor: pointer;
-    height: @mobile-touch-target;
-    line-height: @mobile-touch-target;
+
+    // Default to .jw-breakpoint-2 to match pre 7.9 styles
+    width: 75px;
+    height: 75px;
+    line-height: 75px;
     text-align: center;
-    width: @mobile-touch-target;
 
     &::before {
-      font-size: @mobile-touch-target * 0.5;
+      font-size: @mobile-touch-target * 0.75;
       position: relative;
     }
 
@@ -109,18 +119,25 @@ display icons
   .jw-display-icon-rewind {
     display: none;
   }
+    .jw-display .jw-icon {
+        height: @mobile-touch-target;
+        line-height: @mobile-touch-target;
+        width: @mobile-touch-target;
+        &::before {
+            font-size: @mobile-touch-target * 0.5;
+        }
+    }
 }
 
-// scale display icon sizes on larger breakpoints
-.jw-breakpoint-2 {
-  .jw-display .jw-icon {
-    height: @mobile-touch-target * 1.5;
-    line-height: @mobile-touch-target * 1.5;
-    width: @mobile-touch-target * 1.5;
-    &::before {
-      font-size: @mobile-touch-target * 0.75;
+.jw-breakpoint-1 {
+    .jw-display .jw-icon {
+        height: @mobile-touch-target * 1.25;
+        line-height: @mobile-touch-target * 1.25;
+        width: @mobile-touch-target * 1.25;
+        &::before {
+            font-size: @mobile-touch-target * 0.5;
+        }
     }
-  }
 }
 
 .jw-breakpoint-3 {

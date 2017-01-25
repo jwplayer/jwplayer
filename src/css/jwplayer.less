@@ -1,5 +1,19 @@
 @import "imports/reset";
 
+@import "imports/mixins";
+
+@accent-color: #FFF;
+@inactive-color: #cecece;
+
+@controlbar-background: rgba(33, 33, 33, 0.8);
+@display-bkgd-color: @controlbar-background;
+@display-bkgd-hover-color: rgba(33, 33, 33, 1);
+
+@controlbar-height: 2.5em;
+
+#namespace > .basic-skin-styles();
+#namespace > .set-global-color-classes();
+
 @import "imports/jwplayerelement";
 @import "imports/video";
 @import "imports/display";

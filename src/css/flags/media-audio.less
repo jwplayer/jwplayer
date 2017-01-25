@@ -1,42 +1,4 @@
-@import "../imports/vars";
-
 .jwplayer.jw-flag-media-audio {
-
-    .jw-controlbar {
-        display: table;
-    }
-
-    // This has higher specificity to overwrite jw-flag-user-inactive in pause state
-    &.jw-flag-user-inactive {
-
-        .jw-controlbar {
-            display: table;
-        }
-
-        .jw-nextup-container {
-          bottom: calc(@controlbar-height + 0.5em);
-        }
-
-    }
-    // This has higher specificity to overwrite caption position when user inactive in playing state
-    &.jw-flag-user-inactive.jw-state-playing {
-        .jw-plugin {
-            bottom: 3em;
-        }
-
-        .jw-captions {
-            max-height: calc(97% - 6.25 * (@controlbar-height));
-        }
-        // Separate shadow dom style to prevent side effects in browsers where the element doesn't exist
-        video::-webkit-media-text-track-container {
-            max-height: calc(97% - 6.25 * (@controlbar-height));
-        }
-
-        &.jw-flag-touch video::-webkit-media-text-track-container {
-            // need to compensate for the control bar being 3.75em on mobile
-            max-height: 70%;  // 97% - 6.25 * 4.25em
-        }
-    }
 
     // Hide autostart mute button
     .jw-autostart-mute {
