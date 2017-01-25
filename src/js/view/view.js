@@ -375,13 +375,12 @@ define([
                 '.jw-button-color.jw-toggle',
                 '.jw-button-color:hover',
                 '.jw-button-color.jw-toggle.jw-off:hover',
-                '.jw-option:hover',
-                '.jw-option.jw-active-option',
+                '.jw-option:not(.jw-active-option):hover',
                 '.jw-nextup-header'
             ], 'color', activeColor);
             addStyle([
                 // menu active option
-
+                '.jw-option.jw-active-option',
                 // slider fill color
                 '.jw-progress'
             ], 'background', activeColor);
