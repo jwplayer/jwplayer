@@ -613,7 +613,7 @@ define([
 
         function _setupControls() {
             var overlaysElement = _playerElement.getElementsByClassName('jw-overlays')[0];
-            overlaysElement.addEventListener('mousemove', _userActivity);
+            overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
             _displayClickHandler = new ClickHandler(_model, _videoLayer, {useHover: true});
             _displayClickHandler.on('click', function() {
@@ -627,8 +627,8 @@ define([
                 _touchHandler();
             });
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
-            _displayClickHandler.on('move', _userActivity);
-            _displayClickHandler.on('over', _userActivity);
+            _displayClickHandler.on('move', _userActivityCallback);
+            _displayClickHandler.on('over', _userActivityCallback);
 
             _controlsLayer.appendChild(createDisplayContainer());
 
@@ -660,7 +660,7 @@ define([
             }
 
             _controlbar = new Controlbar(_api, _model);
-            _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
+            _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivityCallback);
             _model.on('change:scrubbing', _dragging);
 
             // Ignore iOS9. Muted autoplay is supported in iOS 10+
@@ -941,12 +941,12 @@ define([
             _captionsRenderer.renderCues(true);
         }
 
-        function _userActivity(timeout) {
-            if (isNaN(timeout)) {
-                timeout = 0;
-            }
+        function _userActivityCallback(/* event */) {
+            _userActivity();
+        }
 
-            if(!_showing){
+        function _userActivity(timeout) {
+            if (!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _captionsRenderer.renderCues(true);
             }
