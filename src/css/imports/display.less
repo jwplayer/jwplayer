@@ -17,10 +17,12 @@
     .jw-preview {
         background-size: contain;
     }
-    /* Enforce auto container sizing to prevent custom skin errors in 7.9 */
     .jw-display-icon-container {
+        /* Enforce auto container sizing to prevent custom skin errors in 7.9 */
         width: auto;
         height: auto;
+        /* Prevent border styles from impacting width and height */
+        box-sizing: content-box;
     }
 }
 
