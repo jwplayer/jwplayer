@@ -295,9 +295,9 @@ define([
         }
 
         function _responsiveListener() {
-                _cancelDelayResize(_resizeContainerRequestId);
-                _resizeContainerRequestId = _delayResize(_setContainerDimensions);
-            }
+            _cancelDelayResize(_resizeContainerRequestId);
+            _resizeContainerRequestId = _delayResize(_setContainerDimensions);
+        }
 
         // Set global colors, used by related plugin
         // If a color is undefined simple-style-loader won't add their styles to the dom
@@ -914,6 +914,7 @@ define([
                 _model.set('fullscreen', newState);
             }
 
+            _responsiveListener();
             clearTimeout(_resizeMediaTimeout);
             _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
         }
