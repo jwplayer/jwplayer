@@ -253,9 +253,16 @@ define([
 
             _cancelDelayResize(_resizeContainerRequestId);
 
-            // If we have bad values for either dimension or the container is the same size as before, return early.
-            if ((!containerWidth || !containerHeight) ||
-                (containerWidth === _lastWidth && containerHeight === _lastHeight)) {
+            // If the container is the same size as before, return early
+            if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
+                return;
+            }
+            // If we have bad values for either dimension, return early
+            if (!containerWidth || !containerHeight) {
+                // If we haven't established player size, try again
+                if (!_lastWidth || !_lastHeight) {
+                    _responsiveListener();
+                }
                 return;
             }
 
@@ -288,10 +295,8 @@ define([
         }
 
         function _responsiveListener() {
-            if (document.body.contains(_playerElement)) {
-                _cancelDelayResize(_resizeContainerRequestId);
-                _resizeContainerRequestId = _delayResize(_setContainerDimensions);
-            }
+            _cancelDelayResize(_resizeContainerRequestId);
+            _resizeContainerRequestId = _delayResize(_setContainerDimensions);
         }
 
         // Set global colors, used by related plugin
@@ -823,11 +828,6 @@ define([
                 _preview.resize(width, height, _model.get('stretching'));
             }
 
-            //IE9 Fake Full Screen Fix
-            if (utils.isMSIE(9) && document.all && !window.atob) {
-                width = height = '100%';
-            }
-
             var provider = _model.getVideo();
             if (!provider) {
                 return;
@@ -909,6 +909,7 @@ define([
                 _model.set('fullscreen', newState);
             }
 
+            _responsiveListener();
             clearTimeout(_resizeMediaTimeout);
             _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
         }
@@ -930,6 +931,7 @@ define([
             }
 
             _resizeMedia();
+            _responsiveListener();
         }
 
         function _userInactive() {
