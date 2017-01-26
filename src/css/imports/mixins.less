@@ -96,6 +96,10 @@
             background: @controlbar-background;
         }
 
+        &.jw-flag-color-override .jw-background-color {
+            background: none;
+        }
+
         .jw-text {
             color: @inactive-color;
         }
@@ -154,6 +158,10 @@
 
         .jw-progress {
             background: @progress-color;
+        }
+
+        &.jw-flag-color-override .jw-progress {
+            background: none;
         }
 
         .jw-slider-horizontal {
@@ -228,6 +236,14 @@
             background: @display-bkgd-hover-color;
         }
 
+        &.jw-flag-color-override .jw-dock {
+            &:hover,
+            .jw-dock-button,
+            .jw-overlay {
+                background: none;
+            }
+        }
+
         /*
         Chromecast
         */
@@ -282,6 +298,10 @@
             fade(@nextup-body-text-color-overflow, 0%) 0%,
             @nextup-body-text-color-overflow 100%
           );
+        }
+
+        &.jw-flag-color-override .jw-nextup-thumbnail-visible + .jw-nextup-title::after {
+            background: none;
         }
 
         .jw-nextup-close {
