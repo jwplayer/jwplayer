@@ -828,11 +828,6 @@ define([
                 _preview.resize(width, height, _model.get('stretching'));
             }
 
-            //IE9 Fake Full Screen Fix
-            if (utils.isMSIE(9) && document.all && !window.atob) {
-                width = height = '100%';
-            }
-
             var provider = _model.getVideo();
             if (!provider) {
                 return;
@@ -936,6 +931,7 @@ define([
             }
 
             _resizeMedia();
+            _responsiveListener();
         }
 
         function _userInactive() {
