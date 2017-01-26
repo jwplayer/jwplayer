@@ -56,11 +56,15 @@
     }
 
     &.jw-ie {
-        .jw-controlbar .jw-text-alt {
-            display: table;
-            white-space: normal;
-            top: -2px;
-            transform: none;
+        .jw-controlbar-center-group {
+            overflow: hidden;
+
+            .jw-text-alt {
+                display: table;
+                white-space: nowrap;
+                top: 0px;
+                transform: none;
+            }
         }
     }
 }
