@@ -42,6 +42,10 @@
 
     .skin-element-padding();
 
+    .jw-display-icon-container {
+        border-radius: 50%;
+    }
+
     /* For the overlay containers */
     .jw-time-tip,
     .jw-volume-tip,
@@ -64,50 +68,47 @@
         line-height: @controlbar-height;
     }
 
-		/* Horizontal (timeline & horz volume) slider */
-		.jw-slider-horizontal {
-			.jw-knob,
-			.jw-cue {
-				height: 2em;
-			}
+    /* Horizontal (timeline & horz volume) slider */
+    .jw-slider-horizontal {
+        .jw-knob,
+        .jw-cue {
+            height: 2em;
+        }
 
-			.jw-knob {
-				margin-left: 0;
-							background-color: #fff;
-							width: .2em;
-							.vertically-centered-rail-element(@rail-height, 2em);
-			}
+        .jw-knob {
+            margin-left: 0;
+            background-color: #fff;
+            width: .2em;
+            .vertically-centered-rail-element(@rail-height, 2em);
+        }
 
-			.jw-cue {
-				.vertically-centered-rail-element(2em, @cue-size);
-									background: @display-icon-color;
-									height: @cue-size;
-			}
-		}
+        .jw-cue {
+            .vertically-centered-rail-element(2em, @cue-size);
+            background: @display-icon-color;
+            height: @cue-size;
+        }
+    }
 
-		/* Volume slider */
-		.jw-slider-vertical {
-			padding: .4em;
-			bottom: 3px;
-			border-radius: 2px;
-			border: 0;
-			background-color: #333333;
+    /* Volume slider */
+    .jw-slider-vertical {
+        padding: .4em;
+        bottom: 3px;
+        border-radius: 2px;
+        border: 0;
 
-			.jw-knob {
-					display: none;
-			}
+        .jw-knob {
+            display: none;
+        }
 
-			.jw-rail {
-					background-color: rgba(0, 0, 0, 0.8);
-			}
+        .jw-rail {
+            background: @buffer-color;
+        }
 
-			.jw-rail,
-			.jw-progress {
-					border: 1px solid #000;
-			}
-
-		}
-
+        .jw-rail,
+        .jw-progress {
+            border: 1px solid #000;
+        }
+    }
 
     /* Toggle icons */
     .jw-icon-cc {
@@ -127,41 +128,37 @@
         .jw-controlbar {
             background: @inactive-color;
         }
-      .jw-controlbar-center-group {
-        padding-bottom: 0;
-      }
+        .jw-controlbar-center-group {
+            padding-bottom: 0;
+        }
     }
 
-		// adjust horizontal time slider under time slider above flag/small player
-		&.jw-flag-time-slider-above {
+    // adjust horizontal time slider under time slider above flag/small player
+    &.jw-flag-time-slider-above {
+        .jw-slider-volume.jw-slider-horizontal {
+            height: 0.5em;
 
-			.jw-slider-volume.jw-slider-horizontal {
-				height: 0.5em;
-
-				.jw-rail,
-				.jw-progress,
-				.jw-buffer,
-				.jw-knob {
-					height: 0.5em;
-				}
-
-			}
-
-			.jw-controlbar .jw-group {
-        > .jw-text {
-          color: rgba(255, 255, 255, 0.6);
+            .jw-rail,
+            .jw-progress,
+            .jw-buffer,
+            .jw-knob {
+                height: 0.5em;
+            }
         }
-        > .jw-button-color {
-          color: rgba(255, 255, 255, 0.6);
-          &:hover {
-            color: @hover-color;
-          }
-          &:focus {
-            color: @hover-color;
-          }
+
+        .jw-controlbar .jw-group {
+            > .jw-text {
+                color: rgba(255, 255, 255, 0.6);
+            }
+            > .jw-button-color {
+                color: rgba(255, 255, 255, 0.6);
+                &:hover {
+                    color: @hover-color;
+                }
+                &:focus {
+                    color: @hover-color;
+                }
+            }
         }
-      }
-
-		}
-
+    }
 }
