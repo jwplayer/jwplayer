@@ -23,7 +23,7 @@
 
 .inset-controlbar() {
 
-  &:not(.jw-flag-small-player) {
+  &:not(.jw-flag-small-player):not(.jw-flag-audio-player) {
     .jw-controlbar {
       display: inline-block;
     }
@@ -397,20 +397,6 @@
 
                     .jw-icon {
                         color: @display-icon-hover-color;
-                    }
-                }
-            }
-
-            // When we're in an error or buffering state...
-            &.jw-error,
-            &.jw-state-error,
-            &.jw-state-buffering {
-                // Show the normal state for the icons so we do not imply its clickable
-                .jw-display-icon-container {
-                    background-color: @display-bkgd-color;
-
-                    .jw-icon {
-                        color: @display-icon-color;
                     }
                 }
             }

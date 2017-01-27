@@ -55,3 +55,27 @@
     background-repeat: no-repeat;
     opacity: 0.75;
 }
+
+
+.jw-flag-small-player {
+    .jw-dock {
+        margin: 0;
+    }
+    .jw-dock-button {
+        margin: 1px;
+        height: @mobile-touch-target;
+        width: @mobile-touch-target;
+    }
+}
+
+.jw-breakpoint-1 {
+    // give dock some padding
+    .jw-dock {
+        padding: 0 1%;
+    }
+
+    // give dock buttons some space between each other above smallest breakpoint
+    .jw-dock-button {
+        margin: 2% 1%;
+    }
+}
