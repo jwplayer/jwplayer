@@ -63,12 +63,17 @@
 
     .jw-controlbar {
         border: @def-border;
-        border-radius: .3em;
         background-size: @def-background-size;
 
         .jw-overlay {
             bottom: 2em;
             padding-bottom: .25em;
+        }
+    }
+
+    &:not(.jw-breakpoint-0) {
+        .jw-controlbar {
+            border-radius: .3em;
         }
     }
 

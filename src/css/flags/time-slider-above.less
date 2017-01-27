@@ -166,16 +166,6 @@
       }
     }
 
-    &.jw-flag-small-player {
-      .jw-group {
-        > .jw-icon-rewind,
-        > .jw-icon-next,
-        > .jw-icon-playback {
-          display: none;
-        }
-      }
-    }
-
     /* ==================================================
     control bar groups
     */
@@ -210,6 +200,11 @@
         }
         .jw-text-duration {
           padding: 0 0.5em 0 0;
+        }
+      }
+      &.jw-breakpoint-0 {
+        .jw-text-countdown {
+          display: inline-block;
         }
       }
     }

@@ -23,12 +23,13 @@
 
 .inset-controlbar() {
 
+  &:not(.jw-flag-small-player) {
     .jw-controlbar {
-        display: inline-block;
+      display: inline-block;
     }
+  }
 
-  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
-
+  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
     .jw-controlbar {
       bottom: .7em;
       max-width: @min-breakpoint-5-width;
@@ -37,6 +38,9 @@
       right: 2%;
       width: 96%; // width assignment is required for IE11 to center correctly
     }
+  }
+
+  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
 
     .jw-nextup-container {
       bottom: @controlbar-height + .7em;
@@ -311,17 +315,26 @@
         bottom: auto;
       }
 
-      &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
-
+      &:not(.jw-flag-time-slider-above) {
         .jw-controlbar {
-
           height: @controlbar-height;
 
           .jw-overlay {
             bottom: @controlbar-height;
           }
-
         }
+
+        .jw-icon-inline,
+        .jw-icon-tooltip,
+        .jw-text-elapsed,
+        .jw-text-duration,
+        .jw-text-countdown {
+          height: @controlbar-height;
+          line-height: @controlbar-height;
+        }
+      }
+
+      &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
 
         .jw-time-tip {
             bottom: (@controlbar-height / 2);
@@ -341,15 +354,6 @@
             .jw-controls-right {
                 bottom: @controlbar-height;
             }
-        }
-
-        .jw-icon-inline,
-        .jw-icon-tooltip,
-        .jw-text-elapsed,
-        .jw-text-duration,
-        .jw-text-countdown {
-            height: @controlbar-height;
-            line-height: @controlbar-height;
         }
 
         &.jw-flag-audio-player {

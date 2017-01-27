@@ -41,8 +41,10 @@
     .skin-element-padding();
     .inset-controlbar();
 
-    .jw-controlbar {
-        border-radius: .3em;
+    &:not(.jw-breakpoint-0) {
+        .jw-controlbar {
+            border-radius: .3em;
+        }
     }
 
     .jw-time-tip,
