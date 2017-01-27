@@ -46,9 +46,11 @@
 
     /* Controlbar styles */
     .inset-controlbar();
-    .jw-controlbar {
-        border-radius: @roundster-corners;
-        padding: 0 @roundster-corners;
+    &:not(.jw-breakpoint-0) {
+        .jw-controlbar {
+            border-radius: @roundster-corners;
+            padding: 0 @roundster-corners;
+        }
     }
 
     /* Rail/slider styles */

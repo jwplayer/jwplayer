@@ -124,13 +124,26 @@
   display: none;
 }
 
-.jwplayer:not(.jw-breakpoint-0) .jw-text-countdown {
+.jwplayer .jw-text-countdown {
   display: none;
 }
 
-.jw-breakpoint-0 .jw-controlbar {
-  .jw-text-duration,
-  .jw-text-elapsed {
-    display: none;
+.jw-breakpoint-0,
+.jw-breakpoint-1:not(.jw-flag-time-slider-above) {
+  .jw-controlbar {
+    .jw-text-duration,
+    .jw-text-elapsed {
+      display: none;
+    }
+  }
+}
+
+.jw-flag-small-player {
+  .jw-group {
+    > .jw-icon-rewind,
+    > .jw-icon-next,
+    > .jw-icon-playback {
+      display: none;
+    }
   }
 }
