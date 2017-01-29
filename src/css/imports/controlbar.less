@@ -4,6 +4,7 @@
 .jw-controlbar {
   display: table;
   position: absolute;
+  left: 0;
   bottom: 0;
   height: @controlbar-height;
   width: 100%;
@@ -138,11 +139,24 @@
   }
 }
 
-.jw-flag-small-player {
+.jw-flag-small-player:not(.jw-flag-audio-player) {
   .jw-group {
     > .jw-icon-rewind,
     > .jw-icon-next,
     > .jw-icon-playback {
+      display: none;
+    }
+  }
+}
+
+.jw-flag-ads-vpaid,
+.jw-flag-autostart,
+.jw-flag-user-inactive.jw-state-playing,
+.jw-flag-user-inactive.jw-state-buffering,
+.jw-flag-controls-hidden
+{
+  &:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-googleima):not(.jw-flag-casting) {
+    .jw-controlbar {
       display: none;
     }
   }

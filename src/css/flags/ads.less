@@ -73,7 +73,6 @@
 .jwplayer.jw-flag-ads-googleima {
 
     .jw-controlbar {
-        display: table;
         bottom: 0;
     }
 
@@ -91,24 +90,21 @@
     &.jw-skin-seven .jw-controlbar {
         font-size: 0.9em;
     }
-
-    &.jw-flag-ads-vpaid.jw-flag-ads-vpaid-controls {
-        .jw-controlbar {
-            display: table;
-            bottom: 0;
-        }
-    }
 }
 
+// Control bar should always be visible during ads on touch devices
 .jwplayer.jw-flag-ads.jw-flag-touch {
-    .jw-controlbar {
-        display: table;
+    &,
+    &.jw-flag-autostart {
+        .jw-controls .jw-controlbar.jw-controlbar {
+            display: table;
+        }
     }
 }
 
 .jwplayer.jw-flag-ads-vpaid,
 .jwplayer.jw-flag-touch.jw-flag-ads-vpaid {
-    .jw-controlbar, .jw-display-container, .jw-skip {
+    .jw-display-container, .jw-skip {
         display: none;
     }
 }

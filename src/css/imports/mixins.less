@@ -23,10 +23,20 @@
 
 .inset-controlbar() {
 
-  &:not(.jw-flag-small-player):not(.jw-flag-audio-player) {
-    .jw-controlbar {
-      display: inline-block;
+  &:not(.jw-time-slider-above):not(.jw-flag-audio-player) {
+    &,
+    .jwplayer.jw-flag-ads.jw-flag-touch&,
+    .jwplayer.jw-flag-ads.jw-flag-touch.jw-flag-autostart&
+    {
+      .jw-controlbar {
+        display: inline-block;
+      }
     }
+  }
+
+  // Specificity needed for error mode
+  &.jw-state-error .jw-controls > .jw-controlbar {
+    display: none;
   }
 
   &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
