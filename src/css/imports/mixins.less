@@ -48,7 +48,12 @@
   }
 
   &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
+    &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
+        top: 1px;
+    }
+  }
 
+  &:not(.jw-flag-time-slider-above) {
     .jw-nextup-container {
       bottom: @controlbar-height + .7em;
       padding-left: 0;
@@ -63,9 +68,6 @@
         padding-left: 2%;
         padding-right: 2%;
       }
-    }
-    &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
-        top: 1px;
     }
   }
 
