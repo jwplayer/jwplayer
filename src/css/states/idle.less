@@ -26,15 +26,11 @@
     /* hide control bar and clear display container padding on idle state unless
     cast available flag is set */
     &:not(.jw-flag-cast-available) {
-
-      .jw-controlbar {
-        display: none;
-      }
-
       .jw-display {
         padding: 0;
       }
-
     }
-
+    .jwplayer&:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available) .jw-controlbar {
+        display: none;
+    }
 }

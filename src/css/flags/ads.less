@@ -68,14 +68,20 @@
             }
         }
     }
+
+    // Control bar should always be visible during ad playback on touch devices
+    // except when jw-flag-ads-vpaid is set
+    &.jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid) {
+        &,
+        &.jw-flag-autostart {
+            .jw-controls .jw-controlbar {
+                display: table;
+            }
+        }
+    }
 }
 
 .jwplayer.jw-flag-ads-googleima {
-
-    .jw-controlbar {
-        display: table;
-        bottom: 0;
-    }
 
     &.jw-flag-touch {
         .jw-controlbar {
@@ -91,24 +97,11 @@
     &.jw-skin-seven .jw-controlbar {
         font-size: 0.9em;
     }
-
-    &.jw-flag-ads-vpaid.jw-flag-ads-vpaid-controls {
-        .jw-controlbar {
-            display: table;
-            bottom: 0;
-        }
-    }
-}
-
-.jwplayer.jw-flag-ads.jw-flag-touch {
-    .jw-controlbar {
-        display: table;
-    }
 }
 
 .jwplayer.jw-flag-ads-vpaid,
 .jwplayer.jw-flag-touch.jw-flag-ads-vpaid {
-    .jw-controlbar, .jw-display-container, .jw-skip {
+    .jw-display-container, .jw-skip {
         display: none;
     }
 }

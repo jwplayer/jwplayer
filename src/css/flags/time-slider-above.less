@@ -8,20 +8,10 @@
   }
 
   &.jw-state-idle:not(.jw-flag-cast-available) {
-    .jw-controlbar {
-      display: none;
-    }
-    
     .jw-display {
       padding: 0;
     }
   }
-
-  /* ==================================================
-  dock
-  */
-
-
 
   /* ==================================================
   display
@@ -114,9 +104,8 @@
 
     .jw-group > .jw-icon {
       font-size: 20px;
-      padding: 0;
-      text-align: center;
-      width: @mobile-touch-target;
+      padding: 0 8px;
+      max-width: @mobile-touch-target;
 
       &::before {
         background-color: transparent;

@@ -23,9 +23,13 @@
 
 .inset-controlbar() {
 
-  &:not(.jw-flag-small-player):not(.jw-flag-audio-player) {
-    .jw-controlbar {
-      display: inline-block;
+  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
+    &,
+    .jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid)&,
+    .jw-flag-ads.jw-flag-touch.jw-flag-autostart:not(.jw-flag-ads-vpaid)& {
+      .jw-controlbar {
+        display: inline-block;
+      }
     }
   }
 
@@ -38,10 +42,18 @@
       right: 2%;
       width: 96%; // width assignment is required for IE11 to center correctly
     }
+    &.jw-flag-ads-googleima .jw-controlbar {
+      bottom: 0;
+    }
   }
 
   &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
+    &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
+        top: 1px;
+    }
+  }
 
+  &:not(.jw-flag-time-slider-above) {
     .jw-nextup-container {
       bottom: @controlbar-height + .7em;
       padding-left: 0;
@@ -56,9 +68,6 @@
         padding-left: 2%;
         padding-right: 2%;
       }
-    }
-    &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
-        top: 1px;
     }
   }
 

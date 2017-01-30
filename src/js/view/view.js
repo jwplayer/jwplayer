@@ -302,20 +302,24 @@ define([
         // Set global colors, used by related plugin
         // If a color is undefined simple-style-loader won't add their styles to the dom
         function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
-            var activeColorSet = {
-                color: activeColor,
-                borderColor: activeColor,
-                stroke: activeColor
-            };
-            var inactiveColorSet = {
-                color: inactiveColor,
-                borderColor: inactiveColor,
-                stroke: inactiveColor
-            };
-            utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
-            utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
-            utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
-            utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
+            if (activeColor) {
+                var activeColorSet = {
+                    color: activeColor,
+                    borderColor: activeColor,
+                    stroke: activeColor
+                };
+                utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
+                utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
+            }
+            if (inactiveColor) {
+                var inactiveColorSet = {
+                    color: inactiveColor,
+                    borderColor: inactiveColor,
+                    stroke: inactiveColor
+                };
+                utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
+                utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
+            }
         }
 
 
@@ -960,6 +964,12 @@ define([
         }
 
         function _toggleControls() {
+            // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
+            if  (_instreamModel ||
+                _model.get('castActive') ||
+                (_model.mediaModel && _model.mediaModel.get('mediaType') === 'audio')) {
+                return;
+            }
             utils.toggleClass(_playerElement, 'jw-flag-controls-hidden');
             _captionsRenderer.renderCues(true);
         }
