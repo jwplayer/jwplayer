@@ -960,6 +960,12 @@ define([
         }
 
         function _toggleControls() {
+            // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
+            if  (_instreamModel ||
+                _model.get('castActive') ||
+                (_model.mediaModel && _model.mediaModel.get('mediaType') === 'audio')) {
+                return;
+            }
             utils.toggleClass(_playerElement, 'jw-flag-controls-hidden');
             _captionsRenderer.renderCues(true);
         }
