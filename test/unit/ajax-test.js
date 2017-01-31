@@ -1,8 +1,7 @@
 define([
     'test/underscore',
-    'utils/ajax',
-    'sinon'
-], function (_, utils, sinon) {
+    'utils/ajax'
+], function (_, utils) {
     /* jshint qunit: true */
 
     QUnit.module('utils.ajax');
@@ -207,11 +206,9 @@ define([
         });
     });
 
-    test('error "File not found" (404)', function (assert) {
+    test('error "File not found" (404) - Integration Test', function (assert) {
         var done = assert.async();
-        var server = sinon.fakeServer.create();
 
-        server.respondImmediately = true;
         utils.ajax({
             url: 'foobar',
             oncomplete: function() {
@@ -224,8 +221,6 @@ define([
                 done();
             }
         });
-        server.respond();
-        server.restore();
     });
 
 });
