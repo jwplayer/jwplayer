@@ -1,8 +1,10 @@
 @import "../imports/icons";
 
 .jwplayer.jw-state-complete {
-    .jw-preview:not(.jw-flag-casting) {
-        display: block;
+    &:not(.jw-flag-casting):not(.jw-flag-audio-player) {
+        .jw-preview {
+            display: block;
+        }
     }
 
     .jw-display {
