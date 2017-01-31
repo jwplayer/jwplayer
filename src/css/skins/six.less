@@ -48,13 +48,8 @@
     @nextup-body-background: darken(@nextup-header-background, 20%);
     @nextup-body-text-color-overflow: darken(@def-background-color, 20%);
 
-    @fixed-time-slider-inactive-color: @inactive-color;
-    @fixed-time-slider-hover-color: @active-color;
-    @fixed-time-slider-progress-color: @rail-color;
-
-    #namespace > .controlbar-height();
+    #namespace > .custom-skin-styles();
     #namespace > .basic-skin-styles(); // Using the above local variables
-    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
@@ -68,12 +63,17 @@
 
     .jw-controlbar {
         border: @def-border;
-        border-radius: .3em;
         background-size: @def-background-size;
 
         .jw-overlay {
             bottom: 2em;
             padding-bottom: .25em;
+        }
+    }
+
+    &:not(.jw-breakpoint-0) {
+        .jw-controlbar {
+            border-radius: .3em;
         }
     }
 
@@ -108,6 +108,8 @@
 
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
+        background: none;
+
         .jw-knob {
             .vertically-centered-rail-element(@rail-height, @thumb-size);
         }
@@ -163,10 +165,20 @@
         border: @def-border;
     }
 
-    &:hover {
-        .jw-display-icon-container {
-            background: @def-background-style;
-            background-size: @def-background-size;
+    // Matching mixin code because we need to use background instead of background-color...
+    &:not(.jw-flag-touch) {
+        // When not in an error state or in a buffering state...
+        &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
+            // Highlight the display icon's background when hovering the media container
+            .jw-media:hover ~ .jw-controls .jw-display-icon-display
+            {
+                background: @def-background-style;
+                background-size: @def-background-size;
+            }
+
+            .jw-display-icon-container:hover {
+                background: rgba(0,0,0,0.8);
+            }
         }
     }
 

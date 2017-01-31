@@ -23,43 +23,52 @@
 
 .inset-controlbar() {
 
-  &:not(.jw-breakpoint-0),
-  &:not(.jw-breakpoint-1) {
-
-    &.jw-flag-time-slider-default:not(.jw-flag-audio-player) {
-
+  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
+    &,
+    .jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid)&,
+    .jw-flag-ads.jw-flag-touch.jw-flag-autostart:not(.jw-flag-ads-vpaid)& {
       .jw-controlbar {
-        bottom: .7em;
-        display: inline-block; // for correct display in IE browsers
-        max-width: @min-breakpoint-5-width;
-        margin: 0 auto;
-        left: 2%;
-        right: 2%;
-        width: 96%; // width assignment is required for IE11 to center correctly
+        display: inline-block;
       }
+    }
+  }
 
-      &.jw-state-idle .jw-controlbar {
-        display: none;
-      }
+  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
+    .jw-controlbar {
+      bottom: .7em;
+      max-width: @min-breakpoint-5-width;
+      margin: 0 auto;
+      left: 2%;
+      right: 2%;
+      width: 96%; // width assignment is required for IE11 to center correctly
+    }
+    &.jw-flag-ads-googleima .jw-controlbar {
+      bottom: 0;
+    }
+  }
 
-      .jw-nextup-container {
-        bottom: @controlbar-height + .7em;
-        padding-left: 0;
-        padding-right: 0;
-        max-width: @min-breakpoint-5-width;
-      }
+  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
+    &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
+        top: 1px;
+    }
+  }
 
-      &.jw-breakpoint-2,
-      &.jw-breakpoint-3,
-      &.jw-breakpoint-4 {
-        .jw-nextup-container {
-          padding-left: 2%;
-          padding-right: 2%;
-        }
-      }
-
+  &:not(.jw-flag-time-slider-above) {
+    .jw-nextup-container {
+      bottom: @controlbar-height + .7em;
+      padding-left: 0;
+      padding-right: 0;
+      max-width: @min-breakpoint-5-width;
     }
 
+    &.jw-breakpoint-2,
+    &.jw-breakpoint-3,
+    &.jw-breakpoint-4 {
+      .jw-nextup-container {
+        padding-left: 2%;
+        padding-right: 2%;
+      }
+    }
   }
 
   &.jw-flag-audio-player .jw-controlbar {
@@ -96,18 +105,8 @@
             background: @controlbar-background;
         }
 
-        .jw-controlbar {
-            background: @controlbar-background;
-        }
-
         .jw-text {
             color: @inactive-color;
-        }
-
-        /* Text color in thumbnail that appears upon hovering on the timeline slider */
-        .jw-tooltip-title {
-            color: @inactive-color;
-            border-bottom: 1px solid @inactive-color;
         }
 
         .jw-knob {
@@ -117,20 +116,18 @@
 
         .jw-button-color {
             color: @inactive-color;
-            &:hover {
-              color: @hover-color;
-            }
-            &:focus {
-                outline: none;
-                color: @hover-color;
-            }
+        }
+
+        &:not(.jw-flag-touch) .jw-button-color:hover,
+        .jw-button-color:focus {
+            outline: none;
+            color: @hover-color;
         }
 
         .jw-toggle {
             color: @hover-color;
             &.jw-off {
                 color: @inactive-color;
-                &:hover,
                 &:focus {
                   color: @hover-color;
                 }
@@ -140,25 +137,18 @@
             }
         }
 
+        &:not(.jw-flag-touch) .jw-toggle.jw-off:hover {
+            color: @hover-color;
+        }
+
         /* Colors for display icons */
         .jw-display-icon-container {
           background-color: @display-bkgd-color;
-          border-radius: @ui-corner-round;
           margin: 0 (@ui-padding * 0.5);
 
           .jw-icon {
             color: @display-icon-color;
           }
-
-          &:hover {
-            background: @display-bkgd-hover-color;
-
-            .jw-icon {
-              color: @display-icon-hover-color;
-            }
-
-          }
-
         }
 
         /* Slider colors */
@@ -176,7 +166,6 @@
         }
 
         .jw-slider-horizontal {
-            background: @controlbar-background;
             height: @rail-height;
 
             .jw-rail,
@@ -203,20 +192,22 @@
         }
 
         /* Styles for menu elements, volume, slider thumbnail */
+        .jw-menu,
         .jw-time-tip,
-        .jw-volume-tip,
-        .jw-menu {
-            background: @controlbar-background;
+        .jw-volume-tip {
             border: @volume-border;
+        }
+
+        .jw-menu,
+        .jw-time-tip {
+            padding: @ui-padding;
+        }
+
+        .jw-volume-tip {
             padding: @volume-padding;
         }
 
-        .jw-menu.jw-background-color {
-          background: @controlbar-background;
-        }
-
         .jw-skip {
-            background: @controlbar-background;
             padding: @ui-padding;
 
             .jw-skiptext,
@@ -240,11 +231,10 @@
         /* Dock button styles */
         .jw-dock-button {
             background: @display-bkgd-color;
-            border-radius: @ui-corner-round;
+        }
 
-            &:hover {
-                background: @display-bkgd-hover-color;
-            }
+        &:not(.jw-flag-touch) .jw-dock-button:hover {
+            background: @display-bkgd-hover-color;
         }
 
         /*
@@ -315,63 +305,45 @@
           color: @nextup-close-button-color-hover;
         }
 
-
-        &:not(.jw-flag-audio-player) {
-            // time slider above
-            &.jw-flag-time-slider-above,
-            &.jw-breakpoint-0,
-            &.jw-breakpoint-1 {
-
-                .jw-controlbar-center-group {
-
-                    .jw-slider-horizontal {
-                        .jw-knob {
-                            border-radius: @slider-fixed-knob-border-radius;
-                            height: @slider-fixed-knob-height;
-                            margin-left: @slider-fixed-knob-width / -2;
-                            margin-top: @slider-fixed-knob-height / -2;
-                            width: @slider-fixed-knob-width;
-                        }
-                    }
-                }
-
-                .jw-progress {
-                    background: @fixed-time-slider-progress-color;
-                }
-
-                .jw-tooltip-time {
-
-                    .jw-time-tip {
-                        border-radius: @ui-corner-round;
-                    }
-
-                }
-
-            }
-        }
-
     }
 
-    /* Override default touch flag styles */
-    .touch-flag-skin-styles() {
-        &.jw-flag-touch {
-            //
+    .custom-skin-styles() {
+
+        .jw-display-icon-container {
+            border-radius: @ui-corner-round;
         }
-    }
 
-    .controlbar-height() {
+        .jw-dock-button {
+            border-radius: @ui-corner-round;
+        }
 
-      &.jw-flag-time-slider-default:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
+      .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
+        top: 50%;
+        transform: translateY(-50%);
+        margin: auto;
+        bottom: auto;
+      }
 
+      &:not(.jw-flag-time-slider-above) {
         .jw-controlbar {
-
           height: @controlbar-height;
 
           .jw-overlay {
             bottom: @controlbar-height;
           }
-
         }
+
+        .jw-icon-inline,
+        .jw-icon-tooltip,
+        .jw-text-elapsed,
+        .jw-text-duration,
+        .jw-text-countdown {
+          height: @controlbar-height;
+          line-height: @controlbar-height;
+        }
+      }
+
+      &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
 
         .jw-time-tip {
             bottom: (@controlbar-height / 2);
@@ -391,15 +363,6 @@
             .jw-controls-right {
                 bottom: @controlbar-height;
             }
-        }
-
-        .jw-icon-inline,
-        .jw-icon-tooltip,
-        .jw-text-elapsed,
-        .jw-text-duration,
-        .jw-text-countdown {
-            height: @controlbar-height;
-            line-height: @controlbar-height;
         }
 
         &.jw-flag-audio-player {
@@ -428,10 +391,24 @@
     }
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
-        &.jwplayer:hover {
-          .jw-display-icon-container {
-            background-color: @display-bkgd-hover-color;
-          }
+        // Set the highlight color of the center display icon when we are hovering the player.
+        &.jwplayer:not(.jw-flag-touch){
+            // When not in an error state or in a buffering state...
+            &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
+                // Highlight the display icon's background when hovering the media container
+                .jw-media:hover ~ .jw-controls .jw-display-icon-display {
+                    background-color: @display-bkgd-hover-color;
+                 }
+
+                // Highlight the display icon and the display icon's background
+                .jw-display-icon-container:hover {
+                    background-color: @display-bkgd-hover-color;
+
+                    .jw-icon {
+                        color: @display-icon-hover-color;
+                    }
+                }
+            }
         }
 
         .jw-color-active {
@@ -440,7 +417,7 @@
             border-color: @active-color;
         }
 
-        .jw-color-active-hover {
+        &:not(.jw-flag-touch) .jw-color-active-hover {
             &:hover {
                 color: @active-color;
                 stroke: @active-color;
@@ -454,7 +431,7 @@
             border-color: @inactive-color;
         }
 
-        .jw-color-inactive-hover {
+        &:not(.jw-flag-touch) .jw-color-inactive-hover {
             &:hover {
                 color: @inactive-color;
                 stroke: @inactive-color;
@@ -464,14 +441,15 @@
         /* Color for list item text in menu lists */
         .jw-option {
           color: @option-inactive-color;
-          &:hover {
-            color: @hover-color;
-          }
+
           &.jw-active-option {
             color: @option-active-color;
             background-color: @option-active-bg-color;
           }
         }
-    }
 
+        &:not(.jw-flag-touch) .jw-option:hover {
+            color: @hover-color;
+        }
+    }
 }

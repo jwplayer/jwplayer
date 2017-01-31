@@ -40,7 +40,7 @@ define([
             _controlsLayer,
             _controlsTimeout = -1,
             _timeoutDuration = _isMobile ? 4000 : 2000,
-            _controlBarOnlyHeight = 40,
+            CONTOLBAR_ONLY_HEIGHT = 44,
             _videoLayer,
             _lastWidth,
             _lastHeight,
@@ -55,7 +55,6 @@ define([
             _nextuptooltip,
             _mute,
             _captionsRenderer,
-            _audioMode,
             _showing = false,
             _rightClickMenu,
             _resizeMediaTimeout = -1,
@@ -242,7 +241,7 @@ define([
             }
 
             // On tab-focus, show the control bar for a few seconds
-            if (!_instreamModel) {
+            if (!_instreamModel && !_isMobile) {
                 _userActivity();
             }
         }
@@ -254,9 +253,16 @@ define([
 
             _cancelDelayResize(_resizeContainerRequestId);
 
-            // If we have bad values for either dimension or the container is the same size as before, return early.
-            if ((!containerWidth || !containerHeight) ||
-                (containerWidth === _lastWidth && containerHeight === _lastHeight)) {
+            // If the container is the same size as before, return early
+            if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
+                return;
+            }
+            // If we have bad values for either dimension, return early
+            if (!containerWidth || !containerHeight) {
+                // If we haven't established player size, try again
+                if (!_lastWidth || !_lastHeight) {
+                    _responsiveListener();
+                }
                 return;
             }
 
@@ -267,7 +273,9 @@ define([
 
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
-            setBreakpoint(_playerElement, containerWidth, containerHeight);
+            var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
+            _checkAudioMode(_model.get('height'));
+            _setTimesliderFlags(breakPoint, _model.get('audioMode'));
 
             _this.trigger(events.JWPLAYER_RESIZE, {
                 width: containerWidth,
@@ -275,30 +283,43 @@ define([
             });
         }
 
+
+        function _setTimesliderFlags(breakPoint, audioMode) {
+            var smallPlayer = breakPoint < 2;
+            var timeSliderAboveConfig = _model.get('timeSliderAbove');
+            var timeSliderAbove = !audioMode &&
+                (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
+            utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
+            utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
+            utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
+        }
+
         function _responsiveListener() {
-            if (document.body.contains(_playerElement)) {
-                _cancelDelayResize(_resizeContainerRequestId);
-                _resizeContainerRequestId = _delayResize(_setContainerDimensions);
-            }
+            _cancelDelayResize(_resizeContainerRequestId);
+            _resizeContainerRequestId = _delayResize(_setContainerDimensions);
         }
 
         // Set global colors, used by related plugin
         // If a color is undefined simple-style-loader won't add their styles to the dom
         function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
-            var activeColorSet = {
-                color: activeColor,
-                borderColor: activeColor,
-                stroke: activeColor
-            };
-            var inactiveColorSet = {
-                color: inactiveColor,
-                borderColor: inactiveColor,
-                stroke: inactiveColor
-            };
-            utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
-            utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
-            utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
-            utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
+            if (activeColor) {
+                var activeColorSet = {
+                    color: activeColor,
+                    borderColor: activeColor,
+                    stroke: activeColor
+                };
+                utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
+                utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
+            }
+            if (inactiveColor) {
+                var inactiveColorSet = {
+                    color: inactiveColor,
+                    borderColor: inactiveColor,
+                    stroke: inactiveColor
+                };
+                utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
+                utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
+            }
         }
 
 
@@ -351,10 +372,10 @@ define([
             var activeColor = _model.get('skinColorActive'),
                 inactiveColor = _model.get('skinColorInactive'),
                 backgroundColor = _model.get('skinColorBackground'),
-                backgroundColorGradient = backgroundColor ? 'linear-gradient(180deg, ' +
+                backgroundColorGradient = backgroundColor ? 'transparent linear-gradient(180deg, ' +
                     getRgba(backgroundColor, 0) + ' 0%, ' +
-                    getRgba(backgroundColor, 0.05) + ' 25%, ' +
-                    getRgba(backgroundColor, 0.15) + ' 50%, ' +
+                    getRgba(backgroundColor, 0.25) + ' 30%, ' +
+                    getRgba(backgroundColor, 0.4) + ' 70%, ' +
                     getRgba(backgroundColor, 0.5) + ') 100%' : '';
 
             // These will use standard style names for CSS since they are added directly to a style sheet
@@ -366,13 +387,12 @@ define([
                 '.jw-button-color.jw-toggle',
                 '.jw-button-color:hover',
                 '.jw-button-color.jw-toggle.jw-off:hover',
-                '.jw-option:hover',
-                '.jw-option.jw-active-option',
+                '.jw-option:not(.jw-active-option):hover',
                 '.jw-nextup-header'
             ], 'color', activeColor);
             addStyle([
                 // menu active option
-
+                '.jw-option.jw-active-option',
                 // slider fill color
                 '.jw-progress'
             ], 'background', activeColor);
@@ -387,7 +407,6 @@ define([
                 '.jw-button-color',
                 // toggle button
                 '.jw-toggle.jw-off',
-                '.jw-tooltip-title',
                 '.jw-skip .jw-skip-icon',
                 '.jw-nextup-body'
             ], 'color', inactiveColor);
@@ -402,23 +421,18 @@ define([
             // Apply background color
             addStyle([
                 // general background color
-                '.jw-background-color',
-                '.jw-tooltip-title'
+                '.jw-background-color'
             ], 'background', backgroundColor);
 
             addStyle([
                 // for small player, set the control bar gradient to the config background color
-                '.jw-breakpoint-0 .jw-background-color.jw-controlbar',
-                '.jw-breakpoint-1 .jw-background-color.jw-controlbar',
-                '.jw-flag-time-slider-above .jw-background-color.jw-controlbar',
+                '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
             ], 'background', backgroundColorGradient, true);
 
+            // remove the config background on time slider
             addStyle([
-                // remove the config background color on time slider on small player
-                '.jw-breakpoint-0 .jw-background-color.jw-slider-time',
-                '.jw-breakpoint-1 .jw-background-color.jw-slider-time',
-                '.jw-flag-time-slider-above .jw-background-color.jw-slider-time',
-            ], 'background', 'none', true);
+                '.jw-flag-time-slider-above .jw-background-color.jw-slider-time'
+            ], 'background', 'transparent', true);
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
@@ -433,13 +447,6 @@ define([
                 _model.once('change:skin-loading', function() {
                     utils.removeClass(_playerElement, 'jw-flag-skin-loading');
                 });
-            }
-
-            // display time slider above control bar if configured
-            if (_model.get('timeSliderAbove') && !utils.hasClass(_playerElement, 'jw-flag-audio-player')) {
-              utils.addClass(_playerElement, 'jw-flag-time-slider-above');
-            } else {
-              utils.addClass(_playerElement, 'jw-flag-time-slider-default');
             }
 
             this.onChangeSkin(_model, _model.get('skin'), '');
@@ -520,10 +527,8 @@ define([
 
             // This setTimeout allows the player to actually get embedded into the player
             _api.on(events.JWPLAYER_READY, function() {
-                // Initialize values for containerWidth and containerHeight
-                _setContainerDimensions();
-
                 _resize(_model.get('width'), _model.get('height'));
+                _setContainerDimensions();
             });
         };
 
@@ -538,18 +543,15 @@ define([
             }
         }
 
-        function _touchHandler(playDisplayIcon) {
+        function _touchHandler() {
             var state = _model.get('state');
 
-            if ((state === states.IDLE ||
-                state === states.COMPLETE ||
-                (playDisplayIcon && (state === states.PAUSED || state === states.PLAYING)) ||
-                (_instreamModel && _instreamModel.get('state') === states.PAUSED)) &&
-                _model.get('controls')) {
+            if (_model.get('controls') &&
+                ((state === states.IDLE ||state === states.COMPLETE) ||
+                (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
                 _api.play(reasonInteraction());
             }
-
-            if (state === states.PAUSED && !playDisplayIcon) {
+            if (state === states.PAUSED) {
                 // Toggle visibility of the controls when tapping the media
                 _toggleControls();
             } else {
@@ -620,7 +622,7 @@ define([
 
         function _setupControls() {
             var overlaysElement = _playerElement.getElementsByClassName('jw-overlays')[0];
-            overlaysElement.addEventListener('mousemove', _userActivity);
+            overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
             _displayClickHandler = new ClickHandler(_model, _videoLayer, {useHover: true});
             _displayClickHandler.on('click', function() {
@@ -634,8 +636,8 @@ define([
                 _touchHandler();
             });
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
-            _displayClickHandler.on('move', _userActivity);
-            _displayClickHandler.on('over', _userActivity);
+            _displayClickHandler.on('move', _userActivityCallback);
+            _displayClickHandler.on('over', _userActivityCallback);
 
             _controlsLayer.appendChild(createDisplayContainer());
 
@@ -659,7 +661,7 @@ define([
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             var height = _model.get('height');
-            if (_isMobile && (typeof height === 'string' || height >= _controlBarOnlyHeight * 1.5)){
+            if (_isMobile && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)){
                 utils.addClass(_playerElement, 'jw-flag-touch');
             } else {
                 _rightClickMenu = new RightClick();
@@ -667,7 +669,7 @@ define([
             }
 
             _controlbar = new Controlbar(_api, _model);
-            _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivity);
+            _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivityCallback);
             _model.on('change:scrubbing', _dragging);
 
             // Ignore iOS9. Muted autoplay is supported in iOS 10+
@@ -779,15 +781,14 @@ define([
         }
 
         function _checkAudioMode(height) {
-            _audioMode = _isAudioMode(height);
+            var audioMode = _isAudioMode(height);
             if (_controlbar) {
-                if (!_audioMode) {
+                if (!audioMode) {
                     var model = _instreamModel ? _instreamModel : _model;
                     _stateHandler(model, model.get('state'));
                 }
             }
-
-            utils.toggleClass(_playerElement, 'jw-flag-audio-player', _audioMode);
+            _model.set('audioMode', audioMode);
         }
 
         function _isAudioMode(height) {
@@ -798,14 +799,19 @@ define([
                 return false;
             }
 
-            var checkHeight = (_.isNumber(height) ? height : _model.get('containerHeight'));
+            // Coerce into Number (don't parse out CSS units)
+            var checkHeight = (height * 1) || null;
+            checkHeight = (_.isNumber(checkHeight) ? checkHeight : _model.get('containerHeight'));
+            if (!checkHeight) {
+                return false;
+            }
 
             return _isControlBarOnly(checkHeight);
         }
 
         function _isControlBarOnly(verticalPixels) {
             // 1.75 so there's a little wiggle room on mobile for the large UI to fit in
-            return verticalPixels && verticalPixels <= (_controlBarOnlyHeight * ((_isMobile)?1.75:1));
+            return verticalPixels && verticalPixels <= CONTOLBAR_ONLY_HEIGHT;
         }
 
         function _resizeMedia(width, height) {
@@ -824,11 +830,6 @@ define([
 
             if (_preview) {
                 _preview.resize(width, height, _model.get('stretching'));
-            }
-
-            //IE9 Fake Full Screen Fix
-            if (utils.isMSIE(9) && document.all && !window.atob) {
-                width = height = '100%';
             }
 
             var provider = _model.getVideo();
@@ -912,6 +913,7 @@ define([
                 _model.set('fullscreen', newState);
             }
 
+            _responsiveListener();
             clearTimeout(_resizeMediaTimeout);
             _resizeMediaTimeout = setTimeout(_resizeMedia, 200);
         }
@@ -933,6 +935,7 @@ define([
             }
 
             _resizeMedia();
+            _responsiveListener();
         }
 
         function _userInactive() {
@@ -944,8 +947,12 @@ define([
             _captionsRenderer.renderCues(true);
         }
 
-        function _userActivity() {
-            if(!_showing){
+        function _userActivityCallback(/* event */) {
+            _userActivity();
+        }
+
+        function _userActivity(timeout) {
+            if (!_showing){
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _captionsRenderer.renderCues(true);
             }
@@ -953,10 +960,16 @@ define([
             _showing = true;
 
             clearTimeout(_controlsTimeout);
-            _controlsTimeout = setTimeout(_userInactive, _timeoutDuration);
+            _controlsTimeout = setTimeout(_userInactive, timeout || _timeoutDuration);
         }
 
         function _toggleControls() {
+            // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
+            if  (_instreamModel ||
+                _model.get('castActive') ||
+                (_model.mediaModel && _model.mediaModel.get('mediaType') === 'audio')) {
+                return;
+            }
             utils.toggleClass(_playerElement, 'jw-flag-controls-hidden');
             _captionsRenderer.renderCues(true);
         }
@@ -1012,14 +1025,6 @@ define([
             }
         }
 
-        function _isCasting() {
-            var provider = _model.getVideo();
-            if (provider) {
-                return provider.isCaster;
-            }
-            return false;
-        }
-
         function _updateStateClass() {
             utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _currentState);
         }
@@ -1047,18 +1052,10 @@ define([
 
             _updateStateClass();
 
-            // cast.display
-            if (_isCasting()) {
-                utils.addClass(_videoLayer, 'jw-media-show');
-                return;
-            }
             // player display
             switch (state) {
                 case states.PLAYING:
                     _resizeMedia();
-                    break;
-                case states.PAUSED:
-                    _userActivity();
                     break;
             }
         }
@@ -1088,13 +1085,10 @@ define([
         function createPlayDisplayIcon() {
           var playDisplayIcon = new PlayDisplayIcon(_model);
           //toggle playback
-          playDisplayIcon.on('click', function() {
+          playDisplayIcon.on('click tap', function() {
               forward({type : events.JWPLAYER_DISPLAY_CLICK});
-              _api.play({reason: 'interaction'});
-          });
-          playDisplayIcon.on('tap', function() {
-              forward({type : events.JWPLAYER_DISPLAY_CLICK});
-              _touchHandler(true);
+              _userActivity(1000);
+              _api.play(reasonInteraction());
           });
 
           // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle

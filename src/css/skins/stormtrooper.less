@@ -33,16 +33,12 @@
     @nextup-body-background: darken(@nextup-header-background, 20%);
     @nextup-body-text-color-overflow: darken(@controlbar-background, 20%);
 
-    @fixed-time-slider-inactive-color: @display-icon-color;
-    @fixed-time-slider-hover-color: @display-icon-hover-color;
-
     @slider-fixed-knob-border-radius: 0px;
     @slider-fixed-knob-height: 16px;
     @slider-fixed-knob-width: 4px;
 
-    #namespace > .controlbar-height();
+    #namespace > .custom-skin-styles();
     #namespace > .basic-skin-styles(); // Using the above local variables
-    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
@@ -59,12 +55,6 @@
     .jw-volume-tip,
     .jw-menu {
         bottom: .3em;
-    }
-
-    /* Playlist title */
-    .jw-tooltip-title {
-        border-bottom: 1px solid #5B697A;
-        background-color: @rail-color;
     }
 
     /* Rail/slider styles */

@@ -1,7 +1,8 @@
 @import "../imports/vars";
 @import "../imports/icons";
 
-body .jw-error, .jwplayer.jw-state-error {
+body .jw-error,
+body .jwplayer.jw-state-error {
     .jw-title {
         display: block;
         .jw-title-primary {
@@ -13,28 +14,18 @@ body .jw-error, .jwplayer.jw-state-error {
         display: block;
     }
 
-    .jw-controlbar {
-        display : none;
+    .jw-controls .jw-controlbar {
+        display: none;
     }
 
     .jw-captions {
         display: none;
     }
 
-    &:hover .jw-display-icon-container {
-        cursor: default;
-        color: #fff;
-        background: #000;
-    }
-
     .jw-icon-display {
         cursor: default;
         .jw-icon;
         .jw-icon-error;
-
-        &:hover {
-            color: #fff;
-        }
     }
 
     .jw-display-icon-next,
@@ -63,3 +54,4 @@ body .jw-error {
         right: 0;
     }
 }
+

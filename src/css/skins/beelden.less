@@ -43,12 +43,8 @@
     @nextup-body-background: darken(fade(@controlbar-background-color, 90%), 20%);
     @nextup-body-text-color-overflow: darken(@controlbar-background-color, 20%);
 
-    @fixed-time-slider-inactive-color: @inactive-color;
-    @fixed-time-slider-hover-color: @hover-color;
-
-    #namespace > .controlbar-height();
+    #namespace > .custom-skin-styles();
     #namespace > .basic-skin-styles(); // Using the above local variables
-    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
@@ -56,7 +52,12 @@
 
     .jw-controlbar {
         box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
-        border-radius: .3em;
+    }
+
+    &:not(.jw-breakpoint-0) {
+        .jw-controlbar {
+            border-radius: .3em;
+        }
     }
 
     /* Container styles for controlbar play/pause button */
@@ -181,10 +182,13 @@
         border-radius: .3em;
     }
 
-    /* Playlist title */
-    .jw-tooltip-title {
-        border-bottom: 1px solid #000;
-        background-color: #282828;
+    // Remove the gradients used and show the hover styles
+    &:not(.jw-flag-touch) {
+        &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
+            .jw-display-icon-container:hover {
+                background: none;
+            }
+        }
     }
 
     /* Styles for play button on idle */

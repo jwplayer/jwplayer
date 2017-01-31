@@ -6,6 +6,7 @@ window.requireCallback = function(){
         'mock/mock-model',
         'view/view',
         'view/error',
+        'utils/css',
         'less!css/jwplayer.less',
         'less!css/skins/beelden.less',
         'less!css/skins/bekle.less',
@@ -15,7 +16,7 @@ window.requireCallback = function(){
         'less!css/skins/six.less',
         'less!css/skins/stormtrooper.less',
         'less!css/skins/vapor.less'
-    ], function(MockApi, MockModel, View, ViewError) {
+    ], function(MockApi, MockModel, View, ViewError, css) {
 
         // TODO: these (url params: width, height, aspectratio, stretching, provider (flash rightclick))
         //     'jw-flag-aspect-mode',
@@ -38,6 +39,10 @@ window.requireCallback = function(){
         document.body.addEventListener('mousemove', clearInactivity);
         document.body.addEventListener('touchstart', clearInactivity);
 
+        // Styles added by related plugin
+        css.css('.jw-related-dock-btn .jw-dock-image', {
+            backgroundSize: 20
+        });
 
         // Create Player Views
         _.each([
@@ -62,8 +67,7 @@ window.requireCallback = function(){
                 'error',
                 '*live-dvr*',
                 '*audio-only*',
-                '*ads*',
-                '*casting*',
+                '*ads*'
             ], function(state) {
                 var position, duration, bufferPercent;
                 if (state === 'idle') {

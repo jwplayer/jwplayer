@@ -15,23 +15,21 @@
         display: none;
     }
 
-    &:not(.jw-breakpoint-0):not(.jw-breakpoint-1) {
-      .jw-display {
+    &.jw-flag-small-player {
+      .jw-display-icon-rewind,
+      .jw-display-icon-next,
+      .jw-display-icon-display {
         display: none;
       }
-    }
-
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
-      .jw-display-icon-rewind,
-      .jw-display-icon-next {
-        display: none;
+      &.jw-state-buffering .jw-display-icon-display {
+        display: inline-block;
       }
     }
 
     .jw-controlbar {
         .jw-icon-inline,
         .jw-icon-tooltip,
+        .jw-icon-cast,
         .jw-text,
         .jw-slider-horizontal {
             display: none;
@@ -46,13 +44,6 @@
 
         .jw-text-alt {
             display: inline-block;
-            height: auto;
-            line-height: @controlbar-height;
-            margin: 0 -0.5em;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            vertical-align: middle;
-            white-space: nowrap;
         }
 
         .jw-slider-volume.jw-slider-horizontal,
@@ -64,53 +55,59 @@
         }
     }
 
+    &.jw-ie {
+        .jw-controlbar-center-group {
+            overflow: hidden;
+
+            .jw-text-alt {
+                display: table;
+                white-space: nowrap;
+                top: 0;
+                transform: none;
+                margin: 0.5em 0;
+            }
+        }
+    }
+
+    // Control bar should always be visible during ad playback on touch devices
+    // except when jw-flag-ads-vpaid is set
+    &.jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid) {
+        &,
+        &.jw-flag-autostart {
+            .jw-controls .jw-controlbar {
+                display: table;
+            }
+        }
+    }
 }
 
 .jwplayer.jw-flag-ads-googleima {
-
-    .jw-controlbar {
-        display: table;
-        bottom: 0;
-    }
 
     &.jw-flag-touch {
         .jw-controlbar {
             font-size: 1em;
         }
 
-        &.jw-state-paused .jw-display {
-            display: none;
+        .jw-display-icon-display,
+        .jw-display-icon-display .jw-icon-display {
+            pointer-events: none;
         }
     }
 
     &.jw-skin-seven .jw-controlbar {
         font-size: 0.9em;
     }
-
-    &.jw-flag-ads-vpaid-controls {
-        .jw-controlbar {
-            display: table;
-            bottom: 0;
-        }
-    }
-}
-
-.jwplayer.jw-flag-ads.jw-flag-touch {
-    .jw-controlbar {
-        display: table;
-    }
 }
 
 .jwplayer.jw-flag-ads-vpaid,
 .jwplayer.jw-flag-touch.jw-flag-ads-vpaid {
-    .jw-controlbar, .jw-display-container, .jw-skip {
+    .jw-display-container, .jw-skip {
         display: none;
     }
 }
 
 .jwplayer.jw-flag-ads-vpaid {
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
+    &.jw-flag-small-player {
         .jw-controls {
             background: none;
         }

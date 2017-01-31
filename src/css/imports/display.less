@@ -2,12 +2,6 @@
 
 // Preview Image
 
-.jw-click {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-
 .jw-preview {
     position: absolute;
     display: none;
@@ -19,10 +13,16 @@
 }
 
 .jwplayer,
-.jw-error,
-.jw-stretch-uniform {
+.jw-error {
     .jw-preview {
         background-size: contain;
+    }
+    .jw-display-icon-container {
+        /* Enforce auto container sizing to prevent custom skin errors in 7.9 */
+        width: auto;
+        height: auto;
+        /* Prevent border styles from impacting width and height */
+        box-sizing: content-box;
     }
 }
 
@@ -79,26 +79,31 @@ display icons
   display: inline-block;
 }
 
+.jwplayer .jw-display-icon-container {
+    // float in case custom skin tries to override inline-block
+    float: left;
+}
+
 .jw-display-icon-container {
-  border-radius: @ui-corner-round;
   display: inline-block;
   margin: 0 (@ui-padding * 0.5);
 
   .jw-icon {
     cursor: pointer;
-    height: @mobile-touch-target;
-    line-height: @mobile-touch-target;
+
+    // Default to .jw-breakpoint-2 to match pre 7.9 styles
+    width: 75px;
+    height: 75px;
+    line-height: 75px;
     text-align: center;
-    width: @mobile-touch-target;
 
     &::before {
-      font-size: @mobile-touch-target * 0.5;
+      font-size: @mobile-touch-target * 0.75;
       position: relative;
     }
 
     &.jw-icon-rewind::before {
-      top: 2px;
-      padding: 0.2em 0.05em 0.1em;
+      padding: 0.2em 0.05em;
     }
 
     .jw-state-idle &.jw-icon-display::before,
@@ -115,5 +120,49 @@ display icons
   .jw-display-icon-next,
   .jw-display-icon-rewind {
     display: none;
+  }
+    .jw-display .jw-icon {
+        height: @mobile-touch-target;
+        line-height: @mobile-touch-target;
+        width: @mobile-touch-target;
+        &::before {
+            font-size: @mobile-touch-target * 0.5;
+        }
+    }
+}
+
+.jw-breakpoint-1 {
+    .jw-display .jw-icon {
+        height: @mobile-touch-target * 1.25;
+        line-height: @mobile-touch-target * 1.25;
+        width: @mobile-touch-target * 1.25;
+        &::before {
+            font-size: @mobile-touch-target * 0.5;
+        }
+    }
+}
+
+.jw-breakpoint-3 {
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 1.75;
+    line-height: @mobile-touch-target * 1.75;
+    width: @mobile-touch-target * 1.75;
+    &::before {
+      font-size: @mobile-touch-target * 0.875;
+    }
+  }
+}
+
+.jw-breakpoint-4,
+.jw-breakpoint-5,
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 2;
+    line-height: @mobile-touch-target * 2;
+    width: @mobile-touch-target * 2;
+    &::before {
+      font-size: @mobile-touch-target;
+    }
   }
 }

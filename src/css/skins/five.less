@@ -22,12 +22,9 @@
 
     @option-active-bg-color: rgba(255, 255, 255, 0.6);
 
-
-
     @rail-height: .2em;
     @thumb-size: 1em;
     @cue-height: .4em;
-    @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
 
     @five-border-radius: 0;
 
@@ -38,17 +35,14 @@
     @nextup-body-text-color: @active-color;
     @nextup-body-text-color-overflow: darken(#eee, 10%);
 
-    @fixed-time-slider-inactive-color: @display-icon-color;
-    @fixed-time-slider-hover-color: @display-icon-hover-color;
     @fixed-time-slider-progress-color: #fff;
 
     @slider-fixed-knob-border-radius: 0px;
     @slider-fixed-knob-height: 16px;
     @slider-fixed-knob-width: 4px;
 
-    #namespace > .controlbar-height();
+    #namespace > .custom-skin-styles();
     #namespace > .basic-skin-styles(); // Using the above local variables
-    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
@@ -56,12 +50,6 @@
     /* Styles for play button container on idle */
     .jw-display-icon-container {
         border-radius: @five-border-radius;
-    }
-
-    /* Playlist title */
-    .jw-tooltip-title {
-        border-bottom: 1px solid #000;
-        background-color : #ECECEC;
     }
 
     /* Slider styles */
@@ -86,9 +74,6 @@
         .jw-knob {
             .vertically-centered-rail-element(@rail-height, @thumb-size);
             margin: 0;
-
-            background-color: #000;
-            border-radius: @five-border-radius;
             width: 1px;
             height: @thumb-size;
         }
@@ -110,21 +95,12 @@
             width: @rail-height;
         }
 
-        .jw-progress {
-            background: #fff;
-        }
-
-        .jw-rail {
-            background: #737373;
-        }
-
         .jw-knob {
             margin-bottom: 2px/-2;
-            width: .6em;
-            height: 2px;
-            background: @rail-vert-gradient;
+            width: .8em;
+            height: 1px;
             border-radius: @five-border-radius;
-            .horizontally-centered-rail-element(@rail-height, 0.6em);
+            .horizontally-centered-rail-element(@rail-height, 0.8em);
         }
     }
 
@@ -133,4 +109,25 @@
         border-radius: @five-border-radius;
     }
 
+    // override control bar element colors that don't look good in time slider above mode
+    &.jw-flag-time-slider-above {
+        .jw-progress {
+            background: @fixed-time-slider-progress-color;
+        }
+
+        .jw-controlbar .jw-group {
+            > .jw-text {
+                color: rgba(255, 255, 255, 0.6);
+            }
+            > .jw-button-color {
+                color: rgba(255, 255, 255, 0.6);
+                &:hover {
+                    color: rgba(255, 255, 255, 1);
+                }
+                &:focus {
+                    color: rgba(255, 255, 255, 1);
+                }
+            }
+        }
+    }
 }

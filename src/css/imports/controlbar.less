@@ -4,6 +4,7 @@
 .jw-controlbar {
   display: table;
   position: absolute;
+  left: 0;
   bottom: 0;
   height: @controlbar-height;
   width: 100%;
@@ -21,6 +22,7 @@
 .jw-controlbar-center-group {
 
   padding: 0 @ui-padding;
+  position: relative;
   width: 100%;
 
   .jw-slider-time, .jw-text-alt {
@@ -29,6 +31,19 @@
 
   .jw-text-alt {
     display: none;
+    position: absolute;
+    top: -1px;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    line-height: @controlbar-height;
+    margin: 0.5em 0;
+    padding-right: 0.5em;
+    overflow: hidden;
+    text-align: left;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    white-space: nowrap;
   }
 
 }
@@ -95,13 +110,13 @@
   display: none;
   margin: 0;
   padding: 0;
-  width: 2.25em;
 
   button {
     background-color: transparent;
     border: none;
     cursor: pointer;
     font-size: inherit;
+    width: 2.25em;
   }
 }
 
@@ -110,13 +125,37 @@
   display: none;
 }
 
-.jwplayer:not(.jw-breakpoint-0) .jw-text-countdown {
+.jwplayer .jw-text-countdown {
   display: none;
 }
 
-.jw-breakpoint-0 .jw-controlbar {
-  .jw-text-duration,
-  .jw-text-elapsed {
-    display: none;
+.jw-breakpoint-0,
+.jw-breakpoint-1:not(.jw-flag-time-slider-above) {
+  .jw-controlbar {
+    .jw-text-duration,
+    .jw-text-elapsed {
+      display: none;
+    }
+  }
+}
+
+.jw-flag-small-player:not(.jw-flag-audio-player) {
+  .jw-group {
+    > .jw-icon-rewind,
+    > .jw-icon-next,
+    > .jw-icon-playback {
+      display: none;
+    }
+  }
+}
+
+.jw-flag-ads-vpaid,
+.jw-flag-autostart,
+.jw-flag-user-inactive.jw-state-playing,
+.jw-flag-user-inactive.jw-state-buffering {
+  &:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
+    .jw-controlbar {
+      display: none;
+    }
   }
 }

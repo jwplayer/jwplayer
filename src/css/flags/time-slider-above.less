@@ -1,112 +1,49 @@
-/*
-Some refactoring is still necessary to prevent selectors such as:
-- .jw-breakpoint-0:not(.jw-flag-audio-player).jw-breakpoint-0
-- .jw-breakpoint-0:not(.jw-breakpoint-0)
-
-We can probably pull some of these breakpoint 0 and 1 styles down the the bottom
-of the file to be defined separately.
-*/
-
 @import "../imports/vars";
 
 /* time slider above or small player (both override player into same UI) */
-.jw-flag-time-slider-above,
-.jw-breakpoint-0,
-.jw-breakpoint-1 {
+.jw-flag-time-slider-above:not(.jw-flag-ads-googleima) {
 
-
-  /* ==================================================
-  dock
-  */
-
-  .jw-dock {
-    margin: 0;
+  .jw-controlbar {
+    display: table;
   }
 
-  &:not(.jw-breakpoint-0) {
-
-    // give dock some padding
-    .jw-dock {
-      padding: 0 1%;
+  &.jw-state-idle:not(.jw-flag-cast-available) {
+    .jw-display {
+      padding: 0;
     }
-
-  }
-
-  .jw-dock-button {
-    margin: 0;
-    height: @mobile-touch-target;
-    width: @mobile-touch-target;
-  }
-
-  &:not(.jw-breakpoint-0) {
-
-    // give dock buttons some space between each other above smallest breakpoint
-    .jw-dock-button {
-      margin: 2% 1%;
-    }
-
   }
 
   /* ==================================================
   display
   */
 
-  .jw-display {
-    padding-bottom: @mobile-touch-target * 1.5;
-  }
 
-  &.jw-breakpoint-0 {
-
-    &.jw-state-paused,
-    &.jw-state-playing:not(.jw-flag-user-inactive) {
-
-      // add padding to top that equals height of dock icons if the video is not in aspect mode
+  // Consistent padding for display icons so they don't interfere with the time slider touch target
+  // and don't get repositioned when the timeslider is not visible
+  &.jw-flag-small-player {
       .jw-display {
         padding-top: @mobile-touch-target;
+        padding-bottom: @mobile-touch-target * 1.5;
       }
-
-    }
-
-  }
-
-  &:not(.jw-breakpoint-0) {
-
-    &.jw-state-paused,
-    &.jw-state-playing:not(.jw-flag-user-inactive),
-    &.jw-flag-cast-available,
-    &.jw-flag-casting {
-
-      // add top padding to display that equals height of dock icons
-      .jw-display {
-        padding-top: @mobile-touch-target;
-      }
-
-      // and add top padding to display-container to cover total of dock button top and bottom margins
-      // goal here is to clear the dock icon outer height
-      .jw-display-container {
-        padding-top: 4%;
-      }
-
-    }
-
   }
 
   /* ==================================================
   to avoid overriding audio player on small size
   */
 
-  &:not(.jw-flag-audio-player) {
+  &.jwplayer {
 
     /* ==================================================
     control bar
     */
 
     .jw-controlbar {
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.5) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0, rgba(0,0,0,0.25) 30%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0.5) 100%);
       border: none;
       border-radius: 0;
       background-size: auto;
       height: @mobile-touch-target;
+      width: 100%;
       padding: 0 10px;
     }
 
@@ -116,11 +53,9 @@ of the file to be defined separately.
     video from clashing with the video colors, making it easy to see/use) */
     &.jw-state-idle:not(.jw-flag-cast-available),
     &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
-
       .jw-controls {
         background: none;
       }
-
     }
 
     /* by default, the control bar height is set to the height needed for live
@@ -169,9 +104,8 @@ of the file to be defined separately.
 
     .jw-group > .jw-icon {
       font-size: 20px;
-      padding: 0;
-      text-align: center;
-      width: @mobile-touch-target;
+      padding: 0 8px;
+      max-width: @mobile-touch-target;
 
       &::before {
         background-color: transparent;
@@ -188,7 +122,6 @@ of the file to be defined separately.
 
     .jw-group {
       .jw-icon-cast {
-        width: auto;
 
         button {
           font-size: inherit;
@@ -200,50 +133,56 @@ of the file to be defined separately.
       }
     }
 
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
-      .jw-group {
-        > .jw-icon-rewind,
-        > .jw-icon-next,
-        > .jw-icon-playback {
-          display: none;
-        }
-      }
-    }
-
     /* ==================================================
     control bar groups
     */
 
     // position the time slider group above other control bar elements
-    .jw-controlbar-center-group {
-      height: @slider-fixed-height;
-      left: 0;
-      padding: 0 20px;
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 100%;
-    }
+    &:not(.jw-flag-ads):not(.jw-flag-live) {
+      .jw-controlbar-center-group {
+        height: @slider-fixed-height;
+        left: 0;
+        padding: 0 15px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
 
-    .jw-controlbar-left-group {
-      margin-left: -5px;
+        .jw-slider-horizontal {
+          .jw-knob {
+            border-radius: @slider-fixed-knob-border-radius;
+            height: @slider-fixed-knob-height;
+            margin-left: @slider-fixed-knob-width / -2;
+            margin-top: @slider-fixed-knob-height / -2;
+            width: @slider-fixed-knob-width;
+          }
+        }
+      }
+      .jw-controlbar-left-group {
+        margin-left: -5px;
 
-      .jw-text-elapsed,
-      .jw-text-duration,
-      .jw-text-countdown {
-        padding: 0 10px;
+        .jw-text-elapsed,
+        .jw-text-countdown {
+          padding: 0 0.5em;
+        }
+        .jw-text-duration {
+          padding: 0 0.5em 0 0;
+        }
+      }
+      &.jw-breakpoint-0 {
+        .jw-text-countdown {
+          display: inline-block;
+        }
       }
     }
 
     &:not(.jw-breakpoint-0){
       .jw-text-duration {
         display: inline-block;
-        padding-left: 0;
         &::before {
           content: '/';
           display: inline-block;
-          padding-right: 6px;
+          padding-right: 0.5em;
         }
       }
     }
@@ -274,8 +213,7 @@ of the file to be defined separately.
       margin-bottom: 2px;
     }
 
-    &.jw-breakpoint-0,
-    &.jw-breakpoint-1 {
+    &.jw-flag-small-player {
       .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
         display: none;
       }
@@ -305,15 +243,22 @@ of the file to be defined separately.
       .jw-progress,
       .jw-buffer,
       .jw-knob {
-        background: none;
         border: none;
         box-shadow: none;
+      }
+
+      .jw-knob {
+        background: none;
       }
 
       .jw-rail,
       .jw-buffer,
       .jw-progress {
         height: @slider-fixed-rail-height;
+        // center in ie
+        margin: auto;
+        top: 0;
+        bottom: 0;
       }
 
       .jw-rail {
@@ -357,6 +302,7 @@ of the file to be defined separately.
 
       .jw-time-tip {
         bottom: 0;
+        border-radius: @ui-corner-round;
       }
     }
 
@@ -369,26 +315,18 @@ of the file to be defined separately.
     &.jw-flag-live {
 
       .jw-controlbar {
-        padding-left: 10px;
         padding-right: 5px;
       }
 
       .jw-controlbar-center-group {
         height: auto;
-        overflow: hidden;
         padding: 0;
-        position: static;
-        text-overflow: ellipsis;
-        width: 100%;
       }
 
       .jw-group > .jw-text-alt {
-        color: #fff;
-        display: block;
+        display: inline-block;
         margin: 0;
-        position: relative;
-        text-align: left;
-        top: -1px;
+        line-height: @mobile-touch-target;
       }
 
       .jw-text-duration {
@@ -402,6 +340,10 @@ of the file to be defined separately.
     }
 
     &.jw-flag-live {
+
+      .jw-controlbar {
+        padding-left: 10px;
+      }
 
       .jw-text-elapsed,
       .jw-text-duration {
@@ -425,15 +367,10 @@ of the file to be defined separately.
         display: table-cell;
       }
 
-      &.jw-breakpoint-0,
-      &.jw-breakpoint-1 {
+      &.jw-flag-small-player {
 
-        .jw-controlbar-left-group {
-          display: none;
-        }
-
-        .jw-group > .jw-text-alt {
-          margin: 0;
+        .jw-group .jw-icon-playback {
+          display: inline-block;
         }
 
       }
