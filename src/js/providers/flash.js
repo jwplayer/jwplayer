@@ -34,7 +34,6 @@ define([
         var _currentAudioTrack = -1;
         var _audioTracks = null;
         var _flashProviderType;
-        var _attached = true;
         var _fullscreen = false;
         var _this = this;
 
@@ -209,23 +208,6 @@ define([
                 setState: function() {
                     return DefaultProvider.setState.apply(this, arguments);
                 },
-                checkComplete: function() {
-                    return _beforecompleted;
-                },
-                attachMedia: function() {
-                    _attached = true;
-                    // This is after a postroll completes
-                    if (_beforecompleted) {
-                        this.setState(states.COMPLETE);
-                        this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
-                        _beforecompleted = false;
-                    }
-                },
-                detachMedia: function() {
-                    _attached = false;
-                    return null;
-                },
-
                 getSwfObject : function(parent) {
                     var found = parent.getElementsByTagName('object')[0];
                     if (found) {
@@ -340,19 +322,8 @@ define([
                         this.trigger(e.type);
                     }, this);
 
-                    _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
-                        _beforecompleted = true;
-                        this.trigger(e.type);
-                        if(_attached === true) {
-                            _beforecompleted = false;
-                        }
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
-                        if(!_beforecompleted){
-                            this.setState(states.COMPLETE);
-                            this.trigger(e.type);
-                        }
+                    _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function() {
+                        this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
                     }, this);
 
                     _swf.on('visualQuality', function(e) {
@@ -473,9 +444,6 @@ define([
 
         // Overwrite the event dispatchers to block on certain occasions
         this.trigger = function(type, args) {
-            if (!_attached) {
-                return;
-            }
             return Events.trigger.call(this, type, args);
         };
 
