@@ -55,7 +55,7 @@ define([
         assert.equal(actual, expected);
     });
 
-    test('retuns null when no custom labels are empty', function (assert) {
+    test('retuns null when custom labels are empty', function (assert) {
         var expected = null;
         var actual = qualityLabels.getCustomLabel([], 4000000);
         assert.equal(actual, expected);
@@ -63,7 +63,7 @@ define([
 
     test('retuns null when bandwidth is undefined', function (assert) {
         var expected = null;
-        var actual = qualityLabels.getCustomLabel([], undefined);
+        var actual = qualityLabels.getCustomLabel(customLabels, undefined);
         assert.equal(actual, expected);
     });
 
