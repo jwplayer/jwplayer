@@ -490,6 +490,11 @@ define(['utils/underscore',
     function _removeCues(tracks) {
         if (tracks.length) {
             _.each(tracks, function(track) {
+                // Let Edge handle cleanup of non-sideloaded text tracks in HLS streams
+                if (utils.isEdge() && /^(native|subtitle)/.test(track._id)) {
+                    return;
+                }
+                
                 // Cues are inaccessible if the track is disabled. While hidden,
                 // we can remove cues while the track is in a non-visible state
                 // Set to disabled before hidden to ensure active cues disappear
