@@ -79,14 +79,12 @@ define([
             if (this.activeCue && _.isNumber(this.activeCue.pct)) {
                 return this.activeCue.pct;
             }
-            var duration = this._model.get('duration');
-            var streamType = this._model.get('streamType');
-            if (streamType === 'DVR') {
-                var position = (1 - (percent / 100)) * duration;
-                var currentPosition = this._model.get('position');
-                var updatedPosition = Math.min(position, Math.max(Constants.dvrSeekLimit, currentPosition));
-                var updatedPercent = updatedPosition * 100 / duration;
-                return 100 - updatedPercent;
+            if (this._model.get('streamType') === 'DVR') {
+                // When in DVR mode, only allow seeking up to the live edge - 25s
+                // dvrSeekLimit is negative
+                var seekableRange = this._model.get('seekableRange');
+                var maxSeekPercentage = ((seekableRange + Constants.dvrSeekLimit) / seekableRange) * 100;
+                percent = Math.min(maxSeekPercentage, percent);
             }
             return percent;
         },
@@ -116,22 +114,19 @@ define([
             this.updateBuffer(pct);
         },
         onPosition : function(model, position) {
-            this.updateTime(position, model.get('duration'));
+            this.updateTime(position, model.get('duration'), model.get('seekableRange'));
         },
         onDuration : function(model, duration) {
-            this.updateTime(model.get('position'), duration);
+            this.updateTime(model.get('position'), duration, model.get('seekableRange'));
         },
-        updateTime : function(position, duration) {
-            var pct = 0;
-            if (duration) {
-                var streamType = this._model.get('streamType');
-                if (streamType === 'DVR') {
-                    pct = (duration - position) / duration * 100;
-                } else if (streamType === 'VOD') {
-                    pct = position / duration * 100;
-                }
+        updateTime : function(position, duration, seekableRange) {
+            var streamType = this._model.get('streamType');
+            if (!duration || streamType ===  'LIVE') {
+                return;
             }
-            this.render(pct);
+
+            var range = streamType === 'DVR' ? seekableRange : duration;
+            this.render(position / range * 100);
         },
         onPlaylistItem : function (model, playlistItem) {
             this.reset();
@@ -152,12 +147,13 @@ define([
         performSeek : function() {
             var percent = this.seekTo;
             var duration = this._model.get('duration');
+            var seekableRange = this._model.get('seekableRange');
             var streamType = this._model.get('streamType');
             var position;
             if (duration === 0) {
                 this._api.play(reasonInteraction());
             } else if (streamType === 'DVR') {
-                position = (100 - percent) / 100 * duration;
+                position = (100 - percent) / 100 * seekableRange;
                 this._api.seek(position, reasonInteraction());
             } else {
                 position = percent / 100 * duration;
@@ -165,9 +161,14 @@ define([
             }
         },
         showTimeTooltip: function(evt) {
-            var duration = this._model.get('duration');
+            var  duration = this._model.get('duration');
+
             if (duration === 0) {
                 return;
+            }
+
+            if (this._model.get('streamType') === 'DVR') {
+                duration = -this._model.get('seekableRange');
             }
 
             var _railBounds = utils.bounds(this.elementRail);

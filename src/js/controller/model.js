@@ -111,8 +111,14 @@ define([
                     }
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
+                    var streamType = utils.streamType(data.duration, data.seekableRange, this.get('minDvrWindow'));
+                    this.set('streamType', streamType);
+
+                    this.set('seekableRange', data.seekableRange);
+
                     mediaModel.set('position', data.position);
                     this.set('position', data.position);
+
                     if (_.isNumber(data.duration)) {
                         mediaModel.set('duration', data.duration);
                         this.set('duration', data.duration);
