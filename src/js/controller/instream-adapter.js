@@ -88,8 +88,6 @@ define([
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _oldProvider.detachMedia();
 
-            _model.mediaModel.set('state', states.BUFFERING);
-
             if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
@@ -105,6 +103,8 @@ define([
             if (currState === states.PLAYING || currState === states.BUFFERING) {
                 _oldProvider.pause();
             }
+
+            _model.mediaModel.set('state', states.BUFFERING);
 
             // Show instream state instead of normal player state
             _view.setupInstream(_instream._adModel);
