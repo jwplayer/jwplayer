@@ -159,7 +159,7 @@
         }
       }
       .jw-controlbar-left-group {
-        margin-left: -5px;
+        padding-left: 0;
 
         .jw-text-elapsed,
         .jw-text-countdown {
@@ -172,6 +172,12 @@
       &.jw-breakpoint-0 {
         .jw-text-countdown {
           display: inline-block;
+        }
+      }
+      &.jw-flag-small-player {
+        .jw-text-elapsed,
+        .jw-text-countdown {
+          padding-left: 15px;
         }
       }
     }
@@ -188,7 +194,7 @@
     }
 
     .jw-controlbar-right-group {
-      margin-right: -5px;
+      padding-right: 6px;
       text-align: right;
 
       .jw-text-duration {
@@ -320,7 +326,6 @@
 
       .jw-controlbar-center-group {
         height: auto;
-        padding: 0;
       }
 
       .jw-group > .jw-text-alt {
