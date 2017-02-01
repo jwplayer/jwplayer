@@ -299,6 +299,10 @@
           color: @nextup-close-button-color-hover;
         }
 
+        // Fixes an issue that cuts off the icon in Safari.  Value must be calculated base on skin's values.
+        .jw-flag-audio-player .jw-controlbar .jw-icon-rewind {
+            line-height: @font-size * @controlbar-height;
+        }
     }
 
     .custom-skin-styles() {
