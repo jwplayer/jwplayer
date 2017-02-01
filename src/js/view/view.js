@@ -491,7 +491,7 @@ define([
             _model.on('change:controls', _onChangeControls);
             _onChangeControls(_model, _model.get('controls'));
             _model.on('change:state', _stateHandler);
-            _model.on('change:duration', _setLiveMode, this);
+            _model.on('change:streamType', _setLiveMode, this);
 
             _model.on('change:flashBlocked', _onChangeFlashBlocked);
             _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
@@ -1003,12 +1003,8 @@ define([
             }
         }
 
-        function _setLiveMode(model, duration){
-            var minDvrWindow = model.get('minDvrWindow');
-            var streamType = utils.streamType(duration, minDvrWindow);
+        function _setLiveMode(model, streamType){
             var live = (streamType === 'LIVE');
-
-            model.set('streamType', streamType);
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
             _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }

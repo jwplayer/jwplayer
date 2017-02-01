@@ -266,17 +266,13 @@ define([
 
             new UI(this.elements.duration).on('click tap', function(){
                 if (this._model.get('streamType') === 'DVR') {
-                    // Seek to "Live" position within live buffer, but not before current position
-                    var currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition), reasonInteraction());
+                    this._api.seek(-Constants.dvrSeekLimit, reasonInteraction());
                 }
             }, this);
 
             new UI(this.elements.durationLeft).on('click tap', function(){
                 if (this._model.get('streamType') === 'DVR') {
-                    // Seek to "Live" position within live buffer, but not before current position
-                    var currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
+                    this._api.seek(-Constants.dvrSeekLimit, reasonInteraction());
                 }
             }, this);
 
@@ -352,12 +348,11 @@ define([
         onElapsed: function(model, val) {
             var elapsedTime,
                 countdownTime;
-            var duration = model.get('duration');
             if (model.get('streamType') === 'DVR') {
-                elapsedTime = countdownTime = '-' + utils.timeFormat(-duration);
+                elapsedTime = countdownTime = '-' + utils.timeFormat(model.get('seekableRange'), true);
             } else {
                 elapsedTime = utils.timeFormat(val);
-                countdownTime = utils.timeFormat(duration - val);
+                countdownTime = utils.timeFormat(model.get('duration') - val);
             }
             this.elements.elapsed.innerHTML = elapsedTime;
             this.elements.countdown.innerHTML = countdownTime;
@@ -402,17 +397,21 @@ define([
             this.closeMenus();
         },
         rewind : function() {
-            var currentPosition = this._model.get('position'),
-                duration = this._model.get('duration'),
-                rewindPosition = currentPosition - 10,
-                startPosition = 0;
+            var currentPosition = this._model.get('position');
+            var rewindPosition = currentPosition - 10;
+            var startPosition = 0;
+            var seekPos = 0;
 
             // duration is negative in DVR mode
             if (this._model.get('streamType') === 'DVR') {
-                startPosition = duration;
+                var seekableRange = this._model.get('seekableRange');
+                seekPos = Math.min(seekableRange - rewindPosition, seekableRange);
+            } else {
+                seekPos = Math.max(rewindPosition, startPosition);
             }
+
             // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
-            this._api.seek(Math.max(rewindPosition, startPosition), reasonInteraction());
+            this._api.seek(seekPos, reasonInteraction());
         },
         onStreamTypeChange : function(model) {
             // Hide rewind button when in LIVE mode

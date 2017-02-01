@@ -11,16 +11,21 @@ define([
             ariaLabel: model.get('localization').playback
         }));
         this.iconUI = new UI (this.el).on('click tap', function() {
-            var currentPosition = model.get('position'),
-                duration = model.get('duration'),
-                rewindPosition = currentPosition - 10,
-                startPosition = 0;
+            var currentPosition = this._model.get('position');
+            var rewindPosition = currentPosition - 10;
+            var startPosition = 0;
+            var seekPos = 0;
+
             // duration is negative in DVR mode
-            if (model.get('streamType') === 'DVR') {
-                startPosition = duration;
+            if (this._model.get('streamType') === 'DVR') {
+                var seekableRange = this._model.get('seekableRange');
+                seekPos = Math.min(seekableRange - rewindPosition, seekableRange);
+            } else {
+                seekPos = Math.max(rewindPosition, startPosition);
             }
+
             // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
-            api.seek(Math.max(rewindPosition, startPosition));
+            this._api.seek(seekPos, { reason: 'interaction' });
         });
     };
 
