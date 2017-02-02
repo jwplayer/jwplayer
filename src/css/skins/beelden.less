@@ -82,6 +82,10 @@
         }
     }
 
+    & .jw-icon-playback:before{
+        background: none;
+    }
+
     /* Keep the play/pause container from collapsing on toggle */
     &.jw-state-playing {
         .jw-icon-playback {
@@ -206,4 +210,16 @@
         border-radius: @ui-padding;
     }
 
+    &.jw-flag-color-override {
+        .jw-display-icon-container,
+        .jw-controlbar,
+        .jw-skip {
+            box-shadow: none;
+            border: none;
+        }
+
+        .jw-progress {
+            background: none;
+        }
+    }
 }

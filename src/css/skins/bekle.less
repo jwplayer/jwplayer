@@ -95,7 +95,6 @@
     }
 
     .jw-slider-vertical {
-
         .jw-rail,
         .jw-progress {
             width: @rail-height;
@@ -108,7 +107,13 @@
         .jw-progress {
             background: @progress-vert-gradient;
         }
-
     }
 
+    // Override inside the skin to not bloat other skins
+    &.jw-flag-color-override {
+        .jw-progress,
+        .jw-slider-vertical .jw-progress {
+            background: none;
+        }
+    }
 }

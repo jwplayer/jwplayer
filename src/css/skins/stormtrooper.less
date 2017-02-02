@@ -72,6 +72,16 @@
         background: @rail-color;
     }
 
+    // Override styles inside the skin to not bloat other skins
+    &.jw-flag-color-override {
+        .jw-slider-horizontal .jw-progress,
+        .jw-slider-horizontal .jw-knob,
+        .jw-slider-vertical .jw-progress,
+        .jw-slider-vertical .jw-knob {
+            background: none;
+        }
+    }
+
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
         .jw-progress {

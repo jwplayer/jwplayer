@@ -239,4 +239,26 @@
         }
     }
 
+    // Override styles inside the skin to not bloat other skins
+    &.jw-flag-color-override {
+        .jw-display-icon-container {
+            background: none;
+            border: none;
+        }
+
+        .jw-progress,
+        .jw-knob,
+        .jw-slider-vertical .jw-progress,
+        .jw-slider-vertical .jw-knob {
+            background: none;
+        }
+
+        .jw-dock {
+            &:hover,
+            .jw-dock-button,
+            .jw-overlay {
+                background: none;
+            }
+        }
+    }
 }
