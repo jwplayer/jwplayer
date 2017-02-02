@@ -42,7 +42,7 @@ define([
         var expected = '';
         var actual = qualityLabels.createLabel(undefined, undefined, false);
         assert.equal(actual, expected);
-    })
+    });
 
     QUnit.module('getCustomLabel');
     test('gets custom label when bandwidth exactly matches a key', function (assert) {
