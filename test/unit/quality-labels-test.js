@@ -13,6 +13,7 @@ define([
 
     var bandwidths = _.keys(customLabels);
 
+    QUnit.module('createLabel');
     test('creates a label using height when available', function (assert) {
         var expected = '360p';
         var actual = qualityLabels.createLabel(360, undefined, false);
@@ -23,7 +24,13 @@ define([
         var expected = '1337 kbps';
         var actual = qualityLabels.createLabel(undefined, 1337000,  false);
         assert.equal(actual, expected);
-    })
+    });
+
+    test('does not add parentheses to bandwidth when redundant is true and height is not available', function (assert) {
+        var expected = '1337 kbps';
+        var actual = qualityLabels.createLabel(undefined, 1337000,  true);
+        assert.equal(actual, expected);
+    });
 
     test('includes bandwidth string when redundant argument is true', function (assert) {
         var expected = '360p (1337 kbps)';
@@ -37,6 +44,7 @@ define([
         assert.equal(actual, expected);
     })
 
+    QUnit.module('getCustomLabel');
     test('gets custom label when bandwidth exactly matches a key', function (assert) {
         var expected = 'medium';
         var actual = qualityLabels.getCustomLabel(customLabels, 2000000);
@@ -57,7 +65,7 @@ define([
 
     test('retuns null when custom labels are empty', function (assert) {
         var expected = null;
-        var actual = qualityLabels.getCustomLabel([], 4000000);
+        var actual = qualityLabels.getCustomLabel({}, 4000000);
         assert.equal(actual, expected);
     });
 
@@ -67,9 +75,16 @@ define([
         assert.equal(actual, expected);
     });
 
+    QUnit.module('findClosestBandwidth');
     test('retuns null when no bandwidths are given', function (assert) {
         var expected = null;
         var actual = qualityLabels.findClosestBandwidth([], 4000);
+        assert.equal(actual, expected);
+    });
+
+    test('returns null when bandwidths are not an array', function (assert) {
+        var expected = null;
+        var actual = qualityLabels.findClosestBandwidth({medium: 4000}, 4000);
         assert.equal(actual, expected);
     });
 

@@ -52,13 +52,15 @@ define([
         var smallestDiff = Infinity;
         var curDiff;
 
-        _.forEach(bandwidths, function (cur) {
-            curDiff = Math.abs(cur - targetBandwidth);
-            if (curDiff < smallestDiff) {
-                closest = cur;
-                smallestDiff = curDiff;
-            }
-        });
+        if (!_.isArray(bandwidths)) {
+            _.forEach(bandwidths, function (cur) {
+                curDiff = Math.abs(cur - targetBandwidth);
+                if (curDiff < smallestDiff) {
+                    closest = cur;
+                    smallestDiff = curDiff;
+                }
+            });
+        }
 
         return closest;
     }
