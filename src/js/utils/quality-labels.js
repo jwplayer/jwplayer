@@ -52,7 +52,7 @@ define([
         var smallestDiff = Infinity;
         var curDiff;
 
-        if (!_.isArray(bandwidths)) {
+        if (_.isArray(bandwidths)) {
             _.forEach(bandwidths, function (cur) {
                 curDiff = Math.abs(cur - targetBandwidth);
                 if (curDiff < smallestDiff) {
