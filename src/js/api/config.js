@@ -126,6 +126,8 @@ define([
             config.playlist = [ obj ];
         }
 
+        config.qualityLabels = config.qualityLabels || config.hlslabels;
+
         return config;
     };
 
