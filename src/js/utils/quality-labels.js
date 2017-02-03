@@ -74,6 +74,6 @@ define([
         createLabel: createLabel,
         getCustomLabel: getCustomLabel,
         findClosestBandwidth: findClosestBandwidth,
-        toKbps: toKbps
+        toKbps: toKbps,
     };
 });
