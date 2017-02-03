@@ -7,12 +7,6 @@
     display: table;
   }
 
-  &.jw-state-idle:not(.jw-flag-cast-available) {
-    .jw-display {
-      padding: 0;
-    }
-  }
-
   /* ==================================================
   display
   */
@@ -20,18 +14,27 @@
 
   // Consistent padding for display icons so they don't interfere with the time slider touch target
   // and don't get repositioned when the timeslider is not visible
-  &.jw-flag-small-player {
-      .jw-display {
-        padding-top: @mobile-touch-target;
-        padding-bottom: @mobile-touch-target * 1.5;
-      }
+  &.jw-flag-small-player .jw-display {
+    padding-bottom: @mobile-touch-target * 1.25;
   }
+  &.jw-breakpoint-1 .jw-display {
+    padding-top: @mobile-touch-target;
+  }
+
+
 
   /* ==================================================
   to avoid overriding audio player on small size
   */
 
   &.jwplayer {
+
+    &.jw-state-idle:not(.jw-flag-cast-available),
+    &.jw-state-error {
+      .jw-display {
+        padding: 0;
+      }
+    }
 
     /* ==================================================
     control bar
