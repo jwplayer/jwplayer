@@ -306,81 +306,77 @@
     }
 
     .custom-skin-styles() {
-        .jw-display-icon-container {
-            border-radius: @ui-corner-round;
+      .jw-display-icon-container {
+        border-radius: @ui-corner-round;
+      }
+
+      .jw-dock-button {
+        border-radius: @ui-corner-round;
+      }
+
+      .jw-controlbar .jw-controlbar-center-group .jw-text-alt {
+        top: 50%;
+        transform: translateY(-50%);
+        margin: auto;
+        bottom: auto;
+      }
+
+      &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
+        .jw-controlbar {
+          height: @controlbar-height;
+
+          .jw-overlay {
+            bottom: @controlbar-height;
+          }
         }
 
-        .jw-dock-button {
-            border-radius: @ui-corner-round;
+        .jw-icon-inline,
+        .jw-icon-tooltip,
+        .jw-text-elapsed,
+        .jw-text-duration,
+        .jw-text-countdown {
+          height: @controlbar-height;
+          line-height: @controlbar-height;
+        }
+      }
+
+      &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
+        .jw-time-tip {
+          bottom: (@controlbar-height / 2);
         }
 
-        .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
-            top: 50%;
-            transform: translateY(-50%);
-            margin: auto;
-            bottom: auto;
+        .jw-captions {
+          max-height: calc(97% - 6.25 * (@controlbar-height));
         }
 
-        &:not(.jw-flag-time-slider-above) {
-            .jw-controlbar {
-                height: @controlbar-height;
-
-                .jw-overlay {
-                    bottom: @controlbar-height;
-                }
-            }
-
-            .jw-icon-inline,
-            .jw-icon-tooltip,
-            .jw-text-elapsed,
-            .jw-text-duration,
-            .jw-text-countdown {
-                height: @controlbar-height;
-                line-height: @controlbar-height;
-            }
+        .jwplayer {
+          video::-webkit-media-text-track-container {
+            max-height: calc(97% - 6.25 * (@controlbar-height));
+          }
         }
 
-        &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
-            .jw-time-tip {
-                bottom: (@controlbar-height / 2);
-            }
-
-            .jw-captions {
-                max-height: calc(97% - 6.25 * (@controlbar-height));
-            }
-
-            .jwplayer {
-                video::-webkit-media-text-track-container {
-                    max-height: calc(97% - 6.25 * (@controlbar-height));
-                }
-            }
-
-            .jw-controls {
-                .jw-controls-right {
-                    bottom: @controlbar-height;
-                }
-            }
-
-            &.jw-flag-audio-player {
-                .jw-controlbar {
-                    height: 100%;
-                }
-
-                .jw-icon-inline,
-                .jw-icon-tooltip,
-                .jw-text-elapsed,
-                .jw-text-duration,
-                .jw-text-countdown {
-                    height: auto;
-                    line-height: normal;
-                }
-            }
-
-            .jw-icon-inline,
-            .jw-icon-tooltip {
-                min-width: @controlbar-height * 5/8;
-            }
+        .jw-controls {
+          .jw-controls-right {
+            bottom: @controlbar-height;
+          }
         }
+
+        .jw-icon-inline,
+        .jw-icon-tooltip {
+          min-width: @controlbar-height * 5/8;
+        }
+
+        .jw-icon-rewind {
+          min-width: @controlbar-height;
+          padding: 0 @ui-padding * 1/2;
+        }
+      }
+
+      &.jw-flag-audio-player {
+        .jw-controlbar {
+          height: 100%;
+        }
+      }
     }
 
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
