@@ -367,12 +367,7 @@ define([
             // look good.
             var activeColor = _model.get('skinColorActive'),
                 inactiveColor = _model.get('skinColorInactive'),
-                backgroundColor = _model.get('skinColorBackground'),
-                backgroundColorGradient = backgroundColor ? 'transparent linear-gradient(180deg, ' +
-                    getRgba(backgroundColor, 0) + ' 0%, ' +
-                    getRgba(backgroundColor, 0.25) + ' 30%, ' +
-                    getRgba(backgroundColor, 0.4) + ' 70%, ' +
-                    getRgba(backgroundColor, 0.5) + ') 100%' : '';
+                backgroundColor = _model.get('skinColorBackground');
 
             // These will use standard style names for CSS since they are added directly to a style sheet
             // Using background instead of background-color so we don't have to clear gradients with background-image
@@ -425,10 +420,18 @@ define([
                     '.jw-background-color'
                 ], 'background', 'none ' + backgroundColor);
 
-                addStyle([
-                    // for small player, set the control bar gradient to the config background color
-                    '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
-                ], 'background', 'none ' + backgroundColorGradient, true);
+                if (_model.get('timeSliderAbove') !== false) {
+                    var backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
+                        getRgba(backgroundColor, 0) + ' 0%, ' +
+                        getRgba(backgroundColor, 0.25) + ' 30%, ' +
+                        getRgba(backgroundColor, 0.4) + ' 70%, ' +
+                        getRgba(backgroundColor, 0.5) + ') 100%';
+
+                    addStyle([
+                        // for small player, set the control bar gradient to the config background color
+                        '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
+                    ], 'background', backgroundColorGradient, true);
+                }
 
                 // remove the config background on time slider
                 addStyle([
