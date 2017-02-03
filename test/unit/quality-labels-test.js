@@ -111,4 +111,23 @@ define([
         var actual = qualityLabels.findClosestBandwidth(bandwidths, 1);
         assert.equal(actual, expected);
     });
+
+    QUnit.module('toKbps');
+    test('should be 0 if 0 bps', function (assert) {
+        var expected = 0;
+        var actual = qualityLabels.toKbps(0);
+        assert.equal(actual, expected);
+    });
+
+    test('should be 0 if less than 1 kbps', function (assert) {
+        var expected = 0;
+        var actual = qualityLabels.toKbps(999);
+        assert.equal(actual, expected);
+    });
+
+    test('should convert bps to kbps', function (assert) {
+        var expected = 3;
+        var actual = qualityLabels.toKbps(3000);
+        assert.equal(actual, expected);
+    });
 });
