@@ -12,20 +12,12 @@ define([
             ariaLabel: model.get('localization').playback
         }));
         this.iconUI = new UI (this.el).on('click tap', function() {
-            var currentPosition = this._model.get('position');
-            var rewindPosition = currentPosition - 10;
-            var startPosition = 0;
-            var seekPos = 0;
-
-            // duration is negative in DVR mode
-            if (this._model.get('streamType') === 'DVR') {
-                var seekableRange = this._model.get('seekableRange');
-                seekPos = Math.min(seekableRange - rewindPosition, seekableRange);
-            } else {
-                seekPos = Math.max(rewindPosition, startPosition);
-            }
-
-            // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
+            var seekPos = streamTimeUtils.rewindPosition(
+                10,
+                this._model.get('position'),
+                this._model.get('seekableRange'),
+                this._model.get('streamType')
+            );
             this._api.seek(seekPos, { reason: 'interaction' });
         });
     };
