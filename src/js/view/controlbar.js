@@ -8,8 +8,9 @@ define([
     'view/components/timeslider',
     'view/components/menu',
     'view/components/volumetooltip',
-    'view/components/button'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button) {
+    'view/components/button',
+    'utils/stream-time',
+], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button, streamTimeUtils) {
 
     function text(name, role) {
         var element = document.createElement('span');
@@ -397,20 +398,12 @@ define([
             this.closeMenus();
         },
         rewind : function() {
-            var currentPosition = this._model.get('position');
-            var rewindPosition = currentPosition - 10;
-            var startPosition = 0;
-            var seekPos = 0;
-
-            // duration is negative in DVR mode
-            if (this._model.get('streamType') === 'DVR') {
-                var seekableRange = this._model.get('seekableRange');
-                seekPos = Math.min(seekableRange - rewindPosition, seekableRange);
-            } else {
-                seekPos = Math.max(rewindPosition, startPosition);
-            }
-
-            // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
+            var seekPos = streamTimeUtils.rewindPosition(
+                10,
+                this._model.get('position'),
+                this._model.get('seekableRange'),
+                this._model.get('streamType')
+            );
             this._api.seek(seekPos, reasonInteraction());
         },
         onStreamTypeChange : function(model) {

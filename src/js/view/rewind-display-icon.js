@@ -3,8 +3,9 @@ define([
     'utils/backbone.events',
     'utils/ui',
     'templates/display-icon.html',
-    'utils/underscore'
-], function(utils, Events, UI, Template, _) {
+    'utils/underscore',
+    'utils/stream-time'
+], function(utils, Events, UI, Template, _, streamTimeUtils) {
     var RewindDisplayIcon = function(model, api) {
         this.el = utils.createElement(Template({
             iconName: 'rewind',

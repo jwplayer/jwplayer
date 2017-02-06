@@ -153,6 +153,8 @@ define([
             if (duration === 0) {
                 this._api.play(reasonInteraction());
             } else if (streamType === 'DVR') {
+                // When in DVR mode, give the seek position as the distance from the seekable range
+                // The provider will use this to calculate the real time to seek to
                 position = (100 - percent) / 100 * seekableRange;
                 this._api.seek(position, reasonInteraction());
             } else {
