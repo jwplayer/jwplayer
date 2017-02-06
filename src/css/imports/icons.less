@@ -133,6 +133,10 @@
 
 .jw-icon-rewind {
     &:before {
+        // This icon expands beyond its icon bounds, so we fit it to its related element to :hover correctly
         content: "\e900";
+        display: inline-block;
+        height: 100%;
+        width: 100%;
     }
 }

@@ -22,59 +22,57 @@
 }
 
 .inset-controlbar() {
-
-  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
-    &,
-    .jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid)&,
-    .jw-flag-ads.jw-flag-touch.jw-flag-autostart:not(.jw-flag-ads-vpaid)& {
-      .jw-controlbar {
-        display: inline-block;
-      }
-    }
-  }
-
-  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
-    .jw-controlbar {
-      bottom: .7em;
-      max-width: @min-breakpoint-5-width;
-      margin: 0 auto;
-      left: 2%;
-      right: 2%;
-      width: 96%; // width assignment is required for IE11 to center correctly
-    }
-    &.jw-flag-ads-googleima .jw-controlbar {
-      bottom: 0;
-    }
-  }
-
-  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
-    &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
-        top: 1px;
-    }
-  }
-
-  &:not(.jw-flag-time-slider-above) {
-    .jw-nextup-container {
-      bottom: @controlbar-height + .7em;
-      padding-left: 0;
-      padding-right: 0;
-      max-width: @min-breakpoint-5-width;
+    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
+        &,
+        .jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid)&,
+        .jw-flag-ads.jw-flag-touch.jw-flag-autostart:not(.jw-flag-ads-vpaid)& {
+            .jw-controlbar {
+                display: inline-block;
+            }
+        }
     }
 
-    &.jw-breakpoint-2,
-    &.jw-breakpoint-3,
-    &.jw-breakpoint-4 {
-      .jw-nextup-container {
-        padding-left: 2%;
-        padding-right: 2%;
-      }
+    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
+        .jw-controlbar {
+            bottom: .7em;
+            max-width: @min-breakpoint-5-width;
+            margin: 0 auto;
+            left: 2%;
+            right: 2%;
+            width: 96%; // width assignment is required for IE11 to center correctly
+        }
+        &.jw-flag-ads-googleima .jw-controlbar {
+            bottom: 0;
+        }
     }
-  }
 
-  &.jw-flag-audio-player .jw-controlbar {
-    bottom: 0; // overwrite the inset-controlbar mixin
-  }
+    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
+        &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt {
+            top: 1px;
+        }
+    }
 
+    &:not(.jw-flag-time-slider-above) {
+        .jw-nextup-container {
+            bottom: @controlbar-height + .7em;
+            padding-left: 0;
+            padding-right: 0;
+            max-width: @min-breakpoint-5-width;
+        }
+
+        &.jw-breakpoint-2,
+        &.jw-breakpoint-3,
+        &.jw-breakpoint-4 {
+            .jw-nextup-container {
+                padding-left: 2%;
+                padding-right: 2%;
+            }
+        }
+    }
+
+    &.jw-flag-audio-player .jw-controlbar {
+        bottom: 0; // overwrite the inset-controlbar mixin
+    }
 }
 
 .vertically-centered-rail-element(@rail-height, @element-height) {
@@ -100,7 +98,6 @@
 /* Mixin for common skin styles with variable colors */
 #namespace() {
     .basic-skin-styles() {
-
         .jw-background-color {
             background: @controlbar-background;
         }
@@ -143,12 +140,12 @@
 
         /* Colors for display icons */
         .jw-display-icon-container {
-          background-color: @display-bkgd-color;
-          margin: 0 (@ui-padding * 0.5);
+            background-color: @display-bkgd-color;
+            margin: 0 (@ui-padding * 0.5);
 
-          .jw-icon {
-            color: @display-icon-color;
-          }
+            .jw-icon {
+                color: @display-icon-color;
+            }
         }
 
         /* Slider colors */
@@ -242,27 +239,24 @@
         */
 
         .jw-icon-cast {
+            button {
+                --connected-color: @active-color;
+                --disconnected-color: @inactive-color;
 
-          button {
-            --connected-color: @active-color;
-            --disconnected-color: @inactive-color;
+                &:focus {
+                    --connected-color: @active-color;
+                    --disconnected-color: @hover-color;
+                }
 
-            &:focus {
-              --connected-color: @active-color;
-              --disconnected-color: @hover-color;
+                &.jw-off {
+                    --connected-color: @inactive-color;
+                }
             }
 
-            &.jw-off {
-              --connected-color: @inactive-color;
+            &:hover button {
+                --connected-color: @hover-color;
+                --disconnected-color: @hover-color;
             }
-
-          }
-
-          &:hover button {
-            --connected-color: @hover-color;
-            --disconnected-color: @hover-color;
-          }
-
         }
 
         /* Next up display */
@@ -305,26 +299,29 @@
           color: @nextup-close-button-color-hover;
         }
 
+        // Fixes an issue that cuts off the icon in Safari.  Value must be calculated base on skin's values.
+        .jw-flag-audio-player .jw-controlbar .jw-icon-rewind {
+            line-height: @font-size * @controlbar-height;
+        }
     }
 
     .custom-skin-styles() {
+      .jw-display-icon-container {
+        border-radius: @ui-corner-round;
+      }
 
-        .jw-display-icon-container {
-            border-radius: @ui-corner-round;
-        }
+      .jw-dock-button {
+        border-radius: @ui-corner-round;
+      }
 
-        .jw-dock-button {
-            border-radius: @ui-corner-round;
-        }
-
-      .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
+      .jw-controlbar .jw-controlbar-center-group .jw-text-alt {
         top: 50%;
         transform: translateY(-50%);
         margin: auto;
         bottom: auto;
       }
 
-      &:not(.jw-flag-time-slider-above) {
+      &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
         .jw-controlbar {
           height: @controlbar-height;
 
@@ -344,51 +341,44 @@
       }
 
       &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
-
         .jw-time-tip {
-            bottom: (@controlbar-height / 2);
+          bottom: (@controlbar-height / 2);
         }
 
         .jw-captions {
-            max-height: calc(97% - 6.25 * (@controlbar-height));
+          max-height: calc(97% - 6.25 * (@controlbar-height));
         }
 
         .jwplayer {
-            video::-webkit-media-text-track-container {
-                max-height: calc(97% - 6.25 * (@controlbar-height));
-            }
+          video::-webkit-media-text-track-container {
+            max-height: calc(97% - 6.25 * (@controlbar-height));
+          }
         }
 
         .jw-controls {
-            .jw-controls-right {
-                bottom: @controlbar-height;
-            }
-        }
-
-        &.jw-flag-audio-player {
-
-          .jw-controlbar {
-            height: 100%;
-          }
-
-          .jw-icon-inline,
-          .jw-icon-tooltip,
-          .jw-text-elapsed,
-          .jw-text-duration,
-          .jw-text-countdown {
-              height: auto;
-              line-height: normal;
+          .jw-controls-right {
+            bottom: @controlbar-height;
           }
         }
 
         .jw-icon-inline,
         .jw-icon-tooltip {
-            min-width: @controlbar-height * 5/8;
+          min-width: @controlbar-height * 5/8;
         }
 
+        .jw-icon-rewind {
+          min-width: @controlbar-height;
+          padding: 0 @ui-padding * 1/2;
+        }
       }
 
+      &.jw-flag-audio-player {
+        .jw-controlbar {
+          height: 100%;
+        }
+      }
     }
+
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
         // Set the highlight color of the center display icon when we are hovering the player.
@@ -440,12 +430,12 @@
         }
         /* Color for list item text in menu lists */
         .jw-option {
-          color: @option-inactive-color;
+            color: @option-inactive-color;
 
-          &.jw-active-option {
-            color: @option-active-color;
-            background-color: @option-active-bg-color;
-          }
+            &.jw-active-option {
+                color: @option-active-color;
+                background-color: @option-active-bg-color;
+            }
         }
 
         &:not(.jw-flag-touch) .jw-option:hover {
