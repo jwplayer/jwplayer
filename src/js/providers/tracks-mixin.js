@@ -491,7 +491,7 @@ define(['utils/underscore',
         if (tracks.length) {
             _.each(tracks, function(track) {
                 // Let Edge handle cleanup of non-sideloaded text tracks in HLS streams
-                if (utils.isEdge() && /^(native|subtitle)/.test(track._id)) {
+                if (utils.isEdge() && /^(native|subtitle|cc)/.test(track._id)) {
                     return;
                 }
                 
