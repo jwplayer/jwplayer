@@ -6,7 +6,7 @@ define([
     'utils/underscore',
     'utils/stream-time'
 ], function(utils, Events, UI, Template, _, streamTimeUtils) {
-    var RewindDisplayIcon = function(model, api) {
+    var RewindDisplayIcon = function(model) {
         this.el = utils.createElement(Template({
             iconName: 'rewind',
             ariaLabel: model.get('localization').playback
