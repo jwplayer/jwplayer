@@ -395,7 +395,7 @@ define([
                 '.jw-option.jw-active-option',
                 // slider fill color
                 '.jw-progress'
-            ], 'background', activeColor);
+            ], 'background', 'none ' + activeColor);
 
             // Apply inactive color
             addStyle([
@@ -416,18 +416,18 @@ define([
                 '.jw-knob',
                 '.jw-active-option',
                 '.jw-nextup-header'
-            ], 'background', inactiveColor);
+            ], 'background', 'none ' + inactiveColor);
 
             // Apply background color
             addStyle([
                 // general background color
                 '.jw-background-color'
-            ], 'background', backgroundColor);
+            ], 'background', 'none ' + backgroundColor);
 
             addStyle([
                 // for small player, set the control bar gradient to the config background color
                 '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
-            ], 'background', backgroundColorGradient, true);
+            ], 'background', 'none ' + backgroundColorGradient, true);
 
             // remove the config background on time slider
             addStyle([
