@@ -94,11 +94,23 @@ define([
                     this.set('buffer', data.bufferPercent);
                 /* falls through */
                 case events.JWPLAYER_MEDIA_META:
+                    var metaStreamType = utils.streamType(data.duration, data.seekableRange, this.get('minDvrWindow'));
+                    this.set('streamType', metaStreamType);
+                    this.set('seekableRange', data.seekableRange);
+
                     var duration = data.duration;
                     if (_.isNumber(duration) && !_.isNaN(duration)) {
                         mediaModel.set('duration', duration);
                         this.set('duration', duration);
                     }
+
+                    // For legacy purposes, report duration as negative video duration when in DVR mode
+                    if (metaStreamType === 'DVR') {
+                        evt.duration = -evt.videoDuration;
+                    }
+                    delete evt.videoDuration;
+                    delete evt.seekableRange;
+
                     break;
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
@@ -113,16 +125,22 @@ define([
                 case events.JWPLAYER_MEDIA_TIME:
                     var streamType = utils.streamType(data.duration, data.seekableRange, this.get('minDvrWindow'));
                     this.set('streamType', streamType);
-
                     this.set('seekableRange', data.seekableRange);
-
-                    mediaModel.set('position', data.position);
                     this.set('position', data.position);
+                    mediaModel.set('position', data.position);
 
                     if (_.isNumber(data.duration)) {
-                        mediaModel.set('duration', data.duration);
                         this.set('duration', data.duration);
+                        mediaModel.set('duration', data.duration);
                     }
+
+                    // For legacy purposes, report duration as negative video duration when in DVR mode
+                    if (streamType === 'DVR') {
+                        evt.duration = -evt.videoDuration;
+                    }
+                    delete evt.videoDuration;
+                    delete evt.seekableRange;
+
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
