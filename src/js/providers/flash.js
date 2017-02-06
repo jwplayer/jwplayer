@@ -47,57 +47,6 @@ define([
             }
         };
 
-        var _customLabels = _getCustomLabels();
-
-        function _getNearestCustomLabel(sourceKBps) {
-            // get indexed value
-            var label = _customLabels[sourceKBps];
-            if (!label) {
-                //find nearest
-                var lastDiff = Infinity;
-                var i = _customLabels.bitrates.length;
-                while (i--) {
-                    var diff = Math.abs(_customLabels.bitrates[i] - sourceKBps);
-                    if (diff > lastDiff) {
-                        break;
-                    }
-                    lastDiff = diff;
-                }
-                label = _customLabels.labels[_customLabels.bitrates[i + 1]];
-                // index
-                _customLabels[sourceKBps] = label;
-            }
-            return label;
-        }
-
-        /** Indexed Custom Labels **/
-        function _getCustomLabels() {
-            var hlsLabels =_playerConfig.hlslabels;
-            if(!hlsLabels) {
-                return null;
-            }
-            var labels = {};
-            var bitrates = [];
-            for (var bitrate in hlsLabels) {
-                var key = parseFloat(bitrate);
-                if (!isNaN(key)) {
-                    var rateKBps = Math.round(key);
-                    labels[rateKBps] = hlsLabels[bitrate];
-                    bitrates.push(rateKBps);
-                }
-            }
-            if (bitrates.length === 0) {
-                return null;
-            }
-            bitrates.sort(function(a, b) {
-                return a - b;
-            });
-            return {
-                labels: labels,
-                bitrates: bitrates
-            };
-        }
-
         function checkFlashBlocked() {
             _flashBlockedTimeout = setTimeout(function() {
                 Events.trigger.call(_this, 'flashBlocked');
@@ -124,11 +73,8 @@ define([
                 var level = levels[i];
                 // Set original index
                 level.index = i;
-                // Translate sources into quality levels, assigning custom levels if present
-                if (_customLabels && level.bitrate) {
-                    // get label with nearest rate match
-                    var sourceKbps = Math.round(level.bitrate / 1000);
-                    level.label = _getNearestCustomLabel(sourceKbps);
+                if (level.label !== 'Auto') {
+                    level.label = utils.generateLabel(level, _playerConfig.qualityLabels);
                 }
             }
             e.levels =
