@@ -105,11 +105,12 @@ define([
                     }
 
                     // For legacy purposes, report duration as negative video duration when in DVR mode
-                    if (metaStreamType === 'DVR') {
-                        evt.duration = -evt.videoDuration;
-                    }
-                    delete evt.videoDuration;
-                    delete evt.seekableRange;
+                    evt = {
+                        duration: metaStreamType === 'DVR' ? -data.videoDuration : data.duration,
+                        height: data.height,
+                        width: data.width,
+                        type: 'meta'
+                    };
 
                     break;
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
@@ -135,11 +136,11 @@ define([
                     }
 
                     // For legacy purposes, report duration as negative video duration when in DVR mode
-                    if (streamType === 'DVR') {
-                        evt.duration = -evt.videoDuration;
-                    }
-                    delete evt.videoDuration;
-                    delete evt.seekableRange;
+                    evt = {
+                        position: data.position,
+                        duration: streamType === 'DVR' ? -data.videoDuration : data.duration,
+                        type: 'time'
+                    };
 
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
