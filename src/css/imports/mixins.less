@@ -316,15 +316,17 @@
         .jw-dock-button {
             border-radius: @ui-corner-round;
         }
-
-      .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
-        top: 50%;
-        transform: translateY(-50%);
-        margin: auto;
-        bottom: auto;
+      &:not(.jw-ie) {
+        .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
+          top: 50%;
+          transform: translateY(-50%);
+          margin: auto;
+          bottom: auto;
+        }
       }
 
-      &:not(.jw-flag-time-slider-above) {
+      &:not(.jw-flag-time-slider-above),
+      &.jw-flag-ads-googleima {
         .jw-controlbar {
           height: @controlbar-height;
 
@@ -341,6 +343,11 @@
           height: @controlbar-height;
           line-height: @controlbar-height;
         }
+      }
+
+      &.jw-flag-ads.jw-ie .jw-text-alt {
+        top: 1px;
+        margin: 0;
       }
 
       &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
