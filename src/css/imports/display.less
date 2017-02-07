@@ -51,7 +51,6 @@ display icons
 */
 
 .jw-display {
-
   display: table;
   height: 100%;
   padding: @controlbar-height 0;
@@ -61,11 +60,13 @@ display icons
   .jw-flag-dragging & {
     display: none;
   }
+}
 
-  .jw-state-idle:not(.jw-flag-cast-available) & {
+.jw-state-idle:not(.jw-flag-cast-available),
+.jw-state-error {
+   .jw-display {
     padding: 0;
   }
-
 }
 
 .jw-display-container {
@@ -115,31 +116,38 @@ display icons
 
 }
 
-// hide next and rewind buttons on extra small player
 .jw-breakpoint-0 {
-  .jw-display-icon-next,
+  .jw-display-icon-container {
+    margin: 0 2px;
+  }
+
+  // hide rewind button since it can't fit
   .jw-display-icon-rewind {
     display: none;
   }
-    .jw-display .jw-icon {
-        height: @mobile-touch-target;
-        line-height: @mobile-touch-target;
-        width: @mobile-touch-target;
-        &::before {
-            font-size: @mobile-touch-target * 0.5;
-        }
+  .jw-display {
+    padding: 0 0 40px 0;
+
+    .jw-icon {
+      height: @mobile-touch-target;
+      line-height: @mobile-touch-target;
+      width: @mobile-touch-target;
+      &::before {
+        font-size: @mobile-touch-target * 0.5;
+      }
     }
+  }
 }
 
 .jw-breakpoint-1 {
-    .jw-display .jw-icon {
-        height: @mobile-touch-target * 1.25;
-        line-height: @mobile-touch-target * 1.25;
-        width: @mobile-touch-target * 1.25;
-        &::before {
-            font-size: @mobile-touch-target * 0.5;
-        }
+  .jw-display .jw-icon {
+    height: @mobile-touch-target * 1.25;
+    line-height: @mobile-touch-target * 1.25;
+    width: @mobile-touch-target * 1.25;
+    &::before {
+      font-size: @mobile-touch-target * 0.5;
     }
+  }
 }
 
 .jw-breakpoint-3 {
