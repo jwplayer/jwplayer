@@ -1003,7 +1003,7 @@ define([
             }
         }
 
-        function _setLiveMode(model, streamType){
+        function _setLiveMode(model, streamType) {
             var live = (streamType === 'LIVE');
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
             _this.setAltText((live) ? model.get('localization').liveBroadcast : '');

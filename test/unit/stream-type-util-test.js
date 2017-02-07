@@ -31,17 +31,8 @@ define([
         type = streamTypeUtil.streamType(Infinity, dvrSeekableRange, 0);
         assert.equal(type, 'DVR');
 
-        type = streamTypeUtil.streamType(Infinity, dvrSeekableRange, 0);
-        assert.equal(type, 'DVR');
-
         type = streamTypeUtil.streamType(Infinity, dvrSeekableRange, undefined);
         assert.equal(type, 'DVR');
-
-        type = streamTypeUtil.streamType(Infinity, liveSeekableRange, minDvrWindow);
-        assert.equal(type, 'LIVE');
-
-        type = streamTypeUtil.streamType(Infinity, liveSeekableRange, minDvrWindow);
-        assert.equal(type, 'LIVE');
 
         type = streamTypeUtil.streamType(Infinity, liveSeekableRange, minDvrWindow);
         assert.equal(type, 'LIVE');
