@@ -15,6 +15,8 @@ define([
             // Video provider
             _providers,
             _provider,
+            _beforecompleted = false,
+            _attached = true,
             _currentProvider = utils.noop;
 
         this.mediaController = _.extend({}, Events);
@@ -129,6 +131,14 @@ define([
                     this.setQualityLevel(data.currentQuality, data.levels);
                     this.persistQualityLevel(data.currentQuality, data.levels);
                     break;
+                case events.JWPLAYER_MEDIA_COMPLETE:
+                    _beforecompleted = true;
+                    this.mediaController.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE, evt);
+                    if (_attached) {
+                        this.playbackComplete();
+                    }
+                    return;
+
                 case events.JWPLAYER_AUDIO_TRACKS:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     mediaModel.set('audioTracks', data.tracks);
@@ -224,6 +234,33 @@ define([
             }
 
             this.set('renderCaptionsNatively', _provider.renderNatively);
+        };
+
+        this.checkComplete = function() {
+            return _beforecompleted;
+        };
+
+        this.detachMedia = function() {
+            _attached = false;
+            _provider.off('all', _videoEventHandler, this);
+            return _provider.detachMedia();
+        };
+
+        this.attachMedia = function() {
+            _attached = true;
+            _provider.off('all', _videoEventHandler, this);
+            _provider.on('all', _videoEventHandler, this);
+            if (_beforecompleted) {
+                this.playbackComplete();
+            }
+
+            return _provider.attachMedia();
+        };
+
+        this.playbackComplete = function() {
+            _beforecompleted = false;
+            _provider.setState(states.COMPLETE);
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_COMPLETE, {});
         };
 
         this.destroy = function() {
