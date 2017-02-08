@@ -124,21 +124,34 @@ define([
                     }
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
-                    var streamType = utils.streamType(data.duration, data.seekableRange, this.get('minDvrWindow'));
-                    this.set('streamType', streamType);
-                    this.set('seekableRange', data.seekableRange);
-                    this.set('position', data.position);
-                    mediaModel.set('position', data.position);
+                    var timeDuration = data.duration;
+                    var timePosition = data.position;
+                    var timeSeekableRange = data.seekableRange;
+                    var timeStreamType;
 
-                    if (_.isNumber(data.duration)) {
-                        this.set('duration', data.duration);
-                        mediaModel.set('duration', data.duration);
+                    // Legacy providers will report duration as negative in DVR mode
+                    // Change the data to look like the new format to avoid breaking things
+                    if (timeDuration < 0) {
+                        timeSeekableRange = -timeDuration;
+                        timeDuration = Infinity;
+                        timePosition = -timePosition
+                    }
+
+                    timeStreamType = utils.streamType(timeDuration, timeSeekableRange, this.get('minDvrWindow'));
+                    this.set('streamType', timeStreamType);
+                    this.set('seekableRange', timeSeekableRange);
+                    this.set('position', timePosition);
+                    mediaModel.set('position', timePosition);
+
+                    if (_.isNumber(timeDuration)) {
+                        this.set('duration', timeDuration);
+                        mediaModel.set('duration', timeDuration);
                     }
 
                     // For legacy purposes, report duration as negative video duration when in DVR mode
                     evt = {
-                        position: data.position,
-                        duration: streamType === 'DVR' ? -data.videoDuration : data.duration,
+                        position: timePosition,
+                        duration: timeStreamType === 'DVR' ? -data.videoDuration : timeDuration,
                         type: 'time'
                     };
 
