@@ -163,7 +163,7 @@ define([
             }
         },
         showTimeTooltip: function(evt) {
-            var  duration = this._model.get('duration');
+            var duration = this._model.get('duration');
 
             if (duration === 0) {
                 return;
