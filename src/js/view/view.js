@@ -353,10 +353,6 @@ define([
             }
 
             function addStyle(elements, attr, value, extendParent) {
-                if (!value) {
-                    return;
-                }
-
                 /* if extendParent is true, bundle the first selector of
                 element string to the player element instead of defining it as a
                 child of the player element (default). i.e. #player.sel-1 .sel-2 vs. #player .sel-1 .sel-2 */
@@ -371,68 +367,77 @@ define([
             // look good.
             var activeColor = _model.get('skinColorActive'),
                 inactiveColor = _model.get('skinColorInactive'),
-                backgroundColor = _model.get('skinColorBackground'),
-                backgroundColorGradient = backgroundColor ? 'transparent linear-gradient(180deg, ' +
-                    getRgba(backgroundColor, 0) + ' 0%, ' +
-                    getRgba(backgroundColor, 0.25) + ' 30%, ' +
-                    getRgba(backgroundColor, 0.4) + ' 70%, ' +
-                    getRgba(backgroundColor, 0.5) + ') 100%' : '';
+                backgroundColor = _model.get('skinColorBackground');
 
             // These will use standard style names for CSS since they are added directly to a style sheet
             // Using background instead of background-color so we don't have to clear gradients with background-image
 
-            // Apply active color
-            addStyle([
-                // Toggle and menu button active colors
-                '.jw-button-color.jw-toggle',
-                '.jw-button-color:hover',
-                '.jw-button-color.jw-toggle.jw-off:hover',
-                '.jw-option:not(.jw-active-option):hover',
-                '.jw-nextup-header'
-            ], 'color', activeColor);
-            addStyle([
-                // menu active option
-                '.jw-option.jw-active-option',
-                // slider fill color
-                '.jw-progress'
-            ], 'background', 'none ' + activeColor);
+            if (activeColor) {
+                // Apply active color
+                addStyle([
+                    // Toggle and menu button active colors
+                    '.jw-button-color.jw-toggle',
+                    '.jw-button-color:hover',
+                    '.jw-button-color.jw-toggle.jw-off:hover',
+                    '.jw-option:not(.jw-active-option):hover',
+                    '.jw-nextup-header'
+                ], 'color', activeColor);
+                addStyle([
+                    // menu active option
+                    '.jw-option.jw-active-option',
+                    // slider fill color
+                    '.jw-progress'
+                ], 'background', 'none ' + activeColor);
+            }
 
-            // Apply inactive color
-            addStyle([
-                // text color of many ui elements
-                '.jw-text',
-                // menu option text
-                '.jw-option',
-                // controlbar button colors
-                '.jw-button-color',
-                // toggle button
-                '.jw-toggle.jw-off',
-                '.jw-skip .jw-skip-icon',
-                '.jw-nextup-body'
-            ], 'color', inactiveColor);
-            addStyle([
-                // slider children
-                '.jw-cue',
-                '.jw-knob',
-                '.jw-active-option',
-                '.jw-nextup-header'
-            ], 'background', 'none ' + inactiveColor);
+            if (inactiveColor) {
+                // Apply inactive color
+                addStyle([
+                    // text color of many ui elements
+                    '.jw-text',
+                    // menu option text
+                    '.jw-option',
+                    // controlbar button colors
+                    '.jw-button-color',
+                    // toggle button
+                    '.jw-toggle.jw-off',
+                    '.jw-skip .jw-skip-icon',
+                    '.jw-nextup-body'
+                ], 'color', inactiveColor);
+                addStyle([
+                    // slider children
+                    '.jw-cue',
+                    '.jw-knob',
+                    '.jw-active-option',
+                    '.jw-nextup-header'
+                ], 'background', 'none ' + inactiveColor);
+            }
 
-            // Apply background color
-            addStyle([
-                // general background color
-                '.jw-background-color'
-            ], 'background', 'none ' + backgroundColor);
+            if (backgroundColor) {
+                // Apply background color
+                addStyle([
+                    // general background color
+                    '.jw-background-color'
+                ], 'background', 'none ' + backgroundColor);
 
-            addStyle([
-                // for small player, set the control bar gradient to the config background color
-                '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
-            ], 'background', 'none ' + backgroundColorGradient, true);
+                if (_model.get('timeSliderAbove') !== false) {
+                    var backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
+                        getRgba(backgroundColor, 0) + ' 0%, ' +
+                        getRgba(backgroundColor, 0.25) + ' 30%, ' +
+                        getRgba(backgroundColor, 0.4) + ' 70%, ' +
+                        getRgba(backgroundColor, 0.5) + ') 100%';
 
-            // remove the config background on time slider
-            addStyle([
-                '.jw-flag-time-slider-above .jw-background-color.jw-slider-time'
-            ], 'background', 'transparent', true);
+                    addStyle([
+                        // for small player, set the control bar gradient to the config background color
+                        '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
+                    ], 'background', backgroundColorGradient, true);
+                }
+
+                // remove the config background on time slider
+                addStyle([
+                    '.jw-flag-time-slider-above .jw-background-color.jw-slider-time'
+                ], 'background', 'transparent', true);
+            }
 
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
