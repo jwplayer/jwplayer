@@ -94,19 +94,31 @@ define([
                     this.set('buffer', data.bufferPercent);
                 /* falls through */
                 case events.JWPLAYER_MEDIA_META:
-                    var metaStreamType = utils.streamType(data.duration, data.seekableRange, this.get('minDvrWindow'));
-                    this.set('streamType', metaStreamType);
-                    this.set('seekableRange', data.seekableRange);
+                    // Prefix variables with time to prevent scoping issues
+                    var metaDuration = data.duration;
+                    var metaSeekableRange = data.seekableRange;
+                    var metaLegacyDvrDuration = -data.videoDuration;
+                    var metaStreamType;
 
-                    var duration = data.duration;
-                    if (_.isNumber(duration) && !_.isNaN(duration)) {
-                        mediaModel.set('duration', duration);
-                        this.set('duration', duration);
+                    // Legacy providers will report duration as negative in DVR mode
+                    // Change the data to look like the new format to avoid breaking things
+                    if (metaDuration < 0) {
+                        metaLegacyDvrDuration = metaDuration;
+                        metaSeekableRange = -metaDuration;
+                        metaDuration = Infinity;
                     }
 
+                    metaStreamType = utils.streamType(metaDuration, metaSeekableRange, this.get('minDvrWindow'));
+                    this.set('streamType', metaStreamType);
+                    this.set('seekableRange', metaSeekableRange);
+
+                    if (_.isNumber(metaDuration)) {
+                        this.set('duration', metaDuration);
+                        mediaModel.set('duration', metaDuration);
+                    }
                     // For legacy purposes, report duration as negative video duration when in DVR mode
                     evt = {
-                        duration: metaStreamType === 'DVR' ? -data.videoDuration : data.duration,
+                        duration: metaStreamType === 'DVR' ? metaLegacyDvrDuration: metaDuration,
                         height: data.height,
                         width: data.width,
                         type: 'meta'
@@ -124,17 +136,20 @@ define([
                     }
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
+                    // Prefix variables with time to prevent scoping issues
                     var timeDuration = data.duration;
                     var timePosition = data.position;
                     var timeSeekableRange = data.seekableRange;
+                    var timeLegacyDvrDuration = -data.videoDuration;
                     var timeStreamType;
 
                     // Legacy providers will report duration as negative in DVR mode
                     // Change the data to look like the new format to avoid breaking things
                     if (timeDuration < 0) {
+                        timeLegacyDvrDuration = timeDuration;
                         timeSeekableRange = -timeDuration;
                         timeDuration = Infinity;
-                        timePosition = -timePosition
+                        timePosition = -timePosition;
                     }
 
                     timeStreamType = utils.streamType(timeDuration, timeSeekableRange, this.get('minDvrWindow'));
@@ -151,7 +166,7 @@ define([
                     // For legacy purposes, report duration as negative video duration when in DVR mode
                     evt = {
                         position: timePosition,
-                        duration: timeStreamType === 'DVR' ? -data.videoDuration : timeDuration,
+                        duration: timeStreamType === 'DVR' ? timeLegacyDvrDuration: timeDuration,
                         type: 'time'
                     };
 
@@ -453,6 +468,10 @@ define([
                 ((_autoStartSupportedIOS() && utils.isSafari()) || (utils.isAndroid() && utils.isChrome())) &&
                 (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
+
+        this.updateTimeParameters = function(position, duration, seekableRange) {
+
+        }
     };
 
     // Represents the state of the provider/media element
