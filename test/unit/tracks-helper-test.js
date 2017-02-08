@@ -45,18 +45,16 @@ define([
         func = 'createId';
         count = 0;
 
-        assert.expect(8);
+        assert.expect(6);
 
         assertProperty(assert, '', 'default', 'track.default is 1st priority even if other properties are set');
         assertProperty(assert, 'default', 'default',
             'track.defaulttrack is 2nd priority even if other properties are set');
         assertProperty(assert, 'defaulttrack', '_id', 'track._id is used if track.default is undefined');
         assertProperty(assert, '_id', 'file', 'track.file is used if track.default or track._id is undefined');
-        assertProperty(assert, 'file', 'name',
-            'track.name is prioritized over track.label if other properties are undefined.');
-        assertProperty(assert, 'name', 'label', 'track.label only has a higher priority than track.kind');
         setCount();
-        assertProperty(assert, 'label', 'kind' + count, 'track.kind is lowest priority');
+        assertProperty(assert, 'file',  'kind' + count,
+            'track.kind is used if other properties are undefined.');
         setCount();
         assertProperty(assert, 'kind', 'cc' + count, 'cc is used as the prefix if no other properties are set');
     });

@@ -7,7 +7,7 @@ define([
             if (track.default || track.defaulttrack) {
                 trackId = 'default';
             } else {
-                trackId = track._id || track.file || track.name || track.label || (prefix + tracksCount);
+                trackId = track._id || track.file || (prefix + tracksCount);
             }
             return trackId;
         },
