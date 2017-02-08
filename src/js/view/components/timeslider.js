@@ -79,13 +79,6 @@ define([
             if (this.activeCue && _.isNumber(this.activeCue.pct)) {
                 return this.activeCue.pct;
             }
-            if (this._model.get('streamType') === 'DVR') {
-                // When in DVR mode, only allow seeking up to the live edge - 25s
-                // dvrSeekLimit is negative
-                var seekableRange = this._model.get('seekableRange');
-                var maxSeekPercentage = ((seekableRange + Constants.dvrSeekLimit) / seekableRange) * 100;
-                percent = Math.min(maxSeekPercentage, percent);
-            }
             return percent;
         },
         update: function(percent) {
@@ -113,20 +106,18 @@ define([
         onBuffer : function (model, pct) {
             this.updateBuffer(pct);
         },
-        onPosition : function(model, position) {
-            this.updateTime(position, model.get('duration'), model.get('seekableRange'));
+        onPosition : function(model) {
+            this.updateTime(model.get('position'), model.get('seekableStart'), model.get('seekableEnd'));
         },
-        onDuration : function(model, duration) {
-            this.updateTime(model.get('position'), duration, model.get('seekableRange'));
+        onDuration : function(model) {
+            this.updateTime(model.get('position'), model.get('seekableStart'), model.get('seekableEnd'));
         },
-        updateTime : function(position, duration, seekableRange) {
+        updateTime : function(position, seekableStart, seekableEnd) {
             var streamType = this._model.get('streamType');
-            if (!duration || streamType ===  'LIVE') {
+            if (streamType ===  'LIVE') {
                 return;
             }
-
-            var range = streamType === 'DVR' ? seekableRange : duration;
-            this.render(position / range * 100);
+            this.render((position - seekableStart) / (seekableEnd - seekableStart) * 100);
         },
         onPlaylistItem : function (model, playlistItem) {
             this.reset();
@@ -146,21 +137,10 @@ define([
 
         performSeek : function() {
             var percent = this.seekTo;
-            var duration = this._model.get('duration');
-            var seekableRange = this._model.get('seekableRange');
-            var streamType = this._model.get('streamType');
-            var position;
-            if (duration === 0) {
-                this._api.play(reasonInteraction());
-            } else if (streamType === 'DVR') {
-                // When in DVR mode, give the seek position as the distance from the seekable range
-                // The provider will use this to calculate the real time to seek to
-                position = (100 - percent) / 100 * seekableRange;
-                this._api.seek(position, reasonInteraction());
-            } else {
-                position = percent / 100 * duration;
-                this._api.seek(Math.min(position, duration - 0.25), reasonInteraction());
-            }
+            var start = this._model.get('seekableStart');
+            var range = this._model.get('seekableRange');
+            var position = start + ((percent / 100) * range);
+            this._api.seek(position, reasonInteraction());
         },
         showTimeTooltip: function(evt) {
             var duration = this._model.get('duration');
@@ -190,11 +170,6 @@ define([
             } else {
                 var allowNegativeTime = true;
                 timetipText = utils.timeFormat(time, allowNegativeTime);
-
-                // If DVR and within live buffer
-                if (duration < 0 && time > Constants.dvrSeekLimit) {
-                    timetipText = 'Live';
-                }
             }
             this.timeTip.update(timetipText);
             this.showThumbnail(time);

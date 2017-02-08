@@ -223,7 +223,8 @@ define([
             if (_this.state === states.PLAYING) {
                 _this.trigger(events.JWPLAYER_MEDIA_TIME, {
                     position: _position,
-                    duration: _duration
+                    duration: _duration,
+                    seekableRange: getSeekableRange()
                 });
 
                 _checkVisualQuality();
@@ -270,14 +271,6 @@ define([
 
         function _getDuration() {
             var duration = _videotag.duration;
-            var end = _getSeekableEnd();
-            if (duration === Infinity && end) {
-                var seekableDuration = end - _getSeekableStart();
-                if (seekableDuration !== Infinity && seekableDuration > MIN_DVR_DURATION) {
-                    // Player interprets negative duration as DVR
-                    duration = -seekableDuration;
-                }
-            }
             return duration;
         }
 
@@ -1069,6 +1062,14 @@ define([
                 }
                 _this.trigger('mediaType', {mediaType: mediaType});
             }
+        }
+
+
+        function getSeekableRange() {
+            return {
+                start: _getSeekableStart(),
+                end: _getSeekableEnd()
+            };
         }
     }
 

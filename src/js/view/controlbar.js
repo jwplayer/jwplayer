@@ -267,13 +267,13 @@ define([
 
             new UI(this.elements.duration).on('click tap', function(){
                 if (this._model.get('streamType') === 'DVR') {
-                    this._api.seek(-Constants.dvrSeekLimit, reasonInteraction());
+                    this._api.seek(this._model.get('seekableEnd'), reasonInteraction());
                 }
             }, this);
 
             new UI(this.elements.durationLeft).on('click tap', function(){
                 if (this._model.get('streamType') === 'DVR') {
-                    this._api.seek(-Constants.dvrSeekLimit, reasonInteraction());
+                    this._api.seek(this._model.get('seekableEnd'), reasonInteraction());
                 }
             }, this);
 
@@ -398,12 +398,7 @@ define([
             this.closeMenus();
         },
         rewind : function() {
-            var seekPos = streamTimeUtils.rewindPosition(
-                10,
-                this._model.get('position'),
-                this._model.get('seekableRange'),
-                this._model.get('streamType')
-            );
+            var seekPos = Math.max(this._model.get('position') - 10, this._model.get('seekableStart'));
             this._api.seek(seekPos, reasonInteraction());
         },
         onStreamTypeChange : function(model) {

@@ -143,18 +143,15 @@ define([
                     var timeLegacyDvrDuration = -data.videoDuration;
                     var timeStreamType;
 
-                    // Legacy providers will report duration as negative in DVR mode
-                    // Change the data to look like the new format to avoid breaking things
-                    if (timeDuration < 0) {
-                        timeLegacyDvrDuration = timeDuration;
-                        timeSeekableRange = -timeDuration;
-                        timeDuration = Infinity;
-                        timePosition = -timePosition;
-                    }
+                    console.log(timeSeekableRange.end - timeSeekableRange.start);
+                    console.log((timePosition - timeSeekableRange.start) / (timeSeekableRange.end - timeSeekableRange.start));
 
-                    timeStreamType = utils.streamType(timeDuration, timeSeekableRange, this.get('minDvrWindow'));
+                    timeStreamType = utils.streamType(timeDuration, timeSeekableRange.end - timeSeekableRange.start, this.get('minDvrWindow'));
+
                     this.set('streamType', timeStreamType);
-                    this.set('seekableRange', timeSeekableRange);
+                    this.set('seekableStart', timeSeekableRange.start);
+                    this.set('seekableEnd', timeSeekableRange.end);
+                    this.set('seekableRange', timeSeekableRange.end - timeSeekableRange.start);
                     this.set('position', timePosition);
                     mediaModel.set('position', timePosition);
 
@@ -164,11 +161,11 @@ define([
                     }
 
                     // For legacy purposes, report duration as negative video duration when in DVR mode
-                    evt = {
-                        position: timePosition,
-                        duration: timeStreamType === 'DVR' ? timeLegacyDvrDuration: timeDuration,
-                        type: 'time'
-                    };
+                    // evt = {
+                    //     position: timePosition,
+                    //     duration: timeStreamType === 'DVR' ? timeLegacyDvrDuration: timeDuration,
+                    //     type: 'time'
+                    // };
 
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
