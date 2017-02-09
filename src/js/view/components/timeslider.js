@@ -15,6 +15,7 @@ define([
             this.text.className = 'jw-text jw-reset';
             this.img  = document.createElement('div');
             this.img.className = 'jw-reset';
+            this.resetWidth();
 
             var wrapper = document.createElement('div');
             wrapper.className = 'jw-time-tip jw-background-color jw-reset';
@@ -32,6 +33,16 @@ define([
 
         update : function(txt) {
             this.text.innerHTML = txt;
+        },
+        width : function () {
+            if (!this.containerWidth && this.container) {
+                this.containerWidth = utils.bounds(this.container).width;
+            }
+
+            return this.containerWidth;
+        },
+        resetWidth : function () {
+            this.containerWidth = 0;
         }
     });
 
@@ -170,6 +181,7 @@ define([
                 return;
             }
 
+            var playerWidth = this._model.get('containerWidth');
             var _railBounds = utils.bounds(this.elementRail);
             var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
             position = utils.between(position, 0, _railBounds.width);
@@ -197,7 +209,18 @@ define([
             this.showThumbnail(time);
 
             utils.addClass(this.timeTip.el, 'jw-open');
-            this.timeTip.el.style.left = (pct*100) + '%';
+
+            var timeTipWidth = this.timeTip.width();
+            var widthPct = _railBounds.width / 100;
+            var tolerance = playerWidth - _railBounds.width;
+            var timeTipPct = 0;
+            if (timeTipWidth > tolerance) {
+                // timeTip may go outside the bounds of the player. determine the % of tolerance needed
+                timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
+            }
+            var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct));
+
+            this.timeTip.el.style.left = (safePct * 100) + '%';
         },
 
         hideTimeTooltip: function() {
@@ -207,6 +230,7 @@ define([
         reset : function() {
             this.resetChapters();
             this.resetThumbnails();
+            this.timeTip.resetWidth();
         }
     });
 
