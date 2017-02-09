@@ -185,7 +185,7 @@ define([
 
             _style(_captionsWindow, windowStyle);
             _style(_textContainer, textStyle);
-            _setupCaptionStyles(playerElementId, windowStyle, textStyle);
+            _setupCaptionStyles(playerElementId, windowStyle, textStyle, _options.fontSize);
 
             _captionsWindow.appendChild(_textContainer);
             _display.appendChild(_captionsWindow);
@@ -198,11 +198,15 @@ define([
             return _display;
         };
 
-        function _setupCaptionStyles(playerId, windowStyle, textStyle) {
+        function _setupCaptionStyles(playerId, windowStyle, textStyle, fontSize) {
             // VTT.js DOM window styles
             cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
             // VTT.js DOM text styles
             cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+
+            // Set Shadow DOM font size (needs to be important to override browser's in line style)
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-container',
+                '{font-size: ' + fontSize + 'px !important;}', playerId);
 
             // Shadow DOM window styles
             cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
