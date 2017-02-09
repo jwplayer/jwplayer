@@ -16,12 +16,8 @@ define([
         'ru': 'Russian',
         'es': 'Spanish'
     };
-
-    /**
-     * A map of 3-letter language codes (ISO 639-2) to 2-letter language codes (ISO 639-1)
-     * Commented out until needed
-     */
-    // var threeCharMap = {
+    
+    // If we decide to support the 3-letter language codes (ISO 639-2), the accepted codes would be
     //     'zho': 'zh',
     //     'chi': 'zh',
     //     'dut': 'nl',
@@ -37,11 +33,8 @@ define([
     //     'rus': 'ru',
     //     'esp': 'es',
     //     'spa': 'es'
-    // };
 
     function getLabel(language) {
-        // var code = threeCharMap[language] || language;
-
         return twoCharMap[language] || language;
     }
 
