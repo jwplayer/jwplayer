@@ -205,22 +205,23 @@ define([
                     timetipText = 'Live';
                 }
             }
-            this.timeTip.update(timetipText);
+            var timeTip = this.timeTip;
+
+            timeTip.update(timetipText);
             this.showThumbnail(time);
 
-            utils.addClass(this.timeTip.el, 'jw-open');
+            utils.addClass(timeTip.el, 'jw-open');
 
-            var timeTipWidth = this.timeTip.width();
+            var timeTipWidth = timeTip.width();
             var widthPct = _railBounds.width / 100;
             var tolerance = playerWidth - _railBounds.width;
             var timeTipPct = 0;
             if (timeTipWidth > tolerance) {
-                // timeTip may go outside the bounds of the player. determine the % of tolerance needed
+                // timeTip may go outside the bounds of the player. Determine the % of tolerance needed
                 timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
             }
-            var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct));
-
-            this.timeTip.el.style.left = (safePct * 100) + '%';
+            var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
+            utils.css.style(timeTip.el, {'left': safePct + '%'});
         },
 
         hideTimeTooltip: function() {
