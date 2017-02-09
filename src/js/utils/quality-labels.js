@@ -69,11 +69,25 @@ define([
         return Math.floor(bandwidth / 1000);
     }
 
+    // Use an empty object as the context and populate it like a hash map
+    function hasRedundantLevels(levels) {
+        if (!_.isArray(levels)) {
+            return false;
+        }
+        return _.some(levels, function (level) {
+            var key = level.height || level.bandwidth;
+            var foundDuplicate = this[key];
+            this[key] = 1;
+            return foundDuplicate;
+        }, {});
+    }
+
     return {
         generateLabel: generateLabel,
         createLabel: createLabel,
         getCustomLabel: getCustomLabel,
         findClosestBandwidth: findClosestBandwidth,
         toKbps: toKbps,
+        hasRedundantLevels: hasRedundantLevels,
     };
 });

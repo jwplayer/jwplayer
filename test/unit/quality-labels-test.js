@@ -130,4 +130,47 @@ define([
         var actual = qualityLabels.toKbps(3000);
         assert.equal(actual, expected);
     });
+
+    QUnit.module('hasRedundantLevels');
+    test('should return true if at least two levels share the same height', function (assert) {
+        var levels = [{ height: 100 }, { height: 50 }, { height: 100 }];
+        var actual = qualityLabels.hasRedundantLevels(levels);
+        assert.equal(actual, true);
+    });
+
+    test('should return false if no levels share the same height', function (assert) {
+        var levels = [{ height: 100 }, { height: 50 }, { height: 200 }];
+        var actual = qualityLabels.hasRedundantLevels(levels);
+        assert.equal(actual, false);
+    });
+
+    test('should return true if at least two have no height and share the same bandwidth', function (assert) {
+        var levels = [{ bandwidth: 10000 }, { height: 50 }, { bandwidth: 10000 }];
+        var actual = qualityLabels.hasRedundantLevels(levels);
+        assert.equal(actual, true);
+    });
+
+    test('should return false if at least two have no height and do not share the same bandwidth', function (assert) {
+        var levels = [{ bandwidth: 10000 }, { height: 50 }, { bandwidth: 20000 }];
+        var actual = qualityLabels.hasRedundantLevels(levels);
+        assert.equal(actual, false);
+    });
+
+    test('should return false if there are no levels', function (assert) {
+        var levels = [];
+        var actual = qualityLabels.hasRedundantLevels(levels);
+        assert.equal(actual, false);
+    });
+
+    test('should return false if levels are undefined', function (assert) {
+        var levels = undefined;
+        var actual = qualityLabels.hasRedundantLevels(levels);
+        assert.equal(actual, false);
+    });
+
+    test('should return false if levels are not an array', function (assert) {
+        var levels = { height: 100, notHeight: 100 };
+        var actual = qualityLabels.hasRedundantLevels(levels);
+        assert.equal(actual, false);
+    });
 });
