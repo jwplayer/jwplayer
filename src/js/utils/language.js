@@ -19,29 +19,30 @@ define([
 
     /**
      * A map of 3-letter language codes (ISO 639-2) to 2-letter language codes (ISO 639-1)
+     * Commented out until needed
      */
-    var threeCharMap = {
-        'zho': 'zh',
-        'chi': 'zh',
-        'dut': 'nl',
-        'nld': 'nl',
-        'eng': 'en',
-        'fra': 'fr',
-        'fre': 'fr',
-        'deu': 'de',
-        'ger': 'de',
-        'ita': 'it',
-        'jpn': 'ja',
-        'por': 'pt',
-        'rus': 'ru',
-        'esp': 'es',
-        'spa': 'es'
-    };
+    // var threeCharMap = {
+    //     'zho': 'zh',
+    //     'chi': 'zh',
+    //     'dut': 'nl',
+    //     'nld': 'nl',
+    //     'eng': 'en',
+    //     'fra': 'fr',
+    //     'fre': 'fr',
+    //     'deu': 'de',
+    //     'ger': 'de',
+    //     'ita': 'it',
+    //     'jpn': 'ja',
+    //     'por': 'pt',
+    //     'rus': 'ru',
+    //     'esp': 'es',
+    //     'spa': 'es'
+    // };
 
     function getLabel(language) {
-        var code = threeCharMap[language] || language;
+        // var code = threeCharMap[language] || language;
 
-        return twoCharMap[code] || language;
+        return twoCharMap[language] || language;
     }
 
     return {
