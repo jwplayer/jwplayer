@@ -96,7 +96,10 @@ define([
                 case events.JWPLAYER_MEDIA_META:
                     // Prefix variables with time to prevent scoping issues
                     var metaDuration = data.duration;
-                    var metaSeekableRange = data.seekableRange;
+                    var metaSeekableRange = data.seekableRange || {
+                        start: 0,
+                        end: 0
+                    };
                     var metaLegacyDvrDuration = -data.videoDuration;
                     var metaStreamType;
 
@@ -104,11 +107,14 @@ define([
                     // Change the data to look like the new format to avoid breaking things
                     if (metaDuration < 0) {
                         metaLegacyDvrDuration = metaDuration;
-                        metaSeekableRange = -metaDuration;
+                        metaSeekableRange = {
+                            start: 0,
+                            end: -metaDuration
+                        };
                         metaDuration = Infinity;
                     }
 
-                    metaStreamType = utils.streamType(metaDuration, metaSeekableRange, this.get('minDvrWindow'));
+                    metaStreamType = utils.streamType(metaDuration, metaSeekableRange.end - metaSeekableRange.start, this.get('minDvrWindow'));
                     this.set('streamType', metaStreamType);
                     this.set('seekableRange', metaSeekableRange);
 
@@ -117,12 +123,12 @@ define([
                         mediaModel.set('duration', metaDuration);
                     }
                     // For legacy purposes, report duration as negative video duration when in DVR mode
-                    evt = {
-                        duration: metaStreamType === 'DVR' ? metaLegacyDvrDuration: metaDuration,
-                        height: data.height,
-                        width: data.width,
-                        type: 'meta'
-                    };
+                    // evt = {
+                    //     duration: metaStreamType === 'DVR' ? metaLegacyDvrDuration: metaDuration,
+                    //     height: data.height,
+                    //     width: data.width,
+                    //     type: 'meta'
+                    // };
 
                     break;
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
@@ -143,8 +149,17 @@ define([
                     var timeLegacyDvrDuration = -data.videoDuration;
                     var timeStreamType;
 
-                    console.log(timeSeekableRange.end - timeSeekableRange.start);
-                    console.log((timePosition - timeSeekableRange.start) / (timeSeekableRange.end - timeSeekableRange.start));
+                    if (timeDuration < 0) {
+                        timePosition = -timeDuration + timePosition;
+                        timeSeekableRange = {
+                            start: 0,
+                            end: -timeDuration
+                        };
+                        timeDuration = Infinity;
+                    }
+                    //
+                    // console.log(timeSeekableRange.end - timeSeekableRange.start);
+                    // console.log((timePosition - timeSeekableRange.start) / (timeSeekableRange.end - timeSeekableRange.start));
 
                     timeStreamType = utils.streamType(timeDuration, timeSeekableRange.end - timeSeekableRange.start, this.get('minDvrWindow'));
 

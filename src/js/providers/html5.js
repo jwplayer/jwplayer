@@ -97,8 +97,6 @@ define([
             },
             // DOM container
             _container,
-            // Current duration
-            _duration,
             // Current position
             _position,
             // Whether seeking is ready yet
@@ -187,8 +185,7 @@ define([
             if (!_attached || _isAndroidHLS) {
                 return;
             }
-            _updateDuration(_getDuration());
-            _setBuffered(_getBuffer(), _position, _duration);
+            _setBuffered(_getBuffer(), _position);
         }
 
         function _progressHandler() {
@@ -196,7 +193,7 @@ define([
                 return;
             }
 
-            _setBuffered(_getBuffer(), _position, _duration);
+            _setBuffered(_getBuffer(), _position);
         }
 
         function _timeUpdateHandler() {
@@ -214,16 +211,15 @@ define([
             if (_isAndroidHLS && (_videotag.duration === Infinity) && (_videotag.currentTime === 0)) {
                 return;
             }
-            _updateDuration(_getDuration());
             _setPosition(_videotag.currentTime);
             // buffer ranges change during playback, not just on file progress
-            _setBuffered(_getBuffer(), _position, _duration);
+            _setBuffered(_getBuffer(), _position);
 
             // send time events when playing
             if (_this.state === states.PLAYING) {
                 _this.trigger(events.JWPLAYER_MEDIA_TIME, {
                     position: _position,
-                    duration: _duration,
+                    duration: _getDuration(),
                     seekableRange: getSeekableRange()
                 });
 
@@ -252,33 +248,22 @@ define([
         }
 
         function _setBuffered(buffered, currentTime, duration) {
-            if (duration !== 0 && (buffered !== _buffered || duration !== _duration)) {
+            if (duration !== 0 && buffered !== _buffered) {
                 _buffered = buffered;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: buffered * 100,
                     position: currentTime,
-                    duration: duration
+                    duration: _getDuration()
                 });
             }
         }
 
         function _setPosition(currentTime) {
-            if (_duration < 0) {
-                currentTime = -(_getSeekableEnd() - currentTime);
-            }
             _position = currentTime;
         }
 
         function _getDuration() {
-            var duration = _videotag.duration;
-            return duration;
-        }
-
-        function _updateDuration(duration) {
-            _duration = duration;
-            if (_delayedSeek && duration && duration !== Infinity) {
-                _this.seek(_delayedSeek);
-            }
+            return _videotag.duration;
         }
 
         function _sendMetaEvent() {
@@ -291,7 +276,6 @@ define([
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
             });
-            _updateDuration(duration);
         }
 
         function _canPlayHandler() {
@@ -450,8 +434,7 @@ define([
             }
         }
 
-        function _completeLoad(startTime, duration) {
-
+        function _completeLoad(startTime) {
             _delayedSeek = 0;
             clearTimeout(_playbackTimeout);
 
@@ -464,7 +447,6 @@ define([
             var hasPlayed = _videotag.hasAttribute('jw-played');
 
             if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
-                _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
                 _this.setupSideloadedTracks(_this._itemTracks);
                 _videotag.load();
@@ -598,7 +580,6 @@ define([
             }
 
             _position = item.starttime || 0;
-            _duration = item.duration || 0;
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
             this.setupSideloadedTracks(item.tracks);
@@ -656,19 +637,15 @@ define([
                 return;
             }
 
-            if (seekPos < 0) {
-                seekPos += _getSeekableStart() + _getSeekableEnd();
-            }
-
             if (_delayedSeek === 0) {
                 this.trigger(events.JWPLAYER_MEDIA_SEEK, {
                     position: _videotag.currentTime,
                     offset: seekPos
                 });
             }
-            if (!_canSeek) {
-                _canSeek = !!_getSeekableEnd();
-            }
+
+            _canSeek = _canSeek || !!_getSeekableEnd();
+
             if (_canSeek) {
                 _delayedSeek = 0;
                 // setting currentTime can throw an invalid DOM state exception if the video is not ready
@@ -681,11 +658,6 @@ define([
                 }
             } else {
                 _delayedSeek = seekPos;
-                // Firefox isn't firing canplay event when in a paused state
-                // https://bugzilla.mozilla.org/show_bug.cgi?id=1194624
-                if (_isFirefox && _videotag.paused) {
-                    _play();
-                }
             }
         };
 
@@ -978,9 +950,6 @@ define([
 
                     var time = _videotag.currentTime || 0;
                     var duration = _videotag.duration || 0;
-                    if (duration <= 0) {
-                        duration = _duration;
-                    }
                     _this.setState(states.LOADING);
                     _completeLoad(time, duration);
                 }
