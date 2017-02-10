@@ -16,6 +16,7 @@ define([
             this.img  = document.createElement('div');
             this.img.className = 'jw-reset';
             this.resetWidth();
+            this.textLength = 0;
 
             var wrapper = document.createElement('div');
             wrapper.className = 'jw-time-tip jw-background-color jw-reset';
@@ -220,6 +221,11 @@ define([
             var timeTip = this.timeTip;
 
             timeTip.update(timetipText);
+            if (this.textLength !== timetipText.length) {
+                // An activeCue may cause the width of the timeTip container to change
+                this.textLength = timetipText.length;
+                timeTip.resetWidth();
+            }
             this.showThumbnail(time);
 
             utils.addClass(timeTip.el, 'jw-open');
@@ -244,6 +250,7 @@ define([
             this.resetChapters();
             this.resetThumbnails();
             this.timeTip.resetWidth();
+            this.textLength = 0;
         }
     });
 
