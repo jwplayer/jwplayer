@@ -9,7 +9,6 @@ module.exports = function() {
             {pattern: 'node_modules/requirejs/require.js', instrument: false},
             {pattern: 'node_modules/requirejs-handlebars/*.js', load: false, instrument: false},
             {pattern: 'node_modules/requirejs-text/*.js', load: false, instrument: false},
-            {pattern: 'node_modules/require-less/*.js', load: false, instrument: false},
             {pattern: 'node_modules/simple-style-loader/addStyles.js', load: false, instrument: false},
             {pattern: 'node_modules/underscore/*.js', load: false, instrument: false},
 

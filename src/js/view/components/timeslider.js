@@ -15,6 +15,8 @@ define([
             this.text.className = 'jw-text jw-reset';
             this.img  = document.createElement('div');
             this.img.className = 'jw-reset';
+            this.resetWidth();
+            this.textLength = 0;
 
             var wrapper = document.createElement('div');
             wrapper.className = 'jw-time-tip jw-background-color jw-reset';
@@ -32,6 +34,28 @@ define([
 
         update : function(txt) {
             this.text.innerHTML = txt;
+        },
+        getWidth : function () {
+            if (!this.containerWidth) {
+                this.setWidth();
+            }
+
+            return this.containerWidth;
+        },
+        setWidth : function (width) {
+            if (width) {
+                this.containerWidth = width + 16; // add a little padding so the image isn't flush against the edge
+                return;
+            }
+
+            if (!this.container) {
+                return;
+            }
+
+            this.containerWidth = utils.bounds(this.container).width;
+        },
+        resetWidth : function () {
+            this.containerWidth = 0;
         }
     });
 
@@ -170,6 +194,7 @@ define([
                 return;
             }
 
+            var playerWidth = this._model.get('containerWidth');
             var _railBounds = utils.bounds(this.elementRail);
             var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
             position = utils.between(position, 0, _railBounds.width);
@@ -193,11 +218,28 @@ define([
                     timetipText = 'Live';
                 }
             }
-            this.timeTip.update(timetipText);
+            var timeTip = this.timeTip;
+
+            timeTip.update(timetipText);
+            if (this.textLength !== timetipText.length) {
+                // An activeCue may cause the width of the timeTip container to change
+                this.textLength = timetipText.length;
+                timeTip.resetWidth();
+            }
             this.showThumbnail(time);
 
-            utils.addClass(this.timeTip.el, 'jw-open');
-            this.timeTip.el.style.left = (pct*100) + '%';
+            utils.addClass(timeTip.el, 'jw-open');
+
+            var timeTipWidth = timeTip.getWidth();
+            var widthPct = _railBounds.width / 100;
+            var tolerance = playerWidth - _railBounds.width;
+            var timeTipPct = 0;
+            if (timeTipWidth > tolerance) {
+                // timeTip may go outside the bounds of the player. Determine the % of tolerance needed
+                timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
+            }
+            var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
+            utils.css.style(timeTip.el, {'left': safePct + '%'});
         },
 
         hideTimeTooltip: function() {
@@ -207,6 +249,8 @@ define([
         reset : function() {
             this.resetChapters();
             this.resetThumbnails();
+            this.timeTip.resetWidth();
+            this.textLength = 0;
         }
     });
 

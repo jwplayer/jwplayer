@@ -206,7 +206,7 @@ define([
         });
     });
 
-    test('error "File not found" (404)', function (assert) {
+    test('error "File not found" (404) - Integration Test', function (assert) {
         var done = assert.async();
 
         utils.ajax({
