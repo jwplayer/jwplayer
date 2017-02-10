@@ -1,0 +1,189 @@
+@import "../imports/vars";
+@import "../imports/icons";
+
+// idle
+
+.jw-state-idle {
+  .jw-icon-display {
+    .jw-icon-play;
+  }
+
+  /* hide control bar and clear display container padding on idle state unless
+  cast available flag is set */
+  &:not(.jw-flag-cast-available) {
+    .jw-display {
+      padding: 0;
+    }
+  }
+}
+
+// buffering
+
+.jwplayer.jw-state-buffering {
+  .jw-display-icon-display .jw-icon {
+    .jw-icon-buffer;
+
+    -webkit-animation:spin 2s linear infinite;
+    -moz-animation:spin 2s linear infinite;
+    animation:spin 2s linear infinite;
+    @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+    @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+    @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+  }
+}
+
+// playing
+
+.jwplayer.jw-state-playing {
+
+  .jw-display .jw-icon-display,
+  .jw-icon-playback {
+    .jw-icon-pause;
+  }
+
+}
+
+// paused
+
+.jwplayer.jw-state-paused {
+
+  .jw-display .jw-icon-display,
+  .jw-icon-playback {
+    .jw-icon-play;
+  }
+
+  // Hide autostart mute button when paused by the browser
+  .jw-autostart-mute {
+    display: none;
+  }
+
+}
+
+// complete
+
+.jwplayer.jw-state-complete {
+
+  .jw-display {
+    .jw-icon-display {
+      .jw-icon-replay;
+    }
+
+    .jw-text {
+      display: none;
+    }
+  }
+
+  .jw-icon-playback {
+    .jw-icon-play;
+  }
+}
+
+// errors
+
+body .jw-error,
+body .jwplayer.jw-state-error {
+  .jw-title .jw-title-primary {
+    white-space: normal;
+  }
+
+  .jw-icon-display {
+    cursor: default;
+    .jw-icon;
+    .jw-icon-error;
+  }
+}
+
+body .jw-error {
+  font-size: @default-em-size;
+  background-color: #000;
+  color: @font-color;
+  width: 100%;
+  height: 100%;
+  display: table;
+  opacity: 1;
+  position: relative;
+
+  .jw-icon-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+}
+
+// Show the title
+
+.jw-state-idle,
+body .jw-error,
+body .jwplayer.jw-state-error {
+  .jw-title {
+    display: block;
+  }
+}
+
+// Only show the play display icon
+
+.jw-state-idle,
+.jwplayer.jw-state-buffering,
+.jwplayer.jw-state-complete,
+body .jw-error,
+body .jwplayer.jw-state-error {
+  .jw-display-icon-rewind,
+  .jw-display-icon-next {
+    display: none;
+  }
+}
+
+// Show preview
+
+.jw-state-idle,
+.jwplayer.jw-state-complete:not(.jw-flag-casting):not(.jw-flag-audio-player),
+body .jw-error,
+body .jwplayer.jw-state-error {
+  .jw-preview {
+    display: block;
+  }
+}
+
+// Hide captions
+
+.jw-state-idle,
+.jwplayer.jw-state-complete,
+body .jwplayer.jw-state-error {
+  .jw-captions {
+    display: none;
+  }
+}
+
+// Hide control bar
+
+.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available),
+body .jwplayer.jw-state-error {
+  .jw-controlbar {
+    display: none;
+  }
+}
+
+// Hide display
+
+.jwplayer.jw-state-playing.jw-flag-user-inactive,
+.jwplayer.jw-state-playing:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting),
+.jwplayer.jw-state-paused:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
+  .jw-display {
+    display: none;
+  }
+}
+
+// Hide text
+
+.jwplayer.jw-state-buffering,
+.jwplayer.jw-state-complete {
+  .jw-text {
+    display: none;
+  }
+}
+
