@@ -70,11 +70,12 @@ define([
                     return;
                 }
             } else {
-                if(!this.individualImage){
+                if (!this.individualImage) {
                     this.individualImage = new Image();
                     this.individualImage.onload = _.bind(function () {
                         this.individualImage.onload = null;
                         this.timeTip.image({ width: this.individualImage.width, height: this.individualImage.height });
+                        this.timeTip.setWidth(this.individualImage.width);
                     }, this);
                     this.individualImage.src = url;
                 }
