@@ -20,8 +20,8 @@
     @cc-inactive: @buffer-color;
     @cc-active: @active-color;
     @volume-background: #333;
-
-    @rail-height: .3em;
+    
+    @rail-height: 0.375em;
     @thumb-size: .1em;
     @thumb-width: @thumb-size;
     @thumb-height: .5em;
@@ -79,7 +79,7 @@
         }
 
         .jw-knob {
-            .vertically-centered-rail-element(.3em,.5em);
+            .vertically-centered-rail-element(@rail-height,.5em);
 
             background: @vertical-rail-gradient;
             width: .3em;
@@ -89,7 +89,7 @@
         }
 
         .jw-cue {
-            .vertically-centered-rail-element(.3em,.4em);
+            .vertically-centered-rail-element(@rail-height,.4em);
             background-color: @inactive-color;
             border: 1px solid #000;
         }
