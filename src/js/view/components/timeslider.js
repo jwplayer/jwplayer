@@ -34,12 +34,24 @@ define([
         update : function(txt) {
             this.text.innerHTML = txt;
         },
-        width : function () {
-            if (!this.containerWidth && this.container) {
-                this.containerWidth = utils.bounds(this.container).width;
+        getWidth : function () {
+            if (!this.containerWidth) {
+                this.setWidth();
             }
 
             return this.containerWidth;
+        },
+        setWidth : function (width) {
+            if (width) {
+                this.containerWidth = width + 16; // add a little padding so the image isn't flush against the edge
+                return;
+            }
+
+            if (!this.container) {
+                return;
+            }
+
+            this.containerWidth = utils.bounds(this.container).width;
         },
         resetWidth : function () {
             this.containerWidth = 0;
@@ -212,7 +224,7 @@ define([
 
             utils.addClass(timeTip.el, 'jw-open');
 
-            var timeTipWidth = timeTip.width();
+            var timeTipWidth = timeTip.getWidth();
             var widthPct = _railBounds.width / 100;
             var tolerance = playerWidth - _railBounds.width;
             var timeTipPct = 0;
