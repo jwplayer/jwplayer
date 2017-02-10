@@ -83,6 +83,10 @@ define([
 
             _model.setup(config, storage);
             _view  = this._view = new View(_api, _model);
+
+            if(_model.get('autostart') === 'viewable' && (window.self !== window.top)) {
+                _model.set('autostart', true);
+            }
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
@@ -225,7 +229,7 @@ define([
                 }
                 // Start playback on desktop and mobile browsers when allowed
                 if (_canAutoStart()) {
-                    if (utils.isMobile() && _video().video) {
+                    if (_video().video && (utils.isMobile() || _model.get('autostart') === 'viewable')) {
                         // Only play if the video is in the viewport
                         _observeVideo(_video().video);
                     } else {
