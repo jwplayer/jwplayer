@@ -205,7 +205,8 @@ define([
             cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
 
             // Set Shadow DOM font size (needs to be important to override browser's in line style)
-            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-container',
+            var target = utils.isSafari() ? 'display' : 'container';
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target,
                 '{font-size: ' + fontSize + 'px !important;}', playerId);
 
             // Shadow DOM window styles
@@ -214,7 +215,13 @@ define([
             // Shadow DOM text styles
             cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
 
-            // Shadow DOM text background style in Safari needs to be important to override browser style
+            // Shadow DOM text color needs to be important to override Safari
+            if (utils.isSafari()) {
+                cssUtils.css('#' + playerId + ' .jw-video::cue',
+                    '{color: ' + textStyle.color + ' !important;}', playerId);
+            }
+
+            // Shadow DOM text background style needs to be important to override Safari
             if (textStyle.backgroundColor) {
                 var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
