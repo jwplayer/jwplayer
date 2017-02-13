@@ -183,6 +183,11 @@ define([
                 });
             });
 
+            _model.on('change:viewable', function(model, viewable) {
+                var meta = { reason: 'autostart' };
+                viewable ? _this.play(meta) : _this.pause(meta);
+            });
+
             // Ensure captionsList event is raised after playlistItem
             _captions = new Captions(_api, _model);
 
@@ -225,7 +230,7 @@ define([
                 }
                 // Start playback on desktop and mobile browsers when allowed
                 if (_canAutoStart()) {
-                    if (utils.isMobile() && _video().video) {
+                    if (_video().video) {
                         // Only play if the video is in the viewport
                         _observeVideo(_video().video);
                     } else {
@@ -251,7 +256,7 @@ define([
                 if (!window.IntersectionObserver) {
                     return;
                 }
-                _xo = new window.IntersectionObserver(_toggleVideoPlayback, { threshold: 0.5 });
+                _xo = new window.IntersectionObserver(_onIntersection, { threshold: 0.5 });
                 _xo.observe(video);
             }
 
@@ -260,16 +265,15 @@ define([
                 _xo = undefined;
             }
 
-            function _toggleVideoPlayback(entries) {
+            function _onIntersection(entries) {
                 if (entries && entries.length) {
                     var video = _video().video;
                     var entry = entries[0];
-                    var meta = { reason: 'autostart' };
 
                     if (entry.target === video && entry.intersectionRatio >= 0.5) {
-                        _this.play(meta);
+                        _model.set('viewable', true);
                     } else {
-                        _this.pause(meta);
+                        _model.set('viewable', false);
                     }
                 }
             }
