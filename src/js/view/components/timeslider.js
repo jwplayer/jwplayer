@@ -2,11 +2,12 @@ define([
     'utils/underscore',
     'utils/helpers',
     'utils/constants',
+    'utils/ui',
     'view/components/slider',
     'view/components/tooltip',
     'view/components/chapters.mixin',
     'view/components/thumbnails.mixin'
-], function(_, utils, Constants, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
+], function(_, utils, Constants, UI, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
 
     var TimeTip = Tooltip.extend({
         setup : function() {
@@ -75,6 +76,7 @@ define([
 
             // Store the attempted seek, until the previous one completes
             this.seekThrottled = _.throttle(this.performSeek, 400);
+            this.mobileHoverDistance = 5;
 
             this._model
                 .on('change:playlistItem', this.onPlaylistItem, this)
@@ -95,9 +97,11 @@ define([
 
             this.elementRail.appendChild(this.timeTip.element());
 
-            // mousemove/mouseout because this currently mouse specific functionality.
-            this.el.addEventListener('mousemove', this.showTimeTooltip.bind(this), false);
-            this.el.addEventListener('mouseout', this.hideTimeTooltip.bind(this), false);
+            // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
+            this.elementUI = new UI(this.el, {'useHover': true, 'useMove': true})
+                .on('drag move over', this.showTimeTooltip.bind(this), this)
+                .on('dragEnd out', this.hideTimeTooltip.bind(this), this);
+
         },
         limit: function(percent) {
             if (this.activeCue && _.isNumber(this.activeCue.pct)) {
@@ -207,6 +211,18 @@ define([
             }
 
             var timetipText;
+
+            // With touch events, we never will get the hover events on the cues that cause cues to be active.
+            // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
+            if (evt.sourceEventType === 'touch') {
+                this.activeCue = _.reduce(this.cues, function(closeCue, cue) {
+                    if (Math.abs(position - (parseInt(cue.pct) / 100 * _railBounds.width)) < this.mobileHoverDistance) {
+                        return cue;
+                    }
+                    return closeCue;
+                }.bind(this), undefined);
+            }
+
             if (this.activeCue) {
                 timetipText = this.activeCue.text;
             } else {
