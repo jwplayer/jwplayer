@@ -15,7 +15,7 @@ define([
     'events/states',
     'events/events',
     'view/error',
-    'controller/events-middleware',
+    'controller/events-middleware'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
             Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
 
@@ -186,7 +186,11 @@ define([
 
             _model.on('change:viewable', function(model, viewable) {
                 var meta = { reason: 'autostart' };
-                viewable ? _this.play(meta) : _this.pause(meta);
+                if (viewable) {
+                    _this.play(meta);
+                } else {
+                    _this.pause(meta);
+                }
             });
 
             // Ensure captionsList event is raised after playlistItem
