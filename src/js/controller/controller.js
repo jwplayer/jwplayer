@@ -14,9 +14,10 @@ define([
     'events/change-state-event',
     'events/states',
     'events/events',
-    'view/error'
+    'view/error',
+    'controller/events-middleware',
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
 
     function _queueCommand(command) {
         return function(){
@@ -230,7 +231,7 @@ define([
                 }
                 // Start playback on desktop and mobile browsers when allowed
                 if (_canAutoStart()) {
-                    if (_video().video) {
+                    if (utils.isMobile() && _video().video) {
                         // Only play if the video is in the viewport
                         _observeVideo(_video().video);
                     } else {
@@ -267,13 +268,12 @@ define([
 
             function _onIntersection(entries) {
                 if (entries && entries.length) {
-                    var video = _video().video;
                     var entry = entries[0];
 
-                    if (entry.target === video && entry.intersectionRatio >= 0.5) {
-                        _model.set('viewable', true);
+                    if (entry.target === _video().video && entry.intersectionRatio >= 0.5) {
+                        _model.set('viewable', 1);
                     } else {
-                        _model.set('viewable', false);
+                        _model.set('viewable', 0);
                     }
                 }
             }
@@ -836,6 +836,12 @@ define([
                 if (_this._instreamAdapter) {
                     _this._instreamAdapter.destroy();
                 }
+            };
+
+            // Delegate trigger so we can run a middleware function before any event is bubbled through the API
+            this.trigger = function (type, args) {
+                var data = eventsMiddleware(_model, type, args);
+                return Events.trigger.call(this, type, data);
             };
 
             _setup.start();
