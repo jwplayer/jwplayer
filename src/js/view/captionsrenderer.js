@@ -185,7 +185,7 @@ define([
 
             _style(_captionsWindow, windowStyle);
             _style(_textContainer, textStyle);
-            _setupCaptionStyles(playerElementId, windowStyle, textStyle);
+            _setupCaptionStyles(playerElementId, windowStyle, textStyle, _options.fontSize);
 
             _captionsWindow.appendChild(_textContainer);
             _display.appendChild(_captionsWindow);
@@ -198,11 +198,16 @@ define([
             return _display;
         };
 
-        function _setupCaptionStyles(playerId, windowStyle, textStyle) {
+        function _setupCaptionStyles(playerId, windowStyle, textStyle, fontSize) {
             // VTT.js DOM window styles
             cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
             // VTT.js DOM text styles
             cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+
+            // Set Shadow DOM font size (needs to be important to override browser's in line style)
+            var target = utils.isSafari() ? 'display' : 'container';
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target,
+                '{font-size: ' + fontSize + 'px !important;}', playerId);
 
             // Shadow DOM window styles
             cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
@@ -210,7 +215,13 @@ define([
             // Shadow DOM text styles
             cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
 
-            // Shadow DOM text background style in Safari needs to be important to override browser style
+            // Shadow DOM text color needs to be important to override Safari
+            if (utils.isSafari()) {
+                cssUtils.css('#' + playerId + ' .jw-video::cue',
+                    '{color: ' + textStyle.color + ' !important;}', playerId);
+            }
+
+            // Shadow DOM text background style needs to be important to override Safari
             if (textStyle.backgroundColor) {
                 var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',

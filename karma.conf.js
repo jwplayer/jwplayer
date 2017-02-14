@@ -83,7 +83,6 @@ module.exports = function( config ) {
             {pattern: 'node_modules/requirejs/require.js', included: true},
             {pattern: 'node_modules/requirejs-handlebars/*.js', included: false},
             {pattern: 'node_modules/requirejs-text/*.js', included: false},
-            {pattern: 'node_modules/require-less/*.js', included: false},
             {pattern: 'node_modules/simple-style-loader/addStyles.js', included: false},
             {pattern: 'node_modules/underscore/*.js', included: false},
             {pattern: 'node_modules/sinon/**/*.js', included: false},

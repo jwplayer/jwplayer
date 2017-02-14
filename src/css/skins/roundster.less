@@ -26,7 +26,7 @@
     @volume-background: #5c6373;
 
     @cue-size: .25em;
-    @thumb-size: .9em;
+    @thumb-size: 1em;
     @def-rail-width: 0.75em;
     @slider-height: @rail-height;
     @rail-height: 0.4em;
@@ -105,7 +105,13 @@
         .jw-slider-container{
             width: @def-rail-width;
         }
+    }
 
+    // Adjusts the volume slider container width to allow the slider to be centered
+    &.jw-flag-time-slider-above {
+        .jw-slider-vertical .jw-slider-container {
+            width: 0.8em;
+        }
     }
 
     /* For the overlay containers */
