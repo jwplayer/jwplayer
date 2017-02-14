@@ -248,6 +248,10 @@ define([
             }
 
             function _observePlayerContainer(container) {
+                if (!container) {
+                    return;
+                }
+
                 if ('IntersectionObserver' in window &&
                     'IntersectionObserverEntry' in window &&
                     'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
