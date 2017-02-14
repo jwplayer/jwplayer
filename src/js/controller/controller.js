@@ -83,6 +83,10 @@ define([
 
             _model.setup(config, storage);
             _view  = this._view = new View(_api, _model);
+
+            if(_model.get('autostart') === 'viewable' && (window.self !== window.top)) {
+                _model.set('autostart', true);
+            }
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
@@ -225,34 +229,34 @@ define([
                 }
                 // Start playback on desktop and mobile browsers when allowed
                 if (_canAutoStart()) {
-                    if (utils.isMobile() && _video().video) {
-                        // Only play if the video is in the viewport
-                        _observeVideo(_video().video);
+                    if (utils.isMobile() || _model.get('autostart') === 'viewable') {
+                        // Only play if the player is in the viewport
+                        _observePlayerContainer(_this.getContainer());
                     } else {
                         _autoStart();
                     }
                 }
             }
 
-            function _observeVideo(video) {
+            function _observePlayerContainer(container) {
                 if ('IntersectionObserver' in window &&
                     'IntersectionObserverEntry' in window &&
                     'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-                    _startObserving(video);
+                    _startObserving(container);
                 } else {
                     require.ensure(['polyfills/intersection-observer'], function (require) {
                         require('polyfills/intersection-observer');
-                        _startObserving(video);
+                        _startObserving(container);
                     }, 'polyfills.intersection-observer');
                 }
             }
 
-            function _startObserving(video) {
+            function _startObserving(container) {
                 if (!window.IntersectionObserver) {
                     return;
                 }
                 _xo = new window.IntersectionObserver(_toggleVideoPlayback, { threshold: 0.5 });
-                _xo.observe(video);
+                _xo.observe(container);
             }
 
             function _stopObserving() {
@@ -262,13 +266,14 @@ define([
 
             function _toggleVideoPlayback(entries) {
                 if (entries && entries.length) {
-                    var video = _video().video;
+                    var container = _this.getContainer();
                     var entry = entries[0];
                     var meta = { reason: 'autostart' };
+                    var viewable = entry.target === container && entry.intersectionRatio >= 0.5;
 
-                    if (entry.target === video && entry.intersectionRatio >= 0.5) {
+                    if (_model.get('state') !== 'playing' && viewable) {
                         _this.play(meta);
-                    } else {
+                    } else if (utils.isMobile()) {
                         _this.pause(meta);
                     }
                 }
