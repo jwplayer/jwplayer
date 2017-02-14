@@ -270,9 +270,9 @@ define([
                     var entry = entries[0];
                     var meta = { reason: 'autostart' };
 
-                    if (entry.target === video && entry.intersectionRatio >= 0.5) {
+                    if (_model.get('state') !== 'playing' && entry.target === video && entry.intersectionRatio >= 0.5) {
                         _this.play(meta);
-                    } else {
+                    } else if (utils.isMobile()) {
                         _this.pause(meta);
                     }
                 }
