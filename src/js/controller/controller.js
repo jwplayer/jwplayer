@@ -189,11 +189,12 @@ define([
             });
 
             _model.on('change:viewable', function(model, viewable) {
-                var meta = { reason: 'autostart' };
-                if (viewable) {
-                    _this.play(meta);
-                } else {
-                    _this.pause(meta);
+                if (_canAutoStart()) {
+                    if (_shouldAutoStart(viewable)) {
+                        _autoStart();
+                    } else if (utils.isMobile()) {
+                        _this.pause({reason: 'autostart'});
+                    }
                 }
             });
 
@@ -237,14 +238,12 @@ define([
                 if (related) {
                     related.on('nextUp', _model.setNextUp, _model);
                 }
-                // Start playback on desktop and mobile browsers when allowed
-                if (_canAutoStart()) {
-                    if (utils.isMobile() || _model.get('autostart') === 'viewable') {
-                        // Only play if the player is in the viewport
-                        _observePlayerContainer(_this.getContainer());
-                    } else {
-                        _autoStart();
-                    }
+
+                _observePlayerContainer(_this.getContainer());
+                if (_canAutoStart() && _shouldAutoStart()) {
+                    // Autostart immediately if we're not waiting for the player to become viewable first
+                    // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
+                    _autoStart();
                 }
             }
 
@@ -276,13 +275,10 @@ define([
 
             function _onIntersection(entries) {
                 if (entries && entries.length) {
-                    var container = _this.getContainer();
                     var entry = entries[0];
-                    var viewable = entry.target === container && entry.intersectionRatio >= 0.5;
-
-                    if (_model.get('state') !== 'playing' && viewable) {
+                    if (entry.target === _this.getContainer() && entry.intersectionRatio >= 0.5) {
                         _model.set('viewable', 1);
-                    } else if (utils.isMobile()) {
+                    } else {
                         _model.set('viewable', 0);
                     }
                 }
@@ -717,6 +713,17 @@ define([
 
             function _canAutoStart() {
                 return (_model.get('autostart') && !utils.isMobile()) || _model.autoStartOnMobile();
+            }
+
+            function _shouldAutoStart(viewable) {
+                var mobileAutostart = utils.isMobile();
+
+                if (!mobileAutostart && _model.get('autostart') === true) {
+                    return true;
+                }
+
+                var desktopViewableAutostart = _model.get('autostart') === 'viewable';
+                return viewable && (mobileAutostart || desktopViewableAutostart);
             }
 
             /** Controller API / public methods **/
