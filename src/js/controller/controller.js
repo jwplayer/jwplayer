@@ -193,7 +193,7 @@ define([
                     if (_shouldAutoStart(viewable)) {
                         _autoStart();
                     } else if (utils.isMobile()) {
-                        _this.pause({reason: 'autostart'});
+                        _this.pause({ reason: 'autostart' });
                     }
                 }
             });
@@ -323,7 +323,11 @@ define([
                 _this.trigger('destroyPlugin', {});
 
                 if (_canAutoStart()) {
-                    _model.once('itemReady', _autoStart);
+                    _model.once('itemReady', function () {
+                        if (_shouldAutoStart(_model.get('viewable'))) {
+                            _autoStart();
+                        }
+                    });
                 }
 
                 switch (typeof item) {
@@ -716,14 +720,16 @@ define([
             }
 
             function _shouldAutoStart(viewable) {
-                var mobileAutostart = utils.isMobile();
-
-                if (!mobileAutostart && _model.get('autostart') === true) {
+                var mobile = utils.isMobile();
+                // Immediately autostart if we're not mobile and autostart is explicitly true
+                if (!mobile && _model.get('autostart') === true) {
                     return true;
                 }
 
+                // Always autostart on mobile if we're viewable
+                // Only autostart if viewable on desktop if autostart is explicitly viewable
                 var desktopViewableAutostart = _model.get('autostart') === 'viewable';
-                return viewable && (mobileAutostart || desktopViewableAutostart);
+                return viewable && (mobile || desktopViewableAutostart);
             }
 
             /** Controller API / public methods **/
