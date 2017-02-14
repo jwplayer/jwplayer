@@ -214,7 +214,7 @@ define([
 
             // With touch events, we never will get the hover events on the cues that cause cues to be active.
             // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
-            if (UI.getEventSource(evt.sourceEvent) === 'touch') {
+            if (UI.getPointerType(evt.sourceEvent) === 'touch') {
                 this.activeCue = _.reduce(this.cues, function(closeCue, cue) {
                     if (Math.abs(position - (parseInt(cue.pct) / 100 * _railBounds.width)) < this.mobileHoverDistance) {
                         return cue;

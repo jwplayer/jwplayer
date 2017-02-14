@@ -293,8 +293,9 @@ define([
         return this;
     };
 
-    UI.getEventSource = function (evt) {
-        // Expose what the source of the event is so that we can ensure it's handled correctly.
+    // Expose what the source of the event is so that we can ensure it's handled correctly.
+    // This returns only 'touch' or 'mouse'.  'pen' will be treated as a mouse.
+    UI.getPointerType = function (evt) {
         if (_supportsPointerEvents && evt instanceof window.PointerEvent) {
             return (evt.pointerType === 'touch') ? 'touch' : 'mouse';
         } else if (_supportsTouchEvents && evt instanceof window.TouchEvent) {
