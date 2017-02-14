@@ -731,8 +731,9 @@ define([
                 }
 
                 // Always autostart on mobile if we're viewable
-                // Only autostart if viewable on desktop if autostart is explicitly viewable
-                var desktopViewableAutostart = _model.get('autostart') === 'viewable';
+                // Only autostart if viewable on desktop if autostart is explicitly viewable and we're not already playing
+                var desktopViewableAutostart = _model.get('autostart') === 'viewable'
+                    && _model.getState() !== states.PLAYING;
                 return viewable && (mobile || desktopViewableAutostart);
             }
 
