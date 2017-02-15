@@ -244,8 +244,8 @@ define([
                     'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
                     _startObserving(container);
                 } else {
-                    require.ensure(['polyfills/intersection-observer'], function (require) {
-                        require('polyfills/intersection-observer');
+                    require.ensure(['intersection-observer'], function (require) {
+                        require('intersection-observer');
                         _startObserving(container);
                     }, 'polyfills.intersection-observer');
                 }
