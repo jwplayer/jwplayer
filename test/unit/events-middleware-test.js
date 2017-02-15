@@ -16,29 +16,29 @@ define([
     }
 
     test('should add viewable to the play event', function (assert) {
-        var model = mockModel({ viewable: true });
-        var expected = { viewable: true, foo: 'bar' };
+        var model = mockModel({ visibility: 0.5 });
+        var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'play', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
     test('should add viewable to the paused event', function (assert) {
-        var model = mockModel({ viewable: true });
-        var expected = { viewable: true, foo: 'bar' };
+        var model = mockModel({ visibility: 0.5 });
+        var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'pause', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
     test('should add viewable to the time event', function (assert) {
-        var model = mockModel({ viewable: true });
-        var expected = { viewable: true, foo: 'bar' };
+        var model = mockModel({ visibility: 0.5 });
+        var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'time', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
     test('should add viewable to the adImpression event', function (assert) {
-        var model = mockModel({ viewable: true });
-        var expected = { viewable: true, foo: 'bar' };
+        var model = mockModel({ visibility: 0.5 });
+        var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'adImpression', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });

@@ -10,7 +10,7 @@ define([
             case Events.JWPLAYER_AD_IMPRESSION:
             case 'play':
             case 'pause': {
-                var viewable = model.get('viewable') || 0;
+                var viewable = Math.round(model.get('visibility') || 0);
                 newState = _.extend({}, currentState, { viewable: viewable });
                 break;
             }
