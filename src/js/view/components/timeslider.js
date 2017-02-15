@@ -239,7 +239,7 @@ define([
                 timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
             }
             var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
-            utils.css.style(timeTip.el, {'left': safePct + '%'});
+            utils.style(timeTip.el, {'left': safePct + '%'});
         },
 
         hideTimeTooltip: function() {
