@@ -865,11 +865,13 @@ define([
             if (autostartSucceeded) {
                 mute = false;
             }
+
             _model.off('change:autostartFailed', _autoplayUnmute);
             _model.off('change:mute', _autoplayUnmute);
             _model.off('change:autostartMuted', _autoplayUnmute);
             _model.set('autostartFailed', undefined);
             _model.set('autostartMuted', undefined);
+            _model.set('playOnViewable', false);
             _api.setMute(mute);
             // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state
             _controlbar.renderVolume(mute, _model.get('volume'));

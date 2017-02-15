@@ -127,9 +127,9 @@ define([
                 _this.trigger(events.JWPLAYER_FULLSCREEN, {
                     fullscreen: bool
                 });
-               if (bool && _xo) {
+               if (bool) {
                    // Stop autoplay behavior when the player enters fullscreen
-                   _stopObserving();
+                   _model.set('playOnViewable', false);
                }
             });
             _model.on('itemReady', function() {
@@ -189,12 +189,10 @@ define([
             });
 
             _model.on('change:viewable', function(model, viewable) {
-                if (_canAutoStart()) {
-                    if (_shouldAutoStart(viewable)) {
-                        _autoStart();
-                    } else if (utils.isMobile()) {
-                        _this.pause({ reason: 'autostart' });
-                    }
+                if (viewable && _model.get('playOnViewable')) {
+                    _autoStart();
+                } else if (!viewable && utils.isMobile()) {
+                    _this.pause({ reason: 'autostart' });
                 }
             });
 
@@ -240,10 +238,12 @@ define([
                 }
 
                 _observePlayerContainer(_this.getContainer());
-                if (_canAutoStart() && _shouldAutoStart()) {
+                if (!utils.isMobile() && _model.get('autostart') === true) {
                     // Autostart immediately if we're not waiting for the player to become viewable first
-                    // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
                     _autoStart();
+                } else {
+                    // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
+                    _model.set('playOnViewable', utils.isMobile() || _model.get('autostart') === 'viewable');
                 }
             }
 
@@ -326,13 +326,11 @@ define([
                 _stop(true);
                 _this.trigger('destroyPlugin', {});
 
-                if (_canAutoStart()) {
-                    _model.once('itemReady', function () {
-                        if (_shouldAutoStart(_model.get('viewable'))) {
-                            _autoStart();
-                        }
-                    });
-                }
+                _model.once('itemReady', function () {
+                    if (_model.get('viewable') && _model.get('playOnViewable')) {
+                        _autoStart();
+                    }
+                });
 
                 switch (typeof item) {
                     case 'string':
@@ -468,8 +466,8 @@ define([
                 if (meta) {
                     _model.set('pauseReason', meta.reason);
                     // Stop autoplay behavior if the video is paused by the user or an api call
-                    if (_xo && (meta.reason === 'interaction' || meta.reason === 'external')) {
-                        _stopObserving();
+                    if (meta.reason === 'interaction' || meta.reason === 'external') {
+                        _model.set('playOnViewable', false);
                     }
                 }
 
@@ -572,11 +570,9 @@ define([
                     if (_model.get('repeat')) {
                         _next({reason: 'repeat'});
                     } else {
-                        if (_xo) {
-                            // Autoplay/pause no longer needed since there's no more media to play
-                            // This prevents media from replaying when a completed video scrolls into view
-                            _stopObserving();
-                        }
+                        // Autoplay/pause no longer needed since there's no more media to play
+                        // This prevents media from replaying when a completed video scrolls into view
+                        _model.set('playOnViewable', false);
                         _model.set('state', states.COMPLETE);
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
@@ -719,24 +715,6 @@ define([
                 }
             }
 
-            function _canAutoStart() {
-                return (_model.get('autostart') && !utils.isMobile()) || _model.autoStartOnMobile();
-            }
-
-            function _shouldAutoStart(viewable) {
-                var mobile = utils.isMobile();
-                // Immediately autostart if we're not mobile and autostart is explicitly true
-                if (!mobile && _model.get('autostart') === true) {
-                    return true;
-                }
-
-                // Always autostart on mobile if we're viewable
-                // Only autostart if viewable on desktop if autostart is explicitly viewable and we're not already playing
-                var desktopViewableAutostart = _model.get('autostart') === 'viewable' &&
-                    _model.getState() !== states.PLAYING;
-                return viewable && (mobile || desktopViewableAutostart);
-            }
-
             /** Controller API / public methods **/
             this._play = _play;
             this._pause = _pause;
@@ -827,8 +805,8 @@ define([
 
             this.playerDestroy = function () {
                 this.stop();
-
                 this.showView(this.originalContainer);
+                _stopObserving();
 
                 if (_view) {
                     _view.destroy();
