@@ -188,7 +188,8 @@ define([
                 });
             });
 
-            _model.on('change:viewable', function(model, viewable) {
+            _model.on('change:visibility', function(model, visibility) {
+                var viewable = visibility >= 0.5;
                 if (viewable && _model.get('playOnViewable')) {
                     _autoStart();
                 } else if (!viewable && utils.isMobile()) {
@@ -268,22 +269,23 @@ define([
                 if (!window.IntersectionObserver) {
                     return;
                 }
-                _xo = new window.IntersectionObserver(_onIntersection, { threshold: 0.5 });
+                // Fire the callback every time 25% of the player comes in/out of view
+                _xo = new window.IntersectionObserver(_onIntersection, { threshold: [0, 0.25, 0.5, 0.75, 1] });
                 _xo.observe(container);
             }
 
             function _stopObserving() {
-                _xo.disconnect();
-                _xo = undefined;
+                if (_xo) {
+                    _xo.disconnect();
+                    _xo = undefined;
+                }
             }
 
             function _onIntersection(entries) {
                 if (entries && entries.length) {
                     var entry = entries[0];
-                    if (entry.target === _this.getContainer() && entry.intersectionRatio >= 0.5) {
-                        _model.set('viewable', 1);
-                    } else {
-                        _model.set('viewable', 0);
+                    if (entry.target === _this.getContainer()) {
+                        _model.set('visibility', entry.intersectionRatio);
                     }
                 }
             }
