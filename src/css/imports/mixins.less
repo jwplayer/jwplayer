@@ -45,6 +45,16 @@
     &.jw-flag-ads-googleima .jw-controlbar {
       bottom: 0;
     }
+
+    .jw-captions {
+      max-height: ~"calc(~'100%' - ~'46px')";
+    }
+
+    .jwplayer& {
+      video::-webkit-media-text-track-container {
+        max-height:  ~"calc(~'100%' - ~'46px')";
+      }
+    }
   }
 
   &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
@@ -357,12 +367,12 @@
         }
 
         .jw-captions {
-            max-height: calc(97% - 6.25 * (@controlbar-height));
+            max-height: ~"calc(~'100%' - ~'38px')";
         }
 
-        .jwplayer {
+        .jwplayer& {
             video::-webkit-media-text-track-container {
-                max-height: calc(97% - 6.25 * (@controlbar-height));
+                max-height:  ~"calc(~'100%' - ~'38px')";
             }
         }
 
