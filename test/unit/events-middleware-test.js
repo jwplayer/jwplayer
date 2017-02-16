@@ -36,13 +36,6 @@ define([
         assert.deepEqual(actual, expected);
     });
 
-    test('should add viewable to the adImpression event', function (assert) {
-        var model = mockModel({ visibility: 0.5 });
-        var expected = { viewable: 1, foo: 'bar' };
-        var actual = middleware(model, 'adImpression', { foo: 'bar' });
-        assert.deepEqual(actual, expected);
-    });
-
     test('does not modify original data when the type does not have a case', function (assert) {
         var expected = { foo: 'bar' };
         var actual = middleware(mockModel({}), 'cat', expected);

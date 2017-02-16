@@ -7,7 +7,6 @@ define([
 
         switch (type) {
             case Events.JWPLAYER_MEDIA_TIME:
-            case Events.JWPLAYER_AD_IMPRESSION:
             case 'play':
             case 'pause': {
                 var viewable = Math.round(model.get('visibility') || 0);
