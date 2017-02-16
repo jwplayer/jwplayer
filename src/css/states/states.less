@@ -4,9 +4,6 @@
 // idle
 
 .jw-state-idle {
-  .jw-icon-display {
-    .jw-icon-play;
-  }
 
   /* hide control bar and clear display container padding on idle state unless
   cast available flag is set */
@@ -48,11 +45,6 @@
 
 .jwplayer.jw-state-paused {
 
-  .jw-display .jw-icon-display,
-  .jw-icon-playback {
-    .jw-icon-play;
-  }
-
   // Hide autostart mute button when paused by the browser
   .jw-autostart-mute {
     display: none;
@@ -72,10 +64,6 @@
     .jw-text {
       display: none;
     }
-  }
-
-  .jw-icon-playback {
-    .jw-icon-play;
   }
 }
 
@@ -115,14 +103,13 @@ body .jw-error {
   }
 }
 
-// Show the title
+// Show the play icon
 
-.jw-state-idle,
-body .jw-error,
-body .jwplayer.jw-state-error {
-  .jw-title {
-    display: block;
-  }
+.jw-state-idle .jw-icon-display,
+.jwplayer.jw-state-paused .jw-icon-playback,
+.jwplayer.jw-state-paused .jw-icon-display,
+.jwplayer.jw-state-complete .jw-icon-playback {
+  .jw-icon-play;
 }
 
 // Only show the play display icon
@@ -135,6 +122,16 @@ body .jwplayer.jw-state-error {
   .jw-display-icon-rewind,
   .jw-display-icon-next {
     display: none;
+  }
+}
+
+// Show the title
+
+.jw-state-idle,
+body .jw-error,
+body .jwplayer.jw-state-error {
+  .jw-title {
+    display: block;
   }
 }
 
@@ -180,8 +177,8 @@ body .jwplayer.jw-state-error {
 
 // Hide text
 
-.jwplayer.jw-state-buffering,
-.jwplayer.jw-state-complete {
+.jwplayer.jw-state-buffering .jw-display-icon-display,
+.jwplayer.jw-state-complete .jw-display {
   .jw-text {
     display: none;
   }
