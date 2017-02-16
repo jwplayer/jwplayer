@@ -39,7 +39,8 @@ define([
                 scrubbing : false,
                 duration: 0,
                 position: 0,
-                buffer: 0
+                buffer: 0,
+                visibility: 0
             });
 
             this.updateProviders();
