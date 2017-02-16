@@ -69,9 +69,15 @@ define([
                 scale = Math.pow(width / 400, 0.6);
             if (scale) {
                 var size = _options.fontSize * scale;
-                _style(_display, {
-                    fontSize: Math.floor(size*2)/2 + 'px'
-                });
+                var fontSize = Math.floor(size*2)/2;
+
+                if (_model.get('renderCaptionsNatively')) {
+                    _setShadowDOMFontSize(_model.get('id'), fontSize);
+                } else {
+                    _style(_display, {
+                        fontSize: fontSize + 'px'
+                    });
+                }
             }
             this.renderCues(true);
         };
@@ -204,10 +210,7 @@ define([
             // VTT.js DOM text styles
             cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
 
-            // Set Shadow DOM font size (needs to be important to override browser's in line style)
-            var target = utils.isSafari() ? 'display' : 'container';
-            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target,
-                '{font-size: ' + fontSize + 'px !important;}', playerId);
+            _setShadowDOMFontSize(playerId, fontSize);
 
             // Shadow DOM window styles
             cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
@@ -227,6 +230,13 @@ define([
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
                     backdropStyle, playerId);
             }
+        }
+
+        function _setShadowDOMFontSize(playerId, fontSize) {
+            // Set Shadow DOM font size (needs to be important to override browser's in line style)
+            var target = utils.isSafari() ? 'display' : 'container';
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target,
+                '{font-size: ' + fontSize + 'px !important;}', playerId);
         }
 
         function _addEdgeStyle(option, style, fontOpacity) {
