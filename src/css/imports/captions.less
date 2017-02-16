@@ -6,7 +6,7 @@
     height: inherit;
     text-align: center;
     display: none;
-    max-height: calc(97% - 6.25 * (@controlbar-height));
+    max-height: ~"calc(100% - 46px)";
     line-height: 1.3em;
     letter-spacing: normal;
     word-spacing: normal;
@@ -58,7 +58,7 @@
     }
     video::-webkit-media-text-track-container {
         // With 16 lines of captions, 1em ~= 6.25% of height
-        max-height: calc(97% - 6.25 * (@controlbar-height));
+        max-height: ~"calc(100% - 46px)";
         line-height: 1.3em;
     }
     video::-webkit-media-text-track-display {
