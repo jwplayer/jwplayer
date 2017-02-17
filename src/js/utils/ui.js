@@ -33,7 +33,9 @@ define([
     }
 
     function normalizeUIEvent(type, srcEvent, target) {
-        var source;
+        var source,
+            sourceType;
+
         if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
             source = srcEvent;
         } else {
@@ -43,8 +45,19 @@ define([
                 source = srcEvent.changedTouches[0];
             }
         }
+
+        // Expose what the source of the event is so that we can ensure it's handled correctly.
+        if (_supportsPointerEvents && srcEvent instanceof window.PointerEvent) {
+            sourceType = (srcEvent.pointerType === 'touch') ? 'touch' : 'mouse';
+        } else if (_supportsTouchEvents && srcEvent instanceof window.TouchEvent) {
+            sourceType = 'touch';
+        } else {
+            sourceType = 'mouse';
+        }
+
         return {
             type: type,
+            sourceEventType: sourceType,
             target: srcEvent.target,
             currentTarget: target,
             pageX: source.pageX,
