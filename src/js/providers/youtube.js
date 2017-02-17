@@ -36,8 +36,6 @@ define([
             _playingInterval = -1,
             // current Youtube state, tracked because state events fail to fire
             _youtubeState = -1,
-            // post roll support
-            _beforecompleted = false,
             // user must click video to initiate playback, gets set to false once playback starts
             _requiresUserInteraction = _isMobile;
 
@@ -158,10 +156,6 @@ define([
 
         function _ended() {
             if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
-                _beforecompleted = true;
-                _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                _this.setState(states.COMPLETE);
-                _beforecompleted = false;
                 _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
             }
         }
@@ -488,18 +482,6 @@ define([
             }
         };
 
-        this.detachMedia = function() {
-            return null;
-        };
-
-        this.attachMedia = function() {
-            if (_beforecompleted) {
-                this.setState(states.COMPLETE);
-                this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
-                _beforecompleted = false;
-            }
-        };
-
         this.setContainer = function(parent) {
             _container = parent;
             parent.appendChild(_element);
@@ -546,10 +528,6 @@ define([
 
         this.resize = function(/* width, height, stretching */) {
             return false;
-        };
-
-        this.checkComplete = function() {
-            return _beforecompleted;
         };
 
         this.getCurrentQuality = function() {
