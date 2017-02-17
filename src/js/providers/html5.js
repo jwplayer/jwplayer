@@ -52,9 +52,6 @@ define([
 
         // Overwrite the event dispatchers to block on certain occasions
         this.trigger = function(type, args) {
-            if (!_attached) {
-                return;
-            }
             return Events.trigger.call(this, type, args);
         };
 
@@ -111,8 +108,6 @@ define([
             _playbackTimeout = -1,
             // Last sent buffer amount
             _buffered = -1,
-            // Whether or not we're listening to video tag events
-            _attached = true,
             // Quality levels
             _levels,
             // Current quality level index
@@ -121,8 +116,6 @@ define([
             _isAndroidHLS = null,
             // mobile sdk configuration
             _isSDK = !!_playerConfig.sdkplatform,
-            // post roll support
-            _beforecompleted = false,
             // webkit fullscreen media element state
             _fullscreenState = false,
             // function to call when resuming after pause
@@ -164,18 +157,12 @@ define([
 
         // Enable tracks support for HLS videos
         function _onLoadedData() {
-            if (!_attached) {
-                return;
-            }
             _setAudioTracks(_videotag.audioTracks);
             _this.setTextTracks(_videotag.textTracks);
             _setAttribute('jw-loaded', 'data');
         }
 
         function _onLoadStart() {
-            if (!_attached) {
-                return;
-            }
             _setAttribute('jw-loaded', 'started');
         }
 
@@ -184,7 +171,7 @@ define([
         }
 
         function _durationChangeHandler() {
-            if (!_attached || _isAndroidHLS) {
+            if (_isAndroidHLS) {
                 return;
             }
             _updateDuration(_getDuration());
@@ -192,19 +179,12 @@ define([
         }
 
         function _progressHandler() {
-            if (!_attached) {
-                return;
-            }
-
             _setBuffered(_getBuffer(), _position, _duration);
         }
 
         function _timeUpdateHandler() {
             clearTimeout(_playbackTimeout);
             _canSeek = true;
-            if (!_attached) {
-                return;
-            }
             if (_this.state === states.STALLED) {
                 _this.setState(states.PLAYING);
             } else if (_this.state === states.PLAYING) {
@@ -302,10 +282,6 @@ define([
         }
 
         function _canPlayHandler() {
-            if (!_attached) {
-                return;
-            }
-
             _canSeek = _canPlay = true;
             if (!_isAndroidHLS) {
                 _setMediaType();
@@ -319,9 +295,6 @@ define([
         }
 
         function _loadedMetadataHandler() {
-            if (!_attached) {
-                return;
-            }
             _setAttribute('jw-loaded', 'meta');
             _sendMetaEvent();
         }
@@ -390,9 +363,6 @@ define([
         }
 
         function _errorHandler() {
-            if (!_attached) {
-                return;
-            }
             _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
@@ -570,9 +540,6 @@ define([
 
         this.stop = function() {
             clearTimeout(_playbackTimeout);
-            if (!_attached) {
-                return;
-            }
             _clearVideotagSource();
             this.clearTracks();
             // IE/Edge continue to play a video after changing video.src and calling video.load()
@@ -586,7 +553,7 @@ define([
 
         this.destroy = function() {
             _beforeResumeHandler = utils.noop;
-             _removeListeners(_mediaEvents, _videotag);
+            _removeListeners(_mediaEvents, _videotag);
             this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
             this.removeTracksListener(_videotag.textTracks, 'change', _this.textTrackChangeHandler);
             this.remove();
@@ -594,9 +561,6 @@ define([
         };
 
         this.init = function(item) {
-            if (!_attached) {
-                return;
-            }
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
             // the loadeddata event determines the mediaType for HLS sources
@@ -612,10 +576,6 @@ define([
         };
 
         this.load = function(item) {
-            if (!_attached) {
-                return;
-            }
-
             _setLevels(item.sources);
 
             if(item.sources.length && item.sources[0].type !== 'hls') {
@@ -659,10 +619,6 @@ define([
         };
 
         this.seek = function(seekPos) {
-            if (!_attached) {
-                return;
-            }
-
             if (seekPos < 0) {
                 seekPos += _getSeekableStart() + _getSeekableEnd();
             }
@@ -738,31 +694,12 @@ define([
         }
 
         function _endedHandler() {
-            if (!_attached) {
-                return;
-            }
             if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
                 clearTimeout(_playbackTimeout);
                 _currentQuality = -1;
-                _beforecompleted = true;
 
-                _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                // This event may trigger the detaching of the player
-                //  In that case, playback isn't complete until the player is re-attached
-                if (!_attached) {
-                    return;
-                }
-
-                _playbackComplete();
+                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
             }
-        }
-
-        function _playbackComplete() {
-            clearTimeout(_playbackTimeout);
-            _this.setState(states.COMPLETE);
-            _beforecompleted = false;
-            _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
-
         }
 
         function _fullscreenBeginHandler(e) {
@@ -800,20 +737,16 @@ define([
             });
         }
 
-        this.checkComplete = function() {
-            return _beforecompleted;
-        };
-
         /**
          * Return the video tag and stop listening to events
          */
         this.detachMedia = function() {
             clearTimeout(_playbackTimeout);
+            _removeListeners(_mediaEvents, _videotag);
             // Stop listening to track changes so disabling the current track doesn't update the model
             this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
             // Prevent tracks from showing during ad playback
             this.disableTextTrack();
-            _attached = false;
             return _videotag;
         };
 
@@ -821,7 +754,7 @@ define([
          * Begin listening to events again
          */
         this.attachMedia = function() {
-            _attached = true;
+            _setupListeners(_mediaEvents, _videotag);
             _canSeek = false;
 
             // If we were mid-seek when detached, we want to allow it to resume
@@ -833,11 +766,6 @@ define([
             // If there was a showing track, re-enable it
             this.enableTextTrack();
             this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
-
-            // This is after a postroll completes
-            if (_beforecompleted) {
-                _playbackComplete();
-            }
         };
 
         this.setContainer = function(element) {
