@@ -691,12 +691,14 @@ define([
                 _model.on('change:autostartMuted', _autoplayUnmute);
                 _model.on('change:mute', _autoplayUnmute);
             }
+            if (_model.get('nextUpDisplay')) {
+                _nextuptooltip = new NextUpToolTip(_model, _api, _playerElement);
+                _nextuptooltip.setup();
 
-            _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next, _playerElement);
-            _nextuptooltip.setup();
+                // NextUp needs to be behind the controlbar to not block other tooltips
+                _controlsLayer.appendChild(_nextuptooltip.element());
+            }
 
-            // NextUp needs to be behind the controlbar to not block other tooltips
-            _controlsLayer.appendChild(_nextuptooltip.element());
             _controlsLayer.appendChild(_controlbar.element());
 
             _playerElement.addEventListener('focus', handleFocus);
