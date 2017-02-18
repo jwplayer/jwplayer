@@ -80,6 +80,7 @@ module.exports = function( config ) {
             {pattern: 'node_modules/handlebars-loader/*.js', included: false},
             {pattern: 'node_modules/jquery/dist/*.js', included: false},
             {pattern: 'node_modules/phantomjs-polyfill/*.js', included: false},
+            {pattern: 'node_modules/intersection-observer/intersection-observer.js', included: false},
             {pattern: 'node_modules/requirejs/require.js', included: true},
             {pattern: 'node_modules/requirejs-handlebars/*.js', included: false},
             {pattern: 'node_modules/requirejs-text/*.js', included: false},

@@ -34,6 +34,7 @@ define([
 
     function normalizeUIEvent(type, srcEvent, target) {
         var source;
+
         if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
             source = srcEvent;
         } else {
@@ -43,8 +44,10 @@ define([
                 source = srcEvent.changedTouches[0];
             }
         }
+
         return {
             type: type,
+            sourceEvent: srcEvent,
             target: srcEvent.target,
             currentTarget: target,
             pageX: source.pageX,
@@ -288,6 +291,18 @@ define([
         };
 
         return this;
+    };
+
+    // Expose what the source of the event is so that we can ensure it's handled correctly.
+    // This returns only 'touch' or 'mouse'.  'pen' will be treated as a mouse.
+    UI.getPointerType = function (evt) {
+        if (_supportsPointerEvents && evt instanceof window.PointerEvent) {
+            return (evt.pointerType === 'touch') ? 'touch' : 'mouse';
+        } else if (_supportsTouchEvents && evt instanceof window.TouchEvent) {
+            return 'touch';
+        }
+
+        return 'mouse';
     };
 
     _.extend(UI.prototype, Events);

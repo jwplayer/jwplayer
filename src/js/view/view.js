@@ -864,7 +864,11 @@ define([
             // so we should update the model, setting mute to false
             if (autostartSucceeded) {
                 mute = false;
+            } else {
+                // Don't try to play again when viewable since it will keep failing
+                _model.set('playOnViewable', false);
             }
+
             _model.off('change:autostartFailed', _autoplayUnmute);
             _model.off('change:mute', _autoplayUnmute);
             _model.off('change:autostartMuted', _autoplayUnmute);

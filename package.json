@@ -27,6 +27,7 @@
     "grunt-recess": "1.0.1",
     "handlebars": "4.0.5",
     "handlebars-loader": "1.2.0",
+    "intersection-observer": "^0.2.1",
     "jquery": "3.0.0",
     "karma": "0.13.22",
     "karma-browserstack-launcher": "1.1.1",

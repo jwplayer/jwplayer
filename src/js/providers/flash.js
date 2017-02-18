@@ -34,7 +34,6 @@ define([
         var _currentAudioTrack = -1;
         var _audioTracks = null;
         var _flashProviderType;
-        var _attached = true;
         var _fullscreen = false;
         var _this = this;
 
@@ -47,57 +46,6 @@ define([
                 _swf.triggerFlash.apply(_swf, arguments);
             }
         };
-
-        var _customLabels = _getCustomLabels();
-
-        function _getNearestCustomLabel(sourceKBps) {
-            // get indexed value
-            var label = _customLabels[sourceKBps];
-            if (!label) {
-                //find nearest
-                var lastDiff = Infinity;
-                var i = _customLabels.bitrates.length;
-                while (i--) {
-                    var diff = Math.abs(_customLabels.bitrates[i] - sourceKBps);
-                    if (diff > lastDiff) {
-                        break;
-                    }
-                    lastDiff = diff;
-                }
-                label = _customLabels.labels[_customLabels.bitrates[i + 1]];
-                // index
-                _customLabels[sourceKBps] = label;
-            }
-            return label;
-        }
-
-        /** Indexed Custom Labels **/
-        function _getCustomLabels() {
-            var hlsLabels =_playerConfig.hlslabels;
-            if(!hlsLabels) {
-                return null;
-            }
-            var labels = {};
-            var bitrates = [];
-            for (var bitrate in hlsLabels) {
-                var key = parseFloat(bitrate);
-                if (!isNaN(key)) {
-                    var rateKBps = Math.round(key);
-                    labels[rateKBps] = hlsLabels[bitrate];
-                    bitrates.push(rateKBps);
-                }
-            }
-            if (bitrates.length === 0) {
-                return null;
-            }
-            bitrates.sort(function(a, b) {
-                return a - b;
-            });
-            return {
-                labels: labels,
-                bitrates: bitrates
-            };
-        }
 
         function checkFlashBlocked() {
             _flashBlockedTimeout = setTimeout(function() {
@@ -125,11 +73,8 @@ define([
                 var level = levels[i];
                 // Set original index
                 level.index = i;
-                // Translate sources into quality levels, assigning custom levels if present
-                if (_customLabels && level.bitrate) {
-                    // get label with nearest rate match
-                    var sourceKbps = Math.round(level.bitrate / 1000);
-                    level.label = _getNearestCustomLabel(sourceKbps);
+                if (level.label !== 'Auto') {
+                    level.label = utils.generateLabel(level, _playerConfig.qualityLabels);
                 }
             }
             e.levels =
@@ -209,23 +154,6 @@ define([
                 setState: function() {
                     return DefaultProvider.setState.apply(this, arguments);
                 },
-                checkComplete: function() {
-                    return _beforecompleted;
-                },
-                attachMedia: function() {
-                    _attached = true;
-                    // This is after a postroll completes
-                    if (_beforecompleted) {
-                        this.setState(states.COMPLETE);
-                        this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
-                        _beforecompleted = false;
-                    }
-                },
-                detachMedia: function() {
-                    _attached = false;
-                    return null;
-                },
-
                 getSwfObject : function(parent) {
                     var found = parent.getElementsByTagName('object')[0];
                     if (found) {
@@ -340,19 +268,8 @@ define([
                         this.trigger(e.type);
                     }, this);
 
-                    _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function(e){
-                        _beforecompleted = true;
-                        this.trigger(e.type);
-                        if(_attached === true) {
-                            _beforecompleted = false;
-                        }
-                    }, this);
-
-                    _swf.on(events.JWPLAYER_MEDIA_COMPLETE, function(e) {
-                        if(!_beforecompleted){
-                            this.setState(states.COMPLETE);
-                            this.trigger(e.type);
-                        }
+                    _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function() {
+                        this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
                     }, this);
 
                     _swf.on('visualQuality', function(e) {
@@ -473,9 +390,6 @@ define([
 
         // Overwrite the event dispatchers to block on certain occasions
         this.trigger = function(type, args) {
-            if (!_attached) {
-                return;
-            }
             return Events.trigger.call(this, type, args);
         };
 

@@ -15,7 +15,8 @@ define([
             'item', // this was playlistindex
             'stretching',
             'playlist',
-            'captions'
+            'captions',
+            'visibility'
         ];
 
         // given a name "buffer", it adds to jwplayer api a function named getBuffer

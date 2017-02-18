@@ -10,8 +10,9 @@ define([
     'utils/validator',
     'utils/playerutils',
     'utils/trycatch',
-    'utils/stream-type'
-], function(strings, _, browser, dom, css, parser, id3Parser, ajax, validator, playerutils, trycatch, streamType) {
+    'utils/stream-type',
+    'utils/quality-labels'
+], function(strings, _, browser, dom, css, parser, id3Parser, ajax, validator, playerutils, trycatch, streamType, qualityLabels) {
 
     var utils = {};
 
@@ -58,7 +59,7 @@ define([
     utils.prefix = strings.prefix;
     utils.suffix = strings.suffix;
 
-    _.extend(utils, parser, id3Parser, validator, browser, ajax, dom, css, playerutils, trycatch, streamType);
+    _.extend(utils, parser, id3Parser, validator, browser, ajax, dom, css, playerutils, trycatch, streamType, qualityLabels);
 
     return utils;
 });

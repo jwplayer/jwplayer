@@ -14,9 +14,10 @@ define([
     'events/change-state-event',
     'events/states',
     'events/events',
-    'view/error'
+    'view/error',
+    'controller/events-middleware'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
 
     function _queueCommand(command) {
         return function(){
@@ -83,6 +84,10 @@ define([
 
             _model.setup(config, storage);
             _view  = this._view = new View(_api, _model);
+
+            if(_model.get('autostart') === 'viewable' && (window.self !== window.top)) {
+                _model.set('autostart', true);
+            }
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
@@ -122,9 +127,9 @@ define([
                 _this.trigger(events.JWPLAYER_FULLSCREEN, {
                     fullscreen: bool
                 });
-               if (bool && _xo) {
+               if (bool) {
                    // Stop autoplay behavior when the player enters fullscreen
-                   _stopObserving();
+                   _model.set('playOnViewable', false);
                }
             });
             _model.on('itemReady', function() {
@@ -183,6 +188,15 @@ define([
                 });
             });
 
+            _model.on('change:visibility', function(model, visibility) {
+                var viewable = visibility >= 0.5;
+                if (viewable && _model.get('playOnViewable')) {
+                    _autoStart();
+                } else if (!viewable && utils.isMobile()) {
+                    _this.pause({ reason: 'autostart' });
+                }
+            });
+
             // Ensure captionsList event is raised after playlistItem
             _captions = new Captions(_api, _model);
 
@@ -223,53 +237,56 @@ define([
                 if (related) {
                     related.on('nextUp', _model.setNextUp, _model);
                 }
-                // Start playback on desktop and mobile browsers when allowed
-                if (_canAutoStart()) {
-                    if (utils.isMobile() && _video().video) {
-                        // Only play if the video is in the viewport
-                        _observeVideo(_video().video);
-                    } else {
-                        _autoStart();
-                    }
+
+                _observePlayerContainer(_this.getContainer());
+                var autostart = _model.get('autostart');
+                if (!utils.isMobile() && autostart === true) {
+                    // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
+                    _autoStart();
+                } else {
+                    // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
+                    _model.set('playOnViewable', _model.autoStartOnMobile() || _model.get('autostart') === 'viewable');
                 }
             }
 
-            function _observeVideo(video) {
+            function _observePlayerContainer(container) {
+                if (!container) {
+                    return;
+                }
+
                 if ('IntersectionObserver' in window &&
                     'IntersectionObserverEntry' in window &&
                     'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-                    _startObserving(video);
+                    _startObserving(container);
                 } else {
-                    require.ensure(['polyfills/intersection-observer'], function (require) {
-                        require('polyfills/intersection-observer');
-                        _startObserving(video);
+                    require.ensure(['intersection-observer'], function (require) {
+                        require('intersection-observer');
+                        _startObserving(container);
                     }, 'polyfills.intersection-observer');
                 }
             }
 
-            function _startObserving(video) {
+            function _startObserving(container) {
                 if (!window.IntersectionObserver) {
                     return;
                 }
-                _xo = new window.IntersectionObserver(_toggleVideoPlayback, { threshold: 0.5 });
-                _xo.observe(video);
+                // Fire the callback every time 25% of the player comes in/out of view
+                _xo = new window.IntersectionObserver(_onIntersection, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+                _xo.observe(container);
             }
 
             function _stopObserving() {
-                _xo.disconnect();
-                _xo = undefined;
+                if (_xo) {
+                    _xo.disconnect();
+                    _xo = undefined;
+                }
             }
 
-            function _toggleVideoPlayback(entries) {
+            function _onIntersection(entries) {
                 if (entries && entries.length) {
-                    var video = _video().video;
                     var entry = entries[0];
-                    var meta = { reason: 'autostart' };
-
-                    if (entry.target === video && entry.intersectionRatio >= 0.5) {
-                        _this.play(meta);
-                    } else {
-                        _this.pause(meta);
+                    if (entry.target === _this.getContainer()) {
+                        _model.set('visibility', entry.intersectionRatio);
                     }
                 }
             }
@@ -312,9 +329,11 @@ define([
                 _stop(true);
                 _this.trigger('destroyPlugin', {});
 
-                if (_canAutoStart()) {
-                    _model.once('itemReady', _autoStart);
-                }
+                _model.once('itemReady', function () {
+                    if (_model.get('viewable') && _model.get('playOnViewable')) {
+                        _autoStart();
+                    }
+                });
 
                 switch (typeof item) {
                     case 'string':
@@ -450,8 +469,8 @@ define([
                 if (meta) {
                     _model.set('pauseReason', meta.reason);
                     // Stop autoplay behavior if the video is paused by the user or an api call
-                    if (_xo && (meta.reason === 'interaction' || meta.reason === 'external')) {
-                        _stopObserving();
+                    if (meta.reason === 'interaction' || meta.reason === 'external') {
+                        _model.set('playOnViewable', false);
                     }
                 }
 
@@ -554,11 +573,9 @@ define([
                     if (_model.get('repeat')) {
                         _next({reason: 'repeat'});
                     } else {
-                        if (_xo) {
-                            // Autoplay/pause no longer needed since there's no more media to play
-                            // This prevents media from replaying when a completed video scrolls into view
-                            _stopObserving();
-                        }
+                        // Autoplay/pause no longer needed since there's no more media to play
+                        // This prevents media from replaying when a completed video scrolls into view
+                        _model.set('playOnViewable', false);
                         _model.set('state', states.COMPLETE);
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
@@ -664,20 +681,13 @@ define([
 
             /** Used for the InStream API **/
             function _detachMedia() {
-                var provider = _model.getVideo();
-                if (provider) {
-                    var video = provider.detachMedia();
-                    if (video instanceof HTMLVideoElement) {
-                        return video;
-                    }
-                }
-                return null;
+                return _model.detachMedia();
             }
 
             function _attachMedia() {
                 // Called after instream ends
                 var status = utils.tryCatch(function() {
-                    _model.getVideo().attachMedia();
+                    _model.attachMedia();
                 });
 
                 if (status instanceof utils.Error) {
@@ -706,10 +716,6 @@ define([
                 if (related) {
                     related.next();
                 }
-            }
-
-            function _canAutoStart() {
-                return (_model.get('autostart') && !utils.isMobile()) || _model.autoStartOnMobile();
             }
 
             /** Controller API / public methods **/
@@ -802,8 +808,8 @@ define([
 
             this.playerDestroy = function () {
                 this.stop();
-
                 this.showView(this.originalContainer);
+                _stopObserving();
 
                 if (_view) {
                     _view.destroy();
@@ -820,7 +826,7 @@ define([
             this.isBeforePlay = this.checkBeforePlay;
 
             this.isBeforeComplete = function () {
-                return _model.getVideo().checkComplete();
+                return _model.checkComplete();
             };
 
             this.createInstream = function() {
@@ -839,6 +845,12 @@ define([
                 if (_this._instreamAdapter) {
                     _this._instreamAdapter.destroy();
                 }
+            };
+
+            // Delegate trigger so we can run a middleware function before any event is bubbled through the API
+            this.trigger = function (type, args) {
+                var data = eventsMiddleware(_model, type, args);
+                return Events.trigger.call(this, type, data);
             };
 
             _setup.start();
