@@ -239,12 +239,13 @@ define([
                 }
 
                 _observePlayerContainer(_this.getContainer());
-                if (!utils.isMobile() && _model.get('autostart') === true) {
-                    // Autostart immediately if we're not waiting for the player to become viewable first
+                var autostart = _model.get('autostart');
+                if (!utils.isMobile() && autostart === true) {
+                    // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
                     _autoStart();
                 } else {
                     // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
-                    _model.set('playOnViewable', utils.isMobile() || _model.get('autostart') === 'viewable');
+                    _model.set('playOnViewable', _model.autoStartOnMobile() || _model.get('autostart') === 'viewable');
                 }
             }
 
