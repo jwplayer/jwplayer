@@ -141,16 +141,19 @@ define([
             });
         },
         onElapsed: function(model, val) {
-            if (!model.get('nextUpEnabled') || model.get('nextUpSticky') === false) {
+            var nextUpSticky = model.get('nextUpSticky');
+            if (!model.get('nextUpEnabled') || nextUpSticky === false) {
                 return;
             }
             // Show nextup during VOD streams if:
             // - in playlist mode but not playing an ad
             // - autoplaying in related mode and autoplaytimer is set to 0
             var showTilEnd = val >= this.offset;
-            if (showTilEnd) {
+            if (showTilEnd && nextUpSticky === undefined) { // show if nextUpSticky is unset
                 model.set('nextUpVisible', showTilEnd);
                 model.set('nextUpSticky', showTilEnd);
+            } else if (!showTilEnd && nextUpSticky === true) { // reset if there was a backward seek
+                this.reset();
             }
         },
         onStreamType: function(model, streamType) {
@@ -177,7 +180,7 @@ define([
         reset: function() {
             var model = this._model;
             model.set('nextUpVisible', false);
-            model.set('nextUpSticky', null);
+            model.set('nextUpSticky', undefined);
         }
     });
 
