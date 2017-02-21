@@ -173,4 +173,19 @@ define([
         var actual = qualityLabels.hasRedundantLevels(levels);
         assert.equal(actual, false);
     });
+
+    QUnit.module('generateLabel');
+    // Only Flash does this
+    test('should use label property if it exists and there are no custom labels', function (assert) {
+        var level = { label: '360px' };
+        var actual = qualityLabels.generateLabel(level, null, false);
+        assert.equal(actual, '360px');
+    });
+
+    // Only Flash does this
+    test('should not use label property if it exists and there are custom labels', function (assert) {
+        var level = { label: '360px', bitrate: 2000000 };
+        var actual = qualityLabels.generateLabel(level, customLabels, false);
+        assert.equal(actual, 'medium');
+    });
 });

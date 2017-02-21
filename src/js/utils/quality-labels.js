@@ -8,7 +8,10 @@ define([
         }
         // Flash uses bitrate instead of bandwidth
         var bandwidth = level.bandwidth || level.bitrate;
-        return getCustomLabel(qualityLabels, bandwidth) || createLabel(level.height, bandwidth, redundant);
+        // Flash, in some cases, will create its own label. Prefer it over creating a new label
+        return getCustomLabel(qualityLabels, bandwidth) ||
+            level.label ||
+            createLabel(level.height, bandwidth, redundant);
     }
 
     // Prefer creating a label with height with a fallback to bandwidth. Make a label using both if redundant
