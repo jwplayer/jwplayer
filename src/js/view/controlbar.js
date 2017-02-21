@@ -119,11 +119,26 @@ define([
                 muteButton = button('jw-icon-volume', this._api.setMute, vol);
             }
 
+            var nextButton = button('jw-icon-next', this._api.next.bind(this), next);
+
+            if (this._model.get('nextUpDisplay')) {
+                new UI(nextButton.element(), {'useHover': true, 'directSelect': true})
+                    .on('over', function () {
+                        this._model.set('nextUpVisible', true);
+                    }, this)
+                    .on('out', function () {
+                        if (this._model.get('nextUpSticky')) {
+                            return;
+                        }
+                        this._model.set('nextUpVisible', false);
+                    }, this);
+            }
+
             this.elements = {
                 alt: text('jw-text-alt', 'status'),
                 play: button('jw-icon-playback', this._api.play.bind(this, reasonInteraction()), play),
                 rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
-                next: button('jw-icon-next', null, next), // the click/tap event listener is in the nextup tooltip
+                next: nextButton,
                 elapsed: text('jw-text-elapsed', 'timer'),
                 countdown: text('jw-text-countdown', 'timer'),
                 time: timeSlider,
@@ -219,6 +234,7 @@ define([
             this._model.on('change:captionsList', this.onCaptionsList, this);
             this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
             this._model.on('change:streamType', this.onStreamTypeChange, this);
+            this._model.on('change:nextUp', this.onNextUp, this);
 
             // Event listeners
 
@@ -422,6 +438,9 @@ define([
                 this.elements.duration.innerHTML = 'Live';
                 this.elements.durationLeft.innerHTML = 'Live';
             }
+        },
+        onNextUp: function(model, nextUp) {
+            this.elements.next.toggle(!!nextUp);
         }
     });
 

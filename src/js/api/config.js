@@ -45,7 +45,8 @@ define([
             nextUpClose: 'Next Up Close',
             related: 'Related'
         },
-        renderCaptionsNatively: false
+        renderCaptionsNatively: false,
+        nextUpDisplay: true
         //qualityLabel: '480p',     // specify a default quality
         //captionLabel: 'English',  // specify a default Caption
     };
