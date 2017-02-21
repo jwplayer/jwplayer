@@ -239,6 +239,10 @@ define([
                 }
 
                 _observePlayerContainer(_this.getContainer());
+                _configureAutostart();
+            }
+
+            function _configureAutostart() {
                 var autostart = _model.get('autostart');
                 if (!utils.isMobile() && autostart === true) {
                     // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
@@ -330,9 +334,7 @@ define([
                 _this.trigger('destroyPlugin', {});
 
                 _model.once('itemReady', function () {
-                    if (_model.get('viewable') && _model.get('playOnViewable')) {
-                        _autoStart();
-                    }
+                    _configureAutostart();
                 });
 
                 switch (typeof item) {
