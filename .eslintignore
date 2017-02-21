@@ -10,7 +10,6 @@ src/js/controller/controller.js
 src/js/controller/instream-adapter.js
 src/js/controller/instream-flash.js
 src/js/controller/instream-html5.js
-src/js/controller/model.js
 src/js/controller/qoe.js
 src/js/controller/setup-steps.js
 src/js/controller/Setup.js

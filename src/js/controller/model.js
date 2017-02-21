@@ -11,13 +11,12 @@ define([
 
     // Represents the state of the player
     var Model = function() {
-        var _this = this,
-            // Video provider
-            _providers,
-            _provider,
-            _beforecompleted = false,
-            _attached = true,
-            _currentProvider = utils.noop;
+        var _this = this;
+        var _providers;
+        var _provider;
+        var _beforecompleted = false;
+        var _attached = true;
+        var _currentProvider = utils.noop;
 
         this.mediaController = _.extend({}, Events);
         this.mediaModel = new MediaModel();
@@ -30,13 +29,13 @@ define([
 
             _.extend(this.attributes, config, {
                 // always start on first playlist item
-                item : 0,
+                item: 0,
                 // Initial state, upon setup
                 state: states.IDLE,
                 // Initially we don't assume Flash is needed
-                flashBlocked : false,
+                flashBlocked: false,
                 fullscreen: false,
-                scrubbing : false,
+                scrubbing: false,
                 duration: 0,
                 position: 0,
                 buffer: 0,
@@ -57,7 +56,7 @@ define([
         };
 
         function _videoEventHandler(type, data) {
-            var evt = _.extend({}, data, {type: type});
+            var evt = _.extend({}, data, { type: type });
             var mediaModel = this.mediaModel;
             switch (type) {
                 case 'flashThrottle':
@@ -160,12 +159,14 @@ define([
                         mediaModel.set('state', states.PAUSED);
                     }
                     break;
+                default:
+                    break;
             }
 
             this.mediaController.trigger(type, evt);
         }
 
-        this.setQualityLevel = function(quality, levels){
+        this.setQualityLevel = function(quality, levels) {
             if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
                 this.mediaModel.set('currentLevel', parseInt(quality));
 
@@ -382,13 +383,12 @@ define([
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
             if (!item) {
-                var idx = this.get('item');
-                item = this.get('playlist')[idx];
+                item = this.get('playlist')[this.get('item')];
             }
             this.set('position', item.starttime || 0);
             this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
             this.mediaModel.set('playAttempt', true);
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, { playReason: this.get('playReason') });
 
             _provider.load(item);
         };
@@ -421,8 +421,8 @@ define([
              * Tracks could have changed even if the index hasn't.
              * Need to ensure track has data for captionsrenderer.
              */
-            if(trackIndex && tracks && trackIndex <= tracks.length && tracks[trackIndex-1].data) {
-                this.set('captionsTrack', tracks[trackIndex-1]);
+            if(trackIndex && tracks && trackIndex <= tracks.length && tracks[trackIndex - 1].data) {
+                this.set('captionsTrack', tracks[trackIndex - 1]);
             }
 
             if (_provider && _provider.setSubtitlesTrack) {
@@ -459,8 +459,6 @@ define([
     var MediaModel = Model.MediaModel = function() {
         this.set('state', states.IDLE);
     };
-
-
 
     _.extend(Model.prototype, SimpleModel);
     _.extend(MediaModel.prototype, SimpleModel);
