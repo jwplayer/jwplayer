@@ -12,11 +12,33 @@ define([
         this._playerElement = playerElement;
         this.nextUpText = _model.get('localization').nextUp;
         this.nextUpClose = _model.get('localization').nextUpClose;
+        this.nextUpDisplay = _model.get('nextUpDisplay');
         this.state = 'tooltip';
     };
 
     _.extend(NextUpTooltip.prototype, {
         setup: function() {
+            var _model = this._model;
+
+            // Show the next button when there's a nextUp item
+            _model.on('change:nextUp', this.onNextUp, this);
+
+            // Next button without tooltip
+            if(!this.nextUpDisplay) {
+                new UI(this._nextButton.element(), {'directSelect': true})
+                    .on('click tap', this.click, this);
+                return;
+            }
+
+            // Next button behavior:
+            // - click = go to next playlist or related item
+            // - hover = show NextUp tooltip without 'close' button
+            new UI(this._nextButton.element(), {'useHover': true, 'directSelect': true})
+                .on('click tap', this.click, this)
+                .on('over', this.show, this)
+                .on('out', this.hoverOut, this);
+
+
             this.container = document.createElement('div');
             this.container.className = 'jw-nextup-container jw-reset';
             var element = utils.createElement(nextUpTemplate());
@@ -31,14 +53,13 @@ define([
             this.streamType = undefined;
 
             // Events
-            this._model.on('change:mediaModel', this.onMediaModel, this);
-            this._model.on('change:streamType', this.onStreamType, this);
-            this._model.on('change:nextUp', this.onNextUp, this);
+            _model.on('change:mediaModel', this.onMediaModel, this);
+            _model.on('change:streamType', this.onStreamType, this);
 
             // Listen for duration changes to determine the offset from the end for when next up should be shown
-            this._model.on('change:duration', this.onDuration, this);
+            _model.on('change:duration', this.onDuration, this);
             // Listen for position changes so we can show the tooltip when the offset has been crossed
-            this._model.on('change:position', this.onElapsed, this);
+            _model.on('change:position', this.onElapsed, this);
 
             this.onMediaModel(this._model, this._model.get('mediaModel'));
 
@@ -48,13 +69,6 @@ define([
             // Tooltip
             new UI(this.tooltip)
                 .on('click tap', this.click, this);
-            // Next button behavior:
-            // - click = go to next playlist or related item
-            // - hover = show NextUp tooltip without 'close' button
-            new UI(this._nextButton.element(), {'useHover': true, 'directSelect': true})
-                .on('click tap', this.click, this)
-                .on('over', this.show, this)
-                .on('out', this.hoverOut, this);
         },
         loadThumbnail : function(url) {
             this.nextUpImage = new Image();
@@ -70,7 +84,9 @@ define([
         click: function() {
             this.state = 'tooltip';
             this._api.next();
-            this.hide();
+            if (this.nextUpDisplay) {
+                this.hide();
+            }
         },
         show: function() {
             if(this.state === 'opened' || this.hideToolTip) {
@@ -139,8 +155,14 @@ define([
                 this.showNextUp = false;
                 return;
             }
-            this.showNextUp = nextUp.showNextUp;
+
             this._nextButton.toggle(true);
+
+            if (!this.nextUpDisplay) {
+                return;
+            }
+
+            this.showNextUp = nextUp.showNextUp;
             this.setNextUpItem(nextUp);
         },
         onDuration: function(model, duration) {

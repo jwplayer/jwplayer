@@ -695,8 +695,10 @@ define([
             _nextuptooltip = new NextUpToolTip(_model, _api, _controlbar.elements.next, _playerElement);
             _nextuptooltip.setup();
 
-            // NextUp needs to be behind the controlbar to not block other tooltips
-            _controlsLayer.appendChild(_nextuptooltip.element());
+            if (_model.get('nextUpDisplay')) {
+                // NextUp needs to be behind the controlbar to not block other tooltips
+                _controlsLayer.appendChild(_nextuptooltip.element());
+            }
             _controlsLayer.appendChild(_controlbar.element());
 
             _playerElement.addEventListener('focus', handleFocus);
