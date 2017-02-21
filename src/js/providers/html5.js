@@ -310,13 +310,15 @@ define([
 
         function _playingHandler() {
             _this.setState(states.PLAYING);
+            // For accuracy, trigger firstFrame before manipulating the DOM
+            _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+
             if(!_videotag.hasAttribute('jw-played')) {
                 _setAttribute('jw-played','');
             }
             if (_videotag.hasAttribute('jw-gesture-required')) {
                 _videotag.removeAttribute('jw-gesture-required');
             }
-            _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
         }
 
         function _pauseHandler() {
