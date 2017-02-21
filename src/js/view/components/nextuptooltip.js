@@ -48,7 +48,6 @@ define([
                 .on('click tap', function() {
                     model.set('nextUpSticky', false);
                     model.set('nextUpVisible', false);
-                    this.toggle(model, false);
                 }, this);
             // Tooltip
             new UI(this.tooltip)
