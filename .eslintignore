@@ -6,7 +6,6 @@ src/js/api/config.js
 src/js/api/global-api.js
 src/js/cast/display.js
 src/js/controller/captions.js
-src/js/controller/controller.js
 src/js/controller/instream-adapter.js
 src/js/controller/instream-flash.js
 src/js/controller/instream-html5.js

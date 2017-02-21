@@ -30,7 +30,6 @@
         "no-sparse-arrays": 2,
         "no-unreachable": 2,
         "use-isnan": 2,
-        "valid-jsdoc": 2,
         "valid-typeof": 2,
         "block-scoped-var": 0,
         "complexity": 0,
@@ -129,7 +128,7 @@
         "wrap-regex": 0,
         "generator-star-spacing": [2, "before"],
         "max-depth": [2, 5],
-        "max-params": [2, 8],
+        "max-params": 0,
         "max-statements": 0,
         "object-curly-spacing": ["error", "always"]
     }
