@@ -36,6 +36,20 @@ define([
         assert.deepEqual(actual, expected);
     });
 
+    test('should add viewable to the playAttempt event', function (assert) {
+        var model = mockModel({ visibility: 0.5 });
+        var expected = { viewable: 1, foo: 'bar' };
+        var actual = middleware(model, 'playAttempt', { foo: 'bar' });
+        assert.deepEqual(actual, expected);
+    });
+
+    test('should add viewable to the ready event', function (assert) {
+        var model = mockModel({ visibility: 0.5 });
+        var expected = { viewable: 1, foo: 'bar' };
+        var actual = middleware(model, 'ready', { foo: 'bar' });
+        assert.deepEqual(actual, expected);
+    });
+
     test('should not add viewable if visibility is undefined', function (assert) {
         var model = mockModel({ visibility: undefined });
         var expected = { foo: 'bar' };

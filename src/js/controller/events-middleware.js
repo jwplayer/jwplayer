@@ -7,8 +7,10 @@ define([
 
         switch (type) {
             case Events.JWPLAYER_MEDIA_TIME:
+            case 'pause':
             case 'play':
-            case 'pause': {
+            case 'playAttempt':
+            case 'ready': {
                 var visibility = model.get('visibility');
                 if (!_.isUndefined(visibility)) {
                     var viewable = Math.round(visibility);
