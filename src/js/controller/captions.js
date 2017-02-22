@@ -35,18 +35,14 @@ define(['utils/helpers',
             this.setCaptionsList(captionsMenu);
         }
 
-        var _item = {};
         var _tracks = [];
         var _tracksById = {};
-        var _metaCuesByTextTime = {};
         var _unknownCount = 0;
 
         /** Listen to playlist item updates. **/
-        function _itemHandler(model, item) {
-            _item = item;
+        function _itemHandler() {
             _tracks = [];
             _tracksById = {};
-            _metaCuesByTextTime = {};
             _unknownCount = 0;
         }
 

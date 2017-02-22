@@ -2,7 +2,6 @@ define([
     'utils/underscore',
     'utils/helpers'
 ], function(_, utils) {
-
     var storage = {
         removeItem: utils.noop
     };
@@ -54,7 +53,7 @@ define([
 
     function track(model) {
         _.each(this.persistItems, function(item) {
-            model.on('change:' + item, function(model, value) {
+            model.on('change:' + item, function(changeModel, value) {
                 setItem(item, value);
             });
         });

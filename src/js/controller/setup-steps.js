@@ -9,12 +9,10 @@ define([
     'events/events'
 ], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events) {
 
-    var _pluginLoader,
-        _playlistLoader;
-
+    var _pluginLoader;
+    var _playlistLoader;
 
     function getQueue() {
-
         var Components = {
             LOAD_PROMISE_POLYFILL: {
                 method: _loadPromisePolyfill,
@@ -179,10 +177,15 @@ define([
                 _model.updateProviders();
                 done();
             };
-            Object.defineProperty(swf, 'embedCallback', { get: function() { return done; } });
+            Object.defineProperty(swf, 'embedCallback', {
+                get: function() {
+                    return done;
+                }
+            });
             if (!swf.on) {
                 // Chrome bug where properties are not set on object element
-                return failed();
+                failed();
+                return;
             }
             parentElement.replaceChild(testContainer, originalContainer);
             // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
@@ -214,9 +217,13 @@ define([
     }
 
     function skinToLoad(skin, base) {
+        var skinPath;
+
         if(_.contains(Constants.SkinsLoadable, skin)) {
-            return base + 'skins/' + skin + '.css';
+            skinPath = base + 'skins/' + skin + '.css';
         }
+
+        return skinPath;
     }
 
     function isSkinLoaded(skinPath) {
