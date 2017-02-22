@@ -133,10 +133,9 @@ define([
             this.offset = offset;
         },
         onMediaModel: function(model, mediaModel) {
-            var _this = this;
             mediaModel.on('change:state', function(model, state) {
                 if (state === 'complete') {
-                    _this.reset();
+                    model.set('nextUpVisible', false);
                 }
             });
         },
