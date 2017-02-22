@@ -7,7 +7,7 @@ define([
         'default': false
     };
 
-    return function (config) {
+    return function Source(config) {
         // file is the only hard requirement
         if (!config || !config.file) {
             return;

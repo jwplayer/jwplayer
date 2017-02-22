@@ -2,8 +2,7 @@
 define([
     'utils/underscore',
 ], function(_) {
-
-    return function(_api, _controller) {
+    return function ApiMutators(_api, _controller) {
 
         var modelGetters = [
             'buffer',

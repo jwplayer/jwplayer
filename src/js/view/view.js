@@ -35,7 +35,7 @@ define([
         'MSFullscreenChange'
     ];
 
-    return function (_api, _model) {
+    return function View(_api, _model) {
         var _playerElement;
         var _controlsLayer;
         var _controlsTimeout = -1;

@@ -2,12 +2,10 @@ define([
     'utils/helpers',
     'utils/strings'
 ], function(utils, strings) {
-
-    /** Component that loads and parses an SRT file. **/
-
+    // Component that loads and parses an SRT file
     var _seconds = utils.seconds;
 
-    return function (data) {
+    return function Srt(data) {
         // Trim whitespace and split the list by returns.
         var _captions = [];
         data = strings.trim(data);

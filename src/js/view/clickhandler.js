@@ -4,7 +4,7 @@ define([
     'utils/backbone.events',
     'utils/underscore'
 ], function(UI, events, Events, _) {
-    return function(_model, _ele, options) {
+    return function ClickHandler(_model, _ele, options) {
         var _display;
         var _alternateClickHandler;
         var _alternateDoubleClickHandler;

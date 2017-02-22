@@ -15,7 +15,7 @@ define([
         position: 'top-right'
     };
 
-    return function(_model) {
+    return function Logo(_model) {
         var _logo;
         var _settings;
         var _img = new Image();

@@ -9,7 +9,7 @@ define([
         minDvrWindow: 120
     };
 
-    return function (config) {
+    return function Item(config) {
         config = config || {};
         if (!_.isArray(config.tracks)) {
             delete config.tracks;
