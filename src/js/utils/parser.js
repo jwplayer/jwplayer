@@ -130,13 +130,12 @@ define([
         var prefix = (sec < 0) ? '-' : '';
         sec = Math.abs(sec);
 
-        var hrs  = Math.floor(sec / 3600),
+        var hrs = Math.floor(sec / 3600),
             mins = Math.floor((sec - hrs * 3600) / 60),
             secs = Math.floor(sec % 60);
 
         return prefix + (hrs ? hrs + ':' : '') + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
     };
-
 
 
     return parser;

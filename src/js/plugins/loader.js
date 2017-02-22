@@ -152,7 +152,7 @@ define([
                         var pluginOptions = _.extend({}, pluginConfig);
                         var pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
-                        pluginInstance.addToPlayer   = _addToPlayerGenerator(api, pluginInstance, div);
+                        pluginInstance.addToPlayer = _addToPlayerGenerator(api, pluginInstance, div);
                         pluginInstance.resizeHandler = _pluginResizeGenerator(pluginInstance);
 
                         api.addPlugin(pluginName, pluginInstance, div);

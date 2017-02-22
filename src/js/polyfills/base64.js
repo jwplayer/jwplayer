@@ -25,9 +25,9 @@ define([], function() {
                 // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
                 output += map.charAt(63 & block >> 8 - idx % 1 * 8)
                 ) {
-                charCode = str.charCodeAt(idx += 3/4);
+                charCode = str.charCodeAt(idx += 3 / 4);
                 if (charCode > 0xFF) {
-                    throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                    throw new InvalidCharacterError('\'btoa\' failed: The string to be encoded contains characters outside of the Latin1 range.');
                 }
                 block = block << 8 | charCode;
             }
@@ -40,7 +40,7 @@ define([], function() {
         window.atob = function (input) {
             var str = String(input).replace(/=+$/, '');
             if (str.length % 4 == 1) {
-                throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+                throw new InvalidCharacterError('\'atob\' failed: The string to be decoded is not correctly encoded.');
             }
             for (
                 // initialize result and counters

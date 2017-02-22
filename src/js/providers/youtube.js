@@ -130,7 +130,7 @@ define([
 
 
         function _round(number) {
-            return Math.round(number*10)/10;
+            return Math.round(number * 10) / 10;
         }
         function _timeUpdateHandler() {
             _bufferUpdate();
@@ -150,7 +150,7 @@ define([
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: bufferPercent
                 });
-                //if (bufferPercent === 100) this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                // if (bufferPercent === 100) this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
 
@@ -252,7 +252,7 @@ define([
 
                 case youtubeStates.PLAYING: // 1: playing
 
-                    //prevent duplicate captions when using JW Player captions and YT video has yt:cc=on
+                    // prevent duplicate captions when using JW Player captions and YT video has yt:cc=on
                     if (_.isFunction(_youtubePlayer.unloadModule)) {
                         _youtubePlayer.unloadModule('captions');
                     }
@@ -334,7 +334,7 @@ define([
 
         this.init = function(item) {
             // For now, we want each youtube provider to delete and start from scratch
-            //this.destroy();
+            // this.destroy();
 
             // load item on embed for mobile touch to start
             _setItem(item);
@@ -473,7 +473,7 @@ define([
 
         this.mute = function(mute) {
             var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
-            if (_youtubePlayer  && _youtubePlayer.mute) {
+            if (_youtubePlayer && _youtubePlayer.mute) {
                 if (muted) {
                     _youtubePlayer.mute();
                 } else {
@@ -556,13 +556,13 @@ define([
             // If the result is ['auto', 'low'], we prefer to return ['low']
             if (ytLevels.length === 2 && _.contains(ytLevels, 'auto')) {
                 return {
-                    label : _.without(ytLevels, 'auto')
+                    label: _.without(ytLevels, 'auto')
                 };
             }
 
             var qualityArray = _.map(ytLevels, function(val) {
                 return {
-                    label : val
+                    label: val
                 };
             });
 

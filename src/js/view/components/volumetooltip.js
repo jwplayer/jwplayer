@@ -5,7 +5,7 @@ define([
     'utils/helpers'
 ], function(Tooltip, Slider, UI, utils) {
     var VolumeTooltip = Tooltip.extend({
-        'constructor' : function(_model, name, ariaText) {
+        'constructor': function(_model, name, ariaText) {
             this._model = _model;
 
             // Prevent Volume tooltip button from being aria-hidden="true"
@@ -20,7 +20,7 @@ define([
 
             utils.removeClass(this.el, 'jw-hidden');
 
-            new UI(this.el, {'useHover': true, 'directSelect': true})
+            new UI(this.el, { 'useHover': true, 'directSelect': true })
                 .on('click', this.toggleValue, this)
                 .on('tap', this.toggleOpenState, this)
                 .on('over', this.openTooltip, this)
@@ -28,7 +28,7 @@ define([
 
             this._model.on('change:volume', this.onVolume, this);
         },
-        toggleValue : function(){
+        toggleValue: function() {
             this.trigger('toggleValue');
         }
     });

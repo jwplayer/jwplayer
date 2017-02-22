@@ -62,7 +62,7 @@ define([
 
     _.extend(Storage.prototype, {
         getAllItems: getAllItems,
-        track : track,
+        track: track,
         clear: clear
     });
 

@@ -5,10 +5,10 @@ define([
 ], function(utils, strings, _) {
 
     var Defaults = {
-        //file: undefined,
-        //label: undefined,
-        //type: undefined,
-        //androidhls : undefined,
+        // file: undefined,
+        // label: undefined,
+        // type: undefined,
+        // androidhls : undefined,
         'default': false
     };
 

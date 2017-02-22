@@ -92,7 +92,7 @@ define([
         this.model = _model;
         this.api = _api;
 
-        _playerElement = utils.createElement(playerTemplate({id: _model.get('id')}));
+        _playerElement = utils.createElement(playerTemplate({ id: _model.get('id') }));
         if (utils.isIE()) {
             utils.addClass(_playerElement, 'jw-ie');
         }
@@ -101,7 +101,7 @@ define([
             height = _model.get('height');
 
         _styles(_playerElement, {
-            width: width.toString().indexOf('%') > 0 ? width : (width+ 'px'),
+            width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
             height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
         });
 
@@ -120,7 +120,7 @@ define([
         _elementSupportsFullscreen = _requestFullscreen && _exitFullscreen;
 
         function reasonInteraction() {
-            return {reason: 'interaction'};
+            return { reason: 'interaction' };
         }
 
         function adjustSeek(amount) {
@@ -324,7 +324,7 @@ define([
 
 
         this.onChangeSkin = function(model, newSkin) {
-            utils.replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-'+newSkin) : '');
+            utils.replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-' + newSkin) : '');
         };
 
 
@@ -509,7 +509,7 @@ define([
             });
 
             // set initial state
-            if(_model.get('stretching')){
+            if(_model.get('stretching')) {
                 _onStretchChange(_model, _model.get('stretching'));
             }
             // watch for changes
@@ -552,7 +552,7 @@ define([
             var state = _model.get('state');
 
             if (_model.get('controls') &&
-                ((state === states.IDLE ||state === states.COMPLETE) ||
+                ((state === states.IDLE || state === states.COMPLETE) ||
                 (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
                 _api.play(reasonInteraction());
             }
@@ -569,9 +569,9 @@ define([
             }
         }
 
-        function _logoClickHandler(evt){
+        function _logoClickHandler(evt) {
             if (!evt.link) {
-                //_togglePlay();
+                // _togglePlay();
                 if (_model.get('controls')) {
                     _api.play(reasonInteraction());
                 }
@@ -605,7 +605,7 @@ define([
                 if (_rightClickMenu) {
                     _rightClickMenu.setup(_model, _playerElement, _playerElement);
                 }
-                utils.removeClass(_playerElement,'jw-flag-flash-blocked');
+                utils.removeClass(_playerElement, 'jw-flag-flash-blocked');
             }
         }
 
@@ -629,15 +629,15 @@ define([
             var overlaysElement = _playerElement.getElementsByClassName('jw-overlays')[0];
             overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
-            _displayClickHandler = new ClickHandler(_model, _videoLayer, {useHover: true});
+            _displayClickHandler = new ClickHandler(_model, _videoLayer, { useHover: true });
             _displayClickHandler.on('click', function() {
-                forward({type : events.JWPLAYER_DISPLAY_CLICK});
+                forward({ type: events.JWPLAYER_DISPLAY_CLICK });
                 if(_model.get('controls')) {
                     _api.play(reasonInteraction());
                 }
             });
             _displayClickHandler.on('tap', function() {
-                forward({type : events.JWPLAYER_DISPLAY_CLICK});
+                forward({ type: events.JWPLAYER_DISPLAY_CLICK });
                 _touchHandler();
             });
             _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
@@ -666,7 +666,7 @@ define([
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             var height = _model.get('height');
-            if (_isMobile && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)){
+            if (_isMobile && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)) {
                 utils.addClass(_playerElement, 'jw-flag-touch');
             } else {
                 _rightClickMenu = new RightClick();
@@ -730,7 +730,7 @@ define([
                 } else {
                     // else use native fullscreen
                     if (_instreamModel && _instreamModel.getVideo()) {
-                       _instreamModel.getVideo().setFullscreen(state);
+                        _instreamModel.getVideo().setFullscreen(state);
                     }
                     provider.setFullscreen(state);
                 }
@@ -888,7 +888,7 @@ define([
         };
         this.resizeMedia = _resizeMedia;
 
-        this.reset = function(){
+        this.reset = function() {
             if (document.contains(_playerElement)) {
                 _playerElement.parentNode.replaceChild(_originalContainer, _playerElement);
             }
@@ -907,7 +907,7 @@ define([
                 return !!(fsElement && fsElement.id === _model.get('id'));
             }
             // if player element view fullscreen not available, return video fullscreen state
-            return  _instreamModel ? _instreamModel.getVideo().getFullScreen() :
+            return _instreamModel ? _instreamModel.getVideo().getFullScreen() :
                         _model.getVideo().getFullScreen();
         }
 
@@ -961,7 +961,7 @@ define([
         }
 
         function _userActivity(timeout) {
-            if (!_showing){
+            if (!_showing) {
                 utils.removeClass(_playerElement, 'jw-flag-user-inactive');
                 _captionsRenderer.renderCues(true);
             }
@@ -974,7 +974,7 @@ define([
 
         function _toggleControls() {
             // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-            if  (_instreamModel ||
+            if (_instreamModel ||
                 _model.get('castActive') ||
                 (_model.mediaModel && _model.mediaModel.get('mediaType') === 'audio')) {
                 return;
@@ -997,7 +997,7 @@ define([
         }
 
         function _onMediaTypeChange(model, val) {
-            var isAudioFile = (val ==='audio');
+            var isAudioFile = (val === 'audio');
             var provider = _model.getVideo();
             var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
 
@@ -1012,7 +1012,7 @@ define([
             }
         }
 
-        function _setLiveMode(model, duration){
+        function _setLiveMode(model, duration) {
             var minDvrWindow = model.get('minDvrWindow');
             var streamType = utils.streamType(duration, minDvrWindow);
             var live = (streamType === 'LIVE');
@@ -1079,48 +1079,48 @@ define([
         }
 
         function createDisplayContainer() {
-          var displayContainer = new DisplayContainer();
-          var rewindDisplayIcon = new RewindDisplayIcon(_model, _api);
-          var playDisplayIcon = createPlayDisplayIcon();
-          var nextDisplayIcon = new NextDisplayIcon(_model, _api);
+            var displayContainer = new DisplayContainer();
+            var rewindDisplayIcon = new RewindDisplayIcon(_model, _api);
+            var playDisplayIcon = createPlayDisplayIcon();
+            var nextDisplayIcon = new NextDisplayIcon(_model, _api);
 
-          displayContainer.addButton(rewindDisplayIcon);
-          displayContainer.addButton(playDisplayIcon);
-          displayContainer.addButton(nextDisplayIcon);
+            displayContainer.addButton(rewindDisplayIcon);
+            displayContainer.addButton(playDisplayIcon);
+            displayContainer.addButton(nextDisplayIcon);
 
-          return displayContainer.element();
+            return displayContainer.element();
         }
 
         function createPlayDisplayIcon() {
-          var playDisplayIcon = new PlayDisplayIcon(_model);
-          //toggle playback
-          playDisplayIcon.on('click tap', function() {
-              forward({type : events.JWPLAYER_DISPLAY_CLICK});
-              _userActivity(1000);
-              _api.play(reasonInteraction());
-          });
+            var playDisplayIcon = new PlayDisplayIcon(_model);
+          // toggle playback
+            playDisplayIcon.on('click tap', function() {
+                forward({ type: events.JWPLAYER_DISPLAY_CLICK });
+                _userActivity(1000);
+                _api.play(reasonInteraction());
+            });
 
           // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
-          if (utils.isChrome() && !utils.isMobile()) {
-              playDisplayIcon.el.addEventListener('mousedown', function() {
-                  var provider = _model.getVideo();
-                  var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+            if (utils.isChrome() && !utils.isMobile()) {
+                playDisplayIcon.el.addEventListener('mousedown', function() {
+                    var provider = _model.getVideo();
+                    var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
 
-                  if (!isFlash) {
-                      return;
-                  }
+                    if (!isFlash) {
+                        return;
+                    }
 
-                  var resetPointerEvents = function() {
-                      document.removeEventListener('mouseup', resetPointerEvents);
-                      playDisplayIcon.el.style.pointerEvents = 'auto';
-                  };
+                    var resetPointerEvents = function() {
+                        document.removeEventListener('mouseup', resetPointerEvents);
+                        playDisplayIcon.el.style.pointerEvents = 'auto';
+                    };
 
-                  this.style.pointerEvents = 'none';
-                  document.addEventListener('mouseup', resetPointerEvents);
-              });
-          }
+                    this.style.pointerEvents = 'none';
+                    document.addEventListener('mouseup', resetPointerEvents);
+                });
+            }
 
-          return playDisplayIcon;
+            return playDisplayIcon;
 
         }
 
@@ -1178,8 +1178,8 @@ define([
             var bounds = {
                 x: 0,
                 y: 0,
-                width : _model.get('containerWidth') || 0,
-                height : _model.get('containerHeight') || 0
+                width: _model.get('containerWidth') || 0,
+                height: _model.get('containerHeight') || 0
             };
 
             // If we are using a dock, subtract that from the top

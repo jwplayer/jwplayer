@@ -4,7 +4,7 @@ define([
     'providers/providers-loaded',
     'utils/underscore',
     'utils/defaults'
-    ], function(Default, ProvidersSupported, ProvidersLoaded, _, defaults) {
+], function(Default, ProvidersSupported, ProvidersLoaded, _, defaults) {
 
     function Providers(config) {
         this.config = config || {};
@@ -45,7 +45,7 @@ define([
         }
 
         // If there isn't a "supports" val for this guy
-        if (! _.find(ProvidersSupported, _.matches({name : name}))) {
+        if (!_.find(ProvidersSupported, _.matches({ name: name }))) {
             if (!_.isFunction(provider.supports)) {
                 throw {
                     message: 'Tried to register a provider with an invalid object'
@@ -54,8 +54,8 @@ define([
 
             // The most recent provider will be in the front of the array, and chosen first
             ProvidersSupported.unshift({
-                name : name,
-                supports : provider.supports
+                name: name,
+                supports: provider.supports
             });
         }
 
@@ -85,9 +85,9 @@ define([
             var providers = _.clone(ProvidersSupported);
 
             if (primary === 'flash') {
-                var flashIdx = _.indexOf(providers, _.findWhere(providers, {name: 'flash'}));
+                var flashIdx = _.indexOf(providers, _.findWhere(providers, { name: 'flash' }));
                 var flashProvider = providers.splice(flashIdx, 1)[0];
-                var html5Idx = _.indexOf(providers, _.findWhere(providers, {name: 'html5'}));
+                var html5Idx = _.indexOf(providers, _.findWhere(providers, { name: 'html5' }));
                 providers.splice(html5Idx, 0, flashProvider);
             }
             return providers;
@@ -122,7 +122,7 @@ define([
         },
 
         // Find the name of the first provider which can support the media source-type
-        choose : function(source) {
+        choose: function(source) {
             // prevent throw on missing source
             source = _.isObject(source) ? source : {};
 
@@ -135,11 +135,11 @@ define([
 
                     return {
                         priority: priority,
-                        name : provider.name,
+                        name: provider.name,
                         type: source.type,
                         providerToCheck: provider,
                         // If provider isn't loaded, this will be undefined
-                        provider : ProvidersLoaded[provider.name]
+                        provider: ProvidersLoaded[provider.name]
                     };
                 }
             }

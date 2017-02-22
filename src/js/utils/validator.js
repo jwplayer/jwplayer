@@ -10,7 +10,7 @@ define([
      * @param a The variable to inspect
      */
     validator.exists = function (item) {
-        switch (typeof(item)) {
+        switch (typeof (item)) {
             case 'string':
                 return (item.length > 0);
             case 'object':

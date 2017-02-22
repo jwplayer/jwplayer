@@ -107,7 +107,7 @@ define([
                 if (args.length) {
                     // remove any nodes from arguments
                     // cyclical structures cannot be converted to JSON
-                    for (var i=args.length; i--;) {
+                    for (var i = args.length; i--;) {
                         if (typeof args[i] === 'object') {
                             _.each(args[i], deleteHTMLElement);
                         }
@@ -149,7 +149,7 @@ define([
     }
 
     return {
-        embed : embed,
-        remove : remove
+        embed: embed,
+        remove: remove
     };
 });

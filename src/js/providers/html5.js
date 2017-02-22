@@ -62,32 +62,32 @@ define([
 
         var _this = this,
             _mediaEvents = {
-                //abort: _generalHandler,
-                click : _clickHandler,
+                // abort: _generalHandler,
+                click: _clickHandler,
                 durationchange: _durationChangeHandler,
-                //emptied: _generalHandler,
+                // emptied: _generalHandler,
                 ended: _endedHandler,
                 error: _errorHandler,
 
-                //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
+                // play: _onPlayHandler, // play is attempted, but hasn't necessarily started
                 loadstart: _onLoadStart,
                 loadeddata: _onLoadedData, // we have video tracks (text, audio, metadata)
                 loadedmetadata: _loadedMetadataHandler, // we have video dimensions
                 canplay: _canPlayHandler,
                 playing: _playingHandler,
                 progress: _progressHandler,
-                //canplaythrough: _generalHandler,
+                // canplaythrough: _generalHandler,
 
                 pause: _pauseHandler,
-                //ratechange: _generalHandler,
-                //readystatechange: _readyStateHandler,
+                // ratechange: _generalHandler,
+                // readystatechange: _readyStateHandler,
                 seeked: _seekedHandler,
-                //seeking: _seekingHandler,
-                //stalled: _stalledHandler,
-                //suspend: _generalHandler,
+                // seeking: _seekingHandler,
+                // stalled: _stalledHandler,
+                // suspend: _generalHandler,
                 timeupdate: _timeUpdateHandler,
                 volumechange: _volumeChangeHandler,
-                //waiting: _stalledHandler,
+                // waiting: _stalledHandler,
 
                 webkitbeginfullscreen: _fullscreenBeginHandler,
                 webkitendfullscreen: _fullscreenEndHandler
@@ -311,7 +311,7 @@ define([
         function _playingHandler() {
             _this.setState(states.PLAYING);
             if(!_videotag.hasAttribute('jw-played')) {
-                _setAttribute('jw-played','');
+                _setAttribute('jw-played', '');
             }
             if (_videotag.hasAttribute('jw-gesture-required')) {
                 _videotag.removeAttribute('jw-gesture-required');
@@ -385,7 +385,7 @@ define([
             _currentQuality = _pickInitialQuality(levels);
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
-                //_trigger?
+                // _trigger?
                 _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
                     levels: publicLevels,
                     currentQuality: _currentQuality
@@ -462,12 +462,12 @@ define([
                 // results in html5.controller calling video.play()
                 _sendBufferFull();
                 // If we're still paused, then the tag isn't loading yet due to mobile interaction restrictions.
-                if(!_videotag.paused && _this.state !== states.PLAYING){
+                if(!_videotag.paused && _this.state !== states.PLAYING) {
                     _this.setState(states.LOADING);
                 }
             }
 
-            //in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
+            // in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
             if (utils.isIOS() && _this.getFullScreen()) {
                 _videotag.controls = true;
             }
@@ -659,7 +659,7 @@ define([
 
         this.volume = function(vol) {
             // volume must be 0.0 - 1.0
-            vol = utils.between(vol/100, 0, 1);
+            vol = utils.between(vol / 100, 0, 1);
 
             _videotag.volume = vol;
         };
@@ -690,7 +690,7 @@ define([
             if (!buffered || buffered.length === 0 || duration <= 0 || duration === Infinity) {
                 return 0;
             }
-            return utils.between(buffered.end(buffered.length-1) / duration, 0, 1);
+            return utils.between(buffered.end(buffered.length - 1) / duration, 0, 1);
         }
 
         function _endedHandler() {
@@ -832,9 +832,9 @@ define([
             var fitVideoUsingTransforms = _isIE || _isIOS7 || _isIOS8 || (_isAndroid && !_isFirefox);
             if (fitVideoUsingTransforms) {
                 // Use transforms to center and scale video in container
-                var x = - Math.floor(_videotag.videoWidth  / 2 + 1);
-                var y = - Math.floor(_videotag.videoHeight / 2 + 1);
-                var scaleX = Math.ceil(width  * 100 / _videotag.videoWidth)  / 100;
+                var x = -Math.floor(_videotag.videoWidth / 2 + 1);
+                var y = -Math.floor(_videotag.videoHeight / 2 + 1);
+                var scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
                 var scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
                 if (stretching === 'none') {
                     scaleX = scaleY = 1;
@@ -843,10 +843,10 @@ define([
                 } else if (stretching === 'uniform') {
                     scaleX = scaleY = Math.min(scaleX, scaleY);
                 }
-                style.width  = _videotag.videoWidth;
+                style.width = _videotag.videoWidth;
                 style.height = _videotag.videoHeight;
                 style.top = style.left = '50%';
-                style.margin  = 0;
+                style.margin = 0;
                 cssUtils.transform(_videotag,
                     'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
             }
@@ -871,7 +871,7 @@ define([
                 });
 
                 if (status instanceof utils.Error) {
-                    //object can't go fullscreen
+                    // object can't go fullscreen
                     return false;
                 }
 
@@ -931,7 +931,7 @@ define([
         };
 
         this.getName = function() {
-            return { name : _name };
+            return { name: _name };
         };
         this.setCurrentAudioTrack = _setCurrentAudioTrack;
 
@@ -995,18 +995,18 @@ define([
                 if (_videotag.videoHeight === 0) {
                     mediaType = 'audio';
                 }
-                _this.trigger('mediaType', {mediaType: mediaType});
+                _this.trigger('mediaType', { mediaType: mediaType });
             }
         }
     }
 
     // Register provider
-    var F = function(){};
+    var F = function() {};
     F.prototype = DefaultProvider;
     VideoProvider.prototype = new F();
 
     VideoProvider.getName = function() {
-        return { name : 'html5' };
+        return { name: 'html5' };
     };
 
     return VideoProvider;

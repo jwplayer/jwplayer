@@ -3,8 +3,8 @@ define([
 ], function(_) {
 
     var defaults = {
-        //file: undefined,
-        //label: undefined,
+        // file: undefined,
+        // label: undefined,
         kind: 'captions',
         'default': false
     };

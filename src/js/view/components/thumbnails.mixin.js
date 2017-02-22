@@ -28,7 +28,7 @@ define([
             var data = srt(evt.responseText);
             if (_.isArray(data)) {
                 _.each(data, function(obj) {
-                    this.thumbnails.push( new Thumbnail(obj) );
+                    this.thumbnails.push(new Thumbnail(obj));
                 }, this);
                 this.drawCues();
             }
@@ -36,10 +36,10 @@ define([
 
         thumbnailsFailed: function () { },
 
-        chooseThumbnail : function(seconds) {
-            var idx = _.sortedIndex(this.thumbnails, {end: seconds}, _.property('end'));
+        chooseThumbnail: function(seconds) {
+            var idx = _.sortedIndex(this.thumbnails, { end: seconds }, _.property('end'));
             if (idx >= this.thumbnails.length) {
-                idx = this.thumbnails.length-1;
+                idx = this.thumbnails.length - 1;
             }
             var url = this.thumbnails[idx].img;
             if (url.indexOf('://') < 0) {
@@ -49,7 +49,7 @@ define([
             return url;
         },
 
-        loadThumbnail : function(seconds) {
+        loadThumbnail: function(seconds) {
             var url = this.chooseThumbnail(seconds);
             var style = {
                 display: 'block',
@@ -66,7 +66,7 @@ define([
                     style.width = matched[4];
                     style.height = matched[5];
                 } catch (e) {
-                    //this.vttFailed('Could not parse thumbnail');
+                    // this.vttFailed('Could not parse thumbnail');
                     return;
                 }
             } else {
@@ -86,18 +86,18 @@ define([
             return style;
         },
 
-        showThumbnail : function(seconds) {
+        showThumbnail: function(seconds) {
             if (this.thumbnails.length < 1) {
                 return;
             }
             this.timeTip.image(this.loadThumbnail(seconds));
         },
 
-        resetThumbnails : function() {
+        resetThumbnails: function() {
             this.timeTip.image({
-                backgroundImage : '',
-                width : 0,
-                height : 0
+                backgroundImage: '',
+                width: 0,
+                height: 0
             });
             this.thumbnails = [];
         }

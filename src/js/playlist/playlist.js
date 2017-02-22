@@ -58,11 +58,11 @@ define([
         var hlsjsdefault = model.get('hlsjsdefault');
 
         return _.compact(_.map(sources, function(originalSource) {
-            if (! _.isObject(originalSource)) {
+            if (!_.isObject(originalSource)) {
                 return;
             }
             if (androidhls !== undefined && androidhls !== null) {
-                originalSource.androidhls =  androidhls;
+                originalSource.androidhls = androidhls;
             }
 
             if (originalSource.drm || itemDrm) {
@@ -93,7 +93,7 @@ define([
     var _filterSources = function(sources, providers) {
         // legacy plugin support
         if (!providers || !providers.choose) {
-            providers = new Providers({primary : providers ? 'flash' : null});
+            providers = new Providers({ primary: providers ? 'flash' : null });
         }
 
         var chosenProviderAndType = _chooseProviderAndType(sources, providers);
@@ -113,7 +113,7 @@ define([
             var source = sources[i];
             var chosenProvider = providers.choose(source);
             if (chosenProvider) {
-                return {type: source.type, provider: chosenProvider.providerToCheck};
+                return { type: source.type, provider: chosenProvider.providerToCheck };
             }
         }
 

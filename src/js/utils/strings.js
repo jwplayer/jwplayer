@@ -133,10 +133,10 @@ define([
     };
 
     return {
-        trim : trim,
-        pad : pad,
-        xmlAttribute : xmlAttribute,
-        extension : extension,
+        trim: trim,
+        pad: pad,
+        xmlAttribute: xmlAttribute,
+        extension: extension,
         hms: hms,
         seconds: seconds,
         suffix: suffix,

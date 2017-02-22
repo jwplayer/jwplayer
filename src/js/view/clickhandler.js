@@ -10,7 +10,7 @@ define([
             _alternateClickHandler,
             _alternateDoubleClickHandler;
 
-        var _options = {enableDoubleTap: true, useMove: true};
+        var _options = { enableDoubleTap: true, useMove: true };
         _.extend(this, Events);
 
         _display = _ele;
@@ -20,9 +20,9 @@ define([
         var userInteract = new UI(_display, _.extend(_options, options));
         userInteract.on('click tap', _clickHandler);
         userInteract.on('doubleClick doubleTap', _doubleClickHandler);
-        userInteract.on('move', function(){ _this.trigger('move'); });
-        userInteract.on('over', function(){ _this.trigger('over'); });
-        userInteract.on('out', function(){ _this.trigger('out'); });
+        userInteract.on('move', function() { _this.trigger('move'); });
+        userInteract.on('over', function() { _this.trigger('over'); });
+        userInteract.on('out', function() { _this.trigger('out'); });
 
         this.clickHandler = _clickHandler;
 

@@ -21,7 +21,7 @@ define([
                     'f4v': 'video/mp4',
                     'm4v': 'video/mp4',
                     'mov': 'video/mp4',
-                    //'m4a': 'audio/x-m4a', // converted to aac by source.js
+                    // 'm4a': 'audio/x-m4a', // converted to aac by source.js
                     'mp3': 'audio/mpeg',
                     'mpeg': 'audio/mpeg',
                     'ogv': 'video/ogg',

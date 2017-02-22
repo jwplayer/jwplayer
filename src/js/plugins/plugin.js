@@ -39,7 +39,7 @@ define([
 
         function errorHandler() {
             _status = scriptloader.loaderstatus.ERROR;
-            _this.trigger(events.ERROR, {url: url});
+            _this.trigger(events.ERROR, { url: url });
         }
 
         this.load = function() {

@@ -46,7 +46,7 @@ define([
             qoeItem.tick(JWPLAYER_MEDIA_FIRST_FRAME);
 
             var time = qoeItem.getFirstFrame();
-            model.mediaController.trigger(JWPLAYER_MEDIA_FIRST_FRAME, {loadTime : time});
+            model.mediaController.trigger(JWPLAYER_MEDIA_FIRST_FRAME, { loadTime: time });
             unbindFirstFrameEvents(model);
         });
 
@@ -73,7 +73,6 @@ define([
     }
 
     function initModel(model) {
-
         function onMediaModel(model, mediaModel, oldMediaModel) {
             // finish previous item
             if (model._qoeItem && oldMediaModel) {
@@ -106,6 +105,6 @@ define([
     }
 
     return {
-        model : initModel
+        model: initModel
     };
 });

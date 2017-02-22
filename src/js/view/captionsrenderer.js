@@ -69,7 +69,7 @@ define([
                 scale = Math.pow(width / 400, 0.6);
             if (scale) {
                 var size = _options.fontSize * scale;
-                var fontSize = Math.floor(size*2)/2;
+                var fontSize = Math.floor(size * 2) / 2;
 
                 if (_model.get('renderCaptionsNatively')) {
                     _setShadowDOMFontSize(_model.get('id'), fontSize);

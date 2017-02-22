@@ -31,14 +31,14 @@ define([
         var InstreamMethod = chooseInstreamMethod(_model);
         var _instream = new InstreamMethod(_controller, _model);
 
-        var _array, // the copied in playlist
-            _arrayOptions,
-            _arrayIndex = 0,
-            _options = {},
-            _oldProvider,
-            _oldpos,
-            _olditem,
-            _this = this;
+        var _array;
+        var _arrayOptions;
+        var _arrayIndex = 0;
+        var _options = {};
+        var _oldProvider;
+        var _oldpos;
+        var _olditem;
+        var _this = this;
 
         var _clickHandler = _.bind(function(evt) {
             evt = evt || {};
@@ -199,9 +199,9 @@ define([
                 playlist = [item];
             }
 
-            var _this = this;
+            _this = this;
             var providersManager = _model.getProviders();
-            var primary = (InstreamMethod === InstreamFlash)? 'flash' : undefined;
+            var primary = (InstreamMethod === InstreamFlash) ? 'flash' : undefined;
             var providersNeeded = providersManager.required(playlist, primary);
 
             _model.set('hideAdsControls', false);
@@ -239,7 +239,7 @@ define([
             _model.set('skipButton', true);
         };
 
-        this.applyProviderListeners = function(provider){
+        this.applyProviderListeners = function(provider) {
             _instream.applyProviderListeners(provider);
 
             this.addClickHandler();
@@ -316,6 +316,8 @@ define([
                     case 'instream-postroll':
                     case 'instream-idle':
                         _oldProvider.stop();
+                        break;
+                    default:
                         break;
                 }
             }

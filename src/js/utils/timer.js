@@ -10,11 +10,11 @@ define([
 
         return {
             // Profile methods
-            start : function(methodName) {
+            start: function(methodName) {
                 _startTimes[methodName] = _.now();
-                _counts[methodName] = _counts[methodName]+1 || 1;
+                _counts[methodName] = _counts[methodName] + 1 || 1;
             },
-            end : function(methodName) {
+            end: function(methodName) {
                 if (!_startTimes[methodName]) {
                     return;
                 }
@@ -22,20 +22,20 @@ define([
                 var e = _.now() - _startTimes[methodName];
                 _sum[methodName] = _sum[methodName] + e || e;
             },
-            dump : function() {
+            dump: function() {
                 return {
-                    counts : _counts,
-                    sums : _sum,
-                    events : _ticks
+                    counts: _counts,
+                    sums: _sum,
+                    events: _ticks
                 };
             },
 
             // Profile events
-            tick : function(event, time) {
+            tick: function(event, time) {
                 // If a time is given, use that instead of now()
                 _ticks[event] = time || _.now();
             },
-            between : function(left, right) {
+            between: function(left, right) {
                 if (_ticks[right] && _ticks[left]) {
                     return _ticks[right] - _ticks[left];
                 }

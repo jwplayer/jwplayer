@@ -2,14 +2,13 @@ define([
     'utils/helpers',
     'utils/underscore'
 ], function(utils, _) {
-    /*global __webpack_public_path__:true*/
+    /* global __webpack_public_path__:true*/
 
     // Defaults
     var Defaults = {
-        //androidhls: true,
         autostart: false,
         controls: true,
-        displaytitle : true,
+        displaytitle: true,
         displaydescription: true,
         mobilecontrols: false,
         repeat: false,
@@ -46,8 +45,6 @@ define([
             related: 'Related'
         },
         renderCaptionsNatively: false
-        //qualityLabel: '480p',     // specify a default quality
-        //captionLabel: 'English',  // specify a default Caption
     };
 
     function _deserialize(options) {
@@ -58,12 +55,12 @@ define([
 
     function _normalizeSize(val) {
         if (val.slice && val.slice(-2) === 'px') {
-            val = val.slice(0,-2);
+            val = val.slice(0, -2);
         }
         return val;
     }
 
-    var config = function(options, storage) {
+    var createConfig = function (options, storage) {
         var persisted = storage && storage.getAllItems();
         var allOptions = _.extend({}, (window.jwplayer || {}).defaults, persisted, options);
 
@@ -77,7 +74,7 @@ define([
         }
         config.base = (config.base || utils.loadFrom()).replace(/\/?$/, '/');
         __webpack_public_path__ = config.base;
-        config.width  = _normalizeSize(config.width);
+        config.width = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
         var pathToFlash = (utils.getScriptPath('jwplayer.js') || config.base);
         config.flashplayer = config.flashplayer || pathToFlash + 'jwplayer.flash.swf';
@@ -146,8 +143,8 @@ define([
         if (index === -1) {
             return 0;
         }
-        var w = parseFloat(ar.substr(0, index)),
-            h = parseFloat(ar.substr(index + 1));
+        var w = parseFloat(ar.substr(0, index));
+        var h = parseFloat(ar.substr(index + 1));
         if (w <= 0 || h <= 0) {
             return 0;
         }
@@ -155,5 +152,5 @@ define([
     }
 
 
-    return config;
+    return createConfig;
 });

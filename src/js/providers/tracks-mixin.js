@@ -137,7 +137,7 @@ define(['utils/underscore',
         }
 
         if (this._textTracks.length) {
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
     }
 
@@ -218,7 +218,7 @@ define(['utils/underscore',
                 data: []
             };
             this.addTextTracks([track]);
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
 
         var cueId;
@@ -292,9 +292,9 @@ define(['utils/underscore',
         var cues = cueData.captions || [],
             cuesToConvert = [],
             sort = false;
-        for (var i=0; i<cues.length; i++) {
+        for (var i = 0; i < cues.length; i++) {
             var cue = cues[i];
-            var cueId = cueData.name +'_'+ cue.begin +'_'+ cue.end;
+            var cueId = cueData.name + '_' + cue.begin + '_' + cue.end;
             if (!this._metaCuesByTextTime[cueId]) {
                 this._metaCuesByTextTime[cueId] = cue;
                 cuesToConvert.push(cue);
@@ -345,7 +345,7 @@ define(['utils/underscore',
         if (this.renderNatively || metadataTrack) {
             _removeCues.call(this, this.video.textTracks);
             if(metadataTrack) {
-               metadataTrack.oncuechange = null;
+                metadataTrack.oncuechange = null;
             }
         }
         this._itemTracks = null;
@@ -386,7 +386,7 @@ define(['utils/underscore',
 
     function textTrackChangeHandler() {
         var textTracks = this.video.textTracks;
-        var inUseTracks = _.filter(textTracks, function (track)  {
+        var inUseTracks = _.filter(textTracks, function (track) {
             return (track.inuse || !track._id) && _kindSupported(track.kind);
         });
         if (!this._textTracks || _tracksModified.call(this, inUseTracks)) {
@@ -439,7 +439,7 @@ define(['utils/underscore',
 
         // We can setup the captions menu now since we're not rendering textTracks natively
         if (!this.renderNatively && this._textTracks && this._textTracks.length) {
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
     }
 
@@ -455,7 +455,7 @@ define(['utils/underscore',
             if (!this._cuesByTrackId) {
                 this._cuesByTrackId = {};
             }
-            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false};
+            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false };
             return;
         }
         // Cues already added
@@ -471,9 +471,9 @@ define(['utils/underscore',
         }
     }
 
-    //////////////////////
-    ////// PRIVATE METHODS
-    //////////////////////
+    // ////////////////////
+    // //// PRIVATE METHODS
+    // ////////////////////
 
     function _addCueToTrack(track, vttCue) {
         if (!utils.isEdge() || !window.TextTrackCue) {
@@ -534,7 +534,7 @@ define(['utils/underscore',
             var tracks = this.video.textTracks;
             // TextTrack label is read only, so we'll need to create a new track if we don't
             // already have one with the same label
-            track = _.findWhere(tracks, {'label': label});
+            track = _.findWhere(tracks, { 'label': label });
 
             if (track) {
                 track.kind = itemTrack.kind;
@@ -544,7 +544,7 @@ define(['utils/underscore',
             }
 
             track.default = itemTrack.default;
-            track.mode    = 'disabled';
+            track.mode = 'disabled';
             track.inuse = true;
         } else {
             track = itemTrack;
@@ -586,7 +586,7 @@ define(['utils/underscore',
 
         // Get the most recent start time. Cues are sorted by start time in ascending order by the browser
         var startTime = activeCues[activeCues.length - 1].startTime;
-        //Prevent duplicate meta events for the same list of cues since the cue change handler fires once
+        // Prevent duplicate meta events for the same list of cues since the cue change handler fires once
         // for each activeCue in Safari
         if (this._activeCuePosition === startTime) {
             return;

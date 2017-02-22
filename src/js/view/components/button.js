@@ -17,16 +17,16 @@ define([
         }
 
         return {
-            element : function() { return element; },
-            toggle : function(m) {
+            element: function() { return element; },
+            toggle: function(m) {
                 if (m) {
                     this.show();
                 } else {
                     this.hide();
                 }
             },
-            show : function() { element.style.display = ''; },
-            hide : function() { element.style.display = 'none'; }
+            show: function() { element.style.display = ''; },
+            hide: function() { element.style.display = 'none'; }
         };
     };
 

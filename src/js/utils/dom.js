@@ -126,7 +126,7 @@ define([
             scrollOffsetY = window.pageYOffset,
             scrollOffsetX = window.pageXOffset;
         if (!rect.width && !rect.height && !rect.left && !rect.top) {
-            //element is not visible / no layout
+            // element is not visible / no layout
             return bounds;
         }
         bounds.left = rect.left + scrollOffsetX;

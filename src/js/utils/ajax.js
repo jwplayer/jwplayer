@@ -2,7 +2,7 @@ define([
     'utils/underscore',
     'utils/parser'
 ], function(_, parser) {
-    var noop = function(){};
+    var noop = function() {};
     var useDomParser = false;
 
     var crossdomain = function(uri) {
@@ -23,7 +23,7 @@ define([
             url = args.url;
         }
         var xhr;
-        var options =_.extend({
+        var options = _.extend({
             xhr: null,
             url: url,
             withCredentials: false,
@@ -193,8 +193,8 @@ define([
 
     function _jsonResponse(xhr, options) {
         // insure that xhr.response is parsed JSON
-        if ( !xhr.response ||
-            (_.isString(xhr.response) && xhr.responseText.substr(1) !== '"') ) {
+        if (!xhr.response ||
+            (_.isString(xhr.response) && xhr.responseText.substr(1) !== '"')) {
             try {
                 xhr = _.extend({}, xhr, {
                     response: JSON.parse(xhr.responseText)

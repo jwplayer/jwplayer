@@ -75,7 +75,7 @@ define([
     var _isIOS = browser.isIOS = function(osVersion) {
         if (osVersion) {
             return _userAgentMatch(
-                new RegExp('iP(hone|ad|od).+\\s(OS\\s'+osVersion+'|.*\\sVersion/'+osVersion+')', 'i')
+                new RegExp('iP(hone|ad|od).+\\s(OS\\s' + osVersion + '|.*\\sVersion/' + osVersion + ')', 'i')
             );
         }
         return _userAgentMatch(/iP(hone|ad|od)/i);
@@ -87,7 +87,7 @@ define([
     };
 
     var _isAndroid = browser.isAndroid = function(osVersion, excludeChrome) {
-        //Android Browser appears to include a user-agent string for Chrome/18
+        // Android Browser appears to include a user-agent string for Chrome/18
         if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/)) {
             return false;
         }

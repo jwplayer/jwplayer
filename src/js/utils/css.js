@@ -64,7 +64,7 @@ define([
         }
         var importantString = important ? ' !important' : '';
 
-        //string
+        // string
         if (typeof value === 'string' && isNaN(value)) {
             if ((/png|gif|jpe?g/i).test(value) && value.indexOf('url') < 0) {
                 return 'url(' + value + ')';
@@ -116,10 +116,10 @@ define([
     };
 
     return {
-        css : _css,
-        style : _style,
-        clearCss : styleLoader.clear,
-        transform : transform,
-        hexToRgba : hexToRgba
+        css: _css,
+        style: _style,
+        clearCss: styleLoader.clear,
+        transform: transform,
+        hexToRgba: hexToRgba
     };
 });

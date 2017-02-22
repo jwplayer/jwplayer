@@ -23,7 +23,7 @@ define([
 
 
     return {
-        loadPlugins : loadPlugins,
-        registerPlugin : registerPlugin
+        loadPlugins: loadPlugins,
+        registerPlugin: registerPlugin
     };
 });

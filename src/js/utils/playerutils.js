@@ -10,7 +10,7 @@ define([
     /** Gets the repository location **/
     playerUtils.repo = _.memoize(function () {
         if (__SELF_HOSTED__) {
-            return  parser.getScriptPath('jwplayer.js');
+            return parser.getScriptPath('jwplayer.js');
         }
 
         var semver = version.split('+')[0];

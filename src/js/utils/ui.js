@@ -59,7 +59,7 @@ define([
     function preventDefault(evt) {
         // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
         //  we cannot call evt.preventDefault() on them
-        if (! (evt instanceof MouseEvent) && ! (evt instanceof window.TouchEvent)) {
+        if (!(evt instanceof MouseEvent) && !(evt instanceof window.TouchEvent)) {
             return;
         }
         if (evt.preventManipulation) {

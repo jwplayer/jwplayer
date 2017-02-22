@@ -48,7 +48,7 @@ define([
             var index = line.indexOf(' --> ');
             if (index > 0) {
                 entry.begin = _seconds(line.substr(0, index));
-                entry.end   = _seconds(line.substr(index + 5));
+                entry.end = _seconds(line.substr(index + 5));
                 // Remaining lines contain the text
                 entry.text = array.slice(idx + 1).join('\r\n');
             }

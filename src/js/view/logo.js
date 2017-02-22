@@ -53,15 +53,15 @@ define([
             _img.onload = function() {
                 // update logo style
                 var style = {
-                    backgroundImage: 'url("' + this.src +'")',
+                    backgroundImage: 'url("' + this.src + '")',
                     width: this.width,
                     height: this.height
                 };
                 if(_settings.margin !== LogoDefaults.margin) {
                     var positions = (/(\w+)-(\w+)/).exec(_settings.position);
-                    if (positions.length === 3){
-                        style['margin-'+positions[1]] = _settings.margin;
-                        style['margin-'+positions[2]] = _settings.margin;
+                    if (positions.length === 3) {
+                        style['margin-' + positions[1]] = _settings.margin;
+                        style['margin-' + positions[2]] = _settings.margin;
                     }
                 }
                 _styles(_logo, style);

@@ -5,10 +5,10 @@ define([
 ], function(_, Source, Track) {
 
     var Defaults = {
-        //description: undefined,
-        //image: undefined,
-        //mediaid: undefined,
-        //title: undefined,
+        // description: undefined,
+        // image: undefined,
+        // mediaid: undefined,
+        // title: undefined,
         sources: [],
         tracks: [],
         minDvrWindow: 120
@@ -46,7 +46,7 @@ define([
             }
 
             // If the source doesn't have a label, number it
-            if (! _playlistItem.sources[i].label) {
+            if (!_playlistItem.sources[i].label) {
                 _playlistItem.sources[i].label = i.toString();
             }
 

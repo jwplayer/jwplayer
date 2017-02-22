@@ -9,15 +9,15 @@ define([
     var RightClick = function() {};
 
     _.extend(RightClick.prototype, {
-        buildArray : function() {
+        buildArray: function() {
             var semverParts = version.split('+');
             var majorMinorPatchPre = semverParts[0];
 
             var obj = {
-                items : [{
+                items: [{
                     title: 'Powered by JW Player ' + majorMinorPatchPre,
-                    featured : true,
-                    showLogo : true,
+                    featured: true,
+                    showLogo: true,
                     link: 'https://jwplayer.com/learn-more'
                 }]
             };
@@ -27,8 +27,8 @@ define([
             if (isPrerelease && versionMeta) {
                 var pairs = versionMeta.split('.');
                 obj.items.push({
-                    title : 'build: (' + pairs[0] +'.'+ pairs[1] + ')',
-                    link : '#'
+                    title: 'build: (' + pairs[0] + '.' + pairs[1] + ')',
+                    link: '#'
                 });
             }
 
@@ -36,22 +36,22 @@ define([
             if (_provider && _provider.name.indexOf('flash') >= 0) {
                 var text = 'Flash Version ' + utils.flashVersion();
                 obj.items.push({
-                    title : text,
-                    link : 'http://www.adobe.com/software/flash/about/'
+                    title: text,
+                    link: 'http://www.adobe.com/software/flash/about/'
                 });
             }
 
             return obj;
         },
-        buildMenu : function() {
+        buildMenu: function() {
             var obj = this.buildArray();
             return utils.createElement(rightclickTemplate(obj));
         },
-        updateHtml : function() {
+        updateHtml: function() {
             this.el.innerHTML = this.buildMenu().innerHTML;
         },
 
-        rightClick : function(evt) {
+        rightClick: function(evt) {
             this.lazySetup();
 
             if (this.mouseOverContext) {
@@ -77,14 +77,14 @@ define([
                 target = target.parentNode;
             }
 
-            return { x : x, y : y};
+            return { x: x, y: y };
         },
-        showMenu : function(evt) {
+        showMenu: function(evt) {
             // Offset relative to player element
             var off = this.getOffset(evt);
 
-            this.el.style.left = off.x+'px';
-            this.el.style.top  = off.y+'px';
+            this.el.style.left = off.x + 'px';
+            this.el.style.top = off.y + 'px';
 
             utils.addClass(this.playerElement, 'jw-flag-rightclick-open');
             utils.addClass(this.el, 'jw-open');
@@ -93,7 +93,7 @@ define([
             return false;
         },
 
-        hideMenu : function() {
+        hideMenu: function() {
             this.elementUI.off('out', this.hideMenu, this);
             if (this.mouseOverContext) {
                 // If mouse is over the menu, hide the menu when mouse moves out
@@ -104,7 +104,7 @@ define([
             utils.removeClass(this.el, 'jw-open');
         },
 
-        lazySetup : function() {
+        lazySetup: function() {
             if (this.el) {
                 return;
             }
@@ -121,12 +121,12 @@ define([
             this.model.on('change:provider', this.updateHtml, this);
 
             // Track if the mouse is above the menu or not
-            this.elementUI = new UI(this.el, {'useHover': true})
+            this.elementUI = new UI(this.el, { 'useHover': true })
                 .on('over', function() { this.mouseOverContext = true; }, this)
                 .on('out', function() { this.mouseOverContext = false; }, this);
         },
 
-        setup : function(_model, _playerElement, layer) {
+        setup: function(_model, _playerElement, layer) {
             this.playerElement = _playerElement;
             this.model = _model;
             this.mouseOverContext = false;
@@ -136,19 +136,19 @@ define([
             _playerElement.oncontextmenu = this.rightClick.bind(this);
         },
 
-        addOffListener : function(element) {
+        addOffListener: function(element) {
             element.addEventListener('mousedown', this.hideMenuHandler);
             element.addEventListener('touchstart', this.hideMenuHandler);
             element.addEventListener('pointerdown', this.hideMenuHandler);
         },
 
-        removeOffListener : function(element) {
+        removeOffListener: function(element) {
             element.removeEventListener('mousedown', this.hideMenuHandler);
             element.removeEventListener('touchstart', this.hideMenuHandler);
             element.removeEventListener('pointerdown', this.hideMenuHandler);
         },
 
-        destroy : function() {
+        destroy: function() {
             clearTimeout(this._menuTimeout);
             if(this.el) {
                 this.hideMenu();

@@ -3,6 +3,9 @@
         "browser": true,
         "amd": true
     },
+    "globals": {
+        "__webpack_public_path__": true
+    },
     "extends": "eslint:recommended",
     "rules": {
         "comma-dangle": 0,

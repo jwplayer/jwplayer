@@ -10,7 +10,7 @@ define([
             iconName: 'rewind',
             ariaLabel: model.get('localization').playback
         }));
-        this.iconUI = new UI (this.el).on('click tap', function() {
+        this.iconUI = new UI(this.el).on('click tap', function() {
             var currentPosition = model.get('position'),
                 duration = model.get('duration'),
                 rewindPosition = currentPosition - 10,

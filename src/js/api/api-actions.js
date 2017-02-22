@@ -9,10 +9,10 @@ define([
         //   Ultimately they should be moved into this file
         var passthroughs = [
             // 'setup',
-            //'load',
-            //'play',
-            //'pause',
-            //'remove',
+            // 'load',
+            // 'play',
+            // 'pause',
+            // 'remove',
 
             'seek',
             'skipAd',

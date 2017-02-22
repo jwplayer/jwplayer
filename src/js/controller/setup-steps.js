@@ -16,26 +16,26 @@ define([
     function getQueue() {
 
         var Components = {
-            LOAD_PROMISE_POLYFILL : {
+            LOAD_PROMISE_POLYFILL: {
                 method: _loadPromisePolyfill,
                 depends: []
             },
-            LOAD_BASE64_POLYFILL : {
+            LOAD_BASE64_POLYFILL: {
                 method: _loadBase64Polyfill,
                 depends: []
             },
-            LOADED_POLYFILLS : {
+            LOADED_POLYFILLS: {
                 method: _loadedPolyfills,
                 depends: [
                     'LOAD_PROMISE_POLYFILL',
                     'LOAD_BASE64_POLYFILL'
                 ]
             },
-            LOAD_PLUGINS : {
+            LOAD_PLUGINS: {
                 method: _loadPlugins,
                 depends: ['LOADED_POLYFILLS']
             },
-            INIT_PLUGINS : {
+            INIT_PLUGINS: {
                 method: _initPlugins,
                 depends: [
                     'LOAD_PLUGINS',
@@ -43,36 +43,36 @@ define([
                     'SETUP_VIEW'
                 ]
             },
-            LOAD_SKIN : {
+            LOAD_SKIN: {
                 method: _loadSkin,
                 depends: ['LOADED_POLYFILLS']
             },
-            LOAD_PLAYLIST : {
+            LOAD_PLAYLIST: {
                 method: _loadPlaylist,
                 depends: ['LOADED_POLYFILLS']
             },
             CHECK_FLASH: {
                 method: _checkFlash,
-                depends : ['LOADED_POLYFILLS']
+                depends: ['LOADED_POLYFILLS']
             },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
-                depends : ['LOAD_PLAYLIST', 'CHECK_FLASH']
+                depends: ['LOAD_PLAYLIST', 'CHECK_FLASH']
             },
-            SETUP_VIEW : {
+            SETUP_VIEW: {
                 method: _setupView,
                 depends: [
                     'LOAD_SKIN'
                 ]
             },
-            SET_ITEM : {
+            SET_ITEM: {
                 method: _setPlaylistItem,
                 depends: [
                     'INIT_PLUGINS',
                     'FILTER_PLAYLIST'
                 ]
             },
-            SEND_READY : {
+            SEND_READY: {
                 method: _sendReady,
                 depends: [
                     'SETUP_VIEW',
@@ -106,7 +106,7 @@ define([
         }
     }
 
-    function _loadedPolyfills(resolve){
+    function _loadedPolyfills(resolve) {
         resolve();
     }
 
@@ -162,7 +162,7 @@ define([
             var height = _model.get('height');
             utils.style(testContainer, {
                 position: 'relative',
-                width: width.toString().indexOf('%') > 0 ? width : (width+ 'px'),
+                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
                 height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
             });
             var swf = EmbedSwf.embed(flashHealthCheckSwf, testContainer, flashHealthCheckId, null);
@@ -280,20 +280,20 @@ define([
 
     function _sendReady(resolve) {
         resolve({
-            type : 'complete'
+            type: 'complete'
         });
     }
 
     function error(resolve, msg, reason) {
         resolve({
-            type : 'error',
-            msg : msg,
-            reason : reason
+            type: 'error',
+            msg: msg,
+            reason: reason
         });
     }
 
     return {
-        getQueue : getQueue,
+        getQueue: getQueue,
         error: error
     };
 });
