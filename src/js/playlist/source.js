@@ -3,17 +3,11 @@ define([
     'utils/strings',
     'utils/underscore'
 ], function(utils, strings, _) {
-
     var Defaults = {
-        // file: undefined,
-        // label: undefined,
-        // type: undefined,
-        // androidhls : undefined,
         'default': false
     };
 
-
-    var Source = function (config) {
+    return function (config) {
         // file is the only hard requirement
         if (!config || !config.file) {
             return;
@@ -63,6 +57,8 @@ define([
             case 'm4a':
                 _source.type = 'aac';
                 break;
+            default:
+                break;
         }
 
         // remove empty strings
@@ -74,6 +70,4 @@ define([
 
         return _source;
     };
-
-    return Source;
 });

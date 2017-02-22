@@ -59,7 +59,7 @@ define([
 
         return _.compact(_.map(sources, function(originalSource) {
             if (!_.isObject(originalSource)) {
-                return;
+                return null;
             }
             if (androidhls !== undefined && androidhls !== null) {
                 originalSource.androidhls = androidhls;

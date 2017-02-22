@@ -49,7 +49,7 @@ define([
                         } else if (_.isArray(pl.playlist)) {
                             jsonObj = pl;
                         } else {
-                            throw null;
+                            throw Error;
                         }
                     } catch (e) {
                         _playlistError('Not a valid RSS/JSON feed');

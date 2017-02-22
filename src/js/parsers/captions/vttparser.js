@@ -44,10 +44,9 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             // Timestamp takes the form of [hours]:[minutes].[milliseconds]
             // First position is hours as it's over 59.
             return computeSeconds(m[1], m[2], 0, m[4]);
-        } else {
-            // Timestamp takes the form of [minutes]:[seconds].[milliseconds]
-            return computeSeconds(0, m[1], m[2], m[4]);
         }
+        // Timestamp takes the form of [minutes]:[seconds].[milliseconds]
+        return computeSeconds(0, m[1], m[2], m[4]);
     }
 
     // A settings object holds key/value pairs and will ignore anything but the first

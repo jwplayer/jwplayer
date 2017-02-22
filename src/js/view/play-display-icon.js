@@ -8,7 +8,6 @@ define([
 
     var PlayDisplayIcon = function(_model) {
         _.extend(this, Events);
-
         this.model = _model;
 
         this.el = utils.createElement(Template({
@@ -38,6 +37,9 @@ define([
                         newstateLabel = localization.replay;
                         break;
                     case 'error':
+                        newstateLabel = '';
+                        break;
+                    default:
                         newstateLabel = '';
                         break;
                 }

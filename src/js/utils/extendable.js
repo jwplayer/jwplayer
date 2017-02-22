@@ -34,7 +34,9 @@ define([
 
         // Add prototype properties (instance properties) to the subclass,
         // if supplied.
-        if (protoProps) { _.extend(child.prototype, protoProps); }
+        if (protoProps) {
+            _.extend(child.prototype, protoProps);
+        }
 
         // Set a convenience property in case the parent's prototype is needed
         // later.

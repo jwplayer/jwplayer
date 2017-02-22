@@ -35,8 +35,7 @@ define([
         }
     };
 
-    var registerProvider =
-    Providers.registerProvider = function(provider) {
+    var registerProvider = Providers.registerProvider = function(provider) {
         var name = provider.getName().name;
 
         // Only register the provider if it isn't registered already.  This is an issue on pages with multiple embeds.
@@ -47,9 +46,7 @@ define([
         // If there isn't a "supports" val for this guy
         if (!_.find(ProvidersSupported, _.matches({ name: name }))) {
             if (!_.isFunction(provider.supports)) {
-                throw {
-                    message: 'Tried to register a provider with an invalid object'
-                };
+                throw new Error('Tried to register a provider with an invalid object');
             }
 
             // The most recent provider will be in the front of the array, and chosen first

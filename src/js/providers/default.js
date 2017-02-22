@@ -5,8 +5,8 @@ define([
     'utils/underscore'
 ], function(utils, events, states, _) {
 
-    var noop = utils.noop,
-        returnFalse = _.constant(false);
+    var noop = utils.noop;
+    var returnFalse = _.constant(false);
 
     var DefaultProvider = {
         // This function is required to determine if a provider can work on a given source

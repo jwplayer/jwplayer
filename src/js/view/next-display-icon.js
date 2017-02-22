@@ -14,7 +14,7 @@ define([
             api.next();
         });
         this.el.style.display = 'none';
-        model.on('change:nextUp', function(model, nextUp) {
+        model.on('change:nextUp', function(nextUpChangeModel, nextUp) {
             this.el.style.display = nextUp ? '' : 'none';
         }, this);
     };

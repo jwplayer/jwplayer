@@ -61,7 +61,8 @@ define(['utils/underscore',
 
         // filter for 'subtitles' or 'captions' tracks
         if (tracks.length) {
-            var i = 0, len = tracks.length;
+            var i = 0;
+            var len = tracks.length;
 
             for (i; i < len; i++) {
                 var track = tracks[i];
@@ -93,10 +94,9 @@ define(['utils/underscore',
                     track.mode = 'hidden';
                     track.oncuechange = _cueChangeHandler.bind(this);
                     this._tracksById[track._id] = track;
-                }
-                else if (_kindSupported(track.kind)) {
-                    var mode = track.mode,
-                        cue;
+                } else if (_kindSupported(track.kind)) {
+                    var mode = track.mode;
+                    var cue;
 
                     // By setting the track mode to 'hidden', we can determine if the track has cues
                     track.mode = 'hidden';
@@ -251,10 +251,10 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        var trackId = 'native' + cueData.type,
-            track = this._tracksById[trackId],
-            label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata',
-            vttCue = cueData.cue;
+        var trackId = 'native' + cueData.type;
+        var track = this._tracksById[trackId];
+        var label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
+        var vttCue = cueData.cue;
 
         if (!track) {
             var itemTrack = {
@@ -289,9 +289,10 @@ define(['utils/underscore',
         }
 
         track.source = cueData.source;
-        var cues = cueData.captions || [],
-            cuesToConvert = [],
-            sort = false;
+        var cues = cueData.captions || [];
+        var cuesToConvert = [];
+        var sort = false;
+
         for (var i = 0; i < cues.length; i++) {
             var cue = cues[i];
             var cueId = cueData.name + '_' + cue.begin + '_' + cue.end;
@@ -394,13 +395,14 @@ define(['utils/underscore',
             return;
         }
         // If a caption/subtitle track is showing, find its index
-        var selectedTextTrackIndex = -1, i = 0;
-        for (i; i < this._textTracks.length; i++) {
+        var selectedTextTrackIndex = -1;
+        for (var i = 0; i < this._textTracks.length; i++) {
             if (this._textTracks[i].mode === 'showing') {
                 selectedTextTrackIndex = i;
                 break;
             }
         }
+
         // Notifying the model when the index changes keeps the current index in sync in iOS Fullscreen mode
         if (selectedTextTrackIndex !== this._currentTextTrackIndex) {
             this.setSubtitlesTrack(selectedTextTrackIndex + 1);
@@ -534,7 +536,7 @@ define(['utils/underscore',
             var tracks = this.video.textTracks;
             // TextTrack label is read only, so we'll need to create a new track if we don't
             // already have one with the same label
-            track = _.findWhere(tracks, { 'label': label });
+            track = _.findWhere(tracks, { label: label });
 
             if (track) {
                 track.kind = itemTrack.kind;
@@ -622,8 +624,8 @@ define(['utils/underscore',
         if(!this._cachedVTTCues[track._id]) {
             this._cachedVTTCues[track._id] = {};
         }
-        var cachedCues = this._cachedVTTCues[track._id],
-            cacheKey;
+        var cachedCues = this._cachedVTTCues[track._id];
+        var cacheKey;
 
         switch (trackKind) {
             case 'captions':
@@ -650,6 +652,8 @@ define(['utils/underscore',
 
                 cachedCues[cacheKey] = vttCue.endTime;
                 return true;
+            default:
+                break;
         }
     }
 

@@ -8,10 +8,8 @@ define([
     'view/components/chapters.mixin',
     'view/components/thumbnails.mixin'
 ], function(_, utils, Constants, UI, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
-
     var TimeTip = Tooltip.extend({
         setup: function() {
-
             this.text = document.createElement('span');
             this.text.className = 'jw-text jw-reset';
             this.img = document.createElement('div');
@@ -98,7 +96,7 @@ define([
             this.elementRail.appendChild(this.timeTip.element());
 
             // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
-            this.elementUI = new UI(this.el, { 'useHover': true, 'useMove': true })
+            this.elementUI = new UI(this.el, { useHover: true, useMove: true })
                 .on('drag move over', this.showTimeTooltip.bind(this), this)
                 .on('dragEnd out', this.hideTimeTooltip.bind(this), this);
 
@@ -170,8 +168,7 @@ define([
             _.each(tracks, function (track) {
                 if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
                     this.loadThumbnails(track.file);
-                }
-                else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {
+                } else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {
                     this.loadChapters(track.file);
                 }
             }, this);
@@ -255,7 +252,7 @@ define([
                 timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
             }
             var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
-            utils.style(timeTip.el, { 'left': safePct + '%' });
+            utils.style(timeTip.el, { left: safePct + '%' });
         },
 
         hideTimeTooltip: function() {

@@ -59,9 +59,8 @@ define([
                 return _isEdge(browserVersion);
             } else if (browserVersion >= 11) {
                 return _isIETrident();
-            } else {
-                return _isMSIE(browserVersion);
             }
+            return _isMSIE(browserVersion);
         }
         return _isEdge() || _isIETrident() || _isMSIE();
     };
@@ -118,8 +117,8 @@ define([
             return 0;
         }
 
-        var plugins = navigator.plugins,
-            flash;
+        var plugins = navigator.plugins;
+        var flash;
 
         if (plugins) {
             flash = plugins['Shockwave Flash'];

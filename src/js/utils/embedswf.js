@@ -15,7 +15,11 @@ define([
     }
 
     function addGetter(obj, property, value) {
-        Object.defineProperty(obj, property, { get: function() { return value; } });
+        Object.defineProperty(obj, property, {
+            get: function() {
+                return value;
+            }
+        });
     }
 
     function embed(swfUrl, container, id, wmode) {
@@ -93,9 +97,9 @@ define([
             if (name !== 'setup' && queueCommands || !swf.__externalCall) {
                 var commandQueue = swf.__commandQueue;
                 // remove any earlier commands with the same name
-                for (var i = commandQueue.length; i--;) {
-                    if (commandQueue[i][0] === name) {
-                        commandQueue.splice(i, 1);
+                for (var j = commandQueue.length; j--;) {
+                    if (commandQueue[j][0] === name) {
+                        commandQueue.splice(j, 1);
                     }
                 }
                 commandQueue.push(Array.prototype.slice.call(arguments));
@@ -107,9 +111,9 @@ define([
                 if (args.length) {
                     // remove any nodes from arguments
                     // cyclical structures cannot be converted to JSON
-                    for (var i = args.length; i--;) {
-                        if (typeof args[i] === 'object') {
-                            _.each(args[i], deleteHTMLElement);
+                    for (var k = args.length; k--;) {
+                        if (typeof args[k] === 'object') {
+                            _.each(args[k], deleteHTMLElement);
                         }
                     }
                     var json = JSON.stringify(args);

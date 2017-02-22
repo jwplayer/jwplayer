@@ -5,7 +5,6 @@ define([
     'utils/ui',
     'version'
 ], function(utils, rightclickTemplate, _, UI, version) {
-
     var RightClick = function() {};
 
     _.extend(RightClick.prototype, {
@@ -121,9 +120,13 @@ define([
             this.model.on('change:provider', this.updateHtml, this);
 
             // Track if the mouse is above the menu or not
-            this.elementUI = new UI(this.el, { 'useHover': true })
-                .on('over', function() { this.mouseOverContext = true; }, this)
-                .on('out', function() { this.mouseOverContext = false; }, this);
+            this.elementUI = new UI(this.el, { useHover: true })
+                .on('over', function() {
+                    this.mouseOverContext = true;
+                }, this)
+                .on('out', function() {
+                    this.mouseOverContext = false;
+                }, this);
         },
 
         setup: function(_model, _playerElement, layer) {

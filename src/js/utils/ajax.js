@@ -13,7 +13,7 @@ define([
             b.href = uri;
             b.href = b.href; /* IE fix for relative urls */
             return a.protocol + '//' + a.host !== b.protocol + '//' + b.host;
-        } catch(e) {}
+        } catch(e) {/* swallow */}
         return true;
     };
 
@@ -161,8 +161,8 @@ define([
                 }
             } else {
                 // Handle the case where an XML document was returned with an incorrect MIME type.
-                var xml = xhr.responseXML,
-                    firstChild;
+                var xml = xhr.responseXML;
+                var firstChild;
                 if (xml) {
                     try {
                         // This will throw an error on Windows Mobile 7.5.

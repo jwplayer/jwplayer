@@ -7,26 +7,20 @@ define([
     'parsers/jwparser',
     'parsers/mediaparser',
     'playlist/item'
-], function(strings, parsers, parseEntry, mediaParser, PlaylistItem) {
-    var _textContent = parsers.textContent,
-        _getChildNode = parsers.getChildNode,
-        _numChildren = parsers.numChildren,
-        _localName = parsers.localName;
-
+], function (strings, parsers, parseEntry, mediaParser, PlaylistItem) {
+    var _textContent = parsers.textContent;
+    var _getChildNode = parsers.getChildNode;
+    var _numChildren = parsers.numChildren;
+    var _localName = parsers.localName;
     var rssparser = {};
 
-
-    /**
-     * Parse an RSS playlist for feed items.
-     *
-     * @param {XML} dat
-     * @return {Array} playlistarray
-     */
+    // Parse an RSS playlist for feed items.
     rssparser.parse = function (dat) {
         var arr = [];
         for (var i = 0; i < _numChildren(dat); i++) {
-            var node = _getChildNode(dat, i),
-                localName = _localName(node).toLowerCase();
+            var node = _getChildNode(dat, i);
+            var localName = _localName(node).toLowerCase();
+
             if (localName === 'channel') {
                 for (var j = 0; j < _numChildren(node); j++) {
                     var subNode = _getChildNode(node, j);
@@ -39,13 +33,7 @@ define([
         return arr;
     };
 
-
-    /**
-     * Translate RSS item to playlist item.
-     *
-     * @param {XML} obj
-     * @return {PlaylistItem} PlaylistItem
-     */
+    // Translate RSS item to playlist item.
     function _parseItem(obj) {
         var itm = {};
         for (var i = 0; i < obj.childNodes.length; i++) {
@@ -79,6 +67,8 @@ define([
                     } else {
                         itm.tags = _textContent(node);
                     }
+                    break;
+                default:
                     break;
             }
         }

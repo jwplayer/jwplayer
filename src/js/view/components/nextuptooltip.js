@@ -43,7 +43,7 @@ define([
             this.onMediaModel(this._model, this._model.get('mediaModel'));
 
             // Close button
-            new UI(this.closeButton, { 'directSelect': true })
+            new UI(this.closeButton, { directSelect: true })
                 .on('click tap', this.hide, this);
             // Tooltip
             new UI(this.tooltip)
@@ -51,7 +51,7 @@ define([
             // Next button behavior:
             // - click = go to next playlist or related item
             // - hover = show NextUp tooltip without 'close' button
-            new UI(this._nextButton.element(), { 'useHover': true, 'directSelect': true })
+            new UI(this._nextButton.element(), { useHover: true, directSelect: true })
                 .on('click tap', this.click, this)
                 .on('over', this.show, this)
                 .on('out', this.hoverOut, this);
@@ -158,7 +158,7 @@ define([
             this.offset = offset;
         },
         onMediaModel: function(model, mediaModel) {
-            mediaModel.on('change:state', function(model, state) {
+            mediaModel.on('change:state', function(stateChangeModel, state) {
                 if (state === 'complete') {
                     this.state = 'tooltip';
                     this.hide();

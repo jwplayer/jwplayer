@@ -10,7 +10,6 @@ define([
     'view/components/volumetooltip',
     'view/components/button'
 ], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button) {
-
     function text(name, role) {
         var element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
@@ -24,7 +23,7 @@ define([
         return new Menu(name, ariaText);
     }
 
-    function castButton(castToggle, localization) {
+    function createCastButton(castToggle, localization) {
         if (!utils.isChrome() || utils.isIOS()) {
             return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
         }
@@ -99,10 +98,10 @@ define([
         },
 
         build: function() {
-            var timeSlider = new TimeSlider(this._model, this._api),
-                volumeSlider,
-                volumeTooltip,
-                muteButton;
+            var timeSlider = new TimeSlider(this._model, this._api);
+            var volumeSlider;
+            var volumeTooltip;
+            var muteButton;
 
             var play = this._localization.play;
             var next = this._localization.next;
@@ -135,7 +134,7 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: castButton(this._api.castToggle, this._localization),
+                cast: createCastButton(this._api.castToggle, this._localization),
                 fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
             };
 
@@ -281,7 +280,9 @@ define([
             }, this);
 
             // When the control bar is interacted with, trigger a user action event
-            new UI(this.el).on('click tap drag', function() { this.trigger('userAction'); }, this);
+            new UI(this.el).on('click tap drag', function() {
+                this.trigger('userAction');
+            }, this);
 
             _.each(this.menus, function(ele) {
                 ele.on('open-tooltip', this.closeMenus, this);
@@ -307,17 +308,19 @@ define([
         },
 
         onMediaModel: function(model, mediaModel) {
-            mediaModel.on('change:levels', function(model, levels) {
-                this.elements.hd.setup(levels, model.get('currentLevel'));
+            mediaModel.on('change:levels', function(levelsChangeModel, levels) {
+                this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
             }, this);
-            mediaModel.on('change:currentLevel', function(model, level) {
+            mediaModel.on('change:currentLevel', function(currentLevelChangemodel, level) {
                 this.elements.hd.selectItem(level);
             }, this);
-            mediaModel.on('change:audioTracks', function(model, audioTracks) {
-                var list = _.map(audioTracks, function(track) { return { label: track.name }; });
-                this.elements.audiotracks.setup(list, model.get('currentAudioTrack'), { toggle: false });
+            mediaModel.on('change:audioTracks', function(audioTracksChangeModel, audioTracks) {
+                var list = _.map(audioTracks, function(track) {
+                    return { label: track.name };
+                });
+                this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'), { toggle: false });
             }, this);
-            mediaModel.on('change:currentAudioTrack', function(model, currentAudioTrack) {
+            mediaModel.on('change:currentAudioTrack', function(currentAudioTrackChangeModel, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);
             }, this);
         },
@@ -350,8 +353,8 @@ define([
             }
         },
         onElapsed: function(model, val) {
-            var elapsedTime,
-                countdownTime;
+            var elapsedTime;
+            var countdownTime;
             var duration = model.get('duration');
             if (model.get('streamType') === 'DVR') {
                 elapsedTime = countdownTime = '-' + utils.timeFormat(-duration);
@@ -402,10 +405,10 @@ define([
             this.closeMenus();
         },
         rewind: function() {
-            var currentPosition = this._model.get('position'),
-                duration = this._model.get('duration'),
-                rewindPosition = currentPosition - 10,
-                startPosition = 0;
+            var currentPosition = this._model.get('position');
+            var duration = this._model.get('duration');
+            var rewindPosition = currentPosition - 10;
+            var startPosition = 0;
 
             // duration is negative in DVR mode
             if (this._model.get('streamType') === 'DVR') {

@@ -3,12 +3,7 @@ define([
     'playlist/source',
     'playlist/track'
 ], function(_, Source, Track) {
-
     var Defaults = {
-        // description: undefined,
-        // image: undefined,
-        // mediaid: undefined,
-        // title: undefined,
         sources: [],
         tracks: [],
         minDvrWindow: 120
@@ -37,12 +32,15 @@ define([
         /** Each source should be a named object **/
         for (var i = 0; i < _playlistItem.sources.length; i++) {
             var s = _playlistItem.sources[i];
-            if (!s) { continue; }
-            var def = s['default'];
+            if (!s) {
+                continue;
+            }
+
+            var def = s.default;
             if (def) {
-                s['default'] = (def.toString() === 'true');
+                s.default = (def.toString() === 'true');
             } else {
-                s['default'] = false;
+                s.default = false;
             }
 
             // If the source doesn't have a label, number it

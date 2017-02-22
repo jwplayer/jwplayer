@@ -2,9 +2,8 @@ define([
     'utils/extendable',
     'utils/helpers'
 ], function(Extendable, utils) {
-
     var Tooltip = Extendable.extend({
-        'constructor': function(name, ariaText, ariaShown) {
+        constructor: function(name, ariaText, ariaShown) {
             this.el = document.createElement('div');
             this.el.className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset jw-hidden';
             if (ariaText) {
@@ -52,12 +51,12 @@ define([
             return this.el;
         },
         openTooltip: function(evt) {
-            this.trigger('open-' + this.componentType, evt, { 'isOpen': true });
+            this.trigger('open-' + this.componentType, evt, { isOpen: true });
             this.isOpen = true;
             utils.toggleClass(this.el, this.openClass, this.isOpen);
         },
         closeTooltip: function(evt) {
-            this.trigger('close-' + this.componentType, evt, { 'isOpen': false });
+            this.trigger('close-' + this.componentType, evt, { isOpen: false });
             this.isOpen = false;
             utils.toggleClass(this.el, this.openClass, this.isOpen);
         },

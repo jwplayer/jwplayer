@@ -4,13 +4,20 @@
         "amd": true
     },
     "globals": {
-        "__webpack_public_path__": true
+        "__webpack_public_path__": true,
+        "Promise": true,
+        "Uint8Array": true,
+        "__FLASH_VERSION__": true,
+        "__REPO__": true,
+        "__SELF_HOSTED__": true,
+        "__DEBUG__": true,
+        "__BUILD_VERSION__": true
     },
     "extends": "eslint:recommended",
     "rules": {
         "comma-dangle": 0,
         "no-cond-assign": 2,
-        "no-console": 1,
+        "no-console": ["warn", { "allow": ["warn", "error"] }],
         "no-constant-condition": 2,
         "no-control-regex": 2,
         "no-debugger": 2,
@@ -36,7 +43,7 @@
         "valid-typeof": 2,
         "block-scoped-var": 0,
         "complexity": 0,
-        "consistent-return": 1,
+        "consistent-return": 0,
         "curly": 2,
         "default-case": 2,
         "dot-notation": 2,
@@ -115,9 +122,9 @@
         "no-ternary": 0,
         "no-trailing-spaces": 0,
         "no-underscore-dangle": 0,
-        "one-var": [1, "never"],
+        "one-var": [2, "never"],
         "operator-assignment": [0, "never"],
-        "quote-props": [1, "as-needed"],
+        "quote-props": [1, "as-needed", {"keywords": true}],
         "quotes": [1, "single"],
         "semi": [1, "always"],
         "semi-spacing": [1, {"before": false, "after": true}],

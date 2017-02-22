@@ -15,11 +15,11 @@ define([
         position: 'top-right'
     };
 
-    var Logo = function(_model) {
-        var _logo,
-            _img = new Image(),
-            _settings,
-            _logoConfig = _.extend({}, _model.get('logo'));
+    return function(_model) {
+        var _logo;
+        var _settings;
+        var _img = new Image();
+        var _logoConfig = _.extend({}, _model.get('logo'));
 
         _.extend(this, Events);
 
@@ -113,6 +113,4 @@ define([
 
         return this;
     };
-
-    return Logo;
 });

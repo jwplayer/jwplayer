@@ -2,8 +2,7 @@ define([
     'utils/helpers',
     'utils/underscore'
 ], function(utils, _) {
-    /* global __webpack_public_path__:true*/
-
+    /* eslint camelcase: 0 */
     // Defaults
     var Defaults = {
         autostart: false,
@@ -98,7 +97,7 @@ define([
         }
 
         if (_.isString(config.skin) && config.skin.indexOf('.xml') > 0) {
-            console.log('JW Player does not support XML skins, please update your config');
+            console.warn('JW Player does not support XML skins, please update your config');
             config.skin = config.skin.replace('.xml', '');
         }
 

@@ -11,10 +11,11 @@ define([
             ariaLabel: model.get('localization').playback
         }));
         this.iconUI = new UI(this.el).on('click tap', function() {
-            var currentPosition = model.get('position'),
-                duration = model.get('duration'),
-                rewindPosition = currentPosition - 10,
-                startPosition = 0;
+            var currentPosition = model.get('position');
+            var duration = model.get('duration');
+            var rewindPosition = currentPosition - 10;
+            var startPosition = 0;
+
             // duration is negative in DVR mode
             if (model.get('streamType') === 'DVR') {
                 startPosition = duration;

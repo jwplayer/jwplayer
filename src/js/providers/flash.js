@@ -28,7 +28,6 @@ define([
         var _swf;
         var _item = null;
         var _flashBlockedTimeout = -1;
-        var _beforecompleted = false;
         var _currentQuality = -1;
         var _qualityLevels = null;
         var _currentAudioTrack = -1;
@@ -103,16 +102,13 @@ define([
 
         _.extend(this, Events, Tracks, {
             init: function(item) {
-                    // if not preloading or autostart is true, do nothing
-                if (!item.preload || item.preload === 'none' || _playerConfig.autostart) {
-                    return;
-                } else {
+                // if not preloading or autostart is true, do nothing
+                if (item.preload && item.preload !== 'none' && !_playerConfig.autostart) {
                     _item = item;
                 }
             },
             load: function(item) {
                 _item = item;
-                _beforecompleted = false;
                 this.setState(states.LOADING);
                 _flashCommand('load', item);
                     // HLS mediaType comes from the AdaptiveProvider
@@ -394,7 +390,6 @@ define([
         };
 
     }
-
 
     // Register provider
     var F = function() {};

@@ -55,7 +55,9 @@ define(function() {
         for (; i < arguments.length; i++) {
             var cobj = arguments[i];
             for (var p in cobj) {
-                obj[p] = cobj[p];
+                if (Object.prototype.hasOwnProperty.call(cobj, p)) {
+                    obj[p] = cobj[p];
+                }
             }
         }
 

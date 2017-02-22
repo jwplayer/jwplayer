@@ -4,7 +4,6 @@ define([
     'templates/slider.html',
     'utils/helpers'
 ], function(Extendable, UI, SliderTemplate, utils) {
-
     var getRailBounds = function(elementRail) {
         var bounds = utils.bounds(elementRail);
         // Partial workaround of Android 'inert-visual-viewport'
@@ -17,7 +16,7 @@ define([
         return bounds;
     };
 
-    var Slider = Extendable.extend({
+    return Extendable.extend({
         constructor: function(className, orientation) {
             this.className = className + ' jw-background-color jw-reset';
             this.orientation = orientation;
@@ -32,7 +31,7 @@ define([
         },
         setup: function() {
             var obj = {
-                'default': this['default'],
+                'default': this.default,
                 className: this.className,
                 orientation: 'jw-slider-' + this.orientation
             };
@@ -60,9 +59,9 @@ define([
             this.trigger('dragEnd');
         },
         dragMove: function(evt) {
-            var dimension,
-                bounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail),
-                percentage;
+            var dimension;
+            var bounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail);
+            var percentage;
 
             if (this.orientation === 'horizontal') {
                 dimension = evt.pageX;
@@ -122,6 +121,4 @@ define([
             return this.el;
         }
     });
-
-    return Slider;
 });

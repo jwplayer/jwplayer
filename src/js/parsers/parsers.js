@@ -1,26 +1,30 @@
-define(['utils/strings'], function(strings) {
+define([
+    'utils/strings'
+], function(strings) {
     return {
         localName: function (node) {
-            if (!node) {
-                return '';
-            } else if (node.localName) {
-                return node.localName;
-            } else if (node.baseName) {
-                return node.baseName;
-            } else {
-                return '';
+            var localName = '';
+            if (node) {
+                if (node.localName) {
+                    localName = node.localName;
+                } else if (node.baseName) {
+                    localName = node.baseName;
+                }
             }
+            return localName;
         },
         textContent: function (node) {
-            if (!node) {
-                return '';
-            } else if (node.textContent) {
-                return strings.trim(node.textContent);
-            } else if (node.text) {
-                return strings.trim(node.text);
-            } else {
-                return '';
+            var textContent = '';
+
+            if (node) {
+                if (node.textContent) {
+                    textContent = strings.trim(node.textContent);
+                } else if (node.text) {
+                    textContent = strings.trim(node.text);
+                }
             }
+
+            return textContent;
         },
         getChildNode: function (parent, index) {
             return parent.childNodes[index];
@@ -28,10 +32,8 @@ define(['utils/strings'], function(strings) {
         numChildren: function (parent) {
             if (parent.childNodes) {
                 return parent.childNodes.length;
-            } else {
-                return 0;
             }
+            return 0;
         }
-
     };
 });
