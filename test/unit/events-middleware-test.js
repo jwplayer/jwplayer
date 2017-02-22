@@ -36,10 +36,10 @@ define([
         assert.deepEqual(actual, expected);
     });
 
-    test('should add viewable to the playAttempt event', function (assert) {
+    test('should add viewable to the beforePlay event', function (assert) {
         var model = mockModel({ visibility: 0.5 });
         var expected = { viewable: 1, foo: 'bar' };
-        var actual = middleware(model, 'playAttempt', { foo: 'bar' });
+        var actual = middleware(model, 'beforePlay', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
