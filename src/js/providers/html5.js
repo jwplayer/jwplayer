@@ -130,14 +130,15 @@ define([
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
-        var _videotag = (element) ? element.querySelector('video') : undefined;
+        var tagType = _playerConfig.useAudioTag ? 'audio' : 'video';
+        var _videotag = (element) ? element.querySelector(tagType) : undefined;
 
         function _setAttribute(name, value) {
             _videotag.setAttribute(name, value || '');
         }
 
         if (!_videotag) {
-            _videotag = document.createElement('video');
+            _videotag = document.createElement(tagType);
 
             if (_isMobile) {
                 _setAttribute('jw-gesture-required');
