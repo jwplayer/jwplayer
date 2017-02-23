@@ -653,8 +653,8 @@ define([
 
             var rightside = document.createElement('div');
             rightside.className = 'jw-controls-right jw-reset';
-            _logo.setup(rightside);
             rightside.appendChild(_dock.element());
+            _logo.setup(rightside);
             _controlsLayer.appendChild(rightside);
 
             // captions rendering
