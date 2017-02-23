@@ -2,6 +2,7 @@ define([
     'utils/helpers',
     'utils/underscore'
 ], function(utils, _) {
+    /*global __webpack_public_path__:true*/
     /* eslint camelcase: 0 */
     // Defaults
     var Defaults = {
