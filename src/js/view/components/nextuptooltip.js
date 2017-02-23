@@ -133,7 +133,7 @@ define([
             this.offset = offset;
         },
         onMediaModel: function(model, mediaModel) {
-            mediaModel.on('change:state', function(model, state) {
+            mediaModel.on('change:state', function(mediaModel, state) {
                 if (state === 'complete') {
                     model.set('nextUpVisible', false);
                 }
