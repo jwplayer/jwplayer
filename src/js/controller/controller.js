@@ -188,14 +188,8 @@ define([
                 });
             });
 
-            _model.on('change:visibility', function(model, visibility) {
-                var viewable = visibility >= 0.5;
-                if (viewable && _model.get('playOnViewable')) {
-                    _autoStart();
-                } else if (!viewable && utils.isMobile()) {
-                    _this.pause({ reason: 'autostart' });
-                }
-            });
+            _model.on('change:viewable', _onVisibilityChange);
+            _model.on('change:activeTab', _onActiveTabChange);
 
             // Ensure captionsList event is raised after playlistItem
             _captions = new Captions(_api, _model);
@@ -210,6 +204,7 @@ define([
                 _view.on('all', _triggerAfterReady, _this);
 
                 _this.showView(_view.element());
+                _observePlayerContainer(_view.element());
 
                 // Defer triggering of events until they can be registered
                 _.defer(_playerReadyNotify);
@@ -238,8 +233,8 @@ define([
                     related.on('nextUp', _model.setNextUp, _model);
                 }
 
-                _observePlayerContainer(_this.getContainer());
                 _configureAutostart();
+                _onVisibilityChange(_model, _model.get('visibility'));
             }
 
             function _configureAutostart() {
@@ -290,8 +285,31 @@ define([
                 if (entries && entries.length) {
                     var entry = entries[0];
                     if (entry.target === _this.getContainer()) {
-                        _model.set('visibility', entry.intersectionRatio);
+                        _model.set('intersectionRatio', entry.intersectionRatio);
+                        _checkVisibility();
                     }
+                }
+            }
+
+            function _onActiveTabChange() {
+                _checkVisibility();
+            }
+
+            function _checkVisibility() {
+                // Set visibility to 0 if we're not in the active tab
+                // Otherwise, set it to the intersection ratio reported from the intersection observer
+                var intersectionRatio = _model.get('intersectionRatio');
+                var activeTab = _model.get('activeTab');
+                var visibility = activeTab ? intersectionRatio : 0;
+                _model.set('visibility', visibility);
+            }
+
+            function _onVisibilityChange(model, visibility) {
+                var viewable = Math.round(visibility);
+                if (viewable && model.get('playOnViewable')) {
+                    _autoStart();
+                } else if (!viewable && utils.isMobile()) {
+                    _this.pause({ reason: 'autostart' });
                 }
             }
 
@@ -763,7 +781,6 @@ define([
             this.setCaptions = _view.setCaptions;
 
             this.next = _nextUp;
-
 
             this.addButton = function(img, tooltip, callback, id, btnClass) {
                 var btn = {

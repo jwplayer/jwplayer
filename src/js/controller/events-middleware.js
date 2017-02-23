@@ -12,6 +12,7 @@ define([
             case 'play':
             case 'ready': {
                 var visibility = model.get('visibility');
+                // Don't add viewable to events if we don't know our visibility
                 if (!_.isUndefined(visibility)) {
                     var viewable = Math.round(visibility);
                     newState = _.extend({}, currentState, { viewable: viewable });
