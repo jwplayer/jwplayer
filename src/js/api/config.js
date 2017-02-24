@@ -44,7 +44,8 @@ define([
             nextUpClose: 'Next Up Close',
             related: 'Related'
         },
-        renderCaptionsNatively: false
+        renderCaptionsNatively: false,
+        nextUpDisplay: true
     };
 
     function _deserialize(options) {
