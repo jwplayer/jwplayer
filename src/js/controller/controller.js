@@ -73,7 +73,7 @@ define([
             var _xo; // Intersection Observer - used for playing video on mobile when visible
 
             var _video = function () {
-                _model.getVideo();
+                return _model.getVideo();
             };
 
             var storage = new Storage();
