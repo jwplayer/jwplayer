@@ -524,6 +524,14 @@ define([
                 _resize(_model.get('width'), _model.get('height'));
                 _setContainerDimensions();
             });
+
+            if (!_.isUndefined(document.hidden)) {
+                _model.set('activeTab', !document.hidden);
+                document.addEventListener('visibilitychange', _visibilityChangeListener, false);
+            } else {
+                // Default activeTab to true if the browser doesn't implement the visibility API
+                _model.set('activeTab', true);
+            }
         };
 
         function _onStretchChange(model, newVal) {
@@ -639,8 +647,8 @@ define([
 
             var rightside = document.createElement('div');
             rightside.className = 'jw-controls-right jw-reset';
-            _logo.setup(rightside);
             rightside.appendChild(_dock.element());
+            _logo.setup(rightside);
             _controlsLayer.appendChild(rightside);
 
             // captions rendering
@@ -1104,7 +1112,10 @@ define([
             }
 
             return playDisplayIcon;
+        }
 
+        function _visibilityChangeListener(e) {
+            _model.set('activeTab', !e.target.hidden);
         }
 
         this.setupInstream = function (instreamModel) {
@@ -1193,6 +1204,7 @@ define([
             clearTimeout(_controlsTimeout);
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
+            document.removeEventListener('visibilitychange', _visibilityChangeListener);
             for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
                 document.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
             }

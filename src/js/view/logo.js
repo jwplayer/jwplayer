@@ -40,13 +40,6 @@ define([
 
             utils.addClass(_logo, 'jw-logo-' + (_settings.position || LogoDefaults.position));
 
-            // respond to dock/controls changes when top positioned
-            if (_settings.position === 'top-right') {
-                _model.on('change:dock', this.topRight, this);
-                _model.on('change:controls', this.topRight, this);
-                this.topRight(_model);
-            }
-
             _model.set('logo', _settings);
 
             // apply styles onload when image width and height are known
@@ -86,17 +79,6 @@ define([
             }, this);
 
             container.appendChild(_logo);
-        };
-
-        this.topRight = function(model) {
-            // move the logo down when dock buttons are displayed
-            var controls = model.get('controls');
-            var dockButtons = model.get('dock');
-            var dockButtonsVisible = controls && (dockButtons && dockButtons.length ||
-                model.get('sharing') || model.get('related'));
-            _styles(_logo, {
-                top: (dockButtonsVisible ? '3.5em' : 0)
-            });
         };
 
         this.element = function() {
