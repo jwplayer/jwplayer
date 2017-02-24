@@ -536,9 +536,13 @@ define([
                 _setContainerDimensions();
             });
 
-            // Default activeTab to true if the browser doesn't implement the visibility API
-            _model.set('activeTab', _.isUndefined(document.hidden) ? true : !document.hidden);
-            document.addEventListener('visibilitychange', _visibilityChangeListener, false);
+            if (!_.isUndefined(document.hidden)) {
+                _model.set('activeTab', !document.hidden);
+                document.addEventListener('visibilitychange', _visibilityChangeListener, false);
+            } else {
+                // Default activeTab to true if the browser doesn't implement the visibility API
+                _model.set('activeTab', true);
+            }
         };
 
         function _onStretchChange(model, newVal) {
