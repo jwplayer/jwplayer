@@ -188,7 +188,7 @@ define([
                 });
             });
 
-            _model.on('change:viewable', _onVisibilityChange);
+            _model.on('change:visibility', _onVisibilityChange);
             _model.on('change:activeTab', _onActiveTabChange);
 
             // Ensure captionsList event is raised after playlistItem
