@@ -181,6 +181,7 @@ public class VideoMediaProvider extends MediaProvider {
         _buffered = 0;
         _starttime = 0;
         _offset = {time: 0, byte: 0};
+        _complete = true;
         super.stop();
     }
 
