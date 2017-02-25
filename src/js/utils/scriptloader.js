@@ -1,8 +1,9 @@
 define([
     'events/events',
     'utils/backbone.events',
-    'utils/underscore'
-], function(events, Events, _) {
+    'utils/underscore',
+    'utils/helpers'
+], function(events, Events, _, utils) {
 
     var _loaders = {};
 
@@ -95,6 +96,7 @@ define([
             return _status;
         };
     };
+    utils.scriptloader = scriptloader;
 
     scriptloader.loaderstatus = STATUS;
 
