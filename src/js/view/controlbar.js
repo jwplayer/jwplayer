@@ -121,7 +121,7 @@ define([
             var nextButton = button('jw-icon-next', this._api.next.bind(this), next);
 
             if (this._model.get('nextUpDisplay')) {
-                new UI(nextButton.element(), {'useHover': true, 'directSelect': true})
+                new UI(nextButton.element(), { useHover: true, directSelect: true })
                     .on('over', function () {
                         this._model.set('nextUpVisible', true);
                     }, this)
