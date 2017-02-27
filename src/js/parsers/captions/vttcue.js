@@ -50,30 +50,8 @@ define(function() {
         return align ? value.toLowerCase() : false;
     }
 
-    function extend(obj) {
-        var i = 1;
-        for (; i < arguments.length; i++) {
-            var cobj = arguments[i];
-            for (var p in cobj) {
-                if (Object.prototype.hasOwnProperty.call(cobj, p)) {
-                    obj[p] = cobj[p];
-                }
-            }
-        }
-
-        return obj;
-    }
-
     function VTTCue(startTime, endTime, text) {
         var cue = this;
-        var isIE8 = (/MSIE\s8\.0/).test(navigator.userAgent);
-        var baseObj = {};
-
-        if (isIE8) {
-            cue = document.createElement('custom');
-        } else {
-            baseObj.enumerable = true;
-        }
 
         /**
          * Shim implementation specific properties. These properties are not in
@@ -105,25 +83,28 @@ define(function() {
         var _size = 50;
         var _align = 'middle';
 
-        Object.defineProperty(cue, 'id', extend({}, baseObj, {
+        Object.defineProperty(cue, 'id', {
+            enumerable: true,
             get: function() {
                 return _id;
             },
             set: function(value) {
                 _id = '' + value;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'pauseOnExit', extend({}, baseObj, {
+        Object.defineProperty(cue, 'pauseOnExit', {
+            enumerable: true,
             get: function() {
                 return _pauseOnExit;
             },
             set: function(value) {
                 _pauseOnExit = !!value;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'startTime', extend({}, baseObj, {
+        Object.defineProperty(cue, 'startTime', {
+            enumerable: true,
             get: function() {
                 return _startTime;
             },
@@ -134,9 +115,10 @@ define(function() {
                 _startTime = value;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'endTime', extend({}, baseObj, {
+        Object.defineProperty(cue, 'endTime', {
+            enumerable: true,
             get: function() {
                 return _endTime;
             },
@@ -147,9 +129,10 @@ define(function() {
                 _endTime = value;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'text', extend({}, baseObj, {
+        Object.defineProperty(cue, 'text', {
+            enumerable: true,
             get: function() {
                 return _text;
             },
@@ -157,9 +140,10 @@ define(function() {
                 _text = '' + value;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'region', extend({}, baseObj, {
+        Object.defineProperty(cue, 'region', {
+            enumerable: true,
             get: function() {
                 return _region;
             },
@@ -167,24 +151,26 @@ define(function() {
                 _region = value;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'vertical', extend({}, baseObj, {
+        Object.defineProperty(cue, 'vertical', {
+            enumerable: true,
             get: function() {
                 return _vertical;
             },
             set: function(value) {
                 var setting = findDirectionSetting(value);
-                    // Have to check for false because the setting an be an empty string.
+                // Have to check for false because the setting an be an empty string.
                 if (setting === false) {
                     throw new SyntaxError('An invalid or illegal string was specified.');
                 }
                 _vertical = setting;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'snapToLines', extend({}, baseObj, {
+        Object.defineProperty(cue, 'snapToLines', {
+            enumerable: true,
             get: function() {
                 return _snapToLines;
             },
@@ -192,9 +178,10 @@ define(function() {
                 _snapToLines = !!value;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'line', extend({}, baseObj, {
+        Object.defineProperty(cue, 'line', {
+            enumerable: true,
             get: function() {
                 return _line;
             },
@@ -205,9 +192,10 @@ define(function() {
                 _line = value;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'lineAlign', extend({}, baseObj, {
+        Object.defineProperty(cue, 'lineAlign', {
+            enumerable: true,
             get: function() {
                 return _lineAlign;
             },
@@ -219,9 +207,10 @@ define(function() {
                 _lineAlign = setting;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'position', extend({}, baseObj, {
+        Object.defineProperty(cue, 'position', {
+            enumerable: true,
             get: function() {
                 return _position;
             },
@@ -232,9 +221,10 @@ define(function() {
                 _position = value;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'positionAlign', extend({}, baseObj, {
+        Object.defineProperty(cue, 'positionAlign', {
+            enumerable: true,
             get: function() {
                 return _positionAlign;
             },
@@ -246,9 +236,10 @@ define(function() {
                 _positionAlign = setting;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'size', extend({}, baseObj, {
+        Object.defineProperty(cue, 'size', {
+            enumerable: true,
             get: function() {
                 return _size;
             },
@@ -259,9 +250,10 @@ define(function() {
                 _size = value;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
-        Object.defineProperty(cue, 'align', extend({}, baseObj, {
+        Object.defineProperty(cue, 'align', {
+            enumerable: true,
             get: function() {
                 return _align;
             },
@@ -273,7 +265,7 @@ define(function() {
                 _align = setting;
                 this.hasBeenReset = true;
             }
-        }));
+        });
 
         /**
          * Other <track> spec defined properties
@@ -281,10 +273,6 @@ define(function() {
 
         // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#text-track-cue-display-state
         cue.displayState = undefined;
-
-        if (isIE8) {
-            return cue;
-        }
     }
 
     /**

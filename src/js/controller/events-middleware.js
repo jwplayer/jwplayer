@@ -11,11 +11,11 @@ define([
             case 'pause':
             case 'play':
             case 'ready': {
-                var visibility = model.get('visibility');
-                // Don't add viewable to events if we don't know our visibility
-                if (!_.isUndefined(visibility)) {
-                    var viewable = Math.round(visibility);
-                    newState = _.extend({}, currentState, { viewable: viewable });
+                var viewable = model.get('viewable');
+                // Don't add viewable to events if we don't know we're viewable
+                if (!_.isUndefined(viewable)) {
+                    // Emit viewable as 0 or 1
+                    newState = _.extend({}, currentState, { viewable: viewable ? 1 : 0 });
                 }
                 break;
             }

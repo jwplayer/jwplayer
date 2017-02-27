@@ -15,6 +15,7 @@ define([
             'stretching',
             'playlist',
             'captions',
+            'viewable',
             'visibility'
         ];
 
