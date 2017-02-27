@@ -12,7 +12,7 @@ define([
             case 'play':
             case 'ready': {
                 var viewable = model.get('viewable');
-                // Don't add viewable to events if we don't know if we're viewable
+                // Don't add viewable to events if we don't know we're viewable
                 if (!_.isUndefined(viewable)) {
                     // Emit viewable as 0 or 1
                     newState = _.extend({}, currentState, { viewable: viewable ? 1 : 0 });
