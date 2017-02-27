@@ -421,7 +421,7 @@ define([
              * Tracks could have changed even if the index hasn't.
              * Need to ensure track has data for captionsrenderer.
              */
-            if(trackIndex && tracks && trackIndex <= tracks.length && tracks[trackIndex - 1].data) {
+            if (trackIndex && tracks && trackIndex <= tracks.length && tracks[trackIndex - 1].data) {
                 this.set('captionsTrack', tracks[trackIndex - 1]);
             }
 
