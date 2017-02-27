@@ -305,7 +305,7 @@ define([
             }
 
             function _onVisibilityChange(model, visibility) {
-                var viewable = !!Math.round(visibility);
+                var viewable = Math.round(visibility);
                 model.set('viewable', viewable);
                 if (viewable && model.get('playOnViewable')) {
                     _autoStart();
@@ -893,7 +893,6 @@ define([
         },
 
         triggerError: function(evt) {
-
             this._model.set('errorEvent', evt);
             this._model.set('state', states.ERROR);
             this._model.once('change:state', function() {
