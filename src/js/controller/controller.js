@@ -305,7 +305,8 @@ define([
             }
 
             function _onVisibilityChange(model, visibility) {
-                var viewable = Math.round(visibility);
+                var viewable = !!Math.round(visibility);
+                model.set('viewable', viewable);
                 if (viewable && model.get('playOnViewable')) {
                     _autoStart();
                 } else if (!viewable && utils.isMobile()) {
