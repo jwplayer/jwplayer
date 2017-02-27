@@ -1016,7 +1016,7 @@ define([
             }
         }
 
-        // If we're live and the buffer end has remained the same for some time, kill the stream
+        // If we're live and the buffer end has remained the same for some time, mark the stream as stale and check if the stream is over
         function checkStaleStream() {
             var endOfBuffer = timeRangesUtil.endOfRange(_videotag.buffered);
             var live = (_videotag.duration === Infinity);
@@ -1053,7 +1053,9 @@ define([
                 return;
             }
 
-            return (timeRangesUtil.endOfRange(_videotag.buffered)) - _videotag.currentTime <= 2;
+            // currentTime doesn't always get to the end of the buffered range
+            var timeFudge = 2;
+            return (timeRangesUtil.endOfRange(_videotag.buffered)) - _videotag.currentTime <= timeFudge;
         }
     }
 
