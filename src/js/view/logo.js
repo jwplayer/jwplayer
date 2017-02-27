@@ -50,7 +50,7 @@ define([
                     width: this.width,
                     height: this.height
                 };
-                if(_settings.margin !== LogoDefaults.margin) {
+                if (_settings.margin !== LogoDefaults.margin) {
                     var positions = (/(\w+)-(\w+)/).exec(_settings.position);
                     if (positions.length === 3) {
                         style['margin-' + positions[1]] = _settings.margin;

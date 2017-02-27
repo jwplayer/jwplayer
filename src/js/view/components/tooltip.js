@@ -31,7 +31,7 @@ define([
         },
 
         addContent: function (elem) {
-            if(this.content) {
+            if (this.content) {
                 this.removeContent();
             }
 
@@ -39,7 +39,7 @@ define([
             this.container.appendChild(elem);
         },
         removeContent: function() {
-            if(this.content) {
+            if (this.content) {
                 this.container.removeChild(this.content);
                 this.content = null;
             }
@@ -61,7 +61,7 @@ define([
             utils.toggleClass(this.el, this.openClass, this.isOpen);
         },
         toggleOpenState: function(evt) {
-            if(this.isOpen) {
+            if (this.isOpen) {
                 this.closeTooltip(evt);
             } else {
                 this.openTooltip(evt);

@@ -81,7 +81,7 @@ define([
                 parsedXML.async = 'false';
                 parsedXML.loadXML(input);
             }
-        } catch(e) {/* Expected when content is not XML */}
+        } catch (e) {/* Expected when content is not XML */}
 
         return parsedXML;
     };

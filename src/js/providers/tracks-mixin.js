@@ -272,7 +272,7 @@ define(['utils/underscore',
                 addTextTracks.call(this, [track]);
             }
         }
-        if(_cacheVTTCue.call(this, track, vttCue)) {
+        if (_cacheVTTCue.call(this, track, vttCue)) {
             if (this.renderNatively || track.kind === 'metadata') {
                 _addCueToTrack(track, vttCue);
             } else {
@@ -345,7 +345,7 @@ define(['utils/underscore',
         var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
         if (this.renderNatively || metadataTrack) {
             _removeCues.call(this, this.video.textTracks);
-            if(metadataTrack) {
+            if (metadataTrack) {
                 metadataTrack.oncuechange = null;
             }
         }
@@ -468,7 +468,7 @@ define(['utils/underscore',
         var cue;
         this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
 
-        while((cue = vttCues.shift())) {
+        while ((cue = vttCues.shift())) {
             _addCueToTrack(textTrack, cue);
         }
     }
@@ -621,7 +621,7 @@ define(['utils/underscore',
 
     function _cacheVTTCue(track, vttCue) {
         var trackKind = track.kind;
-        if(!this._cachedVTTCues[track._id]) {
+        if (!this._cachedVTTCues[track._id]) {
             this._cachedVTTCues[track._id] = {};
         }
         var cachedCues = this._cachedVTTCues[track._id];

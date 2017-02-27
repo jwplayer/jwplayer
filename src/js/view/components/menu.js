@@ -62,7 +62,7 @@ define([
                     return c.indexOf('jw-item') === 0;
                 });
 
-                if(item) {
+                if (item) {
                     this.trigger('select', parseInt(item.split('-')[2]));
                     this.closeTooltipListener();
                 }

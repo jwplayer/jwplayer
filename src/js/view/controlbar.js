@@ -209,7 +209,7 @@ define([
             // Initial State
             this.elements.play.show();
             this.elements.fullscreen.show();
-            if(this.elements.mute) {
+            if (this.elements.mute) {
                 this.elements.mute.show();
             }
             this.onVolume(this._model, this._model.get('volume'));
@@ -238,13 +238,13 @@ define([
             // Event listeners
 
             // Volume sliders do not exist on mobile so don't assign listeners to them.
-            if(this.elements.volume) {
+            if (this.elements.volume) {
                 this.elements.volume.on('update', function (pct) {
                     var val = pct.percentage;
                     this._api.setVolume(val);
                 }, this);
             }
-            if(this.elements.volumetooltip) {
+            if (this.elements.volumetooltip) {
                 this.elements.volumetooltip.on('update', function(pct) {
                     var val = pct.percentage;
                     this._api.setVolume(val);
@@ -348,13 +348,13 @@ define([
         },
         renderVolume: function(muted, vol) {
             // mute, volume, and volumetooltip do not exist on mobile devices.
-            if(this.elements.mute) {
+            if (this.elements.mute) {
                 utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
             }
-            if(this.elements.volume) {
+            if (this.elements.volume) {
                 this.elements.volume.render(muted ? 0 : vol);
             }
-            if(this.elements.volumetooltip) {
+            if (this.elements.volumetooltip) {
                 this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
                 utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
             }
@@ -412,7 +412,7 @@ define([
         // Close menus if it has no event.  Otherwise close all but the event's target.
         closeMenus: function(evt) {
             _.each(this.menus, function(ele) {
-                if(!evt || evt.target !== ele.el) {
+                if (!evt || evt.target !== ele.el) {
                     ele.closeTooltip(evt);
                 }
             });

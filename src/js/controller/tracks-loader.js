@@ -99,7 +99,7 @@ define([
 
             try {
                 parser.parse(text).flush();
-            } catch(error) {
+            } catch (error) {
                 delete track.xhr;
                 errorHandler(error);
             }

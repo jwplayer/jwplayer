@@ -133,7 +133,7 @@ define([
                 if (flash) {
                     return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
-            } catch(e) {
+            } catch (e) {
                 return 0;
             }
 

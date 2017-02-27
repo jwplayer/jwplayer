@@ -8,7 +8,7 @@ define([
 
     try {
         storage = window.localStorage;
-    } catch(e) {/* ignore */}
+    } catch (e) {/* ignore */}
 
     function jwPrefix(str) {
         return 'jwplayer.' + str;
@@ -27,7 +27,7 @@ define([
     function setItem(name, value) {
         try {
             storage[jwPrefix(name)] = value;
-        } catch(e) {
+        } catch (e) {
             // ignore QuotaExceededError unless debugging
             var jwplayer = window.jwplayer;
             if (jwplayer && jwplayer.debug) {

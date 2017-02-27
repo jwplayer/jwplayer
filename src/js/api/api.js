@@ -145,7 +145,7 @@ define([
 
         // Request this from the view/controller
         this.getContainer = function () {
-            if(_controller.getContainer) {
+            if (_controller.getContainer) {
                 // If the controller has fully set up...
                 return _controller.getContainer();
             }

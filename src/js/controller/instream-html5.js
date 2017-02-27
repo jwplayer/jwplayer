@@ -91,7 +91,7 @@ define([
             if (_currentProvider) {
                 _currentProvider.detachMedia();
                 _currentProvider.off();
-                if(_adModel.getVideo()) {
+                if (_adModel.getVideo()) {
                     _currentProvider.destroy();
                 }
             }

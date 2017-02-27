@@ -18,14 +18,14 @@ define(['utils/helpers',
         _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
 
         function _subtitlesTracksHandler(e) {
-            if(!e.tracks.length) {
+            if (!e.tracks.length) {
                 return;
             }
 
             var tracks = e.tracks || [];
             for (var i = 0; i < tracks.length; i++) {
                 var track = tracks[i];
-                if(_tracksById[track._id]) {
+                if (_tracksById[track._id]) {
                     continue;
                 }
                 _addTrack(track);
@@ -150,7 +150,7 @@ define(['utils/helpers',
         }
 
         function _setCurrentIndex (index) {
-            if(_tracks.length) {
+            if (_tracks.length) {
                 _model.setVideoSubtitleTrack(index, _tracks);
             } else {
                 _model.set('captionsIndex', index);

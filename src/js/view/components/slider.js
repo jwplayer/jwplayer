@@ -105,7 +105,7 @@ define([
         render: function(percentage) {
             percentage = Math.max(0, Math.min(percentage, 100));
 
-            if(this.orientation === 'horizontal') {
+            if (this.orientation === 'horizontal') {
                 this.elementThumb.style.left = percentage + '%';
                 this.elementProgress.style.width = percentage + '%';
             } else {

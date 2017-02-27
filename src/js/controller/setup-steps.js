@@ -219,7 +219,7 @@ define([
     function skinToLoad(skin, base) {
         var skinPath;
 
-        if(_.contains(Constants.SkinsLoadable, skin)) {
+        if (_.contains(Constants.SkinsLoadable, skin)) {
             skinPath = base + 'skins/' + skin + '.css';
         }
 

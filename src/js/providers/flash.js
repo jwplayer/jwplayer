@@ -41,7 +41,7 @@ define([
         };
 
         var _flashCommand = function() {
-            if(_swf) {
+            if (_swf) {
                 _swf.triggerFlash.apply(_swf, arguments);
             }
         };
@@ -112,7 +112,7 @@ define([
                 this.setState(states.LOADING);
                 _flashCommand('load', item);
                     // HLS mediaType comes from the AdaptiveProvider
-                if(item.sources.length && item.sources[0].type !== 'hls') {
+                if (item.sources.length && item.sources[0].type !== 'hls') {
                     this.sendMediaType(item.sources);
                 }
             },
@@ -250,7 +250,7 @@ define([
                 }, this);
 
                 _swf.on(forwardEventsWithDataDuration.join(' '), function(e) {
-                    if(e.duration === 'Infinity') {
+                    if (e.duration === 'Infinity') {
                         e.duration = Infinity;
                     }
                     this.trigger(e.type, e);
@@ -299,7 +299,7 @@ define([
                 }, this);
 
                 _swf.on(events.JWPLAYER_MEDIA_META, function(e) {
-                    if(e.metadata && e.metadata.type === 'textdata') {
+                    if (e.metadata && e.metadata.type === 'textdata') {
                         this.addCaptionsCue(e.metadata);
                     } else {
                         this.trigger(e.type, e);

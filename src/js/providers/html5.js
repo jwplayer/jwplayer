@@ -278,7 +278,7 @@ define([
 
         function _playingHandler() {
             _this.setState(states.PLAYING);
-            if(!_videotag.hasAttribute('jw-played')) {
+            if (!_videotag.hasAttribute('jw-played')) {
                 _setAttribute('jw-played', '');
             }
             if (_videotag.hasAttribute('jw-gesture-required')) {
@@ -429,7 +429,7 @@ define([
                 // results in html5.controller calling video.play()
                 _sendBufferFull();
                 // If we're still paused, then the tag isn't loading yet due to mobile interaction restrictions.
-                if(!_videotag.paused && _this.state !== states.PLAYING) {
+                if (!_videotag.paused && _this.state !== states.PLAYING) {
                     _this.setState(states.LOADING);
                 }
             }
@@ -488,7 +488,7 @@ define([
             var index = _videotag.seekable ? _videotag.seekable.length : 0;
             var start = Infinity;
 
-            while(index--) {
+            while (index--) {
                 start = Math.min(start, _videotag.seekable.start(index));
             }
             return start;
@@ -498,7 +498,7 @@ define([
             var index = _videotag.seekable ? _videotag.seekable.length : 0;
             var end = 0;
 
-            while(index--) {
+            while (index--) {
                 end = Math.max(end, _videotag.seekable.end(index));
             }
             return end;
@@ -530,7 +530,7 @@ define([
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
             // the loadeddata event determines the mediaType for HLS sources
-            if(item.sources.length && item.sources[0].type !== 'hls') {
+            if (item.sources.length && item.sources[0].type !== 'hls') {
                 this.sendMediaType(item.sources);
             }
 
@@ -544,7 +544,7 @@ define([
         this.load = function(item) {
             _setLevels(item.sources);
 
-            if(item.sources.length && item.sources[0].type !== 'hls') {
+            if (item.sources.length && item.sources[0].type !== 'hls') {
                 this.sendMediaType(item.sources);
             }
             if (!_isMobile || _videotag.hasAttribute('jw-played')) {
@@ -604,7 +604,7 @@ define([
                 try {
                     _this.seeking = true;
                     _videotag.currentTime = seekPos;
-                } catch(e) {
+                } catch (e) {
                     _this.seeking = false;
                     _delayedSeek = seekPos;
                 }
@@ -915,7 +915,7 @@ define([
                         break;
                     }
                 }
-                if(_currentAudioTrackIndex === -1) {
+                if (_currentAudioTrackIndex === -1) {
                     _currentAudioTrackIndex = 0;
                     tracks[_currentAudioTrackIndex].enabled = true;
                 }
@@ -954,7 +954,7 @@ define([
 
         function _setMediaType() {
             // Send mediaType when format is HLS. Other types are handled earlier by default.js.
-            if(_levels[0].type === 'hls') {
+            if (_levels[0].type === 'hls') {
                 var mediaType = 'video';
                 if (_videotag.videoHeight === 0) {
                     mediaType = 'audio';

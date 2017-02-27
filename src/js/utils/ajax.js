@@ -13,7 +13,7 @@ define([
             b.href = uri;
             b.href = b.href; /* IE fix for relative urls */
             return a.protocol + '//' + a.host !== b.protocol + '//' + b.host;
-        } catch(e) {/* swallow */}
+        } catch (e) {/* swallow */}
         return true;
     };
 
@@ -67,7 +67,7 @@ define([
             // remove anchors from the URL since they can't be loaded in IE
             url = url.replace(/#.*$/, '');
             xhr.open('GET', url, true);
-        } catch(e) {
+        } catch (e) {
             requestError(e);
             return xhr;
         }
@@ -75,7 +75,7 @@ define([
         if (options.responseType) {
             try {
                 xhr.responseType = options.responseType;
-            } catch(e) {/* ignore */}
+            } catch (e) {/* ignore */}
         }
 
         if (options.timeout) {
@@ -95,7 +95,7 @@ define([
                 xhr.withCredentials = true;
             }
             xhr.send();
-        } catch(e) {
+        } catch (e) {
             requestError(e);
         }
         return xhr;
