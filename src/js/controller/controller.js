@@ -892,7 +892,6 @@ define([
         },
 
         triggerError: function(evt) {
-            console.log('every day im triggerin')
             this._model.set('errorEvent', evt);
             this._model.set('state', states.ERROR);
             this._model.once('change:state', function() {
