@@ -9,8 +9,8 @@ define([
     'providers/default',
     'utils/backbone.events',
     'providers/tracks-mixin',
-    'utils/browser'
-], function(getIsAndroidHLS, cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks) {
+    'utils/time-ranges',
+], function(getIsAndroidHLS, cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks, timeRangesUtil) {
 
     var clearTimeout = window.clearTimeout,
         STALL_DELAY = 256,
@@ -128,6 +128,12 @@ define([
             // whether playback can start on iOS
             _canPlay = false;
 
+        var _staleStreamDuration = 3 * 10 * 1000;
+        var _staleStreamTimeout = null;
+        var _lastEndOfBuffer = null;
+        var _stale = false;
+        var _endOfStream = false;
+
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
@@ -239,6 +245,8 @@ define([
                     duration: duration
                 });
             }
+
+            checkStaleStream();
         }
 
         function _setPosition(currentTime) {
@@ -357,6 +365,13 @@ define([
             if (utils.isIOS() && (_videotag.duration - _videotag.currentTime <= 0.1)) {
                 _endedHandler();
                 return;
+            }
+
+            if (atEndOfStream()) {
+                _endOfStream = true;
+                if (checkStreamEnded()) {
+                    return;
+                }
             }
 
             _this.setState(states.STALLED);
@@ -681,6 +696,8 @@ define([
             // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
             if (_videotag.currentTime === _position) {
                 _stalledHandler();
+            } else {
+                _endOfStream = false;
             }
         }
 
@@ -997,6 +1014,46 @@ define([
                 }
                 _this.trigger('mediaType', {mediaType: mediaType});
             }
+        }
+
+        // If we're live and the buffer end has remained the same for some time, kill the stream
+        function checkStaleStream() {
+            var endOfBuffer = timeRangesUtil.endOfRange(_videotag.buffered);
+            var live = (_videotag.duration === Infinity);
+
+            if (live && _lastEndOfBuffer === endOfBuffer) {
+                if (!_staleStreamTimeout) {
+                    _staleStreamTimeout = setTimeout(function () {
+                        _stale = true;
+                        checkStreamEnded();
+                    }, _staleStreamDuration);
+                }
+            } else {
+                clearTimeout(_staleStreamTimeout);
+                _staleStreamTimeout = null;
+                _stale = false;
+            }
+
+            _lastEndOfBuffer = endOfBuffer;
+        }
+
+        function checkStreamEnded() {
+            if (_stale && _endOfStream) {
+                _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+                    message: 'The live stream is either down or has ended'
+                });
+                return true;
+            }
+
+            return false;
+        }
+
+        function atEndOfStream() {
+            if (_videotag.duration !== Infinity) {
+                return;
+            }
+
+            return (timeRangesUtil.endOfRange(_videotag.buffered)) - _videotag.currentTime <= 2;
         }
     }
 
