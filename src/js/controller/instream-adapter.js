@@ -199,7 +199,6 @@ define([
                 playlist = [item];
             }
 
-            _this = this;
             var providersManager = _model.getProviders();
             var primary = (InstreamMethod === InstreamFlash) ? 'flash' : undefined;
             var providersNeeded = providersManager.required(playlist, primary);
