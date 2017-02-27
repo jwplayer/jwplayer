@@ -36,9 +36,6 @@ define([
                     case 'complete':
                         newstateLabel = localization.replay;
                         break;
-                    case 'error':
-                        newstateLabel = '';
-                        break;
                     default:
                         newstateLabel = '';
                         break;
