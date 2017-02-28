@@ -189,7 +189,8 @@ define([
         }
 
         function _timeUpdateHandler() {
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
+
             _canSeek = true;
             if (_this.state === states.STALLED) {
                 _this.setState(states.PLAYING);
@@ -445,7 +446,7 @@ define([
         function _completeLoad(startTime, duration) {
 
             _delayedSeek = 0;
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
 
             var sourceElement = document.createElement('source');
             sourceElement.src = _levels[_currentQuality].file;
@@ -554,7 +555,7 @@ define([
         }
 
         this.stop = function() {
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
             _clearVideotagSource();
             this.clearTracks();
             // IE/Edge continue to play a video after changing video.src and calling video.load()
@@ -614,7 +615,7 @@ define([
         };
 
         this.pause = function() {
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
             _videotag.pause();
             _beforeResumeHandler = function() {
                 var unpausing = _videotag.paused && _videotag.currentTime;
@@ -712,7 +713,7 @@ define([
 
         function _endedHandler() {
             if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
-                clearTimeout(_playbackTimeout);
+                clearTimeouts();
                 _currentQuality = -1;
 
                 _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
@@ -758,7 +759,7 @@ define([
          * Return the video tag and stop listening to events
          */
         this.detachMedia = function() {
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
             _removeListeners(_mediaEvents, _videotag);
             // Stop listening to track changes so disabling the current track doesn't update the model
             this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
@@ -797,7 +798,7 @@ define([
         this.remove = function() {
             // stop video silently
             _clearVideotagSource();
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
 
             // remove
             if (_container === _videotag.parentNode) {
@@ -1056,6 +1057,12 @@ define([
             // currentTime doesn't always get to the end of the buffered range
             var timeFudge = 2;
             return (timeRangesUtil.endOfRange(_videotag.buffered)) - _videotag.currentTime <= timeFudge;
+        }
+
+        function clearTimeouts() {
+            clearTimeout(_playbackTimeout);
+            clearTimeout(_staleStreamTimeout);
+            _staleStreamTimeout = null;
         }
     }
 
