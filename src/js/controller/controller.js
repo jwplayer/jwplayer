@@ -202,12 +202,12 @@ define([
                 _setup = null;
 
                 _view.on('all', _triggerAfterReady, _this);
+                _view.once(events.JWPLAYER_RESIZE, _playerReadyNotify);
 
                 _this.showView(_view.element());
                 _observePlayerContainer(_view.element());
 
-                // Defer triggering of events until they can be registered
-                _.defer(_playerReadyNotify);
+                _view.init();
             }
 
             function _playerReadyNotify() {
@@ -252,20 +252,6 @@ define([
                 if (!container) {
                     return;
                 }
-
-                if ('IntersectionObserver' in window &&
-                    'IntersectionObserverEntry' in window &&
-                    'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-                    _startObserving(container);
-                } else {
-                    require.ensure(['intersection-observer'], function (require) {
-                        require('intersection-observer');
-                        _startObserving(container);
-                    }, 'polyfills.intersection-observer');
-                }
-            }
-
-            function _startObserving(container) {
                 if (!window.IntersectionObserver) {
                     return;
                 }

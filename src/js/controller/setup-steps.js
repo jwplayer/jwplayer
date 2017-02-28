@@ -14,6 +14,10 @@ define([
 
     function getQueue() {
         var Components = {
+            DEFERRED: {
+                method: _deferred,
+                depends: []
+            },
             LOAD_PROMISE_POLYFILL: {
                 method: _loadPromisePolyfill,
                 depends: []
@@ -22,11 +26,16 @@ define([
                 method: _loadBase64Polyfill,
                 depends: []
             },
+            LOAD_XO_POLYFILL: {
+                method: _loadIntersectionObserverPolyfill,
+                depends: []
+            },
             LOADED_POLYFILLS: {
                 method: _loadedPolyfills,
                 depends: [
                     'LOAD_PROMISE_POLYFILL',
-                    'LOAD_BASE64_POLYFILL'
+                    'LOAD_BASE64_POLYFILL',
+                    'LOAD_XO_POLYFILL'
                 ]
             },
             LOAD_PLUGINS: {
@@ -74,12 +83,17 @@ define([
                 method: _sendReady,
                 depends: [
                     'SETUP_VIEW',
-                    'SET_ITEM'
+                    'SET_ITEM',
+                    'DEFERRED'
                 ]
             }
         };
 
         return Components;
+    }
+
+    function _deferred(resolve) {
+        setTimeout(resolve, 0);
     }
 
     function _loadPromisePolyfill(resolve) {
@@ -101,6 +115,19 @@ define([
             }, 'polyfills.base64');
         } else {
             resolve();
+        }
+    }
+
+    function _loadIntersectionObserverPolyfill(resolve) {
+        if ('IntersectionObserver' in window &&
+            'IntersectionObserverEntry' in window &&
+            'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
+            resolve();
+        } else {
+            require.ensure(['intersection-observer'], function (require) {
+                require('intersection-observer');
+                resolve();
+            }, 'polyfills.intersection-observer');
         }
     }
 

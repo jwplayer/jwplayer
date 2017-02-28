@@ -443,8 +443,8 @@ define([
                 });
             }
 
-            this.onChangeSkin(_model, _model.get('skin'), '');
             _model.on('change:skin', this.onChangeSkin, this);
+            this.onChangeSkin(_model, _model.get('skin'));
 
             _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
 
@@ -459,9 +459,6 @@ define([
             _title.setup(_titleElement);
 
             _setupControls();
-
-            // call user activity to set timeout for control to fade
-            _userActivity();
 
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
@@ -480,12 +477,12 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
 
-            _model.on('change:errorEvent', _errorHandler);
-
             _model.on('change:controls', _onChangeControls);
             _onChangeControls(_model, _model.get('controls'));
+
             _model.on('change:state', _stateHandler);
-            _model.on('change:duration', _setLiveMode, this);
+            _stateHandler(_model, _model.get('state'));
+
 
             _model.on('change:flashBlocked', _onChangeFlashBlocked);
             _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
@@ -493,19 +490,18 @@ define([
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on('change:hideAdsControls', function (model, val) {
-                utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
-            });
-
             // set initial state
             if (_model.get('stretching')) {
                 _onStretchChange(_model, _model.get('stretching'));
             }
             // watch for changes
+            _model.on('change:duration', _setLiveMode, this);
             _model.on('change:stretching', _onStretchChange);
-
-            _stateHandler(_model, states.IDLE);
             _model.on('change:fullscreen', _fullscreen);
+            _model.on('change:errorEvent', _errorHandler);
+            _model.on('change:hideAdsControls', function (model, val) {
+                utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
+            });
 
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
@@ -519,12 +515,6 @@ define([
                 });
             }
 
-            // This setTimeout allows the player to actually get embedded into the player
-            _api.on(events.JWPLAYER_READY, function () {
-                _resize(_model.get('width'), _model.get('height'));
-                _setContainerDimensions();
-            });
-
             if (!_.isUndefined(document.hidden)) {
                 _model.set('activeTab', !document.hidden);
                 document.addEventListener('visibilitychange', _visibilityChangeListener, false);
@@ -532,6 +522,14 @@ define([
                 // Default activeTab to true if the browser doesn't implement the visibility API
                 _model.set('activeTab', true);
             }
+        };
+
+        this.init = function() {
+            _resize(_model.get('width'), _model.get('height'));
+            _setContainerDimensions();
+
+            // call user activity to set timeout for control to fade
+            _userActivity();
         };
 
         function _onStretchChange(model, newVal) {
