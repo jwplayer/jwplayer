@@ -59,7 +59,7 @@ define([
         };
 
         this.resize = function () {
-            var width = _display.clientWidth;
+            var width = _model.get('containerWidth');
             var scale = Math.pow(width / 400, 0.6);
 
             if (scale) {

@@ -268,6 +268,8 @@ define([
             _checkAudioMode(_model.get('height'));
             _setTimesliderFlags(breakPoint, _model.get('audioMode'));
 
+            _captionsRenderer.resize();
+
             _this.trigger(events.JWPLAYER_RESIZE, {
                 width: containerWidth,
                 height: containerHeight
@@ -833,8 +835,6 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
-
-            _captionsRenderer.resize();
         }
 
         function _autoplayUnmute() {
