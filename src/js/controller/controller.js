@@ -205,9 +205,9 @@ define([
                 _view.once(events.JWPLAYER_RESIZE, _playerReadyNotify);
 
                 _this.showView(_view.element());
-                _observePlayerContainer(_view.element());
-
                 _view.init();
+
+                _observePlayerContainer(_view.element());
             }
 
             function _playerReadyNotify() {

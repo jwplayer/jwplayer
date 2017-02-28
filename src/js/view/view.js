@@ -1197,6 +1197,7 @@ define([
         };
 
         this.destroy = function () {
+            this.off();
             clearTimeout(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
             clearTimeout(_controlsTimeout);
