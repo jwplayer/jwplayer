@@ -144,12 +144,6 @@ define([
             utils.empty(_display);
         };
 
-        this.setContainerHeight = function (height) {
-            _style(_display, {
-                height: height
-            });
-        };
-
         /** Constructor for the renderer. **/
         this.setup = function (playerElementId, options) {
             _captionsWindow = document.createElement('div');

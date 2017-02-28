@@ -762,10 +762,6 @@ define([
                 playerStyle.height = playerHeight;
             }
 
-            if (_model.get('aspectratio')) {
-                _resizeAspectModeCaptions();
-            }
-
             _styles(_playerElement, playerStyle, true);
 
             _checkAudioMode(playerHeight);
@@ -836,10 +832,6 @@ define([
             if (transformScale) {
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
-            }
-
-            if (_model.get('aspectratio')) {
-                _resizeAspectModeCaptions();
             }
 
             _captionsRenderer.resize();
@@ -1060,11 +1052,6 @@ define([
 
         function _dragging(model) {
             _stateHandler(model, model.get('state'));
-        }
-
-        function _resizeAspectModeCaptions() {
-            var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
-            _captionsRenderer.setContainerHeight(aspectRatioContainer.offsetHeight);
         }
 
         function createDisplayContainer() {
