@@ -305,7 +305,7 @@ define([
                 if (activeTab && _.isUndefined(intersectionRatio)) {
                     return;
                 }
-                
+
                 var visibility = activeTab ? intersectionRatio : 0;
                 _model.set('visibility', visibility);
             }
@@ -801,11 +801,13 @@ define([
                     id: id,
                     btnClass: btnClass
                 };
-
                 var dock = _model.get('dock');
-                dock = (dock) ? dock.slice(0) : [];
-                dock = _.reject(dock, _.matches({ id: btn.id }));
 
+                if (_.where(dock, { id: btn.id }).length) {
+                    return;
+                }
+
+                dock = dock ? _.clone(dock) : [];
                 dock.push(btn);
                 _model.set('dock', dock);
             };
