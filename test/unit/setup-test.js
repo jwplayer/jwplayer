@@ -1,8 +1,9 @@
 define([
     'test/underscore',
+    'jquery',
     'api/api',
     'events/events'
-], function (_, Api, events) {
+], function (_, $, Api, events) {
     /* jshint qunit:true */
 
     QUnit.module('Setup');
@@ -149,7 +150,8 @@ define([
     });
 
     function testSetup(model, success, error, done) {
-        var api = new Api(document.createElement('div'), _.noop);
+        var container = createContainer('player');
+        var api = new Api(container, _.noop);
         api.setup(model);
 
         api.on(events.JWPLAYER_READY, function() {
@@ -163,6 +165,12 @@ define([
             api.remove();
         });
         return api;
+    }
+
+    function createContainer(id) {
+        var container = $('<div id="' + id + '"></div>')[0];
+        $('#qunit-fixture').append(container);
+        return container;
     }
 
 });

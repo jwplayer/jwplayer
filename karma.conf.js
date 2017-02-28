@@ -4,7 +4,9 @@ module.exports = function( config ) {
     var isJenkins = !!process.env.JENKINS_HOME;
     var serverPort = process.env.KARMA_PORT || 9876;
     var testReporters = [
-        'progress',
+        'spec',
+        // 'progress',
+        // 'dots',
         'coverage'
     ];
     if (isJenkins) {
@@ -21,6 +23,7 @@ module.exports = function( config ) {
             'karma-requirejs',
             'karma-qunit',
             'karma-junit-reporter',
+            'karma-spec-reporter',
             'karma-phantomjs-launcher',
             'karma-chrome-launcher',
             'karma-firefox-launcher',
