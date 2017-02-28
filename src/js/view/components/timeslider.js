@@ -18,6 +18,7 @@ define([
             this.img.className = 'jw-reset';
             this.resetWidth();
             this.textLength = 0;
+            this.dragJustReleased = false;
 
             var wrapper = document.createElement('div');
             wrapper.className = 'jw-time-tip jw-background-color jw-reset';
@@ -101,7 +102,6 @@ define([
             this.elementUI = new UI(this.el, {'useHover': true, 'useMove': true})
                 .on('drag move over', this.showTimeTooltip.bind(this), this)
                 .on('dragEnd out', this.hideTimeTooltip.bind(this), this);
-
         },
         limit: function(percent) {
             if (this.activeCue && _.isNumber(this.activeCue.pct)) {
@@ -130,6 +130,7 @@ define([
         dragEnd : function() {
             Slider.prototype.dragEnd.apply(this, arguments);
             this._model.set('scrubbing', false);
+            this.dragJustReleased = true;
         },
 
 
@@ -144,6 +145,11 @@ define([
             this.updateBuffer(pct);
         },
         onPosition : function(model, position) {
+            if(this.dragJustReleased) {
+                //prevents firing an outdated position and causing the timeslider to jump back and forth
+                this.dragJustReleased = false;
+                return;
+            }
             this.updateTime(position, model.get('duration'));
         },
         onDuration : function(model, duration) {
