@@ -202,6 +202,9 @@ define([
                 _setup = null;
 
                 _view.on('all', _triggerAfterReady, _this);
+
+                // Fire 'ready' once the view has resized so that player width and height are available
+                // (requires the container to be in the DOM)
                 _view.once(events.JWPLAYER_RESIZE, _playerReadyNotify);
 
                 _this.showView(_view.element());
