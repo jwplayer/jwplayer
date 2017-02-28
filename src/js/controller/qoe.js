@@ -46,7 +46,7 @@ define([
             qoeItem.tick(JWPLAYER_MEDIA_FIRST_FRAME);
 
             var time = qoeItem.getFirstFrame();
-            model.mediaController.trigger(JWPLAYER_MEDIA_FIRST_FRAME, {loadTime : time});
+            model.mediaController.trigger(JWPLAYER_MEDIA_FIRST_FRAME, { loadTime: time });
             unbindFirstFrameEvents(model);
         });
 
@@ -72,8 +72,7 @@ define([
         model.mediaController.on(JWPLAYER_MEDIA_TIME, model._onTime);
     }
 
-    function initModel(model) {
-
+    function initModel(initialModel) {
         function onMediaModel(model, mediaModel, oldMediaModel) {
             // finish previous item
             if (model._qoeItem && oldMediaModel) {
@@ -96,16 +95,16 @@ define([
 
             trackFirstFrame(model);
 
-            mediaModel.on('change:state', function (mediaModel, newstate, oldstate) {
+            mediaModel.on('change:state', function (changeMediaModel, newstate, oldstate) {
                 model._qoeItem.end(oldstate);
                 model._qoeItem.start(newstate);
             });
         }
 
-        model.on('change:mediaModel', onMediaModel);
+        initialModel.on('change:mediaModel', onMediaModel);
     }
 
     return {
-        model : initModel
+        model: initModel
     };
 });

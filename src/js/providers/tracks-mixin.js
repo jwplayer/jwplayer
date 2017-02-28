@@ -61,7 +61,8 @@ define(['utils/underscore',
 
         // filter for 'subtitles' or 'captions' tracks
         if (tracks.length) {
-            var i = 0, len = tracks.length;
+            var i = 0;
+            var len = tracks.length;
 
             for (i; i < len; i++) {
                 var track = tracks[i];
@@ -93,10 +94,9 @@ define(['utils/underscore',
                     track.mode = 'hidden';
                     track.oncuechange = _cueChangeHandler.bind(this);
                     this._tracksById[track._id] = track;
-                }
-                else if (_kindSupported(track.kind)) {
-                    var mode = track.mode,
-                        cue;
+                } else if (_kindSupported(track.kind)) {
+                    var mode = track.mode;
+                    var cue;
 
                     // By setting the track mode to 'hidden', we can determine if the track has cues
                     track.mode = 'hidden';
@@ -137,7 +137,7 @@ define(['utils/underscore',
         }
 
         if (this._textTracks.length) {
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
     }
 
@@ -218,7 +218,7 @@ define(['utils/underscore',
                 data: []
             };
             this.addTextTracks([track]);
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
 
         var cueId;
@@ -251,10 +251,10 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        var trackId = 'native' + cueData.type,
-            track = this._tracksById[trackId],
-            label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata',
-            vttCue = cueData.cue;
+        var trackId = 'native' + cueData.type;
+        var track = this._tracksById[trackId];
+        var label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
+        var vttCue = cueData.cue;
 
         if (!track) {
             var itemTrack = {
@@ -272,7 +272,7 @@ define(['utils/underscore',
                 addTextTracks.call(this, [track]);
             }
         }
-        if(_cacheVTTCue.call(this, track, vttCue)) {
+        if (_cacheVTTCue.call(this, track, vttCue)) {
             if (this.renderNatively || track.kind === 'metadata') {
                 _addCueToTrack(track, vttCue);
             } else {
@@ -289,12 +289,13 @@ define(['utils/underscore',
         }
 
         track.source = cueData.source;
-        var cues = cueData.captions || [],
-            cuesToConvert = [],
-            sort = false;
-        for (var i=0; i<cues.length; i++) {
+        var cues = cueData.captions || [];
+        var cuesToConvert = [];
+        var sort = false;
+
+        for (var i = 0; i < cues.length; i++) {
             var cue = cues[i];
-            var cueId = cueData.name +'_'+ cue.begin +'_'+ cue.end;
+            var cueId = cueData.name + '_' + cue.begin + '_' + cue.end;
             if (!this._metaCuesByTextTime[cueId]) {
                 this._metaCuesByTextTime[cueId] = cue;
                 cuesToConvert.push(cue);
@@ -344,8 +345,8 @@ define(['utils/underscore',
         var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
         if (this.renderNatively || metadataTrack) {
             _removeCues.call(this, this.video.textTracks);
-            if(metadataTrack) {
-               metadataTrack.oncuechange = null;
+            if (metadataTrack) {
+                metadataTrack.oncuechange = null;
             }
         }
         this._itemTracks = null;
@@ -386,7 +387,7 @@ define(['utils/underscore',
 
     function textTrackChangeHandler() {
         var textTracks = this.video.textTracks;
-        var inUseTracks = _.filter(textTracks, function (track)  {
+        var inUseTracks = _.filter(textTracks, function (track) {
             return (track.inuse || !track._id) && _kindSupported(track.kind);
         });
         if (!this._textTracks || _tracksModified.call(this, inUseTracks)) {
@@ -394,13 +395,14 @@ define(['utils/underscore',
             return;
         }
         // If a caption/subtitle track is showing, find its index
-        var selectedTextTrackIndex = -1, i = 0;
-        for (i; i < this._textTracks.length; i++) {
+        var selectedTextTrackIndex = -1;
+        for (var i = 0; i < this._textTracks.length; i++) {
             if (this._textTracks[i].mode === 'showing') {
                 selectedTextTrackIndex = i;
                 break;
             }
         }
+
         // Notifying the model when the index changes keeps the current index in sync in iOS Fullscreen mode
         if (selectedTextTrackIndex !== this._currentTextTrackIndex) {
             this.setSubtitlesTrack(selectedTextTrackIndex + 1);
@@ -439,7 +441,7 @@ define(['utils/underscore',
 
         // We can setup the captions menu now since we're not rendering textTracks natively
         if (!this.renderNatively && this._textTracks && this._textTracks.length) {
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
     }
 
@@ -455,7 +457,7 @@ define(['utils/underscore',
             if (!this._cuesByTrackId) {
                 this._cuesByTrackId = {};
             }
-            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false};
+            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false };
             return;
         }
         // Cues already added
@@ -466,14 +468,14 @@ define(['utils/underscore',
         var cue;
         this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
 
-        while((cue = vttCues.shift())) {
+        while ((cue = vttCues.shift())) {
             _addCueToTrack(textTrack, cue);
         }
     }
 
-    //////////////////////
-    ////// PRIVATE METHODS
-    //////////////////////
+    // ////////////////////
+    // //// PRIVATE METHODS
+    // ////////////////////
 
     function _addCueToTrack(track, vttCue) {
         if (!utils.isEdge() || !window.TextTrackCue) {
@@ -534,7 +536,7 @@ define(['utils/underscore',
             var tracks = this.video.textTracks;
             // TextTrack label is read only, so we'll need to create a new track if we don't
             // already have one with the same label
-            track = _.findWhere(tracks, {'label': label});
+            track = _.findWhere(tracks, { label: label });
 
             if (track) {
                 track.kind = itemTrack.kind;
@@ -544,7 +546,7 @@ define(['utils/underscore',
             }
 
             track.default = itemTrack.default;
-            track.mode    = 'disabled';
+            track.mode = 'disabled';
             track.inuse = true;
         } else {
             track = itemTrack;
@@ -586,7 +588,7 @@ define(['utils/underscore',
 
         // Get the most recent start time. Cues are sorted by start time in ascending order by the browser
         var startTime = activeCues[activeCues.length - 1].startTime;
-        //Prevent duplicate meta events for the same list of cues since the cue change handler fires once
+        // Prevent duplicate meta events for the same list of cues since the cue change handler fires once
         // for each activeCue in Safari
         if (this._activeCuePosition === startTime) {
             return;
@@ -619,11 +621,11 @@ define(['utils/underscore',
 
     function _cacheVTTCue(track, vttCue) {
         var trackKind = track.kind;
-        if(!this._cachedVTTCues[track._id]) {
+        if (!this._cachedVTTCues[track._id]) {
             this._cachedVTTCues[track._id] = {};
         }
-        var cachedCues = this._cachedVTTCues[track._id],
-            cacheKey;
+        var cachedCues = this._cachedVTTCues[track._id];
+        var cacheKey;
 
         switch (trackKind) {
             case 'captions':
@@ -650,6 +652,8 @@ define(['utils/underscore',
 
                 cachedCues[cacheKey] = vttCue.endTime;
                 return true;
+            default:
+                break;
         }
     }
 

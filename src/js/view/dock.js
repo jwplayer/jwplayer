@@ -13,15 +13,15 @@ define([
     };
 
     _.extend(Dock.prototype, {
-        setup : function() {
+        setup: function() {
             var buttons = this.model.get('dock');
             var clickHandler = this.click.bind(this);
 
             var html = dockTemplate(buttons);
             this.el = utils.createElement(html);
-            new UI (this.el).on('click tap', clickHandler);
+            new UI(this.el).on('click tap', clickHandler);
         },
-        getDockButton : function(evt) {
+        getDockButton: function(evt) {
             if (utils.hasClass(evt.target, 'jw-dock-button')) {
                 // Clicks on button container
                 return evt.target;
@@ -33,12 +33,12 @@ define([
             // Clicks on any other children
             return evt.target.parentElement;
         },
-        click : function(evt) {
+        click: function(evt) {
             var elem = this.getDockButton(evt);
 
             var btnId = elem.getAttribute('button');
             var buttons = this.model.get('dock');
-            var btn = _.findWhere(buttons, {id : btnId});
+            var btn = _.findWhere(buttons, { id: btnId });
 
             if (btn && btn.callback) {
                 btn.callback(evt);
@@ -51,7 +51,7 @@ define([
 
             this.el.innerHTML = newEl.innerHTML;
         },
-        element : function() {
+        element: function() {
             return this.el;
         }
     });

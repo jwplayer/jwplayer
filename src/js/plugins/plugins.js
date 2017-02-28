@@ -5,8 +5,8 @@ define([
     'plugins/utils'
 ], function(PluginsLoader, PluginsModel, Plugin, pluginsUtils) {
 
-    var _plugins = {},
-        _pluginLoaders = {};
+    var _plugins = {};
+    var _pluginLoaders = {};
 
     var loadPlugins = function(id, config) {
         _pluginLoaders[id] = new PluginsLoader(new PluginsModel(_plugins), config);
@@ -23,7 +23,7 @@ define([
 
 
     return {
-        loadPlugins : loadPlugins,
-        registerPlugin : registerPlugin
+        loadPlugins: loadPlugins,
+        registerPlugin: registerPlugin
     };
 });

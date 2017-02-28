@@ -3,7 +3,6 @@ define([
     'utils/backbone.events',
     'utils/underscore'
 ], function(events, Events, _) {
-
     var _loaders = {};
 
     var STATUS = {
@@ -14,8 +13,8 @@ define([
     };
 
     var scriptloader = function (url, isStyle) {
-        var _this = _.extend(this, Events),
-            _status = STATUS.NEW;
+        var _this = _.extend(this, Events);
+        var _status = STATUS.NEW;
 
         // legacy support
         this.addEventListener = this.on;
@@ -32,16 +31,16 @@ define([
             _this.trigger(events.COMPLETE, evt);
         }
 
-        this.makeStyleLink = function(url) {
+        this.makeStyleLink = function(styleUrl) {
             var link = document.createElement('link');
             link.type = 'text/css';
             link.rel = 'stylesheet';
-            link.href = url;
+            link.href = styleUrl;
             return link;
         };
-        this.makeScriptTag = function(url) {
+        this.makeScriptTag = function(scriptUrl) {
             var scriptTag = document.createElement('script');
-            scriptTag.src = url;
+            scriptTag.src = scriptUrl;
             return scriptTag;
         };
 

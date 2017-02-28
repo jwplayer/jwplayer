@@ -13,10 +13,10 @@ define([
     'utils/stream-type',
     'utils/quality-labels'
 ], function(strings, _, browser, dom, css, parser, id3Parser, ajax, validator, playerutils, trycatch, streamType, qualityLabels) {
-
     var utils = {};
 
     utils.log = function () {
+        /* eslint no-console: 0 */
         if (!window.console) {
             return;
         }
@@ -36,7 +36,9 @@ define([
      * This is a safe way to iterate over objects if another script has modified the object prototype
      */
     utils.foreach = function (aData, fnEach) {
-        var key, val;
+        var key;
+        var val;
+
         for (key in aData) {
             if (utils.typeOf(aData.hasOwnProperty) === 'function') {
                 if (aData.hasOwnProperty(key)) {

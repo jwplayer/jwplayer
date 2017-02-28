@@ -12,14 +12,14 @@ define([
     _.extend(Title.prototype, {
         // This is normally shown/hidden by states
         //   these are only used for when no title exists
-        hide : function() {
+        hide: function() {
             this.el.style.display = 'none';
         },
-        show : function() {
+        show: function() {
             this.el.style.display = '';
         },
 
-        setup : function(titleEl) {
+        setup: function(titleEl) {
             this.el = titleEl;
 
             // Perform the DOM search only once
@@ -37,7 +37,7 @@ define([
 
         update: function(model) {
             var titleStyle = {
-                paddingLeft:  0,
+                paddingLeft: 0,
                 paddingRight: 0
             };
             var controls = model.get('controls');
@@ -45,11 +45,11 @@ define([
             var logo = model.get('logo');
             if (logo) {
                 // Only use Numeric or pixel ("Npx") margin values
-                var margin = 1*(''+logo.margin).replace('px', '');
+                var margin = 1 * ('' + logo.margin).replace('px', '');
                 var padding = model.get('logoWidth') + (isNaN(margin) ? 0 : margin);
-                if (logo.position ===  'top-left') {
+                if (logo.position === 'top-left') {
                     titleStyle.paddingLeft = padding;
-                } else if (logo.position ===  'top-right') {
+                } else if (logo.position === 'top-right') {
                     titleStyle.paddingRight = padding;
                 }
             }
@@ -60,7 +60,7 @@ define([
             utils.style(this.el, titleStyle);
         },
 
-        playlistItem : function(model, item) {
+        playlistItem: function(model, item) {
             if (model.get('displaytitle') || model.get('displaydescription')) {
                 var title = '';
                 var description = '';
@@ -89,7 +89,7 @@ define([
             }
         },
 
-        element: function(){
+        element: function() {
             return this.el;
         }
     });

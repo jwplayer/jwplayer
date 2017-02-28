@@ -39,12 +39,12 @@ define([
     }
 
     var PluginLoader = function (model, _config) {
-        var _this = _.extend(this, Events),
-            _status = scriptloader.loaderstatus.NEW,
-            _iscomplete = false,
-            _pluginCount = _.size(_config),
-            _pluginLoaded,
-            _destroyed = false;
+        var _this = _.extend(this, Events);
+        var _status = scriptloader.loaderstatus.NEW;
+        var _iscomplete = false;
+        var _pluginCount = _.size(_config);
+        var _pluginLoaded;
+        var _destroyed = false;
 
         /*
          * Plugins can be loaded by multiple players on the page, but all of them use
@@ -80,11 +80,11 @@ define([
                 var plugins = model.getPlugins();
                 _pluginLoaded = _.after(_pluginCount, _complete);
                 _.each(_config, function (value, plugin) {
-                    var pluginName = pluginsUtils.getPluginName(plugin),
-                        pluginObj = plugins[pluginName],
-                        js = pluginObj.getJS(),
-                        target = pluginObj.getTarget(),
-                        status = pluginObj.getStatus();
+                    var pluginName = pluginsUtils.getPluginName(plugin);
+                    var pluginObj = plugins[pluginName];
+                    var js = pluginObj.getJS();
+                    var target = pluginObj.getTarget();
+                    var status = pluginObj.getStatus();
 
                     if (status === scriptloader.loaderstatus.LOADING || status === scriptloader.loaderstatus.NEW) {
                         return;
@@ -116,23 +116,23 @@ define([
         }
 
         this.setupPlugins = function (api, playerModel) {
-            var flashPlugins = [],
-                plugins = model.getPlugins();
+            var flashPlugins = [];
+            var plugins = model.getPlugins();
 
             var pluginsConfig = playerModel.get('plugins');
-            _.each(pluginsConfig, function(pluginConfig, plugin) {
-                var pluginName = pluginsUtils.getPluginName(plugin),
-                    pluginObj = plugins[pluginName],
-                    flashPath = pluginObj.getFlashPath(),
-                    jsPlugin = pluginObj.getJS(),
-                    pluginURL = pluginObj.getURL();
+            _.each(pluginsConfig, function(config, plugin) {
+                var pluginName = pluginsUtils.getPluginName(plugin);
+                var pluginObj = plugins[pluginName];
+                var flashPath = pluginObj.getFlashPath();
+                var jsPlugin = pluginObj.getJS();
+                var pluginURL = pluginObj.getURL();
 
                 if (flashPath) {
                     var flashPluginConfig = _.extend({
                         name: pluginName,
                         swf: flashPath,
                         pluginmode: pluginObj.getPluginmode()
-                    }, pluginConfig);
+                    }, config);
                     flashPlugins.push(flashPluginConfig);
                 }
 
@@ -152,7 +152,7 @@ define([
                         var pluginOptions = _.extend({}, pluginConfig);
                         var pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
-                        pluginInstance.addToPlayer   = _addToPlayerGenerator(api, pluginInstance, div);
+                        pluginInstance.addToPlayer = _addToPlayerGenerator(api, pluginInstance, div);
                         pluginInstance.resizeHandler = _pluginResizeGenerator(pluginInstance);
 
                         api.addPlugin(pluginName, pluginInstance, div);

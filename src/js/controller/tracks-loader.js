@@ -40,7 +40,8 @@ define([
 
     function xhrSuccess(xhr, track, successHandler, errorHandler) {
         var xmlRoot = xhr.responseXML ? xhr.responseXML.firstChild : null;
-        var cues, vttCues;
+        var cues;
+        var vttCues;
 
         // IE9 sets the firstChild element to the root <xml> tag
         if (xmlRoot) {
@@ -98,7 +99,7 @@ define([
 
             try {
                 parser.parse(text).flush();
-            } catch(error) {
+            } catch (error) {
                 delete track.xhr;
                 errorHandler(error);
             }

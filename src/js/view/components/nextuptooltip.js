@@ -44,7 +44,7 @@ define([
             this.onMediaModel(model, model.get('mediaModel'));
 
             // Close button
-            new UI(this.closeButton, {'directSelect': true})
+            new UI(this.closeButton, { directSelect: true })
                 .on('click tap', function() {
                     model.set('nextUpSticky', false);
                     model.set('nextUpVisible', false);
@@ -53,7 +53,7 @@ define([
             new UI(this.tooltip)
                 .on('click tap', this.click, this);
         },
-        loadThumbnail : function(url) {
+        loadThumbnail: function(url) {
             this.nextUpImage = new Image();
             this.nextUpImage.onload = (function() {
                 this.nextUpImage.onload = null;
@@ -133,7 +133,7 @@ define([
             this.offset = offset;
         },
         onMediaModel: function(model, mediaModel) {
-            mediaModel.on('change:state', function(mediaModel, state) {
+            mediaModel.on('change:state', function(stateChangeMediaModel, state) {
                 if (state === 'complete') {
                     model.set('nextUpVisible', false);
                 }

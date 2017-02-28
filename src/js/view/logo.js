@@ -15,11 +15,11 @@ define([
         position: 'top-right'
     };
 
-    var Logo = function(_model) {
-        var _logo,
-            _img = new Image(),
-            _settings,
-            _logoConfig = _.extend({}, _model.get('logo'));
+    return function Logo(_model) {
+        var _logo;
+        var _settings;
+        var _img = new Image();
+        var _logoConfig = _.extend({}, _model.get('logo'));
 
         _.extend(this, Events);
 
@@ -46,15 +46,15 @@ define([
             _img.onload = function() {
                 // update logo style
                 var style = {
-                    backgroundImage: 'url("' + this.src +'")',
+                    backgroundImage: 'url("' + this.src + '")',
                     width: this.width,
                     height: this.height
                 };
-                if(_settings.margin !== LogoDefaults.margin) {
+                if (_settings.margin !== LogoDefaults.margin) {
                     var positions = (/(\w+)-(\w+)/).exec(_settings.position);
-                    if (positions.length === 3){
-                        style['margin-'+positions[1]] = _settings.margin;
-                        style['margin-'+positions[2]] = _settings.margin;
+                    if (positions.length === 3) {
+                        style['margin-' + positions[1]] = _settings.margin;
+                        style['margin-' + positions[2]] = _settings.margin;
                     }
                 }
                 _styles(_logo, style);
@@ -95,6 +95,4 @@ define([
 
         return this;
     };
-
-    return Logo;
 });

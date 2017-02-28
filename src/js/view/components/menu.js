@@ -5,13 +5,13 @@ define([
     'utils/ui',
     'templates/menu.html'
 ], function(Tooltip, utils, _, UI, menuTemplate) {
-    var Menu = Tooltip.extend({
-        setup : function (list, selectedIndex, options) {
+    return Tooltip.extend({
+        setup: function (list, selectedIndex, options) {
             options = options || {};
             if (!this.iconUI) {
-                this.iconUI = new UI(this.el, {'useHover': true, 'directSelect': true});
+                this.iconUI = new UI(this.el, { useHover: true, directSelect: true });
 
-                this.toggleValueListener= this.toggleValue.bind(this);
+                this.toggleValueListener = this.toggleValue.bind(this);
 
                 this.toggleOpenStateListener = this.toggleOpenState.bind(this);
                 this.openTooltipListener = this.openTooltip.bind(this);
@@ -29,9 +29,8 @@ define([
             var isMenu = list.length > 2 || (list.length === 2 && options && options.toggle === false);
             var isToggle = !isMenu && list.length === 2;
             // Make caption menu always a toggle to show active color
-            utils.toggleClass(this.el, 'jw-toggle', isToggle || !!options.isToggle);
+            utils.toggleClass(this.el, 'jw-toggle', isToggle || options.isToggle);
             utils.toggleClass(this.el, 'jw-button-color', !isToggle);
-            this.isActive = isMenu || isToggle;
 
             if (isMenu) {
                 utils.removeClass(this.el, 'jw-off');
@@ -51,21 +50,25 @@ define([
 
             this.selectItem(selectedIndex);
         },
-        toggleValue: function(){
+        toggleValue: function() {
             this.trigger('toggleValue');
         },
         select: function (evt) {
             if (evt.target.parentElement === this.content) {
                 var classes = utils.classList(evt.target);
+
                 // find the class with a name of the form 'jw-item-1'
-                var item = _.find(classes, function(c) { return c.indexOf('jw-item') === 0;});
-                if(item){
+                var item = _.find(classes, function(c) {
+                    return c.indexOf('jw-item') === 0;
+                });
+
+                if (item) {
                     this.trigger('select', parseInt(item.split('-')[2]));
                     this.closeTooltipListener();
                 }
             }
         },
-        selectItem : function(selectedIndex) {
+        selectItem: function(selectedIndex) {
             if (this.content) {
                 for (var i = 0; i < this.content.children.length; i++) {
                     utils.toggleClass(this.content.children[i], 'jw-active-option', (selectedIndex === i));
@@ -73,7 +76,7 @@ define([
             }
             utils.toggleClass(this.el, 'jw-off', (selectedIndex === 0));
         },
-        reset : function() {
+        reset: function() {
             utils.addClass(this.el, 'jw-off');
             this.iconUI.off();
             if (this.contentUI) {
@@ -82,6 +85,4 @@ define([
             this.removeContent();
         }
     });
-
-    return Menu;
 });

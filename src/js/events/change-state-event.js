@@ -1,7 +1,6 @@
 define([
     'events/states'
 ], function(states) {
-
     // The api should dispatch an idle event when the model's state changes to complete
     // This is to avoid conflicts with the complete event and to maintain legacy event flow
     function normalizeApiState(newstate) {
@@ -11,7 +10,7 @@ define([
         return newstate;
     }
 
-    return function(model, newstate, oldstate) {
+    return function ChangeStateEvent(model, newstate, oldstate) {
         newstate = normalizeApiState(newstate);
         oldstate = normalizeApiState(oldstate);
         // do not dispatch idle a second time after complete

@@ -1,10 +1,11 @@
-/* jshint node: true */
+/* eslint-env node */
+/* eslint no-process-env: 0 */
 
-var path = require('path');
 var webpack = require('webpack');
 var webpackConfigs = require('./webpack.config');
 var webpackCompilers = {};
 var env = process.env;
+var execSync = require('child_process').execSync;
 
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
@@ -39,21 +40,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         starttime: new Date(),
         pkg: packageInfo,
-
-        jshint: {
-            options: {
-                jshintrc: '.jshintrc'
-            },
-            player : [
-                'src/js/**/*.js'
-            ],
-            tests : [
-                'test/{,*/}*.js'
-            ],
-            grunt : [
-                'Gruntfile.js'
-            ]
-        },
 
         // lints Less
         recess: {
@@ -125,31 +111,12 @@ module.exports = function(grunt) {
                     grunt.log.writeln('Updated in ' + (time / 1000).toFixed(3) + 's at ' + (new Date()).toISOString());
                 }
             },
-            config: {
-                options: {
-                    reload: true
-                },
-                files: [
-                    'Gruntfile.js',
-                    'webpack.config.js',
-                    'karma.config.js',
-                    '.jshintignore'
-                ],
-                tasks: ['jshint:grunt']
-            },
-            jshint: {
-                files: [
-                    '.jshintrc',
-                    '.jshintignore'
-                ],
-                tasks: ['jshint']
-            },
             player: {
                 options: {
                     atBegin: true
                 },
                 files : ['src/js/**/*.js'],
-                tasks: ['webpack:debug', 'jshint:player', 'karma:local']
+                tasks: ['webpack:debug', 'lint:player', 'karma:local']
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
@@ -157,7 +124,7 @@ module.exports = function(grunt) {
             },
             tests: {
                 files : ['test/{,*/}*.js'],
-                tasks: ['jshint:tests', 'karma:local']
+                tasks: ['lint:tests', 'karma:local']
             },
             flash: {
                 files : [
@@ -303,13 +270,28 @@ module.exports = function(grunt) {
         webpackCompilers[id] = compiler;
 
         compiler.run(function(err, stats) {
-            if (err) throw err;
+            if (err) {
+                throw err;
+            }
             var jsonStats = stats.toJson();
-            if (jsonStats.errors.length)  throw jsonStats.errors;
+            if (jsonStats.errors.length) {
+                throw jsonStats.errors;
+            }
             if (jsonStats.warnings.length) {
                 console.warn(jsonStats.warnings);
             }
             done();
+        });
+    });
+
+    grunt.registerTask('lint', 'ESLint JavaScript', function(target) {
+        var command = 'npm run lint';
+        if (target === 'test') {
+            command = command + '-tests';
+        }
+        execSync(command, {
+            cwd: '.',
+            stdio: [0, 1, 2]
         });
     });
 
@@ -329,7 +311,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build-js', [
         'webpack',
-        'jshint:player',
+        'lint:player',
         'recess'
     ]);
 

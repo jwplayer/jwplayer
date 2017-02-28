@@ -37,12 +37,10 @@ define([
 
         if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
             source = srcEvent;
+        } else if (srcEvent.touches && srcEvent.touches.length) {
+            source = srcEvent.touches[0];
         } else {
-            if (srcEvent.touches && srcEvent.touches.length) {
-                source = srcEvent.touches[0];
-            } else {
-                source = srcEvent.changedTouches[0];
-            }
+            source = srcEvent.changedTouches[0];
         }
 
         return {
@@ -59,7 +57,7 @@ define([
     function preventDefault(evt) {
         // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
         //  we cannot call evt.preventDefault() on them
-        if (! (evt instanceof MouseEvent) && ! (evt instanceof window.TouchEvent)) {
+        if (!(evt instanceof MouseEvent) && !(evt instanceof window.TouchEvent)) {
             return;
         }
         if (evt.preventManipulation) {
@@ -72,14 +70,14 @@ define([
     }
 
     var UI = function (elem, options) {
-        var _elem = elem,
-            _hasMoved = false,
-            _startX = 0,
-            _startY = 0,
-            _lastClickTime = 0,
-            _doubleClickDelay = 300,
-            _touchListenerTarget,
-            _pointerId;
+        var _elem = elem;
+        var _hasMoved = false;
+        var _startX = 0;
+        var _startY = 0;
+        var _lastClickTime = 0;
+        var _doubleClickDelay = 300;
+        var _touchListenerTarget;
+        var _pointerId;
 
         options = options || {};
 
@@ -218,18 +216,14 @@ define([
 
             if (_hasMoved) {
                 triggerEvent(JW_TOUCH_EVENTS.DRAG_END, evt);
-            } else {
-                // Skip if we're not directly selecting the target and if its a cancel
-                if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
-
-                    if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
-                        triggerEvent(JW_TOUCH_EVENTS.CLICK, evt);
-                    } else {
-                        triggerEvent(JW_TOUCH_EVENTS.TAP, evt);
-                        if (evt.type === 'touchend') {
-                            // preventDefault to not dispatch the 300ms delayed click after a tap
-                            preventDefault(evt);
-                        }
+            } else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
+                if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
+                    triggerEvent(JW_TOUCH_EVENTS.CLICK, evt);
+                } else {
+                    triggerEvent(JW_TOUCH_EVENTS.TAP, evt);
+                    if (evt.type === 'touchend') {
+                        // preventDefault to not dispatch the 300ms delayed click after a tap
+                        preventDefault(evt);
                     }
                 }
             }

@@ -34,14 +34,16 @@
         window.wallaby.delayStart();
         base = '../../';
         for (var file in window.wallaby.tests) {
-            deps.push(window.wallaby.tests[file]);
+            if (Object.prototype.hasOwnProperty.call(window.wallaby.tests, file)) {
+                deps.push(window.wallaby.tests[file]);
+            }
         }
         callback = window.wallaby.start;
     } else if (window.__karma__) {
         base = '/base/';
-        for (var file in window.__karma__.files) {
-            if (/test\/unit\/[^\/]+\.js$/.test(file)) {
-                deps.push(file);
+        for (var karmaFile in window.__karma__.files) {
+            if (/test\/unit\/[^\/]+\.js$/.test(karmaFile)) {
+                deps.push(karmaFile);
             }
         }
         callback = window.__karma__.start;
@@ -129,4 +131,4 @@
         // start test run, once Require.js is done
         callback: callback
     });
-})();
+}());

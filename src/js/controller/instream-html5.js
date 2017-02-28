@@ -8,17 +8,16 @@ define([
 ], function(_, Events, changeStateEvent, events, states, Model) {
 
     var InstreamHtml5 = function(_controller, _model) {
-
-        var _adModel,
-            _currentProvider,
-            _this = _.extend(this, Events);
+        var _adModel;
+        var _currentProvider;
+        var _this = _.extend(this, Events);
 
         // Listen for player resize events
         _controller.on(events.JWPLAYER_FULLSCREEN, function(data) {
             this.trigger(events.JWPLAYER_FULLSCREEN, data);
         }, _this);
 
-        /*****************************************
+        /** ***************************************
          *****  Public instream API methods  *****
          *****************************************/
 
@@ -57,7 +56,7 @@ define([
             _adModel.loadVideo(item);
         };
 
-        _this.applyProviderListeners = function(provider){
+        _this.applyProviderListeners = function(provider) {
             // check provider after item change
             _checkProvider(provider);
 
@@ -92,7 +91,7 @@ define([
             if (_currentProvider) {
                 _currentProvider.detachMedia();
                 _currentProvider.off();
-                if(_adModel.getVideo()){
+                if (_adModel.getVideo()) {
                     _currentProvider.destroy();
                 }
             }
@@ -122,7 +121,7 @@ define([
         };
 
 
-        /*****************************
+        /** ***************************
          ****** Private methods ******
          *****************************/
 
@@ -144,7 +143,7 @@ define([
                     if (isVpaidProvider && (type === events.JWPLAYER_MEDIA_COMPLETE)) {
                         return;
                     }
-                    this.trigger(type, _.extend({}, data, {type: type}));
+                    this.trigger(type, _.extend({}, data, { type: type }));
                 }, _this);
 
                 provider.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
@@ -163,6 +162,8 @@ define([
                 case states.PLAYING:
                 case states.PAUSED:
                     _adModel.set('state', evt.newstate);
+                    break;
+                default:
                     break;
             }
         }

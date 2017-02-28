@@ -14,10 +14,9 @@ define([
             Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     var Api = function (container, globalRemovePlayer) {
-        var _this = this,
-            _controller,
-            _playerReady = false,
-            _itemMeta = {};
+        var _this = this;
+        var _controller;
+        var _itemMeta = {};
 
         // Set up event handling
         _.extend(this, Events);
@@ -63,7 +62,6 @@ define([
 
             // capture the ready event and add setup time to it
             _controller.on(events.JWPLAYER_READY, function(event) {
-                _playerReady = true;
                 _qoe.tick('ready');
                 event.setupTime = _qoe.between('setup', 'ready');
             });
@@ -81,9 +79,7 @@ define([
 
 
         var _reset = function() {
-            _playerReady = false;
             _itemMeta = {};
-
             _this.off();
 
             if (_controller) {
@@ -140,16 +136,16 @@ define([
             var firstFrame = qoeItem.getFirstFrame();
 
             return {
-                setupTime : setupTime,
-                firstFrame : firstFrame,
-                player : _qoe.dump(),
-                item : qoeItem.dump()
+                setupTime: setupTime,
+                firstFrame: firstFrame,
+                player: _qoe.dump(),
+                item: qoeItem.dump()
             };
         };
 
         // Request this from the view/controller
         this.getContainer = function () {
-            if(_controller.getContainer) {
+            if (_controller.getContainer) {
                 // If the controller has fully set up...
                 return _controller.getContainer();
             }

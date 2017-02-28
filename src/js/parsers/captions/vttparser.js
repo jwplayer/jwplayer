@@ -43,11 +43,10 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
         } else if (m[1] > 59) {
             // Timestamp takes the form of [hours]:[minutes].[milliseconds]
             // First position is hours as it's over 59.
-            return computeSeconds(m[1], m[2], 0,  m[4]);
-        } else {
-            // Timestamp takes the form of [minutes]:[seconds].[milliseconds]
-            return computeSeconds(0, m[1], m[2], m[4]);
+            return computeSeconds(m[1], m[2], 0, m[4]);
         }
+        // Timestamp takes the form of [minutes]:[seconds].[milliseconds]
+        return computeSeconds(0, m[1], m[2], m[4]);
     }
 
     // A settings object holds key/value pairs and will ignore anything but the first
@@ -125,7 +124,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
         }
     }
     
-    var defaults = new VTTCue(0,0,0);
+    var defaults = new VTTCue(0, 0, 0);
     // 'middle' was changed to 'center' in the spec: https://github.com/w3c/webvtt/pull/244
     // Chrome and Safari don't yet support this change, but FF does
     var center = defaults.align === 'middle' ? 'middle' : 'center';
@@ -241,7 +240,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             // example when flush() is called.
             if (data) {
                 // Try to decode the data that we received.
-                self.buffer += self.decoder.decode(data, {stream: true});
+                self.buffer += self.decoder.decode(data, { stream: true });
             }
 
             function collectNextLine() {
@@ -263,7 +262,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             }
 
             // 3.4 WebVTT region and WebVTT region settings syntax
-            //function parseRegion(input) {
+            // function parseRegion(input) {
             //    var settings = new Settings();
             //
             //    parseOptions(input, function (k, v) {
@@ -320,7 +319,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             //            region: region
             //        });
             //    }
-            //}
+            // }
 
             // 3.2 WebVTT metadata header syntax
             function parseHeader(input) {
@@ -329,7 +328,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                         case 'Region':
                             // 3.3 WebVTT region metadata header syntax
                             console.log('parse region', v);
-                            //parseRegion(v);
+                            // parseRegion(v);
                             break;
                     }
                 }, /:/);
@@ -401,7 +400,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                                 continue;
                             }
                         // Process line as start of a cue.
-                        /*falls through*/
+                        /* falls through*/
                         case 'CUE':
                             // 40 - Collect cue timings and settings.
                             try {
