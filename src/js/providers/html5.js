@@ -368,7 +368,7 @@ define([
                 return;
             }
 
-            if (atEndOfStream()) {
+            if (atEdgeOfLiveStream()) {
                 _endOfStream = true;
                 if (checkStreamEnded()) {
                     return;
@@ -1049,9 +1049,9 @@ define([
             return false;
         }
 
-        function atEndOfStream() {
+        function atEdgeOfLiveStream() {
             if (_videotag.duration !== Infinity) {
-                return;
+                return false;
             }
 
             // currentTime doesn't always get to the end of the buffered range
