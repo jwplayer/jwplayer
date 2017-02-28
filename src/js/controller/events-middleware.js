@@ -15,7 +15,7 @@ define([
                 // Don't add viewable to events if we don't know we're viewable
                 if (!_.isUndefined(viewable)) {
                     // Emit viewable as 0 or 1
-                    newState = _.extend({}, currentState, { viewable: viewable ? 1 : 0 });
+                    newState = _.extend({}, currentState, { viewable: viewable });
                 }
                 break;
             }

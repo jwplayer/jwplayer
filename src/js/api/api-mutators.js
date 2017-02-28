@@ -15,8 +15,7 @@ define([
             'stretching',
             'playlist',
             'captions',
-            'viewable',
-            'visibility'
+            'viewable'
         ];
 
         // given a name "buffer", it adds to jwplayer api a function named getBuffer

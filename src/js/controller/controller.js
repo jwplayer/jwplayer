@@ -234,7 +234,7 @@ define([
                 }
 
                 _configureAutostart();
-                _onVisibilityChange(_model, _model.get('visibility'));
+                _checkVisibility();
             }
 
             function _configureAutostart() {
@@ -300,12 +300,18 @@ define([
                 // Otherwise, set it to the intersection ratio reported from the intersection observer
                 var intersectionRatio = _model.get('intersectionRatio');
                 var activeTab = _model.get('activeTab');
+
+                // We don't yet know if the player is viewable
+                if (activeTab && _.isUndefined(intersectionRatio)) {
+                    return;
+                }
+                
                 var visibility = activeTab ? intersectionRatio : 0;
                 _model.set('visibility', visibility);
             }
 
             function _onVisibilityChange(model, visibility) {
-                var viewable = !!Math.round(visibility);
+                var viewable = Math.round(visibility);
                 model.set('viewable', viewable);
                 if (viewable && model.get('playOnViewable')) {
                     _autoStart();
