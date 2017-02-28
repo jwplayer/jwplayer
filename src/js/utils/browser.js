@@ -59,9 +59,8 @@ define([
                 return _isEdge(browserVersion);
             } else if (browserVersion >= 11) {
                 return _isIETrident();
-            } else {
-                return _isMSIE(browserVersion);
             }
+            return _isMSIE(browserVersion);
         }
         return _isEdge() || _isIETrident() || _isMSIE();
     };
@@ -75,7 +74,7 @@ define([
     var _isIOS = browser.isIOS = function(osVersion) {
         if (osVersion) {
             return _userAgentMatch(
-                new RegExp('iP(hone|ad|od).+\\s(OS\\s'+osVersion+'|.*\\sVersion/'+osVersion+')', 'i')
+                new RegExp('iP(hone|ad|od).+\\s(OS\\s' + osVersion + '|.*\\sVersion/' + osVersion + ')', 'i')
             );
         }
         return _userAgentMatch(/iP(hone|ad|od)/i);
@@ -87,7 +86,7 @@ define([
     };
 
     var _isAndroid = browser.isAndroid = function(osVersion, excludeChrome) {
-        //Android Browser appears to include a user-agent string for Chrome/18
+        // Android Browser appears to include a user-agent string for Chrome/18
         if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/)) {
             return false;
         }
@@ -118,8 +117,8 @@ define([
             return 0;
         }
 
-        var plugins = navigator.plugins,
-            flash;
+        var plugins = navigator.plugins;
+        var flash;
 
         if (plugins) {
             flash = plugins['Shockwave Flash'];
@@ -134,7 +133,7 @@ define([
                 if (flash) {
                     return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
-            } catch(e) {
+            } catch (e) {
                 return 0;
             }
 

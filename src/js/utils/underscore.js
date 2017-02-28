@@ -24,7 +24,7 @@ define([], function() {
     // are declared here.
     var
         nativeMap = ArrayProto.map,
-        nativeReduce       = ArrayProto.reduce,
+        nativeReduce = ArrayProto.reduce,
         nativeForEach = ArrayProto.forEach,
         nativeFilter = ArrayProto.filter,
         nativeEvery = ArrayProto.every,
@@ -166,7 +166,7 @@ define([], function() {
         return !!result;
     };
 
-    //returns the size of an object
+    // returns the size of an object
     _.size = function (obj) {
         if (obj == null) return 0;
         return obj.length === +obj.length ? obj.length : _.keys(obj).length;
@@ -240,7 +240,6 @@ define([], function() {
     _.indexBy = group(function(result, key, value) {
         result[key] = value;
     });
-
 
 
     // Use a comparator function to figure out the smallest index at which
@@ -353,7 +352,7 @@ define([], function() {
 
 
     // Reusable constructor function for prototype setting.
-    var ctor = function(){};
+    var ctor = function() {};
 
     // Create a function bound to a given object (assigning `this`, and arguments,
     // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
@@ -397,9 +396,9 @@ define([], function() {
     // Returns the first function passed as an argument to the second,
     // allowing you to adjust arguments, run code before and after, and
     // conditionally execute the original function.
-    //_.wrap = function(func, wrapper) {
+    // _.wrap = function(func, wrapper) {
     //    return _.partial(wrapper, func);
-    //};
+    // };
 
 
     // Memoize an expensive function by storing its results.
@@ -426,7 +425,6 @@ define([], function() {
     _.defer = function (func) {
         return _.delay.apply(_, [func, 1].concat(slice.call(arguments, 1)));
     };
-
 
 
     // Returns a function, that, when invoked, will only be triggered at most once
@@ -616,7 +614,7 @@ define([], function() {
     };
 
     _.propertyOf = function(obj) {
-        return obj == null ? function(){} : function(key) {
+        return obj == null ? function() {} : function(key) {
             return obj[key];
         };
     };
@@ -624,13 +622,13 @@ define([], function() {
     // Returns a predicate for checking whether an object has a given set of `key:value` pairs.
     _.matches = function (attrs) {
         return function (obj) {
-            if (obj === attrs) return true; //avoid comparing an object to itself.
+            if (obj === attrs) return true; // avoid comparing an object to itself.
             for (var key in attrs) {
                 if (attrs[key] !== obj[key])
                     return false;
             }
             return true;
-        }
+        };
     };
 
 

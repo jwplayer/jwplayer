@@ -15,11 +15,11 @@ define([
         position: 'top-right'
     };
 
-    var Logo = function(_model) {
-        var _logo,
-            _img = new Image(),
-            _settings,
-            _logoConfig = _.extend({}, _model.get('logo'));
+    return function Logo(_model) {
+        var _logo;
+        var _settings;
+        var _img = new Image();
+        var _logoConfig = _.extend({}, _model.get('logo'));
 
         _.extend(this, Events);
 
@@ -40,28 +40,21 @@ define([
 
             utils.addClass(_logo, 'jw-logo-' + (_settings.position || LogoDefaults.position));
 
-            // respond to dock/controls changes when top positioned
-            if (_settings.position === 'top-right') {
-                _model.on('change:dock', this.topRight, this);
-                _model.on('change:controls', this.topRight, this);
-                this.topRight(_model);
-            }
-
             _model.set('logo', _settings);
 
             // apply styles onload when image width and height are known
             _img.onload = function() {
                 // update logo style
                 var style = {
-                    backgroundImage: 'url("' + this.src +'")',
+                    backgroundImage: 'url("' + this.src + '")',
                     width: this.width,
                     height: this.height
                 };
-                if(_settings.margin !== LogoDefaults.margin) {
+                if (_settings.margin !== LogoDefaults.margin) {
                     var positions = (/(\w+)-(\w+)/).exec(_settings.position);
-                    if (positions.length === 3){
-                        style['margin-'+positions[1]] = _settings.margin;
-                        style['margin-'+positions[2]] = _settings.margin;
+                    if (positions.length === 3) {
+                        style['margin-' + positions[1]] = _settings.margin;
+                        style['margin-' + positions[2]] = _settings.margin;
                     }
                 }
                 _styles(_logo, style);
@@ -88,17 +81,6 @@ define([
             container.appendChild(_logo);
         };
 
-        this.topRight = function(model) {
-            // move the logo down when dock buttons are displayed
-            var controls = model.get('controls');
-            var dockButtons = model.get('dock');
-            var dockButtonsVisible = controls && (dockButtons && dockButtons.length ||
-                model.get('sharing') || model.get('related'));
-            _styles(_logo, {
-                top: (dockButtonsVisible ? '3.5em' : 0)
-            });
-        };
-
         this.element = function() {
             return _logo;
         };
@@ -113,6 +95,4 @@ define([
 
         return this;
     };
-
-    return Logo;
 });

@@ -2,8 +2,7 @@
 define([
     'utils/underscore',
 ], function(_) {
-
-    return function(_api, _controller) {
+    return function ApiMutators(_api, _controller) {
 
         var modelGetters = [
             'buffer',
@@ -16,12 +15,12 @@ define([
             'stretching',
             'playlist',
             'captions',
-            'visibility'
+            'viewable'
         ];
 
         // given a name "buffer", it adds to jwplayer api a function named getBuffer
         _.each(modelGetters, function(attr) {
-            var format = attr.slice(0,1).toUpperCase() + attr.slice(1);
+            var format = attr.slice(0, 1).toUpperCase() + attr.slice(1);
 
             _api['get' + format] = function() {
                 return _controller._model.get(attr);
@@ -57,11 +56,11 @@ define([
             'detachMedia'
 
             // These are implemented in api.js, but should be here
-            //'getItemMeta',
-            //'getMeta',
-            //'getPlaylistItem',
-            //'getContainer',
-            //'playlistItem',
+            // 'getItemMeta',
+            // 'getMeta',
+            // 'getPlaylistItem',
+            // 'getContainer',
+            // 'playlistItem',
         ];
 
         var passthroughsChain = [

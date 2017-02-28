@@ -12,12 +12,12 @@ define([
     }
 
     _.extend(Cue.prototype, {
-        align : function(duration) {
+        align: function(duration) {
             // If a percentage, use it, else calculate the percentage
             if (this.time.toString().slice(-1) === '%') {
                 this.pct = this.time;
             } else {
-                var percentage = (this.time/duration) * 100;
+                var percentage = (this.time / duration) * 100;
                 this.pct = percentage + '%';
             }
 
@@ -69,7 +69,7 @@ define([
             });
         },
 
-        resetChapters : function() {
+        resetChapters: function() {
             _.each(this.cues, function (cue) {
                 if (cue.el.parentNode) {
                     cue.el.parentNode.removeChild(cue.el);

@@ -12,19 +12,18 @@ define([
     'utils/browser'
 ], function(getIsAndroidHLS, cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks) {
 
-    var clearTimeout = window.clearTimeout,
-        STALL_DELAY = 256,
-        MIN_DVR_DURATION = 120,
-        _isIE = utils.isIE(),
-        _isIE9 = utils.isIE(9),
-        _isMSIE = utils.isMSIE(),
-        _isMobile = utils.isMobile(),
-        _isFirefox = utils.isFF(),
-        _isAndroid = utils.isAndroidNative(),
-        _isIOS7 = utils.isIOS(7),
-        _isIOS8 = utils.isIOS(8),
-        _name = 'html5';
-
+    var clearTimeout = window.clearTimeout;
+    var STALL_DELAY = 256;
+    var MIN_DVR_DURATION = 120;
+    var _isIE = utils.isIE();
+    var _isIE9 = utils.isIE(9);
+    var _isMSIE = utils.isMSIE();
+    var _isMobile = utils.isMobile();
+    var _isFirefox = utils.isFF();
+    var _isAndroid = utils.isAndroidNative();
+    var _isIOS7 = utils.isIOS(7);
+    var _isIOS8 = utils.isIOS(8);
+    var _name = 'html5';
 
     function _setupListeners(eventsHash, videoTag) {
         utils.foreach(eventsHash, function(evt, evtCallback) {
@@ -39,7 +38,6 @@ define([
     }
 
     function VideoProvider(_playerId, _playerConfig) {
-
         // Current media state
         this.state = states.IDLE;
 
@@ -60,73 +58,43 @@ define([
         };
 
 
-        var _this = this,
-            _mediaEvents = {
-                //abort: _generalHandler,
-                click : _clickHandler,
-                durationchange: _durationChangeHandler,
-                //emptied: _generalHandler,
-                ended: _endedHandler,
-                error: _errorHandler,
-
-                //play: _onPlayHandler, // play is attempted, but hasn't necessarily started
-                loadstart: _onLoadStart,
-                loadeddata: _onLoadedData, // we have video tracks (text, audio, metadata)
-                loadedmetadata: _loadedMetadataHandler, // we have video dimensions
-                canplay: _canPlayHandler,
-                playing: _playingHandler,
-                progress: _progressHandler,
-                //canplaythrough: _generalHandler,
-
-                pause: _pauseHandler,
-                //ratechange: _generalHandler,
-                //readystatechange: _readyStateHandler,
-                seeked: _seekedHandler,
-                //seeking: _seekingHandler,
-                //stalled: _stalledHandler,
-                //suspend: _generalHandler,
-                timeupdate: _timeUpdateHandler,
-                volumechange: _volumeChangeHandler,
-                //waiting: _stalledHandler,
-
-                webkitbeginfullscreen: _fullscreenBeginHandler,
-                webkitendfullscreen: _fullscreenEndHandler
-            },
-            // DOM container
-            _container,
-            // Current duration
-            _duration,
-            // Current position
-            _position,
-            // Whether seeking is ready yet
-            _canSeek = false,
-            // Whether we have sent out the BUFFER_FULL event
-            _bufferFull,
-            // If we should seek on canplay
-            _delayedSeek = 0,
-            // Using setInterval to check buffered ranges
-            _playbackTimeout = -1,
-            // Last sent buffer amount
-            _buffered = -1,
-            // Quality levels
-            _levels,
-            // Current quality level index
-            _currentQuality = -1,
-            // android hls doesn't update currentTime so we want to skip the stall check since it always fails
-            _isAndroidHLS = null,
-            // mobile sdk configuration
-            _isSDK = !!_playerConfig.sdkplatform,
-            // webkit fullscreen media element state
-            _fullscreenState = false,
-            // function to call when resuming after pause
-            _beforeResumeHandler = utils.noop,
-            // MediaElement Tracks
-            _audioTracks = null,
-            _currentAudioTrackIndex = -1,
-            _activeCuePosition = -1,
-            _visualQuality = { level: {} },
-            // whether playback can start on iOS
-            _canPlay = false;
+        var _this = this;
+        var _mediaEvents = {
+            click: _clickHandler,
+            durationchange: _durationChangeHandler,
+            ended: _endedHandler,
+            error: _errorHandler,
+            loadstart: _onLoadStart,
+            loadeddata: _onLoadedData, // we have video tracks (text, audio, metadata)
+            loadedmetadata: _loadedMetadataHandler, // we have video dimensions
+            canplay: _canPlayHandler,
+            playing: _playingHandler,
+            progress: _progressHandler,
+            pause: _pauseHandler,
+            seeked: _seekedHandler,
+            timeupdate: _timeUpdateHandler,
+            volumechange: _volumeChangeHandler,
+            webkitbeginfullscreen: _fullscreenBeginHandler,
+            webkitendfullscreen: _fullscreenEndHandler
+        };
+        var _container;
+        var _duration;
+        var _position;
+        var _canSeek = false;
+        var _bufferFull;
+        var _delayedSeek = 0;
+        var _playbackTimeout = -1;
+        var _buffered = -1;
+        var _levels;
+        var _currentQuality = -1;
+        var _isAndroidHLS = null;
+        var _isSDK = !!_playerConfig.sdkplatform;
+        var _fullscreenState = false;
+        var _beforeResumeHandler = utils.noop;
+        var _audioTracks = null;
+        var _currentAudioTrackIndex = -1;
+        var _visualQuality = { level: {} };
+        var _canPlay = false;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -310,8 +278,8 @@ define([
 
         function _playingHandler() {
             _this.setState(states.PLAYING);
-            if(!_videotag.hasAttribute('jw-played')) {
-                _setAttribute('jw-played','');
+            if (!_videotag.hasAttribute('jw-played')) {
+                _setAttribute('jw-played', '');
             }
             if (_videotag.hasAttribute('jw-gesture-required')) {
                 _videotag.removeAttribute('jw-gesture-required');
@@ -385,7 +353,7 @@ define([
             _currentQuality = _pickInitialQuality(levels);
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
-                //_trigger?
+                // _trigger?
                 _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
                     levels: publicLevels,
                     currentQuality: _currentQuality
@@ -398,7 +366,7 @@ define([
             var label = _playerConfig.qualityLabel;
             if (levels) {
                 for (var i = 0; i < levels.length; i++) {
-                    if (levels[i]['default']) {
+                    if (levels[i].default) {
                         currentQuality = i;
                     }
                     if (label && levels[i].label === label) {
@@ -428,7 +396,6 @@ define([
         }
 
         function _completeLoad(startTime, duration) {
-
             _delayedSeek = 0;
             clearTimeout(_playbackTimeout);
 
@@ -462,12 +429,12 @@ define([
                 // results in html5.controller calling video.play()
                 _sendBufferFull();
                 // If we're still paused, then the tag isn't loading yet due to mobile interaction restrictions.
-                if(!_videotag.paused && _this.state !== states.PLAYING){
+                if (!_videotag.paused && _this.state !== states.PLAYING) {
                     _this.setState(states.LOADING);
                 }
             }
 
-            //in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
+            // in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
             if (utils.isIOS() && _this.getFullScreen()) {
                 _videotag.controls = true;
             }
@@ -480,7 +447,6 @@ define([
         function _setVideotagSource(source) {
             _audioTracks = null;
             _currentAudioTrackIndex = -1;
-            _activeCuePosition = -1;
             if (!_visualQuality.reason) {
                 _visualQuality.reason = 'initial choice';
                 _visualQuality.level = {};
@@ -522,7 +488,7 @@ define([
             var index = _videotag.seekable ? _videotag.seekable.length : 0;
             var start = Infinity;
 
-            while(index--) {
+            while (index--) {
                 start = Math.min(start, _videotag.seekable.start(index));
             }
             return start;
@@ -532,7 +498,7 @@ define([
             var index = _videotag.seekable ? _videotag.seekable.length : 0;
             var end = 0;
 
-            while(index--) {
+            while (index--) {
                 end = Math.max(end, _videotag.seekable.end(index));
             }
             return end;
@@ -564,7 +530,7 @@ define([
             _levels = item.sources;
             _currentQuality = _pickInitialQuality(item.sources);
             // the loadeddata event determines the mediaType for HLS sources
-            if(item.sources.length && item.sources[0].type !== 'hls') {
+            if (item.sources.length && item.sources[0].type !== 'hls') {
                 this.sendMediaType(item.sources);
             }
 
@@ -578,7 +544,7 @@ define([
         this.load = function(item) {
             _setLevels(item.sources);
 
-            if(item.sources.length && item.sources[0].type !== 'hls') {
+            if (item.sources.length && item.sources[0].type !== 'hls') {
                 this.sendMediaType(item.sources);
             }
             if (!_isMobile || _videotag.hasAttribute('jw-played')) {
@@ -638,7 +604,7 @@ define([
                 try {
                     _this.seeking = true;
                     _videotag.currentTime = seekPos;
-                } catch(e) {
+                } catch (e) {
                     _this.seeking = false;
                     _delayedSeek = seekPos;
                 }
@@ -659,7 +625,7 @@ define([
 
         this.volume = function(vol) {
             // volume must be 0.0 - 1.0
-            vol = utils.between(vol/100, 0, 1);
+            vol = utils.between(vol / 100, 0, 1);
 
             _videotag.volume = vol;
         };
@@ -690,7 +656,7 @@ define([
             if (!buffered || buffered.length === 0 || duration <= 0 || duration === Infinity) {
                 return 0;
             }
-            return utils.between(buffered.end(buffered.length-1) / duration, 0, 1);
+            return utils.between(buffered.end(buffered.length - 1) / duration, 0, 1);
         }
 
         function _endedHandler() {
@@ -768,9 +734,9 @@ define([
             this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
         };
 
-        this.setContainer = function(element) {
-            _container = element;
-            element.appendChild(_videotag);
+        this.setContainer = function(containerElement) {
+            _container = containerElement;
+            containerElement.appendChild(_videotag);
         };
 
         this.getContainer = function() {
@@ -832,9 +798,9 @@ define([
             var fitVideoUsingTransforms = _isIE || _isIOS7 || _isIOS8 || (_isAndroid && !_isFirefox);
             if (fitVideoUsingTransforms) {
                 // Use transforms to center and scale video in container
-                var x = - Math.floor(_videotag.videoWidth  / 2 + 1);
-                var y = - Math.floor(_videotag.videoHeight / 2 + 1);
-                var scaleX = Math.ceil(width  * 100 / _videotag.videoWidth)  / 100;
+                var x = -Math.floor(_videotag.videoWidth / 2 + 1);
+                var y = -Math.floor(_videotag.videoHeight / 2 + 1);
+                var scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
                 var scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
                 if (stretching === 'none') {
                     scaleX = scaleY = 1;
@@ -843,10 +809,10 @@ define([
                 } else if (stretching === 'uniform') {
                     scaleX = scaleY = Math.min(scaleX, scaleY);
                 }
-                style.width  = _videotag.videoWidth;
+                style.width = _videotag.videoWidth;
                 style.height = _videotag.videoHeight;
                 style.top = style.left = '50%';
-                style.margin  = 0;
+                style.margin = 0;
                 cssUtils.transform(_videotag,
                     'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
             }
@@ -871,19 +837,17 @@ define([
                 });
 
                 if (status instanceof utils.Error) {
-                    //object can't go fullscreen
+                    // object can't go fullscreen
                     return false;
                 }
-
                 return _this.getFullScreen();
+            }
 
-            } else {
-                var exitFullscreen =
-                    _videotag.webkitExitFullscreen ||
-                    _videotag.webkitExitFullScreen;
-                if (exitFullscreen) {
-                    exitFullscreen.apply(_videotag);
-                }
+            var exitFullscreen =
+                _videotag.webkitExitFullscreen ||
+                _videotag.webkitExitFullScreen;
+            if (exitFullscreen) {
+                exitFullscreen.apply(_videotag);
             }
 
             return state;
@@ -931,7 +895,7 @@ define([
         };
 
         this.getName = function() {
-            return { name : _name };
+            return { name: _name };
         };
         this.setCurrentAudioTrack = _setCurrentAudioTrack;
 
@@ -951,7 +915,7 @@ define([
                         break;
                     }
                 }
-                if(_currentAudioTrackIndex === -1) {
+                if (_currentAudioTrackIndex === -1) {
                     _currentAudioTrackIndex = 0;
                     tracks[_currentAudioTrackIndex].enabled = true;
                 }
@@ -990,23 +954,23 @@ define([
 
         function _setMediaType() {
             // Send mediaType when format is HLS. Other types are handled earlier by default.js.
-            if(_levels[0].type === 'hls') {
+            if (_levels[0].type === 'hls') {
                 var mediaType = 'video';
                 if (_videotag.videoHeight === 0) {
                     mediaType = 'audio';
                 }
-                _this.trigger('mediaType', {mediaType: mediaType});
+                _this.trigger('mediaType', { mediaType: mediaType });
             }
         }
     }
 
     // Register provider
-    var F = function(){};
+    var F = function() {};
     F.prototype = DefaultProvider;
     VideoProvider.prototype = new F();
 
     VideoProvider.getName = function() {
-        return { name : 'html5' };
+        return { name: 'html5' };
     };
 
     return VideoProvider;

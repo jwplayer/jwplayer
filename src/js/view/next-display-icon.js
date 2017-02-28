@@ -10,11 +10,11 @@ define([
             iconName: 'next',
             ariaLabel: model.get('localization').next
         }));
-        this.iconUI = new UI (this.el).on('click tap', function() {
+        this.iconUI = new UI(this.el).on('click tap', function() {
             api.next();
         });
         this.el.style.display = 'none';
-        model.on('change:nextUp', function(model, nextUp) {
+        model.on('change:nextUp', function(nextUpChangeModel, nextUp) {
             this.el.style.display = nextUp ? '' : 'none';
         }, this);
     };

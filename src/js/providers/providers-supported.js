@@ -16,25 +16,23 @@ define([
             name: 'html5',
             supports: function (source) {
                 var MimeTypes = {
-                    'aac': 'audio/mp4',
-                    'mp4': 'video/mp4',
-                    'f4v': 'video/mp4',
-                    'm4v': 'video/mp4',
-                    'mov': 'video/mp4',
-                    //'m4a': 'audio/x-m4a', // converted to aac by source.js
-                    'mp3': 'audio/mpeg',
-                    'mpeg': 'audio/mpeg',
-                    'ogv': 'video/ogg',
-                    'ogg': 'video/ogg',
-                    'oga': 'video/ogg',
-                    'vorbis': 'video/ogg',
-                    'webm': 'video/webm',
-
+                    aac: 'audio/mp4',
+                    mp4: 'video/mp4',
+                    f4v: 'video/mp4',
+                    m4v: 'video/mp4',
+                    mov: 'video/mp4',
+                    mp3: 'audio/mpeg',
+                    mpeg: 'audio/mpeg',
+                    ogv: 'video/ogg',
+                    ogg: 'video/ogg',
+                    oga: 'video/ogg',
+                    vorbis: 'video/ogg',
+                    webm: 'video/webm',
                     // The following are not expected to work in Chrome
-                    'f4a': 'video/aac',
-                    'm3u8': 'application/vnd.apple.mpegurl',
-                    'm3u': 'application/vnd.apple.mpegurl',
-                    'hls': 'application/vnd.apple.mpegurl'
+                    f4a: 'video/aac',
+                    m3u8: 'application/vnd.apple.mpegurl',
+                    m3u: 'application/vnd.apple.mpegurl',
+                    hls: 'application/vnd.apple.mpegurl'
                 };
 
                 var file = source.file;
@@ -68,17 +66,17 @@ define([
             name: 'flash',
             supports: function (source) {
                 var flashExtensions = {
-                    'flv': 'video',
-                    'f4v': 'video',
-                    'mov': 'video',
-                    'm4a': 'video',
-                    'm4v': 'video',
-                    'mp4': 'video',
-                    'aac': 'video',
-                    'f4a': 'video',
-                    'mp3': 'sound',
-                    'mpeg': 'sound',
-                    'smil': 'rtmp'
+                    flv: 'video',
+                    f4v: 'video',
+                    mov: 'video',
+                    m4a: 'video',
+                    m4v: 'video',
+                    mp4: 'video',
+                    aac: 'video',
+                    f4a: 'video',
+                    mp3: 'sound',
+                    mpeg: 'sound',
+                    smil: 'rtmp'
                 };
                 var PLAYABLE = _.keys(flashExtensions);
                 if (!utils.isFlashSupported()) {

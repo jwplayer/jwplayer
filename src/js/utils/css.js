@@ -9,7 +9,9 @@ define([
         if (typeof styles === 'object') {
             var style;
             for (style in styles) {
-                break;
+                if (Object.prototype.hasOwnProperty.call(styles, style)) {
+                    break;
+                }
             }
             if (!style) {
                 return;
@@ -34,16 +36,22 @@ define([
         var style;
         var cssRules = {};
         for (style in styles) {
-            cssRules[style] = _styleValue(style, styles[style]);
+            if (Object.prototype.hasOwnProperty.call(styles, style)) {
+                cssRules[style] = _styleValue(style, styles[style]);
+            }
         }
 
         for (var i = 0; i < elements.length; i++) {
-            var element = elements[i], styleName;
+            var element = elements[i];
+            var styleName;
+
             if (element !== undefined && element !== null) {
                 for (style in cssRules) {
-                    styleName = _styleAttributeName(style);
-                    if (element.style[styleName] !== cssRules[style]) {
-                        element.style[styleName] = cssRules[style];
+                    if (Object.prototype.hasOwnProperty.call(cssRules, style)) {
+                        styleName = _styleAttributeName(style);
+                        if (element.style[styleName] !== cssRules[style]) {
+                            element.style[styleName] = cssRules[style];
+                        }
                     }
                 }
             }
@@ -64,7 +72,7 @@ define([
         }
         var importantString = important ? ' !important' : '';
 
-        //string
+        // string
         if (typeof value === 'string' && isNaN(value)) {
             if ((/png|gif|jpe?g/i).test(value) && value.indexOf('url') < 0) {
                 return 'url(' + value + ')';
@@ -116,10 +124,10 @@ define([
     };
 
     return {
-        css : _css,
-        style : _style,
-        clearCss : styleLoader.clear,
-        transform : transform,
-        hexToRgba : hexToRgba
+        css: _css,
+        style: _style,
+        clearCss: styleLoader.clear,
+        transform: transform,
+        hexToRgba: hexToRgba
     };
 });

@@ -11,7 +11,7 @@ define([
 
     function onMediaModel(model, mediaModel) {
         mediaModel.off('change:mediaType', null, this);
-        mediaModel.on('change:mediaType', function(mediaModel, mediaType) {
+        mediaModel.on('change:mediaType', function(mediaTypeChangeModel, mediaType) {
             if (mediaType === 'audio') {
                 this.setImage(model.get('playlistItem').image);
             }
@@ -25,10 +25,10 @@ define([
         if (delayPosterLoad) {
             this.setImage(null);
             model.off('change:state', null, this);
-            model.on('change:state', function(model, state) {
+            model.on('change:state', function(stateChangeModel, state) {
                 if (state === 'complete' || state === 'idle' || state === 'error') {
                     this.setImage(playlistItem.image);
-                    this.resize(null, null, model.get('stretching'));
+                    this.resize(null, null, stateChangeModel.get('stretching'));
                 }
             }, this);
             return;

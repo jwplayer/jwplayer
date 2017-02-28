@@ -15,7 +15,7 @@ define([
 
     _.extend(DisplayContainer.prototype, {
         element: function() {
-          return this.el;
+            return this.el;
         }
     });
 

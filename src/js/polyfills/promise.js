@@ -4,37 +4,37 @@ define(['utils/underscore'], function(_) {
 
     // ** THIS POLYFILL BREAKS WEBPACK **
     // Use polyfill for setImmediate for performance gains
-    //var asap = (typeof setImmediate === 'function' && setImmediate) ||
-        //function(fn) { setTimeout(fn, 1); };
+    // var asap = (typeof setImmediate === 'function' && setImmediate) ||
+        // function(fn) { setTimeout(fn, 1); };
     var asap = _.defer;
 
     // Polyfill for Function.prototype.bind
     function bind(fn, thisArg) {
         return function() {
             fn.apply(thisArg, arguments);
-        }
+        };
     }
 
-    var isArray = Array.isArray || function(value) { return Object.prototype.toString.call(value) === "[object Array]" };
+    var isArray = Array.isArray || function(value) { return Object.prototype.toString.call(value) === '[object Array]'; };
 
     function Promise(fn) {
         if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new');
         if (typeof fn !== 'function') throw new TypeError('not a function');
         this._state = null;
         this._value = null;
-        this._deferreds = []
+        this._deferreds = [];
 
-        doResolve(fn, bind(resolve, this), bind(reject, this))
+        doResolve(fn, bind(resolve, this), bind(reject, this));
     }
 
     function handle(deferred) {
         var me = this;
         if (this._state === null) {
             this._deferreds.push(deferred);
-            return
+            return;
         }
         asap(function () {
-            var cb = me._state ? deferred.onFulfilled : deferred.onRejected
+            var cb = me._state ? deferred.onFulfilled : deferred.onRejected;
             if (cb === null) {
                 (me._state ? deferred.resolve : deferred.reject)(me._value);
                 return;
@@ -48,11 +48,11 @@ define(['utils/underscore'], function(_) {
                 return;
             }
             deferred.resolve(ret);
-        })
+        });
     }
 
     function resolve(newValue) {
-        try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+        try { // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
             if (newValue === this) throw new TypeError('A promise cannot be resolved with itself.');
             if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
                 var then = newValue.then;
@@ -100,7 +100,7 @@ define(['utils/underscore'], function(_) {
                 if (done) return;
                 done = true;
                 onRejected(reason);
-            })
+            });
         } catch (ex) {
             if (done) return;
             done = true;
@@ -116,7 +116,7 @@ define(['utils/underscore'], function(_) {
         var me = this;
         return new Promise(function (resolve, reject) {
             handle.call(me, new Handler(onFulfilled, onRejected, resolve, reject));
-        })
+        });
     };
 
     Promise.all = function () {
@@ -132,7 +132,7 @@ define(['utils/underscore'], function(_) {
                         var then = val.then;
                         if (typeof then === 'function') {
                             then.call(val, function (val) {
-                                res(i, val)
+                                res(i, val);
                             }, reject);
                             return;
                         }

@@ -18,9 +18,9 @@ define([
 ], function(_) {
 
     var array = [];
-    //var push = array.push;
+    // var push = array.push;
     var slice = array.slice;
-    //var splice = array.splice;
+    // var splice = array.splice;
 
     var Events = {
 
@@ -30,7 +30,7 @@ define([
             if (!eventsApi(this, 'on', name, [callback, context]) || !callback) return this;
             this._events || (this._events = {});
             var events = this._events[name] || (this._events[name] = []);
-            events.push({callback: callback, context: context});
+            events.push({ callback: callback, context: context });
             return this;
         },
 

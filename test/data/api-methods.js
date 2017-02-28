@@ -44,7 +44,7 @@ define({
     getStretching: null,
     getVisualQuality: null,
     getVolume: null,
-    getVisibility: null,
+    getViewable: null,
     getWidth: null,
     isBeforeComplete: null,
     isBeforePlay: null,

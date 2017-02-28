@@ -4,16 +4,11 @@ define([
     'utils/underscore',
     'events/events'
 ], function(SetupSteps, Events, _, events) {
-
-
     var Setup = function(_api, _model, _view, _setPlaylist) {
-        var _this = this,
-            _setupFailureTimeout;
-
+        var _this = this;
+        var _setupFailureTimeout;
         var _queue = SetupSteps.getQueue();
-
         var _errorTimeoutSeconds = 30;
-
 
         this.start = function () {
             _setupFailureTimeout = setTimeout(_setupTimeoutHandler, _errorTimeoutSeconds * 1000);

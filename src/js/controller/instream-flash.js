@@ -66,7 +66,7 @@ define([
 
             this.swf.triggerFlash('instream:init');
 
-            this.applyProviderListeners = function(provider){
+            this.applyProviderListeners = function(provider) {
                 this.model.on('change:volume', function(data, value) {
                     provider.volume(value);
                 }, this);
@@ -90,10 +90,12 @@ define([
 
         stateHandler: function(evt) {
             switch (evt.newstate) {
-            case states.PLAYING:
-            case states.PAUSED:
-                this._adModel.set('state', evt.newstate);
-                break;
+                case states.PLAYING:
+                case states.PAUSED:
+                    this._adModel.set('state', evt.newstate);
+                    break;
+                default:
+                    break;
             }
         },
 

@@ -2,13 +2,12 @@ define([
     'utils/underscore',
     'utils/backbone.events'
 ], function(_, Events) {
-
-    var SimpleModel = _.extend({
-        'get' : function (attr) {
+    return _.extend({
+        get: function (attr) {
             this.attributes = this.attributes || {};
             return this.attributes[attr];
         },
-        'set' : function (attr, val) {
+        set: function (attr, val) {
             this.attributes = this.attributes || {};
 
             if (this.attributes[attr] === val) {
@@ -18,10 +17,8 @@ define([
             this.attributes[attr] = val;
             this.trigger('change:' + attr, this, val, oldVal);
         },
-        'clone' : function() {
+        clone: function() {
             return _.clone(this.attributes);
         }
     }, Events);
-
-    return SimpleModel;
 });

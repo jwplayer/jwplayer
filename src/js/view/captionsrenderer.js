@@ -4,6 +4,8 @@ define([
     'events/states',
     'utils/underscore'
 ], function(utils, cssUtils, states, _) {
+    /** Component that renders the actual captions on screen. **/
+    var CaptionsRenderer;
     var _style = cssUtils.style;
 
     var _defaults = {
@@ -22,24 +24,16 @@ define([
         preprocessor: _.identity
     };
 
-    /** Component that renders the actual captions on screen. **/
-    var CaptionsRenderer = function (_model) {
+    CaptionsRenderer = function (_model) {
 
-        var _options = {},
-        // array of cues
-            _captionsTrack,
-
-        // current cues
-            _currentCues,
-
-        // last time/seek event
-            _timeEvent,
-
-        // display hierarchy
-            _display,
-            _captionsWindow,
-            _textContainer,
-            _VTTRenderer;
+        var _options = {};
+        var _captionsTrack;
+        var _currentCues;
+        var _timeEvent;
+        var _display;
+        var _captionsWindow;
+        var _textContainer;
+        var _VTTRenderer;
 
         _display = document.createElement('div');
         _display.className = 'jw-captions jw-reset';
@@ -52,8 +46,8 @@ define([
             _display.className = 'jw-captions jw-reset';
         };
 
-        /** Assign list of captions to the renderer. **/
-        this.populate = function(captions) {
+        // Assign list of captions to the renderer
+        this.populate = function (captions) {
             _currentCues = [];
             _captionsTrack = captions;
             if (!captions) {
@@ -65,11 +59,12 @@ define([
         };
 
         this.resize = function () {
-            var width = _display.clientWidth,
-                scale = Math.pow(width / 400, 0.6);
+            var width = _display.clientWidth;
+            var scale = Math.pow(width / 400, 0.6);
+
             if (scale) {
                 var size = _options.fontSize * scale;
-                var fontSize = Math.floor(size*2)/2;
+                var fontSize = Math.floor(size * 2) / 2;
 
                 if (_model.get('renderCaptionsNatively')) {
                     _setShadowDOMFontSize(_model.get('id'), fontSize);
@@ -82,15 +77,16 @@ define([
             this.renderCues(true);
         };
 
-        this.renderCues = function(updateBoxPosition) {
+        this.renderCues = function (updateBoxPosition) {
             updateBoxPosition = !!updateBoxPosition;
-            if(_VTTRenderer) {
+            if (_VTTRenderer) {
                 _VTTRenderer.WebVTT.processCues(window, _currentCues, _display, updateBoxPosition);
             }
         };
 
-        this.selectCues = function(track, timeEvent) {
-            var cues, pos;
+        this.selectCues = function (track, timeEvent) {
+            var cues;
+            var pos;
 
             if (!track || !track.data || !timeEvent) {
                 return;
@@ -107,13 +103,13 @@ define([
             this.renderCues(true);
         };
 
-        this.getCurrentCues = function(allCues, pos) {
+        this.getCurrentCues = function (allCues, pos) {
             return _.filter(allCues, function (cue) {
                 return pos >= (cue.startTime) && (!cue.endTime || pos <= cue.endTime);
             });
         };
 
-        this.updateCurrentCues = function(cues) {
+        this.updateCurrentCues = function (cues) {
             // Render with vtt.js if there are cues, clear if there are none
             if (!cues.length) {
                 _currentCues = [];
@@ -125,7 +121,7 @@ define([
             return _currentCues;
         };
 
-        this.getAlignmentPosition = function(track, timeEvent) {
+        this.getAlignmentPosition = function (track, timeEvent) {
             var source = track.source;
             var metadata = timeEvent.metadata;
 
@@ -133,9 +129,8 @@ define([
             if (source) {
                 if (metadata && _.isNumber(metadata[source])) {
                     return metadata[source];
-                } else {
-                    return false;
                 }
+                return;
             } else if (track.embedded && timeEvent.duration < 0) {
                 // In DVR mode, need to make alignmentPosition positive for captions to work
                 return timeEvent.position - timeEvent.duration;
@@ -156,7 +151,7 @@ define([
         };
 
         /** Constructor for the renderer. **/
-        this.setup = function(playerElementId, options) {
+        this.setup = function (playerElementId, options) {
             _captionsWindow = document.createElement('div');
             _textContainer = document.createElement('span');
             _captionsWindow.className = 'jw-captions-window jw-reset';
@@ -164,18 +159,18 @@ define([
 
             _options = _.extend({}, _defaults, options);
 
-            var fontOpacity = _options.fontOpacity,
-                windowOpacity = _options.windowOpacity,
-                edgeStyle = _options.edgeStyle,
-                bgColor = _options.backgroundColor,
-                windowStyle = {},
-                textStyle = {
-                    color: cssUtils.hexToRgba(_options.color, fontOpacity),
-                    fontFamily: _options.fontFamily,
-                    fontStyle: _options.fontStyle,
-                    fontWeight: _options.fontWeight,
-                    textDecoration: _options.textDecoration
-                };
+            var fontOpacity = _options.fontOpacity;
+            var windowOpacity = _options.windowOpacity;
+            var edgeStyle = _options.edgeStyle;
+            var bgColor = _options.backgroundColor;
+            var windowStyle = {};
+            var textStyle = {
+                color: cssUtils.hexToRgba(_options.color, fontOpacity),
+                fontFamily: _options.fontFamily,
+                fontStyle: _options.fontStyle,
+                fontWeight: _options.fontWeight,
+                textDecoration: _options.textDecoration
+            };
 
             if (windowOpacity) {
                 windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
@@ -200,7 +195,7 @@ define([
             _model.set('captions', _options);
         };
 
-        this.element = function() {
+        this.element = function () {
             return _display;
         };
 
@@ -249,9 +244,9 @@ define([
                 style.textShadow = '0 -2px 1px ' + color;
             } else if (option === 'uniform') { // outline
                 style.textShadow = '-2px 0 1px ' + color + ',2px 0 1px ' + color +
-                ',0 -2px 1px ' + color + ',0 2px 1px ' + color + ',-1px 1px 1px ' +
-                color + ',1px 1px 1px ' + color + ',1px -1px 1px ' + color +
-                ',1px 1px 1px ' + color;
+                    ',0 -2px 1px ' + color + ',0 2px 1px ' + color + ',-1px 1px 1px ' +
+                    color + ',1px 1px 1px ' + color + ',1px -1px 1px ' + color +
+                    ',1px 1px 1px ' + color;
             }
         }
 
@@ -262,35 +257,35 @@ define([
 
         function _itemReadyHandler() {
             // don't load the polyfill or do unnecessary work if rendering natively
-            if(!_model.get('renderCaptionsNatively')) {
+            if (!_model.get('renderCaptionsNatively')) {
                 require.ensure(['polyfills/vtt'], function (require) {
                     _VTTRenderer = require('polyfills/vtt');
                 }, 'polyfills.vttrenderer');
             }
         }
 
-        _model.on('change:playlistItem', function() {
+        _model.on('change:playlistItem', function () {
             _timeEvent = null;
             _currentCues = [];
         }, this);
 
-        _model.on('change:captionsTrack', function(model, captionsTrack) {
+        _model.on('change:captionsTrack', function (model, captionsTrack) {
             this.populate(captionsTrack);
             // TODO: handle with VTT.js
         }, this);
 
-        _model.mediaController.on('seek', function() {
+        _model.mediaController.on('seek', function () {
             _currentCues = [];
         }, this);
 
         _model.mediaController.on('time seek', _timeChange, this);
 
-        _model.mediaController.on('subtitlesTrackData', function() {
+        _model.mediaController.on('subtitlesTrackData', function () {
             // update captions after a provider's subtitle track changes
             this.selectCues(_captionsTrack, _timeEvent);
         }, this);
 
-        _model.on('change:state', function(model, state) {
+        _model.on('change:state', function (model, state) {
             switch (state) {
                 case states.IDLE:
                 case states.ERROR:

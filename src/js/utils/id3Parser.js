@@ -31,13 +31,13 @@ define([
             switch (c >> 4) {
                 case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
                 // 0xxxxxxx
-                out += String.fromCharCode(c);
-                break;
+                    out += String.fromCharCode(c);
+                    break;
                 case 12: case 13:
                 // 110x xxxx   10xx xxxx
-                char2 = array[i++];
-                out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
-                break;
+                    char2 = array[i++];
+                    out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                    break;
                 case 14:
                     // 1110 xxxx  10xx xxxx  10xx xxxx
                     char2 = array[i++];
@@ -72,9 +72,9 @@ define([
     id3Parser.syncSafeInt = function(sizeArray) {
         var size = id3Parser.arrayToInt(sizeArray);
         return (size & 0x0000007F) |
-            ( (size & 0x00007F00) >> 1 ) |
-            ( (size & 0x007F0000) >> 2 ) |
-            ( (size & 0x7F000000) >> 3 );
+            ((size & 0x00007F00) >> 1) |
+            ((size & 0x007F0000) >> 2) |
+            ((size & 0x7F000000) >> 3);
     };
     
     id3Parser.arrayToInt = function(array) {
@@ -132,9 +132,9 @@ define([
                             array.subarray(startPos, startPos += infoDelimiterPosition), 0);
                         if (cue.value.key === 'PRIV') {
                             if (info === 'com.apple.streaming.transportStreamTimestamp') {
-                                var pts_33_bit =  id3Parser.syncSafeInt(
+                                var pts_33_bit = id3Parser.syncSafeInt(
                                         array.subarray(startPos, startPos += 4)) & 0x00000001;
-                                var transportStreamTimestamp =  id3Parser.syncSafeInt(
+                                var transportStreamTimestamp = id3Parser.syncSafeInt(
                                     array.subarray(startPos, startPos += 4));
                                 if (pts_33_bit) {
                                     transportStreamTimestamp += 0x100000000;

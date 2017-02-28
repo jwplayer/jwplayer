@@ -5,10 +5,8 @@ define([
     'providers/providers-supported',
     'plugins/plugins'
 ], function(Api, _, Providers, ProvidersSupported, plugins) {
-
-    var _instances = [],
-        _uniqueIndex = 0;
-
+    var _instances = [];
+    var _uniqueIndex = 0;
 
     var selectPlayer = function (query) {
         var player;
@@ -60,7 +58,7 @@ define([
     };
 
     var _removePlayer = function (api) {
-        for (var i=_instances.length; i--;) {
+        for (var i = _instances.length; i--;) {
             if (_instances[i].uniqueId === api.uniqueId) {
                 _instances.splice(i, 1);
                 break;
@@ -69,10 +67,10 @@ define([
     };
 
     var api = {
-        selectPlayer : selectPlayer,
+        selectPlayer: selectPlayer,
         registerProvider: Providers.registerProvider,
         availableProviders: ProvidersSupported,
-        registerPlugin : plugins.registerPlugin
+        registerPlugin: plugins.registerPlugin
     };
 
     selectPlayer.api = api;

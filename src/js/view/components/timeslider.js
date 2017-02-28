@@ -8,13 +8,11 @@ define([
     'view/components/chapters.mixin',
     'view/components/thumbnails.mixin'
 ], function(_, utils, Constants, UI, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
-
     var TimeTip = Tooltip.extend({
-        setup : function() {
-
+        setup: function() {
             this.text = document.createElement('span');
             this.text.className = 'jw-text jw-reset';
-            this.img  = document.createElement('div');
+            this.img = document.createElement('div');
             this.img.className = 'jw-reset';
             this.resetWidth();
             this.textLength = 0;
@@ -30,21 +28,21 @@ define([
             this.addContent(wrapper);
         },
 
-        image : function(style) {
+        image: function(style) {
             utils.style(this.img, style);
         },
 
-        update : function(txt) {
+        update: function(txt) {
             this.text.innerHTML = txt;
         },
-        getWidth : function () {
+        getWidth: function () {
             if (!this.containerWidth) {
                 this.setWidth();
             }
 
             return this.containerWidth;
         },
-        setWidth : function (width) {
+        setWidth: function (width) {
             if (width) {
                 this.containerWidth = width + 16; // add a little padding so the image isn't flush against the edge
                 return;
@@ -56,17 +54,17 @@ define([
 
             this.containerWidth = utils.bounds(this.container).width;
         },
-        resetWidth : function () {
+        resetWidth: function () {
             this.containerWidth = 0;
         }
     });
 
     function reasonInteraction() {
-        return {reason: 'interaction'};
+        return { reason: 'interaction' };
     }
 
     var TimeSlider = Slider.extend({
-        constructor : function(_model, _api) {
+        constructor: function(_model, _api) {
             this._model = _model;
             this._api = _api;
 
@@ -89,7 +87,7 @@ define([
         },
 
         // These overwrite Slider methods
-        setup : function() {
+        setup: function() {
             Slider.prototype.setup.apply(this, arguments);
 
             if (this._model.get('playlistItem')) {
@@ -99,7 +97,7 @@ define([
             this.elementRail.appendChild(this.timeTip.element());
 
             // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
-            this.elementUI = new UI(this.el, {'useHover': true, 'useMove': true})
+            this.elementUI = new UI(this.el, { useHover: true, useMove: true })
                 .on('drag move over', this.showTimeTooltip.bind(this), this)
                 .on('dragEnd out', this.hideTimeTooltip.bind(this), this);
         },
@@ -123,11 +121,11 @@ define([
             this.seekThrottled();
             Slider.prototype.update.apply(this, arguments);
         },
-        dragStart : function() {
+        dragStart: function() {
             this._model.set('scrubbing', true);
             Slider.prototype.dragStart.apply(this, arguments);
         },
-        dragEnd : function() {
+        dragEnd: function() {
             Slider.prototype.dragEnd.apply(this, arguments);
             this._model.set('scrubbing', false);
             this.dragJustReleased = true;
@@ -135,13 +133,13 @@ define([
 
 
         // Event Listeners
-        onSeeked : function () {
+        onSeeked: function () {
             // When we are done scrubbing there will be a final seeked event
             if (this._model.get('scrubbing')) {
                 this.performSeek();
             }
         },
-        onBuffer : function (model, pct) {
+        onBuffer: function (model, pct) {
             this.updateBuffer(pct);
         },
         onPosition : function(model, position) {
@@ -152,10 +150,10 @@ define([
             }
             this.updateTime(position, model.get('duration'));
         },
-        onDuration : function(model, duration) {
+        onDuration: function(model, duration) {
             this.updateTime(model.get('position'), duration);
         },
-        updateTime : function(position, duration) {
+        updateTime: function(position, duration) {
             var pct = 0;
             if (duration) {
                 var streamType = this._model.get('streamType');
@@ -167,7 +165,7 @@ define([
             }
             this.render(pct);
         },
-        onPlaylistItem : function (model, playlistItem) {
+        onPlaylistItem: function (model, playlistItem) {
             this.reset();
 
             model.mediaModel.on('seeked', this.onSeeked, this);
@@ -176,14 +174,13 @@ define([
             _.each(tracks, function (track) {
                 if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
                     this.loadThumbnails(track.file);
-                }
-                else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {
+                } else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {
                     this.loadChapters(track.file);
                 }
             }, this);
         },
 
-        performSeek : function() {
+        performSeek: function() {
             var percent = this.seekTo;
             var duration = this._model.get('duration');
             var streamType = this._model.get('streamType');
@@ -261,14 +258,14 @@ define([
                 timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
             }
             var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
-            utils.style(timeTip.el, {'left': safePct + '%'});
+            utils.style(timeTip.el, { left: safePct + '%' });
         },
 
         hideTimeTooltip: function() {
             utils.removeClass(this.timeTip.el, 'jw-open');
         },
 
-        reset : function() {
+        reset: function() {
             this.resetChapters();
             this.resetThumbnails();
             this.timeTip.resetWidth();

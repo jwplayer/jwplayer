@@ -8,18 +8,17 @@ define([
 
     var PlayDisplayIcon = function(_model) {
         _.extend(this, Events);
-
         this.model = _model;
 
         this.el = utils.createElement(Template({
-          iconName: 'display',
-          ariaLabel: this.model.get('localization').playback
+            iconName: 'display',
+            ariaLabel: this.model.get('localization').playback
         }));
 
         var _this = this;
 
-        this.iconUI = new UI (this.el).on('click tap', function(evt) {
-          _this.trigger(evt.type);
+        this.iconUI = new UI(this.el).on('click tap', function(evt) {
+            _this.trigger(evt.type);
         });
 
         this.model.on('change:state', function(model, newstate) {
@@ -37,7 +36,7 @@ define([
                     case 'complete':
                         newstateLabel = localization.replay;
                         break;
-                    case 'error':
+                    default:
                         newstateLabel = '';
                         break;
                 }
@@ -52,7 +51,7 @@ define([
 
     _.extend(PlayDisplayIcon.prototype, {
         element: function() {
-          return this.el;
+            return this.el;
         }
     });
 
