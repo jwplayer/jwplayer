@@ -17,6 +17,7 @@ define([
             _provider,
             _beforecompleted = false,
             _attached = true,
+            _seeking = false,
             _currentProvider = utils.noop;
 
         this.mediaController = _.extend({}, Events);
@@ -114,12 +115,21 @@ define([
                     }
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
+                    if (_seeking) {
+                        return;
+                    }
                     mediaModel.set('position', data.position);
                     this.set('position', data.position);
                     if (_.isNumber(data.duration)) {
                         mediaModel.set('duration', data.duration);
                         this.set('duration', data.duration);
                     }
+                    break;
+                case events.JWPLAYER_MEDIA_SEEK:
+                    _seeking = true;
+                    break;
+                case events.JWPLAYER_MEDIA_SEEKED:
+                    _seeking = false;
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
