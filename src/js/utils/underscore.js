@@ -5,6 +5,12 @@
 
 // https://github.com/jashkenas/underscore/blob/1f4bf626f23a99f7a676f5076dc1b1475554c8f7/underscore.js
 
+/* eslint no-eq-null: 0 */
+/* eslint eqeqeq: 0 */
+/* eslint no-void: 0 */
+/* eslint guard-for-in: 0 */
+/* eslint no-constant-condition: 0 */
+
 define([], function() {
 
     // Establish the object that gets returned to break out of a loop iteration.
@@ -420,7 +426,7 @@ define([], function() {
             throw new TypeError;
         }
         args = slice.call(arguments, 2);
-        return bound = function() {
+        bound = function() {
             if (!(this instanceof bound)) {
                 return func.apply(context, args.concat(slice.call(arguments)));
             }
@@ -433,6 +439,7 @@ define([], function() {
             }
             return self;
         };
+        return bound;
     };
 
     // Partially apply a function by creating a version that has had some of its
@@ -499,7 +506,9 @@ define([], function() {
     // but if you'd like to disable the execution on the leading edge, pass
     // `{leading: false}`. To disable execution on the trailing edge, ditto.
     _.throttle = function(func, wait, options) {
-        var context, args, result;
+        var context;
+        var args;
+        var result;
         var timeout = null;
         var previous = 0;
         options || (options = {});
