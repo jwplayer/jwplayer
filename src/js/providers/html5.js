@@ -132,7 +132,7 @@ define([
         var _staleStreamTimeout = null;
         var _lastEndOfBuffer = null;
         var _stale = false;
-        var _endOfStream = false;
+        var _edgeOfLiveStream = false;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -369,7 +369,7 @@ define([
             }
 
             if (atEdgeOfLiveStream()) {
-                _endOfStream = true;
+                _edgeOfLiveStream = true;
                 if (checkStreamEnded()) {
                     return;
                 }
@@ -698,7 +698,7 @@ define([
             if (_videotag.currentTime === _position) {
                 _stalledHandler();
             } else {
-                _endOfStream = false;
+                _edgeOfLiveStream = false;
             }
         }
 
@@ -1039,7 +1039,7 @@ define([
         }
 
         function checkStreamEnded() {
-            if (_stale && _endOfStream) {
+            if (_stale && _edgeOfLiveStream) {
                 _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
                     message: 'The live stream is either down or has ended'
                 });
