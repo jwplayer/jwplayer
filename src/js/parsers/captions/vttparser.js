@@ -3,6 +3,16 @@
  */
 
 define(['parsers/captions/vttcue'], function(VTTCue) {
+    var percentRegex = /^([\d]{1,3})(\.[\d]*)?%$/;
+    var timestampRegex = /^(\d+):(\d{2})(:\d{2})?\.(\d{3})/;
+    var integerRegex = /^-?\d+$/;
+    var fullLineRegex = /\r\n|\n/;
+    var noteRegex = /^NOTE($|[ \t])/;
+    var removeTimestampRegex = /^[^\sa-zA-Z-]+/;
+    var colonDelimRegex = /:/;
+    var stringDelimRegex = /\s/;
+    var whitespaceRegex = /^\s+/;
+
     var VTTParser = function(window, decoder) {
         this.window = window;
         this.state = 'INITIAL';
@@ -32,7 +42,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             return (h | 0) * 3600 + (m | 0) * 60 + (s | 0) + (f | 0) / 1000;
         }
 
-        var m = input.match(/^(\d+):(\d{2})(:\d{2})?\.(\d{3})/);
+        var m = input.match(timestampRegex);
         if (!m) {
             return null;
         }
@@ -88,14 +98,13 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
         },
         // Accept a setting if its a valid (signed) integer.
         integer: function(k, v) {
-            if (/^-?\d+$/.test(v)) { // integer
+            if (integerRegex.test(v)) { // integer
                 this.set(k, parseInt(v, 10));
             }
         },
         // Accept a setting if its a valid percentage.
         percent: function(k, v) {
-            var m;
-            if ((m = v.match(/^([\d]{1,3})(\.[\d]*)?%$/))) {
+            if (v.match(percentRegex)) {
                 v = parseFloat(v);
                 if (v >= 0 && v <= 100) {
                     this.set(k, v);
@@ -139,7 +148,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                 throw new Error('Malformed timestamp: ' + oInput);
             }
             // Remove time stamp from input.
-            input = input.replace(/^[^\sa-zA-Z-]+/, '');
+            input = input.replace(removeTimestampRegex, '');
             return ts;
         }
 
@@ -187,7 +196,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                         settings.alt(k, v, ['start', center, 'end', 'left', 'right']);
                         break;
                 }
-            }, /:/, /\s/);
+            }, colonDelimRegex, stringDelimRegex);
 
             // Apply default values for any missing fields.
             cue.region = settings.get('region', null);
@@ -211,7 +220,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
         }
 
         function skipWhitespace() {
-            input = input.replace(/^\s+/, '');
+            input = input.replace(whitespaceRegex, '');
         }
 
         // 4.1 WebVTT cue timings.
@@ -356,7 +365,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                 var alreadyCollectedLine = false;
                 while (self.buffer) {
                     // We can't parse a line until we have the full line.
-                    if (!/\r\n|\n/.test(self.buffer)) {
+                    if (!fullLineRegex.test(self.buffer)) {
                         return this;
                     }
 
@@ -384,7 +393,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                             continue;
                         case 'ID':
                             // Check for the start of NOTE blocks.
-                            if (/^NOTE($|[ \t])/.test(line)) {
+                            if (noteRegex.test(line)) {
                                 self.state = 'NOTE';
                                 break;
                             }

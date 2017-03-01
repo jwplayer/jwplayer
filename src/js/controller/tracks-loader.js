@@ -94,10 +94,12 @@ define([
 
             parser.onflush = function() {
                 delete track.xhr;
+                console.timeEnd('vttparse');
                 successHandler(vttCues);
             };
 
             try {
+                console.time('vttparse');
                 parser.parse(text).flush();
             } catch (error) {
                 delete track.xhr;
