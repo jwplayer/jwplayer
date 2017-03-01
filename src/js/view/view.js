@@ -527,6 +527,8 @@ define([
 
         this.init = function() {
             _resize(_model.get('width'), _model.get('height'));
+            _lastWidth = 0;
+            _lastHeight = 0;
             _setContainerDimensions();
 
             // call user activity to set timeout for control to fade
