@@ -59,7 +59,7 @@ define([
         var _rightClickMenu;
         var _resizeMediaTimeout = -1;
         var _resizeContainerRequestId = -1;
-        var _delayResize = window.requestAnimationFrame ||
+        var _requestFrame = window.requestAnimationFrame ||
             function (rafFunc) {
                 return window.setTimeout(rafFunc, 17);
             };
@@ -268,6 +268,8 @@ define([
             _checkAudioMode(_model.get('height'));
             _setTimesliderFlags(breakPoint, _model.get('audioMode'));
 
+            _captionsRenderer.resize();
+
             _this.trigger(events.JWPLAYER_RESIZE, {
                 width: containerWidth,
                 height: containerHeight
@@ -287,7 +289,7 @@ define([
 
         function _responsiveListener() {
             _cancelDelayResize(_resizeContainerRequestId);
-            _resizeContainerRequestId = _delayResize(_setContainerDimensions);
+            _resizeContainerRequestId = _requestFrame(_setContainerDimensions);
         }
 
         // Set global colors, used by related plugin
@@ -443,8 +445,8 @@ define([
                 });
             }
 
-            this.onChangeSkin(_model, _model.get('skin'), '');
             _model.on('change:skin', this.onChangeSkin, this);
+            this.onChangeSkin(_model, _model.get('skin'));
 
             _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
 
@@ -459,9 +461,6 @@ define([
             _title.setup(_titleElement);
 
             _setupControls();
-
-            // call user activity to set timeout for control to fade
-            _userActivity();
 
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
@@ -480,12 +479,8 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
 
-            _model.on('change:errorEvent', _errorHandler);
-
             _model.on('change:controls', _onChangeControls);
             _onChangeControls(_model, _model.get('controls'));
-            _model.on('change:state', _stateHandler);
-            _model.on('change:duration', _setLiveMode, this);
 
             _model.on('change:flashBlocked', _onChangeFlashBlocked);
             _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
@@ -493,19 +488,19 @@ define([
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
 
-            _model.on('change:hideAdsControls', function (model, val) {
-                utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
-            });
-
             // set initial state
             if (_model.get('stretching')) {
                 _onStretchChange(_model, _model.get('stretching'));
             }
             // watch for changes
+            _model.on('change:state', _stateHandler);
+            _model.on('change:duration', _setLiveMode, this);
             _model.on('change:stretching', _onStretchChange);
-
-            _stateHandler(_model, states.IDLE);
             _model.on('change:fullscreen', _fullscreen);
+            _model.on('change:errorEvent', _errorHandler);
+            _model.on('change:hideAdsControls', function (model, val) {
+                utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
+            });
 
             _componentFadeListeners(_controlbar);
             _componentFadeListeners(_logo);
@@ -519,12 +514,6 @@ define([
                 });
             }
 
-            // This setTimeout allows the player to actually get embedded into the player
-            _api.on(events.JWPLAYER_READY, function () {
-                _resize(_model.get('width'), _model.get('height'));
-                _setContainerDimensions();
-            });
-
             if (!_.isUndefined(document.hidden)) {
                 _model.set('activeTab', !document.hidden);
                 document.addEventListener('visibilitychange', _visibilityChangeListener, false);
@@ -532,6 +521,18 @@ define([
                 // Default activeTab to true if the browser doesn't implement the visibility API
                 _model.set('activeTab', true);
             }
+
+            _model.set('viewSetup', true);
+        };
+
+        this.init = function() {
+            _resize(_model.get('width'), _model.get('height'));
+            _lastWidth = 0;
+            _lastHeight = 0;
+            _setContainerDimensions();
+
+            // call user activity to set timeout for control to fade
+            _userActivity();
         };
 
         function _onStretchChange(model, newVal) {
@@ -764,10 +765,6 @@ define([
                 playerStyle.height = playerHeight;
             }
 
-            if (_model.get('aspectratio')) {
-                _resizeAspectModeCaptions();
-            }
-
             _styles(_playerElement, playerStyle, true);
 
             _checkAudioMode(playerHeight);
@@ -839,12 +836,6 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
-
-            if (_model.get('aspectratio')) {
-                _resizeAspectModeCaptions();
-            }
-
-            _captionsRenderer.resize();
         }
 
         function _autoplayUnmute() {
@@ -1030,6 +1021,10 @@ define([
         }
 
         function _stateHandler(model, state) {
+            if (!_model.get('viewSetup')) {
+                return;
+            }
+
             _currentState = state;
             // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
             clearTimeout(_previewDisplayStateTimeout);
@@ -1037,9 +1032,9 @@ define([
             if (state === states.PLAYING) {
                 _stateUpdate(model, state);
             } else {
-                _previewDisplayStateTimeout = setTimeout(function () {
+                _previewDisplayStateTimeout = _requestFrame(function () {
                     _stateUpdate(model, state);
-                }, 33);
+                });
             }
             if (state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
@@ -1062,11 +1057,6 @@ define([
 
         function _dragging(model) {
             _stateHandler(model, model.get('state'));
-        }
-
-        function _resizeAspectModeCaptions() {
-            var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
-            _captionsRenderer.setContainerHeight(aspectRatioContainer.offsetHeight);
         }
 
         function createDisplayContainer() {
@@ -1176,17 +1166,20 @@ define([
                 height: _model.get('containerHeight') || 0
             };
 
-            // If we are using a dock, subtract that from the top
-            var dockButtons = _model.get('dock');
-            if (dockButtons && dockButtons.length && _model.get('controls')) {
-                bounds.y = _dock.element().clientHeight;
-                bounds.height -= bounds.y;
-            }
+            var controls = _model.get('controls');
+            if (controls) {
+                // If we are using a dock, subtract that from the top
+                var dockButtons = _model.get('dock');
+                if (dockButtons && dockButtons.length) {
+                    bounds.y = _dock.element().clientHeight;
+                    bounds.height -= bounds.y;
+                }
 
-            // Subtract controlbar from the bottom when using one
-            includeCB = includeCB || !utils.exists(includeCB);
-            if (includeCB && _model.get('controls')) {
-                bounds.height -= _controlbar.element().clientHeight;
+                // Subtract controlbar from the bottom when using one
+                includeCB = includeCB || !utils.exists(includeCB);
+                if (includeCB) {
+                    bounds.height -= _controlbar.element().clientHeight;
+                }
             }
 
             return bounds;
@@ -1199,6 +1192,7 @@ define([
         };
 
         this.destroy = function () {
+            this.off();
             clearTimeout(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
             clearTimeout(_controlsTimeout);

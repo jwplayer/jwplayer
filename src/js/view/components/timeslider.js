@@ -142,9 +142,9 @@ define([
         onBuffer: function (model, pct) {
             this.updateBuffer(pct);
         },
-        onPosition : function(model, position) {
-            if(this.dragJustReleased) {
-                //prevents firing an outdated position and causing the timeslider to jump back and forth
+        onPosition: function(model, position) {
+            if (this.dragJustReleased) {
+                // prevents firing an outdated position and causing the timeslider to jump back and forth
                 this.dragJustReleased = false;
                 return;
             }

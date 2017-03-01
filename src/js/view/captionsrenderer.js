@@ -59,7 +59,7 @@ define([
         };
 
         this.resize = function () {
-            var width = _display.clientWidth;
+            var width = _model.get('containerWidth');
             var scale = Math.pow(width / 400, 0.6);
 
             if (scale) {
@@ -142,12 +142,6 @@ define([
 
         this.clear = function () {
             utils.empty(_display);
-        };
-
-        this.setContainerHeight = function (height) {
-            _style(_display, {
-                height: height
-            });
         };
 
         /** Constructor for the renderer. **/

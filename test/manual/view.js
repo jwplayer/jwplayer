@@ -356,11 +356,8 @@ window.requireCallback = function(){
             var $wrapper = $('<div id="' + configuration.id+  '-wrapper" class="wrapper"></div>').append(view.element());
             $('body').append($wrapper);
 
-            // resize after layout to update breakpoint css
-            setTimeout(function() {
-                view.resize(mockModel.get('width'), mockModel.get('height'));
-                // provider.seek(11);
-            }, 100);
+            // init to update breakpoint css
+            view.init();
 
             // show next up
             var playlist = mockModel.get('playlist');

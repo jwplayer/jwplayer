@@ -14,6 +14,10 @@ define([
 
     function getQueue() {
         var Components = {
+            DEFERRED: {
+                method: _deferred,
+                depends: []
+            },
             LOAD_PROMISE_POLYFILL: {
                 method: _loadPromisePolyfill,
                 depends: []
@@ -22,36 +26,41 @@ define([
                 method: _loadBase64Polyfill,
                 depends: []
             },
+            LOAD_XO_POLYFILL: {
+                method: _loadIntersectionObserverPolyfill,
+                depends: []
+            },
             LOADED_POLYFILLS: {
                 method: _loadedPolyfills,
                 depends: [
                     'LOAD_PROMISE_POLYFILL',
-                    'LOAD_BASE64_POLYFILL'
+                    'LOAD_BASE64_POLYFILL',
+                    'LOAD_XO_POLYFILL'
                 ]
             },
             LOAD_PLUGINS: {
                 method: _loadPlugins,
-                depends: ['LOADED_POLYFILLS']
+                depends: ['LOAD_PROMISE_POLYFILL']
             },
             INIT_PLUGINS: {
                 method: _initPlugins,
                 depends: [
                     'LOAD_PLUGINS',
-                    // Init requires jw-overlays to be in the DOM
+                    // Plugins require jw-overlays to setup
                     'SETUP_VIEW'
                 ]
             },
             LOAD_SKIN: {
                 method: _loadSkin,
-                depends: ['LOADED_POLYFILLS']
+                depends: []
             },
             LOAD_PLAYLIST: {
                 method: _loadPlaylist,
-                depends: ['LOADED_POLYFILLS']
+                depends: ['LOAD_PROMISE_POLYFILL']
             },
             CHECK_FLASH: {
                 method: _checkFlash,
-                depends: ['LOADED_POLYFILLS']
+                depends: []
             },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
@@ -60,26 +69,32 @@ define([
             SETUP_VIEW: {
                 method: _setupView,
                 depends: [
-                    'LOAD_SKIN'
+                    'LOAD_SKIN',
+                    'LOAD_XO_POLYFILL'
                 ]
             },
             SET_ITEM: {
                 method: _setPlaylistItem,
                 depends: [
-                    'INIT_PLUGINS',
                     'FILTER_PLAYLIST'
                 ]
             },
             SEND_READY: {
                 method: _sendReady,
                 depends: [
-                    'SETUP_VIEW',
-                    'SET_ITEM'
+                    'LOADED_POLYFILLS',
+                    'INIT_PLUGINS',
+                    'SET_ITEM',
+                    'DEFERRED'
                 ]
             }
         };
 
         return Components;
+    }
+
+    function _deferred(resolve) {
+        setTimeout(resolve, 0);
     }
 
     function _loadPromisePolyfill(resolve) {
@@ -101,6 +116,19 @@ define([
             }, 'polyfills.base64');
         } else {
             resolve();
+        }
+    }
+
+    function _loadIntersectionObserverPolyfill(resolve) {
+        if ('IntersectionObserver' in window &&
+            'IntersectionObserverEntry' in window &&
+            'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
+            resolve();
+        } else {
+            require.ensure(['intersection-observer'], function (require) {
+                require('intersection-observer');
+                resolve();
+            }, 'polyfills.intersection-observer');
         }
     }
 
@@ -269,9 +297,7 @@ define([
         }
 
         // Control elements are hidden by the loading flag until it is ready
-        _.defer(function() {
-            resolve();
-        });
+        resolve();
     }
 
 

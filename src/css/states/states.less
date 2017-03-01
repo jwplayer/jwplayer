@@ -1,6 +1,16 @@
 @import "../imports/vars";
 @import "../imports/icons";
 
+// setup
+
+.jw-state-setup {
+  background-color: transparent;
+
+  .jw-controls {
+    display: none;
+  }
+}
+
 // idle
 
 .jw-state-idle {
@@ -20,13 +30,29 @@
   .jw-display-icon-display .jw-icon {
     .jw-icon-buffer;
 
-    -webkit-animation:spin 2s linear infinite;
-    -moz-animation:spin 2s linear infinite;
-    animation:spin 2s linear infinite;
-    @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
-    @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
-    @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+    -webkit-animation: spin 2s linear infinite;
+    -moz-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    @-moz-keyframes spin {
+      100% {
+        -moz-transform: rotate(360deg);
+      }
+    }
+    @-webkit-keyframes spin {
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+    @keyframes spin {
+      100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+      }
+    }
 
+  }
+  .jw-icon-playback {
+    .jw-icon-pause;
   }
 }
 

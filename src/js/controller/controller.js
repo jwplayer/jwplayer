@@ -198,16 +198,23 @@ define([
                 _this.triggerAfterReady(type, e);
             }
 
+            _model.on('change:viewSetup', function(model, viewSetup) {
+                if (viewSetup) {
+                    _this.showView(_view.element());
+                    _observePlayerContainer(_view.element());
+                }
+            });
+
             function _playerReady() {
                 _setup = null;
 
                 _view.on('all', _triggerAfterReady, _this);
 
-                _this.showView(_view.element());
-                _observePlayerContainer(_view.element());
+                // Fire 'ready' once the view has resized so that player width and height are available
+                // (requires the container to be in the DOM)
+                _view.once(events.JWPLAYER_RESIZE, _playerReadyNotify);
 
-                // Defer triggering of events until they can be registered
-                _.defer(_playerReadyNotify);
+                _view.init();
             }
 
             function _playerReadyNotify() {
@@ -252,23 +259,10 @@ define([
                 if (!container) {
                     return;
                 }
-
-                if ('IntersectionObserver' in window &&
-                    'IntersectionObserverEntry' in window &&
-                    'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-                    _startObserving(container);
-                } else {
-                    require.ensure(['intersection-observer'], function (require) {
-                        require('intersection-observer');
-                        _startObserving(container);
-                    }, 'polyfills.intersection-observer');
-                }
-            }
-
-            function _startObserving(container) {
                 if (!window.IntersectionObserver) {
                     return;
                 }
+                _stopObserving();
                 // Fire the callback every time 25% of the player comes in/out of view
                 _xo = new window.IntersectionObserver(_onIntersection, { threshold: [0, 0.25, 0.5, 0.75, 1] });
                 _xo.observe(container);
