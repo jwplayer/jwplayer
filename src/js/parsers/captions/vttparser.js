@@ -3,7 +3,6 @@
  */
 
 define(['parsers/captions/vttcue'], function(VTTCue) {
-    var percentRegex = /^([\d]{1,3})(\.[\d]*)?%$/;
     var timestampRegex = /^(\d+):(\d{2})(:\d{2})?\.(\d{3})/;
     var integerRegex = /^-?\d+$/;
     var fullLineRegex = /\r\n|\n/;
@@ -12,6 +11,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
     var colonDelimRegex = /:/;
     var stringDelimRegex = /\s/;
     var whitespaceRegex = /^\s+/;
+    var arrowRegex = /-->/;
 
     var VTTParser = function(window, decoder) {
         this.window = window;
@@ -104,12 +104,10 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
         },
         // Accept a setting if its a valid percentage.
         percent: function(k, v) {
-            if (v.match(percentRegex)) {
-                v = parseFloat(v);
-                if (v >= 0 && v <= 100) {
-                    this.set(k, v);
-                    return true;
-                }
+            v = parseFloat(v);
+            if (v >= 0 && v <= 100) {
+                this.set(k, v);
+                return true;
             }
             return false;
         }
@@ -119,7 +117,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
     // interprete each group as a key/value pair separated by 'keyValueDelim'.
     function parseOptions(input, callback, keyValueDelim, groupDelim) {
         var groups = groupDelim ? input.split(groupDelim) : [input];
-        for (var i in groups) {
+        for (var i = 0; i <= groups.length; i += 1) {
             if (typeof groups[i] !== 'string') {
                 continue;
             }
@@ -404,7 +402,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                             self.cue = new VTTCue(0, 0, '');
                             self.state = 'CUE';
                             // 30-39 - Check if self line contains an optional identifier or timing data.
-                            if (line.indexOf('-->') === -1) {
+                            if (!arrowRegex.test(line)) {
                                 self.cue.id = line;
                                 continue;
                             }
@@ -423,7 +421,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                             self.state = 'CUETEXT';
                             continue;
                         case 'CUETEXT':
-                            var hasSubstring = line.indexOf('-->') !== -1;
+                            var hasSubstring = arrowRegex.test(line);
                             // 34 - If we have an empty line then report the cue.
                             // 35 - If we have the special substring '-->' then report the cue,
                             // but do not collect the line as we need to process the current
