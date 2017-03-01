@@ -3,24 +3,17 @@ define([
     'utils/css',
     'events/states',
     'utils/underscore'
-], function(utils, cssUtils, states, _) {
+], function (utils, cssUtils, states, _) {
     /** Component that renders the actual captions on screen. **/
     var CaptionsRenderer;
     var _style = cssUtils.style;
 
     var _defaults = {
         back: true,
-        fontSize: 14,
-        fontFamily: 'Arial,sans-serif',
-        fontOpacity: 100,
-        color: '#FFF',
-        backgroundColor: '#000',
         backgroundOpacity: 100,
-        // if back == false edgeStyle defaults to 'uniform',
-        // otherwise it's 'none'
         edgeStyle: null,
-        windowColor: '#FFF',
-        windowOpacity: 0,
+        fontSize: 14,
+        fontOpacity: 100,
         preprocessor: _.identity
     };
 
@@ -48,6 +41,10 @@ define([
 
         // Assign list of captions to the renderer
         this.populate = function (captions) {
+            if (_model.get('renderCaptionsNatively')) {
+                return;
+            }
+
             _currentCues = [];
             _captionsTrack = captions;
             if (!captions) {
@@ -162,25 +159,18 @@ define([
             var fontOpacity = _options.fontOpacity;
             var windowOpacity = _options.windowOpacity;
             var edgeStyle = _options.edgeStyle;
-            var bgColor = _options.backgroundColor;
             var windowStyle = {};
-            var textStyle = {
-                color: cssUtils.hexToRgba(_options.color, fontOpacity),
-                fontFamily: _options.fontFamily,
-                fontStyle: _options.fontStyle,
-                fontWeight: _options.fontWeight,
-                textDecoration: _options.textDecoration
-            };
+            var textStyle = {};
 
-            if (windowOpacity) {
+            _addTextStyle(textStyle, _options, fontOpacity);
+
+            if (_options.windowColor && windowOpacity) {
                 windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
             }
 
             _addEdgeStyle(edgeStyle, textStyle, fontOpacity);
 
-            if (_options.back) {
-                textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, _options.backgroundOpacity);
-            } else if (edgeStyle === null) {
+            if (!_options.back && edgeStyle === null) {
                 _addEdgeStyle('uniform', textStyle);
             }
 
@@ -201,20 +191,20 @@ define([
 
         function _setupCaptionStyles(playerId, windowStyle, textStyle, fontSize) {
             // VTT.js DOM window styles
-            cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
-            // VTT.js DOM text styles
-            cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+            if (windowStyle.backgroundColor) {
+                cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
+                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
+            }
+
+            if (Object.getOwnPropertyNames(textStyle).length) {
+                cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+                cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
+            }
 
             _setShadowDOMFontSize(playerId, fontSize);
 
-            // Shadow DOM window styles
-            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
-
-            // Shadow DOM text styles
-            cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
-
             // Shadow DOM text color needs to be important to override Safari
-            if (utils.isSafari()) {
+            if (textStyle.color && utils.isSafari()) {
                 cssUtils.css('#' + playerId + ' .jw-video::cue',
                     '{color: ' + textStyle.color + ' !important;}', playerId);
             }
@@ -234,6 +224,36 @@ define([
                 '{font-size: ' + fontSize + 'px !important;}', playerId);
         }
 
+        function _addTextStyle(textStyle, options, fontOpacity) {
+            if (options.color) {
+                textStyle.color = cssUtils.hexToRgba(options.color, fontOpacity);
+            }
+
+            if (options.back) {
+                if (options.backgroundColor) {
+                    textStyle.backgroundColor = cssUtils.hexToRgba(options.backgroundColor, _options.backgroundOpacity);
+                }
+            } else {
+                textStyle.background = 'transparent';
+            }
+
+            if (options.fontFamily) {
+                textStyle.fontFamily = options.fontFamily;
+            }
+
+            if (options.fontStyle) {
+                textStyle.fontStyle = options.fontStyle;
+            }
+
+            if (options.fontWeight) {
+                textStyle.fontWeight = options.fontWeight;
+            }
+
+            if (options.textDecoration) {
+                textStyle.textDecoration = options.textDecoration;
+            }
+        }
+
         function _addEdgeStyle(option, style, fontOpacity) {
             var color = cssUtils.hexToRgba('#000000', fontOpacity);
             if (option === 'dropshadow') { // small drop shadow
@@ -251,6 +271,10 @@ define([
         }
 
         function _timeChange(e) {
+            if (_model.get('renderCaptionsNatively')) {
+                return;
+            }
+
             _timeEvent = e;
             this.selectCues(_captionsTrack, _timeEvent);
         }
@@ -271,7 +295,6 @@ define([
 
         _model.on('change:captionsTrack', function (model, captionsTrack) {
             this.populate(captionsTrack);
-            // TODO: handle with VTT.js
         }, this);
 
         _model.mediaController.on('seek', function () {
