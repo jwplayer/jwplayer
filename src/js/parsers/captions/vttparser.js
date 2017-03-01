@@ -12,6 +12,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
     var stringDelimRegex = /\s/;
     var whitespaceRegex = /^\s+/;
     var arrowRegex = /-->/;
+    var headerRegex = /^WEBVTT([ \t].*)?$/;
 
     var VTTParser = function(window, decoder) {
         this.window = window;
@@ -19,6 +20,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
         this.buffer = '';
         this.decoder = decoder || new StringDecoder();
         this.regionList = [];
+        this.maxCueBatch = 1000;
     };
 
     function StringDecoder() {
@@ -268,66 +270,6 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                 return line;
             }
 
-            // 3.4 WebVTT region and WebVTT region settings syntax
-            // function parseRegion(input) {
-            //    var settings = new Settings();
-            //
-            //    parseOptions(input, function (k, v) {
-            //        switch (k) {
-            //            case 'id':
-            //                settings.set(k, v);
-            //                break;
-            //            case 'width':
-            //                settings.percent(k, v);
-            //                break;
-            //            case 'lines':
-            //                settings.integer(k, v);
-            //                break;
-            //            case 'regionanchor':
-            //            case 'viewportanchor':
-            //                var xy = v.split(',');
-            //                if (xy.length !== 2) {
-            //                    break;
-            //                }
-            //                // We have to make sure both x and y parse, so use a temporary
-            //                // settings object here.
-            //                var anchor = new Settings();
-            //                anchor.percent('x', xy[0]);
-            //                anchor.percent('y', xy[1]);
-            //                if (!anchor.has('x') || !anchor.has('y')) {
-            //                    break;
-            //                }
-            //                settings.set(k + 'X', anchor.get('x'));
-            //                settings.set(k + 'Y', anchor.get('y'));
-            //                break;
-            //            case 'scroll':
-            //                settings.alt(k, v, ['up']);
-            //                break;
-            //        }
-            //    }, /=/, /\s/);
-            //
-            //    // Create the region, using default values for any values that were not
-            //    // specified.
-            //    if (settings.has('id')) {
-            //        var region = new self.window.VTTRegion();
-            //        region.width = settings.get('width', 100);
-            //        region.lines = settings.get('lines', 3);
-            //        region.regionAnchorX = settings.get('regionanchorX', 0);
-            //        region.regionAnchorY = settings.get('regionanchorY', 100);
-            //        region.viewportAnchorX = settings.get('viewportanchorX', 0);
-            //        region.viewportAnchorY = settings.get('viewportanchorY', 100);
-            //        region.scroll = settings.get('scroll', '');
-            //        // Register the region.
-            //        self.onregion && self.onregion(region);
-            //        // Remember the VTTRegion for later in case we parse any VTTCues that
-            //        // reference it.
-            //        self.regionList.push({
-            //            id: settings.get('id'),
-            //            region: region
-            //        });
-            //    }
-            // }
-
             // 3.2 WebVTT metadata header syntax
             function parseHeader(input) {
                 parseOptions(input, function (k, v) {
@@ -338,7 +280,18 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                             // parseRegion(v);
                             break;
                     }
-                }, /:/);
+                }, colonDelimRegex);
+            }
+
+            function errorHandler() {
+                // If we are currently parsing a cue, report what we have.
+                if (self.state === 'CUETEXT' && self.cue && self.oncue) {
+                    self.oncue(self.cue);
+                }
+                self.cue = null;
+                // Enter BADWEBVTT state if header was not parsed correctly otherwise
+                // another exception occurred so enter BADCUE state.
+                self.state = self.state === 'INITIAL' ? 'BADWEBVTT' : 'BADCUE';
             }
 
             // 5.1 WebVTT file parsing.
@@ -346,22 +299,28 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                 var line;
                 if (self.state === 'INITIAL') {
                     // We can't start parsing until we have the first line.
-                    if (!/\r\n|\n/.test(self.buffer)) {
+                    if (!fullLineRegex.test(self.buffer)) {
                         return this;
                     }
 
                     line = collectNextLine();
 
-                    var m = line.match(/^WEBVTT([ \t].*)?$/);
+                    var m = line.match(headerRegex);
                     if (!m || !m[0]) {
                         throw new Error('Malformed WebVTT signature.');
                     }
-
                     self.state = 'HEADER';
                 }
+            } catch (e){
+                errorHandler();
+                return this;
+            }
 
-                var alreadyCollectedLine = false;
-                while (self.buffer) {
+            var alreadyCollectedLine = false;
+            var currentCueBatch = 0;
+            function processBuffer() {
+                console.time('batch');
+                while (self.buffer && currentCueBatch <= self.maxCueBatch) {
                     // We can't parse a line until we have the full line.
                     if (!fullLineRegex.test(self.buffer)) {
                         return this;
@@ -376,19 +335,19 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                     switch (self.state) {
                         case 'HEADER':
                             // 13-18 - Allow a header (metadata) under the WEBVTT line.
-                            if (/:/.test(line)) {
+                            if (colonDelimRegex.test(line)) {
                                 parseHeader(line);
                             } else if (!line) {
                                 // An empty line terminates the header and starts the body (cues).
                                 self.state = 'ID';
                             }
-                            continue;
+                            break;
                         case 'NOTE':
                             // Ignore NOTE blocks.
                             if (!line) {
                                 self.state = 'ID';
                             }
-                            continue;
+                            break;
                         case 'ID':
                             // Check for the start of NOTE blocks.
                             if (noteRegex.test(line)) {
@@ -397,14 +356,14 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                             }
                             // 19-29 - Allow any number of line terminators, then initialize new cue values.
                             if (!line) {
-                                continue;
+                                break;
                             }
                             self.cue = new VTTCue(0, 0, '');
                             self.state = 'CUE';
                             // 30-39 - Check if self line contains an optional identifier or timing data.
                             if (!arrowRegex.test(line)) {
                                 self.cue.id = line;
-                                continue;
+                                break;
                             }
                         // Process line as start of a cue.
                         /* falls through*/
@@ -416,10 +375,10 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                                 // In case of an error ignore rest of the cue.
                                 self.cue = null;
                                 self.state = 'BADCUE';
-                                continue;
+                                break;
                             }
                             self.state = 'CUETEXT';
-                            continue;
+                            break;
                         case 'CUETEXT':
                             var hasSubstring = arrowRegex.test(line);
                             // 34 - If we have an empty line then report the cue.
@@ -429,37 +388,40 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                             if (!line || hasSubstring && (alreadyCollectedLine = true)) {
                                 // We are done parsing self cue.
                                 if (self.oncue) {
+                                    currentCueBatch += 1;
                                     self.oncue(self.cue);
                                 }
                                 self.cue = null;
                                 self.state = 'ID';
-                                continue;
+                                break;
                             }
                             if (self.cue.text) {
                                 self.cue.text += '\n';
                             }
                             self.cue.text += line;
-                            continue;
+                            break;
                         case 'BADCUE': // BADCUE
                             // 54-62 - Collect and discard the remaining cue.
                             if (!line) {
                                 self.state = 'ID';
                             }
-                            continue;
+                            break;
                     }
+               }
+                console.timeEnd('batch');
+                currentCueBatch = 0;
+                if (self.buffer) {
+                    try {
+                        requestAnimationFrame(processBuffer);
+                    } catch (e) {
+                        errorHandler();
+                    }
+                } else {
+                    self.flush();
                 }
-            } catch (e) {
-
-                // If we are currently parsing a cue, report what we have.
-                if (self.state === 'CUETEXT' && self.cue && self.oncue) {
-                    self.oncue(self.cue);
-                }
-                self.cue = null;
-                // Enter BADWEBVTT state if header was not parsed correctly otherwise
-                // another exception occurred so enter BADCUE state.
-                self.state = self.state === 'INITIAL' ? 'BADWEBVTT' : 'BADCUE';
             }
-            return this;
+
+            processBuffer();
         },
         flush: function () {
             var self = this;

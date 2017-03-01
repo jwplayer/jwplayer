@@ -100,7 +100,7 @@ define([
 
             try {
                 console.time('vttparse');
-                parser.parse(text).flush();
+                parser.parse(text);
             } catch (error) {
                 delete track.xhr;
                 errorHandler(error);
