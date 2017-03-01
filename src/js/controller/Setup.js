@@ -32,11 +32,10 @@ define([
             for (var taskName in _queue) {
                 if (Object.prototype.hasOwnProperty.call(_queue, taskName)) {
                     var c = _queue[taskName];
-                // If task completed, or destroy was called
                     if (!c.complete && !c.running && _api && _allComplete(c.depends)) {
-                    c.running = true;
-                    callTask(c);
-                }
+                        c.running = true;
+                        callTask(c);
+                    }
                 }
             }
         }

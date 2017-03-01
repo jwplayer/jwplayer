@@ -200,8 +200,8 @@ define([
 
             _model.on('change:viewSetup', function(model, viewSetup) {
                 if (viewSetup) {
-                _this.showView(_view.element());
-                _observePlayerContainer(_view.element());
+                    _this.showView(_view.element());
+                    _observePlayerContainer(_view.element());
                 }
             });
 
