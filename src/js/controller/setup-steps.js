@@ -40,27 +40,27 @@ define([
             },
             LOAD_PLUGINS: {
                 method: _loadPlugins,
-                depends: ['LOADED_POLYFILLS']
+                depends: ['LOAD_PROMISE_POLYFILL']
             },
             INIT_PLUGINS: {
                 method: _initPlugins,
                 depends: [
                     'LOAD_PLUGINS',
-                    // Init requires jw-overlays to be in the DOM
+                    // Plugins require jw-overlays to setup
                     'SETUP_VIEW'
                 ]
             },
             LOAD_SKIN: {
                 method: _loadSkin,
-                depends: ['LOADED_POLYFILLS']
+                depends: []
             },
             LOAD_PLAYLIST: {
                 method: _loadPlaylist,
-                depends: ['LOADED_POLYFILLS']
+                depends: ['LOAD_PROMISE_POLYFILL']
             },
             CHECK_FLASH: {
                 method: _checkFlash,
-                depends: ['LOADED_POLYFILLS']
+                depends: []
             },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
@@ -69,20 +69,21 @@ define([
             SETUP_VIEW: {
                 method: _setupView,
                 depends: [
-                    'LOAD_SKIN'
+                    'LOAD_SKIN',
+                    'LOAD_XO_POLYFILL'
                 ]
             },
             SET_ITEM: {
                 method: _setPlaylistItem,
                 depends: [
-                    'INIT_PLUGINS',
                     'FILTER_PLAYLIST'
                 ]
             },
             SEND_READY: {
                 method: _sendReady,
                 depends: [
-                    'SETUP_VIEW',
+                    'LOADED_POLYFILLS',
+                    'INIT_PLUGINS',
                     'SET_ITEM',
                     'DEFERRED'
                 ]
@@ -296,9 +297,7 @@ define([
         }
 
         // Control elements are hidden by the loading flag until it is ready
-        _.defer(function() {
-            resolve();
-        });
+        resolve();
     }
 
 

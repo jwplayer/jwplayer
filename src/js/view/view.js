@@ -59,7 +59,7 @@ define([
         var _rightClickMenu;
         var _resizeMediaTimeout = -1;
         var _resizeContainerRequestId = -1;
-        var _delayResize = window.requestAnimationFrame ||
+        var _requestFrame = window.requestAnimationFrame ||
             function (rafFunc) {
                 return window.setTimeout(rafFunc, 17);
             };
@@ -289,7 +289,7 @@ define([
 
         function _responsiveListener() {
             _cancelDelayResize(_resizeContainerRequestId);
-            _resizeContainerRequestId = _delayResize(_setContainerDimensions);
+            _resizeContainerRequestId = _requestFrame(_setContainerDimensions);
         }
 
         // Set global colors, used by related plugin
@@ -482,10 +482,6 @@ define([
             _model.on('change:controls', _onChangeControls);
             _onChangeControls(_model, _model.get('controls'));
 
-            _model.on('change:state', _stateHandler);
-            _stateHandler(_model, _model.get('state'));
-
-
             _model.on('change:flashBlocked', _onChangeFlashBlocked);
             _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
 
@@ -497,6 +493,7 @@ define([
                 _onStretchChange(_model, _model.get('stretching'));
             }
             // watch for changes
+            _model.on('change:state', _stateHandler);
             _model.on('change:duration', _setLiveMode, this);
             _model.on('change:stretching', _onStretchChange);
             _model.on('change:fullscreen', _fullscreen);
@@ -524,6 +521,8 @@ define([
                 // Default activeTab to true if the browser doesn't implement the visibility API
                 _model.set('activeTab', true);
             }
+
+            _model.set('viewSetup', true);
         };
 
         this.init = function() {
@@ -1020,6 +1019,10 @@ define([
         }
 
         function _stateHandler(model, state) {
+            if (!_model.get('viewSetup')) {
+                return;
+            }
+
             _currentState = state;
             // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
             clearTimeout(_previewDisplayStateTimeout);
@@ -1027,9 +1030,9 @@ define([
             if (state === states.PLAYING) {
                 _stateUpdate(model, state);
             } else {
-                _previewDisplayStateTimeout = setTimeout(function () {
+                _previewDisplayStateTimeout = _requestFrame(function () {
                     _stateUpdate(model, state);
-                }, 33);
+                });
             }
             if (state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
@@ -1161,17 +1164,20 @@ define([
                 height: _model.get('containerHeight') || 0
             };
 
-            // If we are using a dock, subtract that from the top
-            var dockButtons = _model.get('dock');
-            if (dockButtons && dockButtons.length && _model.get('controls')) {
-                bounds.y = _dock.element().clientHeight;
-                bounds.height -= bounds.y;
-            }
+            var controls = _model.get('controls');
+            if (controls) {
+                // If we are using a dock, subtract that from the top
+                var dockButtons = _model.get('dock');
+                if (dockButtons && dockButtons.length) {
+                    bounds.y = _dock.element().clientHeight;
+                    bounds.height -= bounds.y;
+                }
 
-            // Subtract controlbar from the bottom when using one
-            includeCB = includeCB || !utils.exists(includeCB);
-            if (includeCB && _model.get('controls')) {
-                bounds.height -= _controlbar.element().clientHeight;
+                // Subtract controlbar from the bottom when using one
+                includeCB = includeCB || !utils.exists(includeCB);
+                if (includeCB) {
+                    bounds.height -= _controlbar.element().clientHeight;
+                }
             }
 
             return bounds;

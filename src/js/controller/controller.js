@@ -198,6 +198,13 @@ define([
                 _this.triggerAfterReady(type, e);
             }
 
+            _model.on('change:viewSetup', function(model, viewSetup) {
+                if (viewSetup) {
+                _this.showView(_view.element());
+                _observePlayerContainer(_view.element());
+                }
+            });
+
             function _playerReady() {
                 _setup = null;
 
@@ -207,10 +214,7 @@ define([
                 // (requires the container to be in the DOM)
                 _view.once(events.JWPLAYER_RESIZE, _playerReadyNotify);
 
-                _this.showView(_view.element());
                 _view.init();
-
-                _observePlayerContainer(_view.element());
             }
 
             function _playerReadyNotify() {
@@ -258,6 +262,7 @@ define([
                 if (!window.IntersectionObserver) {
                     return;
                 }
+                _stopObserving();
                 // Fire the callback every time 25% of the player comes in/out of view
                 _xo = new window.IntersectionObserver(_onIntersection, { threshold: [0, 0.25, 0.5, 0.75, 1] });
                 _xo.observe(container);
