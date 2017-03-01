@@ -39,7 +39,6 @@ define([
                 api.setVolume(20);
                 muted = api.getMute();
                 assert.equal(muted, false,  'after setting volume to 20, api.getMute() = ' + muted);
-                console.log('ready muted', muted);
                 done();
             })
             .on('setupError', function() {
