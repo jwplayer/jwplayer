@@ -230,7 +230,7 @@ define([
             var result;
             try {
                 result = fn.apply(api, args);
-            } catch(e) {
+            } catch (e) {
                 var expectedMessage = method +' does not throw an error';
                 assert.equal(method +' threw an error', expectedMessage, expectedMessage +':'+ e.message);
             }
