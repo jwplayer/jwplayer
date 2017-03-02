@@ -13,6 +13,10 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
     var whitespaceRegex = /^\s+/;
     var arrowRegex = /-->/;
     var headerRegex = /^WEBVTT([ \t].*)?$/;
+    var requestFrame = window.requestAnimationFrame ||
+        function (rafFunction) {
+            return window.setTimeout(rafFunction, 17);
+        };
 
     var VTTParser = function(window, decoder) {
         this.window = window;
@@ -410,7 +414,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                 currentCueBatch = 0;
                 if (self.buffer) {
                     try {
-                        requestAnimationFrame(processBuffer);
+                        requestFrame(processBuffer);
                     } catch (e) {
                         errorHandler();
                     }
