@@ -527,6 +527,7 @@ define([
 
         this.init = function() {
             _resize(_model.get('width'), _model.get('height'));
+            _stateHandler(_instreamModel || _model);
             _lastWidth = 0;
             _lastHeight = 0;
             _setContainerDimensions();
@@ -606,9 +607,8 @@ define([
 
         var _onChangeControls = function (model, bool) {
             if (bool) {
-                var state = (_instreamModel) ? _instreamModel.get('state') : _model.get('state');
-                // model may be instream or normal depending on who triggers this
-                _stateHandler(model, state);
+                // ignore model that triggered this event and use current state model
+                _stateHandler(_instreamModel || _model);
             }
 
             var breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
@@ -780,8 +780,7 @@ define([
             var audioMode = _isAudioMode(playerHeight);
             if (_controlbar) {
                 if (!audioMode) {
-                    var model = _instreamModel ? _instreamModel : _model;
-                    _stateHandler(model, model.get('state'));
+                    _stateHandler(_instreamModel || _model);
                 }
             }
             _model.set('audioMode', audioMode);
@@ -1023,23 +1022,23 @@ define([
             utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _currentState);
         }
 
-        function _stateHandler(model, state) {
+        function _stateHandler(model) {
             if (!_model.get('viewSetup')) {
                 return;
             }
 
-            _currentState = state;
+            _currentState = model.get('state');
             // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
             clearTimeout(_previewDisplayStateTimeout);
 
-            if (state === states.PLAYING) {
-                _stateUpdate(model, state);
+            if (_currentState === states.PLAYING) {
+                _stateUpdate(model, _currentState);
             } else {
                 _previewDisplayStateTimeout = _requestFrame(function () {
-                    _stateUpdate(model, state);
+                    _stateUpdate(model, _currentState);
                 });
             }
-            if (state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
+            if (_currentState !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
             }
         }
@@ -1059,7 +1058,7 @@ define([
         }
 
         function _dragging(model) {
-            _stateHandler(model, model.get('state'));
+            _stateHandler(model);
         }
 
         function createDisplayContainer() {
