@@ -241,7 +241,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
     }
 
     VTTParser.prototype = {
-        parse: function (data) {
+        parse: function (data, flushing) {
             var self = this;
 
             // If there is no data then we won't decode it, but will just try to parse
@@ -416,7 +416,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                     } catch (e) {
                         errorHandler();
                     }
-                } else {
+                } else if (!flushing) {
                     self.flush();
                 }
             }
@@ -431,7 +431,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                 // Synthesize the end of the current cue or region.
                 if (self.cue || self.state === 'HEADER') {
                     self.buffer += '\n\n';
-                    self.parse();
+                    self.parse(undefined, true);
                 }
                 // If we've flushed, parsed, and we're still on the INITIAL state then
                 // that means we don't have enough of the stream to parse the first
