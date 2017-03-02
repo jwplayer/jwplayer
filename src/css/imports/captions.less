@@ -3,11 +3,10 @@
 .jw-captions {
     position: absolute;
     width: 100%;
-    height: inherit;
+    height: 100%;
     text-align: center;
     display: none;
-    max-height: ~"calc(100% - 46px)";
-    line-height: 1.3em;
+    max-height: ~"calc(100% - 40px)";
     letter-spacing: normal;
     word-spacing: normal;
     text-transform: none;
@@ -43,27 +42,39 @@
     font-weight: normal;
     text-align: center;
     text-decoration: none;
-    line-height: 1.3em;
-    padding: 0.1em 0.8em;
 }
+
 .jw-text-track-display {
     // Override vtt.js font-size so text resizes as the player size changes
     font-size: inherit;
-    line-height: 1.3em;
+    line-height: 1.5em;
+}
+
+.jw-text-track-cue {
+    background-color: rgba(0, 0, 0, 0.498039);
+    color: #fff;
+    padding: .1em .3em;
 }
 
 .jwplayer {
-    video::-webkit-media-controls {
-        justify-content: flex-start;
+    video {
+        // Normalize the coordinate system to uniformly adjust the container height
+        // when the control bar is visible
+        &::-webkit-media-controls {
+            justify-content: flex-start;
+        }
+        &::-webkit-media-text-track-container {
+            max-height: ~"calc(100% - 40px)";
+            line-height: 1.5em;
+        }
+        &::-webkit-media-text-track-display {
+            // Ensure captions aren't cropped when the pseudo
+            // element's width cannot accommodate all the text
+            min-width: -webkit-min-content;
+        }
+        &::cue {
+            background-color: rgba(0, 0, 0, 0.498039);
+        }
     }
-    video::-webkit-media-text-track-container {
-        // With 16 lines of captions, 1em ~= 6.25% of height
-        max-height: ~"calc(100% - 46px)";
-        line-height: 1.3em;
-    }
-    video::-webkit-media-text-track-display {
-        // Ensure captions aren't cropped when the pseudo
-        // element's width cannot accommodate all the text
-        min-width: -webkit-min-content;
-    }
+
 }

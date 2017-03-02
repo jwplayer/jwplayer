@@ -29,17 +29,15 @@ define([
         }
 
         function _nextTask() {
-            _.each(_queue, function(c) {
-                // If task completed, or destroy was called
-                if (c.complete === true || c.running === true || _api === null) {
-                    return;
+            for (var taskName in _queue) {
+                if (Object.prototype.hasOwnProperty.call(_queue, taskName)) {
+                    var c = _queue[taskName];
+                    if (!c.complete && !c.running && _api && _allComplete(c.depends)) {
+                        c.running = true;
+                        callTask(c);
+                    }
                 }
-
-                if (_allComplete(c.depends)) {
-                    c.running = true;
-                    callTask(c);
-                }
-            });
+            }
         }
 
         function callTask(task) {

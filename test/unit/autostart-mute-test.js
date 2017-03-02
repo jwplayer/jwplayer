@@ -13,7 +13,7 @@ define([
     };
 
     function createConfig(mute) {
-        return _.extend(config, {autostart: true, mute: mute});
+        return _.extend(config, { autostart: true, mute: mute });
     }
 
     // Test autostart mute behavior in Safari Desktop and iOS
@@ -39,6 +39,10 @@ define([
                 api.setVolume(20);
                 muted = api.getMute();
                 assert.equal(muted, false,  'after setting volume to 20, api.getMute() = ' + muted);
+                done();
+            })
+            .on('setupError', function() {
+                assert.ok(false, 'FAIL');
                 done();
             });
     }

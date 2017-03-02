@@ -154,7 +154,10 @@ define([
                 var found = parent.getElementsByTagName('object')[0];
                 if (found) {
                     found.off(null, null, this);
-                    return found;
+                    if (!found.embedCallback) {
+                        return found;
+                    }
+                    parent.removeChild(found);
                 }
 
                 return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId),

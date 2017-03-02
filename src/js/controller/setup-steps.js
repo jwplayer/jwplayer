@@ -14,6 +14,10 @@ define([
 
     function getQueue() {
         var Components = {
+            DEFERRED: {
+                method: _deferred,
+                depends: []
+            },
             LOAD_PROMISE_POLYFILL: {
                 method: _loadPromisePolyfill,
                 depends: []
@@ -22,64 +26,83 @@ define([
                 method: _loadBase64Polyfill,
                 depends: []
             },
-            LOADED_POLYFILLS: {
+            LOAD_XO_POLYFILL: {
+                method: _loadIntersectionObserverPolyfill,
+                depends: []
+            },
+            LOAD_POLYFILLS: {
                 method: _loadedPolyfills,
                 depends: [
                     'LOAD_PROMISE_POLYFILL',
-                    'LOAD_BASE64_POLYFILL'
+                    'LOAD_BASE64_POLYFILL',
+                    'LOAD_XO_POLYFILL'
                 ]
             },
             LOAD_PLUGINS: {
                 method: _loadPlugins,
-                depends: ['LOADED_POLYFILLS']
+                // Plugins require JavaScript Promises
+                depends: [
+                    'LOAD_PROMISE_POLYFILL'
+                ]
             },
             INIT_PLUGINS: {
                 method: _initPlugins,
                 depends: [
                     'LOAD_PLUGINS',
-                    // Init requires jw-overlays to be in the DOM
+                    // Plugins require jw-overlays to setup
                     'SETUP_VIEW'
                 ]
             },
             LOAD_SKIN: {
                 method: _loadSkin,
-                depends: ['LOADED_POLYFILLS']
+                depends: []
             },
             LOAD_PLAYLIST: {
                 method: _loadPlaylist,
-                depends: ['LOADED_POLYFILLS']
+                depends: []
             },
             CHECK_FLASH: {
                 method: _checkFlash,
-                depends: ['LOADED_POLYFILLS']
+                depends: [
+                    'SETUP_VIEW'
+                ]
             },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
-                depends: ['LOAD_PLAYLIST', 'CHECK_FLASH']
+                depends: [
+                    'LOAD_PLAYLIST',
+                    'CHECK_FLASH'
+                ]
             },
             SETUP_VIEW: {
                 method: _setupView,
                 depends: [
-                    'LOAD_SKIN'
+                    'LOAD_SKIN',
+                    'LOAD_XO_POLYFILL'
                 ]
             },
             SET_ITEM: {
                 method: _setPlaylistItem,
                 depends: [
-                    'INIT_PLUGINS',
                     'FILTER_PLAYLIST'
                 ]
             },
             SEND_READY: {
                 method: _sendReady,
                 depends: [
-                    'SETUP_VIEW',
-                    'SET_ITEM'
+                    'LOAD_POLYFILLS',
+                    'INIT_PLUGINS',
+                    'SET_ITEM',
+                    'DEFERRED'
                 ]
             }
         };
 
         return Components;
+    }
+
+    function _deferred(resolve) {
+        setTimeout(resolve, 0);
     }
 
     function _loadPromisePolyfill(resolve) {
@@ -101,6 +124,19 @@ define([
             }, 'polyfills.base64');
         } else {
             resolve();
+        }
+    }
+
+    function _loadIntersectionObserverPolyfill(resolve) {
+        if ('IntersectionObserver' in window &&
+            'IntersectionObserverEntry' in window &&
+            'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
+            resolve();
+        } else {
+            require.ensure(['intersection-observer'], function (require) {
+                require('intersection-observer');
+                resolve();
+            }, 'polyfills.intersection-observer');
         }
     }
 
@@ -142,28 +178,19 @@ define([
         }
     }
 
-    function _checkFlash(resolve, _model, _api) {
+    function _checkFlash(resolve, _model, _api, _view) {
         var primaryFlash = _model.get('primary') === 'flash';
         var flashVersion = utils.flashVersion();
         if (primaryFlash && flashVersion) {
-            var originalContainer = _api.getContainer();
-            var parentElement = originalContainer.parentElement;
-            if (!parentElement) {
+            var viewContainer = _view.element();
+            var mediaContainer = viewContainer.querySelector('.jw-media');
+            if (!viewContainer.parentElement) {
                 // Cannot perform test when player container has no parent
                 resolve();
             }
-            var testContainer = document.createElement('div');
-            testContainer.id = _model.get('id');
-            var flashHealthCheckId = '' + testContainer.id + '-' + Math.random().toString(16).substr(2);
+            var flashHealthCheckId = '' + _model.get('id') + '-' + Math.random().toString(16).substr(2);
             var flashHealthCheckSwf = _model.get('flashloader');
-            var width = _model.get('width');
-            var height = _model.get('height');
-            utils.style(testContainer, {
-                position: 'relative',
-                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
-                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
-            });
-            var swf = EmbedSwf.embed(flashHealthCheckSwf, testContainer, flashHealthCheckId, null);
+            var swf = EmbedSwf.embed(flashHealthCheckSwf, mediaContainer, flashHealthCheckId, null);
             var done = function() {
                 if (embedTimeout === -1) {
                     return;
@@ -187,7 +214,6 @@ define([
                 failed();
                 return;
             }
-            parentElement.replaceChild(testContainer, originalContainer);
             // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
             var embedTimeout = setTimeout(failed, 3000);
         } else {
@@ -269,9 +295,7 @@ define([
         }
 
         // Control elements are hidden by the loading flag until it is ready
-        _.defer(function() {
-            resolve();
-        });
+        resolve();
     }
 
 

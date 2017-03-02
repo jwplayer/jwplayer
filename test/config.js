@@ -30,16 +30,7 @@
         };
     }
 
-    if (window.wallaby) {
-        window.wallaby.delayStart();
-        base = '../../';
-        for (var file in window.wallaby.tests) {
-            if (Object.prototype.hasOwnProperty.call(window.wallaby.tests, file)) {
-                deps.push(window.wallaby.tests[file]);
-            }
-        }
-        callback = window.wallaby.start;
-    } else if (window.__karma__) {
+    if (window.__karma__) {
         base = '/base/';
         for (var karmaFile in window.__karma__.files) {
             if (/test\/unit\/[^\/]+\.js$/.test(karmaFile)) {

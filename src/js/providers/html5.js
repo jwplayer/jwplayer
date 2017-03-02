@@ -9,8 +9,8 @@ define([
     'providers/default',
     'utils/backbone.events',
     'providers/tracks-mixin',
-    'utils/browser'
-], function(getIsAndroidHLS, cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks) {
+    'utils/time-ranges',
+], function(getIsAndroidHLS, cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks, timeRangesUtil) {
 
     var clearTimeout = window.clearTimeout;
     var STALL_DELAY = 256;
@@ -96,6 +96,12 @@ define([
         var _visualQuality = { level: {} };
         var _canPlay = false;
 
+        var _staleStreamDuration = 3 * 10 * 1000;
+        var _staleStreamTimeout = null;
+        var _lastEndOfBuffer = null;
+        var _stale = false;
+        var _edgeOfLiveStream = false;
+
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
         var _videotag = (element) ? element.querySelector('video') : undefined;
@@ -151,7 +157,8 @@ define([
         }
 
         function _timeUpdateHandler() {
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
+
             _canSeek = true;
             if (_this.state === states.STALLED) {
                 _this.setState(states.PLAYING);
@@ -207,6 +214,8 @@ define([
                     duration: duration
                 });
             }
+
+            checkStaleStream();
         }
 
         function _setPosition(currentTime) {
@@ -327,6 +336,13 @@ define([
                 return;
             }
 
+            if (atEdgeOfLiveStream()) {
+                _edgeOfLiveStream = true;
+                if (checkStreamEnded()) {
+                    return;
+                }
+            }
+
             _this.setState(states.STALLED);
         }
 
@@ -397,7 +413,7 @@ define([
 
         function _completeLoad(startTime, duration) {
             _delayedSeek = 0;
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
 
             var sourceElement = document.createElement('source');
             sourceElement.src = _levels[_currentQuality].file;
@@ -505,7 +521,7 @@ define([
         }
 
         this.stop = function() {
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
             _clearVideotagSource();
             this.clearTracks();
             // IE/Edge continue to play a video after changing video.src and calling video.load()
@@ -565,7 +581,7 @@ define([
         };
 
         this.pause = function() {
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
             _videotag.pause();
             _beforeResumeHandler = function() {
                 var unpausing = _videotag.paused && _videotag.currentTime;
@@ -647,6 +663,8 @@ define([
             // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
             if (_videotag.currentTime === _position) {
                 _stalledHandler();
+            } else {
+                _edgeOfLiveStream = false;
             }
         }
 
@@ -661,7 +679,7 @@ define([
 
         function _endedHandler() {
             if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
-                clearTimeout(_playbackTimeout);
+                clearTimeouts();
                 _currentQuality = -1;
 
                 _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
@@ -707,7 +725,7 @@ define([
          * Return the video tag and stop listening to events
          */
         this.detachMedia = function() {
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
             _removeListeners(_mediaEvents, _videotag);
             // Stop listening to track changes so disabling the current track doesn't update the model
             this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
@@ -746,7 +764,7 @@ define([
         this.remove = function() {
             // stop video silently
             _clearVideotagSource();
-            clearTimeout(_playbackTimeout);
+            clearTimeouts();
 
             // remove
             if (_container === _videotag.parentNode) {
@@ -961,6 +979,54 @@ define([
                 }
                 _this.trigger('mediaType', { mediaType: mediaType });
             }
+        }
+
+        // If we're live and the buffer end has remained the same for some time, mark the stream as stale and check if the stream is over
+        function checkStaleStream() {
+            var endOfBuffer = timeRangesUtil.endOfRange(_videotag.buffered);
+            var live = (_videotag.duration === Infinity);
+
+            if (live && _lastEndOfBuffer === endOfBuffer) {
+                if (!_staleStreamTimeout) {
+                    _staleStreamTimeout = setTimeout(function () {
+                        _stale = true;
+                        checkStreamEnded();
+                    }, _staleStreamDuration);
+                }
+            } else {
+                clearTimeout(_staleStreamTimeout);
+                _staleStreamTimeout = null;
+                _stale = false;
+            }
+
+            _lastEndOfBuffer = endOfBuffer;
+        }
+
+        function checkStreamEnded() {
+            if (_stale && _edgeOfLiveStream) {
+                _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+                    message: 'The live stream is either down or has ended'
+                });
+                return true;
+            }
+
+            return false;
+        }
+
+        function atEdgeOfLiveStream() {
+            if (_videotag.duration !== Infinity) {
+                return false;
+            }
+
+            // currentTime doesn't always get to the end of the buffered range
+            var timeFudge = 2;
+            return (timeRangesUtil.endOfRange(_videotag.buffered)) - _videotag.currentTime <= timeFudge;
+        }
+
+        function clearTimeouts() {
+            clearTimeout(_playbackTimeout);
+            clearTimeout(_staleStreamTimeout);
+            _staleStreamTimeout = null;
         }
     }
 
