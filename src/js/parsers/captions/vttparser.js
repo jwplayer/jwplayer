@@ -319,7 +319,6 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             var alreadyCollectedLine = false;
             var currentCueBatch = 0;
             function processBuffer() {
-                console.time('batch');
                 while (self.buffer && currentCueBatch <= self.maxCueBatch) {
                     // We can't parse a line until we have the full line.
                     if (!fullLineRegex.test(self.buffer)) {
@@ -408,7 +407,6 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                             break;
                     }
                }
-                console.timeEnd('batch');
                 currentCueBatch = 0;
                 if (self.buffer) {
                     try {
