@@ -97,8 +97,14 @@
 
 body .jw-error,
 body .jwplayer.jw-state-error {
-  .jw-title .jw-title-primary {
-    white-space: normal;
+  .jw-title {
+    .jw-title-primary {
+      white-space: normal;
+    }
+    .jw-title-secondary {
+      display: block;
+      padding-top: 0.75em;
+    }
   }
 
   .jw-icon-display {
@@ -163,10 +169,10 @@ body .jwplayer.jw-state-error {
 
 // Show preview
 
-.jw-state-idle,
+.jw-state-idle:not(.jw-flag-audio-player),
 .jwplayer.jw-state-complete:not(.jw-flag-casting):not(.jw-flag-audio-player),
-body .jw-error,
-body .jwplayer.jw-state-error {
+body .jw-error:not(.jw-flag-audio-player),
+body .jwplayer.jw-state-error:not(.jw-flag-audio-player) {
   .jw-preview {
     display: block;
   }
