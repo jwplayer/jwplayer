@@ -280,7 +280,7 @@ define([
         function _setTimesliderFlags(breakPoint, audioMode) {
             var smallPlayer = breakPoint < 2;
             var timeSliderAboveConfig = _model.get('timeSliderAbove');
-            var timeSliderAbove = !audioMode &&
+            var timeSliderAbove = !audioMode && _model.get('controls') &&
                 (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
             utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
