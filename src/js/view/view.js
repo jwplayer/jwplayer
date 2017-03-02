@@ -266,7 +266,7 @@ define([
             _model.set('containerHeight', containerHeight);
             var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
             _checkAudioMode(_model.get('height'));
-            _setTimesliderFlags(breakPoint, _model.get('audioMode'));
+            _setTimesliderFlags(breakPoint, _model.get('audioMode'), _model.get('controls'));
 
             _captionsRenderer.resize();
 
@@ -277,10 +277,10 @@ define([
         }
 
 
-        function _setTimesliderFlags(breakPoint, audioMode) {
+        function _setTimesliderFlags(breakPoint, audioMode, controls) {
             var smallPlayer = breakPoint < 2;
             var timeSliderAboveConfig = _model.get('timeSliderAbove');
-            var timeSliderAbove = !audioMode &&
+            var timeSliderAbove = !audioMode && controls &&
                 (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
             utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
@@ -610,6 +610,9 @@ define([
                 // model may be instream or normal depending on who triggers this
                 _stateHandler(model, state);
             }
+
+            var breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
+            _setTimesliderFlags(breakPoint, _model.get('audioMode'), bool);
 
             utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
         };
