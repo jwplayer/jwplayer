@@ -326,6 +326,7 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                 while (self.buffer && currentCueBatch <= self.maxCueBatch) {
                     // We can't parse a line until we have the full line.
                     if (!fullLineRegex.test(self.buffer)) {
+                        self.flush();
                         return this;
                     }
 
@@ -410,7 +411,8 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                             }
                             break;
                     }
-               }
+                }
+
                 currentCueBatch = 0;
                 if (self.buffer) {
                     try {
@@ -420,10 +422,16 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
                     }
                 } else if (!flushing) {
                     self.flush();
+                    return this;
                 }
             }
 
-            processBuffer();
+            try {
+                // Immediately process some cues
+                processBuffer();
+            } catch(e) {
+                errorHandler();
+            }
         },
         flush: function () {
             var self = this;
