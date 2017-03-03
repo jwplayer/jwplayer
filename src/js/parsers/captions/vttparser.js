@@ -323,115 +323,112 @@ define(['parsers/captions/vttcue'], function(VTTCue) {
             var alreadyCollectedLine = false;
             var currentCueBatch = 0;
             function processBuffer() {
-                while (self.buffer && currentCueBatch <= self.maxCueBatch) {
-                    // We can't parse a line until we have the full line.
-                    if (!fullLineRegex.test(self.buffer)) {
+                try {
+                    while (self.buffer && currentCueBatch <= self.maxCueBatch) {
+                        // We can't parse a line until we have the full line.
+                        if (!fullLineRegex.test(self.buffer)) {
+                            self.flush();
+                            return this;
+                        }
+
+                        if (!alreadyCollectedLine) {
+                            line = collectNextLine();
+                        } else {
+                            alreadyCollectedLine = false;
+                        }
+
+                        switch (self.state) {
+                            case 'HEADER':
+                                // 13-18 - Allow a header (metadata) under the WEBVTT line.
+                                if (colonDelimRegex.test(line)) {
+                                    parseHeader(line);
+                                } else if (!line) {
+                                    // An empty line terminates the header and starts the body (cues).
+                                    self.state = 'ID';
+                                }
+                                break;
+                            case 'NOTE':
+                                // Ignore NOTE blocks.
+                                if (!line) {
+                                    self.state = 'ID';
+                                }
+                                break;
+                            case 'ID':
+                                // Check for the start of NOTE blocks.
+                                if (noteRegex.test(line)) {
+                                    self.state = 'NOTE';
+                                    break;
+                                }
+                                // 19-29 - Allow any number of line terminators, then initialize new cue values.
+                                if (!line) {
+                                    break;
+                                }
+                                self.cue = new VTTCue(0, 0, '');
+                                self.state = 'CUE';
+                                // 30-39 - Check if self line contains an optional identifier or timing data.
+                                if (!arrowRegex.test(line)) {
+                                    self.cue.id = line;
+                                    break;
+                                }
+                            // Process line as start of a cue.
+                            /* falls through*/
+                            case 'CUE':
+                                // 40 - Collect cue timings and settings.
+                                try {
+                                    parseCue(line, self.cue, self.regionList);
+                                } catch (e) {
+                                    // In case of an error ignore rest of the cue.
+                                    self.cue = null;
+                                    self.state = 'BADCUE';
+                                    break;
+                                }
+                                self.state = 'CUETEXT';
+                                break;
+                            case 'CUETEXT':
+                                var hasSubstring = arrowRegex.test(line);
+                                // 34 - If we have an empty line then report the cue.
+                                // 35 - If we have the special substring '-->' then report the cue,
+                                // but do not collect the line as we need to process the current
+                                // one as a new cue.
+                                if (!line || hasSubstring && (alreadyCollectedLine = true)) {
+                                    // We are done parsing self cue.
+                                    if (self.oncue) {
+                                        currentCueBatch += 1;
+                                        self.oncue(self.cue);
+                                    }
+                                    self.cue = null;
+                                    self.state = 'ID';
+                                    break;
+                                }
+                                if (self.cue.text) {
+                                    self.cue.text += '\n';
+                                }
+                                self.cue.text += line;
+                                break;
+                            case 'BADCUE': // BADCUE
+                                // 54-62 - Collect and discard the remaining cue.
+                                if (!line) {
+                                    self.state = 'ID';
+                                }
+                                break;
+                        }
+                    }
+
+                    currentCueBatch = 0;
+                    if (self.buffer) {
+                        requestFrame(processBuffer);
+                    } else if (!flushing) {
                         self.flush();
                         return this;
                     }
-
-                    if (!alreadyCollectedLine) {
-                        line = collectNextLine();
-                    } else {
-                        alreadyCollectedLine = false;
-                    }
-
-                    switch (self.state) {
-                        case 'HEADER':
-                            // 13-18 - Allow a header (metadata) under the WEBVTT line.
-                            if (colonDelimRegex.test(line)) {
-                                parseHeader(line);
-                            } else if (!line) {
-                                // An empty line terminates the header and starts the body (cues).
-                                self.state = 'ID';
-                            }
-                            break;
-                        case 'NOTE':
-                            // Ignore NOTE blocks.
-                            if (!line) {
-                                self.state = 'ID';
-                            }
-                            break;
-                        case 'ID':
-                            // Check for the start of NOTE blocks.
-                            if (noteRegex.test(line)) {
-                                self.state = 'NOTE';
-                                break;
-                            }
-                            // 19-29 - Allow any number of line terminators, then initialize new cue values.
-                            if (!line) {
-                                break;
-                            }
-                            self.cue = new VTTCue(0, 0, '');
-                            self.state = 'CUE';
-                            // 30-39 - Check if self line contains an optional identifier or timing data.
-                            if (!arrowRegex.test(line)) {
-                                self.cue.id = line;
-                                break;
-                            }
-                        // Process line as start of a cue.
-                        /* falls through*/
-                        case 'CUE':
-                            // 40 - Collect cue timings and settings.
-                            try {
-                                parseCue(line, self.cue, self.regionList);
-                            } catch (e) {
-                                // In case of an error ignore rest of the cue.
-                                self.cue = null;
-                                self.state = 'BADCUE';
-                                break;
-                            }
-                            self.state = 'CUETEXT';
-                            break;
-                        case 'CUETEXT':
-                            var hasSubstring = arrowRegex.test(line);
-                            // 34 - If we have an empty line then report the cue.
-                            // 35 - If we have the special substring '-->' then report the cue,
-                            // but do not collect the line as we need to process the current
-                            // one as a new cue.
-                            if (!line || hasSubstring && (alreadyCollectedLine = true)) {
-                                // We are done parsing self cue.
-                                if (self.oncue) {
-                                    currentCueBatch += 1;
-                                    self.oncue(self.cue);
-                                }
-                                self.cue = null;
-                                self.state = 'ID';
-                                break;
-                            }
-                            if (self.cue.text) {
-                                self.cue.text += '\n';
-                            }
-                            self.cue.text += line;
-                            break;
-                        case 'BADCUE': // BADCUE
-                            // 54-62 - Collect and discard the remaining cue.
-                            if (!line) {
-                                self.state = 'ID';
-                            }
-                            break;
-                    }
-                }
-
-                currentCueBatch = 0;
-                if (self.buffer) {
-                    try {
-                        requestFrame(processBuffer);
-                    } catch (e) {
-                        errorHandler();
-                    }
-                } else if (!flushing) {
-                    self.flush();
+                } catch (e) {
+                    errorHandler(e);
                     return this;
                 }
             }
 
-            try {
-                // Immediately process some cues
-                processBuffer();
-            } catch(e) {
-                errorHandler();
-            }
+            // Immediately process some cues
+            processBuffer();
         },
         flush: function () {
             var self = this;
