@@ -151,13 +151,14 @@ define([
                 return DefaultProvider.setState.apply(this, arguments);
             },
             getSwfObject: function(parent) {
-                var found = parent.getElementsByTagName('object')[0];
+                var found = parent.querySelector('object');
                 if (found) {
-                    found.off(null, null, this);
-                    if (!found.embedCallback) {
+                    if (!('embedCallback' in found)) {
+                        found.off(null, null, this);
                         return found;
                     }
-                    parent.removeChild(found);
+                    EmbedSwf.remove(found);
+                    found = null;
                 }
 
                 return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId),
