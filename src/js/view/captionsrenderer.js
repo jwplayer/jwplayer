@@ -26,6 +26,7 @@ define([
         var _captionsWindow;
         var _textContainer;
         var _VTTRenderer;
+        var _captionsFontScale;
 
         _display = document.createElement('div');
         _display.className = 'jw-captions jw-reset';
@@ -55,14 +56,13 @@ define([
         };
 
         this.resize = function () {
-            var scale = _model.get('captionsFontScale');
             var height = _model.get('containerHeight');
 
             if (!height) {
                 return;
             }
 
-            var fontSize = Math.round(height * scale);
+            var fontSize = Math.round(height * _captionsFontScale);
 
             if (_model.get('renderCaptionsNatively')) {
                 _setShadowDOMFontSize(_model.get('id'), fontSize);
@@ -150,6 +150,7 @@ define([
 
             _options = _.extend({}, _defaults, options);
 
+            _captionsFontScale = 0.05; // Default captions font size = 1/20th of the video's height
             _setFontScale(_options.fontSize);
 
             var fontOpacity = _options.fontOpacity;
@@ -186,19 +187,19 @@ define([
         };
 
         function _setFontScale(fontSize) {
-            // Browsers set captions font size to 1/20th of the video's height
-            var scale = 0.05;
+            if (!fontSize) {
+                return;
+            }
+
             var height = _model.get('containerHeight');
 
-            if (fontSize) {
-                if (height) {
-                    // Set scale based on custom font size and player height
-                    scale = fontSize / height;
-                } else {
-                    _model.once('change:containerHeight', _setFontScale);
-                }
+            if (!height) {
+                _model.once('change:containerHeight', _setFontScale);
+                return;
             }
-            _model.set('captionsFontScale', scale);
+
+            // Set scale based on custom font size and player height
+            _captionsFontScale = fontSize / height;
         }
 
         function _setupCaptionStyles(playerId, windowStyle, textStyle, fontSize) {
