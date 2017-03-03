@@ -796,7 +796,7 @@ define([
                     btnClass: btnClass
                 };
                 var replaced = false;
-                var dock =  _.map(_model.get('dock'), function(button) {
+                var dock = _.map(_model.get('dock'), function(button) {
                     if (button.id !== btn.id) {
                         return button;
                     } else if (btn !== button) {
