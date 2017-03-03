@@ -12,7 +12,6 @@ define([
         back: true,
         backgroundOpacity: 100,
         edgeStyle: null,
-        fontSize: 14,
         fontOpacity: 100,
         preprocessor: _.identity
     };
@@ -56,20 +55,21 @@ define([
         };
 
         this.resize = function () {
-            var width = _model.get('containerWidth');
-            var scale = Math.pow(width / 400, 0.6);
+            var scale = _model.get('captionsFontScale');
+            var height = _model.get('containerHeight');
 
-            if (scale) {
-                var size = _options.fontSize * scale;
-                var fontSize = Math.floor(size * 2) / 2;
+            if (!height) {
+                return;
+            }
 
-                if (_model.get('renderCaptionsNatively')) {
-                    _setShadowDOMFontSize(_model.get('id'), fontSize);
-                } else {
-                    _style(_display, {
-                        fontSize: fontSize + 'px'
-                    });
-                }
+            var fontSize = Math.round(height * scale);
+
+            if (_model.get('renderCaptionsNatively')) {
+                _setShadowDOMFontSize(_model.get('id'), fontSize);
+            } else {
+                _style(_display, {
+                    fontSize: fontSize + 'px'
+                });
             }
             this.renderCues(true);
         };
@@ -150,6 +150,8 @@ define([
 
             _options = _.extend({}, _defaults, options);
 
+            _setFontScale(_options.fontSize);
+
             var fontOpacity = _options.fontOpacity;
             var windowOpacity = _options.windowOpacity;
             var edgeStyle = _options.edgeStyle;
@@ -182,6 +184,22 @@ define([
         this.element = function () {
             return _display;
         };
+
+        function _setFontScale(fontSize) {
+            // Browsers set captions font size to 1/20th of the video's height
+            var scale = 0.05;
+            var height = _model.get('containerHeight');
+
+            if (fontSize) {
+                if (height) {
+                    // Set scale based on custom font size and player height
+                    scale = fontSize / height;
+                } else {
+                    _model.once('change:containerHeight', _setFontScale);
+                }
+            }
+            _model.set('captionsFontScale', scale);
+        }
 
         function _setupCaptionStyles(playerId, windowStyle, textStyle, fontSize) {
             // VTT.js DOM window styles
