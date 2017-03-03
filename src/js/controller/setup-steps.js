@@ -30,14 +30,6 @@ define([
                 method: _loadIntersectionObserverPolyfill,
                 depends: []
             },
-            LOAD_POLYFILLS: {
-                method: _loadedPolyfills,
-                depends: [
-                    'LOAD_PROMISE_POLYFILL',
-                    'LOAD_BASE64_POLYFILL',
-                    'LOAD_XO_POLYFILL'
-                ]
-            },
             LOAD_PLUGINS: {
                 method: _loadPlugins,
                 // Plugins require JavaScript Promises
@@ -84,14 +76,13 @@ define([
             SET_ITEM: {
                 method: _setPlaylistItem,
                 depends: [
+                    'INIT_PLUGINS',
                     'FILTER_PLAYLIST'
                 ]
             },
             SEND_READY: {
                 method: _sendReady,
                 depends: [
-                    'LOAD_POLYFILLS',
-                    'INIT_PLUGINS',
                     'SET_ITEM',
                     'DEFERRED'
                 ]
@@ -138,10 +129,6 @@ define([
                 resolve();
             }, 'polyfills.intersection-observer');
         }
-    }
-
-    function _loadedPolyfills(resolve) {
-        resolve();
     }
 
     function _loadPlugins(resolve, _model) {
