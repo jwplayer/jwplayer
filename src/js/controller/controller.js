@@ -795,14 +795,20 @@ define([
                     id: id,
                     btnClass: btnClass
                 };
-                var dock = _model.get('dock');
+                var replaced = false;
+                var dock =  _.map(_model.get('dock'), function(button) {
+                    if (button.id !== btn.id) {
+                        return button;
+                    } else if (btn !== button) {
+                        replaced = true;
+                    }
+                    return btn;
+                });
 
-                if (_.where(dock, { id: btn.id }).length) {
-                    return;
+                if (!replaced) {
+                    dock.push(btn);
                 }
 
-                dock = dock ? _.clone(dock) : [];
-                dock.push(btn);
                 _model.set('dock', dock);
             };
 
