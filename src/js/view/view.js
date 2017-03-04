@@ -515,7 +515,7 @@ define([
                 });
             }
 
-            _model.set('iFrame', (window.top !== window.self));
+            _model.set('iFrame', utils.isIframe());
             _model.set('activeTab', !document.hidden);
             document.addEventListener('visibilitychange', _visibilityChangeListener, false);
 

@@ -106,7 +106,11 @@ define([
     };
 
     browser.isIframe = function () {
-        return (window.frameElement && (window.frameElement.nodeName === 'IFRAME'));
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
     };
 
     /**
