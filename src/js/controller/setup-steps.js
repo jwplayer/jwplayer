@@ -14,20 +14,12 @@ define([
 
     function getQueue() {
         var Components = {
-            DEFERRED: {
-                method: _deferred,
-                depends: []
-            },
             LOAD_PROMISE_POLYFILL: {
                 method: _loadPromisePolyfill,
                 depends: []
             },
             LOAD_BASE64_POLYFILL: {
                 method: _loadBase64Polyfill,
-                depends: []
-            },
-            LOAD_XO_POLYFILL: {
-                method: _loadIntersectionObserverPolyfill,
                 depends: []
             },
             LOAD_PLUGINS: {
@@ -37,13 +29,9 @@ define([
                     'LOAD_PROMISE_POLYFILL'
                 ]
             },
-            INIT_PLUGINS: {
-                method: _initPlugins,
-                depends: [
-                    'LOAD_PLUGINS',
-                    // Plugins require jw-overlays to setup
-                    'SETUP_VIEW'
-                ]
+            LOAD_XO_POLYFILL: {
+                method: _loadIntersectionObserverPolyfill,
+                depends: []
             },
             LOAD_SKIN: {
                 method: _loadSkin,
@@ -52,6 +40,21 @@ define([
             LOAD_PLAYLIST: {
                 method: _loadPlaylist,
                 depends: []
+            },
+            SETUP_VIEW: {
+                method: _setupView,
+                depends: [
+                    'LOAD_SKIN',
+                    'LOAD_XO_POLYFILL'
+                ]
+            },
+            INIT_PLUGINS: {
+                method: _initPlugins,
+                depends: [
+                    'LOAD_PLUGINS',
+                    // Plugins require jw-overlays to setup
+                    'SETUP_VIEW'
+                ]
             },
             CHECK_FLASH: {
                 method: _checkFlash,
@@ -66,19 +69,16 @@ define([
                     'CHECK_FLASH'
                 ]
             },
-            SETUP_VIEW: {
-                method: _setupView,
-                depends: [
-                    'LOAD_SKIN',
-                    'LOAD_XO_POLYFILL'
-                ]
-            },
             SET_ITEM: {
                 method: _setPlaylistItem,
                 depends: [
                     'INIT_PLUGINS',
                     'FILTER_PLAYLIST'
                 ]
+            },
+            DEFERRED: {
+                method: _deferred,
+                depends: []
             },
             SEND_READY: {
                 method: _sendReady,

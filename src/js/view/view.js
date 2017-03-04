@@ -259,14 +259,15 @@ define([
 
             _lastWidth = containerWidth;
             _lastHeight = containerHeight;
-            clearTimeout(_resizeMediaTimeout);
-            _resizeMediaTimeout = setTimeout(_resizeMedia, 50);
 
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
+
             var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
             _checkAudioMode(_model.get('height'));
             _setTimesliderFlags(breakPoint, _model.get('audioMode'), _model.get('controls'));
+
+            _resizeMedia(containerWidth, containerHeight);
 
             _captionsRenderer.resize();
 
@@ -448,15 +449,15 @@ define([
             _model.on('change:skin', this.onChangeSkin, this);
             this.onChangeSkin(_model, _model.get('skin'));
 
-            _videoLayer = _playerElement.getElementsByClassName('jw-media')[0];
+            _videoLayer = _playerElement.querySelector('.jw-media');
 
-            _controlsLayer = _playerElement.getElementsByClassName('jw-controls')[0];
+            _controlsLayer = _playerElement.querySelector('.jw-controls');
 
-            var previewElem = _playerElement.getElementsByClassName('jw-preview')[0];
+            var previewElem = _playerElement.querySelector('.jw-preview');
             _preview = new Preview(_model);
             _preview.setup(previewElem);
 
-            var _titleElement = _playerElement.getElementsByClassName('jw-title')[0];
+            var _titleElement = _playerElement.querySelector('.jw-title');
             _title = new Title(_model);
             _title.setup(_titleElement);
 
@@ -508,19 +509,15 @@ define([
             var aspectratio = _model.get('aspectratio');
             if (aspectratio) {
                 utils.addClass(_playerElement, 'jw-flag-aspect-mode');
-                var aspectRatioContainer = _playerElement.getElementsByClassName('jw-aspect')[0];
+                var aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
                 _styles(aspectRatioContainer, {
                     paddingTop: aspectratio
                 });
             }
 
-            if (!_.isUndefined(document.hidden)) {
-                _model.set('activeTab', !document.hidden);
-                document.addEventListener('visibilitychange', _visibilityChangeListener, false);
-            } else {
-                // Default activeTab to true if the browser doesn't implement the visibility API
-                _model.set('activeTab', true);
-            }
+            _model.set('iFrame', (window.top !== window.self));
+            _model.set('activeTab', !document.hidden);
+            document.addEventListener('visibilitychange', _visibilityChangeListener, false);
 
             _model.set('viewSetup', true);
         };
@@ -814,13 +811,13 @@ define([
                 if (!_videoLayer) {
                     return;
                 }
-                mediaWidth = _videoLayer.clientWidth;
+                mediaWidth = _model.get('containerWidth') || _videoLayer.clientWidth;
             }
             if (!mediaHeight || isNaN(Number(mediaHeight))) {
                 if (!_videoLayer) {
                     return;
                 }
-                mediaHeight = _videoLayer.clientHeight;
+                mediaHeight = _model.get('containerHeight') || _videoLayer.clientHeight;
             }
 
             if (_preview) {
