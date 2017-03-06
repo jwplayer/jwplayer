@@ -277,14 +277,12 @@ define([
 
             function _getVisibility() {
                 // Set visibility to 1 if we're in fullscreen
-                var fullscreen = _model.get('fullscreen');
-                if (fullscreen) {
+                if (_model.get('fullscreen')) {
                     return 1;
                 }
 
                 // Set visibility to 0 if we're not in the active tab
-                var activeTab = _model.get('activeTab');
-                if (!activeTab) {
+                if (!_model.get('activeTab')) {
                     return 0;
                 }
                 // Otherwise, set it to the intersection ratio reported from the intersection observer
@@ -292,8 +290,7 @@ define([
 
                 if (_.isUndefined(intersectionRatio)) {
                     // Set visibility to 1 if we're in an iFrame and intersection is unknown
-                    var iFrame = _model.get('iFrame');
-                    if (iFrame) {
+                    if (_model.get('iFrame')) {
                         return 1;
                     }
 
