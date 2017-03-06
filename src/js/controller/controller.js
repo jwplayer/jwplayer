@@ -84,10 +84,7 @@ define([
 
             _model.setup(config, storage);
             _view = this._view = new View(_api, _model);
-
-            if (_model.get('autostart') === 'viewable' && (window.self !== window.top)) {
-                _model.set('autostart', true);
-            }
+            
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
