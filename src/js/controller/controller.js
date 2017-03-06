@@ -206,7 +206,8 @@ define([
 
                 // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
                 _model.set('playOnViewable', _model.autoStartOnMobile() || _model.get('autostart') === 'viewable');
-                _setViewable(_getVisibility());
+                _updateVisibility();
+                _updateViewable();
 
                 _model.on('change:activeTab', _updateVisibility);
                 _model.on('change:fullscreen', _updateVisibility);
@@ -356,17 +357,15 @@ define([
                 };
             }
 
-            function _setViewable(visibility) {
-                var viewable;
-                if (!_.isUndefined(visibility)) {
-                    viewable = Math.round(visibility);
-                    _model.set('viewable', viewable);
-                }
-                return viewable;
-            }
-
             function _updateVisibility() {
                 _model.set('visibility', _getVisibility());
+            }
+
+            function _updateViewable() {
+                var visibility = _model.get('visibility');
+                if (!_.isUndefined(visibility)) {
+                    _model.set('viewable', Math.round(visibility));
+                }
             }
 
             function _checkAutoStart() {
@@ -379,9 +378,10 @@ define([
                 }
             }
 
-            function _onVisibilityChange(model, visibility) {
-                var viewable = _setViewable(visibility);
-                if (viewable && model.get('playOnViewable')) {
+            function _onVisibilityChange() {
+                _updateViewable();
+                var viewable = _model.get('viewable');
+                if (viewable && _model.get('playOnViewable')) {
                     _autoStart();
                 } else if (!viewable && utils.isMobile()) {
                     _this.pause({ reason: 'autostart' });
