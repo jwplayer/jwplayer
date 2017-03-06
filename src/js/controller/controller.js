@@ -84,7 +84,7 @@ define([
 
             _model.setup(config, storage);
             _view = this._view = new View(_api, _model);
-            
+
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
@@ -860,7 +860,7 @@ define([
             this.next = _nextUp;
 
             this.addButton = function(img, tooltip, callback, id, btnClass) {
-                var btn = {
+                var newButton = {
                     img: img,
                     tooltip: tooltip,
                     callback: callback,
@@ -868,17 +868,20 @@ define([
                     btnClass: btnClass
                 };
                 var replaced = false;
-                var dock = _.map(_model.get('dock'), function(button) {
-                    if (button.id !== btn.id) {
-                        return button;
-                    } else if (btn !== button) {
+                var dock = _.map(_model.get('dock'), function(dockButton) {
+                    var replaceButton =
+                        dockButton !== newButton &&
+                        dockButton.id === newButton.id;
+
+                    if (replaceButton) {
                         replaced = true;
+                        return newButton;
                     }
-                    return btn;
+                    return dockButton;
                 });
 
                 if (!replaced) {
-                    dock.push(btn);
+                    dock.push(newButton);
                 }
 
                 _model.set('dock', dock);
