@@ -103,7 +103,6 @@ body .jwplayer.jw-state-error {
     }
     .jw-title-secondary {
       display: block;
-      padding-top: 0.75em;
     }
   }
 
@@ -179,31 +178,21 @@ body .jwplayer.jw-state-error {
   }
 }
 
-.jw-state-idle,
-.jwplayer.jw-state-complete:not(.jw-flag-casting),
-body .jwplayer.jw-state-error {
-  &.jw-flag-audio-player {
-    .jw-preview {
-      display: none;
-    }
-
-    .jw-title-primary {
-      width: auto;
-      display: inline-block;
-      padding-right: 0;
-    }
-
-    .jw-title-secondary {
-      width: auto;
-      display: inline-block;
-      padding-left: 0;
-    }
-  }
-}
-
-body .jwplayer.jw-flag-audio-player .jw-error {
+body .jwplayer.jw-state-error.jw-flag-audio-player {
   .jw-preview {
     display: none;
+  }
+
+  .jw-title-primary {
+    width: auto;
+    display: inline-block;
+    padding-right: 0;
+  }
+
+  .jw-title-secondary {
+    width: auto;
+    display: inline-block;
+    padding-left: 0;
   }
 }
 
