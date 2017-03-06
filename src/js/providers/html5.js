@@ -157,7 +157,7 @@ define([
         }
 
         function _timeUpdateHandler() {
-            clearTimeouts();
+            clearTimeout(_playbackTimeout);
 
             _canSeek = true;
             if (_this.state === states.STALLED) {
