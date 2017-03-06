@@ -7,12 +7,6 @@
     display: table;
   }
 
-  &.jw-state-idle:not(.jw-flag-cast-available) {
-    .jw-display {
-      padding: 0;
-    }
-  }
-
   /* ==================================================
   display
   */
@@ -25,6 +19,12 @@
         padding-top: @mobile-touch-target;
         padding-bottom: @mobile-touch-target * 1.5;
       }
+  }
+
+  &.jw-state-idle:not(.jw-flag-cast-available), &.jw-state-error {
+    .jw-display {
+      padding: 0;
+    }
   }
 
   /* ==================================================
