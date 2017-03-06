@@ -84,10 +84,7 @@ define([
 
             _model.setup(config, storage);
             _view = this._view = new View(_api, _model);
-
-            if (_model.get('autostart') === 'viewable' && (window.self !== window.top)) {
-                _model.set('autostart', true);
-            }
+            
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
@@ -188,9 +185,6 @@ define([
                 });
             });
 
-            _model.on('change:visibility', _onVisibilityChange);
-            _model.on('change:activeTab', _onActiveTabChange);
-
             // Ensure captionsList event is raised after playlistItem
             _captions = new Captions(_api, _model);
 
@@ -209,6 +203,21 @@ define([
                 _setup = null;
 
                 _view.on('all', _triggerAfterReady, _this);
+
+                // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
+                _model.set('playOnViewable', _model.autoStartOnMobile() || _model.get('autostart') === 'viewable');
+                _updateVisibility();
+                _updateViewable();
+
+                _model.on('change:activeTab', _updateVisibility);
+                _model.on('change:fullscreen', _updateVisibility);
+                _model.on('change:intersectionRatio', _updateVisibility);
+                _model.on('change:visibility', _onVisibilityChange);
+
+                var related = _api.getPlugin('related');
+                if (related) {
+                    related.on('nextUp', _model.setNextUp, _model);
+                }
 
                 // Fire 'ready' once the view has resized so that player width and height are available
                 // (requires the container to be in the DOM)
@@ -235,24 +244,7 @@ define([
                     _preplay = false;
                 }
 
-                var related = _api.getPlugin('related');
-                if (related) {
-                    related.on('nextUp', _model.setNextUp, _model);
-                }
-
-                _configureAutostart();
-                _checkVisibility();
-            }
-
-            function _configureAutostart() {
-                var autostart = _model.get('autostart');
-                if (!utils.isMobile() && autostart === true) {
-                    // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
-                    _autoStart();
-                } else {
-                    // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
-                    _model.set('playOnViewable', _model.autoStartOnMobile() || _model.get('autostart') === 'viewable');
-                }
+                _checkAutoStart();
             }
 
             function _observePlayerContainer(container) {
@@ -280,34 +272,116 @@ define([
                     var entry = entries[0];
                     if (entry.target === _this.getContainer()) {
                         _model.set('intersectionRatio', entry.intersectionRatio);
-                        _checkVisibility();
                     }
                 }
             }
 
-            function _onActiveTabChange() {
-                _checkVisibility();
-            }
-
-            function _checkVisibility() {
-                // Set visibility to 0 if we're not in the active tab
-                // Otherwise, set it to the intersection ratio reported from the intersection observer
-                var intersectionRatio = _model.get('intersectionRatio');
-                var activeTab = _model.get('activeTab');
-
-                // We don't yet know if the player is viewable
-                if (activeTab && _.isUndefined(intersectionRatio)) {
-                    return;
+            function _getVisibility() {
+                // Set visibility to 1 if we're in fullscreen
+                if (_model.get('fullscreen')) {
+                    return 1;
                 }
 
-                var visibility = activeTab ? intersectionRatio : 0;
-                _model.set('visibility', visibility);
+                // Set visibility to 0 if we're not in the active tab
+                if (!_model.get('activeTab')) {
+                    return 0;
+                }
+                // Otherwise, set it to the intersection ratio reported from the intersection observer
+                var intersectionRatio = _model.get('intersectionRatio');
+
+                if (_.isUndefined(intersectionRatio)) {
+                    // Set visibility to 1 if we're in an iFrame and intersection is unknown
+                    if (_model.get('iFrame')) {
+                        return 1;
+                    }
+
+                    // Get intersectionRatio through brute force
+                    intersectionRatio = _computeVisibility(_view.element());
+                }
+
+                return intersectionRatio;
             }
 
-            function _onVisibilityChange(model, visibility) {
-                var viewable = Math.round(visibility);
-                model.set('viewable', viewable);
-                if (viewable && model.get('playOnViewable')) {
+            function _computeVisibility(target) {
+                var html = document.documentElement;
+                var body = document.body;
+                var rootRect = {
+                    top: 0,
+                    left: 0,
+                    right: html.clientWidth || body.clientWidth,
+                    width: html.clientWidth || body.clientWidth,
+                    bottom: html.clientHeight || body.clientHeight,
+                    height: html.clientHeight || body.clientHeight
+                };
+
+                var targetRect = utils.bounds(target);
+                var intersectionRect = targetRect;
+                var parent = target.parentNode;
+                var atRoot = false;
+
+                while (!atRoot) {
+                    var parentRect = null;
+                    if (!parent || parent.nodeType !== 1) {
+                        atRoot = true;
+                        parentRect = rootRect;
+                    } else if (window.getComputedStyle(parent).overflow !== 'visible') {
+                        parentRect = utils.bounds(parent);
+                    }
+                    if (parentRect) {
+                        intersectionRect = computeRectIntersection(parentRect, intersectionRect);
+                        if (!intersectionRect) {
+                            return 0;
+                        }
+                    }
+                    parent = parent.parentNode;
+                }
+                var targetArea = targetRect.width * targetRect.height;
+                var intersectionArea = intersectionRect.width * intersectionRect.height;
+                return targetArea ? (intersectionArea / targetArea) : 0;
+            }
+
+            function computeRectIntersection(rect1, rect2) {
+                var top = Math.max(rect1.top, rect2.top);
+                var bottom = Math.min(rect1.bottom, rect2.bottom);
+                var left = Math.max(rect1.left, rect2.left);
+                var right = Math.min(rect1.right, rect2.right);
+                var width = right - left;
+                var height = bottom - top;
+                return (width >= 0 && height >= 0) && {
+                    top: top,
+                    bottom: bottom,
+                    left: left,
+                    right: right,
+                    width: width,
+                    height: height
+                };
+            }
+
+            function _updateVisibility() {
+                _model.set('visibility', _getVisibility());
+            }
+
+            function _updateViewable() {
+                var visibility = _model.get('visibility');
+                if (!_.isUndefined(visibility)) {
+                    _model.set('viewable', Math.round(visibility));
+                }
+            }
+
+            function _checkAutoStart() {
+                var autostart = _model.get('autostart');
+                if (!utils.isMobile() && autostart === true) {
+                    // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
+                    _autoStart();
+                } else {
+                    _onVisibilityChange(_model, _model.get('visibility'));
+                }
+            }
+
+            function _onVisibilityChange() {
+                _updateViewable();
+                var viewable = _model.get('viewable');
+                if (viewable && _model.get('playOnViewable')) {
                     _autoStart();
                 } else if (!viewable && utils.isMobile()) {
                     _this.pause({ reason: 'autostart' });
@@ -352,9 +426,7 @@ define([
                 _stop(true);
                 _this.trigger('destroyPlugin', {});
 
-                _model.once('itemReady', function () {
-                    _configureAutostart();
-                });
+                _model.once('itemReady', _checkAutoStart);
 
                 switch (typeof item) {
                     case 'string':
