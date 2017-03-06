@@ -873,6 +873,8 @@ define([
                         dockButton !== newButton &&
                         dockButton.id === newButton.id;
 
+                    // replace button if its of the same id/type,
+                    // but has different values
                     if (replaceButton) {
                         replaced = true;
                         return newButton;
@@ -880,6 +882,7 @@ define([
                     return dockButton;
                 });
 
+                // add button if it has not been replaced
                 if (!replaced) {
                     dock.push(newButton);
                 }
