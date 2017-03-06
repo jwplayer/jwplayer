@@ -290,11 +290,6 @@ define([
                 var intersectionRatio = _model.get('intersectionRatio');
 
                 if (_.isUndefined(intersectionRatio)) {
-                    // Set visibility to 1 if we're in an iFrame and intersection is unknown
-                    if (_model.get('iFrame')) {
-                        return 1;
-                    }
-
                     // Get intersectionRatio through brute force
                     intersectionRatio = _computeVisibility(_view.element());
                 }
@@ -314,7 +309,11 @@ define([
                     height: html.clientHeight || body.clientHeight
                 };
 
-                var targetRect = utils.bounds(target);
+                if (!body.contains(target)) {
+                    return 0;
+                }
+                var targetRect = target.getBoundingClientRect();
+
                 var intersectionRect = targetRect;
                 var parent = target.parentNode;
                 var atRoot = false;
