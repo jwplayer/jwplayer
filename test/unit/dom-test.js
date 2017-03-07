@@ -137,7 +137,7 @@ define([
         dom.empty(null);
     });
 
-    test('addStyleSheet test', function(assert) {
+    QUnit.skip('addStyleSheet test', function(assert) {
         var url = require.toUrl('./data/playlist.json');
         dom.addStyleSheet(url);
 

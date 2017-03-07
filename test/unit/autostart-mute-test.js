@@ -1,8 +1,9 @@
 define([
     'test/underscore',
+    'jquery',
     'utils/helpers',
     'api/api'
-], function (_, utils, Api) {
+], function (_, $, utils, Api) {
     var test = QUnit.test.bind(QUnit);
 
     var tru = function () { return true; };
