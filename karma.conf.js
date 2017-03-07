@@ -1,7 +1,9 @@
 /* eslint-env node */
 /* eslint no-process-env: 0 */
+var webpack = require('webpack');
+var path = require('path');
 
-module.exports = function( config ) {
+module.exports = function(config) {
     var env = process.env;
     var isJenkins = !!process.env.JENKINS_HOME;
     var serverPort = process.env.KARMA_PORT || 9876;
@@ -16,24 +18,7 @@ module.exports = function( config ) {
     var packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
     config.set({
-
-        basePath: '.',
-
-        plugins: [
-            'karma-coverage',
-            'karma-requirejs',
-            'karma-qunit',
-            'karma-junit-reporter',
-            'karma-spec-reporter',
-            'karma-phantomjs-launcher',
-            'karma-chrome-launcher',
-            'karma-firefox-launcher',
-            'karma-safari-launcher',
-            'karma-browserstack-launcher',
-            'karma-sinon',
-            'karma-babel-preprocessor'
-        ],
-        frameworks: ['requirejs', 'qunit', 'sinon'],
+        frameworks: ['qunit'],
         reporters: testReporters,
         port: serverPort, // web server port
         colors: !isJenkins, // colors in the output (reporters and logs)
@@ -49,7 +34,7 @@ module.exports = function( config ) {
         // config.LOG_ERROR
         // config.LOG_WARN
         // config.LOG_INFO
-        // config.LOG_DEBUG // LOG_DEBUG is useful for writing karma server network status messages to stdio
+        //  config.LOG_DEBUG LOG_DEBUG is useful for writing karma server network status messages to stdio
         logLevel: config.LOG_INFO,
 
         browsers: [
@@ -76,58 +61,96 @@ module.exports = function( config ) {
         // to avoid DISCONNECTED messages when connecting to BrowserStack
         browserDisconnectTimeout : 20 * 1000, // default 2000
         browserDisconnectTolerance : 1, // default 0
-        browserNoActivityTimeout : 100 * 1000, //default 10000
+        browserNoActivityTimeout : 10 * 1000, //default 10000
         captureTimeout : 120 * 1000, //default 60000
 
         files : [
             //3rd Party Code
-            { pattern: 'node_modules/handlebars/dist/*.js', included: false },
-            { pattern: 'node_modules/handlebars-loader/*.js', included: false },
-            { pattern: 'node_modules/jquery/dist/*.js', included: false },
-            { pattern: 'node_modules/phantomjs-polyfill/*.js', included: false },
-            { pattern: 'node_modules/intersection-observer/intersection-observer.js', included: false },
-            { pattern: 'node_modules/requirejs/require.js', included: true },
-            { pattern: 'node_modules/requirejs-handlebars/*.js', included: false },
-            { pattern: 'node_modules/requirejs-text/*.js', included: false },
-            { pattern: 'node_modules/simple-style-loader/addStyles.js', included: false },
-            { pattern: 'node_modules/underscore/*.js', included: false },
-            { pattern: 'node_modules/sinon/**/*.js', included: false },
-
-            // Require Config
-            { pattern: 'test/config.js', included: true },
-
-            // Source
-            { pattern: 'src/js/**/*.js', included: false },
-            { pattern: 'src/css/**/*.less', included: false },
-            { pattern: 'src/templates/**/*.html', included: false },
-
-            // Tests
-            { pattern: 'test/data/*.js', included: false },
-            { pattern: 'test/data/*.json', included: false },
-            { pattern: 'test/data/*.xml', included: false },
-            { pattern: 'test/mock/*.js', included: false },
-            { pattern: 'test/unit/*.js', included: false },
+            { pattern: 'test-context.js' },
         ],
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            // source files, that you want to generate coverage for
-            'src/js/view/controls/**/*.js': ['babel'],
-            'src/js/*.js': ['coverage'],
-            'src/js/!(polyfill)/*.js': ['coverage']
+            'test-context.js': ['webpack']
         },
         coverageReporter: {
             type: 'html',
             dir: 'reports/coverage'
         },
-        babelPreprocessor: {
-            options: {
-                presets: ['es2015-loose']
-            }
+        webpack: {
+            umdNamedDefine: true,
+            resolve: {
+                modulesDirectories: [
+                    'src/js/',
+                    'src',
+                    'src/js/polyfills/',
+                    'node_modules',
+                ],
+                alias: {
+                    'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
+                    'jquery': path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
+                    'sinon': path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
+                    'data': path.resolve(__dirname + '/test/data'),
+                    'mock': path.resolve(__dirname + '/test/mock'),
+                    'utils/video': path.resolve(__dirname + '/test/mock/video.js')
+                }
+            },
+            module: {
+                umdNamedDefine: true,
+                loaders: [
+                    {
+                        test: /\.less$/,
+                        loaders: [
+                            'simple-style-loader',
+                            'css',
+                            'autoprefixer?browsers=' + encodeURIComponent('> 1%'),
+                            'less?compress',
+                        ]
+                    },
+                    {
+                        test: /\.html$/,
+                        include: [
+                            /src/,
+                        ],
+                        loader: 'handlebars-loader'
+                    },
+                    {
+                        test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+                        loader: 'file-loader?name=[name].[ext]'
+                    },
+                    {
+                        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+                        loader: 'file-loader?name=[name].[ext]'
+                    },
+                    {
+                        test: /\.js/,
+                        exclude: /node_modules/,
+                        query: {
+                            presets: ['es2015']
+                        },
+                        loader: 'babel-loader'
+                    }
+                ],
+                noParse: [
+                    /node_modules\/sinon\//,
+                    /node_modules\/jquery\//
+                ]
+            },
+            plugins: [
+                new webpack.optimize.LimitChunkCountPlugin({
+                    maxChunks: 1
+                }),
+                new webpack.DefinePlugin({
+                    __SELF_HOSTED__: true,
+                    __REPO__ : '\'\'',
+                    __DEBUG__ : false,
+                    __BUILD_VERSION__:  '\'' + '7.10.0' + '\'',
+                    __FLASH_VERSION__: 11.2
+                }),
+            ]
         },
-
-            // number of browsers to run at once
+        // number of browsers to run at once
         concurrency: Infinity
     });
 };

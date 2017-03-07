@@ -132,6 +132,7 @@ define([
 
     // HTML5 Primary
     test('html5 primary', function (assert) {
+        console.log('before html5 tests')
         assert.expect(17);
 
         var runTest = getProvidersTestRunner(assert, 'html5');
