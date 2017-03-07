@@ -1,5 +1,6 @@
 /* jshint node: true */
 var webpack = require('webpack');
+var path = require('path');
 var env = process.env;
 var _ = require('lodash');
 var argv = require('minimist')(process.argv.slice(2));
@@ -138,6 +139,10 @@ var multiConfig = _.compact(_.map([
                 {
                     test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
                     loader: 'file-loader?name=[name].[ext]'
+                },
+                {
+                    test: /\.js$/,
+                    loader: 'babel-loader'
                 }
             ]
         }

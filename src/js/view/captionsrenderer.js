@@ -27,7 +27,7 @@ define([
         var _display;
         var _captionsWindow;
         var _textContainer;
-        var _VTTRenderer;
+        var _WebVTT;
         var _fontScale;
 
         _display = document.createElement('div');
@@ -64,8 +64,8 @@ define([
 
         this.renderCues = function (updateBoxPosition) {
             updateBoxPosition = !!updateBoxPosition;
-            if (_VTTRenderer) {
-                _VTTRenderer.WebVTT.processCues(window, _currentCues, _display, updateBoxPosition);
+            if (_WebVTT) {
+                _WebVTT.processCues(window, _currentCues, _display, updateBoxPosition);
             }
         };
 
@@ -300,7 +300,8 @@ define([
             // don't load the polyfill or do unnecessary work if rendering natively
             if (!_model.get('renderCaptionsNatively')) {
                 require.ensure(['polyfills/vtt'], function (require) {
-                    _VTTRenderer = require('polyfills/vtt');
+                    require('polyfills/vtt');
+                    _WebVTT = window.WebVTT;
                 }, 'polyfills.vttrenderer');
             }
         }
