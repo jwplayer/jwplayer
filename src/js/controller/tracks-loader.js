@@ -98,8 +98,7 @@ define([
             };
 
             try {
-                // Parse calls onflush internally
-                parser.parse(text);
+                parser.parse(text).flush();
             } catch (error) {
                 delete track.xhr;
                 errorHandler(error);
