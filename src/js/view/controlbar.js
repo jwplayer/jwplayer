@@ -86,19 +86,15 @@ define([
         this._api = _api;
         this._model = _model;
         this._isMobile = utils.isMobile();
-        this._localization = this._model.get('localization');
-        this.setup();
+        this._localization = _model.get('localization');
+        this.setup(_api, _model);
     }
 
     _.extend(Controlbar.prototype, Events, {
 
-        setup: function() {
-            this.build();
-            this.initialize();
-        },
+        setup: function(_api, _model) {
 
-        build: function() {
-            var timeSlider = new TimeSlider(this._model, this._api);
+            var timeSlider = new TimeSlider(_model, _api);
             var volumeSlider;
             var volumeTooltip;
             var muteButton;
@@ -111,16 +107,16 @@ define([
             // Do not initialize volume slider or tooltip on mobile
             if (!this._isMobile) {
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');// , vol);
-                volumeTooltip = new VolumeTooltip(this._model, 'jw-icon-volume', vol);
+                volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
-            if (!this._model.get('sdkplatform') && !(utils.isIOS(8) || utils.isIOS(9))) {
-                muteButton = button('jw-icon-volume', this._api.setMute, vol);
+            if (!_model.get('sdkplatform') && !(utils.isIOS(8) || utils.isIOS(9))) {
+                muteButton = button('jw-icon-volume', _api.setMute, vol);
             }
 
-            var nextButton = button('jw-icon-next', this._api.next.bind(this), next);
+            var nextButton = button('jw-icon-next', _api.next.bind(this), next);
 
-            if (this._model.get('nextUpDisplay')) {
+            if (_model.get('nextUpDisplay')) {
                 new UI(nextButton.element(), { useHover: true, directSelect: true })
                     .on('over', function () {
                         this._model.set('nextUpVisible', true);
@@ -135,7 +131,7 @@ define([
 
             this.elements = {
                 alt: text('jw-text-alt', 'status'),
-                play: button('jw-icon-playback', this._api.play.bind(this, reasonInteraction()), play),
+                play: button('jw-icon-playback', _api.play.bind(this, reasonInteraction()), play),
                 rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
                 next: nextButton,
                 elapsed: text('jw-text-elapsed', 'timer'),
@@ -149,8 +145,8 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: createCastButton(this._api.castToggle, this._localization),
-                fullscreen: button('jw-icon-fullscreen', this._api.setFullscreen, this._localization.fullscreen)
+                cast: createCastButton(_api.castToggle, this._localization),
+                fullscreen: button('jw-icon-fullscreen', _api.setFullscreen, this._localization.fullscreen)
             };
 
             this.layout = {
@@ -203,36 +199,33 @@ define([
             this.el.appendChild(this.elements.center);
             this.el.appendChild(this.elements.right);
 
-        },
-
-        initialize: function() {
             // Initial State
             this.elements.play.show();
             this.elements.fullscreen.show();
             if (this.elements.mute) {
                 this.elements.mute.show();
             }
-            this.onVolume(this._model, this._model.get('volume'));
+            this.onVolume(_model, _model.get('volume'));
             this.onPlaylistItem();
-            this.onMediaModel(this._model, this._model.get('mediaModel'));
-            this.onCastAvailable(this._model, this._model.get('castAvailable'));
-            this.onCastActive(this._model, this._model.get('castActive'));
-            this.onCaptionsList(this._model, this._model.get('captionsList'));
+            this.onMediaModel(_model, _model.get('mediaModel'));
+            this.onCastAvailable(_model, _model.get('castAvailable'));
+            this.onCastActive(_model, _model.get('castActive'));
+            this.onCaptionsList(_model, _model.get('captionsList'));
 
             // Listen for model changes
-            this._model.change('volume', this.onVolume, this);
-            this._model.change('mute', this.onMute, this);
-            this._model.change('playlistItem', this.onPlaylistItem, this);
-            this._model.change('mediaModel', this.onMediaModel, this);
-            this._model.change('castAvailable', this.onCastAvailable, this);
-            this._model.change('castActive', this.onCastActive, this);
-            this._model.change('duration', this.onDuration, this);
-            this._model.change('position', this.onElapsed, this);
-            this._model.change('fullscreen', this.onFullscreen, this);
-            this._model.change('captionsList', this.onCaptionsList, this);
-            this._model.change('captionsIndex', this.onCaptionsIndex, this);
-            this._model.change('streamType', this.onStreamTypeChange, this);
-            this._model.change('nextUp', this.onNextUp, this);
+            _model.change('volume', this.onVolume, this);
+            _model.change('mute', this.onMute, this);
+            _model.change('playlistItem', this.onPlaylistItem, this);
+            _model.change('mediaModel', this.onMediaModel, this);
+            _model.change('castAvailable', this.onCastAvailable, this);
+            _model.change('castActive', this.onCastActive, this);
+            _model.change('duration', this.onDuration, this);
+            _model.change('position', this.onElapsed, this);
+            _model.change('fullscreen', this.onFullscreen, this);
+            _model.change('captionsList', this.onCaptionsList, this);
+            _model.change('captionsIndex', this.onCaptionsIndex, this);
+            _model.change('streamType', this.onStreamTypeChange, this);
+            _model.change('nextUp', this.onNextUp, this);
 
             // Event listeners
 
@@ -314,10 +307,10 @@ define([
         onPlaylistItem: function() {
             this.elements.time.updateBuffer(0);
             this.elements.time.render(0);
-            this.elements.duration.innerHTML = '00:00';
-            this.elements.durationLeft.innerHTML = '00:00';
-            this.elements.elapsed.innerHTML = '00:00';
-            this.elements.countdown.innerHTML = '00:00';
+            this.elements.duration.textContent = '00:00';
+            this.elements.durationLeft.textContent = '00:00';
+            this.elements.elapsed.textContent = '00:00';
+            this.elements.countdown.textContent = '00:00';
 
             this.elements.audiotracks.setup();
         },
