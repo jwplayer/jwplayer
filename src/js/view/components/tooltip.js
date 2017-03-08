@@ -3,9 +3,13 @@ define([
     'utils/helpers'
 ], function(Extendable, utils) {
     var Tooltip = Extendable.extend({
-        constructor: function(name, ariaText, ariaShown) {
+        constructor: function(name, ariaText, ariaShown, elementShown) {
             this.el = document.createElement('div');
-            this.el.className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset jw-hidden';
+            var className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
+            if (!elementShown) {
+                className += ' jw-hidden';
+            }
+            this.el.className = className;
             if (ariaText) {
                 this.el.setAttribute('tabindex', '0');
                 this.el.setAttribute('role', 'button');
