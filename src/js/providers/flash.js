@@ -303,6 +303,9 @@ define([
                 }, this);
 
                 _swf.on(events.JWPLAYER_MEDIA_META, function(e) {
+                    if (!e) {
+                        return;
+                    }
                     if (e.metadata && e.metadata.type === 'textdata') {
                         this.addCaptionsCue(e.metadata);
                     } else {
