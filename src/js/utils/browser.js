@@ -28,6 +28,8 @@ define([
     browser.isIPad = _browserCheck(/iPad/i);
     browser.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
     browser.isOSX = _browserCheck(/Mac OS X/i);
+    // Check for Facebook App Version to see if it's Facebook
+    browser.isFacebook = _browserCheck(/FBAV/i);
 
     var _isEdge = browser.isEdge = function(browserVersion) {
         if (browserVersion) {
