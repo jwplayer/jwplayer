@@ -80,6 +80,9 @@ define([
     id3Parser.arrayToInt = function(array) {
         var sizeString = '0x';
         for (var i = 0; i < array.length; i++) {
+            if (array[i] < 16) {
+                sizeString += '0';
+            }
             sizeString += array[i].toString(16);
         }
         return parseInt(sizeString);
