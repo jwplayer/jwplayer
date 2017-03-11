@@ -154,6 +154,8 @@ module.exports = function(grunt) {
         },
         flash: {
             options: {
+                flashVersion: '18.0',
+                swfTarget: 29,
                 targetCompilerOptions : [
                     '-define+=JWPLAYER::version,\'' + packageInfo.version + '\''
                 ]
