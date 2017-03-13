@@ -38,6 +38,7 @@ define([
 
     return function View(_api, _model) {
         var _playerElement;
+        var _controls;
         var _controlsLayer;
         var _controlsTimeout = -1;
         var _timeoutDuration = _isMobile ? 4000 : 2000;
@@ -452,8 +453,6 @@ define([
 
             _videoLayer = _playerElement.querySelector('.jw-media');
 
-            _controlsLayer = _playerElement.querySelector('.jw-controls');
-
             var previewElem = _playerElement.querySelector('.jw-preview');
             _preview = new Preview(_model);
             _preview.setup(previewElem);
@@ -461,8 +460,6 @@ define([
             var _titleElement = _playerElement.querySelector('.jw-title');
             _title = new Title(_model);
             _title.setup(_titleElement);
-
-            _setupControls();
 
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
@@ -704,6 +701,10 @@ define([
             _playerElement.onmousedown = handleMouseDown;
             _playerElement.onmouseup = handleMouseUp;
         }
+
+        var _destroyControls = function () {
+            _displayClickHandler.off();
+        };
 
         // Perform the switch to fullscreen
         var _fullscreen = function (model, state) {
@@ -1190,6 +1191,16 @@ define([
             _captionsRenderer.clear();
             _captionsRenderer.setup(_model.get('id'), captionsStyle);
             _captionsRenderer.resize();
+        };
+
+        this.addControls = function (controls) {
+            _controls = controls;
+            _controls.enable();
+            _controlsLayer = _controls.getElement();
+        };
+
+        this.removeControls = function () {
+            _controls.disable();
         };
 
         this.destroy = function () {
