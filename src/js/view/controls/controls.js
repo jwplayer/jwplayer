@@ -1,3 +1,5 @@
+const ClickHandler = require('view/clickhandler');
+
 export default class Controls {
     constructor(context, playerContainer) {
         // Alphabetic order
