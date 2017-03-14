@@ -65,7 +65,7 @@ define([
             var fontSize = Math.round(height * _captionsFontScale);
 
             if (_model.get('renderCaptionsNatively')) {
-                _setShadowDOMFontSize(_model.get('id'), fontSize);
+                // _setShadowDOMFontSize(_model.get('id'), fontSize);
             } else {
                 _style(_display, {
                     fontSize: fontSize + 'px'
@@ -141,6 +141,13 @@ define([
             utils.empty(_display);
         };
 
+        this.clearStyles = function(playerElementId) {
+            console.log('Clearing Styles');
+            cssUtils.clearCss(playerElementId);
+
+            this.setup(playerElementId, {});
+        };
+
         /** Constructor for the renderer. **/
         this.setup = function (playerElementId, options) {
             _captionsWindow = document.createElement('div');
@@ -203,30 +210,50 @@ define([
         }
 
         function _setupCaptionStyles(playerId, windowStyle, textStyle, fontSize) {
+            _setupTextStyles(playerId, textStyle);
+            _setShadowWindowStyles(playerId, windowStyle, fontSize);
+
             // VTT.js DOM window styles
             if (windowStyle.backgroundColor) {
                 cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
-                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
-            }
-
-            if (Object.getOwnPropertyNames(textStyle).length) {
-                cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
-                cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
-            }
-
-            _setShadowDOMFontSize(playerId, fontSize);
-
-            // Shadow DOM text color needs to be important to override Safari
-            if (textStyle.color && utils.isSafari()) {
-                cssUtils.css('#' + playerId + ' .jw-video::cue',
-                    '{color: ' + textStyle.color + ' !important;}', playerId);
             }
 
             // Shadow DOM text background style needs to be important to override Safari
             if (textStyle.backgroundColor) {
                 var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
+
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
                     backdropStyle, playerId);
+            }
+        }
+
+        function _setupTextStyles(playerId, textStyle) {
+            var shadowTextStyle = textStyle;
+
+            if (!Object.getOwnPropertyNames(textStyle).length) {
+                return;
+            }
+
+            if (utils.isSafari()) {
+                shadowTextStyle = _.extend({}, textStyle, { color: textStyle.color + ' !important' });
+            }
+
+            cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+            cssUtils.css('#' + playerId + ' .jw-video::cue', shadowTextStyle, playerId);
+        }
+
+        function _setShadowWindowStyles(playerId, windowStyle, fontSize) {
+            var shadowWindowStyle = windowStyle;
+            var fontSizeStyle = { fontSize: fontSize + 'px !important' };
+
+            if (!utils.isSafari()) {
+                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-container', fontSizeStyle, playerId);
+            } else {
+                shadowWindowStyle = _.extend({}, windowStyle, fontSizeStyle);
+            }
+
+            if (_.size(shadowWindowStyle)) {
+                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', shadowWindowStyle, playerId);
             }
         }
 

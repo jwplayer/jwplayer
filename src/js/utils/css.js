@@ -18,6 +18,8 @@ define([
             }
             var el = document.createElement('div');
             _style(el, styles);
+            console.log('styles', styles);
+            console.log('cssText', el.style.cssText);
             cssText = '{' + el.style.cssText + '}';
         } else if (typeof styles === 'string') {
             cssText = styles;
