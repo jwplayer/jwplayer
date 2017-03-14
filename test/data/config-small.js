@@ -1,3 +1,3 @@
 define({
-    file: 'http://playertest.longtailvideo.com/mp4.mp4'
+    file: '//playertest.longtailvideo.com/barsandtone.mp4'
 });
