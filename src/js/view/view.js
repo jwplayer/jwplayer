@@ -704,6 +704,18 @@ define([
 
         var _destroyControls = function () {
             _displayClickHandler.off();
+            _displayClickHandler = null;
+
+            document.querySelector('.jw-overlays').removeEventListener('mousemove', _userActivityCallback);
+
+            _dock.off();
+            _dock = null;
+
+            _logo.off();
+            _logo = null;
+
+            utils.removeClass(_playerElement, 'jw-flag-touch');
+
         };
 
         // Perform the switch to fullscreen
@@ -1197,6 +1209,7 @@ define([
             _controls = controls;
             _controls.enable();
             _controlsLayer = _controls.getElement();
+            _setupControls();
         };
 
         this.removeControls = function () {
