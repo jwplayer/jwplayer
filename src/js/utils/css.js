@@ -18,7 +18,6 @@ define([
             }
             var el = document.createElement('div');
             _style(el, styles);
-            console.log('cssText', el.style.cssText, el.style);
             cssText = '{' + el.style.cssText + '}';
         } else if (typeof styles === 'string') {
             cssText = styles;
@@ -59,12 +58,29 @@ define([
         }
     };
 
+    function _toStyleString(styles) {
+        var styleString = '{';
+
+        _.each(styles, function(style, name) {
+            styleString += _toSnakeCase(name) + ':\'' + style + '\';';
+        });
+        styleString += '}';
+        console.log('style string', styleString);
+        return styleString;
+    }
+
     function _styleAttributeName(name) {
         name = name.split('-');
         for (var i = 1; i < name.length; i++) {
             name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
         }
         return name.join('');
+    }
+
+    function _toSnakeCase(name) {
+        return name.replace(/([A-Z])/g, function($1) {
+            return '-' + $1.toLowerCase();
+        });
     }
 
     function _styleValue(style, value, important) {
@@ -129,6 +145,7 @@ define([
         style: _style,
         clearCss: styleLoader.clear,
         transform: transform,
-        hexToRgba: hexToRgba
+        hexToRgba: hexToRgba,
+        toStyleString: _toStyleString,
     };
 });

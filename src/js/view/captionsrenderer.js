@@ -202,7 +202,7 @@ define([
             var fontSize = Math.round(height * _fontScale);
 
             if (_model.get('renderCaptionsNatively')) {
-                _setShadowDOMFontSize(_model.get('id'), fontSize);
+                _setShadowDOMDisplayStyles(_model.get('id'), fontSize);
             } else {
                 _style(_display, {
                     fontSize: fontSize + 'px'
@@ -214,21 +214,22 @@ define([
             // VTT.js DOM window styles
             if (windowStyle.backgroundColor) {
                 cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
-                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
             }
 
             if (Object.getOwnPropertyNames(textStyle).length) {
+                console.log('textStyle', textStyle);
                 cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
-                cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
+
+                // Shadow DOM text color needs to be important to override Safari
+                if (textStyle.color && utils.isSafari()) {
+                    textStyle.color += ' !important';
+                    cssUtils.css('#' + playerId + ' .jw-video::cue', _toStyleString(textStyle), playerId);
+                } else {
+                    cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
+                }
             }
 
             _setFontSize();
-
-            // Shadow DOM text color needs to be important to override Safari
-            if (textStyle.color && utils.isSafari()) {
-                cssUtils.css('#' + playerId + ' .jw-video::cue',
-                    '{color: ' + textStyle.color + ' !important;}', playerId);
-            }
 
             // Shadow DOM text background style needs to be important to override Safari
             if (textStyle.backgroundColor) {
@@ -238,11 +239,35 @@ define([
             }
         }
 
-        function _setShadowDOMFontSize(playerId, fontSize) {
+        function _setShadowDOMDisplayStyles(playerId, fontSize) {
             // Set Shadow DOM font size (needs to be important to override browser's in line style)
-            var target = utils.isSafari() ? 'display' : 'container';
-            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target,
-                '{font-size: ' + fontSize + 'px !important;}', playerId);
+            var fontSizeStyle = 'font-size: ' + fontSize + 'px !important;';
+            var bgColorStyle = '';
+
+            if (_options.windowColor && _options.windowOpacity) {
+                bgColorStyle = 'background-color: ' + cssUtils.hexToRgba(_options.windowColor, _options.windowOpacity) + ';';
+            }
+
+            if (utils.isSafari()) {
+                cssUtils.css(
+                    '#' + playerId + ' .jw-video::-webkit-media-text-track-display',
+                    '{' + bgColorStyle + fontSizeStyle + '}',
+                    playerId
+                );
+                return;
+            } else if (bgColorStyle.length > 0) {
+                cssUtils.css(
+                    '#' + playerId + ' .jw-video::-webkit-media-text-track-display',
+                    '{' + bgColorStyle + '}',
+                    playerId
+                );
+            }
+
+            cssUtils.css(
+                '#' + playerId + ' .jw-video::-webkit-media-text-track-container',
+                '{' + fontSizeStyle + '}',
+                playerId
+            );
         }
 
         function _addTextStyle(textStyle, options, fontOpacity) {
@@ -275,6 +300,20 @@ define([
             if (options.textDecoration) {
                 textStyle.textDecoration = options.textDecoration;
             }
+        }
+
+        function _toStyleString(styles) {
+            var styleString = '{';
+
+            _.each(styles, function(style, name) {
+                name = name.replace(/([A-Z])/g, function($1) {
+                    return '-' + $1.toLowerCase();
+                });
+                styleString += name + ': ' + style + ';';
+            });
+            styleString += '}';
+            console.log('style string', styleString);
+            return styleString;
         }
 
         function _addEdgeStyle(option, style, fontOpacity) {
