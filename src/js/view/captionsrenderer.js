@@ -58,8 +58,8 @@ define([
         };
 
         this.resize = function () {
-        _setFontSize();
-        this.renderCues(true);
+            _setFontSize();
+            this.renderCues(true);
         };
 
         this.renderCues = function (updateBoxPosition) {
@@ -213,31 +213,13 @@ define([
 
         function _setupCaptionStyles(playerId, windowStyle, textStyle, fontSize) {
             _setupTextStyles(playerId, textStyle);
-            _setShadowWindowStyles(playerId, windowStyle, fontSize);
 
+            _setShadowWindowStyles(playerId, windowStyle, fontSize);
             _setFontSize();
 
             // VTT.js DOM window styles
             if (windowStyle.backgroundColor) {
                 cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
-        // function _setupCaptionStyles(playerId, windowStyle, textStyle) {
-        //     // VTT.js DOM window styles
-        //     if (windowStyle.backgroundColor) {
-        //         cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
-        //         cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
-        //     }
-        //
-        //     if (Object.getOwnPropertyNames(textStyle).length) {
-        //         cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
-        //         cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
-        //     }
-        //
-        //     _setFontSize();
-        //
-        //     // Shadow DOM text color needs to be important to override Safari
-        //     if (textStyle.color && utils.isSafari()) {
-        //         cssUtils.css('#' + playerId + ' .jw-video::cue',
-        //             '{color: ' + textStyle.color + ' !important;}', playerId);
             }
 
             // Shadow DOM text background style needs to be important to override Safari
@@ -282,6 +264,7 @@ define([
         function _setShadowDOMFontSize(playerId, fontSize) {
             // Set Shadow DOM font size (needs to be important to override browser's in line style)
             var target = utils.isSafari() ? 'display' : 'container';
+
             cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target,
                 '{font-size: ' + fontSize + 'px !important;}', playerId);
         }

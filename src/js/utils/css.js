@@ -18,8 +18,7 @@ define([
             }
             var el = document.createElement('div');
             _style(el, styles);
-            console.log('styles', styles);
-            console.log('cssText', el.style.cssText);
+            console.log('cssText', el.style.cssText, el.style);
             cssText = '{' + el.style.cssText + '}';
         } else if (typeof styles === 'string') {
             cssText = styles;
@@ -72,6 +71,7 @@ define([
         if (value === '' || value === undefined || value === null) {
             return '';
         }
+
         var importantString = important ? ' !important' : '';
 
         // string
