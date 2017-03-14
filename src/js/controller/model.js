@@ -36,10 +36,10 @@ define([
                 flashBlocked: false,
                 fullscreen: false,
                 scrubbing: false,
+                viewSetup: false,
                 duration: 0,
                 position: 0,
-                buffer: 0,
-                visibility: 0
+                buffer: 0
             });
 
             this.updateProviders();
