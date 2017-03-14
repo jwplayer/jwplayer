@@ -917,8 +917,8 @@ define([
 
             this.playerDestroy = function () {
                 this.stop();
-                this.showView(this.originalContainer);
                 _stopObserving();
+                this.showView(this.originalContainer);
 
                 if (_view) {
                     _view.destroy();
