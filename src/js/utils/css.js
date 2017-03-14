@@ -17,6 +17,8 @@ define([
                 return;
             }
             var el = document.createElement('div');
+
+            // TODO: Add warning if any styles have !important, since they will be stripped out here.
             _style(el, styles);
             cssText = '{' + el.style.cssText + '}';
         } else if (typeof styles === 'string') {
@@ -59,14 +61,14 @@ define([
     };
 
     function _toStyleString(styles) {
-        var styleString = '{';
+        var styleString = '';
 
-        _.each(styles, function(style, name) {
-            styleString += _toSnakeCase(name) + ':\'' + style + '\';';
+        styles = styles || {};
+        styles.forEach(function(style, name) {
+            styleString += _toSnakeCase(name) + ': ' + style + ';';
         });
-        styleString += '}';
-        console.log('style string', styleString);
-        return styleString;
+
+        return '{' + styleString + '}';
     }
 
     function _styleAttributeName(name) {
