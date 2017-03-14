@@ -247,7 +247,7 @@ define([
             if (options.back) {
                 var bgColor = options.backgroundColor;
                 var bgOpacity = options.backgroundOpacity;
-                if (bgColor !== _defaults.backgroundColor ||  bgOpacity !== _defaults.backgroundColor) {
+                if (bgColor !== _defaults.backgroundColor || bgOpacity !== _defaults.backgroundColor) {
                     textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, bgOpacity);
                 }
             } else {
