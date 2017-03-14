@@ -20,16 +20,23 @@ define([
     });
 
     test('timer tick test', function(assert) {
+        var done = assert.async();
         var time = new timer();
 
-        time.tick('event1', 5);
-        time.tick('event2', 10);
+        time.tick('event1');
 
-        var between = time.between('event1', 'event2');
-        assert.equal(between, 5, 'between tick time is correctly calculated');
+        setTimeout(function() {
 
-        between = time.between('no', 'value');
-        assert.equal(between, -1, 'invalid tick events returns -1');
+            time.tick('event2');
+
+            var between = time.between('event1', 'event2');
+            assert.ok(between > 5 && between < 30000, 'between tick time is correctly calculated');
+
+            between = time.between('no', 'value');
+            assert.equal(between, null, 'invalid tick events returns null');
+
+            done();
+        }, 10);
     });
 
 });
