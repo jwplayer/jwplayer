@@ -383,7 +383,7 @@ define([
                 if (_model.get('playOnViewable')) {
                     if (viewable) {
                         _autoStart();
-                    } else if (!viewable && utils.isMobile()) {
+                    } else if (utils.isMobile()) {
                         _this.pause({ reason: 'autostart' });
                     }
                 }
