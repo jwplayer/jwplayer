@@ -130,6 +130,7 @@ define([
         };
 
         this.clearStyles = function(playerElementId) {
+            console.log('Clearing Styles');
             cssUtils.clearCss(playerElementId);
 
             this.setup(playerElementId, {});
@@ -211,38 +212,60 @@ define([
         }
 
         function _setupCaptionStyles(playerId, windowStyle, textStyle) {
+            _setupTextStyles(playerId, textStyle);
+            _setFontSize();
+
             // VTT.js DOM window styles
             if (windowStyle.backgroundColor) {
                 cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
-                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
-            }
-
-            if (Object.getOwnPropertyNames(textStyle).length) {
-                cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
-                cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
-            }
-
-            _setFontSize();
-
-            // Shadow DOM text color needs to be important to override Safari
-            if (textStyle.color && utils.isSafari()) {
-                cssUtils.css('#' + playerId + ' .jw-video::cue',
-                    '{color: ' + textStyle.color + ' !important;}', playerId);
             }
 
             // Shadow DOM text background style needs to be important to override Safari
             if (textStyle.backgroundColor) {
                 var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
+
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
                     backdropStyle, playerId);
             }
         }
 
+        function _setupTextStyles(playerId, textStyle) {
+            var shadowTextStyle = textStyle;
+
+            if (!_.size(textStyle)) {
+                cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+                cssUtils.css('#' + playerId + ' .jw-video::cue', shadowTextStyle, playerId);
+                return;
+            }
+
+            if (utils.isSafari()) {
+                shadowTextStyle = _.extend({}, textStyle, { color: textStyle.color + ' !important' });
+            }
+        }
+
         function _setShadowDOMFontSize(playerId, fontSize) {
             // Set Shadow DOM font size (needs to be important to override browser's in line style)
-            var target = utils.isSafari() ? 'display' : 'container';
-            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target,
-                '{font-size: ' + fontSize + 'px !important;}', playerId);
+            var fontSizeStyle = 'font-size: ' + fontSize + 'px !important;';
+            var displayStyle;
+            if (_options.windowColor && _options.windowOpacity) {
+                displayStyle =
+                    '{' +
+                        'background-color: ' + cssUtils.hexToRgba(_options.windowColor, _options.windowOpacity) + ';' +
+                        'font-size: ' + fontSize + 'px !important;' +
+                    '}';
+            } else {
+                displayStyle =
+                    '{' +
+                        'font-size: ' + fontSize + 'px !important;' +
+                    '}';
+            }
+
+            if (utils.isSafari()) {
+                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', displayStyle, playerId);
+            } else {
+                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', '{' + backgroundColorStyle + '}', playerId);
+                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-container', '{' + fontSizeStyle + '}', playerId);
+            }
         }
 
         function _addTextStyle(textStyle, options, fontOpacity) {

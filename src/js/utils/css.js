@@ -71,7 +71,6 @@ define([
         if (value === '' || value === undefined || value === null) {
             return '';
         }
-
         var importantString = important ? ' !important' : '';
 
         // string
