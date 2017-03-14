@@ -10,9 +10,11 @@ define([
 
     var _defaults = {
         back: true,
-        backgroundOpacity: 100,
+        backgroundOpacity: 50,
         edgeStyle: null,
+        fontSize: 14,
         fontOpacity: 100,
+        fontScale: 0.05, // Default captions font size = 1/20th of the video's height
         preprocessor: _.identity
     };
 
@@ -26,7 +28,7 @@ define([
         var _captionsWindow;
         var _textContainer;
         var _VTTRenderer;
-        var _captionsFontScale;
+        var _fontScale;
 
         _display = document.createElement('div');
         _display.className = 'jw-captions jw-reset';
@@ -56,21 +58,7 @@ define([
         };
 
         this.resize = function () {
-            var height = _model.get('containerHeight');
-
-            if (!height) {
-                return;
-            }
-
-            var fontSize = Math.round(height * _captionsFontScale);
-
-            if (_model.get('renderCaptionsNatively')) {
-                _setShadowDOMFontSize(_model.get('id'), fontSize);
-            } else {
-                _style(_display, {
-                    fontSize: fontSize + 'px'
-                });
-            }
+            _setFontSize();
             this.renderCues(true);
         };
 
@@ -150,7 +138,7 @@ define([
 
             _options = _.extend({}, _defaults, options);
 
-            _captionsFontScale = 0.05; // Default captions font size = 1/20th of the video's height
+            _fontScale = _defaults.fontScale;
             _setFontScale(_options.fontSize);
 
             var fontOpacity = _options.fontOpacity;
@@ -186,11 +174,7 @@ define([
             return _display;
         };
 
-        function _setFontScale(fontSize) {
-            if (!fontSize) {
-                return;
-            }
-
+        function _setFontScale() {
             var height = _model.get('containerHeight');
 
             if (!height) {
@@ -198,11 +182,29 @@ define([
                 return;
             }
 
-            // Set scale based on custom font size and player height
-            _captionsFontScale = fontSize / height;
+            // Adjust scale based on font size relative to the default
+            _fontScale = _defaults.fontScale * _options.fontSize / _defaults.fontSize;
         }
 
-        function _setupCaptionStyles(playerId, windowStyle, textStyle, fontSize) {
+        function _setFontSize() {
+            var height = _model.get('containerHeight');
+
+            if (!height) {
+                return;
+            }
+
+            var fontSize = Math.round(height * _fontScale);
+
+            if (_model.get('renderCaptionsNatively')) {
+                _setShadowDOMFontSize(_model.get('id'), fontSize);
+            } else {
+                _style(_display, {
+                    fontSize: fontSize + 'px'
+                });
+            }
+        }
+
+        function _setupCaptionStyles(playerId, windowStyle, textStyle) {
             // VTT.js DOM window styles
             if (windowStyle.backgroundColor) {
                 cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
@@ -214,7 +216,7 @@ define([
                 cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
             }
 
-            _setShadowDOMFontSize(playerId, fontSize);
+            _setFontSize();
 
             // Shadow DOM text color needs to be important to override Safari
             if (textStyle.color && utils.isSafari()) {
@@ -243,8 +245,10 @@ define([
             }
 
             if (options.back) {
-                if (options.backgroundColor) {
-                    textStyle.backgroundColor = cssUtils.hexToRgba(options.backgroundColor, _options.backgroundOpacity);
+                var bgColor = options.backgroundColor;
+                var bgOpacity = options.backgroundOpacity;
+                if (bgColor !== _defaults.backgroundColor || bgOpacity !== _defaults.backgroundColor) {
+                    textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, bgOpacity);
                 }
             } else {
                 textStyle.background = 'transparent';
