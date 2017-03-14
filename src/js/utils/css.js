@@ -63,13 +63,25 @@ define([
     function _toStyleString(styles) {
         var styleString = '';
 
-        styles = styles || {};
-        styles.forEach(function(style, name) {
-            styleString += _toSnakeCase(name) + ': ' + style + ';';
-        });
+        if (!styles) {
+            return '';
+        }
+
+        for (var name in styles) {
+            if (styles.hasOwnProperty(name)) {
+                styleString += _toSnakeCase(name) + ': ' + styles[name] + ';';
+            }
+        }
 
         return '{' + styleString + '}';
     }
+
+    function _toSnakeCase(name) {
+        return name.replace(/([A-Z])/g, function($1) {
+            return '-' + $1.toLowerCase();
+        });
+    }
+
 
     function _styleAttributeName(name) {
         name = name.split('-');
@@ -77,12 +89,6 @@ define([
             name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
         }
         return name.join('');
-    }
-
-    function _toSnakeCase(name) {
-        return name.replace(/([A-Z])/g, function($1) {
-            return '-' + $1.toLowerCase();
-        });
     }
 
     function _styleValue(style, value, important) {
