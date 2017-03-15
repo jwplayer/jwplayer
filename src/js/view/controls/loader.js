@@ -5,7 +5,7 @@ export function load() {
         return Promise.resolve(controls);
     }
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) {
         require.ensure(['view/controls/controls.js'], function (require) {
             controls = require('view/controls/controls.js').default;
             resolve(controls);
