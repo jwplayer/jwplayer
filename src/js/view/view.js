@@ -448,8 +448,7 @@ define([
                 });
             }
 
-            _model.on('change:skin', this.onChangeSkin, this);
-            this.onChangeSkin(_model, _model.get('skin'));
+            _model.change('skin', this.onChangeSkin, this);
 
             _videoLayer = _playerElement.querySelector('.jw-media');
 
@@ -478,11 +477,9 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
 
-            _model.on('change:controls', _onChangeControls);
-            _onChangeControls(_model, _model.get('controls'));
+            _model.change('controls', _onChangeControls);
 
-            _model.on('change:flashBlocked', _onChangeFlashBlocked);
-            _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
+            _model.change('flashBlocked', _onChangeFlashBlocked);
 
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
@@ -493,7 +490,6 @@ define([
             }
             // watch for changes
             _model.on('change:state', _stateHandler);
-            _model.on('change:duration', _setLiveMode, this);
             _model.on('change:stretching', _onStretchChange);
             _model.on('change:fullscreen', _fullscreen);
             _model.on('change:errorEvent', _errorHandler);
@@ -700,6 +696,8 @@ define([
             _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
             _playerElement.onmouseup = handleMouseUp;
+
+            _model.change('duration', _setLiveMode, this);
         }
 
         var _destroyControls = function () {
@@ -1156,7 +1154,9 @@ define([
         };
 
         this.setAltText = function (text) {
-            _controlbar.setAltText(text);
+            if (_controlbar) {
+                _controlbar.setAltText(text);
+            }
         };
 
         this.destroyInstream = function () {
