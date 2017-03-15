@@ -113,7 +113,7 @@ define(['utils/underscore',
                     if (this._cuesByTrackId[track._id] && !this._cuesByTrackId[track._id].loaded) {
                         var cues = this._cuesByTrackId[track._id].cues;
                         while ((cue = cues.shift())) {
-                            _addCueToTrack(track, cue);
+                            _addCueToTrack(this.renderNatively, track, cue);
                         }
                         track.mode = mode;
                         this._cuesByTrackId[track._id].loaded = true;
@@ -274,7 +274,7 @@ define(['utils/underscore',
         }
         if (_cacheVTTCue.call(this, track, vttCue)) {
             if (this.renderNatively || track.kind === 'metadata') {
-                _addCueToTrack(track, vttCue);
+                _addCueToTrack(this.renderNatively, track, vttCue);
             } else {
                 track.data.push(vttCue);
             }
@@ -344,7 +344,7 @@ define(['utils/underscore',
         tracksLoader.cancelXhr(this._itemTracks);
         var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
         if (this.renderNatively || metadataTrack) {
-            _removeCues.call(this, this.video.textTracks);
+            _removeCues(this.renderNatively, this.video.textTracks);
             if (metadataTrack) {
                 metadataTrack.oncuechange = null;
             }
@@ -359,7 +359,7 @@ define(['utils/underscore',
         if (this.renderNatively) {
             // Removing listener first to ensure that removing cues does not trigger it unnecessarily
             this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
-            _removeCues.call(this, this.video.textTracks);
+            _removeCues(this.renderNatively, this.video.textTracks);
         }
     }
 
@@ -469,7 +469,7 @@ define(['utils/underscore',
         this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
 
         while ((cue = vttCues.shift())) {
-            _addCueToTrack(textTrack, cue);
+            _addCueToTrack(this.renderNatively, textTrack, cue);
         }
     }
 
@@ -477,23 +477,23 @@ define(['utils/underscore',
     // //// PRIVATE METHODS
     // ////////////////////
 
-    function _addCueToTrack(track, vttCue) {
-        if (!utils.isEdge() || !window.TextTrackCue) {
+    function _addCueToTrack(renderNatively, track, vttCue) {
+        if (!(utils.isIE() && renderNatively) || !window.TextTrackCue) {
             track.addCue(vttCue);
             return;
         }
-        // There's no support for the VTTCue interface in Edge / IE11.
+        // There's no support for the VTTCue interface in IE/Edge.
         // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
         // This unfortunately removes positioning properties from the cues
         var textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
         track.addCue(textTrackCue);
     }
 
-    function _removeCues(tracks) {
+    function _removeCues(renderNatively, tracks) {
         if (tracks.length) {
             _.each(tracks, function(track) {
-                // Let Edge handle cleanup of non-sideloaded text tracks in HLS streams
-                if (utils.isEdge() && /^(native|subtitle|cc)/.test(track._id)) {
+                // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
+                if (utils.isIE() && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
                     return;
                 }
                 
