@@ -2,3 +2,4 @@ src/js/parsers/captions/vttparser.js
 src/js/polyfills/
 src/js/utils/backbone.events.js
 src/js/utils/id3Parser.js
+src/js/utils/underscore.js

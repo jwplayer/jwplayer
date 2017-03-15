@@ -27,5 +27,5 @@ define([
         getElement() {
             return this.element;
         }
-    }
+    };
 });
