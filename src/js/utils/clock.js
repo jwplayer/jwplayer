@@ -1,39 +1,41 @@
 define([], function() {
 
-    var AudioClockPolyfill = function() {
-        var currentTime = 0;
-        var time = new Date().getTime();
+    var performance = window.performance;
+
+    var supportsPerformance = !!(performance && performance.now);
+
+    var getTime = function() {
+        if (supportsPerformance) {
+            return performance.now();
+        }
+        return new Date().getTime();
+    };
+
+    var Clock = function() {
+        var started = getTime();
+        var updated = started;
 
         var updateClock = function() {
-            var delta = new Date().getTime() - time;
+            var delta = getTime() - updated;
             if (delta > 250) {
                 delta = 250;
             } else if (delta < 0) {
                 delta = 0;
             }
-            time += delta;
-            currentTime += delta;
+            updated += delta;
         };
         setInterval(updateClock, 50);
 
         Object.defineProperty(this, 'currentTime', {
             get: function() {
                 updateClock();
-                return currentTime / 1000;
+                return updated - started;
             }
         });
     };
 
-    var Clock = function() {
-        if ('AudioContext' in window) {
-            this.timer = new AudioContext();
-        } else {
-            this.timer = new AudioClockPolyfill();
-        }
-    };
-
     Clock.prototype.now = function() {
-        return this.timer.currentTime * 1000;
+        return this.currentTime;
     };
 
     return new Clock();
