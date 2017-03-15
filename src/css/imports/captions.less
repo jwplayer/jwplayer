@@ -75,6 +75,10 @@
         &::cue {
             background-color: rgba(0, 0, 0, 0.5);
         }
+        &::-webkit-media-controls-panel-container {
+            // Safari's media controls should not show when not in fullscreen on iOS devices
+            display: none;
+        }
     }
 
 }
