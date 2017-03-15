@@ -39,6 +39,7 @@ define(['utils/underscore',
 
     function setTextTracks(tracks) {
         this._currentTextTrackIndex = -1;
+
         if (!tracks) {
             return;
         }
@@ -128,7 +129,7 @@ define(['utils/underscore',
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-            if (utils.isEdge() || utils.isFF() || utils.isSafari()) {
+            if (utils.isEdge() || utils.isFF()) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
                 this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
