@@ -10,15 +10,17 @@ define([
     'utils/backbone.events',
     'providers/html5',
     'providers/flash',
+    'view/controls/controls'
 ], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events,
-             providerHtml5, providerFlash) {
+             providerHtml5, providerFlash, Controls) {
     /* jshint qunit: true */
 
     require.ensure = function(array, callback) {
         callback(function webpackRequire(modulePath) {
             return ({
                 'providers/html5': providerHtml5,
-                'providers/flash': providerFlash
+                'providers/flash': providerFlash,
+                'view/controls/controls': Controls
             })[modulePath];
         });
     };
@@ -335,8 +337,8 @@ define([
             api.castToggle();
 
             done();
-        }).on('setupError', function() {
-            assert.ok(false, 'FAIL');
+        }).on('setupError', function(e) {
+            assert.ok(false, e);
             done();
         });
     });
