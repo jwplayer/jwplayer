@@ -31,6 +31,7 @@ module.exports = function( config ) {
             'karma-safari-launcher',
             'karma-browserstack-launcher',
             'karma-sinon',
+            'karma-babel-preprocessor'
         ],
         frameworks: ['requirejs', 'qunit', 'sinon'],
         reporters: testReporters,
@@ -112,6 +113,7 @@ module.exports = function( config ) {
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
             // source files, that you want to generate coverage for
+            'src/js/view/controls/**/*.js': ['babel'],
             'src/js/*.js': ['coverage'],
             'src/js/!(polyfill)/*.js': ['coverage']
         },
@@ -119,8 +121,13 @@ module.exports = function( config ) {
             type: 'html',
             dir: 'reports/coverage'
         },
+        babelPreprocessor: {
+            options: {
+                presets: ['es2015']
+            }
+        },
 
-        // number of browsers to run at once
+            // number of browsers to run at once
         concurrency: Infinity
     });
 };
