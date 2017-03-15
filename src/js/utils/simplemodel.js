@@ -19,6 +19,14 @@ define([
         },
         clone: function() {
             return _.clone(this.attributes);
+        },
+        change: function (name, callback, context) {
+            // Register a change handler and immediately invoke the callback with the current value
+            var eventName = 'change:' + name;
+            var currentVal = this.get(name);
+
+            this.on(eventName, callback, context);
+            callback.call(context, this, currentVal, currentVal);
         }
     }, Events);
 });

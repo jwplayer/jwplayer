@@ -220,20 +220,19 @@ define([
             this.onCaptionsList(this._model, this._model.get('captionsList'));
 
             // Listen for model changes
-            this._model.on('change:volume', this.onVolume, this);
-            this._model.on('change:mute', this.onMute, this);
-            this._model.on('change:playlistItem', this.onPlaylistItem, this);
-            this._model.on('change:mediaModel', this.onMediaModel, this);
-            this._model.on('change:castAvailable', this.onCastAvailable, this);
-            this._model.on('change:castActive', this.onCastActive, this);
-            this._model.on('change:duration', this.onDuration, this);
-            this._model.on('change:durationLeft', this.onDuration, this);
-            this._model.on('change:position', this.onElapsed, this);
-            this._model.on('change:fullscreen', this.onFullscreen, this);
-            this._model.on('change:captionsList', this.onCaptionsList, this);
-            this._model.on('change:captionsIndex', this.onCaptionsIndex, this);
-            this._model.on('change:streamType', this.onStreamTypeChange, this);
-            this._model.on('change:nextUp', this.onNextUp, this);
+            this._model.change('volume', this.onVolume, this);
+            this._model.change('mute', this.onMute, this);
+            this._model.change('playlistItem', this.onPlaylistItem, this);
+            this._model.change('mediaModel', this.onMediaModel, this);
+            this._model.change('castAvailable', this.onCastAvailable, this);
+            this._model.change('castActive', this.onCastActive, this);
+            this._model.change('duration', this.onDuration, this);
+            this._model.change('position', this.onElapsed, this);
+            this._model.change('fullscreen', this.onFullscreen, this);
+            this._model.change('captionsList', this.onCaptionsList, this);
+            this._model.change('captionsIndex', this.onCaptionsIndex, this);
+            this._model.change('streamType', this.onStreamTypeChange, this);
+            this._model.change('nextUp', this.onNextUp, this);
 
             // Event listeners
 
