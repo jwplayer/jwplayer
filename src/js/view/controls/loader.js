@@ -9,8 +9,8 @@ define([
         }
 
         return new Promise(function (resolve) {
-            require.ensure(['view/controls/controls.js'], function (require) {
-                controls = require('view/controls/controls.js');
+            require.ensure(['view/controls/controls'], function (require) {
+                controls = require('view/controls/controls');
                 resolve(controls);
             }, 'jwplayer.controls');
         });
