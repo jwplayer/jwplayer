@@ -3,6 +3,8 @@ define([], function() {
     var performance = window.performance;
 
     var supportsPerformance = !!(performance && performance.now);
+    
+    var MAX_INTERVAL = 1000;
 
     var getTime = function() {
         if (supportsPerformance) {
@@ -17,8 +19,8 @@ define([], function() {
 
         var updateClock = function() {
             var delta = getTime() - updated;
-            if (delta > 250) {
-                delta = 250;
+            if (delta > MAX_INTERVAL) {
+                delta = MAX_INTERVAL;
             } else if (delta < 0) {
                 delta = 0;
             }
