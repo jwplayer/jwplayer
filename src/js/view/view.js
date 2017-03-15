@@ -703,19 +703,41 @@ define([
         }
 
         var _destroyControls = function () {
-            _displayClickHandler.off();
-            _displayClickHandler = null;
+            var overlay = document.querySelector('.jw-overlays');
+            if (overlay) {
+                overlay.removeEventListener('mousemove', _userActivityCallback);
+            }
 
-            document.querySelector('.jw-overlays').removeEventListener('mousemove', _userActivityCallback);
+            if (_displayClickHandler) {
+                _displayClickHandler.off();
+                _displayClickHandler = null;
+            }
 
-            _dock.off();
-            _dock = null;
+            if (_dock) {
+                _dock = null;
+            }
 
-            _logo.off();
-            _logo = null;
+            if (_logo) {
+                _logo.destroy();
+                _logo = null;
+            }
+
+            if (_rightClickMenu) {
+                _rightClickMenu.destroy();
+            }
+
+            _playerElement.removeEventListener('focus', handleFocus);
+            _playerElement.removeEventListener('blur', handleBlur);
+            _playerElement.removeEventListener('keydown', handleKeydown);
+            _playerElement.onmousedown = null;
+            _playerElement.onmouseup = null;
 
             utils.removeClass(_playerElement, 'jw-flag-touch');
+            utils.clearCss(_model.get('id'));
 
+            clearTimeout(_previewDisplayStateTimeout);
+            clearTimeout(_resizeMediaTimeout);
+            clearTimeout(_controlsTimeout);
         };
 
         // Perform the switch to fullscreen
@@ -1214,6 +1236,7 @@ define([
 
         this.removeControls = function () {
             _controls.disable();
+            _destroyControls();
         };
 
         this.destroy = function () {
