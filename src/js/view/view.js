@@ -460,6 +460,13 @@ define([
             _title = new Title(_model);
             _title.setup(_titleElement);
 
+            // captions rendering
+            _captionsRenderer = new CaptionsRenderer(_model);
+            _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
+
+            // captions should be place behind controls, and not hidden when controls are hidden
+            _playerElement.insertBefore(_captionsRenderer.element(), _title.element());
+
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
 
@@ -646,13 +653,6 @@ define([
             rightside.appendChild(_dock.element());
             _logo.setup(rightside);
             _controlsLayer.appendChild(rightside);
-
-            // captions rendering
-            _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
-
-            // captions should be place behind controls, and not hidden when controls are hidden
-            _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             height = _model.get('height');
@@ -967,7 +967,9 @@ define([
             _showing = false;
 
             clearTimeout(_controlsTimeout);
-            _controlbar.hideComponents();
+            if (_controlbar) {
+                _controlbar.hideComponents();
+            }
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
             _captionsRenderer.renderCues(true);
         }
