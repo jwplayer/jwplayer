@@ -20,7 +20,7 @@ define([
     'templates/player.html',
     'view/breakpoint',
     'view/components/button',
-    'view/display-container',
+    'view/display-container'
 ], function(utils, events, Events, Constants, states,
             CaptionsRenderer, ClickHandler, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
@@ -37,6 +37,7 @@ define([
 
     return function View(_api, _model) {
         var _playerElement;
+        var _controls;
         var _controlsLayer;
         var _controlsTimeout = -1;
         var _timeoutDuration = _isMobile ? 4000 : 2000;
@@ -446,12 +447,9 @@ define([
                 });
             }
 
-            _model.on('change:skin', this.onChangeSkin, this);
-            this.onChangeSkin(_model, _model.get('skin'));
+            _model.change('skin', this.onChangeSkin, this);
 
             _videoLayer = _playerElement.querySelector('.jw-media');
-
-            _controlsLayer = _playerElement.querySelector('.jw-controls');
 
             var previewElem = _playerElement.querySelector('.jw-preview');
             _preview = new Preview(_model);
@@ -460,8 +458,6 @@ define([
             var _titleElement = _playerElement.querySelector('.jw-title');
             _title = new Title(_model);
             _title.setup(_titleElement);
-
-            _setupControls();
 
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
@@ -480,11 +476,9 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
 
-            _model.on('change:controls', _onChangeControls);
-            _onChangeControls(_model, _model.get('controls'));
+            _model.change('controls', _onChangeControls);
 
-            _model.on('change:flashBlocked', _onChangeFlashBlocked);
-            _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
+            _model.change('flashBlocked', _onChangeFlashBlocked);
 
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
@@ -495,7 +489,6 @@ define([
             }
             // watch for changes
             _model.on('change:state', _stateHandler);
-            _model.on('change:duration', _setLiveMode, this);
             _model.on('change:stretching', _onStretchChange);
             _model.on('change:fullscreen', _fullscreen);
             _model.on('change:errorEvent', _errorHandler);
@@ -701,7 +694,47 @@ define([
             _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
             _playerElement.onmouseup = handleMouseUp;
+
+            _model.change('duration', _setLiveMode, this);
         }
+
+        var _destroyControls = function () {
+            var overlay = document.querySelector('.jw-overlays');
+            if (overlay) {
+                overlay.removeEventListener('mousemove', _userActivityCallback);
+            }
+
+            if (_displayClickHandler) {
+                _displayClickHandler.off();
+                _displayClickHandler = null;
+            }
+
+            if (_dock) {
+                _dock = null;
+            }
+
+            if (_logo) {
+                _logo.destroy();
+                _logo = null;
+            }
+
+            if (_rightClickMenu) {
+                _rightClickMenu.destroy();
+            }
+
+            _playerElement.removeEventListener('focus', handleFocus);
+            _playerElement.removeEventListener('blur', handleBlur);
+            _playerElement.removeEventListener('keydown', handleKeydown);
+            _playerElement.onmousedown = null;
+            _playerElement.onmouseup = null;
+
+            utils.removeClass(_playerElement, 'jw-flag-touch');
+            utils.clearCss(_model.get('id'));
+
+            clearTimeout(_previewDisplayStateTimeout);
+            clearTimeout(_resizeMediaTimeout);
+            clearTimeout(_controlsTimeout);
+        };
 
         // Perform the switch to fullscreen
         var _fullscreen = function (model, state) {
@@ -1119,7 +1152,9 @@ define([
         };
 
         this.setAltText = function (text) {
-            _controlbar.setAltText(text);
+            if (_controlbar) {
+                _controlbar.setAltText(text);
+            }
         };
 
         this.destroyInstream = function () {
@@ -1188,6 +1223,18 @@ define([
             _captionsRenderer.clear();
             _captionsRenderer.setup(_model.get('id'), captionsStyle);
             _captionsRenderer.resize();
+        };
+
+        this.addControls = function (controls) {
+            _controls = controls;
+            _controls.enable();
+            _controlsLayer = _controls.getElement();
+            _setupControls();
+        };
+
+        this.removeControls = function () {
+            _controls.disable();
+            _destroyControls();
         };
 
         this.destroy = function () {

@@ -170,7 +170,7 @@ define([
             if (_array && _arrayIndex + 1 < _array.length) {
                 _loadNextItem();
             } else {
-                /// notify vast of breakEnd
+                // notify vast of breakEnd
                 this.trigger('adBreakEnd', {});
                 if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
                     // Dispatch playlist complete event for ad pods

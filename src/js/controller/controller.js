@@ -15,9 +15,11 @@ define([
     'events/states',
     'events/events',
     'view/error',
-    'controller/events-middleware'
+    'controller/events-middleware',
+    'view/controls/loader'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware,
+            ControlsLoader) {
 
     function _queueCommand(command) {
         return function() {
@@ -153,6 +155,21 @@ define([
                 });
             });
             _model.on('change:controls', function(model, mode) {
+                if (mode) {
+                    ControlsLoader.load()
+                        .then(function (Controls) {
+                            _view.addControls(new Controls(document, _this.currentContainer));
+                        })
+                        .catch(function (reason) {
+                            _this.triggerError({
+                                message: 'Controls failed to load',
+                                reason: reason
+                            });
+                        });
+                } else {
+                    _view.removeControls();
+                }
+
                 _this.trigger(events.JWPLAYER_CONTROLS, {
                     controls: mode
                 });
