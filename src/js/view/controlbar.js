@@ -380,12 +380,13 @@ define([
             this.elements.elapsed.innerHTML = elapsedTime;
             this.elements.countdown.innerHTML = countdownTime;
         },
-        onDuration: function(model, val) {
+        onDuration: function(model) {
             var totalTime;
             if (model.get('streamType') === 'DVR') {
                 totalTime = 'Live';
             } else {
-                totalTime = utils.timeFormat(val);
+                var duration = model.get('duration');
+                totalTime = utils.timeFormat(duration);
             }
             this.elements.duration.innerHTML = totalTime;
             this.elements.durationLeft.innerHTML = totalTime;
