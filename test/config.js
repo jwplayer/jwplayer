@@ -2,7 +2,7 @@
 
     // This allows us to test modules without loading full player
     window.__BUILD_VERSION__ = '7.8.0';
-    window.__FLASH_VERSION__ = 11.2;
+    window.__FLASH_VERSION__ = 18;
     window.__REPO__ = '';
     window.__SELF_HOSTED__ = true;
     window.__DEBUG__ = false;

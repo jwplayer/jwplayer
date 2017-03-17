@@ -5,7 +5,7 @@ var _ = require('lodash');
 var argv = require('minimist')(process.argv.slice(2));
 
 var packageInfo = require('./package.json');
-var flashVersion = 11.2;
+var flashVersion = 18;
 
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
