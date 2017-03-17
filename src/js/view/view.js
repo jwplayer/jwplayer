@@ -3,6 +3,7 @@ define([
     'events/events',
     'utils/backbone.events',
     'utils/constants',
+    'utils/activeTab',
     'events/states',
     'view/captionsrenderer',
     'view/clickhandler',
@@ -21,7 +22,7 @@ define([
     'view/breakpoint',
     'view/components/button',
     'view/display-container',
-], function(utils, events, Events, Constants, states,
+], function(utils, events, Events, Constants, activeTab, states,
             CaptionsRenderer, ClickHandler, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, Dock, Logo,
             Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
 
@@ -516,8 +517,9 @@ define([
             }
 
             _model.set('iFrame', utils.isIframe());
-            _model.set('activeTab', !document.hidden);
+            _model.set('activeTab', activeTab());
             document.addEventListener('visibilitychange', _visibilityChangeListener, false);
+            document.addEventListener('webkitvisibilitychange', _visibilityChangeListener, false);
 
             _model.set('viewSetup', true);
         };
@@ -1103,8 +1105,8 @@ define([
             return playDisplayIcon;
         }
 
-        function _visibilityChangeListener(e) {
-            _model.set('activeTab', !e.target.hidden);
+        function _visibilityChangeListener() {
+            _model.set('activeTab', activeTab());
         }
 
         this.setupInstream = function (instreamModel) {
