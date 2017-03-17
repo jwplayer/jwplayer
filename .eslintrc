@@ -127,7 +127,7 @@
         "operator-assignment": [0, "never"],
         "quote-props": [1, "as-needed", {"keywords": true}],
         "quotes": [1, "single"],
-        "semi": [1, "always"],
+        "semi": [2, "always"],
         "semi-spacing": [1, {"before": false, "after": true}],
         "sort-vars": 0,
         "space-before-blocks": [1, "always"],

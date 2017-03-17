@@ -6,8 +6,9 @@ define([
     'utils/constants',
     'utils/underscore',
     'utils/helpers',
-    'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events) {
+    'events/events',
+    'view/controls/loader'
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events, ControlsLoader) {
 
     var _pluginLoader;
     var _playlistLoader;
@@ -40,6 +41,13 @@ define([
             LOAD_PLAYLIST: {
                 method: _loadPlaylist,
                 depends: []
+            },
+            LOAD_CONTROLS: {
+                method: _loadControls,
+                depends: [
+                    'LOAD_PROMISE_POLYFILL',
+                    'SETUP_VIEW'
+                ]
             },
             SETUP_VIEW: {
                 method: _setupView,
@@ -300,6 +308,22 @@ define([
         resolve({
             type: 'complete'
         });
+    }
+
+    function _loadControls(resolve, _model, _api, _view) {
+        if (!_model.get('controls')) {
+            resolve();
+            return;
+        }
+
+        ControlsLoader.load()
+            .then(function (Controls) {
+                _view.addControls(new Controls(document, _view.element()));
+                resolve();
+            })
+            .catch(function (reason) {
+                error(resolve, 'Failed to load controls', reason);
+            });
     }
 
     function error(resolve, msg, reason) {

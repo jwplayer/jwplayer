@@ -138,6 +138,10 @@ var multiConfig = _.compact(_.map([
                 {
                     test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
                     loader: 'file-loader?name=[name].[ext]'
+                },
+                {
+                    test: /view\/controls\/.*\.js$/,
+                    loader: 'babel-loader'
                 }
             ]
         }

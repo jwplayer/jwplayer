@@ -214,20 +214,19 @@ define([
             this.onCaptionsList(_model, _model.get('captionsList'));
 
             // Listen for model changes
-            _model.on('change:volume', this.onVolume, this);
-            _model.on('change:mute', this.onMute, this);
-            _model.on('change:playlistItem', this.onPlaylistItem, this);
-            _model.on('change:mediaModel', this.onMediaModel, this);
-            _model.on('change:castAvailable', this.onCastAvailable, this);
-            _model.on('change:castActive', this.onCastActive, this);
-            _model.on('change:duration', this.onDuration, this);
-            _model.on('change:durationLeft', this.onDuration, this);
-            _model.on('change:position', this.onElapsed, this);
-            _model.on('change:fullscreen', this.onFullscreen, this);
-            _model.on('change:captionsList', this.onCaptionsList, this);
-            _model.on('change:captionsIndex', this.onCaptionsIndex, this);
-            _model.on('change:streamType', this.onStreamTypeChange, this);
-            _model.on('change:nextUp', this.onNextUp, this);
+            _model.change('volume', this.onVolume, this);
+            _model.change('mute', this.onMute, this);
+            _model.change('playlistItem', this.onPlaylistItem, this);
+            _model.change('mediaModel', this.onMediaModel, this);
+            _model.change('castAvailable', this.onCastAvailable, this);
+            _model.change('castActive', this.onCastActive, this);
+            _model.change('duration', this.onDuration, this);
+            _model.change('position', this.onElapsed, this);
+            _model.change('fullscreen', this.onFullscreen, this);
+            _model.change('captionsList', this.onCaptionsList, this);
+            _model.change('captionsIndex', this.onCaptionsIndex, this);
+            _model.change('streamType', this.onStreamTypeChange, this);
+            _model.change('nextUp', this.onNextUp, this);
 
             // Event listeners
 
