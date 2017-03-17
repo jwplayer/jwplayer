@@ -16,7 +16,6 @@ define([
     var Api = function (container, globalRemovePlayer) {
         var _this = this;
         var _controller;
-        var _itemMeta = {};
 
         // Set up event handling
         _.extend(this, Events);
@@ -53,11 +52,9 @@ define([
             // Add a bunch of methods
             actionsInit(_this, _controller);
             mutatorsInit(_this, _controller);
-            _controller.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
-                _itemMeta = {};
-            });
             _controller.on(events.JWPLAYER_MEDIA_META, function (data) {
-                _.extend(_itemMeta, data.metadata);
+                var itemMeta = _controller._model.get('itemMeta');
+                _.extend(itemMeta, data.metadata);
             });
 
             // capture the ready event and add setup time to it
@@ -79,7 +76,6 @@ define([
 
 
         var _reset = function() {
-            _itemMeta = {};
             _this.off();
 
             if (_controller) {
@@ -154,7 +150,7 @@ define([
         };
 
         this.getMeta = this.getItemMeta = function () {
-            return _itemMeta;
+            return _controller._model.get('itemMeta') || {};
         };
 
         this.getPlaylistItem = function (index) {

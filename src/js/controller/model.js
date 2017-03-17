@@ -30,6 +30,7 @@ define([
             _.extend(this.attributes, config, {
                 // always start on first playlist item
                 item: 0,
+                itemMeta: {},
                 // Initial state, upon setup
                 state: states.IDLE,
                 // Initially we don't assume Flash is needed
@@ -306,6 +307,7 @@ define([
             // Item is actually changing
             this.mediaModel.off();
             this.mediaModel = new MediaModel();
+            this.set('itemMeta', {});
             this.set('mediaModel', this.mediaModel);
             this.set('position', item.starttime || 0);
             this.set('minDvrWindow', item.minDvrWindow);
