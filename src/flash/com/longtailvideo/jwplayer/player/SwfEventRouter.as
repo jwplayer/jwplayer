@@ -74,19 +74,17 @@ public class SwfEventRouter {
 
     static private var _sendScript:XML = <script><![CDATA[
 function(id, name, data) {
-    return setTimeout(function() {
+    setTimeout(function() {
         var swf = document.getElementById(id);
         if (swf && typeof swf.trigger === 'function') {
-            return swf.trigger(name, data);
+            swf.trigger(name, data);
         }
-        // console.log('Unhandled event from "' + id +'":', name, json);
     }, 0);
 }]]></script>;
 
     static public function triggerJsEvent(name:String, data:Object = null):void {
         var id:String = ExternalInterface.objectID;
         if (ExternalInterface.available) {
-            var jsTimeout:Number = -1;
             if (data !== null) {
                 try {
                     if (data is String || data is Number) {
@@ -103,13 +101,13 @@ function(id, name, data) {
                     trace(err);
                 }
                 try {
-                    jsTimeout = ExternalInterface.call(_sendScript, id, name, data);
+                    ExternalInterface.call(_sendScript, id, name, data);
                 } catch(err:Error) {
                     trace(err);
                 }
             } else {
                 try {
-                    jsTimeout = ExternalInterface.call(_sendScript, id, name);
+                    ExternalInterface.call(_sendScript, id, name);
                 } catch(err:Error) {
                     trace(err);
                 }
