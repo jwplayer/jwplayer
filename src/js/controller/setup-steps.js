@@ -44,7 +44,10 @@ define([
             },
             LOAD_CONTROLS: {
                 method: _loadControls,
-                depends: []
+                depends: [
+                    'LOAD_PROMISE_POLYFILL',
+                    'SETUP_VIEW'
+                ]
             },
             SETUP_VIEW: {
                 method: _setupView,
