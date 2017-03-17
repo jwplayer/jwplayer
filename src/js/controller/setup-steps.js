@@ -169,40 +169,38 @@ define([
         var primaryFlash = _model.get('primary') === 'flash';
         var flashVersion = utils.flashVersion();
         if (primaryFlash && flashVersion) {
-            var viewContainer = _view.element();
-            var mediaContainer = viewContainer.querySelector('.jw-media');
-            if (!viewContainer.parentElement) {
-                // Cannot perform test when player container has no parent
-                resolve();
-            }
-            var flashHealthCheckId = '' + _model.get('id') + '-' + Math.random().toString(16).substr(2);
-            var flashHealthCheckSwf = _model.get('flashloader');
-            var swf = EmbedSwf.embed(flashHealthCheckSwf, mediaContainer, flashHealthCheckId, null);
+            var embedTimeout;
             var done = function() {
                 if (embedTimeout === -1) {
                     return;
                 }
                 clearTimeout(embedTimeout);
                 embedTimeout = -1;
-                resolve();
+                setTimeout(function() {
+                    EmbedSwf.remove(mediaContainer.querySelector('#' + flashHealthCheckId));
+                    resolve();
+                }, 0);
             };
             var failed = function() {
                 _model.set('primary', undefined);
                 _model.updateProviders();
                 done();
             };
-            Object.defineProperty(swf, 'embedCallback', {
+            var viewContainer = _view.element();
+            var mediaContainer = viewContainer.querySelector('.jw-media');
+            if (!viewContainer.parentElement) {
+                // Cannot perform test when player container has no parent
+                failed();
+            }
+            var flashHealthCheckId = '' + _model.get('id') + '-' + Math.random().toString(16).substr(2);
+            var flashHealthCheckSwf = _model.get('flashloader');
+            Object.defineProperty(EmbedSwf.embed(flashHealthCheckSwf, mediaContainer, flashHealthCheckId, null), 'embedCallback', {
                 get: function() {
                     return done;
                 }
             });
-            if (!swf.on) {
-                // Chrome bug where properties are not set on object element
-                failed();
-                return;
-            }
             // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
-            var embedTimeout = setTimeout(failed, 3000);
+            embedTimeout = setTimeout(failed, 3000);
         } else {
             resolve();
         }

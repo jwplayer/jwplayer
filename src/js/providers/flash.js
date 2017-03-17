@@ -153,14 +153,9 @@ define([
             getSwfObject: function(parent) {
                 var found = parent.querySelector('object');
                 if (found) {
-                    if (!('embedCallback' in found)) {
-                        found.off(null, null, this);
-                        return found;
-                    }
-                    EmbedSwf.remove(found);
-                    found = null;
+                    found.off(null, null, this);
+                    return found;
                 }
-
                 return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId),
                         _playerConfig.wmode);
             },

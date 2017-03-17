@@ -21,7 +21,7 @@ public class SwfEventRouter {
                     _initialized = true;
                 } catch(err:Error) {
                     // ExternalInterface calls can fail when swf is removed during ActionScript execution
-                    trace(err.getStackTrace());
+                    trace(err);
                 }
 
             }
@@ -73,16 +73,11 @@ public class SwfEventRouter {
      */
 
     static private var _sendScript:XML = <script><![CDATA[
-function(id, name, json) {
+function(id, name, data) {
     return setTimeout(function() {
         var swf = document.getElementById(id);
         if (swf && typeof swf.trigger === 'function') {
-            if (json) {
-                var data = JSON.parse(decodeURIComponent(json));
-                return swf.trigger(name, data);
-            } else {
-                return swf.trigger(name);
-            }
+            return swf.trigger(name, data);
         }
         // console.log('Unhandled event from "' + id +'":', name, json);
     }, 0);
@@ -93,7 +88,6 @@ function(id, name, json) {
         if (ExternalInterface.available) {
             var jsTimeout:Number = -1;
             if (data !== null) {
-                var json:String;
                 try {
                     if (data is String || data is Number) {
                         // do nothing
@@ -105,25 +99,24 @@ function(id, name, json) {
                         delete data.target;
                         delete data.currentTarget;
                     }
-                    json = encodeURIComponent(JSON.stringify(data));
                 } catch(err:Error) {
-                    trace(err.getStackTrace());
+                    trace(err);
                 }
                 try {
-                    jsTimeout = ExternalInterface.call(_sendScript, id, name, json);
+                    jsTimeout = ExternalInterface.call(_sendScript, id, name, data);
                 } catch(err:Error) {
-                    trace(err.getStackTrace());
+                    trace(err);
                 }
             } else {
                 try {
                     jsTimeout = ExternalInterface.call(_sendScript, id, name);
                 } catch(err:Error) {
-                    trace(err.getStackTrace());
+                    trace(err);
                 }
             }
             return;
         }
-        trace('Could not dispatch event "' + id + '":', name, json);
+        trace('Could not dispatch event "' + id + '":', name, data);
     }
 
     static public function error(code:int, message:String):void {
@@ -148,7 +141,7 @@ function() {
             try {
                 ExternalInterface.call.apply(null, [_consoleLog].concat(args));
             } catch(err:Error) {
-                trace(err.getStackTrace());
+                trace(err);
             }
         }
     }

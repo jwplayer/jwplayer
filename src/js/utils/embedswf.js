@@ -29,7 +29,7 @@ define([
         wmode = wmode || 'opaque';
 
         if (utils.isMSIE()) {
-            // IE8 works best with outerHTML
+            // IE9 works best with outerHTML
             var temp = document.createElement('div');
             container.appendChild(temp);
 
@@ -143,6 +143,7 @@ define([
         if (swf && swf.parentNode) {
             swf.style.display = 'none';
             swf.parentNode.removeChild(swf);
+            swf = null;
         }
     }
 
