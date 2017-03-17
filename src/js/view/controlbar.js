@@ -373,13 +373,12 @@ define([
             this.elements.elapsed.innerHTML = elapsedTime;
             this.elements.countdown.innerHTML = countdownTime;
         },
-        onDuration: function(model) {
+        onDuration: function(model, val) {
             var totalTime;
             if (model.get('streamType') === 'DVR') {
                 totalTime = 'Live';
             } else {
-                var duration = model.get('duration');
-                totalTime = utils.timeFormat(duration);
+                totalTime = utils.timeFormat(val);
             }
             this.elements.duration.innerHTML = totalTime;
             this.elements.durationLeft.innerHTML = totalTime;
@@ -434,6 +433,8 @@ define([
                 this.elements.duration.innerHTML = 'Live';
                 this.elements.durationLeft.innerHTML = 'Live';
             }
+            var duration = model.get('duration');
+            this.onDuration(model, duration);
         },
         onNextUp: function(model, nextUp) {
             this.elements.next.toggle(!!nextUp);
