@@ -440,6 +440,8 @@ define([
                 this.elements.duration.innerHTML = 'Live';
                 this.elements.durationLeft.innerHTML = 'Live';
             }
+            var duration = model.get('duration');
+            this.onDuration(model, duration);
         },
         onNextUp: function(model, nextUp) {
             this.elements.next.toggle(!!nextUp);
