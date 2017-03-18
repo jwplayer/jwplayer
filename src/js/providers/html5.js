@@ -48,16 +48,6 @@ define([
 
         this.renderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari() || utils.isEdge();
 
-        // Overwrite the event dispatchers to block on certain occasions
-        this.trigger = function(type, args) {
-            return Events.trigger.call(this, type, args);
-        };
-
-        this.setState = function(state) {
-            return DefaultProvider.setState.call(this, state);
-        };
-
-
         var _this = this;
         var _mediaEvents = {
             click: _clickHandler,

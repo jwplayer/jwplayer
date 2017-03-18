@@ -82,10 +82,38 @@ define([
         }
 
         // flash can trigger events
+        var processEventsTimeout = -1;
         addGetter(swf, 'on', Events.on);
         addGetter(swf, 'once', Events.once);
-        addGetter(swf, 'off', Events.off);
-        addGetter(swf, 'trigger', Events.trigger);
+        addGetter(swf, '_eventQueue', []);
+        addGetter(swf, 'off', function() {
+            var args = Array.prototype.slice.call(arguments);
+            if (!args.length) {
+                swf._eventQueue.length = 0;
+                clearTimeout(processEventsTimeout);
+            }
+            return Events.off.apply(swf, args);
+        });
+        addGetter(swf, 'trigger', function(type, json) {
+            var eventQueue = swf._eventQueue;
+            eventQueue.push({ type: type, json: json });
+            if (processEventsTimeout > -1) {
+                return;
+            }
+            processEventsTimeout = setTimeout(function() {
+                var length = eventQueue.length;
+                processEventsTimeout = -1;
+                while (length--) {
+                    var event = eventQueue.shift();
+                    if (event.json) {
+                        var data = JSON.parse(decodeURIComponent(event.json));
+                        Events.trigger.call(swf, event.type, data);
+                    } else {
+                        Events.trigger.call(swf, event.type);
+                    }
+                }
+            });
+        });
         addGetter(swf, '_events', {});
 
         // javascript can trigger SwfEventRouter callbacks
