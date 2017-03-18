@@ -386,11 +386,6 @@ define([
             }
         });
 
-        // Overwrite the event dispatchers to block on certain occasions
-        this.trigger = function(type, args) {
-            return Events.trigger.call(this, type, args);
-        };
-
     }
 
     // Register provider

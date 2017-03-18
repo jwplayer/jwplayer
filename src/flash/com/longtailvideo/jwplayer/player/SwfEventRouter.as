@@ -73,20 +73,12 @@ public class SwfEventRouter {
      */
 
     static private var _sendScript:XML = <script><![CDATA[
-function(id, name, data, lastTimeout) {
-    if (name === 'time' || name === 'bufferChange') {
-        clearTimeout(lastTimeout);
+function(id, name, data) {
+    var swf = document.getElementById(id);
+    if (swf && typeof swf.trigger === 'function') {
+        return swf.trigger(name, data);
     }
-    return setTimeout(function() {
-        var swf = document.getElementById(id);
-        if (swf && typeof swf.trigger === 'function') {
-            return swf.trigger(name, data);
-        }
-        // console.log('Unhandled event from "' + id +'":', name, json);
-    }, 0);
 }]]></script>;
-
-    static private var jsEventTimeouts:Object = {};
 
     static public function triggerJsEvent(name:String, data:Object = null):void {
         var id:String = ExternalInterface.objectID;
@@ -106,17 +98,12 @@ function(id, name, data, lastTimeout) {
                 } catch(err:Error) {
                     trace(err);
                 }
-                try {
-                    jsEventTimeouts[name] = ExternalInterface.call(_sendScript, id, name, data, jsEventTimeouts[name]);
-                } catch(err:Error) {
-                    trace(err);
-                }
-            } else {
-                try {
-                    ExternalInterface.call(_sendScript, id, name);
-                } catch(err:Error) {
-                    trace(err);
-                }
+            }
+
+            try {
+                ExternalInterface.call(_sendScript, id, name, data);
+            } catch(err:Error) {
+                trace(err);
             }
             return;
         }
