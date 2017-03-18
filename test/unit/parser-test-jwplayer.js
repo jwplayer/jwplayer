@@ -63,7 +63,7 @@ define([
         var path = parser.getScriptPath(null);
         assert.equal(path, '', 'returns an empty string when no file name is provided');
 
-        var scriptPath = parser.getScriptPath('parser-test.js');
+        var scriptPath = parser.getScriptPath('parser-test-jwplayer.js');
         assert.ok(/\S+\:\/\/.+\/$/.test(scriptPath),
             'returns a directory url ending with a forward slash "'+ scriptPath +'"');
     });

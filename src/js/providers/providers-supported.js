@@ -5,7 +5,7 @@ define([
     'utils/video'
 ], function(getIsAndroidHLS, utils, _, video) {
 
-    var SupportsMatrix = [
+    return [
         {
             name: 'youtube',
             supports: function (source) {
@@ -94,7 +94,5 @@ define([
             }
         }
     ];
-
-    return SupportsMatrix;
 
 });

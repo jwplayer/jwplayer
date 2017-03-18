@@ -2,9 +2,8 @@ define([
     'api/api',
     'utils/underscore',
     'providers/providers',
-    'providers/providers-supported',
     'plugins/plugins'
-], function(Api, _, Providers, ProvidersSupported, plugins) {
+], function(Api, _, Providers, plugins) {
     var _instances = [];
     var _uniqueIndex = 0;
 
@@ -69,7 +68,7 @@ define([
     var api = {
         selectPlayer: selectPlayer,
         registerProvider: Providers.registerProvider,
-        availableProviders: ProvidersSupported,
+        availableProviders: Providers.getAvailable,
         registerPlugin: plugins.registerPlugin
     };
 
