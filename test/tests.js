@@ -13,7 +13,7 @@ define([
     'unit/helpers-test',
     'unit/jwplayer-selectplayer-test',
     'unit/model-qoe-test',
-    'unit/parser-test',
+    'unit/parser-test-jwplayer',
     'unit/playerutils-test',
     'unit/playlist-filtering-test',
     'unit/playlist-item-test',
