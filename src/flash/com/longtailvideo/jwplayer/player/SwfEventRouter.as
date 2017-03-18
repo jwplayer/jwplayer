@@ -73,16 +73,17 @@ public class SwfEventRouter {
      */
 
     static private var _sendScript:XML = <script><![CDATA[
-function(id, name, data) {
+function(id, name, json) {
     var swf = document.getElementById(id);
     if (swf && typeof swf.trigger === 'function') {
-        return swf.trigger(name, data);
+        return swf.trigger(name, json);
     }
 }]]></script>;
 
     static public function triggerJsEvent(name:String, data:Object = null):void {
         var id:String = ExternalInterface.objectID;
         if (ExternalInterface.available) {
+            var json:String;
             if (data !== null) {
                 try {
                     if (data is String || data is Number) {
@@ -95,19 +96,19 @@ function(id, name, data) {
                         delete data.target;
                         delete data.currentTarget;
                     }
+                    json = encodeURIComponent(JSON.stringify(data));
                 } catch(err:Error) {
                     trace(err);
                 }
             }
-
             try {
-                ExternalInterface.call(_sendScript, id, name, data);
+                ExternalInterface.call(_sendScript, id, name, json);
             } catch(err:Error) {
                 trace(err);
             }
             return;
         }
-        trace('Could not dispatch event "' + id + '":', name, data);
+        trace('Could not dispatch event "' + id + '":', name, json);
     }
 
     static public function error(code:int, message:String):void {

@@ -94,9 +94,9 @@ define([
             }
             return Events.off.apply(swf, args);
         });
-        addGetter(swf, 'trigger', function(type, args) {
+        addGetter(swf, 'trigger', function(type, json) {
             var eventQueue = swf._eventQueue;
-            eventQueue.push({ type: type, args: args });
+            eventQueue.push({ type: type, json: json });
             if (processEventsTimeout > -1) {
                 return;
             }
@@ -105,7 +105,12 @@ define([
                 processEventsTimeout = -1;
                 while (length--) {
                     var event = eventQueue.shift();
-                    Events.trigger.call(swf, event.type, event.args);
+                    if (event.json) {
+                        var data = JSON.parse(decodeURIComponent(event.json));
+                        Events.trigger.call(swf, event.type, data);
+                    } else {
+                        Events.trigger.call(swf, event.type);
+                    }
                 }
             });
         });
