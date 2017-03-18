@@ -142,6 +142,10 @@ define([
             }
 
             return null;
+        },
+
+        getAvailable: function() {
+            return ProvidersSupported;
         }
     });
 
