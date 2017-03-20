@@ -1,0 +1,141 @@
+@import "icons";
+
+.jwplayer {
+    width: 100%;
+    font-size: @default-em-size;
+    position: relative;
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #000;
+    user-select: none;
+
+    // disallow text-select highlighting
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    * {
+        box-sizing: inherit;
+    }
+
+
+    // Aspect Ratio styles
+    &.jw-flag-aspect-mode {
+        height: auto !important;
+
+        & .jw-aspect{
+            display: block;
+        }
+    }
+
+    .jw-aspect {
+        display: none;
+    }
+
+    &.jw-no-focus:focus, .jw-swf {
+        outline: none;
+    }
+
+    &.jw-ie:focus {
+        outline: #585858 dotted 1px;
+    }
+}
+
+.jw-media, .jw-preview, .jw-overlays, .jw-controls {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.jw-media {
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.jw-overlays {
+    cursor: auto;
+}
+
+.jw-controls {
+    overflow: hidden;
+
+    &.jw-controls-disabled {
+        display: none;
+    }
+
+    .jw-controls-right {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        // this should be adjusted in different skins based on controlbar height
+        bottom: @controlbar-height;
+    }
+}
+
+.jw-flag-small-player .jw-controls {
+  text-align: center;
+}
+
+.jw-text {
+    height: 1em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: @font-size;
+    font-style: normal;
+    font-weight: normal;
+    //line-height: 1em;
+    color: white;
+    text-align: center;
+    font-variant: normal;
+    font-stretch: normal;
+}
+
+.jw-plugin {
+    position: absolute;
+    bottom: 2.5em;
+
+    .jw-banner {
+        max-width: 100%;
+        opacity: 0;
+        cursor: pointer;
+        position: absolute;
+        margin: auto auto 0 auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: block;
+    }
+}
+
+.jw-icon-playback {
+    .jw-icon-play;
+}
+
+// Allow pointer events through to the provider
+.jw-preview, .jw-captions, .jw-title, .jw-overlays, .jw-controls {
+    pointer-events : none;
+}
+
+// These items can intercept pointer-events
+.jw-overlays .jw-plugin,
+.jw-dock .jw-dock-button,
+.jw-media,
+.jw-controlbar,
+.jw-logo,
+.jw-skip,
+.jw-display-icon-container,
+.jw-display-icon-container .jw-icon,
+.jw-nextup-container,
+.jw-autostart-mute {
+    pointer-events: all;
+}

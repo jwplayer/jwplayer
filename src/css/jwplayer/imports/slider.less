@@ -1,0 +1,116 @@
+@import "vars";
+
+.jw-slider-container {
+    height: 1em; // For easy grabbability - does not affect positioning of slider itself
+    width: 100%;
+    position: relative;
+    touch-action: none;
+}
+
+.jw-rail,
+.jw-buffer,
+.jw-progress {
+    position: absolute;
+    cursor: pointer;
+}
+
+.jw-progress {
+    background-color: @progress-color;
+}
+
+.jw-rail {
+    background-color: @rail-color;
+}
+
+.jw-buffer {
+    background-color: @buffer-color;
+}
+
+.jw-cue,
+.jw-knob {
+    position: absolute;
+    cursor: pointer;
+}
+
+.jw-cue {
+    height: @rail-height;
+    background-color: rgba(33,33,33,.9);
+    border-radius:25%;
+    width: @ui-padding;
+}
+
+.jw-knob {
+    width: @thumb-size;
+    height: @thumb-size;
+    border-radius: @ui-corner-round;
+}
+
+.jw-slider-horizontal {
+    height: @slider-height;
+    padding: 0;
+
+    &.jw-slider-volume {
+        width: @volume-rail-length;
+        margin: 0 0.5em;
+    }
+
+    .jw-rail {
+        width: 100%;
+    }
+
+    .jw-knob {
+        top: (@rail-height - @thumb-size) / 2;
+        margin-left: @thumb-size / -2;
+    }
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        height: @rail-height;
+    }
+}
+
+.jw-slider-vertical {
+    padding: (@volume-padding / 1.5) @volume-padding;
+    position: absolute;
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        bottom: 0;
+        height: 100%;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+    }
+
+    .jw-slider-container,
+    .jw-rail,
+    .jw-progress {
+        width: @def-rail-width;
+    }
+
+    .jw-slider-container {
+        height: @volume-rail-length;
+    }
+
+    .jw-knob {
+        right: 0;
+        left: (@def-rail-width - @thumb-size) / 2;
+        margin-bottom: @thumb-size/-2;
+    }
+}
+
+.jw-slider-time {
+    width: 100%;
+}
+
+.jw-tooltip-time {
+    position: absolute;
+}
+
+.jw-slider-volume {
+    .jw-buffer {
+        display: none;
+    }
+}

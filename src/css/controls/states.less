@@ -1,0 +1,143 @@
+@import "../imports/vars";
+@import "../imports/icons";
+
+// idle
+.jw-state-idle {
+    /* hide control bar and clear display container padding on idle state unless
+    cast available flag is set */
+    &:not(.jw-flag-cast-available) {
+        .jw-display {
+            padding: 0;
+        }
+    }
+}
+
+// buffering
+.jwplayer.jw-state-buffering {
+    .jw-display-icon-display .jw-icon {
+        .jw-icon-buffer;
+
+        -webkit-animation: spin 2s linear infinite;
+        -moz-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+        @-moz-keyframes spin {
+            100% {
+                -moz-transform: rotate(360deg);
+            }
+        }
+        @-webkit-keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+        @keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+    }
+    .jw-icon-playback {
+        .jw-icon-pause;
+    }
+}
+
+// playing
+.jwplayer.jw-state-playing {
+    .jw-display .jw-icon-display,
+    .jw-icon-playback {
+        .jw-icon-pause;
+    }
+}
+
+// paused
+.jwplayer.jw-state-paused {
+    // Hide autostart mute button when paused by the browser
+    .jw-autostart-mute {
+        display: none;
+    }
+}
+
+// complete
+.jwplayer.jw-state-complete {
+    .jw-display {
+        .jw-icon-display {
+            .jw-icon-replay;
+        }
+        .jw-text {
+            display: none;
+        }
+    }
+}
+
+// Show the play icon
+.jw-state-idle .jw-icon-display,
+.jwplayer.jw-state-paused .jw-icon-playback,
+.jwplayer.jw-state-paused .jw-icon-display,
+.jwplayer.jw-state-complete .jw-icon-playback {
+    .jw-icon-play;
+}
+
+// Only show the play display icon
+.jw-state-idle,
+.jwplayer.jw-state-buffering,
+.jwplayer.jw-state-complete,
+body .jw-error,
+body .jwplayer.jw-state-error {
+    .jw-display-icon-rewind,
+    .jw-display-icon-next {
+        display: none;
+    }
+}
+
+// Show the title
+.jw-state-idle {
+    .jw-title {
+        display: block;
+    }
+}
+
+
+// TODO: These moved over as well?  Are they needed at all?
+body .jwplayer.jw-state-error.jw-flag-audio-player {
+    .jw-preview {
+        display: none;
+    }
+
+    .jw-title-primary {
+        width: auto;
+        display: inline-block;
+        padding-right: 0;
+    }
+
+    .jw-title-secondary {
+        width: auto;
+        display: inline-block;
+        padding-left: 0;
+    }
+}
+
+// Hide control bar
+.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available),
+body .jwplayer.jw-state-error {
+    .jw-controlbar {
+        display: none;
+    }
+}
+
+// Hide display
+.jwplayer.jw-state-playing.jw-flag-user-inactive,
+.jwplayer.jw-state-playing:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting),
+.jwplayer.jw-state-paused:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
+    .jw-display {
+        display: none;
+    }
+}
+
+// Hide text
+.jwplayer.jw-state-buffering .jw-display-icon-display,
+.jwplayer.jw-state-complete .jw-display {
+    .jw-text {
+        display: none;
+    }
+}
