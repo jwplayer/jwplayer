@@ -154,11 +154,13 @@ define([
                     mute: mute
                 });
             });
-            _model.on('change:controls', function(model, mode) {
+            _model.change('controls', function(model, mode) {
                 if (mode) {
                     ControlsLoader.load()
                         .then(function (Controls) {
-                            _view.addControls(new Controls(document, _this.currentContainer));
+                            var controls = new Controls(document, _this.currentContainer);
+                            _view.addControls(controls);
+                            controls.on('all', _triggerAfterReady, _this);
                         })
                         .catch(function (reason) {
                             _this.triggerError({

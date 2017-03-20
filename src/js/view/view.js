@@ -6,13 +6,11 @@ define([
     'utils/activeTab',
     'events/states',
     'view/captionsrenderer',
-    'view/clickhandler',
     'view/rewind-display-icon',
     'view/play-display-icon',
     'view/next-display-icon',
     'view/dock',
     'view/logo',
-    'view/controlbar',
     'view/preview',
     'view/rightclick',
     'view/title',
@@ -23,8 +21,8 @@ define([
     'view/components/button',
     'view/display-container',
 ], function(utils, events, Events, Constants, activeTab, states,
-            CaptionsRenderer, ClickHandler, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, Dock, Logo,
-            Controlbar, Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
+            CaptionsRenderer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, Dock, Logo,
+            Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
 
     var _styles = utils.style;
     var _bounds = utils.bounds;
@@ -40,16 +38,12 @@ define([
         var _playerElement;
         var _controls;
         var _controlsLayer;
-        var _controlsTimeout = -1;
-        var _timeoutDuration = _isMobile ? 4000 : 2000;
         var CONTOLBAR_ONLY_HEIGHT = 44;
         var _videoLayer;
         var _lastWidth;
         var _lastHeight;
         var _instreamModel;
-        var _controlbar;
         var _preview;
-        var _displayClickHandler;
         var _castDisplay;
         var _dock;
         var _logo;
@@ -57,7 +51,6 @@ define([
         var _nextuptooltip;
         var _mute;
         var _captionsRenderer;
-        var _showing = false;
         var _rightClickMenu;
         var _resizeMediaTimeout = -1;
         var _resizeContainerRequestId = -1;
@@ -154,7 +147,7 @@ define([
 
             // On keypress show the controlbar for a few seconds
             if (!_instreamModel) {
-                _userActivity();
+                _controls.userActivity();
             }
 
             switch (evt.keyCode) {
@@ -235,7 +228,7 @@ define([
 
             // On tab-focus, show the control bar for a few seconds
             if (!_instreamModel && !_isMobile) {
-                _userActivity();
+                _controls.userActivity();
             }
         }
 
@@ -520,9 +513,6 @@ define([
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
             });
 
-            _componentFadeListeners(_controlbar);
-            _componentFadeListeners(_logo);
-
             var aspectratio = _model.get('aspectratio');
             if (aspectratio) {
                 _setAspectMode(aspectratio);
@@ -542,7 +532,6 @@ define([
             _stateHandler(_instreamModel || _model);
             _lastWidth = _lastHeight = null;
             _setContainerDimensions();
-            _model.on('change:visibility', _setContainerDimensions);
         };
 
         function _onStretchChange(model, newVal) {
@@ -553,24 +542,6 @@ define([
             if (comp && !_isMobile) {
                 comp.element().addEventListener('mousemove', _overControlElement, false);
                 comp.element().addEventListener('mouseout', _offControlElement, false);
-            }
-        }
-
-        function _touchHandler() {
-            var state = _model.get('state');
-
-            if (_model.get('controls') &&
-                ((state === states.IDLE || state === states.COMPLETE) ||
-                (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
-                _api.play(reasonInteraction());
-            }
-            if (state === states.PAUSED) {
-                // Toggle visibility of the controls when tapping the media
-                _toggleControls();
-            } else if (!_showing) {
-                _userActivity();
-            } else {
-                _userInactive();
             }
         }
 
@@ -589,11 +560,11 @@ define([
 
         function _overControlElement() {
             // Over controlbar, timeout resumed when off controlbar
-            clearTimeout(_controlsTimeout);
+            clearTimeout(_controls.activeTimeout);
         }
 
         function _offControlElement() {
-            _userActivity();
+            _controls.userActivity();
         }
 
         function forward(evt) {
@@ -624,56 +595,12 @@ define([
             utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
         };
 
-        function _doubleClickFullscreen() {
-            if (_model.get('controls')) {
-                _api.setFullscreen();
-            }
-        }
+        this.addControls = function (controls) {
+            _controls = controls;
+            _setupControls();
+            controls.enable(_api, _model, _videoLayer);
 
-        function _setupControls() {
-            var overlaysElement = _playerElement.querySelector('.jw-overlays');
-            overlaysElement.addEventListener('mousemove', _userActivityCallback);
-
-            _displayClickHandler = new ClickHandler(_model, _videoLayer, { useHover: true });
-            _displayClickHandler.on('click', function () {
-                forward({ type: events.JWPLAYER_DISPLAY_CLICK });
-                if (_model.get('controls')) {
-                    _api.play(reasonInteraction());
-                }
-            });
-            _displayClickHandler.on('tap', function () {
-                forward({ type: events.JWPLAYER_DISPLAY_CLICK });
-                _touchHandler();
-            });
-            _displayClickHandler.on('doubleClick', _doubleClickFullscreen);
-            _displayClickHandler.on('move', _userActivityCallback);
-            _displayClickHandler.on('over', _userActivityCallback);
-
-            _controlsLayer.appendChild(createDisplayContainer());
-
-            _dock = new Dock(_model);
-
-            _logo = new Logo(_model);
-            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
-
-            var rightside = document.createElement('div');
-            rightside.className = 'jw-controls-right jw-reset';
-            rightside.appendChild(_dock.element());
-            _logo.setup(rightside);
-            _controlsLayer.appendChild(rightside);
-
-            // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
-            height = _model.get('height');
-            if (_isMobile && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)) {
-                utils.addClass(_playerElement, 'jw-flag-touch');
-            } else {
-                _rightClickMenu = new RightClick();
-                _rightClickMenu.setup(_model, _playerElement, _playerElement);
-            }
-
-            _controlbar = new Controlbar(_api, _model);
-            _controlbar.on(events.JWPLAYER_USER_ACTION, _userActivityCallback);
-            _model.on('change:scrubbing', _dragging);
+            // These need to be called after controls.enable:
 
             // Ignore iOS9. Muted autoplay is supported in iOS 10+
             if (_model.autoStartOnMobile()) {
@@ -681,7 +608,7 @@ define([
                 _mute.show();
                 _controlsLayer.appendChild(_mute.element());
                 // Set mute state in the controlbar
-                _controlbar.renderVolume(true, _model.get('volume'));
+                _controls.controlbar.renderVolume(true, _model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
                 utils.addClass(_playerElement, 'jw-flag-autostart');
                 _model.set('autostartMuted', true);
@@ -697,7 +624,9 @@ define([
                 _controlsLayer.appendChild(_nextuptooltip.element());
             }
 
-            _controlsLayer.appendChild(_controlbar.element());
+            _model.on('change:scrubbing', _dragging);
+            _componentFadeListeners(_controls.controlbar);
+            _controlsLayer.appendChild(_controls.controlbar.element());
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
@@ -706,17 +635,53 @@ define([
             _playerElement.onmouseup = handleMouseUp;
 
             _model.change('duration', _setLiveMode, this);
+        };
+
+        function _setupControls() {
+            var overlaysElement = _playerElement.querySelector('.jw-overlays');
+            overlaysElement.addEventListener('mousemove', _userActivityCallback);
+
+            _controls.on('change:showing', function(/* showing */) {
+                _captionsRenderer.renderCues(true);
+            });
+
+            _controlsLayer = _controls.getElement();
+            _controlsLayer.appendChild(createDisplayContainer());
+
+            _dock = new Dock(_model);
+
+            _logo = new Logo(_model);
+
+            var rightside = document.createElement('div');
+            rightside.className = 'jw-controls-right jw-reset';
+            rightside.appendChild(_dock.element());
+            _logo.setup(rightside);
+            _controlsLayer.appendChild(rightside);
+
+            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
+            _componentFadeListeners(_logo);
+
+            // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
+            height = _model.get('height');
+            if (_isMobile && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)) {
+                utils.addClass(_playerElement, 'jw-flag-touch');
+            } else {
+                _rightClickMenu = new RightClick();
+                _rightClickMenu.setup(_model, _playerElement, _playerElement);
+            }
         }
+
+        this.removeControls = function () {
+            if (_controls) {
+                _controls.disable();
+            }
+            _destroyControls();
+        };
 
         var _destroyControls = function () {
             var overlay = document.querySelector('.jw-overlays');
             if (overlay) {
                 overlay.removeEventListener('mousemove', _userActivityCallback);
-            }
-
-            if (_displayClickHandler) {
-                _displayClickHandler.off();
-                _displayClickHandler = null;
             }
 
             if (_dock) {
@@ -743,7 +708,6 @@ define([
 
             clearTimeout(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
-            clearTimeout(_controlsTimeout);
         };
 
         // Perform the switch to fullscreen
@@ -821,7 +785,7 @@ define([
 
         function _checkAudioMode(playerHeight) {
             var audioMode = _isAudioMode(playerHeight);
-            if (_controlbar) {
+            if (_controls) {
                 if (!audioMode) {
                     _stateHandler(_instreamModel || _model);
                 }
@@ -903,7 +867,7 @@ define([
             _model.set('autostartMuted', undefined);
             _api.setMute(mute);
             // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state
-            _controlbar.renderVolume(mute, _model.get('volume'));
+            _controls.controlbar.renderVolume(mute, _model.get('volume'));
             _mute.hide();
             utils.removeClass(_playerElement, 'jw-flag-autostart');
         }
@@ -962,7 +926,7 @@ define([
                 });
 
                 // On going fullscreen we want the control bar to fade after a few seconds
-                _userActivity();
+                _controls.userActivity();
             } else {
                 utils.removeClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
@@ -974,42 +938,8 @@ define([
             _responsiveListener();
         }
 
-        function _userInactive() {
-            _showing = false;
-
-            clearTimeout(_controlsTimeout);
-            if (_controlbar) {
-                _controlbar.hideComponents();
-            }
-            utils.addClass(_playerElement, 'jw-flag-user-inactive');
-            _captionsRenderer.renderCues(true);
-        }
-
         function _userActivityCallback(/* event */) {
-            _userActivity();
-        }
-
-        function _userActivity(timeout) {
-            if (!_showing) {
-                utils.removeClass(_playerElement, 'jw-flag-user-inactive');
-                _captionsRenderer.renderCues(true);
-            }
-
-            _showing = true;
-
-            clearTimeout(_controlsTimeout);
-            _controlsTimeout = setTimeout(_userInactive, timeout || _timeoutDuration);
-        }
-
-        function _toggleControls() {
-            // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-            if (_instreamModel ||
-                _model.get('castActive') ||
-                (_model.mediaModel && _model.mediaModel.get('mediaType') === 'audio')) {
-                return;
-            }
-            utils.toggleClass(_playerElement, 'jw-flag-controls-hidden');
-            _captionsRenderer.renderCues(true);
+            _controls.userActivity();
         }
 
         function _playlistCompleteHandler() {
@@ -1073,6 +1003,15 @@ define([
             }
 
             _currentState = model.get('state');
+
+            var instreamState = null;
+            if (_instreamModel) {
+                instreamState = _currentState;
+            }
+            if (_controls) {
+                _controls.instreamState = instreamState;
+            }
+
             // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
             _cancelDelayResize(_previewDisplayStateTimeout);
 
@@ -1124,7 +1063,7 @@ define([
             // toggle playback
             playDisplayIcon.on('click tap', function () {
                 forward({ type: events.JWPLAYER_DISPLAY_CLICK });
-                _userActivity(1000);
+                _controls.userActivity(1000);
                 _api.play(reasonInteraction());
             });
 
@@ -1162,13 +1101,13 @@ define([
 
             utils.addClass(_playerElement, 'jw-flag-ads');
 
-            // trigger _userActivity to display the UI temporarily for the start of the ad
-            _userActivity();
+            // Call Controls.userActivity to display the UI temporarily for the start of the ad
+            _controls.userActivity();
         };
 
         this.setAltText = function (text) {
-            if (_controlbar) {
-                _controlbar.setAltText(text);
+            if (_controls) {
+                _controls.controlbar.setAltText(text);
             }
         };
 
@@ -1186,17 +1125,17 @@ define([
             }
             _setLiveMode(_model, _model.get('duration'));
             // reset display click handler
-            _displayClickHandler.revertAlternateClickHandlers();
+            _controls.displayClick.revertAlternateClickHandlers();
         };
 
         this.addCues = function (cues) {
-            if (_controlbar) {
-                _controlbar.addCues(cues);
+            if (_controls) {
+                _controls.controlbar.addCues(cues);
             }
         };
 
         this.clickHandler = function () {
-            return _displayClickHandler;
+            return _controls.displayClick;
         };
 
         this.controlsContainer = function () {
@@ -1226,8 +1165,8 @@ define([
 
                 // Subtract controlbar from the bottom when using one
                 includeCB = includeCB || !utils.exists(includeCB);
-                if (includeCB) {
-                    bounds.height -= _controlbar.element().clientHeight;
+                if (includeCB && _controls) {
+                    bounds.height -= _controls.controlbar.element().clientHeight;
                 }
             }
 
@@ -1240,23 +1179,10 @@ define([
             _captionsRenderer.resize();
         };
 
-        this.addControls = function (controls) {
-            _controls = controls;
-            _controls.enable();
-            _controlsLayer = _controls.getElement();
-            _setupControls();
-        };
-
-        this.removeControls = function () {
-            _controls.disable();
-            _destroyControls();
-        };
-
         this.destroy = function () {
             this.off();
             _cancelDelayResize(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
-            clearTimeout(_controlsTimeout);
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
             document.removeEventListener('visibilitychange', _visibilityChangeListener);
@@ -1265,6 +1191,9 @@ define([
             }
             if (_model.mediaController) {
                 _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
+            }
+            if (_controls) {
+                _controls.disable();
             }
             _playerElement.removeEventListener('keydown', handleKeydown, false);
             if (_rightClickMenu) {
