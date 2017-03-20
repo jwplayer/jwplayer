@@ -17,6 +17,8 @@ define([
         }
 
         enable() {
+            require('css/controls.less');
+
             this.playerContainer.appendChild(this.element);
         }
 

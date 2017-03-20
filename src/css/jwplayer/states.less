@@ -1,0 +1,81 @@
+@import "../imports/vars";
+@import "../imports/icons";
+
+// setup
+.jw-state-setup {
+    background-color: transparent;
+
+    .jw-controls {
+        display: none;
+    }
+}
+
+// errors
+body .jw-error,
+body .jwplayer.jw-state-error {
+    .jw-title {
+        .jw-title-primary {
+            white-space: normal;
+        }
+        .jw-title-secondary {
+            display: block;
+        }
+    }
+
+    .jw-icon-display {
+        cursor: default;
+        .jw-icon;
+        .jw-icon-error;
+    }
+}
+
+body .jw-error {
+    font-size: @default-em-size;
+    background-color: #000;
+    color: @font-color;
+    width: 100%;
+    height: 100%;
+    display: table;
+    opacity: 1;
+    position: relative;
+
+    .jw-icon-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+    }
+}
+
+// Show the title
+body .jw-error,
+body .jwplayer.jw-state-error {
+    .jw-title {
+        display: block;
+    }
+}
+
+// Show preview
+.jw-state-idle,
+.jwplayer.jw-state-complete:not(.jw-flag-casting):not(.jw-flag-audio-player),
+body .jw-error,
+body .jwplayer.jw-state-error {
+    .jw-preview {
+        display: block;
+    }
+}
+
+// Hide captions
+.jw-state-idle,
+.jwplayer.jw-state-complete,
+body .jwplayer.jw-state-error {
+    .jw-captions {
+        display: none;
+    }
+    video::-webkit-media-text-track-container {
+        display: none;
+    }
+}

@@ -32,27 +32,29 @@
 @import "imports/autostartmute";
 
 // State specific
-@import "states/states";
+@import "jwplayer/states";
+    // Incorporate title/description only display code for error, normal startup and flash throttling?
 
-@import "flags/time-slider-above";
-@import "flags/cast";
-@import "flags/cast-available";
-@import "flags/skinloading";
-@import "flags/fullscreen";
-@import "flags/live";
-@import "flags/controls-hidden";
-@import "flags/user-inactive";
-@import "flags/media-audio";
-@import "flags/ads";
-@import "flags/overlay";
-@import "flags/rightclick-open";
-@import "flags/controls-disabled";
-@import "flags/flash-blocked";
-@import "flags/touch";
-@import "flags/audioplayer";
+//@import "jwplayer/flags/time-slider-above";
+//@import "jwplayer/flags/cast";
+//@import "jwplayer/flags/cast-available";
+@import "jwplayer/flags/skinloading";            // Hides content until styles loaded.  Rename stylesloading.les
+@import "jwplayer/flags/fullscreen";             // Styles to make player fullscreen
+//@import "jwplayer/flags/live";
+//@import "jwplayer/flags/controls-hidden";
+//@import "jwplayer/flags/user-inactive";
+//@import "jwplayer/flags/media-audio";
+//@import "jwplayer/flags/ads";
+//@import "jwplayer/flags/overlay";
+//@import "jwplayer/flags/rightclick-open";
+//@import "jwplayer/flags/controls-disabled";
+@import "jwplayer/flags/flash-blocked";
+//@import "jwplayer/flags/touch";
+
+@import "jwplayer/flags/audioplayer";
 
 // modifiers
 @import "imports/utilities";
 
 // Skins
-@import "skins/seven";
+// @import "jwplayer/skins/seven";
