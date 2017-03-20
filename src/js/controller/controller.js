@@ -424,8 +424,8 @@ define([
                 }
                 _model.set('preInstreamState', 'instream-idle');
 
-                _stop(true);
                 _this.trigger('destroyPlugin', {});
+                _stop(true);
 
                 _model.once('itemReady', _checkAutoStart);
 
