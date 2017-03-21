@@ -12,7 +12,6 @@ define([
     'view/dock',
     'view/logo',
     'view/preview',
-    'view/rightclick',
     'view/title',
     'view/components/nextuptooltip',
     'utils/underscore',
@@ -22,7 +21,7 @@ define([
     'view/display-container',
 ], function(utils, events, Events, Constants, activeTab, states,
             CaptionsRenderer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, Dock, Logo,
-            Preview, RightClick, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
+            Preview, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
 
     var _styles = utils.style;
     var _bounds = utils.bounds;
@@ -38,7 +37,6 @@ define([
         var _playerElement;
         var _controls;
         var _controlsLayer;
-        var CONTOLBAR_ONLY_HEIGHT = 44;
         var _videoLayer;
         var _lastWidth;
         var _lastHeight;
@@ -51,7 +49,6 @@ define([
         var _nextuptooltip;
         var _mute;
         var _captionsRenderer;
-        var _rightClickMenu;
         var _resizeMediaTimeout = -1;
         var _resizeContainerRequestId = -1;
         var _requestFrame = window.requestAnimationFrame ||
@@ -268,10 +265,10 @@ define([
             _model.set('inDom', inDOM);
 
             var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
-            var controls = _model.get('controls');
-            _checkAudioMode(_model.get('height'));
-            _setTimesliderFlags(breakPoint, _model.get('audioMode'), controls);
-            _onChangeControls(_model, controls);
+
+            if (_controls) {
+                _controls.resize(_model, breakPoint);
+            }
 
             _resizeMedia(containerWidth, containerHeight);
 
@@ -288,17 +285,7 @@ define([
                 height: containerHeight
             });
         }
-
-        function _setTimesliderFlags(breakPoint, audioMode, controls) {
-            var smallPlayer = breakPoint < 2;
-            var timeSliderAboveConfig = _model.get('timeSliderAbove');
-            var timeSliderAbove = !audioMode && controls &&
-                (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
-            utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
-            utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
-            utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
-        }
-
+        
         function _responsiveListener() {
             _cancelDelayResize(_resizeContainerRequestId);
             _resizeContainerRequestId = _requestFrame(_setContainerDimensions);
@@ -573,13 +560,13 @@ define([
 
         function _onChangeFlashBlocked(model, isBlocked) {
             if (isBlocked) {
-                if (_rightClickMenu) {
-                    _rightClickMenu.destroy();
+                if (_controls && _controls.rightClickMenu) {
+                    _controls.rightClickMenu.destroy();
                 }
                 utils.addClass(_playerElement, 'jw-flag-flash-blocked');
             } else {
-                if (_rightClickMenu) {
-                    _rightClickMenu.setup(_model, _playerElement, _playerElement);
+                if (_controls && _controls.rightClickMenu) {
+                    _controls.rightClickMenu.setup(_model, _playerElement, _playerElement);
                 }
                 utils.removeClass(_playerElement, 'jw-flag-flash-blocked');
             }
@@ -589,10 +576,14 @@ define([
             if (bool) {
                 // ignore model that triggered this event and use current state model
                 _stateHandler(_instreamModel || _model);
-                _userActivity();
+
+                if (_controls) {
+                    var breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
+                    _controls.resize(_model, breakPoint);
+                }
             }
 
-            utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
+            // utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
         };
 
         this.addControls = function (controls) {
@@ -660,15 +651,6 @@ define([
 
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
             _componentFadeListeners(_logo);
-
-            // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
-            height = _model.get('height');
-            if (_isMobile && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)) {
-                utils.addClass(_playerElement, 'jw-flag-touch');
-            } else {
-                _rightClickMenu = new RightClick();
-                _rightClickMenu.setup(_model, _playerElement, _playerElement);
-            }
         }
 
         this.removeControls = function () {
@@ -691,10 +673,6 @@ define([
             if (_logo) {
                 _logo.destroy();
                 _logo = null;
-            }
-
-            if (_rightClickMenu) {
-                _rightClickMenu.destroy();
             }
 
             _playerElement.removeEventListener('focus', handleFocus);
@@ -768,8 +746,6 @@ define([
 
             _styles(_playerElement, playerStyle);
 
-            _checkAudioMode(playerHeight);
-
             // pass width, height from jwResize if present
             _resizeMedia(playerWidth, playerHeight);
         }
@@ -780,40 +756,6 @@ define([
             _styles(aspectRatioContainer, {
                 paddingTop: aspectratio || null
             });
-        }
-
-
-        function _checkAudioMode(playerHeight) {
-            var audioMode = _isAudioMode(playerHeight);
-            if (_controls) {
-                if (!audioMode) {
-                    _stateHandler(_instreamModel || _model);
-                }
-            }
-            _model.set('audioMode', audioMode);
-        }
-
-        function _isAudioMode(playerHeight) {
-            if (_model.get('aspectratio')) {
-                return false;
-            }
-            if (_.isString(playerHeight) && playerHeight.indexOf('%') > -1) {
-                return false;
-            }
-
-            // Coerce into Number (don't parse out CSS units)
-            var checkHeight = (playerHeight * 1) || null;
-            checkHeight = (_.isNumber(checkHeight) ? checkHeight : _model.get('containerHeight'));
-            if (!checkHeight) {
-                return false;
-            }
-
-            return _isControlBarOnly(checkHeight);
-        }
-
-        function _isControlBarOnly(verticalPixels) {
-            // 1.75 so there's a little wiggle room on mobile for the large UI to fit in
-            return verticalPixels && verticalPixels <= CONTOLBAR_ONLY_HEIGHT;
         }
 
         function _resizeMedia(mediaWidth, mediaHeight) {
@@ -1196,9 +1138,7 @@ define([
                 _controls.disable();
             }
             _playerElement.removeEventListener('keydown', handleKeydown, false);
-            if (_rightClickMenu) {
-                _rightClickMenu.destroy();
-            }
+
             if (_castDisplay) {
                 _model.off('change:state', _castDisplay.statusDelegate);
                 _castDisplay.destroy();

@@ -5,9 +5,30 @@ define([
     'utils/helpers',
     'view/controls/clickhandler',
     'view/controls/controlbar',
-], function (events, states, Events, utils, ClickHandler, Controlbar) {
+    'view/controls/rightclick',
+], function (events, states, Events, utils, ClickHandler, Controlbar, RightClick) {
 
-    const timeoutDuration = utils.isMobile() ? 4000 : 2000;
+    const CONTOLBAR_ONLY_HEIGHT = 44;
+    const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
+
+    const isAudioMode = function(model) {
+        let playerHeight = model.get('height')
+        if (model.get('aspectratio')) {
+            return false;
+        }
+        if (typeof playerHeight === 'string' && playerHeight.indexOf('%') > -1) {
+            return false;
+        }
+
+        // Coerce into Number (don't parse out CSS units)
+        var verticalPixels = (playerHeight * 1) || null;
+        verticalPixels = (_.isNumber(verticalPixels) ? verticalPixels : model.get('containerHeight'));
+        if (!verticalPixels) {
+            return false;
+        }
+
+        return verticalPixels && verticalPixels <= CONTOLBAR_ONLY_HEIGHT;
+    };
 
     const reasonInteraction = function() {
         return { reason: 'interaction' };
@@ -25,6 +46,7 @@ define([
             this.instreamState = null;
             this.enabled = true;
             this.playerContainer = playerContainer;
+            this.rightClickMenu = null;
             this.showing = false;
 
             const element = this.context.createElement('div');
@@ -75,8 +97,20 @@ define([
             displayClickHandler.on('over', () => this.userActivity());
             this.displayClick = displayClickHandler;
 
-            this.controlbar = new Controlbar(api, model);
-            this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActivity());
+            if (!this.controlbar) {
+                this.controlbar = new Controlbar(api, model);
+                this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActivity());
+            }
+
+            // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
+            const height = model.get('height');
+            if (utils.isMobile() && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)) {
+                utils.addClass(this.playerContainer, 'jw-flag-touch');
+            } else {
+                this.rightClickMenu = new RightClick();
+                this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
+            }
+
 
             this.userActivity();
 
@@ -93,10 +127,30 @@ define([
                 this.displayClick.off();
                 this.displayClick = null;
             }
+
+            if (this.rightClickMenu) {
+                this.rightClickMenu.destroy();
+                this.rightClickMenu = null;
+            }
         }
 
         getElement() {
             return this.element;
+        }
+
+        resize(model, breakPoint) {
+            var audioMode = isAudioMode(model);
+
+            // Set timeslider flags
+            var smallPlayer = breakPoint < 2;
+            var timeSliderAboveConfig = model.get('timeSliderAbove');
+            var timeSliderAbove = !audioMode &&
+                (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
+            utils.toggleClass(this.playerContainer, 'jw-flag-small-player', smallPlayer);
+            utils.toggleClass(this.playerContainer, 'jw-flag-audio-player', audioMode);
+            utils.toggleClass(this.playerContainer, 'jw-flag-time-slider-above', timeSliderAbove);
+
+            model.set('audioMode', audioMode);
         }
 
         userActivity(timeout) {
@@ -109,7 +163,7 @@ define([
 
             clearTimeout(this.activeTimeout);
             this.activeTimeout = setTimeout(() => this.userInactive(),
-                timeout || timeoutDuration);
+                timeout || ACTIVE_TIMEOUT);
         }
 
         userInactive() {
