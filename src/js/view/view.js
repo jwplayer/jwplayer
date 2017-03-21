@@ -594,7 +594,7 @@ define([
             var overlaysElement = _playerElement.querySelector('.jw-overlays');
             overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
-            _controls.on('uiActivity', function(/* showing */) {
+            controls.on('uiActivity', function(/* showing */) {
                 _captionsRenderer.renderCues(true);
             });
 
@@ -602,15 +602,14 @@ define([
 
             controls.enable(_api, _model, _videoLayer);
 
-            var controlsLayer = _controls.getElement();
-
             // Ignore iOS9. Muted autoplay is supported in iOS 10+
             if (_model.get('autostartMuted')) {
                 _mute = button('jw-autostart-mute jw-off', _autoplayUnmute, _model.get('localization').volume);
                 _mute.show();
+                var controlsLayer = controls.getElement();
                 controlsLayer.appendChild(_mute.element());
                 // Set mute state in the controlbar
-                _controls.controlbar.renderVolume(true, _model.get('volume'));
+                controls.controlbar.renderVolume(true, _model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
                 utils.addClass(_playerElement, 'jw-flag-autostart');
 
@@ -618,11 +617,10 @@ define([
                 _model.on('change:autostartMuted', _autoplayUnmute);
                 _model.on('change:mute', _autoplayUnmute);
             }
+            
+            _componentFadeListeners(controls.controlbar);
 
-            _model.on('change:scrubbing', _dragging);
-            _componentFadeListeners(_controls.controlbar);
-            controlsLayer.appendChild(_controls.controlbar.element());
-
+            _model.change('scrubbing', _dragging);
             _model.change('duration', _setLiveMode, this);
         };
 

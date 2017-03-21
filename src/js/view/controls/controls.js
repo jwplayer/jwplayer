@@ -155,12 +155,6 @@ define([
             displayClickHandler.on('over', () => this.userActive());
             this.displayClick = displayClickHandler;
 
-            // Controlbar
-            if (!this.controlbar) {
-                this.controlbar = new Controlbar(api, model);
-                this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
-            }
-
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             const height = model.get('height');
             if (utils.isMobile() && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)) {
@@ -179,6 +173,13 @@ define([
                 // NextUp needs to be behind the controlbar to not block other tooltips
                 this.element.appendChild(nextUpToolTip.element());
             }
+
+            // Controlbar
+            if (!this.controlbar) {
+                this.controlbar = new Controlbar(api, model);
+                this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
+            }
+            this.element.appendChild(this.controlbar.element());
 
             // Show controls when enabled
             this.userActive();
