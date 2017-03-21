@@ -1,32 +1,27 @@
-//@import "imports/reset";
-
-@import "imports/mixins";
-
+@import "shared-imports/mixins";
 
 // TO REMOVE
-@import "imports/jwplayerelement";
-@import "imports/video";
-@import "imports/display";
-@import "imports/controlbar";
-@import "imports/dock";
-@import "imports/title";
-@import "imports/slider";
+@import "controls/imports/jwplayerelement";
+//@import "shared-imports/video";
+@import "controls/imports/display";
+@import "controls/imports/controlbar";
+@import "controls/imports/dock";
+//@import "shared-imports/title";
+@import "controls/imports/slider";
 
-@import "imports/captions";
-@import "imports/rightclick";
-@import "imports/logo";
-@import "imports/tooltip";
-@import "imports/skipad";
-@import "imports/cast";
-@import "imports/nextup";
-@import "imports/autostartmute";
-//
-
+//@import "shared-imports/captions";
+@import "controls/imports/rightclick";
+//@import "shared-imports/logo";
+@import "controls/imports/tooltip";
+@import "controls/imports/skipad";
+@import "controls/imports/cast";
+@import "controls/imports/nextup";
+@import "controls/imports/autostartmute";
 
 // State specific
 @import "controls/states";
 
-// flagsgrunt grt
+// flags
 @import "controls/flags/time-slider-above";
 @import "controls/flags/cast";
 @import "controls/flags/cast-available";
@@ -43,9 +38,8 @@
 @import "controls/flags/touch";
 @import "controls/flags/audioplayer";
 
-
 // modifiers
-@import "imports/utilities";
+@import "controls/imports/utilities";
 
 // Skins
 @import "skins/seven";

@@ -1,0 +1,42 @@
+@import "../../shared-imports/icons";
+
+.jw-overlays {
+    cursor: auto;
+}
+
+.jw-controls {
+    overflow: hidden;
+
+    .jw-controls-right {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        // this should be adjusted in different skins based on controlbar height
+        bottom: @controlbar-height;
+    }
+}
+
+.jw-flag-small-player .jw-controls {
+    text-align: center;
+}
+
+.jw-icon-playback {
+    .jw-icon-play;
+}
+
+// Allow pointer events through to the provider
+.jw-controls {
+    pointer-events : none;
+}
+
+// These items can intercept pointer-events
+.jw-dock .jw-dock-button,
+.jw-controlbar,
+.jw-skip,
+.jw-display-icon-container,
+.jw-display-icon-container .jw-icon,
+.jw-nextup-container,
+.jw-autostart-mute {
+    pointer-events: all;
+}

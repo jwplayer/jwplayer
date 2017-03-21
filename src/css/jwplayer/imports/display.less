@@ -1,7 +1,6 @@
-@import "vars";
+@import "../../shared-imports/vars";
 
 // Preview Image
-
 .jw-preview {
     position: absolute;
     display: none;
@@ -46,9 +45,7 @@
 }
 
 /*
-
 display icons
-
 */
 
 .jw-display {
@@ -57,14 +54,6 @@ display icons
     padding: @controlbar-height 0;
     position: relative;
     width: 100%;
-
-    .jw-flag-dragging & {
-        display: none;
-    }
-
-    .jw-state-idle:not(.jw-flag-cast-available) & {
-        padding: 0;
-    }
 }
 
 .jw-display-container {
@@ -72,10 +61,6 @@ display icons
     height: 100%;
     text-align: center;
     vertical-align: middle;
-}
-
-.jw-display-controls {
-    display: inline-block;
 }
 
 .jwplayer .jw-display-icon-container {
@@ -99,15 +84,6 @@ display icons
         &::before {
             font-size: @mobile-touch-target * 0.75;
             position: relative;
-        }
-
-        &.jw-icon-rewind::before {
-            padding: 0.2em 0.05em;
-        }
-
-        .jw-state-idle &.jw-icon-display::before,
-        .jw-state-paused &.jw-icon-display::before {
-            left: 1px;
         }
     }
 }

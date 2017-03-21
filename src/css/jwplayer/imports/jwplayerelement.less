@@ -1,4 +1,4 @@
-@import "icons";
+@import "../../shared-imports/icons";
 
 .jwplayer {
     width: 100%;
@@ -23,7 +23,6 @@
     * {
         box-sizing: inherit;
     }
-
 
     // Aspect Ratio styles
     &.jw-flag-aspect-mode {
@@ -62,30 +61,10 @@
     cursor: pointer;
 }
 
-.jw-overlays {
-    cursor: auto;
-}
-
-.jw-controls {
-    overflow: hidden;
-
-    &.jw-controls-disabled {
-        display: none;
-    }
-
-    .jw-controls-right {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        // this should be adjusted in different skins based on controlbar height
-        bottom: @controlbar-height;
-    }
-}
-
-.jw-flag-small-player .jw-controls {
-  text-align: center;
-}
+// TODO: Remove me?
+//.jw-controls.jw-controls-disabled {
+//    display: none;
+//}
 
 .jw-text {
     height: 1em;
@@ -117,25 +96,14 @@
     }
 }
 
-.jw-icon-playback {
-    .jw-icon-play;
-}
-
 // Allow pointer events through to the provider
-.jw-preview, .jw-captions, .jw-title, .jw-overlays, .jw-controls {
+.jw-preview, .jw-captions, .jw-title, .jw-overlays {
     pointer-events : none;
 }
 
 // These items can intercept pointer-events
 .jw-overlays .jw-plugin,
-.jw-dock .jw-dock-button,
 .jw-media,
-.jw-controlbar,
-.jw-logo,
-.jw-skip,
-.jw-display-icon-container,
-.jw-display-icon-container .jw-icon,
-.jw-nextup-container,
-.jw-autostart-mute {
+.jw-logo {
     pointer-events: all;
 }

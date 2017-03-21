@@ -1,52 +1,51 @@
-@import "../imports/vars";
-@import "../imports/icons";
+@import "../shared-imports/vars";
+@import "../shared-imports/icons";
 
 .jw-skin-seven {
+    @display-bkgd-color: @controlbar-background;
 
-  @display-bkgd-color: @controlbar-background;
+    .jw-display-icon-container {
+        border-radius: 3.5em;
 
-  .jw-display-icon-container {
-    border-radius: 3.5em;
-
-    & > .jw-icon {
-      color: rgba(255, 255, 255, 0.9);
-    }
-  }
-
-  &.jw-breakpoint-2 {
-    .jw-display .jw-icon {
-      width: @mobile-touch-target * 1.5;
-      height: @mobile-touch-target * 1.5;
-      line-height: @mobile-touch-target * 1.5;
-    }
-  }
-
-  .jw-dock-button {
-    // Seven skin dock buttons do not highlight, they only show the tooltip
-    &:hover{
-      background: @controlbar-background;
+        & > .jw-icon {
+            color: rgba(255, 255, 255, 0.9);
+        }
     }
 
-    border-radius: 2.5em;
-  }
-
-  .jw-menu {
-    padding: 0;
-  }
-
-  .jw-dock {
-    .jw-overlay {
-      border-radius: @ui-padding;
+    &.jw-breakpoint-2 {
+        .jw-display .jw-icon {
+            width: @mobile-touch-target * 1.5;
+            height: @mobile-touch-target * 1.5;
+            line-height: @mobile-touch-target * 1.5;
+        }
     }
-  }
 
-  .jw-skip {
-    border-radius: @ui-padding;
-  }
+    .jw-dock-button {
+        // Seven skin dock buttons do not highlight, they only show the tooltip
+        &:hover{
+            background: @controlbar-background;
+        }
 
-  .jw-text {
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+        border-radius: 2.5em;
+    }
+
+    .jw-menu {
+        padding: 0;
+    }
+
+    .jw-dock {
+        .jw-overlay {
+            border-radius: @ui-padding;
+        }
+    }
+
+    .jw-skip {
+        border-radius: @ui-padding;
+    }
+
+    .jw-text {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 }
