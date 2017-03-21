@@ -22,69 +22,67 @@
 }
 
 .inset-controlbar() {
-
-  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
-    &,
-    .jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid)&,
-    .jw-flag-ads.jw-flag-touch.jw-flag-autostart:not(.jw-flag-ads-vpaid)& {
-      .jw-controlbar {
-        display: inline-block;
-      }
-    }
-  }
-
-  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
-    .jw-controlbar {
-      bottom: .7em;
-      max-width: @min-breakpoint-5-width;
-      margin: 0 auto;
-      left: 2%;
-      right: 2%;
-      width: 96%; // width assignment is required for IE11 to center correctly
-    }
-    &.jw-flag-ads-googleima .jw-controlbar {
-      bottom: 0;
+    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
+        &,
+        .jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid)&,
+        .jw-flag-ads.jw-flag-touch.jw-flag-autostart:not(.jw-flag-ads-vpaid)& {
+            .jw-controlbar {
+                display: inline-block;
+            }
+        }
     }
 
-    .jw-captions {
-      max-height: ~"calc(~'100%' - ~'46px')";
+    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
+        .jw-controlbar {
+            bottom: .7em;
+            max-width: @min-breakpoint-5-width;
+            margin: 0 auto;
+            left: 2%;
+            right: 2%;
+            width: 96%; // width assignment is required for IE11 to center correctly
+        }
+        &.jw-flag-ads-googleima .jw-controlbar {
+            bottom: 0;
+        }
+
+        .jw-captions {
+            max-height: ~"calc(~'100%' - ~'46px')";
+        }
+
+        .jwplayer& {
+            video::-webkit-media-text-track-container {
+                max-height:  ~"calc(~'100%' - ~'46px')";
+            }
+        }
     }
 
-    .jwplayer& {
-      video::-webkit-media-text-track-container {
-        max-height:  ~"calc(~'100%' - ~'46px')";
-      }
-    }
-  }
-
-  &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
-    &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
-        top: 1px;
-    }
-  }
-
-  &:not(.jw-flag-time-slider-above) {
-    .jw-nextup-container {
-      bottom: @controlbar-height + .7em;
-      padding-left: 0;
-      padding-right: 0;
-      max-width: @min-breakpoint-5-width;
+    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
+        &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
+            top: 1px;
+        }
     }
 
-    &.jw-breakpoint-2,
-    &.jw-breakpoint-3,
-    &.jw-breakpoint-4 {
-      .jw-nextup-container {
-        padding-left: 2%;
-        padding-right: 2%;
-      }
+    &:not(.jw-flag-time-slider-above) {
+        .jw-nextup-container {
+            bottom: @controlbar-height + .7em;
+            padding-left: 0;
+            padding-right: 0;
+            max-width: @min-breakpoint-5-width;
+        }
+
+        &.jw-breakpoint-2,
+        &.jw-breakpoint-3,
+        &.jw-breakpoint-4 {
+            .jw-nextup-container {
+                padding-left: 2%;
+                padding-right: 2%;
+            }
+        }
     }
-  }
 
-  &.jw-flag-audio-player .jw-controlbar {
-    bottom: 0; // overwrite the inset-controlbar mixin
-  }
-
+    &.jw-flag-audio-player .jw-controlbar {
+        bottom: 0; // overwrite the inset-controlbar mixin
+    }
 }
 
 .vertically-centered-rail-element(@rail-height, @element-height) {
@@ -153,12 +151,12 @@
 
         /* Colors for display icons */
         .jw-display-icon-container {
-          background-color: @display-bkgd-color;
-          margin: 0 (@ui-padding * 0.5);
+            background-color: @display-bkgd-color;
+            margin: 0 (@ui-padding * 0.5);
 
-          .jw-icon {
-            color: @display-icon-color;
-          }
+            .jw-icon {
+                color: @display-icon-color;
+            }
         }
 
         /* Slider colors */
@@ -252,73 +250,68 @@
         */
 
         .jw-icon-cast {
+            button {
+                --connected-color: @active-color;
+                --disconnected-color: @inactive-color;
 
-          button {
-            --connected-color: @active-color;
-            --disconnected-color: @inactive-color;
+                &:focus {
+                    --connected-color: @active-color;
+                    --disconnected-color: @hover-color;
+                }
 
-            &:focus {
-              --connected-color: @active-color;
-              --disconnected-color: @hover-color;
+                &.jw-off {
+                    --connected-color: @inactive-color;
+                }
             }
 
-            &.jw-off {
-              --connected-color: @inactive-color;
+            &:hover button {
+                --connected-color: @hover-color;
+                --disconnected-color: @hover-color;
             }
-
-          }
-
-          &:hover button {
-            --connected-color: @hover-color;
-            --disconnected-color: @hover-color;
-          }
-
         }
 
         /* Next up display */
         .jw-nextup-container {
-          bottom: @controlbar-height;
-          padding: 5px @ui-padding;
+            bottom: @controlbar-height;
+            padding: 5px @ui-padding;
         }
 
         .jw-nextup {
-          border-radius: @nextup-border-radius;
+            border-radius: @nextup-border-radius;
         }
 
         .jw-nextup-header {
-          background: @nextup-header-background;
-          color: @nextup-header-text-color;
+            background: @nextup-header-background;
+            color: @nextup-header-text-color;
         }
 
         .jw-nextup-body {
-          background: @nextup-body-background;
-          color: @nextup-body-text-color;
+            background: @nextup-body-background;
+            color: @nextup-body-text-color;
         }
 
         .jw-nextup-thumbnail-visible + .jw-nextup-title::after {
-          background: linear-gradient(
-            -180deg,
-            fade(@nextup-body-text-color-overflow, 0%) 0%,
-            @nextup-body-text-color-overflow 100%
-          );
+            background: linear-gradient(
+                -180deg,
+                fade(@nextup-body-text-color-overflow, 0%) 0%,
+                @nextup-body-text-color-overflow 100%
+            );
         }
 
         .jw-nextup-close {
-          color: @nextup-close-button-color-inactive;
+            color: @nextup-close-button-color-inactive;
         }
 
         .jw-nextup-close:active {
-          color: @nextup-close-button-color-active;
+            color: @nextup-close-button-color-active;
         }
 
         .jw-nextup-close:hover {
-          color: @nextup-close-button-color-hover;
+            color: @nextup-close-button-color-hover;
         }
-
     }
 
     .custom-skin-styles() {
-
         .jw-display-icon-container {
             border-radius: @ui-corner-round;
         }
@@ -326,87 +319,84 @@
         .jw-dock-button {
             border-radius: @ui-corner-round;
         }
-      &:not(.jw-ie) {
-        .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
-          top: 50%;
-          transform: translateY(-50%);
-          margin: auto;
-          bottom: auto;
-        }
-      }
-
-      &:not(.jw-flag-time-slider-above),
-      &.jw-flag-ads-googleima {
-        .jw-controlbar {
-          height: @controlbar-height;
-
-          .jw-overlay {
-            bottom: @controlbar-height;
-          }
-        }
-
-        .jw-icon-inline,
-        .jw-icon-tooltip,
-        .jw-text-elapsed,
-        .jw-text-duration,
-        .jw-text-countdown {
-          height: @controlbar-height;
-          line-height: @controlbar-height;
-        }
-      }
-
-      &.jw-flag-ads.jw-ie .jw-text-alt,
-      &.jw-flag-live.jw-ie .jw-text-alt {
-        top: 1px;
-        margin: 0;
-      }
-
-      &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
-
-        .jw-time-tip {
-            bottom: (@controlbar-height / 2);
-        }
-
-        .jw-captions {
-            max-height: ~"calc(~'100%' - ~'38px')";
-        }
-
-        .jwplayer& {
-            video::-webkit-media-text-track-container {
-                max-height:  ~"calc(~'100%' - ~'38px')";
+        &:not(.jw-ie) {
+            .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
+                top: 50%;
+                transform: translateY(-50%);
+                margin: auto;
+                bottom: auto;
             }
         }
 
-        .jw-controls {
-            .jw-controls-right {
-                bottom: @controlbar-height;
+        &:not(.jw-flag-time-slider-above),
+        &.jw-flag-ads-googleima {
+            .jw-controlbar {
+                height: @controlbar-height;
+
+                .jw-overlay {
+                    bottom: @controlbar-height;
+                }
+            }
+
+            .jw-icon-inline,
+            .jw-icon-tooltip,
+            .jw-text-elapsed,
+            .jw-text-duration,
+            .jw-text-countdown {
+                height: @controlbar-height;
+                line-height: @controlbar-height;
             }
         }
 
-        &.jw-flag-audio-player {
-
-          .jw-controlbar {
-            height: 100%;
-          }
-
-          .jw-icon-inline,
-          .jw-icon-tooltip,
-          .jw-text-elapsed,
-          .jw-text-duration,
-          .jw-text-countdown {
-              height: auto;
-              line-height: normal;
-          }
+        &.jw-flag-ads.jw-ie .jw-text-alt,
+        &.jw-flag-live.jw-ie .jw-text-alt {
+            top: 1px;
+            margin: 0;
         }
 
-        .jw-icon-inline,
-        .jw-icon-tooltip {
-            min-width: @controlbar-height * 5/8;
+        &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
+            .jw-time-tip {
+                bottom: (@controlbar-height / 2);
+            }
+
+            .jw-captions {
+                max-height: ~"calc(~'100%' - ~'38px')";
+            }
+
+            .jwplayer& {
+                video::-webkit-media-text-track-container {
+                    max-height:  ~"calc(~'100%' - ~'38px')";
+                }
+            }
+
+            .jw-controls {
+                .jw-controls-right {
+                    bottom: @controlbar-height;
+                }
+            }
+
+            &.jw-flag-audio-player {
+                .jw-controlbar {
+                    height: 100%;
+                }
+
+                .jw-icon-inline,
+                .jw-icon-tooltip,
+                .jw-text-elapsed,
+                .jw-text-duration,
+                .jw-text-countdown {
+                    height: auto;
+                    line-height: normal;
+                }
+            }
+
+            .jw-icon-inline,
+            .jw-icon-tooltip {
+                min-width: @controlbar-height * 5/8;
+            }
         }
-
-      }
-
     }
+
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
         // Set the highlight color of the center display icon when we are hovering the player.

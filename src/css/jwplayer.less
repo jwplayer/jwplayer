@@ -1,6 +1,6 @@
-@import "imports/reset";
+@import "jwplayer/imports/reset";
 
-@import "imports/mixins";
+@import "shared-imports/mixins";
 
 @accent-color: #FFF;
 @inactive-color: #cecece;
@@ -14,47 +14,47 @@
 #namespace > .basic-skin-styles();
 #namespace > .set-global-color-classes();
 
-@import "imports/jwplayerelement";
-@import "imports/video";
-@import "imports/display";
-@import "imports/controlbar";
-@import "imports/dock";
-@import "imports/title";
-@import "imports/slider";
+@import "jwplayer/imports/jwplayerelement";
+@import "jwplayer/imports/video";
+@import "jwplayer/imports/display";
+//@import "shared-imports/controlbar";
+//@import "shared-imports/dock";
+@import "jwplayer/imports/title";
+//@import "shared-imports/slider";
 
-@import "imports/captions";
-@import "imports/rightclick";
-@import "imports/logo";
-@import "imports/tooltip";
-@import "imports/skipad";
-@import "imports/cast";
-@import "imports/nextup";
-@import "imports/autostartmute";
+@import "jwplayer/imports/captions";
+//@import "shared-imports/rightclick";
+@import "jwplayer/imports/logo";
+//@import "shared-imports/tooltip";
+//@import "shared-imports/skipad";
+//@import "shared-imports/cast";
+//@import "shared-imports/nextup";
+//@import "shared-imports/autostartmute";
 
 // State specific
 @import "jwplayer/states";
     // Incorporate title/description only display code for error, normal startup and flash throttling?
 
-//@import "jwplayer/flags/time-slider-above";
-//@import "jwplayer/flags/cast";
-//@import "jwplayer/flags/cast-available";
+//@import "shared-imports/flags/time-slider-above";
+//@import "shared-imports/flags/cast";
+//@import "shared-imports/flags/cast-available";
 @import "jwplayer/flags/skinloading";            // Hides content until styles loaded.  Rename stylesloading.les
 @import "jwplayer/flags/fullscreen";             // Styles to make player fullscreen
-//@import "jwplayer/flags/live";
-//@import "jwplayer/flags/controls-hidden";
-//@import "jwplayer/flags/user-inactive";
-//@import "jwplayer/flags/media-audio";
-//@import "jwplayer/flags/ads";
-//@import "jwplayer/flags/overlay";
-//@import "jwplayer/flags/rightclick-open";
-//@import "jwplayer/flags/controls-disabled";
+//@import "shared-imports/flags/live";
+//@import "shared-imports/flags/controls-hidden";
+//@import "shared-imports/flags/user-inactive";
+//@import "shared-imports/flags/media-audio";
+//@import "shared-imports/flags/ads";
+//@import "shared-imports/flags/overlay";
+//@import "shared-imports/flags/rightclick-open";
+//@import "shared-imports/flags/controls-disabled";
 @import "jwplayer/flags/flash-blocked";
-//@import "jwplayer/flags/touch";
+//@import "shared-imports/flags/touch";
 
 @import "jwplayer/flags/audioplayer";
 
 // modifiers
-@import "imports/utilities";
+//@import "shared-imports/utilities";
 
 // Skins
 // @import "jwplayer/skins/seven";

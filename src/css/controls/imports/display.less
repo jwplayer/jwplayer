@@ -1,0 +1,38 @@
+@import "../../shared-imports/vars";
+
+.jw-display {
+    .jw-flag-dragging & {
+        display: none;
+    }
+
+    .jw-state-idle:not(.jw-flag-cast-available) & {
+        padding: 0;
+    }
+}
+
+.jw-display-controls {
+    display: inline-block;
+}
+
+.jw-display-icon-container .jw-icon {
+    &.jw-icon-rewind::before {
+        padding: 0.2em 0.05em;
+    }
+
+    .jw-state-idle &.jw-icon-display::before,
+    .jw-state-paused &.jw-icon-display::before {
+        left: 1px;
+    }
+}
+
+// hide next and rewind buttons on extra small player
+.jw-breakpoint-0 {
+    .jw-display-icon-next,
+    .jw-display-icon-rewind {
+        display: none;
+    }
+}
+
+.jw-breakpoint-1 .jw-display .jw-icon.jw-icon-rewind:before {
+    font-size: @mobile-touch-target * 0.75;
+}
