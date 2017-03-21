@@ -6,12 +6,14 @@ define([
     'view/controls/clickhandler',
     'view/controls/controlbar',
     'view/controls/rightclick',
-    'view/display-container',
-    'view/rewind-display-icon',
-    'view/play-display-icon',
-    'view/next-display-icon',
+    'view/controls/display-container',
+    'view/controls/rewind-display-icon',
+    'view/controls/play-display-icon',
+    'view/controls/next-display-icon',
+    'view/controls/nextuptooltip',
 ], function (events, states, Events, utils, ClickHandler, Controlbar, RightClick,
-             DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon) {
+             DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
+             NextUpToolTip) {
 
     const CONTOLBAR_ONLY_HEIGHT = 44;
     const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
@@ -48,8 +50,10 @@ define([
             this.context = context;
             this.controlbar = null;
             this.displayClick;
-            this.instreamState = null;
+            this.displayContainer = null;
             this.enabled = true;
+            this.instreamState = null;
+            this.nextUpToolTip = null;
             this.playerContainer = playerContainer;
             this.rightClickMenu = null;
             this.showing = false;
@@ -63,36 +67,40 @@ define([
 
         enable(api, model, videoLayer) {
             // Display Buttons
-            var displayContainer = new DisplayContainer();
-            var rewindDisplayIcon = new RewindDisplayIcon(model, api);
-            var playDisplayIcon = new PlayDisplayIcon(model);
-            // toggle playback
-            playDisplayIcon.on('click tap', () => {
-                this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                this.userActive(1000);
-                api.play(reasonInteraction());
-            });
-            // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
-            if (utils.isChrome() && !utils.isMobile()) {
-                playDisplayIcon.el.addEventListener('mousedown', () => {
-                    var provider = model.getVideo();
-                    var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
-                    if (!isFlash) {
-                        return;
-                    }
-                    var resetPointerEvents = function () {
-                        document.removeEventListener('mouseup', resetPointerEvents);
-                        playDisplayIcon.el.style.pointerEvents = 'auto';
-                    };
-                    this.style.pointerEvents = 'none';
-                    document.addEventListener('mouseup', resetPointerEvents);
+            if (!this.displayContainer) {
+                var displayContainer = new DisplayContainer();
+                var rewindDisplayIcon = new RewindDisplayIcon(model, api);
+                var playDisplayIcon = new PlayDisplayIcon(model);
+                // toggle playback
+                playDisplayIcon.on('click tap', () => {
+                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    this.userActive(1000);
+                    api.play(reasonInteraction());
                 });
+                // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
+                if (utils.isChrome() && !utils.isMobile()) {
+                    playDisplayIcon.el.addEventListener('mousedown', () => {
+                        var provider = model.getVideo();
+                        var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+                        if (!isFlash) {
+                            return;
+                        }
+                        var resetPointerEvents = function () {
+                            document.removeEventListener('mouseup', resetPointerEvents);
+                            playDisplayIcon.el.style.pointerEvents = 'auto';
+                        };
+                        this.style.pointerEvents = 'none';
+                        document.addEventListener('mouseup', resetPointerEvents);
+                    });
+                }
+                var nextDisplayIcon = new NextDisplayIcon(model, api);
+                displayContainer.addButton(rewindDisplayIcon);
+                displayContainer.addButton(playDisplayIcon);
+                displayContainer.addButton(nextDisplayIcon);
+                this.element.appendChild(displayContainer.element());
+                this.displayContainer = displayContainer;
             }
-            var nextDisplayIcon = new NextDisplayIcon(model, api);
-            displayContainer.addButton(rewindDisplayIcon);
-            displayContainer.addButton(playDisplayIcon);
-            displayContainer.addButton(nextDisplayIcon);
-            this.element.appendChild(displayContainer.element());
+
 
             // Display Click and Double Click Handling
             const displayClickHandler = new ClickHandler(model, videoLayer, { useHover: true });
@@ -147,6 +155,16 @@ define([
             } else {
                 this.rightClickMenu = new RightClick();
                 this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
+            }
+
+            // Next Up Tooltip
+            if (model.get('nextUpDisplay') && !this.nextUpToolTip) {
+                const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
+                nextUpToolTip.setup();
+                this.nextUpToolTip = nextUpToolTip;
+
+                // NextUp needs to be behind the controlbar to not block other tooltips
+                this.element.appendChild(nextUpToolTip.element());
             }
 
             // Show controls when enabled

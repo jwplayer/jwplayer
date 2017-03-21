@@ -27,10 +27,12 @@ define([
             _settings = _.extend({}, LogoDefaults, _logoConfig);
             _settings.hide = (_settings.hide.toString() === 'true');
 
-            _logo = utils.createElement(logoTemplate());
-
             if (!_settings.file) {
                 return;
+            }
+
+            if (!_logo) {
+                _logo = utils.createElement(logoTemplate());
             }
 
             if (_settings.hide) {
