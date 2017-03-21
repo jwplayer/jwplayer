@@ -5,7 +5,6 @@ define([
     'intersection-observer'
 ], function (providerHtml5, providerFlash, vtt, intersectionObserver) {
     __webpack_require__.e = function (array, callback) {
-        console.log('Try not to test code which is require.ensure\'d.');
         callback(function webpackRequire(modulePath) {
             return ({
                 'providers/html5': providerHtml5,
