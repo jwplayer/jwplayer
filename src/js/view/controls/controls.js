@@ -50,7 +50,7 @@ define([
             this.activeTimeout = -1;
             this.context = context;
             this.controlbar = null;
-            this.displayClick;
+            this.displayClick = null;
             this.displayContainer = null;
             this.dock = null;
             this.enabled = true;

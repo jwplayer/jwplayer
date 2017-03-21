@@ -80,25 +80,25 @@ define([
             dom.toggleClass(this.container, 'jw-nextup-sticky', !!model.get('nextUpSticky'));
         },
         setNextUpItem: function(nextUpItem) {
-            var _this = this;
+            var self = this;
             // Give the previous item time to complete its animation
             setTimeout(function () {
                 // Set thumbnail
-                _this.thumbnail = _this.content.querySelector('.jw-nextup-thumbnail');
-                dom.toggleClass(_this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
+                self.thumbnail = self.content.querySelector('.jw-nextup-thumbnail');
+                dom.toggleClass(self.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
                 if (nextUpItem.image) {
-                    var thumbnailStyle = _this.loadThumbnail(nextUpItem.image);
-                    utils.style(_this.thumbnail, thumbnailStyle);
+                    var thumbnailStyle = self.loadThumbnail(nextUpItem.image);
+                    utils.style(self.thumbnail, thumbnailStyle);
                 }
 
                 // Set header
-                _this.header = _this.content.querySelector('.jw-nextup-header');
-                _this.header.innerText = _this.nextUpText;
+                self.header = self.content.querySelector('.jw-nextup-header');
+                self.header.innerText = self.nextUpText;
 
                 // Set title
-                _this.title = _this.content.querySelector('.jw-nextup-title');
+                self.title = self.content.querySelector('.jw-nextup-title');
                 var title = nextUpItem.title;
-                _this.title.innerText = title ? utils.createElement(title).textContent : '';
+                self.title.innerText = title ? utils.createElement(title).textContent : '';
             }, 500);
         },
         onNextUp: function(model, nextUp) {

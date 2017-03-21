@@ -31,8 +31,8 @@ define([
                 });
             }
 
-            var _provider = this.model.get('provider');
-            if (_provider && _provider.name.indexOf('flash') >= 0) {
+            var provider = this.model.get('provider');
+            if (provider && provider.name.indexOf('flash') >= 0) {
                 var text = 'Flash Version ' + utils.flashVersion();
                 obj.items.push({
                     title: text,

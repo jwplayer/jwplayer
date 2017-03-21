@@ -326,7 +326,8 @@ define([
                 var list = _.map(audioTracks, function(track) {
                     return { label: track.name };
                 });
-                this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'), { toggle: false });
+                this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'),
+                    { toggle: false });
             }, this);
             mediaModel.on('change:currentAudioTrack', function(currentAudioTrackChangeModel, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);

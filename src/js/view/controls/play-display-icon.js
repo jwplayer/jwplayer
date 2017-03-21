@@ -15,16 +15,16 @@ define([
             ariaLabel: this.model.get('localization').playback
         }));
 
-        var _this = this;
+        var self = this;
 
         this.iconUI = new UI(this.el).on('click tap', function(evt) {
-            _this.trigger(evt.type);
+            self.trigger(evt.type);
         });
 
         this.model.on('change:state', function(model, newstate) {
-            var iconDisplay = _this.el.getElementsByClassName('jw-icon-display');
+            var iconDisplay = self.el.getElementsByClassName('jw-icon-display');
             if (iconDisplay.length) {
-                var localization = _this.model.get('localization');
+                var localization = self.model.get('localization');
                 var newstateLabel = localization.playback;
                 switch (newstate) {
                     case 'buffering':

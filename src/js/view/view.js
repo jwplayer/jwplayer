@@ -138,7 +138,7 @@ define([
             }
 
             // On keypress show the controlbar for a few seconds
-            if (!_instreamModel) {
+            if (!_instreamModel && _controls) {
                 _controls.userActive();
             }
 
@@ -954,7 +954,9 @@ define([
             utils.addClass(_playerElement, 'jw-flag-ads');
 
             // Call Controls.userActivity to display the UI temporarily for the start of the ad
-            _controls.userActive();
+            if (_controls) {
+                _controls.userActive();
+            }
         };
 
         this.setAltText = function (text) {
@@ -992,6 +994,14 @@ define([
 
         this.getContainer = this.element = function () {
             return _playerElement;
+        };
+
+        this.controlsContainer = function() {
+            if (_controls) {
+                return _controls.element;
+            }
+            // return controls stand-in element not in DOM
+            return document.createElement('div');
         };
 
         this.getSafeRegion = function (includeCB) {
