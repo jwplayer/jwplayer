@@ -50,8 +50,11 @@ define([
         var scripts = document.getElementsByTagName('script');
         for (var i = 0; i < scripts.length; i++) {
             var src = scripts[i].src;
-            if (src && src.indexOf(scriptName) >= 0) {
-                return src.substr(0, src.indexOf(scriptName));
+            if (src) {
+                var index = src.indexOf('/' + scriptName);
+                if (index >= 0) {
+                    return src.substr(0, index + 1);
+                }
             }
         }
         return '';
