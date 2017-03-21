@@ -17,7 +17,11 @@ define([
         }
 
         enable() {
-            require('css/controls.less');
+            // Include the separate chunk that contains the controls styles.  Check webpackJsonjwplayer so we don't
+            // run this in phantomjs because it breaks despite working in browser and including files like we want to.
+            if (window.webpackJsonpjwplayer) {
+                require('css/controls.less');
+            }
 
             this.playerContainer.appendChild(this.element);
         }
