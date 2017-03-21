@@ -25,6 +25,7 @@ define([
     var _styles = utils.style;
     var _bounds = utils.bounds;
     var _isMobile = utils.isMobile();
+    var _isIE = utils.isIE();
     var DOCUMENT_FULLSCREEN_EVENTS = [
         'fullscreenchange',
         'webkitfullscreenchange',
@@ -396,7 +397,7 @@ define([
         };
 
         this.setup = function () {
-            if (utils.isIE()) {
+            if (_isIE) {
                 utils.addClass(_playerElement, 'jw-ie');
             }
 
@@ -640,7 +641,7 @@ define([
                     _exitFullscreen.apply(document);
                 }
                 _toggleDOMFullscreen(_playerElement, state);
-            } else if (utils.isIE()) {
+            } else if (_isIE) {
                 _toggleDOMFullscreen(_playerElement, state);
             } else {
                 // else use native fullscreen

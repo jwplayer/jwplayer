@@ -120,8 +120,7 @@ define([
             displayClickHandler.on('click', () => {
                 this.trigger(events.JWPLAYER_DISPLAY_CLICK);
                 api.play(reasonInteraction());
-            });
-            displayClickHandler.on('tap', () => {
+            }).on('tap', () => {
                 this.trigger(events.JWPLAYER_DISPLAY_CLICK);
                 // (function touchHandler() {
                 var state = model.get('state');
@@ -149,10 +148,9 @@ define([
                     this.userInactive();
                 }
                 // }());
-            });
-            displayClickHandler.on('doubleClick', () => api.setFullscreen());
-            displayClickHandler.on('move', () => this.userActive());
-            displayClickHandler.on('over', () => this.userActive());
+            }).on('doubleClick', () => api.setFullscreen())
+                .on('move', () => this.userActive())
+                .on('over', () => this.userActive());
             this.displayClick = displayClickHandler;
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in

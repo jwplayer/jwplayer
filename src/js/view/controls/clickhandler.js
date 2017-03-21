@@ -12,6 +12,23 @@ define([
         var options = { enableDoubleTap: true, useMove: true };
         _.extend(this, Events);
 
+        this.element = function() {
+            return element;
+        };
+
+        this.clickHandler = function(evt) {
+            if (model.get('flashBlocked')) {
+                return;
+            }
+
+            if (alternateClickHandler) {
+                alternateClickHandler(evt);
+                return;
+            }
+
+            this.trigger((evt.type === events.touchEvents.CLICK) ? 'click' : 'tap');
+        };
+
         var userInteract = new UI(element, _.extend(options, options));
         userInteract.on('click tap', this.clickHandler, this);
         userInteract.on('doubleClick doubleTap', function() {
@@ -31,23 +48,6 @@ define([
         userInteract.on('out', function() {
             this.trigger('out');
         }, this);
-
-        this.element = function() {
-            return element;
-        };
-
-        this.clickHandler = function(evt) {
-            if (model.get('flashBlocked')) {
-                return;
-            }
-
-            if (alternateClickHandler) {
-                alternateClickHandler(evt);
-                return;
-            }
-
-            this.trigger((evt.type === events.touchEvents.CLICK) ? 'click' : 'tap');
-        };
 
         this.setAlternateClickHandlers = function(clickHandler, doubleClickHandler) {
             alternateClickHandler = clickHandler;
