@@ -10,7 +10,6 @@ define([
     'view/captionsrenderer',
     'view/logo',
 
-    'view/dock',
     'view/components/button',
 
     'view/preview',
@@ -18,7 +17,7 @@ define([
     'templates/player.html',
 ], function(utils, _, events, states, Events, Constants, activeTab, setBreakpoint, CaptionsRenderer, Logo,
 
-            Dock, button,
+            button,
 
             Preview, Title, playerTemplate) {
 
@@ -41,7 +40,6 @@ define([
         var _instreamModel;
         var _preview;
         var _castDisplay;
-        var _dock;
         var _logo;
         var _title;
         var _mute;
@@ -455,6 +453,8 @@ define([
 
             _logo = new Logo(_model);
             _logo.setup(_playerElement);
+            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
+            _componentFadeListeners(_logo);
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
@@ -598,23 +598,11 @@ define([
                 _captionsRenderer.renderCues(true);
             });
 
-            var controlsLayer = _controls.getElement();
-
-            _dock = new Dock(_model);
-
-            var rightside = document.createElement('div');
-            rightside.className = 'jw-controls-right jw-reset';
-            _logo.setup(rightside);
-            rightside.appendChild(_dock.element());
-            controlsLayer.appendChild(rightside);
-
-            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
-            _componentFadeListeners(_logo);
-
+            _logo.setup(controls.right);
 
             controls.enable(_api, _model, _videoLayer);
 
-            // These need to be called after controls.enable:
+            var controlsLayer = _controls.getElement();
 
             // Ignore iOS9. Muted autoplay is supported in iOS 10+
             if (_model.get('autostartMuted')) {
@@ -648,10 +636,6 @@ define([
             var overlay = document.querySelector('.jw-overlays');
             if (overlay) {
                 overlay.removeEventListener('mousemove', _userActivityCallback);
-            }
-
-            if (_dock) {
-                _dock = null;
             }
 
             utils.removeClass(_playerElement, 'jw-flag-touch');
@@ -1020,18 +1004,17 @@ define([
                 height: _lastHeight || 0
             };
 
-            var controls = _model.get('controls');
-            if (controls) {
+            if (_controls) {
                 // If we are using a dock, subtract that from the top
                 var dockButtons = _model.get('dock');
                 if (dockButtons && dockButtons.length) {
-                    bounds.y = _dock.element().clientHeight;
+                    bounds.y = _controls.dock.element().clientHeight;
                     bounds.height -= bounds.y;
                 }
 
                 // Subtract controlbar from the bottom when using one
                 includeCB = includeCB || !utils.exists(includeCB);
-                if (includeCB && _controls) {
+                if (includeCB) {
                     bounds.height -= _controls.controlbar.element().clientHeight;
                 }
             }

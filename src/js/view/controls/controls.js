@@ -5,15 +5,16 @@ define([
     'utils/helpers',
     'view/controls/clickhandler',
     'view/controls/controlbar',
-    'view/controls/rightclick',
+    'view/controls/dock',
     'view/controls/display-container',
     'view/controls/rewind-display-icon',
     'view/controls/play-display-icon',
     'view/controls/next-display-icon',
     'view/controls/nextuptooltip',
-], function (events, states, Events, utils, ClickHandler, Controlbar, RightClick,
+    'view/controls/rightclick',
+], function (events, states, Events, utils, ClickHandler, Controlbar, Dock,
              DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
-             NextUpToolTip) {
+             NextUpToolTip, RightClick) {
 
     const CONTOLBAR_ONLY_HEIGHT = 44;
     const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
@@ -51,6 +52,7 @@ define([
             this.controlbar = null;
             this.displayClick;
             this.displayContainer = null;
+            this.dock = null;
             this.enabled = true;
             this.instreamState = null;
             this.nextUpToolTip = null;
@@ -62,10 +64,21 @@ define([
             element.className = 'jw-controls jw-reset';
             this.element = element;
 
+            var right = document.createElement('div');
+            right.className = 'jw-controls-right jw-reset';
+            element.appendChild(right);
+            this.right = right;
+
             Object.assign(this, Events);
         }
 
         enable(api, model, videoLayer) {
+            // Dock Area and Buttons
+            if (!this.dock) {
+                this.dock = new Dock(model);
+            }
+            this.right.appendChild(this.dock.element());
+
             // Display Buttons
             if (!this.displayContainer) {
                 var displayContainer = new DisplayContainer();
