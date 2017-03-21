@@ -6,13 +6,18 @@ define([
     'view/controls/clickhandler',
     'view/controls/controlbar',
     'view/controls/rightclick',
-], function (events, states, Events, utils, ClickHandler, Controlbar, RightClick) {
+    'view/display-container',
+    'view/rewind-display-icon',
+    'view/play-display-icon',
+    'view/next-display-icon',
+], function (events, states, Events, utils, ClickHandler, Controlbar, RightClick,
+             DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon) {
 
     const CONTOLBAR_ONLY_HEIGHT = 44;
     const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
 
     const isAudioMode = function(model) {
-        let playerHeight = model.get('height')
+        let playerHeight = model.get('height');
         if (model.get('aspectratio')) {
             return false;
         }
@@ -21,8 +26,8 @@ define([
         }
 
         // Coerce into Number (don't parse out CSS units)
-        var verticalPixels = (playerHeight * 1) || null;
-        verticalPixels = (_.isNumber(verticalPixels) ? verticalPixels : model.get('containerHeight'));
+        var verticalPixels = (playerHeight * 1) || NaN;
+        verticalPixels = (!isNaN(verticalPixels) ? verticalPixels : model.get('containerHeight'));
         if (!verticalPixels) {
             return false;
         }
@@ -57,14 +62,46 @@ define([
         }
 
         enable(api, model, videoLayer) {
+            // Display Buttons
+            var displayContainer = new DisplayContainer();
+            var rewindDisplayIcon = new RewindDisplayIcon(model, api);
+            var playDisplayIcon = new PlayDisplayIcon(model);
+            // toggle playback
+            playDisplayIcon.on('click tap', () => {
+                this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                this.userActive(1000);
+                api.play(reasonInteraction());
+            });
+            // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
+            if (utils.isChrome() && !utils.isMobile()) {
+                playDisplayIcon.el.addEventListener('mousedown', () => {
+                    var provider = model.getVideo();
+                    var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+                    if (!isFlash) {
+                        return;
+                    }
+                    var resetPointerEvents = function () {
+                        document.removeEventListener('mouseup', resetPointerEvents);
+                        playDisplayIcon.el.style.pointerEvents = 'auto';
+                    };
+                    this.style.pointerEvents = 'none';
+                    document.addEventListener('mouseup', resetPointerEvents);
+                });
+            }
+            var nextDisplayIcon = new NextDisplayIcon(model, api);
+            displayContainer.addButton(rewindDisplayIcon);
+            displayContainer.addButton(playDisplayIcon);
+            displayContainer.addButton(nextDisplayIcon);
+            this.element.appendChild(displayContainer.element());
 
+            // Display Click and Double Click Handling
             const displayClickHandler = new ClickHandler(model, videoLayer, { useHover: true });
             displayClickHandler.on('click', () => {
-                this.trigger({ type: events.JWPLAYER_DISPLAY_CLICK });
+                this.trigger(events.JWPLAYER_DISPLAY_CLICK);
                 api.play(reasonInteraction());
             });
             displayClickHandler.on('tap', () => {
-                this.trigger({ type: events.JWPLAYER_DISPLAY_CLICK });
+                this.trigger(events.JWPLAYER_DISPLAY_CLICK);
                 // (function touchHandler() {
                 var state = model.get('state');
 
@@ -82,24 +119,25 @@ define([
                         return;
                     }
                     utils.toggleClass(this.playerContainer, 'jw-flag-controls-hidden');
-                    this.trigger('change:showing', this.showing);
+                    this.trigger('uiActivity', this.showing);
                     // }());
 
                 } else if (!this.showing) {
-                    this.userActivity();
+                    this.userActive();
                 } else {
                     this.userInactive();
                 }
                 // }());
             });
             displayClickHandler.on('doubleClick', () => api.setFullscreen());
-            displayClickHandler.on('move', () => this.userActivity());
-            displayClickHandler.on('over', () => this.userActivity());
+            displayClickHandler.on('move', () => this.userActive());
+            displayClickHandler.on('over', () => this.userActive());
             this.displayClick = displayClickHandler;
 
+            // Controlbar
             if (!this.controlbar) {
                 this.controlbar = new Controlbar(api, model);
-                this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActivity());
+                this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
             }
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
@@ -111,8 +149,8 @@ define([
                 this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
             }
 
-
-            this.userActivity();
+            // Show controls when enabled
+            this.userActive();
 
             this.playerContainer.appendChild(this.element);
         }
@@ -121,7 +159,9 @@ define([
             this.off();
             clearTimeout(this.activeTimeout);
 
-            this.playerContainer.removeChild(this.element);
+            if (this.element.parentNode) {
+                this.playerContainer.removeChild(this.element);
+            }
 
             if (this.displayClick) {
                 this.displayClick.off();
@@ -153,13 +193,13 @@ define([
             model.set('audioMode', audioMode);
         }
 
-        userActivity(timeout) {
+        userActive(timeout) {
             if (!this.showing) {
                 utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
             }
 
             this.showing = true;
-            this.trigger('change:showing', this.showing);
+            this.trigger('uiActivity', this.showing);
 
             clearTimeout(this.activeTimeout);
             this.activeTimeout = setTimeout(() => this.userInactive(),
@@ -174,7 +214,8 @@ define([
                 this.controlbar.hideComponents();
             }
             utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
-            this.trigger('change:showing', this.showing);
+
+            this.trigger('uiActivity', this.showing);
         }
     };
 });

@@ -10,10 +10,6 @@ define([
     'view/captionsrenderer',
     'view/logo',
 
-    'view/display-container',
-    'view/rewind-display-icon',
-    'view/play-display-icon',
-    'view/next-display-icon',
     'view/components/nextuptooltip',
     'view/dock',
     'view/components/button',
@@ -23,7 +19,7 @@ define([
     'templates/player.html',
 ], function(utils, _, events, states, Events, Constants, activeTab, setBreakpoint, CaptionsRenderer, Logo,
 
-            DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, NextUpToolTip, Dock, button,
+            NextUpToolTip, Dock, button,
 
             Preview, Title, playerTemplate) {
 
@@ -40,7 +36,6 @@ define([
     return function View(_api, _model) {
         var _playerElement;
         var _controls;
-        var _controlsLayer;
         var _videoLayer;
         var _lastWidth;
         var _lastHeight;
@@ -148,7 +143,7 @@ define([
 
             // On keypress show the controlbar for a few seconds
             if (!_instreamModel) {
-                _controls.userActivity();
+                _controls.userActive();
             }
 
             switch (evt.keyCode) {
@@ -229,7 +224,7 @@ define([
 
             // On tab-focus, show the control bar for a few seconds
             if (_controls && !_instreamModel && !_isMobile) {
-                _controls.userActivity();
+                _controls.userActive();
             }
         }
 
@@ -565,11 +560,7 @@ define([
         }
 
         function _offControlElement() {
-            _controls.userActivity();
-        }
-
-        function forward(evt) {
-            _this.trigger(evt.type, evt);
+            _controls.userActive();
         }
 
         function _onChangeFlashBlocked(model, isBlocked) {
@@ -606,12 +597,11 @@ define([
             var overlaysElement = _playerElement.querySelector('.jw-overlays');
             overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
-            _controls.on('change:showing', function(/* showing */) {
+            _controls.on('uiActivity', function(/* showing */) {
                 _captionsRenderer.renderCues(true);
             });
 
-            _controlsLayer = _controls.getElement();
-            _controlsLayer.appendChild(createDisplayContainer());
+            var controlsLayer = _controls.getElement();
 
             _dock = new Dock(_model);
 
@@ -619,7 +609,7 @@ define([
             rightside.className = 'jw-controls-right jw-reset';
             rightside.appendChild(_dock.element());
             _logo.setup(rightside);
-            _controlsLayer.appendChild(rightside);
+            controlsLayer.appendChild(rightside);
 
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
             _componentFadeListeners(_logo);
@@ -630,15 +620,15 @@ define([
             // These need to be called after controls.enable:
 
             // Ignore iOS9. Muted autoplay is supported in iOS 10+
-            if (_model.autoStartOnMobile()) {
+            if (_model.get('autostartMuted')) {
                 _mute = button('jw-autostart-mute jw-off', _autoplayUnmute, _model.get('localization').volume);
                 _mute.show();
-                _controlsLayer.appendChild(_mute.element());
+                controlsLayer.appendChild(_mute.element());
                 // Set mute state in the controlbar
                 _controls.controlbar.renderVolume(true, _model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
                 utils.addClass(_playerElement, 'jw-flag-autostart');
-                _model.set('autostartMuted', true);
+
                 _model.on('change:autostartFailed', _autoplayUnmute);
                 _model.on('change:autostartMuted', _autoplayUnmute);
                 _model.on('change:mute', _autoplayUnmute);
@@ -648,12 +638,12 @@ define([
                 _nextuptooltip.setup();
 
                 // NextUp needs to be behind the controlbar to not block other tooltips
-                _controlsLayer.appendChild(_nextuptooltip.element());
+                controlsLayer.appendChild(_nextuptooltip.element());
             }
 
             _model.on('change:scrubbing', _dragging);
             _componentFadeListeners(_controls.controlbar);
-            _controlsLayer.appendChild(_controls.controlbar.element());
+            controlsLayer.appendChild(_controls.controlbar.element());
 
             _model.change('duration', _setLiveMode, this);
         };
@@ -859,7 +849,7 @@ define([
                 });
 
                 // On going fullscreen we want the control bar to fade after a few seconds
-                _controls.userActivity();
+                _controls.userActive();
             } else {
                 utils.removeClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
@@ -872,7 +862,7 @@ define([
         }
 
         function _userActivityCallback(/* event */) {
-            _controls.userActivity();
+            _controls.userActive();
         }
 
         function _playlistCompleteHandler() {
@@ -978,51 +968,6 @@ define([
             _stateHandler(model);
         }
 
-        function createDisplayContainer() {
-            var displayContainer = new DisplayContainer();
-            var rewindDisplayIcon = new RewindDisplayIcon(_model, _api);
-            var playDisplayIcon = createPlayDisplayIcon();
-            var nextDisplayIcon = new NextDisplayIcon(_model, _api);
-
-            displayContainer.addButton(rewindDisplayIcon);
-            displayContainer.addButton(playDisplayIcon);
-            displayContainer.addButton(nextDisplayIcon);
-
-            return displayContainer.element();
-        }
-
-        function createPlayDisplayIcon() {
-            var playDisplayIcon = new PlayDisplayIcon(_model);
-            // toggle playback
-            playDisplayIcon.on('click tap', function () {
-                forward({ type: events.JWPLAYER_DISPLAY_CLICK });
-                _controls.userActivity(1000);
-                _api.play(reasonInteraction());
-            });
-
-            // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
-            if (utils.isChrome() && !utils.isMobile()) {
-                playDisplayIcon.el.addEventListener('mousedown', function () {
-                    var provider = _model.getVideo();
-                    var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
-
-                    if (!isFlash) {
-                        return;
-                    }
-
-                    var resetPointerEvents = function () {
-                        document.removeEventListener('mouseup', resetPointerEvents);
-                        playDisplayIcon.el.style.pointerEvents = 'auto';
-                    };
-
-                    this.style.pointerEvents = 'none';
-                    document.addEventListener('mouseup', resetPointerEvents);
-                });
-            }
-
-            return playDisplayIcon;
-        }
-
         function _visibilityChangeListener() {
             _model.set('activeTab', activeTab());
         }
@@ -1035,7 +980,7 @@ define([
             utils.addClass(_playerElement, 'jw-flag-ads');
 
             // Call Controls.userActivity to display the UI temporarily for the start of the ad
-            _controls.userActivity();
+            _controls.userActive();
         };
 
         this.setAltText = function (text) {
@@ -1069,10 +1014,6 @@ define([
 
         this.clickHandler = function () {
             return _controls.displayClick;
-        };
-
-        this.controlsContainer = function () {
-            return _controlsLayer;
         };
 
         this.getContainer = this.element = function () {

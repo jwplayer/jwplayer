@@ -293,6 +293,12 @@ define([
 
 
     function _setupView(resolve, _model, _api, _view) {
+        // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
+        var autoStartOnMobile = _model.autoStartOnMobile();
+        if (autoStartOnMobile) {
+            _model.set('autostartMuted', true);
+        }
+        _model.set('playOnViewable', autoStartOnMobile || _model.get('autostart') === 'viewable');
         _view.setup();
         resolve();
     }
