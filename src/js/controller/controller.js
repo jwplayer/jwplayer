@@ -189,6 +189,32 @@ define([
                 _this.triggerAfterReady(type, e);
             }
 
+            function changeControls(model, mode) {
+                if (mode) {
+                    ControlsLoader.load()
+                        .then(function (Controls) {
+                            if (!_view.isSetup) {
+                                return;
+                            }
+                            var controls = new Controls(document, _this.currentContainer);
+                            _view.addControls(controls);
+                            controls.on('all', _triggerAfterReady, _this);
+                        })
+                        .catch(function (reason) {
+                            _this.triggerError({
+                                message: 'Controls failed to load',
+                                reason: reason
+                            });
+                        });
+                } else {
+                    _view.removeControls();
+                }
+
+                _this.trigger(events.JWPLAYER_CONTROLS, {
+                    controls: mode
+                });
+            }
+
             _model.on('change:viewSetup', function(model, viewSetup) {
                 if (viewSetup) {
                     _this.showView(_view.element());
@@ -199,28 +225,8 @@ define([
                 if (inDom) {
                     _observePlayerContainer(_view.element());
 
-                    model.change('controls', function(changedModel, mode) {
-                        if (mode) {
-                            ControlsLoader.load()
-                                .then(function (Controls) {
-                                    var controls = new Controls(document, _this.currentContainer);
-                                    _view.addControls(controls);
-                                    controls.on('all', _triggerAfterReady, _this);
-                                })
-                                .catch(function (reason) {
-                                    _this.triggerError({
-                                        message: 'Controls failed to load',
-                                        reason: reason
-                                    });
-                                });
-                        } else {
-                            _view.removeControls();
-                        }
-
-                        _this.trigger(events.JWPLAYER_CONTROLS, {
-                            controls: mode
-                        });
-                    });
+                    model.off('change:controls', changeControls);
+                    model.change('controls', changeControls);
                 }
             });
 
