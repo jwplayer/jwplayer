@@ -5,58 +5,68 @@ define([
     'utils/underscore'
 ], function(UI, events, Events, _) {
 
-    return function ClickHandler(model, element) {
-        var alternateClickHandler;
-        var alternateDoubleClickHandler;
+    return class ClickHandler {
 
-        var options = { enableDoubleTap: true, useMove: true };
-        _.extend(this, Events);
+        constructor(model, element) {
+            _.extend(this, Events);
 
-        this.element = function() {
-            return element;
-        };
+            this.revertAlternateClickHandlers();
+            this.domElement = element;
+            this.model = model;
 
-        this.clickHandler = function(evt) {
-            if (model.get('flashBlocked')) {
+            const options = { enableDoubleTap: true, useMove: true };
+            this.ui = new UI(element, _.extend(options, options)).on({
+                'click tap': this.clickHandler,
+                'doubleClick doubleTap': function() {
+                    if (this.alternateDoubleClickHandler) {
+                        this.alternateDoubleClickHandler();
+                        return;
+                    }
+                    this.trigger('doubleClick');
+                },
+                move: function() {
+                    this.trigger('move');
+                },
+                over: function() {
+                    this.trigger('over');
+                },
+                out: function() {
+                    this.trigger('out');
+                }
+            }, this);
+        }
+
+        destroy() {
+            if (this.ui) {
+                this.ui.destroy();
+                this.ui = this.domElement = this.model = null;
+                this.revertAlternateClickHandlers();
+            }
+        }
+
+        clickHandler(evt) {
+            if (this.model.get('flashBlocked')) {
                 return;
             }
-
-            if (alternateClickHandler) {
-                alternateClickHandler(evt);
+            if (this.alternateClickHandler) {
+                this.alternateClickHandler(evt);
                 return;
             }
-
             this.trigger((evt.type === events.touchEvents.CLICK) ? 'click' : 'tap');
-        };
+        }
 
-        var userInteract = new UI(element, _.extend(options, options));
-        userInteract.on('click tap', this.clickHandler, this);
-        userInteract.on('doubleClick doubleTap', function() {
-            if (alternateDoubleClickHandler) {
-                alternateDoubleClickHandler();
-                return;
-            }
+        element() {
+            return this.domElement;
+        }
 
-            this.trigger('doubleClick');
-        }, this);
-        userInteract.on('move', function() {
-            this.trigger('move');
-        }, this);
-        userInteract.on('over', function() {
-            this.trigger('over');
-        }, this);
-        userInteract.on('out', function() {
-            this.trigger('out');
-        }, this);
+        setAlternateClickHandlers(clickHandler, doubleClickHandler) {
+            this.alternateClickHandler = clickHandler;
+            this.alternateDoubleClickHandler = doubleClickHandler || null;
+        }
 
-        this.setAlternateClickHandlers = function(clickHandler, doubleClickHandler) {
-            alternateClickHandler = clickHandler;
-            alternateDoubleClickHandler = doubleClickHandler || null;
-        };
-
-        this.revertAlternateClickHandlers = function() {
-            alternateClickHandler = null;
-            alternateDoubleClickHandler = null;
-        };
+        revertAlternateClickHandlers() {
+            this.alternateClickHandler = null;
+            this.alternateDoubleClickHandler = null;
+        }
     };
 });

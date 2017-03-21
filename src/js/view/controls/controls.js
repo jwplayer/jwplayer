@@ -29,7 +29,7 @@ define([
         }
 
         // Coerce into Number (don't parse out CSS units)
-        var verticalPixels = (playerHeight * 1) || NaN;
+        let verticalPixels = (playerHeight * 1) || NaN;
         verticalPixels = (!isNaN(verticalPixels) ? verticalPixels : model.get('containerHeight'));
         if (!verticalPixels) {
             return false;
@@ -64,7 +64,7 @@ define([
             element.className = 'jw-controls jw-reset';
             this.element = element;
 
-            var right = document.createElement('div');
+            const right = document.createElement('div');
             right.className = 'jw-controls-right jw-reset';
             element.appendChild(right);
             this.right = right;
@@ -81,9 +81,9 @@ define([
 
             // Display Buttons
             if (!this.displayContainer) {
-                var displayContainer = new DisplayContainer();
-                var rewindDisplayIcon = new RewindDisplayIcon(model, api);
-                var playDisplayIcon = new PlayDisplayIcon(model);
+                const displayContainer = new DisplayContainer();
+                const rewindDisplayIcon = new RewindDisplayIcon(model, api);
+                const playDisplayIcon = new PlayDisplayIcon(model);
                 // toggle playback
                 playDisplayIcon.on('click tap', () => {
                     this.trigger(events.JWPLAYER_DISPLAY_CLICK);
@@ -93,12 +93,12 @@ define([
                 // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
                 if (utils.isChrome() && !utils.isMobile()) {
                     playDisplayIcon.el.addEventListener('mousedown', () => {
-                        var provider = model.getVideo();
-                        var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+                        const provider = model.getVideo();
+                        const isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
                         if (!isFlash) {
                             return;
                         }
-                        var resetPointerEvents = function () {
+                        const resetPointerEvents = function() {
                             document.removeEventListener('mouseup', resetPointerEvents);
                             playDisplayIcon.el.style.pointerEvents = 'auto';
                         };
@@ -106,7 +106,7 @@ define([
                         document.addEventListener('mouseup', resetPointerEvents);
                     });
                 }
-                var nextDisplayIcon = new NextDisplayIcon(model, api);
+                const nextDisplayIcon = new NextDisplayIcon(model, api);
                 displayContainer.addButton(rewindDisplayIcon);
                 displayContainer.addButton(playDisplayIcon);
                 displayContainer.addButton(nextDisplayIcon);
@@ -117,40 +117,40 @@ define([
 
             // Display Click and Double Click Handling
             const displayClickHandler = new ClickHandler(model, videoLayer, { useHover: true });
-            displayClickHandler.on('click', () => {
-                this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                api.play(reasonInteraction());
-            }).on('tap', () => {
-                this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                // (function touchHandler() {
-                var state = model.get('state');
-
-                if (((state === states.IDLE || state === states.COMPLETE) ||
-                    (this.instreamState === states.PAUSED))) {
+            displayClickHandler.on({
+                click: () => {
+                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
                     api.play(reasonInteraction());
-                }
-                if (state === states.PAUSED) {
-                    // Toggle visibility of the controls when tapping the media
-                    // (function _toggleControls() {
-                    // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-                    if (this.instreamState ||
-                        model.get('castActive') ||
-                        (model.mediaModel && model.mediaModel.get('mediaType') === 'audio')) {
-                        return;
-                    }
-                    utils.toggleClass(this.playerContainer, 'jw-flag-controls-hidden');
-                    this.trigger('uiActivity', this.showing);
-                    // }());
+                },
+                tap: () => {
+                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    const state = model.get('state');
 
-                } else if (!this.showing) {
-                    this.userActive();
-                } else {
-                    this.userInactive();
-                }
-                // }());
-            }).on('doubleClick', () => api.setFullscreen())
-                .on('move', () => this.userActive())
-                .on('over', () => this.userActive());
+                    if (((state === states.IDLE || state === states.COMPLETE) ||
+                        (this.instreamState === states.PAUSED))) {
+                        api.play(reasonInteraction());
+                    }
+                    if (state === states.PAUSED) {
+                        // Toggle visibility of the controls when tapping the media
+                        // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
+                        if (this.instreamState ||
+                            model.get('castActive') ||
+                            (model.mediaModel && model.mediaModel.get('mediaType') === 'audio')) {
+                            return;
+                        }
+                        utils.toggleClass(this.playerContainer, 'jw-flag-controls-hidden');
+                        this.trigger('uiActivity', this.showing);
+
+                    } else if (!this.showing) {
+                        this.userActive();
+                    } else {
+                        this.userInactive();
+                    }
+                },
+                doubleClick: () => api.setFullscreen(),
+                move: () => this.userActive(),
+                over: () => this.userActive()
+            });
             this.displayClick = displayClickHandler;
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
@@ -194,7 +194,7 @@ define([
             }
 
             if (this.displayClick) {
-                this.displayClick.off();
+                this.displayClick.destroy();
                 this.displayClick = null;
             }
 
@@ -209,12 +209,12 @@ define([
         }
 
         resize(model, breakPoint) {
-            var audioMode = isAudioMode(model);
+            const audioMode = isAudioMode(model);
 
             // Set timeslider flags
-            var smallPlayer = breakPoint < 2;
-            var timeSliderAboveConfig = model.get('timeSliderAbove');
-            var timeSliderAbove = !audioMode &&
+            const smallPlayer = breakPoint < 2;
+            const timeSliderAboveConfig = model.get('timeSliderAbove');
+            const timeSliderAbove = !audioMode &&
                 (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
             utils.toggleClass(this.playerContainer, 'jw-flag-small-player', smallPlayer);
             utils.toggleClass(this.playerContainer, 'jw-flag-audio-player', audioMode);
