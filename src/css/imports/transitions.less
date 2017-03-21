@@ -1,11 +1,15 @@
-
-
-.jw-transition {
+.jw-transitions {
     opacity: 0;
-    -webkit-transition: opacity 1s;
-    transition: opacity 1s;
+    -webkit-transition: opacity 10s;
+    -moz-transition: opacity 10s;
+    -ms-transition: opacity 10s;
+    -o-transition: opacity 10s;
+    transition: opacity 10s;
+    &:hover{
+        opacity: 1;
+    }
+    &:active{
+        opacity: 1;
+    }
 }
 
-.jw-transition:hover {
-    opacity: 1;
-}
