@@ -1,27 +1,31 @@
 define([
     'utils/helpers',
+    'utils/underscore',
     'events/events',
+    'events/states',
     'utils/backbone.events',
     'utils/constants',
     'utils/activeTab',
-    'events/states',
+    'view/breakpoint',
     'view/captionsrenderer',
+    'view/logo',
+
+    'view/display-container',
     'view/rewind-display-icon',
     'view/play-display-icon',
     'view/next-display-icon',
+    'view/components/nextuptooltip',
     'view/dock',
-    'view/logo',
+    'view/components/button',
+
     'view/preview',
     'view/title',
-    'view/components/nextuptooltip',
-    'utils/underscore',
     'templates/player.html',
-    'view/breakpoint',
-    'view/components/button',
-    'view/display-container',
-], function(utils, events, Events, Constants, activeTab, states,
-            CaptionsRenderer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, Dock, Logo,
-            Preview, Title, NextUpToolTip, _, playerTemplate, setBreakpoint, button, DisplayContainer) {
+], function(utils, _, events, states, Events, Constants, activeTab, setBreakpoint, CaptionsRenderer, Logo,
+
+            DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon, NextUpToolTip, Dock, button,
+
+            Preview, Title, playerTemplate) {
 
     var _styles = utils.style;
     var _bounds = utils.bounds;
@@ -224,7 +228,7 @@ define([
             }
 
             // On tab-focus, show the control bar for a few seconds
-            if (!_instreamModel && !_isMobile) {
+            if (_controls && !_instreamModel && !_isMobile) {
                 _controls.userActivity();
             }
         }
@@ -456,6 +460,10 @@ define([
             _title = new Title(_model);
             _title.setup(_titleElement);
 
+            _logo = new Logo(_model);
+            _logo.setup(_playerElement);
+            _playerElement.appendChild(_logo.element());
+
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
             _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
@@ -509,6 +517,12 @@ define([
             _model.set('activeTab', activeTab());
             document.addEventListener('visibilitychange', _visibilityChangeListener, false);
             document.addEventListener('webkitvisibilitychange', _visibilityChangeListener, false);
+
+            _playerElement.addEventListener('focus', handleFocus);
+            _playerElement.addEventListener('blur', handleBlur);
+            _playerElement.addEventListener('keydown', handleKeydown);
+            _playerElement.onmousedown = handleMouseDown;
+            _playerElement.onmouseup = handleMouseUp;
 
             _model.set('viewSetup', true);
             _model.set('inDom', document.body.contains(_playerElement));
@@ -583,12 +597,34 @@ define([
                 }
             }
 
-            // utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
+            utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
         };
 
         this.addControls = function (controls) {
             _controls = controls;
-            _setupControls();
+
+            var overlaysElement = _playerElement.querySelector('.jw-overlays');
+            overlaysElement.addEventListener('mousemove', _userActivityCallback);
+
+            _controls.on('change:showing', function(/* showing */) {
+                _captionsRenderer.renderCues(true);
+            });
+
+            _controlsLayer = _controls.getElement();
+            _controlsLayer.appendChild(createDisplayContainer());
+
+            _dock = new Dock(_model);
+
+            var rightside = document.createElement('div');
+            rightside.className = 'jw-controls-right jw-reset';
+            rightside.appendChild(_dock.element());
+            _logo.setup(rightside);
+            _controlsLayer.appendChild(rightside);
+
+            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
+            _componentFadeListeners(_logo);
+
+
             controls.enable(_api, _model, _videoLayer);
 
             // These need to be called after controls.enable:
@@ -619,48 +655,14 @@ define([
             _componentFadeListeners(_controls.controlbar);
             _controlsLayer.appendChild(_controls.controlbar.element());
 
-            _playerElement.addEventListener('focus', handleFocus);
-            _playerElement.addEventListener('blur', handleBlur);
-            _playerElement.addEventListener('keydown', handleKeydown);
-            _playerElement.onmousedown = handleMouseDown;
-            _playerElement.onmouseup = handleMouseUp;
-
             _model.change('duration', _setLiveMode, this);
         };
-
-        function _setupControls() {
-            var overlaysElement = _playerElement.querySelector('.jw-overlays');
-            overlaysElement.addEventListener('mousemove', _userActivityCallback);
-
-            _controls.on('change:showing', function(/* showing */) {
-                _captionsRenderer.renderCues(true);
-            });
-
-            _controlsLayer = _controls.getElement();
-            _controlsLayer.appendChild(createDisplayContainer());
-
-            _dock = new Dock(_model);
-
-            _logo = new Logo(_model);
-
-            var rightside = document.createElement('div');
-            rightside.className = 'jw-controls-right jw-reset';
-            rightside.appendChild(_dock.element());
-            _logo.setup(rightside);
-            _controlsLayer.appendChild(rightside);
-
-            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
-            _componentFadeListeners(_logo);
-        }
 
         this.removeControls = function () {
             if (_controls) {
                 _controls.disable();
             }
-            _destroyControls();
-        };
 
-        var _destroyControls = function () {
             var overlay = document.querySelector('.jw-overlays');
             if (overlay) {
                 overlay.removeEventListener('mousemove', _userActivityCallback);
@@ -669,17 +671,6 @@ define([
             if (_dock) {
                 _dock = null;
             }
-
-            if (_logo) {
-                _logo.destroy();
-                _logo = null;
-            }
-
-            _playerElement.removeEventListener('focus', handleFocus);
-            _playerElement.removeEventListener('blur', handleBlur);
-            _playerElement.removeEventListener('keydown', handleKeydown);
-            _playerElement.onmousedown = null;
-            _playerElement.onmouseup = null;
 
             utils.removeClass(_playerElement, 'jw-flag-touch');
             utils.clearCss(_model.get('id'));
@@ -1139,6 +1130,12 @@ define([
             }
             _playerElement.removeEventListener('keydown', handleKeydown, false);
 
+            _playerElement.removeEventListener('focus', handleFocus);
+            _playerElement.removeEventListener('blur', handleBlur);
+            _playerElement.removeEventListener('keydown', handleKeydown);
+            _playerElement.onmousedown = null;
+            _playerElement.onmouseup = null;
+
             if (_castDisplay) {
                 _model.off('change:state', _castDisplay.statusDelegate);
                 _castDisplay.destroy();
@@ -1149,6 +1146,7 @@ define([
             }
             if (_logo) {
                 _logo.destroy();
+                _logo = null;
             }
             utils.clearCss(_model.get('id'));
         };
