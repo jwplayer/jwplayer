@@ -2,7 +2,8 @@
     "root": true,
     "env": {
         "browser": true,
-        "amd": true
+        "amd": true,
+        "es6": true
     },
     "globals": {
         "__webpack_public_path__": true,
@@ -13,6 +14,9 @@
         "__SELF_HOSTED__": true,
         "__DEBUG__": true,
         "__BUILD_VERSION__": true
+    },
+    "parserOptions": {
+        "sourceType": "module"
     },
     "extends": "eslint:recommended",
     "rules": {

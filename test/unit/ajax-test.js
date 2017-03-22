@@ -14,7 +14,7 @@ define([
         return xhr instanceof window.XMLHttpRequest;
     }
 
-    test('legacy params', function (assert) {
+    QUnit.skip('legacy params', function (assert) {
         var done = assert.async();
 
         var uri = require.toUrl('./data/playlist.xml');
@@ -42,7 +42,7 @@ define([
             'utils.ajax returns an XMLHttpRequest instance');
     });
 
-    test('responseType "text"', function (assert) {
+    QUnit.skip('responseType "text"', function (assert) {
         var done = assert.async();
 
         var uri = require.toUrl('./data/playlist.json');
@@ -64,7 +64,7 @@ define([
             'utils.ajax returns an XMLHttpRequest instance');
     });
 
-    test('responseType "json"', function (assert) {
+    QUnit.skip('responseType "json"', function (assert) {
         var done = assert.async();
 
         var uri = require.toUrl('./data/playlist.json');
@@ -88,7 +88,7 @@ define([
             'utils.ajax returns an XMLHttpRequest instance');
     });
 
-    test('timeout', function (assert) {
+    QUnit.skip('timeout', function (assert) {
         var done = assert.async();
         var nonce = Math.random().toFixed(20).substr(2);
 
@@ -109,7 +109,7 @@ define([
         });
     });
 
-    test('withCredentials', function (assert) {
+    QUnit.skip('withCredentials', function (assert) {
         var done = assert.async();
 
         utils.ajax({
@@ -131,7 +131,7 @@ define([
         });
     });
 
-    test('withCredentials crossdomain', function (assert) {
+    QUnit.skip('withCredentials crossdomain', function (assert) {
         var done = assert.async();
 
         utils.ajax({
@@ -158,7 +158,7 @@ define([
         });
     });
 
-    test('error "Error loading file" (bad request)', function (assert) {
+    QUnit.skip('error "Error loading file" (bad request)', function (assert) {
         var done = assert.async();
 
         utils.ajax({
@@ -169,7 +169,7 @@ define([
         });
     });
 
-    test('error "Invalid XML"', function (assert) {
+    QUnit.skip('error "Invalid XML"', function (assert) {
         var done = assert.async();
 
         utils.ajax({
@@ -188,7 +188,7 @@ define([
         });
     });
 
-    test('error "Invalid JSON"', function (assert) {
+    QUnit.skip('error "Invalid JSON"', function (assert) {
         var done = assert.async();
 
         utils.ajax({
@@ -206,7 +206,7 @@ define([
         });
     });
 
-    test('error "File not found" (404) - Integration Test', function (assert) {
+    QUnit.skip('error "File not found" (404) - Integration Test', function (assert) {
         var done = assert.async();
 
         utils.ajax({

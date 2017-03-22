@@ -8,20 +8,7 @@ define([
     'data/api-methods-chainable',
     'data/config-small',
     'utils/backbone.events',
-    'providers/html5',
-    'providers/flash',
-], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events,
-             providerHtml5, providerFlash) {
-    /* jshint qunit: true */
-
-    require.ensure = function(array, callback) {
-        callback(function webpackRequire(modulePath) {
-            return ({
-                'providers/html5': providerHtml5,
-                'providers/flash': providerFlash
-            })[modulePath];
-        });
-    };
+], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events) {
     var log = console.log;
 
     var vid = document.createElement('video');

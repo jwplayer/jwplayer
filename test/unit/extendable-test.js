@@ -8,8 +8,8 @@ define([
     QUnit.test('extendable.extend', function(assert) {
         extendable();
 
-        var static = {'test': 'staticTest'};
-        var child = extendable.extend(null, static);
+        var staticTest = {'test': 'staticTest'};
+        var child = extendable.extend(null,staticTest);
         assert.equal(child.test, 'staticTest', 'extend should allow child to inherit');
     });
 
