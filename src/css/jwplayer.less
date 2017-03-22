@@ -14,7 +14,7 @@
 #namespace > .basic-skin-styles();
 #namespace > .set-global-color-classes();
 
-@import "jwplayer/imports/jwplayerelement";
+@import "jwplayer/imports/jwplayerlayout";
 @import "jwplayer/imports/video";
 @import "jwplayer/imports/display";
 @import "jwplayer/imports/title";
@@ -24,13 +24,8 @@
 
 // State specific
 @import "jwplayer/states";
-    // Incorporate title/description only display code for error, normal startup and flash throttling?
-
-//@import "shared-imports/flags/time-slider-above";
-//@import "shared-imports/flags/cast";
-//@import "shared-imports/flags/cast-available";
 @import "jwplayer/flags/skinloading";            // Hides content until styles loaded.  Rename stylesloading.les
-@import "jwplayer/flags/fullscreen";             // Styles to make player fullscreen
+@import "jwplayer/flags/fullscreen";
 @import "jwplayer/flags/flash-blocked";
 
 @import "jwplayer/flags/audioplayer";
