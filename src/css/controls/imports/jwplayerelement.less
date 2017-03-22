@@ -17,7 +17,7 @@
     }
 }
 
-.jw-controls {
+.jw-overlays, .jw-controls {
       position: absolute;
       width: 100%;
       height: 100%;
@@ -61,5 +61,15 @@
 .jw-display-icon-container .jw-icon,
 .jw-nextup-container,
 .jw-autostart-mute {
+    pointer-events: all;
+}
+
+// Allow pointer events through to the provider
+.jw-overlays {
+    pointer-events : none;
+}
+
+// These items can intercept pointer-events
+.jw-overlays .jw-plugin {
     pointer-events: all;
 }
