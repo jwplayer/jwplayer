@@ -653,7 +653,9 @@ define([
                 });
 
                 // On going fullscreen we want the control bar to fade after a few seconds
-                _controls.userActive();
+                if (_controls) {
+                    _controls.userActive();
+                }
             } else {
                 utils.removeClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
@@ -806,7 +808,9 @@ define([
             }
             _setLiveMode(_model, _model.get('duration'));
             // reset display click handler
-            _controls.displayClick.revertAlternateClickHandlers();
+            if (_controls && _controls.displayClick) {
+                _controls.displayClick.revertAlternateClickHandlers();
+            }
         };
 
         this.addCues = function (cues) {
@@ -816,7 +820,9 @@ define([
         };
 
         this.clickHandler = function () {
-            return _controls.displayClick;
+            if (_controls) {
+                return _controls.displayClick;
+            }
         };
 
         this.getContainer = this.element = function () {
