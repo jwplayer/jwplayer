@@ -482,8 +482,13 @@ define([
             
             _componentFadeListeners(controls.controlbar);
 
-            _model.change('scrubbing', _dragging);
-            _model.change('duration', _setLiveMode, this);
+            _model.on('change:scrubbing', _stateHandler);
+            _model.change('streamType', _setLiveMode, this);
+
+            // refresh breakpoint and timeslider classes
+            if (_lastHeight) {
+                _setContainerDimensions();
+            }
         };
 
         this.removeControls = function () {
@@ -697,12 +702,8 @@ define([
             }
         }
 
-        function _setLiveMode(model, duration) {
-            var minDvrWindow = model.get('minDvrWindow');
-            var streamType = utils.streamType(duration, minDvrWindow);
+        function _setLiveMode(model, streamType) {
             var live = (streamType === 'LIVE');
-
-            model.set('streamType', streamType);
             utils.toggleClass(_playerElement, 'jw-flag-live', live);
             _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
@@ -767,10 +768,6 @@ define([
             }
         }
 
-        function _dragging(model) {
-            _stateHandler(model);
-        }
-
         function _visibilityChangeListener() {
             _model.set('activeTab', activeTab());
         }
@@ -806,7 +803,7 @@ define([
                 var provider = _model.getVideo();
                 provider.setContainer(_videoLayer);
             }
-            _setLiveMode(_model, _model.get('duration'));
+            _setLiveMode(_model, _model.get('streamType'));
             // reset display click handler
             if (_controls && _controls.displayClick) {
                 _controls.displayClick.revertAlternateClickHandlers();

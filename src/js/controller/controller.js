@@ -119,6 +119,12 @@ define([
 
             _model.on('change:state', changeStateEvent, this);
 
+            _model.on('change:duration', function(model, duration) {
+                var minDvrWindow = model.get('minDvrWindow');
+                var streamType = utils.streamType(duration, minDvrWindow);
+                model.set('streamType', streamType);
+            });
+
             _model.on('change:castState', function(model, evt) {
                 _this.trigger(events.JWPLAYER_CAST_SESSION, evt);
             });
@@ -128,7 +134,7 @@ define([
                 });
                 if (bool) {
                     // Stop autoplay behavior when the player enters fullscreen
-                    _model.set('playOnViewable', false);
+                    model.set('playOnViewable', false);
                 }
             });
             _model.on('itemReady', function() {

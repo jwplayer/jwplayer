@@ -45,8 +45,7 @@ define([
             LOAD_CONTROLS: {
                 method: _loadControls,
                 depends: [
-                    'LOAD_PROMISE_POLYFILL',
-                    'SETUP_VIEW'
+                    'LOAD_PROMISE_POLYFILL'
                 ]
             },
             SETUP_VIEW: {
@@ -91,6 +90,7 @@ define([
             SEND_READY: {
                 method: _sendReady,
                 depends: [
+                    'LOAD_CONTROLS',
                     'SET_ITEM',
                     'DEFERRED'
                 ]
