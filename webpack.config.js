@@ -141,7 +141,11 @@ var multiConfig = _.compact(_.map([
                     loader: 'file-loader?name=[name].[ext]'
                 },
                 {
-                    test: /\.js$/,
+                    test: /\.js/,
+                    exclude: /node_modules/,
+                    query: {
+                        presets: ['es2015']
+                    },
                     loader: 'babel-loader'
                 }
             ]

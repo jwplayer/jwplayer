@@ -1,7 +1,20 @@
 /* eslint-env node */
 /* eslint no-process-env: 0 */
-var webpack = require('webpack');
-var path = require('path');
+const webpack = require('webpack');
+const path = require('path');
+// Use the debug config
+const webpackConfig = require('./webpack.config.js')[0];
+
+const aliases = {
+    'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
+    'jquery': path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
+    'sinon': path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
+    'data': path.resolve(__dirname + '/test/data'),
+    'mock': path.resolve(__dirname + '/test/mock'),
+    'utils/video': path.resolve(__dirname + '/test/mock/video.js')
+};
+
+webpackConfig.resolve.alias = Object.assign(webpackConfig.resolve.alias || {}, aliases);
 
 module.exports = function(config) {
     var env = process.env;
@@ -79,64 +92,9 @@ module.exports = function(config) {
             dir: 'reports/coverage'
         },
         webpack: {
-            umdNamedDefine: true,
-            resolve: {
-                modulesDirectories: [
-                    'src/js/',
-                    'src',
-                    'src/js/polyfills/',
-                    'node_modules',
-                ],
-                alias: {
-                    'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
-                    'jquery': path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
-                    'sinon': path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
-                    'data': path.resolve(__dirname + '/test/data'),
-                    'mock': path.resolve(__dirname + '/test/mock'),
-                    'utils/video': path.resolve(__dirname + '/test/mock/video.js')
-                }
-            },
-            module: {
-                umdNamedDefine: true,
-                loaders: [
-                    {
-                        test: /\.less$/,
-                        loaders: [
-                            'simple-style-loader',
-                            'css',
-                            'autoprefixer?browsers=' + encodeURIComponent('> 1%'),
-                            'less?compress',
-                        ]
-                    },
-                    {
-                        test: /\.html$/,
-                        include: [
-                            /src/,
-                        ],
-                        loader: 'handlebars-loader'
-                    },
-                    {
-                        test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-                        loader: 'file-loader?name=[name].[ext]'
-                    },
-                    {
-                        test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-                        loader: 'file-loader?name=[name].[ext]'
-                    },
-                    {
-                        test: /\.js/,
-                        exclude: /node_modules/,
-                        query: {
-                            presets: ['es2015']
-                        },
-                        loader: 'babel-loader'
-                    }
-                ],
-                noParse: [
-                    /node_modules\/sinon\//,
-                    /node_modules\/jquery\//
-                ]
-            },
+            umdNamedDefine: webpackConfig.umdNamedDefine,
+            resolve: webpackConfig.resolve,
+            module: webpackConfig.module,
             plugins: [
                 new webpack.optimize.LimitChunkCountPlugin({
                     maxChunks: 1
