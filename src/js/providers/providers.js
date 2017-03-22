@@ -12,25 +12,31 @@ define([
     }
 
     Providers.loaders = {
-        html5: function(resolvePromise) {
+        html5: function(resolve, reject) {
+            var timeout = setTimeout(reject, 8000);
             require.ensure(['providers/html5'], function(require) {
+                clearTimeout(timeout);
                 var provider = require('providers/html5');
                 registerProvider(provider);
-                resolvePromise(provider);
+                resolve(provider);
             }, 'provider.html5');
         },
-        flash: function(resolvePromise) {
+        flash: function(resolve, reject) {
+            var timeout = setTimeout(reject, 8000);
             require.ensure(['providers/flash'], function(require) {
+                clearTimeout(timeout);
                 var provider = require('providers/flash');
                 registerProvider(provider);
-                resolvePromise(provider);
+                resolve(provider);
             }, 'provider.flash');
         },
-        youtube: function(resolvePromise) {
+        youtube: function(resolve, reject) {
+            var timeout = setTimeout(reject, 8000);
             require.ensure(['providers/youtube'], function(require) {
+                clearTimeout(timeout);
                 var provider = require('providers/youtube');
                 registerProvider(provider);
-                resolvePromise(provider);
+                resolve(provider);
             }, 'provider.youtube');
         }
     };
@@ -67,12 +73,17 @@ define([
 
         load: function(providersToLoad) {
             return Promise.all(_.map(providersToLoad, function(provider) {
-                return new Promise(function(resolvePromise) {
+                return new Promise(function(resolve, reject) {
                     var providerLoaderMethod = Providers.loaders[provider.name];
                     if (providerLoaderMethod) {
-                        providerLoaderMethod(resolvePromise);
+                        var rejectProviderLoaded = function() {
+                            reject({
+                                message: 'Could not load "' + provider.name + '" provider'
+                            });
+                        };
+                        providerLoaderMethod(resolve, rejectProviderLoaded);
                     } else {
-                        resolvePromise(/* unknown registered module */);
+                        resolve(/* unknown registered module */);
                     }
                 });
             }));
