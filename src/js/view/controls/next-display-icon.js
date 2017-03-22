@@ -1,29 +1,30 @@
 define([
     'utils/helpers',
-    'utils/backbone.events',
     'utils/ui',
-    'templates/display-icon.html',
-    'utils/underscore'
-], function(utils, Events, UI, Template, _) {
-    var NextDisplayIcon = function(model, api) {
-        this.el = utils.createElement(Template({
-            iconName: 'next',
-            ariaLabel: model.get('localization').next
-        }));
-        this.iconUI = new UI(this.el).on('click tap', function() {
-            api.next();
-        });
-        this.el.style.display = 'none';
-        model.on('change:nextUp', function(nextUpChangeModel, nextUp) {
-            this.el.style.display = nextUp ? '' : 'none';
-        }, this);
-    };
+    'templates/display-icon.html'
+], function(utils, UI, Template) {
 
-    _.extend(NextDisplayIcon.prototype, {
-        element: function() {
+    return class NextDisplayIcon {
+
+        constructor(model, api) {
+            const element = utils.createElement(Template({
+                iconName: 'next',
+                ariaLabel: model.get('localization').next
+            }));
+
+            this.iconUI = new UI(element).on('click tap', function() {
+                api.next();
+            });
+
+            model.change('nextUp', function(nextUpChangeModel, nextUp) {
+                element.style.display = nextUp ? '' : 'none';
+            });
+
+            this.el = element;
+        }
+
+        element() {
             return this.el;
         }
-    });
-
-    return NextDisplayIcon;
+    };
 });

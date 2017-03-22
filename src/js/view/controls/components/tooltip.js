@@ -1,11 +1,15 @@
 define([
-    'utils/extendable',
-    'utils/helpers'
-], function(Extendable, utils) {
-    var Tooltip = Extendable.extend({
-        constructor: function(name, ariaText, ariaShown, elementShown) {
+    'utils/backbone.events',
+    'utils/helpers',
+    'utils/underscore',
+], function(Events, utils, _) {
+
+    return class Tooltip {
+        
+        constructor(name, ariaText, ariaShown, elementShown) {
+            _.extend(this, Events);
             this.el = document.createElement('div');
-            var className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
+            let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
             if (!elementShown) {
                 className += ' jw-hidden';
             }
@@ -32,46 +36,50 @@ define([
             this.componentType = 'tooltip';
 
             this.el.appendChild(this.container);
-        },
+        }
 
-        addContent: function (elem) {
+        addContent(elem) {
             if (this.content) {
                 this.removeContent();
             }
 
             this.content = elem;
             this.container.appendChild(elem);
-        },
-        removeContent: function() {
+        }
+
+        removeContent() {
             if (this.content) {
                 this.container.removeChild(this.content);
                 this.content = null;
             }
-        },
-        hasContent: function() {
+        }
+
+        hasContent() {
             return !!this.content;
-        },
-        element: function() {
+        }
+
+        element() {
             return this.el;
-        },
-        openTooltip: function(evt) {
+        }
+
+        openTooltip(evt) {
             this.trigger('open-' + this.componentType, evt, { isOpen: true });
             this.isOpen = true;
             utils.toggleClass(this.el, this.openClass, this.isOpen);
-        },
-        closeTooltip: function(evt) {
+        }
+
+        closeTooltip(evt) {
             this.trigger('close-' + this.componentType, evt, { isOpen: false });
             this.isOpen = false;
             utils.toggleClass(this.el, this.openClass, this.isOpen);
-        },
-        toggleOpenState: function(evt) {
+        }
+
+        toggleOpenState(evt) {
             if (this.isOpen) {
                 this.closeTooltip(evt);
             } else {
                 this.openTooltip(evt);
             }
         }
-    });
-
-    return Tooltip;
+    };
 });

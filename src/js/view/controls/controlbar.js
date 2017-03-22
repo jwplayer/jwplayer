@@ -4,14 +4,14 @@ define([
     'utils/backbone.events',
     'utils/constants',
     'utils/ui',
-    'view/components/slider',
-    'view/components/timeslider',
-    'view/components/menu',
-    'view/components/volumetooltip',
-    'view/components/button'
+    'view/controls/components/slider',
+    'view/controls/components/timeslider',
+    'view/controls/components/menu',
+    'view/controls/components/volumetooltip',
+    'view/controls/components/button'
 ], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button) {
     function text(name, role) {
-        var element = document.createElement('span');
+        const element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
         if (role) {
             element.setAttribute('role', role);
@@ -28,9 +28,9 @@ define([
             return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
         }
 
-        var castButton = document.createElement('button', 'google-cast-button');
-        var element = document.createElement('div');
-        var ariaText = localization.cast;
+        const castButton = document.createElement('button', 'google-cast-button');
+        const element = document.createElement('div');
+        const ariaText = localization.cast;
 
         castButton.className = 'jw-button-color jw-icon-inline';
         element.className = 'jw-reset jw-icon-cast';
@@ -69,7 +69,7 @@ define([
     }
 
     function buildGroup(group, elements) {
-        var elem = document.createElement('div');
+        const elem = document.createElement('div');
         elem.className = 'jw-group jw-controlbar-' + group + '-group jw-reset';
 
         _.each(elements, function(e) {
@@ -82,31 +82,33 @@ define([
         return elem;
     }
 
-    function Controlbar(_api, _model) {
-        this._api = _api;
-        this._model = _model;
-        this._isMobile = utils.isMobile();
-        this._localization = _model.get('localization');
-        this.setup(_api, _model);
-    }
+    return class Controlbar {
 
-    _.extend(Controlbar.prototype, Events, {
+        constructor(_api, _model) {
+            _.extend(this, Events);
+            this._api = _api;
+            this._model = _model;
+            this._isMobile = utils.isMobile();
+            this._localization = _model.get('localization');
+            this.setup(_api, _model);
+        }
 
-        setup: function(_api, _model) {
+        setup(_api, _model) {
 
-            var timeSlider = new TimeSlider(_model, _api);
-            var volumeSlider;
-            var volumeTooltip;
-            var muteButton;
+            const timeSlider = new TimeSlider(_model, _api);
+            let volumeSlider;
+            let volumeTooltip;
+            let muteButton;
 
-            var play = this._localization.play;
-            var next = this._localization.next;
-            var vol = this._localization.volume;
-            var rewind = this._localization.rewind;
+            const play = this._localization.play;
+            const next = this._localization.next;
+            const vol = this._localization.volume;
+            const rewind = this._localization.rewind;
 
             // Do not initialize volume slider or tooltip on mobile
             if (!this._isMobile) {
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');// , vol);
+                volumeSlider.setup();
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
@@ -114,7 +116,7 @@ define([
                 muteButton = button('jw-icon-volume', _api.setMute, vol);
             }
 
-            var nextButton = button('jw-icon-next', _api.next.bind(this), next);
+            const nextButton = button('jw-icon-next', _api.next.bind(this), next);
 
             if (_model.get('nextUpDisplay')) {
                 new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -205,12 +207,6 @@ define([
             if (this.elements.mute) {
                 this.elements.mute.show();
             }
-            this.onVolume(_model, _model.get('volume'));
-            this.onPlaylistItem();
-            this.onMediaModel(_model, _model.get('mediaModel'));
-            this.onCastAvailable(_model, _model.get('castAvailable'));
-            this.onCastActive(_model, _model.get('castActive'));
-            this.onCaptionsList(_model, _model.get('captionsList'));
 
             // Listen for model changes
             _model.change('volume', this.onVolume, this);
@@ -238,7 +234,7 @@ define([
             }
             if (this.elements.volumetooltip) {
                 this.elements.volumetooltip.on('update', function(pct) {
-                    var val = pct.percentage;
+                    const val = pct.percentage;
                     this._api.setVolume(val);
                 }, this);
                 this.elements.volumetooltip.on('toggleValue', function() {
@@ -263,7 +259,7 @@ define([
                 this._api.setCurrentCaptions(value);
             }, this);
             this.elements.cc.on('toggleValue', function() {
-                var index = this._model.get('captionsIndex');
+                const index = this._model.get('captionsIndex');
                 this._api.setCurrentCaptions(index ? 0 : 1);
             }, this);
 
@@ -274,7 +270,7 @@ define([
             new UI(this.elements.duration).on('click tap', function() {
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
-                    var currentPosition = this._model.get('position');
+                    const currentPosition = this._model.get('position');
                     this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition), reasonInteraction());
                 }
             }, this);
@@ -282,7 +278,7 @@ define([
             new UI(this.elements.durationLeft).on('click tap', function() {
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
-                    var currentPosition = this._model.get('position');
+                    const currentPosition = this._model.get('position');
                     this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
                 }
             }, this);
@@ -295,27 +291,22 @@ define([
             _.each(this.menus, function(ele) {
                 ele.on('open-tooltip', this.closeMenus, this);
             }, this);
-        },
+        }
 
-        onCaptionsList: function(model, tracks) {
-            var index = model.get('captionsIndex');
+        onCaptionsList(model, tracks) {
+            const index = model.get('captionsIndex');
             this.elements.cc.setup(tracks, index, { isToggle: true });
-        },
-        onCaptionsIndex: function(model, index) {
+        }
+
+        onCaptionsIndex(model, index) {
             this.elements.cc.selectItem(index);
-        },
-        onPlaylistItem: function() {
-            this.elements.time.updateBuffer(0);
-            this.elements.time.render(0);
-            this.elements.duration.textContent = '00:00';
-            this.elements.durationLeft.textContent = '00:00';
-            this.elements.elapsed.textContent = '00:00';
-            this.elements.countdown.textContent = '00:00';
+        }
 
+        onPlaylistItem() {
             this.elements.audiotracks.setup();
-        },
+        }
 
-        onMediaModel: function(model, mediaModel) {
+        onMediaModel(model, mediaModel) {
             mediaModel.on('change:levels', function(levelsChangeModel, levels) {
                 this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
             }, this);
@@ -323,7 +314,7 @@ define([
                 this.elements.hd.selectItem(level);
             }, this);
             mediaModel.on('change:audioTracks', function(audioTracksChangeModel, audioTracks) {
-                var list = _.map(audioTracks, function(track) {
+                const list = _.map(audioTracks, function(track) {
                     return { label: track.name };
                 });
                 this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'),
@@ -332,14 +323,17 @@ define([
             mediaModel.on('change:currentAudioTrack', function(currentAudioTrackChangeModel, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);
             }, this);
-        },
-        onVolume: function(model, pct) {
+        }
+
+        onVolume(model, pct) {
             this.renderVolume(model.get('mute'), pct);
-        },
-        onMute: function(model, muted) {
+        }
+
+        onMute(model, muted) {
             this.renderVolume(muted, model.get('volume'));
-        },
-        renderVolume: function(muted, vol) {
+        }
+
+        renderVolume(muted, vol) {
             // mute, volume, and volumetooltip do not exist on mobile devices.
             if (this.elements.mute) {
                 utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
@@ -351,20 +345,23 @@ define([
                 this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
                 utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
             }
-        },
-        onCastAvailable: function(model, val) {
+        }
+
+        onCastAvailable(model, val) {
             this.elements.cast.toggle(val);
-        },
-        onCastActive: function(model, val) {
+        }
+
+        onCastActive(model, val) {
             this.elements.fullscreen.toggle(!val);
             if (this.elements.cast.button) {
                 utils.toggleClass(this.elements.cast.button, 'jw-off', !val);
             }
-        },
-        onElapsed: function(model, val) {
-            var elapsedTime;
-            var countdownTime;
-            var duration = model.get('duration');
+        }
+
+        onElapsed(model, val) {
+            let elapsedTime;
+            let countdownTime;
+            const duration = model.get('duration');
             if (model.get('streamType') === 'DVR') {
                 elapsedTime = countdownTime = '-' + utils.timeFormat(-duration);
             } else {
@@ -373,9 +370,10 @@ define([
             }
             this.elements.elapsed.innerHTML = elapsedTime;
             this.elements.countdown.innerHTML = countdownTime;
-        },
-        onDuration: function(model, val) {
-            var totalTime;
+        }
+
+        onDuration(model, val) {
+            let totalTime;
             if (model.get('streamType') === 'DVR') {
                 totalTime = 'Live';
             } else {
@@ -383,41 +381,47 @@ define([
             }
             this.elements.duration.innerHTML = totalTime;
             this.elements.durationLeft.innerHTML = totalTime;
-        },
-        onFullscreen: function(model, val) {
-            utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
-        },
+        }
 
-        element: function() {
+        onFullscreen(model, val) {
+            utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
+        }
+
+        element() {
             return this.el;
-        },
-        setAltText: function(altText) {
+        }
+
+        setAltText(altText) {
             this.elements.alt.innerHTML = altText;
-        },
-        addCues: function(cues) {
+        }
+
+        addCues(cues) {
             if (this.elements.time) {
                 _.each(cues, function(ele) {
                     this.elements.time.addCue(ele);
                 }, this);
                 this.elements.time.drawCues();
             }
-        },
+        }
+
         // Close menus if it has no event.  Otherwise close all but the event's target.
-        closeMenus: function(evt) {
+        closeMenus(evt) {
             _.each(this.menus, function(ele) {
                 if (!evt || evt.target !== ele.el) {
                     ele.closeTooltip(evt);
                 }
             });
-        },
-        hideComponents: function() {
+        }
+
+        hideComponents() {
             this.closeMenus();
-        },
-        rewind: function() {
-            var currentPosition = this._model.get('position');
-            var duration = this._model.get('duration');
-            var rewindPosition = currentPosition - 10;
-            var startPosition = 0;
+        }
+
+        rewind() {
+            const currentPosition = this._model.get('position');
+            const duration = this._model.get('duration');
+            const rewindPosition = currentPosition - 10;
+            let startPosition = 0;
 
             // duration is negative in DVR mode
             if (this._model.get('streamType') === 'DVR') {
@@ -425,22 +429,22 @@ define([
             }
             // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
             this._api.seek(Math.max(rewindPosition, startPosition), reasonInteraction());
-        },
-        onStreamTypeChange: function(model) {
+        }
+
+        onStreamTypeChange(model) {
             // Hide rewind button when in LIVE mode
-            var streamType = model.get('streamType');
+            const streamType = model.get('streamType');
             this.elements.rewind.toggle(streamType !== 'LIVE');
             if (streamType === 'DVR') {
                 this.elements.duration.innerHTML = 'Live';
                 this.elements.durationLeft.innerHTML = 'Live';
             }
-            var duration = model.get('duration');
+            const duration = model.get('duration');
             this.onDuration(model, duration);
-        },
-        onNextUp: function(model, nextUp) {
+        }
+
+        onNextUp(model, nextUp) {
             this.elements.next.toggle(!!nextUp);
         }
-    });
-
-    return Controlbar;
+    };
 });

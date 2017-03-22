@@ -1,8 +1,9 @@
 define([
     'utils/ui'
 ], function(UI) {
-    var button = function (icon, apiAction, ariaText) {
-        var element = document.createElement('div');
+
+    return function (icon, apiAction, ariaText) {
+        const element = document.createElement('div');
         element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
         element.setAttribute('role', 'button');
         element.setAttribute('tabindex', '0');
@@ -39,6 +40,4 @@ define([
             }
         };
     };
-
-    return button;
 });

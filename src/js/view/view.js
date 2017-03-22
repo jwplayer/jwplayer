@@ -5,22 +5,15 @@ define([
     'utils/helpers',
     'utils/underscore',
     'utils/active-tab',
-    'utils/constants',
     'utils/request-animation-frame',
     'view/breakpoint',
     'view/captionsrenderer',
     'view/logo',
-
-    'view/components/button',
-
     'view/preview',
     'view/title',
     'templates/player.html',
-], function(events, states, Events, utils, _, activeTab, Constants, raf, setBreakpoint, CaptionsRenderer, Logo,
-
-            button,
-
-            Preview, Title, playerTemplate) {
+], function(events, states, Events, utils, _, activeTab, raf, setBreakpoint,
+            CaptionsRenderer, Logo, Preview, Title, playerTemplate) {
 
     var _styles = utils.style;
     var _bounds = utils.bounds;
@@ -51,8 +44,6 @@ define([
         var _captionsRenderer;
         var _controls;
         var _logo;
-
-        var _mute;
 
         var _playerState;
 
@@ -89,102 +80,6 @@ define([
 
         function reasonInteraction() {
             return { reason: 'interaction' };
-        }
-
-        function adjustSeek(amount) {
-            var min = 0;
-            var max = _model.get('duration');
-            var position = _model.get('position');
-            if (_model.get('streamType') === 'DVR') {
-                min = max;
-                max = Math.max(position, Constants.dvrSeekLimit);
-            }
-            var newSeek = utils.between(position + amount, min, max);
-            _api.seek(newSeek, reasonInteraction());
-        }
-
-        function adjustVolume(amount) {
-            var newVol = utils.between(_model.get('volume') + amount, 0, 100);
-            _api.setVolume(newVol);
-        }
-
-        function allowKeyHandling(evt) {
-            // If Meta keys return
-            if (evt.ctrlKey || evt.metaKey) {
-                return false;
-            }
-
-            // Controls may be disabled during share screens, or via API
-            if (!_model.get('controls')) {
-                return false;
-            }
-            return true;
-        }
-
-        function handleKeydown(evt) {
-            if (!allowKeyHandling(evt)) {
-                // Let event bubble upwards
-                return true;
-            }
-
-            // On keypress show the controlbar for a few seconds
-            if (!_instreamModel && _controls) {
-                _controls.userActive();
-            }
-
-            switch (evt.keyCode) {
-                case 27: // Esc
-                    _api.setFullscreen(false);
-                    break;
-                case 13: // enter
-                case 32: // space
-                    _api.play(reasonInteraction());
-                    break;
-                case 37: // left-arrow, if not adMode
-                    if (!_instreamModel) {
-                        adjustSeek(-5);
-                    }
-                    break;
-                case 39: // right-arrow, if not adMode
-                    if (!_instreamModel) {
-                        adjustSeek(5);
-                    }
-                    break;
-                case 38: // up-arrow
-                    adjustVolume(10);
-                    break;
-                case 40: // down-arrow
-                    adjustVolume(-10);
-                    break;
-                case 67: // c-key
-                    var captionsList = _api.getCaptionsList();
-                    var listLength = captionsList.length;
-                    if (listLength) {
-                        var nextIndex = (_api.getCurrentCaptions() + 1) % listLength;
-                        _api.setCurrentCaptions(nextIndex);
-                    }
-                    break;
-                case 77: // m-key
-                    _api.setMute();
-                    break;
-                case 70: // f-key
-                    _api.setFullscreen();
-                    break;
-                default:
-                    if (evt.keyCode >= 48 && evt.keyCode <= 59) {
-                        // if 0-9 number key, move to n/10 of the percentage of the video
-                        var number = evt.keyCode - 48;
-                        var newSeek = (number / 10) * _model.get('duration');
-                        _api.seek(newSeek, reasonInteraction());
-                    }
-                    break;
-            }
-
-            if (/13|32|37|38|39|40/.test(evt.keyCode)) {
-                // Prevent keypresses from scrolling the screen
-                evt.preventDefault();
-                return false;
-            }
         }
 
         function handleBlur() {
@@ -491,7 +386,6 @@ define([
 
             _playerElement.addEventListener('focus', handleFocus);
             _playerElement.addEventListener('blur', handleBlur);
-            _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
             _playerElement.onmouseup = handleMouseUp;
 
@@ -581,22 +475,6 @@ define([
             _logo.setup(controls.right);
 
             controls.enable(_api, _model, _videoLayer);
-
-            // Ignore iOS9. Muted autoplay is supported in iOS 10+
-            if (_model.get('autostartMuted')) {
-                _mute = button('jw-autostart-mute jw-off', _autoplayUnmute, _model.get('localization').volume);
-                _mute.show();
-                var controlsLayer = controls.getElement();
-                controlsLayer.appendChild(_mute.element());
-                // Set mute state in the controlbar
-                controls.controlbar.renderVolume(true, _model.get('volume'));
-                // Hide the controlbar until the autostart flag is removed
-                utils.addClass(_playerElement, 'jw-flag-autostart');
-
-                _model.on('change:autostartFailed', _autoplayUnmute);
-                _model.on('change:autostartMuted', _autoplayUnmute);
-                _model.on('change:mute', _autoplayUnmute);
-            }
             
             _componentFadeListeners(controls.controlbar);
 
@@ -630,8 +508,8 @@ define([
             var provider = _model.getVideo();
 
             // Unmute the video so volume can be adjusted with native controls in fullscreen
-            if (state && _model.get('autostartMuted')) {
-                _autoplayUnmute();
+            if (state && _controls && _model.get('autostartMuted')) {
+                _controls.unmuteAutoplay(_api, _model);
             }
 
             if (_elementSupportsFullscreen) {
@@ -722,31 +600,6 @@ define([
                 clearTimeout(_resizeMediaTimeout);
                 _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
             }
-        }
-
-        function _autoplayUnmute() {
-            var autostartSucceeded = !_model.get('autostartFailed');
-            var mute = _model.get('mute');
-
-            // If autostart succeeded, it means the user has chosen to unmute the video,
-            // so we should update the model, setting mute to false
-            if (autostartSucceeded) {
-                mute = false;
-            } else {
-                // Don't try to play again when viewable since it will keep failing
-                _model.set('playOnViewable', false);
-            }
-
-            _model.off('change:autostartFailed', _autoplayUnmute);
-            _model.off('change:mute', _autoplayUnmute);
-            _model.off('change:autostartMuted', _autoplayUnmute);
-            _model.set('autostartFailed', undefined);
-            _model.set('autostartMuted', undefined);
-            _api.setMute(mute);
-            // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state
-            _controls.controlbar.renderVolume(mute, _model.get('volume'));
-            _mute.hide();
-            utils.removeClass(_playerElement, 'jw-flag-autostart');
         }
 
         this.resize = function (playerWidth, playerHeight) {
@@ -1023,11 +876,8 @@ define([
             if (_controls) {
                 _controls.disable();
             }
-            _playerElement.removeEventListener('keydown', handleKeydown, false);
-
             _playerElement.removeEventListener('focus', handleFocus);
             _playerElement.removeEventListener('blur', handleBlur);
-            _playerElement.removeEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = null;
             _playerElement.onmouseup = null;
 

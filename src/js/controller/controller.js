@@ -16,7 +16,7 @@ define([
     'events/events',
     'view/error',
     'controller/events-middleware',
-    'view/controls/loader'
+    'controller/controls-loader'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
             Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware,
             ControlsLoader) {

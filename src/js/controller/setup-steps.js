@@ -7,7 +7,7 @@ define([
     'utils/underscore',
     'utils/helpers',
     'events/events',
-    'view/controls/loader'
+    'controller/controls-loader'
 ], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events, ControlsLoader) {
 
     var _pluginLoader;

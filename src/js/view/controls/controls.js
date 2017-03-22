@@ -2,7 +2,10 @@ define([
     'events/events',
     'events/states',
     'utils/backbone.events',
+    'utils/constants',
     'utils/helpers',
+    'utils/underscore',
+    'view/controls/components/button',
     'view/controls/clickhandler',
     'view/controls/controlbar',
     'view/controls/dock',
@@ -12,12 +15,12 @@ define([
     'view/controls/next-display-icon',
     'view/controls/nextuptooltip',
     'view/controls/rightclick',
-], function (events, states, Events, utils, ClickHandler, Controlbar, Dock,
+], function (events, states, Events, Constants, utils, _, button, ClickHandler, Controlbar, Dock,
              DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
              NextUpToolTip, RightClick) {
 
-    const CONTOLBAR_ONLY_HEIGHT = 44;
     const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
+    const CONTOLBAR_ONLY_HEIGHT = 44;
 
     const isAudioMode = function(model) {
         let playerHeight = model.get('height');
@@ -45,6 +48,8 @@ define([
     return class Controls {
 
         constructor(context, playerContainer) {
+            _.extend(this, Events);
+
             // Alphabetic order
             // Any property on the prototype should be initialized here first
             this.activeTimeout = -1;
@@ -55,10 +60,13 @@ define([
             this.dock = null;
             this.enabled = true;
             this.instreamState = null;
+            this.keydownCallback = null;
+            this.mute = null;
             this.nextUpToolTip = null;
             this.playerContainer = playerContainer;
             this.rightClickMenu = null;
             this.showing = false;
+            this.unmuteCallback = null;
 
             const element = this.context.createElement('div');
             element.className = 'jw-controls jw-reset';
@@ -68,8 +76,6 @@ define([
             right.className = 'jw-controls-right jw-reset';
             element.appendChild(right);
             this.right = right;
-
-            Object.assign(this, Events);
         }
 
         enable(api, model, videoLayer) {
@@ -179,6 +185,105 @@ define([
             }
             this.element.appendChild(this.controlbar.element());
 
+            // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
+            if (model.get('autostartMuted')) {
+                const unmuteCallback = () => this.unmuteAutoplay(api, model);
+                this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').volume);
+                this.mute.show();
+                this.element.appendChild(this.mute.element());
+                // Set mute state in the controlbar
+                this.controlbar.renderVolume(true, model.get('volume'));
+                // Hide the controlbar until the autostart flag is removed
+                utils.addClass(this.playerContainer, 'jw-flag-autostart');
+
+                model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback);
+                this.unmuteCallback = unmuteCallback;
+            }
+
+            // Keyboard Commands
+            function adjustSeek(amount) {
+                let min = 0;
+                let max = model.get('duration');
+                const position = model.get('position');
+                if (model.get('streamType') === 'DVR') {
+                    min = max;
+                    max = Math.max(position, Constants.dvrSeekLimit);
+                }
+                const newSeek = utils.between(position + amount, min, max);
+                api.seek(newSeek, reasonInteraction());
+            }
+            function adjustVolume(amount) {
+                const newVol = utils.between(model.get('volume') + amount, 0, 100);
+                api.setVolume(newVol);
+            }
+            const handleKeydown = (evt) => {
+                // If Meta keys return
+                if (evt.ctrlKey || evt.metaKey) {
+                    // Let event bubble upwards
+                    return true;
+                }
+                // On keypress show the controlbar for a few seconds
+                if (!this.instreamState) {
+                    this.userActive();
+                }
+                switch (evt.keyCode) {
+                    case 27: // Esc
+                        api.setFullscreen(false);
+                        break;
+                    case 13: // enter
+                    case 32: // space
+                        api.play(reasonInteraction());
+                        break;
+                    case 37: // left-arrow, if not adMode
+                        if (!this.instreamState) {
+                            adjustSeek(-5);
+                        }
+                        break;
+                    case 39: // right-arrow, if not adMode
+                        if (!this.instreamState) {
+                            adjustSeek(5);
+                        }
+                        break;
+                    case 38: // up-arrow
+                        adjustVolume(10);
+                        break;
+                    case 40: // down-arrow
+                        adjustVolume(-10);
+                        break;
+                    case 67: // c-key
+                        {
+                            const captionsList = api.getCaptionsList();
+                            const listLength = captionsList.length;
+                            if (listLength) {
+                                const nextIndex = (api.getCurrentCaptions() + 1) % listLength;
+                                api.setCurrentCaptions(nextIndex);
+                            }
+                        }
+                        break;
+                    case 77: // m-key
+                        api.setMute();
+                        break;
+                    case 70: // f-key
+                        api.setFullscreen();
+                        break;
+                    default:
+                        if (evt.keyCode >= 48 && evt.keyCode <= 59) {
+                            // if 0-9 number key, move to n/10 of the percentage of the video
+                            const number = evt.keyCode - 48;
+                            const newSeek = (number / 10) * model.get('duration');
+                            api.seek(newSeek, reasonInteraction());
+                        }
+                }
+
+                if (/13|32|37|38|39|40/.test(evt.keyCode)) {
+                    // Prevent keypresses from scrolling the screen
+                    evt.preventDefault();
+                    return false;
+                }
+            };
+            this.playerContainer.addEventListener('keydown', handleKeydown);
+            this.keydownCallback = handleKeydown;
+
             // Show controls when enabled
             this.userActive();
 
@@ -202,6 +307,11 @@ define([
                 this.rightClickMenu.destroy();
                 this.rightClickMenu = null;
             }
+
+            if (this.keydownCallback) {
+                this.playerContainer.removeEventListener('keydown', this.keydownCallback);
+                this.keydownCallback = null;
+            }
         }
 
         getElement() {
@@ -221,6 +331,31 @@ define([
             utils.toggleClass(this.playerContainer, 'jw-flag-time-slider-above', timeSliderAbove);
 
             model.set('audioMode', audioMode);
+        }
+
+        unmuteAutoplay(api, model) {
+            const autostartSucceeded = !model.get('autostartFailed');
+            let mute = model.get('mute');
+
+            // If autostart succeeded, it means the user has chosen to unmute the video,
+            // so we should update the model, setting mute to false
+            if (autostartSucceeded) {
+                mute = false;
+            } else {
+                // Don't try to play again when viewable since it will keep failing
+                model.set('playOnViewable', false);
+            }
+            if (this.unmuteCallback) {
+                model.off('change:autostartFailed change:autostartMuted change:mute', this.unmuteCallback);
+                this.unmuteCallback = null;
+            }
+            model.set('autostartFailed', undefined);
+            model.set('autostartMuted', undefined);
+            api.setMute(mute);
+            // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state
+            this.controlbar.renderVolume(mute, model.get('volume'));
+            this.mute.hide();
+            utils.removeClass(this.playerContainer, 'jw-flag-autostart');
         }
 
         userActive(timeout) {

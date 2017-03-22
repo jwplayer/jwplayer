@@ -4,28 +4,29 @@ define([
     'parsers/captions/srt',
 ], function(_, utils, srt) {
 
-    function Cue(time, text) {
-        this.time = time;
-        this.text = text;
-        this.el = document.createElement('div');
-        this.el.className = 'jw-cue jw-reset';
-    }
+    class Cue {
 
-    _.extend(Cue.prototype, {
-        align: function(duration) {
+        constructor (time, text) {
+            this.time = time;
+            this.text = text;
+            this.el = document.createElement('div');
+            this.el.className = 'jw-cue jw-reset';
+        }
+
+        align(duration) {
             // If a percentage, use it, else calculate the percentage
             if (this.time.toString().slice(-1) === '%') {
                 this.pct = this.time;
             } else {
-                var percentage = (this.time / duration) * 100;
+                const percentage = (this.time / duration) * 100;
                 this.pct = percentage + '%';
             }
 
             this.el.style.left = this.pct;
         }
-    });
+    }
 
-    var ChaptersMixin = {
+    return {
 
         loadChapters: function (file) {
             utils.ajax(file, this.chaptersLoaded.bind(this), this.chaptersFailed, {
@@ -34,15 +35,14 @@ define([
         },
 
         chaptersLoaded: function (evt) {
-            var data = srt(evt.responseText);
+            const data = srt(evt.responseText);
             if (_.isArray(data)) {
                 _.each(data, this.addCue, this);
                 this.drawCues();
             }
         },
 
-        chaptersFailed: function () {
-        },
+        chaptersFailed: function () {},
 
         addCue: function (obj) {
             this.cues.push(new Cue(obj.begin, obj.text));
@@ -50,22 +50,22 @@ define([
 
         drawCues: function () {
             // We won't want to draw them until we have a duration
-            var duration = this._model.mediaModel.get('duration');
+            const duration = this._model.mediaModel.get('duration');
             if (!duration || duration <= 0) {
                 this._model.mediaModel.once('change:duration', this.drawCues, this);
                 return;
             }
 
-            var _this = this;
+            const self = this;
             _.each(this.cues, function (cue) {
                 cue.align(duration);
                 cue.el.addEventListener('mouseover', function () {
-                    _this.activeCue = cue;
+                    self.activeCue = cue;
                 });
                 cue.el.addEventListener('mouseout', function () {
-                    _this.activeCue = null;
+                    self.activeCue = null;
                 });
-                _this.elementRail.appendChild(cue.el);
+                self.elementRail.appendChild(cue.el);
             });
         },
 
@@ -78,6 +78,4 @@ define([
             this.cues = [];
         }
     };
-
-    return ChaptersMixin;
 });

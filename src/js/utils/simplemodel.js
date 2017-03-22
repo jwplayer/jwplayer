@@ -27,6 +27,7 @@ define([
 
             this.on(eventName, callback, context);
             callback.call(context, this, currentVal, currentVal);
+            return this;
         }
     }, Events);
 });

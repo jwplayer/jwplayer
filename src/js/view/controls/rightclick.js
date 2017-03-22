@@ -1,14 +1,13 @@
 define([
     'utils/helpers',
     'templates/rightclick.html',
-    'utils/underscore',
     'utils/ui',
     'version'
-], function(utils, rightclickTemplate, _, UI, version) {
-    var RightClick = function() {};
+], function(utils, rightclickTemplate, UI, version) {
 
-    _.extend(RightClick.prototype, {
-        buildArray: function() {
+    return class RightClick {
+
+        buildArray() {
             var semverParts = version.split('+');
             var majorMinorPatchPre = semverParts[0];
 
@@ -41,16 +40,18 @@ define([
             }
 
             return obj;
-        },
-        buildMenu: function() {
+        }
+
+        buildMenu() {
             var obj = this.buildArray();
             return utils.createElement(rightclickTemplate(obj));
-        },
-        updateHtml: function() {
-            this.el.innerHTML = this.buildMenu().innerHTML;
-        },
+        }
 
-        rightClick: function(evt) {
+        updateHtml() {
+            this.el.innerHTML = this.buildMenu().innerHTML;
+        }
+
+        rightClick(evt) {
             this.lazySetup();
 
             if (this.mouseOverContext) {
@@ -62,9 +63,9 @@ define([
             this.showMenu(evt);
 
             return false;
-        },
+        }
 
-        getOffset: function(evt) {
+        getOffset(evt) {
             var target = evt.target;
             // offsetX is from the W3C standard, layerX is how Firefox does it
             var x = evt.offsetX || evt.layerX;
@@ -77,8 +78,9 @@ define([
             }
 
             return { x: x, y: y };
-        },
-        showMenu: function(evt) {
+        }
+
+        showMenu(evt) {
             // Offset relative to player element
             var off = this.getOffset(evt);
 
@@ -90,9 +92,9 @@ define([
             clearTimeout(this._menuTimeout);
             this._menuTimeout = setTimeout(this.hideMenu.bind(this), 3000);
             return false;
-        },
+        }
 
-        hideMenu: function() {
+        hideMenu() {
             this.elementUI.off('out', this.hideMenu, this);
             if (this.mouseOverContext) {
                 // If mouse is over the menu, hide the menu when mouse moves out
@@ -101,9 +103,9 @@ define([
             }
             utils.removeClass(this.playerElement, 'jw-flag-rightclick-open');
             utils.removeClass(this.el, 'jw-open');
-        },
+        }
 
-        lazySetup: function() {
+        lazySetup() {
             if (this.el) {
                 return;
             }
@@ -127,9 +129,9 @@ define([
                 .on('out', function() {
                     this.mouseOverContext = false;
                 }, this);
-        },
+        }
 
-        setup: function(_model, _playerElement, layer) {
+        setup(_model, _playerElement, layer) {
             this.playerElement = _playerElement;
             this.model = _model;
             this.mouseOverContext = false;
@@ -137,21 +139,21 @@ define([
 
             // Defer the rest of setup until the first click
             _playerElement.oncontextmenu = this.rightClick.bind(this);
-        },
+        }
 
-        addOffListener: function(element) {
+        addOffListener(element) {
             element.addEventListener('mousedown', this.hideMenuHandler);
             element.addEventListener('touchstart', this.hideMenuHandler);
             element.addEventListener('pointerdown', this.hideMenuHandler);
-        },
+        }
 
-        removeOffListener: function(element) {
+        removeOffListener(element) {
             element.removeEventListener('mousedown', this.hideMenuHandler);
             element.removeEventListener('touchstart', this.hideMenuHandler);
             element.removeEventListener('pointerdown', this.hideMenuHandler);
-        },
+        }
 
-        destroy: function() {
+        destroy() {
             clearTimeout(this._menuTimeout);
             if (this.el) {
                 this.hideMenu();
@@ -173,7 +175,5 @@ define([
             }
 
         }
-    });
-
-    return RightClick;
+    };
 });

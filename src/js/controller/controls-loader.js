@@ -1,7 +1,7 @@
 define([
 
 ], function() {
-    let controls = null;
+    var controls = null;
 
     function load() {
         if (controls) {
