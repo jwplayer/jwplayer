@@ -1,6 +1,11 @@
 @import "../shared-imports/vars";
 @import "../shared-imports/icons";
 
+// setup
+.jw-state-setup .jw-controls {
+    display: none;
+}
+
 // idle
 .jw-state-idle {
     /* hide control bar and clear display container padding on idle state unless
@@ -88,7 +93,10 @@ body .jwplayer.jw-state-error {
     .jw-display-icon-next {
         display: none;
     }
+}
 
+body .jw-error,
+body .jwplayer.jw-state-error {
     .jw-icon-display {
         cursor: default;
         .jw-icon;

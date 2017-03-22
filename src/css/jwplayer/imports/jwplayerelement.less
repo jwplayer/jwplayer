@@ -44,7 +44,7 @@
     }
 }
 
-.jw-media, .jw-preview, .jw-overlays {
+.jw-media, .jw-preview {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -77,12 +77,11 @@
 }
 
 // Allow pointer events through to the provider
-.jw-preview, .jw-captions, .jw-title, .jw-overlays {
+.jw-preview, .jw-captions, .jw-title {
     pointer-events : none;
 }
 
 // These items can intercept pointer-events
-.jw-overlays .jw-plugin,
 .jw-media,
 .jw-logo {
     pointer-events: all;
