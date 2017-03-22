@@ -427,11 +427,15 @@ define([
 
         function _overControlElement() {
             // Over controlbar, timeout resumed when off controlbar
-            clearTimeout(_controls.activeTimeout);
+            if (_controls) {
+                clearTimeout(_controls.activeTimeout);
+            }
         }
 
         function _offControlElement() {
-            _controls.userActive();
+            if (_controls) {
+                _controls.userActive();
+            }
         }
 
         function _onChangeFlashBlocked(model, isBlocked) {
