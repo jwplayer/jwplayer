@@ -70,7 +70,8 @@ module.exports = function(grunt) {
                     compile: true
                 },
                 files: {
-                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less'
+                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less',
+                    'bin-debug/reference/controls.css': 'src/css/controls.less'
                 }
             },
             debug: {
