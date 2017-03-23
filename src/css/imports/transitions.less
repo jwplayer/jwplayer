@@ -1,15 +1,45 @@
 .jw-transitions {
-    opacity: 0;
-    -webkit-transition: opacity 10s;
-    -moz-transition: opacity 10s;
-    -ms-transition: opacity 10s;
-    -o-transition: opacity 10s;
-    transition: opacity 10s;
-    &:hover{
-        opacity: 1;
-    }
-    &:active{
-        opacity: 1;
-    }
+    //.jw-controls {
+    //    opacity: 0;
+    //    -webkit-transition: opacity 10s;
+    //    -moz-transition: opacity 10s;
+    //    -ms-transition: opacity 10s;
+    //    -o-transition: opacity 10s;
+    //    transition: opacity 10s;
+    //}
+
+
+    //&.jwplayer:hover{
+    //    .jw-controls.jw-flag-active {
+    //        opacity: 1;
+    //    }
+    //}
+    //.jwplayer.jw-flag-user-active.jw-state-playing {
+    //        .jw-controls {
+    //            opacity: 1;
+    //        }
+    //    }
+    //&.jwplayer:active{
+    //    .jw-controls {
+    //        opacity: 1;
+    //    }
+    //}
 }
 
+.jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads) {
+    .jw-controls {
+
+        opacity: 0;
+        -webkit-transition: opacity 10s;
+        -moz-transition: opacity 10s;
+        -ms-transition: opacity 10s;
+        -o-transition: opacity 10s;
+        transition: opacity 10s;
+
+        &:not(.jw-flag-user-inactive) {
+            .jw-controls {
+                opacity: 1;
+            }
+        }
+    }
+}

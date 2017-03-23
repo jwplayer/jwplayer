@@ -2,7 +2,7 @@
 @import "../imports/transitions";
 
 .jw-skin-seven {
-
+    background-color: #bf09ed;
   @display-bkgd-color: @controlbar-background;
   .jw-display-icon-container {
     border-radius: 3.5em;
@@ -14,7 +14,6 @@
 
   &.jw-breakpoint-2 {
     .jw-display .jw-icon {
-      .jw-transitions;
       width: @mobile-touch-target * 1.5;
       height: @mobile-touch-target * 1.5;
       line-height: @mobile-touch-target * 1.5;
@@ -22,7 +21,6 @@
   }
 
   .jw-dock-button {
-    .jw-transitions;
     // Seven skin dock buttons do not highlight, they only show the tooltip
     &:hover{
       background: @controlbar-background;
@@ -32,24 +30,20 @@
   }
 
   .jw-menu {
-    .jw-transitions;
     padding: 0;
   }
 
   .jw-dock {
     .jw-overlay {
-     .jw-transitions;
       border-radius: @ui-padding;
     }
   }
 
   .jw-skip {
-    .jw-transitions;
     border-radius: @ui-padding;
   }
 
   .jw-text {
-    .jw-transitions;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
