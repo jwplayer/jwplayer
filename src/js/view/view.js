@@ -354,8 +354,6 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
 
-            _model.change('controls', _onChangeControls);
-
             _model.change('flashBlocked', _onChangeFlashBlocked);
 
             _api.onPlaylistComplete(_playlistCompleteHandler);
@@ -456,11 +454,6 @@ define([
             if (bool) {
                 // ignore model that triggered this event and use current state model
                 _stateHandler(_instreamModel || _model);
-
-                if (_controls) {
-                    var breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
-                    _controls.resize(_model, breakPoint);
-                }
             }
 
             utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
