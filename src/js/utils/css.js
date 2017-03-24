@@ -7,21 +7,18 @@ define([
         playerId = playerId || 'all-players';
         var cssText = '';
         if (typeof styles === 'object') {
-            var style;
-            for (style in styles) {
-                if (Object.prototype.hasOwnProperty.call(styles, style)) {
-                    break;
-                }
-            }
-            if (!style) {
-                return;
-            }
             var el = document.createElement('div');
             _style(el, styles);
             cssText = '{' + el.style.cssText + '}';
         } else if (typeof styles === 'string') {
             cssText = styles;
         }
+
+        if (cssText === '' || cssText === '{}') {
+            styleLoader.clear(playerId, selector);
+            return;
+        }
+
         styleLoader.style([[selector, selector + cssText]], playerId);
     };
 
@@ -123,11 +120,34 @@ define([
         return style + '(' + channels.join(',') + ')';
     };
 
+    function toStyleString(styles) {
+        var styleString = '';
+
+        if (!styles) {
+            return '';
+        }
+
+        for (var name in styles) {
+            if (styles.hasOwnProperty(name)) {
+                styleString += _toSnakeCase(name) + ': ' + styles[name] + ';';
+            }
+        }
+
+        return '{' + styleString + '}';
+    }
+
+    function _toSnakeCase(name) {
+        return name.replace(/([A-Z])/g, function($1) {
+            return '-' + $1.toLowerCase();
+        });
+    }
+
     return {
         css: _css,
         style: _style,
         clearCss: styleLoader.clear,
         transform: transform,
-        hexToRgba: hexToRgba
+        hexToRgba: hexToRgba,
+        toStyleString: toStyleString
     };
 });

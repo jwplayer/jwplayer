@@ -239,6 +239,7 @@ define([
         }
 
         function _setContainerDimensions() {
+            var inDOM = document.body.contains(_playerElement);
             var bounds = _bounds(_playerElement);
             var containerWidth = Math.round(bounds.width);
             var containerHeight = Math.round(bounds.height);
@@ -247,6 +248,10 @@ define([
 
             // If the container is the same size as before, return early
             if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
+                // Listen for player to be added to DOM
+                if (!_lastWidth || !_lastHeight) {
+                    _responsiveListener();
+                }
                 return;
             }
             // If we have bad values for either dimension, return early
@@ -255,29 +260,40 @@ define([
                 if (!_lastWidth || !_lastHeight) {
                     _responsiveListener();
                 }
+                _model.set('inDom', inDOM);
+                // Fire resize 0,0 if the player element is not in the DOM
+                // This allows setup to complete even if element was removed from DOM
+                if (!inDOM) {
+                    _resized(containerWidth, containerHeight);
+                }
                 return;
             }
 
-            _lastWidth = containerWidth;
-            _lastHeight = containerHeight;
-
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
+            _model.set('inDom', inDOM);
 
             var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
+            var controls = _model.get('controls');
             _checkAudioMode(_model.get('height'));
-            _setTimesliderFlags(breakPoint, _model.get('audioMode'), _model.get('controls'));
+            _setTimesliderFlags(breakPoint, _model.get('audioMode'), controls);
+            _onChangeControls(_model, controls);
 
             _resizeMedia(containerWidth, containerHeight);
 
             _captionsRenderer.resize();
 
+            _resized(containerWidth, containerHeight);
+        }
+
+        function _resized(containerWidth, containerHeight) {
+            _lastWidth = containerWidth;
+            _lastHeight = containerHeight;
             _this.trigger(events.JWPLAYER_RESIZE, {
                 width: containerWidth,
                 height: containerHeight
             });
         }
-
 
         function _setTimesliderFlags(breakPoint, audioMode, controls) {
             var smallPlayer = breakPoint < 2;
@@ -482,7 +498,6 @@ define([
             }
 
             _model.on('change:controls', _onChangeControls);
-            _onChangeControls(_model, _model.get('controls'));
 
             _model.on('change:flashBlocked', _onChangeFlashBlocked);
             _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
@@ -522,17 +537,15 @@ define([
             document.addEventListener('webkitvisibilitychange', _visibilityChangeListener, false);
 
             _model.set('viewSetup', true);
+            _model.set('inDom', document.body.contains(_playerElement));
         };
 
         this.init = function() {
             _resize(_model.get('width'), _model.get('height'));
             _stateHandler(_instreamModel || _model);
-            _lastWidth = 0;
-            _lastHeight = 0;
+            _lastWidth = _lastHeight = null;
             _setContainerDimensions();
-
-            // call user activity to set timeout for control to fade
-            _userActivity();
+            _model.on('change:visibility', _setContainerDimensions);
         };
 
         function _onStretchChange(model, newVal) {
@@ -608,10 +621,8 @@ define([
             if (bool) {
                 // ignore model that triggered this event and use current state model
                 _stateHandler(_instreamModel || _model);
+                _userActivity();
             }
-
-            var breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
-            _setTimesliderFlags(breakPoint, _model.get('audioMode'), bool);
 
             utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
         };

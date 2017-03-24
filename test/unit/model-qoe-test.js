@@ -68,8 +68,12 @@ define([
         assert.ok(validateMeasurement(qoeDump.events.firstFrame, startTime), 'first frame event was fired');
 
         // test that listeners are removed by testing that tick events are no longer changed
-        qoeItem.tick('playAttempt', -1);
-        qoeItem.tick('firstFrame', -1);
+        qoeItem.tick('playAttempt');
+        qoeItem.tick('firstFrame');
+        qoeDump = qoeItem.dump();
+        var playAttemptTick = qoeDump.events.playAttempt;
+        var firstFrameTick = qoeDump.events.firstFrame;
+
         model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
         model.mediaController.trigger(events.JWPLAYER_MEDIA_TIME, {
             position: 2
@@ -77,8 +81,8 @@ define([
         model.mediaController.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME);
 
         qoeDump = qoeItem.dump();
-        assert.equal(qoeDump.events.playAttempt, -1, 'play attempt is unchanged after further media events');
-        assert.equal(qoeDump.events.firstFrame,  -1, 'first frame is unchanged after further media events');
+        assert.equal(qoeDump.events.playAttempt, playAttemptTick, 'play attempt is unchanged after further media events');
+        assert.equal(qoeDump.events.firstFrame, firstFrameTick, 'first frame is unchanged after further media events');
     });
 
     test('tracks stalled time', function(assert) {
@@ -135,18 +139,19 @@ define([
         assert.ok(validateMeasurement(loadTime), 'time to first frame is a valid number');
 
         var qoeDump = qoeItem.dump();
-        assert.equal(qoeDump.counts.idle, 1,       'one idle event');
+        assert.equal(qoeDump.counts.idle, 1, 'one idle event');
         assert.equal(qoeDump.counts.loading, 1, 'one loading event');
         assert.equal(qoeDump.counts.playing, 1, 'one playing event');
-        assert.ok(validateMeasurement(qoeDump.sums.idle),       'idle sum is a valid number');
+        assert.ok(validateMeasurement(qoeDump.sums.idle), 'idle sum is a valid number');
         assert.ok(validateMeasurement(qoeDump.sums.loading), 'loading sum is a valid number');
+        assert.ok(validateMeasurement(qoeDump.sums.playing), 'playing sum is a valid number');
         assert.ok(validateMeasurement(qoeDump.events.playlistItem, startTime), 'playlistItem epoch time is ok');
-        assert.ok(validateMeasurement(qoeDump.events.playAttempt, startTime),   'playAttempt epoch time is ok');
-        assert.ok(validateMeasurement(qoeDump.events.firstFrame, startTime),     'firstFrame epoch time is ok');
+        assert.ok(validateMeasurement(qoeDump.events.playAttempt, startTime), 'playAttempt epoch time is ok');
+        assert.ok(validateMeasurement(qoeDump.events.firstFrame, startTime), 'firstFrame epoch time is ok');
     }
 
     function validateMeasurement(value, min) {
-        return typeof value === 'number' && !isNaN(value) && value >= (min||0);
+        return typeof value === 'number' && !isNaN(value) && value >= (min || 0);
     }
 
 });
