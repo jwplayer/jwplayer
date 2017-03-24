@@ -8,6 +8,11 @@
 
 // idle
 .jw-state-idle {
+    // Show the title
+    .jw-title {
+        display: block;
+    }
+
     /* hide control bar and clear display container padding on idle state unless
     cast available flag is set */
     &:not(.jw-flag-cast-available) {
@@ -112,13 +117,6 @@ body .jw-error .jw-icon-container {
     left: 0;
     bottom: 0;
     right: 0;
-}
-
-// Show the title
-.jw-state-idle {
-    .jw-title {
-        display: block;
-    }
 }
 
 body .jwplayer.jw-state-error.jw-flag-audio-player {

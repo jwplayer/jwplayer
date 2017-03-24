@@ -2,10 +2,15 @@
 
 .jw-overlays {
     cursor: auto;
+
+    // Allow pointer events through to the provider
+    pointer-events : none;
 }
 
 .jw-controls {
     overflow: hidden;
+    // Allow pointer events through to the provider
+    pointer-events : none;
 
     .jw-controls-right {
         position: absolute;
@@ -17,7 +22,8 @@
     }
 }
 
-.jw-overlays, .jw-controls {
+.jw-overlays,
+.jw-controls {
       position: absolute;
       width: 100%;
       height: 100%;
@@ -33,11 +39,6 @@
 
 .jw-icon-playback {
     .jw-icon-play;
-}
-
-// Allow pointer events through to the provider
-.jw-controls {
-    pointer-events : none;
 }
 
 .jw-text {
@@ -62,11 +63,6 @@
 .jw-nextup-container,
 .jw-autostart-mute {
     pointer-events: all;
-}
-
-// Allow pointer events through to the provider
-.jw-overlays {
-    pointer-events : none;
 }
 
 // These items can intercept pointer-events

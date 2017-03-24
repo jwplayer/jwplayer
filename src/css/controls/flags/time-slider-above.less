@@ -11,7 +11,6 @@
   display
   */
 
-
   // Consistent padding for display icons so they don't interfere with the time slider touch target
   // and don't get repositioned when the timeslider is not visible
   &.jw-flag-small-player {
@@ -45,6 +44,18 @@
       height: @mobile-touch-target;
       width: 100%;
       padding: 0 10px;
+      box-shadow: none;
+
+      // adjust overlay bottom padding to match height of touch target
+      .jw-overlay {
+        bottom: @mobile-touch-target;
+
+        &::after {
+          content: '';
+          display: block;
+          height: @mobile-touch-target * 0.5;
+        }
+      }
     }
 
     /* do not show the controls background linear gradient when video is idle
@@ -71,25 +82,6 @@
         padding: @slider-fixed-height 0 0;
       }
 
-    }
-
-    /* ==================================================
-    control bar tooltip overlays
-    */
-
-    // adjust overlay bottom padding to match height of touch target
-    .jw-controlbar {
-      box-shadow: none;
-
-      .jw-overlay {
-        bottom: @mobile-touch-target;
-
-        &::after {
-          content: '';
-          display: block;
-          height: @mobile-touch-target * 0.5;
-        }
-      }
     }
 
     /* ==================================================
@@ -253,10 +245,6 @@
         box-shadow: none;
       }
 
-      .jw-knob {
-        background: none;
-      }
-
       .jw-rail,
       .jw-buffer,
       .jw-progress {
@@ -276,6 +264,7 @@
       }
 
       .jw-knob {
+        background: none;
         background-color: #fff;
         border-radius: @slider-fixed-knob-border-radius;
         box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
@@ -286,7 +275,6 @@
         top: 50%;
         width: @slider-fixed-knob-width;
       }
-
     }
 
     .jw-tooltip-time {
@@ -311,7 +299,6 @@
         border-radius: @ui-corner-round;
       }
     }
-
 
     /* ==================================================
     ads/live
@@ -344,6 +331,10 @@
 
       .jw-controlbar .jw-overlay::after {
         display: none;
+      }
+
+      .jw-nextup-container {
+        bottom: @mobile-touch-target;
       }
 
     }
@@ -411,15 +402,6 @@
     .jw-nextup-container {
       bottom: (@mobile-touch-target * 1.5);
       padding: 5px 20px;
-    }
-
-    &.jw-flag-ads,
-    &.jw-flag-live {
-
-      .jw-nextup-container {
-        bottom: @mobile-touch-target;
-      }
-
     }
 
   }
