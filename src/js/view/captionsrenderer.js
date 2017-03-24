@@ -223,43 +223,21 @@ define([
         }
 
         function _styleNativeCaptions(playerId, textStyle) {
-            var shadowTextStyle = textStyle;
-            var shadowWindowStyle = _windowStyle;
-
             if (utils.isSafari()) {
-                // Shadow DOM text background style needs to be important to override Safari
-                var backdropStyle = '';
-                if (textStyle.backgroundColor) {
-                    backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
-                }
                 // Only Safari uses a separate element for styling text background
-                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
-                    backdropStyle, playerId);
-                // Shadow DOM text color needs to be important to override Safari
-                if (textStyle.color) {
-                    textStyle.color += ' !important';
-                }
-                // Styles with !important get stripped out of style objects, so they must be converted to a string
-                shadowTextStyle = cssUtils.toStyleString(textStyle);
-                shadowWindowStyle = cssUtils.toStyleString(_windowStyle);
+                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop', {
+                    backgroundColor: textStyle.backgroundColor
+                }, playerId, true);
             }
 
-            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', shadowWindowStyle, playerId);
-            cssUtils.css('#' + playerId + ' .jw-video::cue', shadowTextStyle, playerId);
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', _windowStyle, playerId, true);
+            cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId, true);
         }
 
         function _setShadowDOMFontSize(playerId, fontSize) {
             // Set Shadow DOM font size (needs to be important to override browser's in line style)
-            var target = 'container';
-            var shadowTextStyle = '{font-size: ' + fontSize + 'px !important;}';
-
-            if (utils.isSafari()) {
-                target = 'display';
-                _windowStyle.fontSize = fontSize + 'px !important';
-                shadowTextStyle = cssUtils.toStyleString(_windowStyle);
-            }
-
-            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target, shadowTextStyle, playerId);
+            _windowStyle.fontSize = fontSize + 'px';
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', _windowStyle, playerId, true);
         }
 
         function _addTextStyle(textStyle, options) {

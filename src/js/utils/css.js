@@ -3,13 +3,17 @@ define([
     'simple-style-loader/addStyles'
 ], function(Strings, styleLoader) {
 
-    var _css = function(selector, styles, playerId) {
+    var _css = function(selector, styles, playerId, important) {
         playerId = playerId || 'all-players';
         var cssText = '';
         if (typeof styles === 'object') {
             var el = document.createElement('div');
             _style(el, styles);
-            cssText = '{' + el.style.cssText + '}';
+            var styleCSSText = el.style.cssText;
+            if (important && styleCSSText) {
+                styleCSSText = styleCSSText.replace(/;$/g, ' !important;');
+            }
+            cssText = '{' + styleCSSText + '}';
         } else if (typeof styles === 'string') {
             cssText = styles;
         }
@@ -63,29 +67,27 @@ define([
         return name.join('');
     }
 
-    function _styleValue(style, value, important) {
+    function _styleValue(style, value) {
         if (value === '' || value === undefined || value === null) {
             return '';
         }
-        var importantString = important ? ' !important' : '';
-
         // string
         if (typeof value === 'string' && isNaN(value)) {
             if ((/png|gif|jpe?g/i).test(value) && value.indexOf('url') < 0) {
                 return 'url(' + value + ')';
             }
-            return value + importantString;
+            return value;
         }
         // number
         if (value === 0 ||
             style === 'z-index' ||
             style === 'opacity') {
-            return '' + value + importantString;
+            return '' + value;
         }
         if ((/color/i).test(style)) {
-            return '#' + Strings.pad(value.toString(16).replace(/^0x/i, ''), 6) + importantString;
+            return '#' + Strings.pad(value.toString(16).replace(/^0x/i, ''), 6);
         }
-        return Math.ceil(value) + 'px' + importantString;
+        return Math.ceil(value) + 'px';
     }
 
     var transform = function (element, value) {
@@ -120,34 +122,11 @@ define([
         return style + '(' + channels.join(',') + ')';
     };
 
-    function toStyleString(styles) {
-        var styleString = '';
-
-        if (!styles) {
-            return '';
-        }
-
-        for (var name in styles) {
-            if (styles.hasOwnProperty(name)) {
-                styleString += _toSnakeCase(name) + ': ' + styles[name] + ';';
-            }
-        }
-
-        return '{' + styleString + '}';
-    }
-
-    function _toSnakeCase(name) {
-        return name.replace(/([A-Z])/g, function($1) {
-            return '-' + $1.toLowerCase();
-        });
-    }
-
     return {
         css: _css,
         style: _style,
         clearCss: styleLoader.clear,
         transform: transform,
-        hexToRgba: hexToRgba,
-        toStyleString: toStyleString
+        hexToRgba: hexToRgba
     };
 });
