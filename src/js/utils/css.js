@@ -17,6 +17,8 @@ define([
                 return;
             }
             var el = document.createElement('div');
+
+            // TODO: Add warning if any styles have !important, since they will be stripped out here.
             _style(el, styles);
             cssText = '{' + el.style.cssText + '}';
         } else if (typeof styles === 'string') {
@@ -57,6 +59,29 @@ define([
             }
         }
     };
+
+    function _toStyleString(styles) {
+        var styleString = '';
+
+        if (!styles) {
+            return '';
+        }
+
+        for (var name in styles) {
+            if (styles.hasOwnProperty(name)) {
+                styleString += _toSnakeCase(name) + ': ' + styles[name] + ';';
+            }
+        }
+
+        return '{' + styleString + '}';
+    }
+
+    function _toSnakeCase(name) {
+        return name.replace(/([A-Z])/g, function($1) {
+            return '-' + $1.toLowerCase();
+        });
+    }
+
 
     function _styleAttributeName(name) {
         name = name.split('-');
@@ -128,6 +153,7 @@ define([
         style: _style,
         clearCss: styleLoader.clear,
         transform: transform,
-        hexToRgba: hexToRgba
+        hexToRgba: hexToRgba,
+        toStyleString: _toStyleString,
     };
 });

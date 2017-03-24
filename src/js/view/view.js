@@ -1199,7 +1199,11 @@ define([
 
         this.setCaptions = function (captionsStyle) {
             _captionsRenderer.clear();
-            _captionsRenderer.setup(_model.get('id'), captionsStyle);
+            if (_.size(captionsStyle)) {
+                _captionsRenderer.setup(_model.get('id'), captionsStyle);
+            } else {
+                _captionsRenderer.clearStyles(_model.get('id'));
+            }
             _captionsRenderer.resize();
         };
 
