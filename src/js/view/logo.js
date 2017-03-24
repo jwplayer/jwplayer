@@ -107,7 +107,7 @@ define([
             // When positioned in the top right, the logo needs to be shifted down to accommodate dock buttons
             var dockButtons = _model.get('dock');
             var belowDock = !!(dockButtons && dockButtons.length && _settings.position === 'top-right');
-            utils.toggleClass(_logo, 'below', belowDock);
+            utils.toggleClass(_logo, 'jw-below', belowDock);
         }
 
         return this;
