@@ -1,0 +1,6 @@
+{
+    "rules": {
+        "selector-no-id": true,
+        "length-zero-no-unit": true
+    }
+}
