@@ -145,7 +145,6 @@ define([
                             return;
                         }
                         utils.toggleClass(this.playerContainer, 'jw-flag-controls-hidden');
-                        this.trigger('uiActivity', this.showing);
 
                     } else if (!this.showing) {
                         this.userActive();
@@ -364,7 +363,7 @@ define([
             }
 
             this.showing = true;
-            this.trigger('uiActivity', this.showing);
+            this.trigger('userActive', this.showing);
 
             clearTimeout(this.activeTimeout);
             this.activeTimeout = setTimeout(() => this.userInactive(),
@@ -380,7 +379,7 @@ define([
             }
             utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
 
-            this.trigger('uiActivity', this.showing);
+            this.trigger('userInactive', this.showing);
         }
     };
 });
