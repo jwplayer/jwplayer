@@ -212,12 +212,8 @@ define([
 
         function _setupCaptionStyles(playerId, textStyle) {
             _setFontSize();
-
-            if (_model.get('renderCaptionsNatively')) {
-                _styleNativeCaptions(playerId, textStyle);
-            } else {
-                _stylePlayerCaptions(playerId, textStyle);
-            }
+            _styleNativeCaptions(playerId, textStyle);
+            _stylePlayerCaptions(playerId, textStyle);
         }
 
         function _stylePlayerCaptions(playerId, textStyle) {
