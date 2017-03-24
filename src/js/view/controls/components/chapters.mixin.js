@@ -56,25 +56,20 @@ define([
                 return;
             }
 
-            const self = this;
-            _.each(this.cues, function (cue) {
+            _.each(this.cues, (cue) => {
                 cue.align(duration);
-                cue.el.addEventListener('mouseover', function () {
-                    self.activeCue = cue;
-                });
-                cue.el.addEventListener('mouseout', function () {
-                    self.activeCue = null;
-                });
-                self.elementRail.appendChild(cue.el);
+                cue.el.addEventListener('mouseover', () => (this.activeCue = cue));
+                cue.el.addEventListener('mouseout', () => (this.activeCue = null));
+                this.elementRail.appendChild(cue.el);
             });
         },
 
         resetChapters: function() {
-            _.each(this.cues, function (cue) {
+            _.each(this.cues, (cue) => {
                 if (cue.el.parentNode) {
                     cue.el.parentNode.removeChild(cue.el);
                 }
-            }, this);
+            });
             this.cues = [];
         }
     };

@@ -23,7 +23,7 @@ define([
     const CONTOLBAR_ONLY_HEIGHT = 44;
 
     const isAudioMode = function(model) {
-        let playerHeight = model.get('height');
+        const playerHeight = model.get('height');
         if (model.get('aspectratio')) {
             return false;
         }
@@ -67,7 +67,11 @@ define([
             this.rightClickMenu = null;
             this.showing = false;
             this.unmuteCallback = null;
+            this.element = null;
+            this.right = null;
+        }
 
+        enable(api, model, videoLayer) {
             const element = this.context.createElement('div');
             element.className = 'jw-controls jw-reset';
             this.element = element;
@@ -76,9 +80,7 @@ define([
             right.className = 'jw-controls-right jw-reset';
             element.appendChild(right);
             this.right = right;
-        }
 
-        enable(api, model, videoLayer) {
             // Dock Area and Buttons
             if (!this.dock) {
                 this.dock = new Dock(model);

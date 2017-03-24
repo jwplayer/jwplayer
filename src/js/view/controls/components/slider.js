@@ -34,12 +34,12 @@ define([
         }
 
         setup() {
-            const obj = {
+            const configuration = {
                 'default': this.default,
                 className: this.className,
                 orientation: 'jw-slider-' + this.orientation
             };
-            this.el = utils.createElement(SliderTemplate(obj));
+            this.el = utils.createElement(SliderTemplate(configuration));
 
             this.elementRail = this.el.getElementsByClassName('jw-slider-container')[0];
             this.elementBuffer = this.el.getElementsByClassName('jw-buffer')[0];

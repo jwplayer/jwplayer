@@ -85,25 +85,24 @@ define([
         }
 
         setNextUpItem(nextUpItem) {
-            var self = this;
             // Give the previous item time to complete its animation
-            setTimeout(function () {
+            setTimeout(() => {
                 // Set thumbnail
-                self.thumbnail = self.content.querySelector('.jw-nextup-thumbnail');
-                dom.toggleClass(self.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
+                this.thumbnail = this.content.querySelector('.jw-nextup-thumbnail');
+                dom.toggleClass(this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
                 if (nextUpItem.image) {
-                    var thumbnailStyle = self.loadThumbnail(nextUpItem.image);
-                    utils.style(self.thumbnail, thumbnailStyle);
+                    var thumbnailStyle = this.loadThumbnail(nextUpItem.image);
+                    utils.style(this.thumbnail, thumbnailStyle);
                 }
 
                 // Set header
-                self.header = self.content.querySelector('.jw-nextup-header');
-                self.header.innerText = self.nextUpText;
+                this.header = this.content.querySelector('.jw-nextup-header');
+                this.header.innerText = this.nextUpText;
 
                 // Set title
-                self.title = self.content.querySelector('.jw-nextup-title');
+                this.title = this.content.querySelector('.jw-nextup-title');
                 var title = nextUpItem.title;
-                self.title.innerText = title ? utils.createElement(title).textContent : '';
+                this.title.innerText = title ? utils.createElement(title).textContent : '';
             }, 500);
         }
 
