@@ -1,6 +1,19 @@
 {
     "rules": {
         "selector-no-id": true,
-        "length-zero-no-unit": true
+
+
+        "max-empty-lines": 1,
+        "length-zero-no-unit": true,
+        "no-duplicate-selectors": true,
+        "no-empty-source": true,
+        "no-eol-whitespace": true,
+        "no-extra-semicolons": true,
+        "no-invalid-double-slash-comments": true
+    },
+    "rulesToImplement": {
+        "max-nesting-depth": { "ignore": ["blockless-at-rules"] },
+        "no-descending-specificity": true,
+        "selector-max-compound-selectors": 3
     }
 }
