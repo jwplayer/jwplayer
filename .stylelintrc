@@ -12,6 +12,9 @@
         "no-invalid-double-slash-comments": true
     },
     "rulesToImplement": {
+        "indentation": [4, {
+            "ignore": ["param"]
+        }],
         "max-nesting-depth": { "ignore": ["blockless-at-rules"] },
         "no-descending-specificity": true,
         "selector-max-compound-selectors": 3
