@@ -15,7 +15,8 @@ define([
         fontSize: 14,
         fontOpacity: 100,
         fontScale: 0.05, // Default captions font size = 1/20th of the video's height
-        preprocessor: _.identity
+        preprocessor: _.identity,
+        windowOpacity: 0
     };
 
     CaptionsRenderer = function (_model) {
@@ -29,6 +30,7 @@ define([
         var _textContainer;
         var _VTTRenderer;
         var _fontScale;
+        var _windowStyle;
 
         _display = document.createElement('div');
         _display.className = 'jw-captions jw-reset';
@@ -141,27 +143,27 @@ define([
             _fontScale = _defaults.fontScale;
             _setFontScale(_options.fontSize);
 
-            var fontOpacity = _options.fontOpacity;
+            var windowColor = _options.windowColor;
             var windowOpacity = _options.windowOpacity;
             var edgeStyle = _options.edgeStyle;
-            var windowStyle = {};
+            _windowStyle = {};
             var textStyle = {};
 
-            _addTextStyle(textStyle, _options, fontOpacity);
+            _addTextStyle(textStyle, _options);
 
-            if (_options.windowColor && windowOpacity) {
-                windowStyle.backgroundColor = cssUtils.hexToRgba(_options.windowColor, windowOpacity);
+            if (windowColor || windowOpacity !== _defaults.windowOpacity) {
+                _windowStyle.backgroundColor = cssUtils.hexToRgba(windowColor || '#000000', windowOpacity);
             }
 
-            _addEdgeStyle(edgeStyle, textStyle, fontOpacity);
+            _addEdgeStyle(edgeStyle, textStyle, _options.fontOpacity);
 
             if (!_options.back && edgeStyle === null) {
                 _addEdgeStyle('uniform', textStyle);
             }
 
-            _style(_captionsWindow, windowStyle);
+            _style(_captionsWindow, _windowStyle);
             _style(_textContainer, textStyle);
-            _setupCaptionStyles(playerElementId, windowStyle, textStyle, _options.fontSize);
+            _setupCaptionStyles(playerElementId, textStyle);
 
             _captionsWindow.appendChild(_textContainer);
             _display.appendChild(_captionsWindow);
@@ -175,6 +177,10 @@ define([
         };
 
         function _setFontScale() {
+            if (!_.isFinite(_options.fontSize)) {
+                return;
+            }
+
             var height = _model.get('containerHeight');
 
             if (!height) {
@@ -204,50 +210,69 @@ define([
             }
         }
 
-        function _setupCaptionStyles(playerId, windowStyle, textStyle) {
-            // VTT.js DOM window styles
-            if (windowStyle.backgroundColor) {
-                cssUtils.css('#' + playerId + ' .jw-text-track-display', windowStyle, playerId);
-                cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', windowStyle, playerId);
-            }
-
-            if (Object.getOwnPropertyNames(textStyle).length) {
-                cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
-                cssUtils.css('#' + playerId + ' .jw-video::cue', textStyle, playerId);
-            }
-
+        function _setupCaptionStyles(playerId, textStyle) {
             _setFontSize();
+            _styleNativeCaptions(playerId, textStyle);
+            _stylePlayerCaptions(playerId, textStyle);
+        }
 
-            // Shadow DOM text color needs to be important to override Safari
-            if (textStyle.color && utils.isSafari()) {
-                cssUtils.css('#' + playerId + ' .jw-video::cue',
-                    '{color: ' + textStyle.color + ' !important;}', playerId);
-            }
+        function _stylePlayerCaptions(playerId, textStyle) {
+            // VTT.js DOM window and text styles
+            cssUtils.css('#' + playerId + ' .jw-text-track-display', _windowStyle, playerId);
+            cssUtils.css('#' + playerId + ' .jw-text-track-cue', textStyle, playerId);
+        }
 
-            // Shadow DOM text background style needs to be important to override Safari
-            if (textStyle.backgroundColor) {
-                var backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
+        function _styleNativeCaptions(playerId, textStyle) {
+            var shadowTextStyle = textStyle;
+            var shadowWindowStyle = _windowStyle;
+
+            if (utils.isSafari()) {
+                // Shadow DOM text background style needs to be important to override Safari
+                var backdropStyle = '';
+                if (textStyle.backgroundColor) {
+                    backdropStyle = '{background-color: ' + textStyle.backgroundColor + ' !important;}';
+                }
+                // Only Safari uses a separate element for styling text background
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop',
                     backdropStyle, playerId);
+                // Shadow DOM text color needs to be important to override Safari
+                if (textStyle.color) {
+                    textStyle.color += ' !important';
+                }
+                // Styles with !important get stripped out of style objects, so they must be converted to a string
+                shadowTextStyle = cssUtils.toStyleString(textStyle);
+                shadowWindowStyle = cssUtils.toStyleString(_windowStyle);
             }
+
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', shadowWindowStyle, playerId);
+            cssUtils.css('#' + playerId + ' .jw-video::cue', shadowTextStyle, playerId);
         }
 
         function _setShadowDOMFontSize(playerId, fontSize) {
             // Set Shadow DOM font size (needs to be important to override browser's in line style)
-            var target = utils.isSafari() ? 'display' : 'container';
-            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target,
-                '{font-size: ' + fontSize + 'px !important;}', playerId);
+            var target = 'container';
+            var shadowTextStyle = '{font-size: ' + fontSize + 'px !important;}';
+
+            if (utils.isSafari()) {
+                target = 'display';
+                _windowStyle.fontSize = fontSize + 'px !important';
+                shadowTextStyle = cssUtils.toStyleString(_windowStyle);
+            }
+
+            cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-' + target, shadowTextStyle, playerId);
         }
 
-        function _addTextStyle(textStyle, options, fontOpacity) {
-            if (options.color) {
-                textStyle.color = cssUtils.hexToRgba(options.color, fontOpacity);
+        function _addTextStyle(textStyle, options) {
+            var color = options.color;
+            var fontOpacity = options.fontOpacity;
+            if (color || fontOpacity !== _defaults.fontOpacity) {
+                textStyle.color = cssUtils.hexToRgba(color || '#ffffff', fontOpacity);
             }
 
             if (options.back) {
                 var bgColor = options.backgroundColor;
                 var bgOpacity = options.backgroundOpacity;
-                if (bgColor !== _defaults.backgroundColor || bgOpacity !== _defaults.backgroundColor) {
+                if (bgColor !== _defaults.backgroundColor || bgOpacity !== _defaults.backgroundOpacity) {
                     textStyle.backgroundColor = cssUtils.hexToRgba(bgColor, bgOpacity);
                 }
             } else {
