@@ -1,45 +1,28 @@
-.jw-transitions {
-    //.jw-controls {
-    //    opacity: 0;
-    //    -webkit-transition: opacity 10s;
-    //    -moz-transition: opacity 10s;
-    //    -ms-transition: opacity 10s;
-    //    -o-transition: opacity 10s;
-    //    transition: opacity 10s;
-    //}
-
-
-    //&.jwplayer:hover{
-    //    .jw-controls.jw-flag-active {
-    //        opacity: 1;
-    //    }
-    //}
-    //.jwplayer.jw-flag-user-active.jw-state-playing {
-    //        .jw-controls {
-    //            opacity: 1;
-    //        }
-    //    }
-    //&.jwplayer:active{
-    //    .jw-controls {
-    //        opacity: 1;
-    //    }
-    //}
-}
-
 .jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads) {
     .jw-controls {
-
-        opacity: 0;
-        -webkit-transition: opacity 10s;
-        -moz-transition: opacity 10s;
-        -ms-transition: opacity 10s;
-        -o-transition: opacity 10s;
-        transition: opacity 10s;
-
-        &:not(.jw-flag-user-inactive) {
-            .jw-controls {
-                opacity: 1;
-            }
+        visibility: visible;
+        display: block;
+    }
+    &.jw-flag-user-inactive {
+        .jw-controls {
+            opacity: 0;
+            -webkit-transition: opacity 1s;
+            -moz-transition: opacity 1s;
+            -ms-transition: opacity 1s;
+            -o-transition: opacity 1s;
+            transition: opacity 1s;
         }
     }
+
+    &:not(.jw-flag-user-inactive) {
+        .jw-controls {
+            opacity: 1;
+            -webkit-transition: opacity 1s;
+            -moz-transition: opacity 1s;
+            -ms-transition: opacity 1s;
+            -o-transition: opacity 1s;
+            transition: opacity 1s;
+        }
+    }
+
 }
