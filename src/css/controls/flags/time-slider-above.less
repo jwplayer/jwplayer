@@ -48,7 +48,7 @@
             .jw-overlay {
                 bottom: @mobile-touch-target;
 
-                &::after {
+                &:after {
                     content: '';
                     display: block;
                     height: @mobile-touch-target * 0.5;
@@ -95,7 +95,7 @@
             padding: 0 8px;
             max-width: @mobile-touch-target;
 
-            &::before {
+            &:before {
                 background-color: transparent;
                 background: none;
                 background-size: auto;
@@ -170,7 +170,7 @@
         &:not(.jw-breakpoint-0){
             .jw-text-duration {
                 display: inline-block;
-                &::before {
+                &:before {
                     content: '/';
                     display: inline-block;
                     padding-right: 0.5em;
@@ -320,7 +320,7 @@
                 display: none;
             }
 
-            .jw-controlbar .jw-overlay::after {
+            .jw-controlbar .jw-overlay:after {
                 display: none;
             }
 
@@ -375,7 +375,7 @@
         */
 
         .jw-captions,
-        video::-webkit-media-text-track-container {
+        video:-webkit-media-text-track-container {
             max-height:  ~"calc(100% - 64px)";
         }
 

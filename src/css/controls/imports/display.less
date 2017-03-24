@@ -60,17 +60,17 @@ display icons
         line-height: 75px;
         text-align: center;
 
-        &.jw-icon-rewind::before {
+        &.jw-icon-rewind:before {
             padding: 0.2em 0.05em;
         }
 
-        &::before {
+        &:before {
             font-size: @mobile-touch-target * 0.75;
             position: relative;
         }
 
-        .jw-state-idle &.jw-icon-display::before,
-        .jw-state-paused &.jw-icon-display::before {
+        .jw-state-idle &.jw-icon-display:before,
+        .jw-state-paused &.jw-icon-display:before {
             left: 1px;
         }
     }
@@ -86,7 +86,7 @@ display icons
         height: @mobile-touch-target;
         line-height: @mobile-touch-target;
         width: @mobile-touch-target;
-        &::before {
+        &:before {
             font-size: @mobile-touch-target * 0.5;
         }
     }
@@ -97,7 +97,7 @@ display icons
         height: @mobile-touch-target * 1.25;
         line-height: @mobile-touch-target * 1.25;
         width: @mobile-touch-target * 1.25;
-        &::before {
+        &:before {
             font-size: @mobile-touch-target * 0.5;
         }
         &.jw-icon-rewind:before {
@@ -111,7 +111,7 @@ display icons
         height: @mobile-touch-target * 1.75;
         line-height: @mobile-touch-target * 1.75;
         width: @mobile-touch-target * 1.75;
-        &::before {
+        &:before {
             font-size: @mobile-touch-target * 0.875;
         }
     }
@@ -125,7 +125,7 @@ display icons
         height: @mobile-touch-target * 2;
         line-height: @mobile-touch-target * 2;
         width: @mobile-touch-target * 2;
-        &::before {
+        &:before {
             font-size: @mobile-touch-target;
         }
     }

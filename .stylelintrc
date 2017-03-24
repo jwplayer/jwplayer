@@ -5,6 +5,22 @@
 
 
 
+        "selector-class-pattern": "(jwplayer)|jw-[a-z]+",
+        "selector-combinator-space-after": "always",
+        "selector-combinator-space-before": "always",
+        "selector-no-vendor-prefix": true,
+        "selector-pseudo-class-case": "lower",
+        "selector-pseudo-class-no-unknown": true,
+        "selector-pseudo-element-case": "lower",
+        "selector-pseudo-element-colon-notation": "single",
+        "selector-type-case": "lower",
+        "selector-type-no-unknown": true,
+        "selector-max-empty-lines": 0,
+
+
+
+
+
         "media-query-list-comma-newline-after": "always-multi-line",
 
         "comment-no-empty": true,
