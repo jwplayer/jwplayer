@@ -3,6 +3,14 @@
         "selector-no-id": true,
 
 
+
+
+        "media-query-list-comma-newline-after": "always-multi-line",
+
+        "comment-no-empty": true,
+        "comment-whitespace-inside": "always",
+        "comment-word-blacklist": ["/^TODO:/"],
+
         "max-empty-lines": 1,
         "length-zero-no-unit": true,
         "no-duplicate-selectors": true,
@@ -12,6 +20,11 @@
         "no-invalid-double-slash-comments": true
     },
     "rulesToImplement": {
+        "selector-list-comma-newline-after": "always",
+        "rule-empty-line-before": [
+            "always-multi-line",
+            { "except": ["after-single-line-comment", "inside-block-and-after-rule"] }
+        ],
         "indentation": [4, {
             "ignore": ["param"]
         }],
