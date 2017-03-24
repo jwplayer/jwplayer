@@ -32,7 +32,7 @@
         }
     }
 
-    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
+    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0) {
         .jw-controlbar {
             bottom: .7em;
             max-width: @min-breakpoint-5-width;
@@ -57,7 +57,7 @@
     }
 
     &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
-        &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
+        &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt {
             top: 1px;
         }
     }
@@ -320,7 +320,7 @@
             border-radius: @ui-corner-round;
         }
         &:not(.jw-ie) {
-            .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
+            .jw-controlbar .jw-controlbar-center-group .jw-text-alt {
                 top: 50%;
                 transform: translateY(-50%);
                 margin: auto;
@@ -400,7 +400,7 @@
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
         // Set the highlight color of the center display icon when we are hovering the player.
-        &.jwplayer:not(.jw-flag-touch){
+        &.jwplayer:not(.jw-flag-touch) {
             // When not in an error state or in a buffering state...
             &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
                 // Highlight the display icon's background when hovering the media container

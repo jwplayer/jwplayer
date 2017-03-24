@@ -137,7 +137,6 @@
 
     /* Volume slider */
     .jw-slider-vertical {
-
         .jw-slider-container,
         .jw-rail,
         .jw-progress {
@@ -170,8 +169,7 @@
         // When not in an error state or in a buffering state...
         &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
             // Highlight the display icon's background when hovering the media container
-            .jw-media:hover ~ .jw-controls .jw-display-icon-display
-            {
+            .jw-media:hover ~ .jw-controls .jw-display-icon-display {
                 background: @def-background-style;
                 background-size: @def-background-size;
             }
@@ -184,13 +182,13 @@
 
     /* Styles for menu list items */
     .jw-option {
+        text-align: left;
+
         .jw-icon-menu-bullet {
             &:before {
                 content: "\e606";
             }
         }
-
-        text-align: left;
 
         &:before {
             font-size: .4em;
@@ -238,5 +236,4 @@
             background-size: @def-background-size;
         }
     }
-
 }

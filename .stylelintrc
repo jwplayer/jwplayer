@@ -1,14 +1,23 @@
 {
     "rules": {
-        "selector-no-id": true,
+        "declaration-block-no-duplicate-properties": true,
+        "declaration-block-semicolon-newline-after": "always",
+        "declaration-block-semicolon-newline-before": "never-multi-line",
+        "declaration-block-single-line-max-declarations": 1,
+        "declaration-block-trailing-semicolon": "always",
 
-
-
+        "block-closing-brace-empty-line-before": "never",
+        "block-closing-brace-newline-after": "always",
+        "block-closing-brace-newline-before": "always",
+        "block-no-empty": true,
+        "block-opening-brace-newline-after": "always",
+        "block-opening-brace-space-before": "always",
 
         "selector-class-pattern": "(jwplayer)|jw-[a-z]+",
         "selector-combinator-space-after": "always",
         "selector-combinator-space-before": "always",
-        "selector-no-vendor-prefix": true,
+        "selector-no-id": true,
+
         "selector-pseudo-class-case": "lower",
         "selector-pseudo-class-no-unknown": true,
         "selector-pseudo-element-case": "lower",
@@ -36,6 +45,9 @@
         "no-invalid-double-slash-comments": true
     },
     "rulesToImplement": {
+        "declaration-block-no-redundant-longhand-properties": true,
+        "declaration-block-no-shorthand-property-overrides": true,
+        "selector-no-vendor-prefix": true,
         "selector-list-comma-newline-after": "always",
         "rule-empty-line-before": [
             "always-multi-line",
