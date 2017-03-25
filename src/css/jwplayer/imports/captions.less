@@ -45,7 +45,7 @@
 }
 
 .jw-text-track-display {
-    // Override vtt.js font-size so text resizes as the player size changes
+    /* Override vtt.js font-size so text resizes as the player size changes */
     font-size: inherit;
     line-height: 1.5;
 }
@@ -58,25 +58,27 @@
 
 .jwplayer {
     video {
-        // Normalize the coordinate system to uniformly adjust the container height
-        // when the control bar is visible
+        /* Normalize the coordinate system to uniformly adjust the container height when the control bar is visible */
         &::-webkit-media-controls {
             justify-content: flex-start;
         }
+
         &::-webkit-media-text-track-container {
             max-height: ~"calc(100% - 40px)";
             line-height: normal;
         }
+
+        /* Ensure captions aren't cropped when the pseudo element's width cannot accommodate all the text */
         &::-webkit-media-text-track-display {
-            // Ensure captions aren't cropped when the pseudo
-            // element's width cannot accommodate all the text
             min-width: -webkit-min-content;
         }
+
         &::cue {
             background-color: rgba(0, 0, 0, 0.5);
         }
+
+        /* Safari's media controls should not show when not in fullscreen on iOS devices */
         &::-webkit-media-controls-panel-container {
-            // Safari's media controls should not show when not in fullscreen on iOS devices
             display: none;
         }
     }

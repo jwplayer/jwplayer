@@ -52,16 +52,6 @@
     white-space: nowrap;
 }
 
-.jw-knob,
-.jw-icon-inline,
-.jw-icon-tooltip,
-.jw-icon-display,
-.jw-option:before {
-    &:hover {
-        color: @hover-color;
-    }
-}
-
 .jw-icon-inline,
 .jw-icon-tooltip,
 .jw-slider-horizontal,
@@ -77,16 +67,26 @@
     padding: 0 @ui-padding;
 }
 
-.jw-controlbar-left-group {
-    .jw-text-duration {
-        display: none;
-    }
-}
-
 .jw-icon-inline,
 .jw-icon-tooltip {
     min-width: @controlbar-height * 5/8;
     text-align: center;
+}
+
+.jw-knob,
+.jw-icon-inline,
+.jw-icon-tooltip,
+.jw-icon-display,
+.jw-option:before {
+    &:hover {
+        color: @hover-color;
+    }
+}
+
+.jw-controlbar-left-group {
+    .jw-text-duration {
+        display: none;
+    }
 }
 
 .jw-icon-playback {

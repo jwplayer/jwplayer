@@ -37,11 +37,14 @@
 
         "declaration-colon-space-after": "always",
         "declaration-colon-space-before": "never",
-
+        "declaration-block-no-duplicate-properties": true,
+        "declaration-block-no-redundant-longhand-properties": true,
+        "declaration-block-no-shorthand-property-overrides": true,
         "declaration-block-semicolon-newline-after": "always",
         "declaration-block-semicolon-newline-before": "never-multi-line",
         "declaration-block-single-line-max-declarations": 1,
         "declaration-block-trailing-semicolon": "always",
+        "declaration-no-important": true,
 
         "block-closing-brace-empty-line-before": "never",
         "block-closing-brace-newline-after": "always",
@@ -53,8 +56,8 @@
         "selector-class-pattern": "(jwplayer)|jw-[a-z]+",
         "selector-combinator-space-after": "always",
         "selector-combinator-space-before": "always",
+        "selector-list-comma-newline-after": "always",
         "selector-no-id": true,
-
         "selector-pseudo-class-case": "lower",
         "selector-pseudo-class-no-unknown": true,
         "selector-pseudo-element-case": "lower",
@@ -62,10 +65,6 @@
         "selector-type-case": "lower",
         "selector-type-no-unknown": true,
         "selector-max-empty-lines": 0,
-
-
-
-
 
         "media-query-list-comma-newline-after": "always-multi-line",
 
@@ -78,26 +77,23 @@
         "no-empty-source": true,
         "no-eol-whitespace": true,
         "no-extra-semicolons": true,
-        "no-invalid-double-slash-comments": true
-    },
-    "rulesToImplement": {
-        "value-no-vendor-prefix": true,
-        "declaration-no-important": true,
-        "declaration-block-no-duplicate-properties": true,
-        "declaration-block-no-redundant-longhand-properties": true,
-        "declaration-block-no-shorthand-property-overrides": true,
-        "property-no-vendor-prefix": true,
-        "selector-no-vendor-prefix": true,
-        "selector-list-comma-newline-after": "always",
+        "no-invalid-double-slash-comments": true,
         "rule-empty-line-before": [
             "always-multi-line",
-            { "except": ["after-single-line-comment", "inside-block-and-after-rule"] }
-        ],
+            { "except": ["after-single-line-comment", "first-nested"] }
+        ]
+    },
+    "rulesThatBreakForSomeReason": {
         "indentation": [4, {
-            "ignore": ["param"]
-        }],
-        "max-nesting-depth": { "ignore": ["blockless-at-rules"] },
-        "no-descending-specificity": true,
-        "selector-max-compound-selectors": 3
+            "except": ["param"]
+        }]
+    },
+    "rulesThatDoVendorPrefixingPostCSSShouldDealWith": {
+        "value-no-vendor-prefix": true,
+        "property-no-vendor-prefix": true,
+        "selector-no-vendor-prefix": true
+    },
+    "rulesThatMayNotBeWorthIt": {
+        "no-descending-specificity": true
     }
 }
