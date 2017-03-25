@@ -1,6 +1,43 @@
 {
     "rules": {
-        "declaration-block-no-duplicate-properties": true,
+        "color-hex-case": "lower",
+        "color-hex-length": "short",
+        "color-named": "never",
+        "color-no-invalid-hex": true,
+
+        "function-calc-no-unspaced-operator": true,
+        "function-comma-space-after": "always-single-line",
+        "function-comma-space-before": "never",
+        "function-linear-gradient-no-nonstandard-direction": true,
+        "function-max-empty-lines": 0,
+        "function-name-case": "lower",
+        "function-parentheses-space-inside": "never-single-line",
+
+        "number-leading-zero": "always",
+        "number-max-precision": 3,
+        "number-no-trailing-zeros": true,
+
+        "string-quotes": "double",
+        "length-zero-no-unit": true,
+
+        "unit-case": "lower",
+        "unit-no-unknown": true,
+
+        "value-keyword-case": "lower",
+        "value-list-comma-space-after": "always",
+
+        "value-list-comma-newline-after": "never-multi-line",
+        "value-list-comma-newline-before": "never-multi-line",
+        "value-list-max-empty-lines": 0,
+
+        "shorthand-property-no-redundant-values": true,
+
+        "property-case": "lower",
+        "property-no-unknown": true,
+
+        "declaration-colon-space-after": "always",
+        "declaration-colon-space-before": "never",
+
         "declaration-block-semicolon-newline-after": "always",
         "declaration-block-semicolon-newline-before": "never-multi-line",
         "declaration-block-single-line-max-declarations": 1,
@@ -37,7 +74,6 @@
         "comment-word-blacklist": ["/^TODO:/"],
 
         "max-empty-lines": 1,
-        "length-zero-no-unit": true,
         "no-duplicate-selectors": true,
         "no-empty-source": true,
         "no-eol-whitespace": true,
@@ -45,8 +81,12 @@
         "no-invalid-double-slash-comments": true
     },
     "rulesToImplement": {
+        "value-no-vendor-prefix": true,
+        "declaration-no-important": true,
+        "declaration-block-no-duplicate-properties": true,
         "declaration-block-no-redundant-longhand-properties": true,
         "declaration-block-no-shorthand-property-overrides": true,
+        "property-no-vendor-prefix": true,
         "selector-no-vendor-prefix": true,
         "selector-list-comma-newline-after": "always",
         "rule-empty-line-before": [
