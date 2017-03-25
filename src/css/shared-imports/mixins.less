@@ -1,24 +1,14 @@
 @import "vars";
 
-// Mixin for icon default formatting
+/* Mixin for icon default formatting */
 .jw-icon {
     font-family: "jw-icons";
     -webkit-font-smoothing: antialiased;
     font-style: normal;
     font-weight: normal;
-    //line-height: 1;
     text-transform: none;
     background-color: transparent;
     font-variant: normal;
-
-    /* Enable Ligatures ================ */
-    -webkit-font-feature-settings: "liga";
-    -moz-font-feature-settings: "liga=1";
-    -moz-font-feature-settings: "liga";
-    -ms-font-feature-settings: "liga" 1;
-    -o-font-feature-settings: "liga";
-    font-feature-settings: "liga";
-    -moz-osx-font-smoothing: grayscale;
 }
 
 .inset-controlbar() {
@@ -39,8 +29,9 @@
             margin: 0 auto;
             left: 2%;
             right: 2%;
-            width: 96%; // width assignment is required for IE11 to center correctly
+            width: 96%; /* width assignment is required for IE11 to center correctly */
         }
+
         &.jw-flag-ads-googleima .jw-controlbar {
             bottom: 0;
         }
@@ -103,12 +94,11 @@
     }
 }
 
-// Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316
+/* Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316 */
 
 /* Mixin for common skin styles with variable colors */
 #namespace() {
     .basic-skin-styles() {
-
         .jw-background-color {
             background: @controlbar-background;
         }
@@ -134,12 +124,15 @@
 
         .jw-toggle {
             color: @hover-color;
+
             &.jw-off {
                 color: @inactive-color;
+
                 &:focus {
                     color: @hover-color;
                 }
             }
+
             &:focus {
                 outline: none;
             }
@@ -160,7 +153,6 @@
         }
 
         /* Slider colors */
-
         .jw-rail {
             background: @rail-color;
         }
@@ -319,6 +311,7 @@
         .jw-dock-button {
             border-radius: @ui-corner-round;
         }
+
         &:not(.jw-ie) {
             .jw-controlbar .jw-controlbar-center-group .jw-text-alt {
                 top: 50%;

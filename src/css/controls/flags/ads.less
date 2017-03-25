@@ -1,7 +1,6 @@
 @import "../../shared-imports/vars";
 
 .jwplayer.jw-flag-ads {
-
     .jw-preview,
     .jw-dock,
     .jw-logo,
@@ -21,9 +20,11 @@
         .jw-display-icon-display {
             display: none;
         }
+
         &.jw-state-buffering .jw-display-icon-display {
             display: inline-block;
         }
+
         .jw-controlbar-center-group {
             padding: 0;
         }
@@ -53,6 +54,7 @@
         .jw-icon-inline.jw-icon-volume {
             display: inline-block;
         }
+
         .jw-icon-tooltip.jw-icon-volume {
             display: none;
         }
@@ -81,7 +83,6 @@
 }
 
 .jwplayer.jw-flag-ads-googleima {
-
     &.jw-flag-touch {
         .jw-controlbar {
             font-size: 1em;
@@ -116,6 +117,7 @@
 
 .jwplayer.jw-flag-ads-hide-controls {
     .jw-controls {
+        /* stylelint-disable-next-line declaration-no-important */
         display: none !important;
     }
 }

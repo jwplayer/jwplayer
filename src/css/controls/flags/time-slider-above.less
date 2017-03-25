@@ -19,7 +19,8 @@
         }
     }
 
-    &.jw-state-idle:not(.jw-flag-cast-available), &.jw-state-error {
+    &.jw-state-idle:not(.jw-flag-cast-available),
+    &.jw-state-error {
         .jw-display {
             padding: 0;
         }
@@ -60,6 +61,7 @@
         state (except when cast available and we show controls on idle state) or
         playing state when user inactive (the gradient in other scenarios blocks
         video from clashing with the video colors, making it easy to see/use) */
+
         &.jw-state-idle:not(.jw-flag-cast-available),
         &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
             .jw-controls {
@@ -72,6 +74,7 @@
         isn't a live broadcast. the delay the player has before it detects a live
         broadcast and adds causes a flicker. Handling control bar in this way fixes
         that experience in time slider above mode. */
+
         &:not(.jw-flag-ads),
         &:not(.jw-flag-live) {
             .jw-controlbar {
@@ -97,6 +100,7 @@
 
             &:before {
                 background-color: transparent;
+                /* stylelint-disable-next-line declaration-block-no-shorthand-property-overrides */
                 background: none;
                 background-size: auto;
                 border: none;
@@ -143,6 +147,7 @@
                     }
                 }
             }
+
             .jw-controlbar-left-group {
                 padding-left: 0;
 
@@ -150,15 +155,18 @@
                 .jw-text-countdown {
                     padding: 0 0.5em;
                 }
+
                 .jw-text-duration {
                     padding: 0 0.5em 0 0;
                 }
             }
+
             &.jw-breakpoint-0 {
                 .jw-text-countdown {
                     display: inline-block;
                 }
             }
+
             &.jw-flag-small-player {
                 .jw-text-elapsed,
                 .jw-text-countdown {
@@ -170,6 +178,7 @@
         &:not(.jw-breakpoint-0) {
             .jw-text-duration {
                 display: inline-block;
+
                 &:before {
                     content: "/";
                     display: inline-block;
@@ -342,12 +351,12 @@
 
         &.jw-flag-ads {
             .jw-controlbar {
-              pointer-events: none;
+                pointer-events: none;
             }
 
             .jw-icon,
             .jw-slider-horizontal {
-              pointer-events: all;
+                pointer-events: all;
             }
 
             .jw-controlbar-left-group {
