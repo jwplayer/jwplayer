@@ -159,21 +159,33 @@ define([
             // console.log('ready', api.id);
             clearTimeout(timeout);
             success.call(api);
+            try {
+                api.remove();
+            } catch (e) {
+                assert.notOk(e.toString());
+            }
             done();
-            api.remove();
         });
         api.on('setupError', function(e) {
             // console.log('setupError', api.id);
             clearTimeout(timeout);
             error.call(api, e.message);
+            try {
+                api.remove();
+            } catch (e) {
+                assert.notOk(e.toString());
+            }
             done();
-            api.remove();
         });
         var timeout = setTimeout(function() {
             // console.log('timeout', api.id);
             assert.notOk('Setup timed out');
+            try {
+                api.remove();
+            } catch (e) {
+                assert.notOk(e.toString());
+            }
             done();
-            api.remove();
         }, 8000);
         return api;
     }

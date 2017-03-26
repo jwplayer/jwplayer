@@ -256,7 +256,7 @@ define([
 
         var meta = api.getMeta();
 
-        var config = _.extend(configSmall, {
+        var config = _.extend({}, configSmall, {
             events: {
                 onReady: function() {
                     assert.ok(true, 'config.onReady event handler called after setup');
@@ -333,7 +333,7 @@ define([
 
         var api = createApi('player');
 
-        var config = _.extend(configSmall, {});
+        var config = _.extend({}, configSmall);
 
         api.setup(config)
             .play()
