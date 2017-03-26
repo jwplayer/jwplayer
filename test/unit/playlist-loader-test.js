@@ -8,7 +8,7 @@ define([
     QUnit.module('loader');
     var test = QUnit.test.bind(QUnit);
 
-    test('Test JSON feed', function (assert) {
+    QUnit.skip('Test JSON feed', function (assert) {
         var done = assert.async();
         var loader = new PlaylistLoader();
         var expectedJSON = [{
@@ -31,7 +31,7 @@ define([
         loader.load(require.toUrl('./data/playlist.json'));
     });
 
-    test('Test XML feed', function(assert) {
+    QUnit.skip('Test XML feed', function(assert) {
         var done = assert.async();
         var loader = new PlaylistLoader();
         var mediaid = 'TQjoCPTk';
@@ -49,7 +49,7 @@ define([
         loader.load(require.toUrl('./data/playlist.xml'));
     });
 
-    test('Test invalid feed', function (assert) {
+    QUnit.skip('Test invalid feed', function (assert) {
         var done = assert.async();
         var loader = new PlaylistLoader();
 
