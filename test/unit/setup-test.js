@@ -2,8 +2,7 @@ define([
     'test/underscore',
     'jquery',
     'api/api',
-    'events/events'
-], function (_, $, Api, events) {
+], function (_, $, Api) {
     /* jshint qunit:true */
 
     QUnit.module('Setup');
@@ -20,19 +19,19 @@ define([
         };
 
         var model = {};
-        testSetup(model, readyHandler, errorHandler, assert.async());
+        testSetup(model, readyHandler, errorHandler, assert);
 
         model = { playlist : '' };
-        testSetup(model, readyHandler, errorHandler, assert.async());
+        testSetup(model, readyHandler, errorHandler, assert);
 
-        model = { playlist : _.noop };
-        testSetup(model, readyHandler, errorHandler, assert.async());
+        // model = { playlist : function() {} };
+        // testSetup(model, readyHandler, errorHandler, assert);
 
         model = { playlist : 1 };
-        testSetup(model, readyHandler, errorHandler, assert.async());
+        testSetup(model, readyHandler, errorHandler, assert);
 
         model = { playlist : true };
-        testSetup(model, readyHandler, errorHandler, assert.async());
+        testSetup(model, readyHandler, errorHandler, assert);
     });
 
     test('fails if playlist is empty', function(assert) {
@@ -44,7 +43,7 @@ define([
             assert.ok(false, 'setup should not succeed');
         }, function(message) {
             assert.ok(message, 'setup failed with message: ' + message);
-        }, assert.async());
+        }, assert);
     });
 
     test('fails when playlist items are filtered out', function(assert) {
@@ -62,7 +61,7 @@ define([
             playlist = this.getPlaylist();
             assert.deepEqual(playlist, [], 'playlist is an empty array');
             assert.ok(message, 'setup failed with message: ' + message);
-        }, assert.async());
+        }, assert);
     });
 
     /*
@@ -77,7 +76,7 @@ define([
             assert.ok(false, 'setup should not succeed');
         }, function(message) {
             assert.ok(message, 'setup failed with message: ' + message);
-        }, assert.async());
+        }, assert);
     });
 
     test('fails - skin error', function(assert) {
@@ -90,7 +89,7 @@ define([
             assert.ok(false, 'setup should not succeed');
         }, function(message) {
             assert.ok(message, 'setup failed with message: ' + message);
-        }, assert.async());
+        }, assert);
     });
      */
 
@@ -103,7 +102,7 @@ define([
             assert.ok(true, 'setup ok');
         }, function(message) {
             assert.ok(false, 'setup failed with message: ' + message);
-        }, assert.async());
+        }, assert);
     });
 
     /*
@@ -118,7 +117,7 @@ define([
             assert.ok(false, 'setup should have been cancelled');
         }, function(message) {
             assert.ok(false, 'setup failed with message: ' + message);
-        }, done);
+        }, assert);
 
         // cancel setup
         setup.destroy();
@@ -146,24 +145,36 @@ define([
         }, function(message) {
             assert.ok(true, 'setup failed with message: ' + message);
             assert.notEqual(options, optionsOrig, 'config was modified');
-        }, assert.async());
+        }, assert);
     });
 
-    function testSetup(model, success, error, done) {
-        var container = createContainer('player');
+    function testSetup(model, success, error, assert) {
+        var done = assert.async();
+        var container = createContainer('player-' + Math.random().toFixed(12).substr(2));
         var api = new Api(container, _.noop);
+        // console.log('test setup', api.id, JSON.stringify(model));
         api.setup(model);
 
-        api.on(events.JWPLAYER_READY, function() {
+        api.on('ready', function() {
+            // console.log('ready', api.id);
+            clearTimeout(timeout);
             success.call(api);
             done();
             api.remove();
         });
-        api.on(events.JWPLAYER_SETUP_ERROR, function(e) {
+        api.on('setupError', function(e) {
+            // console.log('setupError', api.id);
+            clearTimeout(timeout);
             error.call(api, e.message);
             done();
             api.remove();
         });
+        var timeout = setTimeout(function() {
+            // console.log('timeout', api.id);
+            assert.notOk('Setup timed out');
+            done();
+            api.remove();
+        }, 8000);
         return api;
     }
 
