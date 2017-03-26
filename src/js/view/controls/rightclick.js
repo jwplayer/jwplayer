@@ -11,7 +11,7 @@ define([
             var semverParts = version.split('+');
             var majorMinorPatchPre = semverParts[0];
 
-            var obj = {
+            var menu = {
                 items: [{
                     title: 'Powered by JW Player ' + majorMinorPatchPre,
                     featured: true,
@@ -24,7 +24,7 @@ define([
             var versionMeta = semverParts[1];
             if (isPrerelease && versionMeta) {
                 var pairs = versionMeta.split('.');
-                obj.items.push({
+                menu.items.push({
                     title: 'build: (' + pairs[0] + '.' + pairs[1] + ')',
                     link: '#'
                 });
@@ -33,13 +33,13 @@ define([
             var provider = this.model.get('provider');
             if (provider && provider.name.indexOf('flash') >= 0) {
                 var text = 'Flash Version ' + utils.flashVersion();
-                obj.items.push({
+                menu.items.push({
                     title: text,
                     link: 'http://www.adobe.com/software/flash/about/'
                 });
             }
 
-            return obj;
+            return menu;
         }
 
         buildMenu() {
