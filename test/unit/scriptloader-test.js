@@ -58,7 +58,7 @@ define([
             'adding same tag should not add the tag');
     });
 
-    test('scriptloader with actual path', function(assert) {
+    QUnit.skip('scriptloader with actual path', function(assert) {
         var scriptPath = parser.getScriptPath('scriptloader-test.js') + 'scriptloader-test.js';
         var script = new scriptloader(scriptPath, false);
         script.load();
