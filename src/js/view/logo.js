@@ -23,7 +23,7 @@ define([
 
         _.extend(this, Events);
 
-        this.setup = function(container) {
+        this.setup = function() {
             _settings = _.extend({}, LogoDefaults, _logoConfig);
             _settings.hide = (_settings.hide.toString() === 'true');
 
@@ -48,7 +48,7 @@ define([
             _model.on('change:dock', accommodateDock);
 
             // apply styles onload when image width and height are known
-            _img.onload = function() {
+            _img.onload = function () {
                 // update logo style
                 var style = {
                     backgroundImage: 'url("' + this.src + '")',
@@ -71,7 +71,7 @@ define([
             _img.src = _settings.file;
 
             var logoInteractHandler = new UI(_logo);
-            logoInteractHandler.on('click tap', function(evt) {
+            logoInteractHandler.on('click tap', function (evt) {
                 if (utils.exists(evt) && evt.stopPropagation) {
                     evt.stopPropagation();
                 }
@@ -82,8 +82,12 @@ define([
                 });
 
             }, this);
+        };
 
-            container.appendChild(_logo);
+        this.setContainer = function(container) {
+            if (_logo) {
+                container.appendChild(_logo);
+            }
         };
 
         this.element = function() {

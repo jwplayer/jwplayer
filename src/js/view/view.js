@@ -326,7 +326,8 @@ define([
             _title.setup(_titleElement);
 
             _logo = new Logo(_model);
-            _logo.setup(_playerElement);
+            _logo.setup();
+            _logo.setContainer(_playerElement);
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
             _componentFadeListeners(_logo);
 
@@ -469,7 +470,7 @@ define([
                 _captionsRenderer.renderCues(true);
             });
 
-            _logo.setup(controls.right);
+            _logo.setContainer(controls.right);
 
             controls.enable(_api, _model, _videoLayer);
             
@@ -485,7 +486,7 @@ define([
         };
 
         this.removeControls = function () {
-            _logo.setup(_playerElement);
+            _logo.setContainer(_playerElement);
 
             if (_controls) {
                 _controls.disable();
