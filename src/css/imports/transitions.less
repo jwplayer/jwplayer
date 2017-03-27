@@ -9,20 +9,33 @@
             }
         }
     }
-}
-
-.jwplayer.jw-skin-seven:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
     .jw-overlays {
-        .jw-plugin-related {
-            opacity: 0;
-            visibility: visible;
-        }
-        opacity: 0;
-        -webkit-transition: opacity 1s;
-        -moz-transition: opacity 1s;
-        -ms-transition: opacity 1s;
-        -o-transition: opacity 1s;
-        transition: opacity 1s;
+         opacity: 0;
+         -webkit-transition: opacity 1s;
+         -moz-transition: opacity 1s;
+         -ms-transition: opacity 1s;
+         -o-transition: opacity 1s;
+         transition: opacity 1s;
+    }
+    &.jw-flag-overlay-open-related {
+         .jw-overlays {
+             opacity: 1;
+             -webkit-transition: opacity 1s;
+             -moz-transition: opacity 1s;
+             -ms-transition: opacity 1s;
+             -o-transition: opacity 1s;
+             transition: opacity 1s;
+         }
+         &.jw-flag-user-inactive {
+            .jw-overlays {
+                opacity: 0;
+                -webkit-transition: opacity 1s;
+                -moz-transition: opacity 1s;
+                -ms-transition: opacity 1s;
+                -o-transition: opacity 1s;
+                transition: opacity 1s;
+            }
+         }
     }
 }
 
@@ -54,20 +67,7 @@
     }
 }
 
-.jwplayer.jw-skin-seven:not(.jw-state-playing):not(.jw-flag-ads) {
-    &.jw-flag-overlay-open-related {
-        .jw-overlays {
-            opacity: 1;
-            -webkit-transition: opacity 1s;
-            -moz-transition: opacity 1s;
-            -ms-transition: opacity 1s;
-            -o-transition: opacity 1s;
-            transition: opacity 1s;
-        }
-    }
-}
-
-.jwplayer.jw-skin-seven.jw-flag-user-inactive.jw-state-playing:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
+.jwplayer.jw-skin-seven.jw-flag-user-inactive.jw-state-playing:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting):not(.jw-flag-ads) {
     .jw-dock,
     .jw-controlbar {
         display: block;
