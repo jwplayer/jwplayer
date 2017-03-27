@@ -1,5 +1,6 @@
 .jwplayer.jw-skin-seven:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
     //background-color:#db0d32;
+
     .jw-overlays {
         .jw-plugin-related {
             opacity: 0;
@@ -16,7 +17,6 @@
 
 .jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
     background-color: #1890c4;
-
     &.jw-flag-user-inactive {
         .jw-controls {
             opacity: 0;
@@ -56,5 +56,29 @@
 .jwplayer.jw-skin-seven.jw-flag-user-inactive.jw-state-playing:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
     .jw-controlbar {
         display: block;
+    }
+}
+
+.jwplayer.jw-skin-seven {
+    .jw-rail:hover {
+        .jw-knob {
+            width: @slider-fixed-knob-width;
+            -webkit-transition: width 1s;
+            -moz-transition: width 1s;
+            -ms-transition: width 1s;
+            -o-transition: width 1s;
+            transition: width 1s;
+        }
+    }
+
+    .jw-rail:not(:hover) {
+        .jw-knob {
+            width: 0;
+            -webkit-transition: width 1s;
+            -moz-transition: width 1s;
+            -ms-transition: width 1s;
+            -o-transition: width 1s;
+            transition: width 1s;
+        }
     }
 }
