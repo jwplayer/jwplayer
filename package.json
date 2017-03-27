@@ -69,9 +69,11 @@
   },
   "scripts": {
     "test": "karma start",
-    "lint": "eslint ./src/js",
-    "lint-tests": "eslint ./test/*.js",
-    "flow": "flow check ./src/js"
+    "lint": "npm run lint:js && npm run lint:styles",
+    "lint:js": "eslint './src/js'",
+    "lint:styles": "stylelint './src/css/**/*.less'",
+    "lint:tests": "eslint './test/*.js'",
+    "flow": "flow check './src/js'"
   },
   "engines": {
     "node": ">=4.3.1"
