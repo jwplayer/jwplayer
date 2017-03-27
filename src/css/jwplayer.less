@@ -1,6 +1,6 @@
-@import "imports/reset";
+@import "jwplayer/imports/reset";
 
-@import "imports/mixins";
+@import "shared-imports/mixins";
 
 @accent-color: #FFF;
 @inactive-color: #cecece;
@@ -14,45 +14,18 @@
 #namespace > .basic-skin-styles();
 #namespace > .set-global-color-classes();
 
-@import "imports/jwplayerelement";
-@import "imports/video";
-@import "imports/display";
-@import "imports/controlbar";
-@import "imports/dock";
-@import "imports/title";
-@import "imports/slider";
+@import "jwplayer/imports/jwplayerlayout";
+@import "jwplayer/imports/video";
+@import "jwplayer/imports/display";
+@import "jwplayer/imports/title";
 
-@import "imports/captions";
-@import "imports/rightclick";
-@import "imports/logo";
-@import "imports/tooltip";
-@import "imports/skipad";
-@import "imports/cast";
-@import "imports/nextup";
-@import "imports/autostartmute";
+@import "jwplayer/imports/captions";
+@import "jwplayer/imports/logo";
 
 // State specific
-@import "states/states";
+@import "jwplayer/states";
+@import "jwplayer/flags/skinloading";            // Hides content until styles loaded.  Rename stylesloading.les
+@import "jwplayer/flags/fullscreen";
+@import "jwplayer/flags/flash-blocked";
 
-@import "flags/time-slider-above";
-@import "flags/cast";
-@import "flags/cast-available";
-@import "flags/skinloading";
-@import "flags/fullscreen";
-@import "flags/live";
-@import "flags/controls-hidden";
-@import "flags/user-inactive";
-@import "flags/media-audio";
-@import "flags/ads";
-@import "flags/overlay";
-@import "flags/rightclick-open";
-@import "flags/controls-disabled";
-@import "flags/flash-blocked";
-@import "flags/touch";
-@import "flags/audioplayer";
-
-// modifiers
-@import "imports/utilities";
-
-// Skins
-@import "skins/seven";
+@import "jwplayer/flags/audioplayer";
