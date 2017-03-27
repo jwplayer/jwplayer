@@ -1,6 +1,17 @@
-.jwplayer.jw-skin-seven:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
-    //background-color:#db0d32;
+.jwplayer.jw-skin-seven {
+    .jw-slider-container {
+        &:hover {
+            .jw-knob {
+                width: @thumb-size;
+            }
+        }
+        .jw-knob {
+            width: 0;
+        }
+    }
+}
 
+.jwplayer.jw-skin-seven:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
     .jw-overlays {
         .jw-plugin-related {
             opacity: 0;
@@ -13,34 +24,9 @@
         -o-transition: opacity 1s;
         transition: opacity 1s;
     }
-
-    .jw-slider-container {
-        background-color:#db0d32;
-        &:hover {
-            //background-color: #1890c4;
-            .jw-knob {
-                width: @slider-fixed-knob-width;
-                height: @slider-fixed-knob-height;
-                transition-property: width, height;
-                transition-duration: 1s, 1s;
-            }
-        }
-        .jw-knob {
-            //background-color: #1bd314;
-            width: 0;
-            height: 0;
-            transition-property: width, height;
-            transition-duration: 1s, 1s;
-        }
-    }
-
-
-
-
 }
 
 .jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
-    background-color: #1890c4;
     &.jw-flag-user-inactive {
         .jw-controls {
             opacity: 0;
@@ -80,25 +66,5 @@
 .jwplayer.jw-skin-seven.jw-flag-user-inactive.jw-state-playing:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
     .jw-controlbar {
         display: block;
-    }
-}
-
-.jwplayer.jw-skin-seven {
-    &.jw-rail:hover {
-        .jw-knob {
-            width: 10;//@slider-fixed-knob-width;
-            height: 10;//@slider-fixed-knob-height;
-            transition-property: width, height;
-            transition-duration: 1s;
-        }
-    }
-
-    &.jw-rail:not(:hover) {
-        .jw-knob {
-            width: 0;
-            height: 0;
-            transition-property: width, height;
-            transition-duration: 1s;
-        }
     }
 }
