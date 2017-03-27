@@ -13,6 +13,30 @@
         -o-transition: opacity 1s;
         transition: opacity 1s;
     }
+
+    .jw-slider-container {
+        background-color:#db0d32;
+        &:hover {
+            //background-color: #1890c4;
+            .jw-knob {
+                width: @slider-fixed-knob-width;
+                height: @slider-fixed-knob-height;
+                transition-property: width, height;
+                transition-duration: 1s, 1s;
+            }
+        }
+        .jw-knob {
+            //background-color: #1bd314;
+            width: 0;
+            height: 0;
+            transition-property: width, height;
+            transition-duration: 1s, 1s;
+        }
+    }
+
+
+
+
 }
 
 .jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
@@ -60,25 +84,21 @@
 }
 
 .jwplayer.jw-skin-seven {
-    .jw-rail:hover {
+    &.jw-rail:hover {
         .jw-knob {
-            width: @slider-fixed-knob-width;
-            -webkit-transition: width 1s;
-            -moz-transition: width 1s;
-            -ms-transition: width 1s;
-            -o-transition: width 1s;
-            transition: width 1s;
+            width: 10;//@slider-fixed-knob-width;
+            height: 10;//@slider-fixed-knob-height;
+            transition-property: width, height;
+            transition-duration: 1s;
         }
     }
 
-    .jw-rail:not(:hover) {
+    &.jw-rail:not(:hover) {
         .jw-knob {
             width: 0;
-            -webkit-transition: width 1s;
-            -moz-transition: width 1s;
-            -ms-transition: width 1s;
-            -o-transition: width 1s;
-            transition: width 1s;
+            height: 0;
+            transition-property: width, height;
+            transition-duration: 1s;
         }
     }
 }
