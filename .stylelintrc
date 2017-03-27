@@ -17,17 +17,21 @@
         "number-max-precision": 3,
         "number-no-trailing-zeros": true,
 
+        "string-no-newline": true,
         "string-quotes": "double",
+
         "length-zero-no-unit": true,
 
+        "unit-blacklist": ["pt", "en"],
         "unit-case": "lower",
         "unit-no-unknown": true,
 
         "value-keyword-case": "lower",
-        "value-list-comma-space-after": "always",
 
         "value-list-comma-newline-after": "never-multi-line",
         "value-list-comma-newline-before": "never-multi-line",
+        "value-list-comma-space-after": "always",
+        "value-list-comma-space-before": "never",
         "value-list-max-empty-lines": 0,
 
         "shorthand-property-no-redundant-values": true,
@@ -35,16 +39,21 @@
         "property-case": "lower",
         "property-no-unknown": true,
 
+        "declaration-bang-space-after": "never",
+        "declaration-bang-space-before": "always",
         "declaration-colon-space-after": "always",
         "declaration-colon-space-before": "never",
+        "declaration-no-important": true,
+
         "declaration-block-no-duplicate-properties": true,
         "declaration-block-no-redundant-longhand-properties": true,
         "declaration-block-no-shorthand-property-overrides": true,
         "declaration-block-semicolon-newline-after": "always",
         "declaration-block-semicolon-newline-before": "never-multi-line",
+        "declaration-block-semicolon-space-after": "always-single-line",
+        "declaration-block-semicolon-space-before": "never",
         "declaration-block-single-line-max-declarations": 1,
         "declaration-block-trailing-semicolon": "always",
-        "declaration-no-important": true,
 
         "block-closing-brace-empty-line-before": "never",
         "block-closing-brace-newline-after": "always",
@@ -56,15 +65,23 @@
         "selector-class-pattern": "(jwplayer)|jw-[a-z]+",
         "selector-combinator-space-after": "always",
         "selector-combinator-space-before": "always",
-        "selector-list-comma-newline-after": "always",
+        "selector-descendant-combinator-no-non-space": true,
         "selector-no-id": true,
         "selector-pseudo-class-case": "lower",
         "selector-pseudo-class-no-unknown": true,
         "selector-pseudo-element-case": "lower",
         "selector-pseudo-element-colon-notation": "single",
+        "selector-pseudo-element-no-unknown": [
+            true,
+            { "ignorePseudoElements": ["cue"] }
+        ],
         "selector-type-case": "lower",
         "selector-type-no-unknown": true,
         "selector-max-empty-lines": 0,
+
+        "selector-list-comma-newline-after": "always",
+        "selector-list-comma-newline-before": "never-multi-line",
+        "selector-list-comma-space-before": "never",
 
         "media-query-list-comma-newline-after": "always-multi-line",
 
@@ -72,6 +89,9 @@
         "comment-whitespace-inside": "always",
         "comment-word-blacklist": ["/^TODO:/"],
 
+        "indentation": [4, {
+            "indentClosingBrace": false
+        }],
         "max-empty-lines": 1,
         "no-duplicate-selectors": true,
         "no-empty-source": true,
@@ -82,18 +102,5 @@
             "always-multi-line",
             { "except": ["after-single-line-comment", "first-nested"] }
         ]
-    },
-    "rulesThatBreakForSomeReason": {
-        "indentation": [4, {
-            "except": ["param"]
-        }]
-    },
-    "rulesThatDoVendorPrefixingPostCSSShouldDealWith": {
-        "value-no-vendor-prefix": true,
-        "property-no-vendor-prefix": true,
-        "selector-no-vendor-prefix": true
-    },
-    "rulesThatMayNotBeWorthIt": {
-        "no-descending-specificity": true
     }
 }

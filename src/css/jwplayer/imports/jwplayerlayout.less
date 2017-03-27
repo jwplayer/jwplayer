@@ -23,6 +23,7 @@
 
     // Aspect Ratio styles
     &.jw-flag-aspect-mode {
+        /* Height auto required for displaying aspect ratio correctly */
         /* stylelint-disable-next-line declaration-no-important */
         height: auto !important;
 
@@ -78,14 +79,14 @@
     }
 }
 
-// Allow pointer events through to the provider
+/* Allow pointer events through to the provider */
 .jw-preview,
 .jw-captions,
 .jw-title {
     pointer-events: none;
 }
 
-// These items can intercept pointer-events
+/* These items can intercept pointer-events */
 .jw-media,
 .jw-logo {
     pointer-events: all;
