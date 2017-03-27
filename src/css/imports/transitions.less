@@ -1,6 +1,23 @@
+.jwplayer.jw-skin-seven:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
+    //background-color:#db0d32;
+    .jw-overlays {
+        .jw-plugin-related {
+            opacity: 0;
+            visibility: visible;
+        }
+        opacity: 0;
+        -webkit-transition: opacity 1s;
+        -moz-transition: opacity 1s;
+        -ms-transition: opacity 1s;
+        -o-transition: opacity 1s;
+        transition: opacity 1s;
+    }
+}
+
 .jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
+    background-color: #1890c4;
+
     &.jw-flag-user-inactive {
-        .jw-overlays,
         .jw-controls {
             opacity: 0;
             -webkit-transition: opacity 1s;
@@ -12,7 +29,6 @@
     }
 
     &:not(.jw-flag-user-inactive) {
-        .jw-overlays,
         .jw-controls {
             opacity: 1;
             -webkit-transition: opacity 1s;
@@ -28,17 +44,6 @@
     &.jw-flag-overlay-open-related {
         .jw-overlays {
             opacity: 1;
-            -webkit-transition: opacity 1s;
-            -moz-transition: opacity 1s;
-            -ms-transition: opacity 1s;
-            -o-transition: opacity 1s;
-            transition: opacity 1s;
-        }
-    }
-
-    &:not(.jw-flag-overlay-open-related) {
-        .jw-overlays {
-            opacity: 0;
             -webkit-transition: opacity 1s;
             -moz-transition: opacity 1s;
             -ms-transition: opacity 1s;
