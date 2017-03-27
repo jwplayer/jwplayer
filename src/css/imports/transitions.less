@@ -1,12 +1,12 @@
 .jwplayer.jw-skin-seven {
     .jw-slider-container {
+        .jw-knob {
+            width: 0;
+        }
         &:hover {
             .jw-knob {
                 width: @thumb-size;
             }
-        }
-        .jw-knob {
-            width: 0;
         }
     }
 }
@@ -28,7 +28,9 @@
 
 .jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
     &.jw-flag-user-inactive {
-        .jw-controls {
+        .jw-controlbar,
+        .jw-controls-right,
+        .jw-display {
             opacity: 0;
             -webkit-transition: opacity 1s;
             -moz-transition: opacity 1s;
@@ -39,7 +41,9 @@
     }
 
     &:not(.jw-flag-user-inactive) {
-        .jw-controls {
+        .jw-controlbar,
+        .jw-controls-right,
+        .jw-display {
             opacity: 1;
             -webkit-transition: opacity 1s;
             -moz-transition: opacity 1s;
@@ -64,6 +68,7 @@
 }
 
 .jwplayer.jw-skin-seven.jw-flag-user-inactive.jw-state-playing:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
+    .jw-dock,
     .jw-controlbar {
         display: block;
     }
