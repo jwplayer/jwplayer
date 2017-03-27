@@ -44,12 +44,11 @@ module.exports = function(grunt) {
         less: {
             options: {
                 compress: false,
-                dumpLineNumbers: false,
                 paths: ['src/css', 'src/css/*']
             },
             internal: {
                 options: {
-                    dumpLineNumbers: true
+                    dumpLineNumbers: 'comments'
                 },
                 files: {
                     'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less',
@@ -58,7 +57,7 @@ module.exports = function(grunt) {
             },
             debug: {
                 options: {
-                    dumpLineNumbers: true
+                    dumpLineNumbers: 'comments'
                 },
                 files: [{
                     expand: true,
