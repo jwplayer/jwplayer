@@ -451,9 +451,13 @@ define([
         }
 
         this.autoStartOnMobile = function() {
-            return this.get('autostart') && !this.get('sdkplatform') &&
-                ((_autoStartSupportedIOS() && (utils.isSafari() || utils.isChrome() || utils.isFacebook())) || (utils.isAndroid() && utils.isChrome())) &&
-                (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
+            var autostartAdsIsEnabled = (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
+            var iosBrowserIsSupported = _autoStartSupportedIOS() && (utils.isSafari() || utils.isChrome() || utils.isFacebook());
+            var androidBrowserIsSupported = utils.isAndroid() && utils.isChrome();
+            var mobileBrowserIsSupported = (iosBrowserIsSupported || androidBrowserIsSupported);
+            var isAndroidSdk = this.get('sdkplatform') === 1;
+            var platformCanAutostart = (!this.get('sdkplatform') && autostartAdsIsEnabled && mobileBrowserIsSupported) || isAndroidSdk;
+            return this.get('autostart') && platformCanAutostart;
         };
     };
 
