@@ -2,14 +2,13 @@
 
 .jw-overlays {
     cursor: auto;
-
-    // Allow pointer events through to the provider
+    /* Allow pointer events through to the provider */
     pointer-events: none;
 }
 
 .jw-controls {
     overflow: hidden;
-    // Allow pointer events through to the provider
+    /* Allow pointer events through to the provider */
     pointer-events: none;
 
     .jw-controls-right {
@@ -17,7 +16,7 @@
         top: 0;
         right: 0;
         left: 0;
-        // this should be adjusted in different skins based on controlbar height
+        /* this should be adjusted in different skins based on controlbar height */
         bottom: @controlbar-height;
     }
 }
@@ -47,14 +46,13 @@
     font-size: @font-size;
     font-style: normal;
     font-weight: normal;
-    //line-height: 1em;
     color: #fff;
     text-align: center;
     font-variant: normal;
     font-stretch: normal;
 }
 
-// These items can intercept pointer-events
+/* These items can intercept pointer-events */
 .jw-dock .jw-dock-button,
 .jw-controlbar,
 .jw-skip,
@@ -65,7 +63,7 @@
     pointer-events: all;
 }
 
-// These items can intercept pointer-events
+/* These items can intercept pointer-events */
 .jw-overlays .jw-plugin {
     pointer-events: all;
 }

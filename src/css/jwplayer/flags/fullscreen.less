@@ -1,9 +1,10 @@
 .jwplayer {
     &.jw-flag-fullscreen {
-        /* stylelint-disable-next-line declaration-no-important */
+        /* !important required to ensure that fullscreen state is respected */
+        /* stylelint-disable declaration-no-important */
         width: 100% !important;
-        /* stylelint-disable-next-line declaration-no-important */
         height: 100% !important;
+        /* stylelint-enable declaration-no-important */
         top: 0;
         right: 0;
         bottom: 0;

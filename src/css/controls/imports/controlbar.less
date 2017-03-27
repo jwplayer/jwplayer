@@ -126,6 +126,8 @@
     display: none;
 }
 
+/* Indentation sometimes complains about multiple selections when :not()s are included */
+/* stylelint-disable indentation */
 .jw-breakpoint-0,
 .jw-breakpoint-1:not(.jw-flag-time-slider-above) {
     .jw-controlbar {
@@ -135,6 +137,7 @@
         }
     }
 }
+/* stylelint-enable indentation */
 
 .jw-flag-small-player:not(.jw-flag-audio-player) {
     .jw-group {
