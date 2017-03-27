@@ -19,7 +19,8 @@ define([
 
         var sameHost = (a.host === window.location.host);
 
-        return utils.isChrome() && !sameHost;
+        // JW7-4118
+        return (utils.isChrome() || utils.isEdge()) && !sameHost;
     }
 
     function FlashProvider(_playerId, _playerConfig) {
