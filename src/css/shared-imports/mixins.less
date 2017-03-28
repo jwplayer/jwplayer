@@ -3,7 +3,7 @@
 /* Mixin for icon default formatting */
 .jw-icon {
     font-family: "jw-icons";
-    -webkit-font-smoothing: antialiased;
+    font-smoothing: antialiased;
     font-style: normal;
     font-weight: normal;
     text-transform: none;
@@ -41,6 +41,7 @@
         }
 
         .jwplayer& {
+            /* captions styles code specific to native text track rendering */
             video::-webkit-media-text-track-container {
                 max-height: ~"calc(~'100%' - ~'46px')";
             }
@@ -357,6 +358,7 @@
             }
 
             .jwplayer& {
+                /* captions styles code specific to native text track rendering */
                 video::-webkit-media-text-track-container {
                     max-height: ~"calc(~'100%' - ~'38px')";
                 }
