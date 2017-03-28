@@ -500,7 +500,7 @@ define([
             utils.removeClass(_playerElement, 'jw-flag-touch');
             utils.clearCss(_model.get('id'));
 
-            clearTimeout(_previewDisplayStateTimeout);
+            cancelAnimationFrame(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
         };
 
@@ -734,7 +734,7 @@ define([
             }
 
             // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
-            _cancelDelayResize(_previewDisplayStateTimeout);
+            cancelAnimationFrame(_previewDisplayStateTimeout);
 
             if (_playerState === states.PLAYING) {
                 _stateUpdate(model, _playerState);
@@ -863,7 +863,7 @@ define([
         this.destroy = function () {
             this.isSetup = false;
             this.off();
-            _cancelDelayResize(_previewDisplayStateTimeout);
+            cancelAnimationFrame(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
