@@ -41,6 +41,20 @@ module.exports = function(grunt) {
         starttime: new Date(),
         pkg: packageInfo,
 
+        stylelint: {
+            options: {
+                configFile: '.stylelintrc',
+                formatter: 'string',
+                ignoreDisables: false,
+                failOnError: true,
+                reportNeedlessDisables: false,
+                syntax: 'less'
+            },
+            src: [
+                'src/**/*.less'
+            ]
+        },
+
         less: {
             options: {
                 compress: false,
@@ -82,18 +96,33 @@ module.exports = function(grunt) {
             }
         },
 
-        stylelint: {
+        postcss: {
             options: {
-                configFile: '.stylelintrc',
-                formatter: 'string',
-                ignoreDisables: false,
+                processors: [
+                    require('autoprefixer')
+                ],
+                map: true,
                 failOnError: true,
-                reportNeedlessDisables: false,
-                syntax: 'less'
+                writeDest: true
             },
-            src: [
-                'src/**/*.less'
-            ]
+            internal: {
+                src: [
+                    'bin-debug/reference/*.css',
+                    'bin-debug/skins/*.css',
+                ]
+            },
+            debug: {
+                src: [
+                    'bin-debug/reference/*.css',
+                    'bin-debug/skins/*.css',
+                    'bin-release/skins/*.css'
+                ]
+            },
+            release: {
+                src: [
+                    'bin-release/skins/*.css'
+                ]
+            }
         },
 
         watch : {
@@ -116,7 +145,7 @@ module.exports = function(grunt) {
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
-                tasks: ['stylelint', 'webpack:debug', 'less:debug']
+                tasks: ['stylelint', 'webpack:debug', 'less:debug', 'postcss:debug']
             },
             tests: {
                 files : ['test/{,*/}*.js'],
@@ -311,7 +340,8 @@ module.exports = function(grunt) {
         'webpack',
         'lint:player',
         'stylelint',
-        'less'
+        'less',
+        'postcss'
     ]);
 
     grunt.registerTask('build-flash', [
