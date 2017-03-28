@@ -1039,7 +1039,7 @@ define([
 
             _currentState = model.get('state');
             // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
-            clearTimeout(_previewDisplayStateTimeout);
+            _cancelDelayResize(_previewDisplayStateTimeout);
 
             if (_currentState === states.PLAYING) {
                 _stateUpdate(model, _currentState);
