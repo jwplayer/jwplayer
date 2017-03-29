@@ -47,4 +47,15 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  .jw-slider-container {
+      .jw-knob {
+          width: 0;
+      }
+      &:hover {
+          .jw-knob {
+              width: @thumb-size;
+          }
+      }
+  }
 }
