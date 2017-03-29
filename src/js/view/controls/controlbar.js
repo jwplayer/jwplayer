@@ -222,6 +222,7 @@ define([
             _model.change('captionsIndex', this.onCaptionsIndex, this);
             _model.change('streamType', this.onStreamTypeChange, this);
             _model.change('nextUp', this.onNextUp, this);
+            _model.change('cues', this.addCues, this);
 
             // Event listeners
 
@@ -395,7 +396,7 @@ define([
             this.elements.alt.innerHTML = altText;
         }
 
-        addCues(cues) {
+        addCues(model, cues) {
             if (this.elements.time) {
                 _.each(cues, function(ele) {
                     this.elements.time.addCue(ele);

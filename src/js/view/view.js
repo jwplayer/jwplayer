@@ -6,25 +6,22 @@ define([
     'utils/underscore',
     'utils/active-tab',
     'utils/request-animation-frame',
-    'view/breakpoint',
+    'view/utils/request-fullscreen-helper',
+    'view/utils/breakpoint',
+    'view/utils/flag-no-focus',
+    'view/utils/clickhandler',
     'view/captionsrenderer',
     'view/logo',
     'view/preview',
     'view/title',
     'templates/player.html',
-], function(events, states, Events, utils, _, activeTab, raf, setBreakpoint,
-            CaptionsRenderer, Logo, Preview, Title, playerTemplate) {
+], function(events, states, Events, utils, _, activeTab, raf, requestFullscreenHelper, setBreakpoint, flagNoFocus,
+            ClickHandler, CaptionsRenderer, Logo, Preview, Title, playerTemplate) {
 
     var _styles = utils.style;
     var _bounds = utils.bounds;
     var _isMobile = utils.isMobile();
     var _isIE = utils.isIE();
-    var DOCUMENT_FULLSCREEN_EVENTS = [
-        'fullscreenchange',
-        'webkitfullscreenchange',
-        'mozfullscreenchange',
-        'MSFullscreenChange'
-    ];
 
     // These must be assigned to variables to avoid illegal invocation
     var requestAnimationFrame = raf.requestAnimationFrame;
@@ -42,7 +39,6 @@ define([
         var _preview;
         var _title;
         var _captionsRenderer;
-        var _controls;
         var _logo;
 
         var _playerState;
@@ -56,21 +52,11 @@ define([
         var _resizeContainerRequestId = -1;
         var _previewDisplayStateTimeout = -1;
 
-        var _requestFullscreen =
-            _playerElement.requestFullscreen ||
-            _playerElement.webkitRequestFullscreen ||
-            _playerElement.webkitRequestFullScreen ||
-            _playerElement.mozRequestFullScreen ||
-            _playerElement.msRequestFullscreen;
-        var _exitFullscreen =
-            document.exitFullscreen ||
-            document.webkitExitFullscreen ||
-            document.webkitCancelFullScreen ||
-            document.mozCancelFullScreen ||
-            document.msExitFullscreen;
-        var _elementSupportsFullscreen = !!(_requestFullscreen && _exitFullscreen);
+        var displayClickHandler;
+        var fullscreenHelpers;
+        var focusHelper;
 
-        var _focusFromClick = false;
+        var _controls;
 
         // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
         // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
@@ -80,33 +66,6 @@ define([
 
         function reasonInteraction() {
             return { reason: 'interaction' };
-        }
-
-        function handleBlur() {
-            _focusFromClick = false;
-            utils.removeClass(_playerElement, 'jw-no-focus');
-        }
-
-        function handleMouseUp(e) {
-            if (e.target && e.target.blur) {
-                e.target.blur();
-            }
-        }
-
-        function handleMouseDown() {
-            _focusFromClick = true;
-            utils.addClass(_playerElement, 'jw-no-focus');
-        }
-
-        function handleFocus() {
-            if (!_focusFromClick) {
-                handleBlur();
-            }
-
-            // On tab-focus, show the control bar for a few seconds
-            if (_controls && !_instreamModel && !_isMobile) {
-                _controls.userActive();
-            }
         }
 
         function _setContainerDimensions() {
@@ -193,12 +152,6 @@ define([
                 utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
             }
         }
-
-
-        this.onChangeSkin = function (model, newSkin) {
-            utils.replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-' + newSkin) : '');
-        };
-
 
         this.handleColorOverrides = function () {
             var id = _model.get('id');
@@ -292,29 +245,6 @@ define([
         };
 
         this.setup = function () {
-            if (_isIE) {
-                utils.addClass(_playerElement, 'jw-ie');
-            }
-
-            var width = _model.get('width');
-            var height = _model.get('height');
-            _styles(_playerElement, {
-                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
-                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
-            });
-
-            this.handleColorOverrides();
-
-            // Hide control elements until skin is loaded
-            if (_model.get('skin-loading') === true) {
-                utils.addClass(_playerElement, 'jw-flag-skin-loading');
-                _model.once('change:skin-loading', function () {
-                    utils.removeClass(_playerElement, 'jw-flag-skin-loading');
-                });
-            }
-
-            _model.change('skin', this.onChangeSkin, this);
-
             _videoLayer = _playerElement.querySelector('.jw-media');
 
             var previewElem = _playerElement.querySelector('.jw-preview');
@@ -329,7 +259,6 @@ define([
             _logo.setup();
             _logo.setContainer(_playerElement);
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
-            _componentFadeListeners(_logo);
 
             // captions rendering
             _captionsRenderer = new CaptionsRenderer(_model);
@@ -338,55 +267,65 @@ define([
             // captions should be place behind controls, and not hidden when controls are hidden
             _playerElement.insertBefore(_captionsRenderer.element(), _title.element());
 
-            // adds video tag to video layer
-            _model.set('mediaContainer', _videoLayer);
+            // Display Click and Double Click Handling
+            displayClickHandler = clickHandlerHelper(_api, _model, _videoLayer);
 
-            // Native fullscreen (coming through from the provider)
-            _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
-            // DOM fullscreen
-            for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
-                document.addEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
-            }
+            focusHelper = flagNoFocus(_playerElement);
+            fullscreenHelpers = requestFullscreenHelper(_playerElement, document);
+
+            _playerElement.addEventListener('focus', onFocus);
+
+            document.addEventListener('visibilitychange', onVisibilityChange);
+            document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 
             window.removeEventListener('resize', _responsiveListener);
-            window.addEventListener('resize', _responsiveListener, false);
-            if (_isMobile) {
-                window.removeEventListener('orientationchange', _responsiveListener);
-                window.addEventListener('orientationchange', _responsiveListener, false);
-            }
+            window.addEventListener('resize', _responsiveListener);
+            window.removeEventListener('orientationchange', _responsiveListener);
+            window.addEventListener('orientationchange', _responsiveListener);
 
-            _model.change('flashBlocked', _onChangeFlashBlocked);
-
-            _api.onPlaylistComplete(_playlistCompleteHandler);
-            _api.onPlaylistItem(_playlistItemHandler);
-
-            // set initial state
-            if (_model.get('stretching')) {
-                _onStretchChange(_model, _model.get('stretching'));
-            }
-            // watch for changes
+            _model.on('change:state', (model, state) => {
+                if (state === states.COMPLETE) {
+                    _api.setFullscreen(false);
+                }
+            });
             _model.on('change:state', _stateHandler);
-            _model.on('change:stretching', _onStretchChange);
             _model.on('change:fullscreen', _fullscreen);
             _model.on('change:errorEvent', _errorHandler);
             _model.on('change:hideAdsControls', function (model, val) {
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
             });
+            // Native fullscreen (coming through from the provider)
+            _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
 
-            var aspectratio = _model.get('aspectratio');
-            if (aspectratio) {
-                _setAspectMode(aspectratio);
+            _model.change('mediaModel', (model, mediaModel) => {
+                mediaModel.change('mediaType', _onMediaTypeChange, this);
+            });
+            _model.change('skin', onSkinChange, this);
+            _model.change('stretching', onStretchChange);
+            _model.change('aspectratio', onAspectRatioChange);
+            _model.change('flashBlocked', onFlashBlockedChange);
+
+            var width = _model.get('width');
+            var height = _model.get('height');
+            _styles(_playerElement, {
+                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
+                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
+            });
+            if (_isIE) {
+                utils.addClass(_playerElement, 'jw-ie');
             }
-
+            // Hide control elements until skin is loaded
+            if (_model.get('skin-loading') === true) {
+                utils.addClass(_playerElement, 'jw-flag-skin-loading');
+                _model.once('change:skin-loading', function () {
+                    utils.removeClass(_playerElement, 'jw-flag-skin-loading');
+                });
+            }
+            this.handleColorOverrides();
+            // adds video tag to video layer
+            _model.set('mediaContainer', _videoLayer);
             _model.set('iFrame', utils.isIframe());
             _model.set('activeTab', activeTab());
-            document.addEventListener('visibilitychange', _visibilityChangeListener, false);
-            document.addEventListener('webkitvisibilitychange', _visibilityChangeListener, false);
-
-            _playerElement.addEventListener('focus', handleFocus);
-            _playerElement.addEventListener('blur', handleBlur);
-            _playerElement.onmousedown = handleMouseDown;
-            _playerElement.onmouseup = handleMouseUp;
 
             this.isSetup = true;
             _model.set('viewSetup', true);
@@ -400,14 +339,76 @@ define([
             _setContainerDimensions();
         };
 
-        function _onStretchChange(model, newVal) {
+        function clickHandlerHelper(api, model, videoLayer) {
+            const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });
+            clickHandler.on({
+                click: () => {
+                    _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    if (_controls) {
+                        api.play(reasonInteraction());
+                    }
+                },
+                tap: () => {
+                    _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    const state = model.get('state');
+
+                    if (_controls &&
+                        ((state === states.IDLE || state === states.COMPLETE) ||
+                        (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
+                        api.play(reasonInteraction());
+                    }
+                    if (state === states.PAUSED) {
+                        // Toggle visibility of the controls when tapping the media
+                        // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
+                        if (_instreamModel ||
+                            model.get('castActive') ||
+                            (model.mediaModel && model.mediaModel.get('mediaType') === 'audio')) {
+                            return;
+                        }
+                        utils.toggleClass(_playerElement, 'jw-flag-controls-hidden');
+                        _captionsRenderer.renderCues(true);
+                    } else if (_controls) {
+                        if (!_controls.showing) {
+                            _controls.userActive();
+                        } else {
+                            _controls.userInactive();
+                        }
+                    }
+                },
+                doubleClick: () => api.setFullscreen(),
+                move: () => _controls && _controls.userActive(),
+                over: () => _controls && _controls.userActive()
+            });
+            return clickHandler;
+        }
+
+        function onSkinChange(model, newSkin) {
+            utils.replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-' + newSkin) : '');
+        }
+
+        function onStretchChange(model, newVal) {
             utils.replaceClass(_playerElement, /jw-stretch-\S+/, 'jw-stretch-' + newVal);
         }
 
-        function _componentFadeListeners(comp) {
-            if (!_isMobile && comp && comp.element()) {
-                comp.element().addEventListener('mousemove', _overControlElement, false);
-                comp.element().addEventListener('mouseout', _offControlElement, false);
+        function onAspectRatioChange(model, aspectratio) {
+            utils.toggleClass(_playerElement, 'jw-flag-aspect-mode', !!aspectratio);
+            var aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
+            _styles(aspectRatioContainer, {
+                paddingTop: aspectratio || null
+            });
+        }
+
+        function onFlashBlockedChange(model, isBlocked) {
+            if (isBlocked) {
+                if (_controls && _controls.rightClickMenu) {
+                    _controls.rightClickMenu.destroy();
+                }
+                utils.addClass(_playerElement, 'jw-flag-flash-blocked');
+            } else {
+                if (_controls && _controls.rightClickMenu) {
+                    _controls.rightClickMenu.setup(_model, _playerElement, _playerElement);
+                }
+                utils.removeClass(_playerElement, 'jw-flag-flash-blocked');
             }
         }
 
@@ -421,33 +422,6 @@ define([
                 _api.pause(true, reasonInteraction());
                 _api.setFullscreen(false);
                 window.open(evt.link, evt.linktarget);
-            }
-        }
-
-        function _overControlElement() {
-            // Over controlbar, timeout resumed when off controlbar
-            if (_controls) {
-                clearTimeout(_controls.activeTimeout);
-            }
-        }
-
-        function _offControlElement() {
-            if (_controls) {
-                _controls.userActive();
-            }
-        }
-
-        function _onChangeFlashBlocked(model, isBlocked) {
-            if (isBlocked) {
-                if (_controls && _controls.rightClickMenu) {
-                    _controls.rightClickMenu.destroy();
-                }
-                utils.addClass(_playerElement, 'jw-flag-flash-blocked');
-            } else {
-                if (_controls && _controls.rightClickMenu) {
-                    _controls.rightClickMenu.setup(_model, _playerElement, _playerElement);
-                }
-                utils.removeClass(_playerElement, 'jw-flag-flash-blocked');
             }
         }
 
@@ -472,9 +446,8 @@ define([
 
             _logo.setContainer(controls.right);
 
-            controls.enable(_api, _model, _videoLayer);
-            
-            _componentFadeListeners(controls.controlbar);
+            controls.enable(_api, _model);
+            controls.addActiveListeners(_logo.element());
 
             _model.on('change:scrubbing', _stateHandler);
             _model.change('streamType', _setLiveMode, this);
@@ -489,6 +462,7 @@ define([
             _logo.setContainer(_playerElement);
 
             if (_controls) {
+                _controls.removeActiveListeners(_logo.element());
                 _controls.disable();
             }
 
@@ -515,11 +489,11 @@ define([
                 _controls.unmuteAutoplay(_api, _model);
             }
 
-            if (_elementSupportsFullscreen) {
+            if (fullscreenHelpers.supportsDomFullscreen()) {
                 if (state) {
-                    _requestFullscreen.apply(_playerElement);
+                    fullscreenHelpers.requestFullscreen();
                 } else {
-                    _exitFullscreen.apply(document);
+                    fullscreenHelpers.exitFullscreen();
                 }
                 _toggleDOMFullscreen(_playerElement, state);
             } else if (_isIE) {
@@ -547,7 +521,6 @@ define([
             resetAspectMode = !!resetAspectMode;
             if (resetAspectMode) {
                 _model.set('aspectratio', null);
-                _setAspectMode(null);
                 playerStyle.display = 'block';
             }
 
@@ -564,14 +537,6 @@ define([
 
             // pass width, height from jwResize if present
             _resizeMedia(playerWidth, playerHeight);
-        }
-
-        function _setAspectMode(aspectratio) {
-            utils.toggleClass(_playerElement, 'jw-flag-aspect-mode', !!aspectratio);
-            var aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
-            _styles(aspectRatioContainer, {
-                paddingTop: aspectratio || null
-            });
         }
 
         function _resizeMedia(mediaWidth, mediaHeight) {
@@ -616,11 +581,8 @@ define([
          * Return whether or not we're in native fullscreen
          */
         function _isNativeFullscreen() {
-            if (_elementSupportsFullscreen) {
-                var fsElement = document.fullscreenElement ||
-                    document.webkitCurrentFullScreenElement ||
-                    document.mozFullScreenElement ||
-                    document.msFullscreenElement;
+            if (fullscreenHelpers.supportsDomFullscreen()) {
+                var fsElement = fullscreenHelpers.fullscreenElement();
                 return !!(fsElement && fsElement.id === _model.get('id'));
             }
             // if player element view fullscreen not available, return video fullscreen state
@@ -668,16 +630,6 @@ define([
 
         function _userActivityCallback(/* event */) {
             _controls.userActive();
-        }
-
-        function _playlistCompleteHandler() {
-            _api.setFullscreen(false);
-        }
-
-        function _playlistItemHandler() {
-            // update display title
-            _onMediaTypeChange(_model, _model.mediaModel.get('mediaType'));
-            _model.mediaModel.on('change:mediaType', _onMediaTypeChange, this);
         }
 
         function _onMediaTypeChange(model, val) {
@@ -762,7 +714,14 @@ define([
             }
         }
 
-        function _visibilityChangeListener() {
+        function onFocus() {
+            // On tab-focus, show the control bar for a few seconds
+            if (_controls && !_instreamModel && !_isMobile) {
+                _controls.userActive();
+            }
+        }
+
+        function onVisibilityChange() {
             _model.set('activeTab', activeTab());
         }
 
@@ -799,21 +758,15 @@ define([
             }
             _setLiveMode(_model, _model.get('streamType'));
             // reset display click handler
-            if (_controls && _controls.displayClick) {
-                _controls.displayClick.revertAlternateClickHandlers();
-            }
+            displayClickHandler.revertAlternateClickHandlers();
         };
 
         this.addCues = function (cues) {
-            if (_controls) {
-                _controls.controlbar.addCues(cues);
-            }
+            _model.set('cues', cues);
         };
 
         this.clickHandler = function () {
-            if (_controls) {
-                return _controls.displayClick;
-            }
+            return displayClickHandler;
         };
 
         this.getContainer = this.element = function () {
@@ -867,9 +820,19 @@ define([
             clearTimeout(_resizeMediaTimeout);
             window.removeEventListener('resize', _responsiveListener);
             window.removeEventListener('orientationchange', _responsiveListener);
-            document.removeEventListener('visibilitychange', _visibilityChangeListener);
-            for (var i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
-                document.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], _fullscreenChangeHandler, false);
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+            _playerElement.removeEventListener('focus', onFocus);
+            if (focusHelper) {
+                focusHelper.destroy();
+                focusHelper = null;
+            }
+            if (fullscreenHelpers) {
+                fullscreenHelpers.destroy();
+                fullscreenHelpers = null;
+            }
+            if (displayClickHandler) {
+                displayClickHandler.destroy();
+                displayClickHandler = null;
             }
             if (_model.mediaController) {
                 _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
@@ -877,10 +840,6 @@ define([
             if (_controls) {
                 _controls.disable();
             }
-            _playerElement.removeEventListener('focus', handleFocus);
-            _playerElement.removeEventListener('blur', handleBlur);
-            _playerElement.onmousedown = null;
-            _playerElement.onmouseup = null;
 
             if (_instreamModel) {
                 this.destroyInstream();

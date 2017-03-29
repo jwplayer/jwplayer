@@ -6,7 +6,6 @@ define([
     'utils/helpers',
     'utils/underscore',
     'view/controls/components/button',
-    'view/controls/clickhandler',
     'view/controls/controlbar',
     'view/controls/dock',
     'view/controls/display-container',
@@ -15,7 +14,7 @@ define([
     'view/controls/next-display-icon',
     'view/controls/nextuptooltip',
     'view/controls/rightclick',
-], function (events, states, Events, Constants, utils, _, button, ClickHandler, Controlbar, Dock,
+], function (events, states, Events, Constants, utils, _, button, Controlbar, Dock,
              DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
              NextUpToolTip, RightClick) {
 
@@ -55,7 +54,6 @@ define([
             this.activeTimeout = -1;
             this.context = context;
             this.controlbar = null;
-            this.displayClick = null;
             this.displayContainer = null;
             this.dock = null;
             this.enabled = true;
@@ -69,9 +67,13 @@ define([
             this.unmuteCallback = null;
             this.element = null;
             this.right = null;
+            this.activeListeners = {
+                mousemove: () => clearTimeout(this.activeTimeout),
+                mouseout: () => this.userActive()
+            };
         }
 
-        enable(api, model, videoLayer) {
+        enable(api, model) {
             const element = this.context.createElement('div');
             element.className = 'jw-controls jw-reset';
             this.element = element;
@@ -122,44 +124,6 @@ define([
                 this.displayContainer = displayContainer;
             }
 
-
-            // Display Click and Double Click Handling
-            const displayClickHandler = new ClickHandler(model, videoLayer, { useHover: true });
-            displayClickHandler.on({
-                click: () => {
-                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                    api.play(reasonInteraction());
-                },
-                tap: () => {
-                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                    const state = model.get('state');
-
-                    if (((state === states.IDLE || state === states.COMPLETE) ||
-                        (this.instreamState === states.PAUSED))) {
-                        api.play(reasonInteraction());
-                    }
-                    if (state === states.PAUSED) {
-                        // Toggle visibility of the controls when tapping the media
-                        // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-                        if (this.instreamState ||
-                            model.get('castActive') ||
-                            (model.mediaModel && model.mediaModel.get('mediaType') === 'audio')) {
-                            return;
-                        }
-                        utils.toggleClass(this.playerContainer, 'jw-flag-controls-hidden');
-
-                    } else if (!this.showing) {
-                        this.userActive();
-                    } else {
-                        this.userInactive();
-                    }
-                },
-                doubleClick: () => api.setFullscreen(),
-                move: () => this.userActive(),
-                over: () => this.userActive()
-            });
-            this.displayClick = displayClickHandler;
-
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             const height = model.get('height');
             if (utils.isMobile() && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)) {
@@ -184,6 +148,7 @@ define([
                 this.controlbar = new Controlbar(api, model);
                 this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
             }
+            this.addActiveListeners(this.controlbar.element());
             this.element.appendChild(this.controlbar.element());
 
             // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
@@ -298,12 +263,9 @@ define([
             if (this.element.parentNode) {
                 this.playerContainer.removeChild(this.element);
             }
-
-            if (this.displayClick) {
-                this.displayClick.destroy();
-                this.displayClick = null;
+            if (this.controlbar) {
+                this.removeActiveListeners(this.controlbar.element());
             }
-
             if (this.rightClickMenu) {
                 this.rightClickMenu.destroy();
                 this.rightClickMenu = null;
@@ -357,6 +319,20 @@ define([
             this.controlbar.renderVolume(mute, model.get('volume'));
             this.mute.hide();
             utils.removeClass(this.playerContainer, 'jw-flag-autostart');
+        }
+
+        addActiveListeners(element) {
+            if (element && !utils.isMobile()) {
+                element.addEventListener('mousemove', this.activeListeners.mousemove);
+                element.addEventListener('mouseout', this.activeListeners.mouseout);
+            }
+        }
+
+        removeActiveListeners(element) {
+            if (element) {
+                element.removeEventListener('mousemove', this.activeListeners.mousemove);
+                element.removeEventListener('mouseout', this.activeListeners.mouseout);
+            }
         }
 
         userActive(timeout) {
