@@ -11,13 +11,20 @@
           cursor: none;
           -webkit-cursor-visibility: auto-hide;
       }
+      .jw-dock {
+        display: block;
+        visibility: hidden;
+        pointer-events: none;
+        opacity: 0;
+      }
 
       &.jw-flag-casting {
         .jw-display {
           display: table;
         }
         .jw-dock {
-          display: block;
+            visibility: visible;
+            opacity: 1;
         }
       }
   }
