@@ -220,13 +220,16 @@ body .jwplayer.jw-state-error {
 
 // Hide display
 
-.jwplayer.jw-state-playing.jw-flag-user-inactive,
-.jwplayer.jw-state-playing:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting),
-.jwplayer.jw-state-paused:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
-  .jw-display {
+.jwplayer.jw-state-playing.jw-flag-user-inactive .jw-display {
     visibility: hidden;
     pointer-events: none;
     opacity: 0;
+}
+
+.jwplayer.jw-state-playing:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting),
+.jwplayer.jw-state-paused:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
+  .jw-display {
+    display: none;
   }
 }
 
