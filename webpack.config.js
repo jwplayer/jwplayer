@@ -123,7 +123,7 @@ var multiConfig = _.compact(_.map([
                     loaders: [
                         'simple-style-loader',
                         'css',
-                        'autoprefixer?browsers=' + encodeURIComponent('> 1%'),
+                        'postcss-loader',
                         'less?compress'
                     ]
                 },
@@ -144,6 +144,11 @@ var multiConfig = _.compact(_.map([
                     loader: 'babel-loader'
                 }
             ]
+        },
+        postcss: function() {
+            return [
+                require('autoprefixer')
+            ];
         }
     });
 }));
