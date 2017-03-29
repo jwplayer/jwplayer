@@ -25,7 +25,7 @@
 
     @volume-background: #5c6373;
 
-    @cue-size: .25em;
+    @cue-size: 0.25em;
     @thumb-size: 1em;
     @def-rail-width: 0.75em;
     @slider-height: @rail-height;
@@ -46,6 +46,7 @@
 
     /* Controlbar styles */
     .inset-controlbar();
+
     &:not(.jw-breakpoint-0) {
         .jw-controlbar {
             border-radius: @roundster-corners;
@@ -69,7 +70,7 @@
         width: @thumb-size;
         height: @thumb-size;
         border-radius: 50%;
-        box-shadow: 0px 1px 5px 1px rgba(134,142,163,1);
+        box-shadow: 0 1px 5px 1px rgba(134, 142, 163, 1);
     }
 
     /* Timeline and horizontal volume slider */
@@ -92,17 +93,16 @@
 
     /* Volume slider */
     .jw-slider-vertical {
-
         .jw-rail,
         .jw-progress {
-            width: .4em;
+            width: 0.4em;
         }
 
         .jw-knob {
             .horizontally-centered-rail-element(@def-rail-width, @thumb-size);
         }
 
-        .jw-slider-container{
+        .jw-slider-container {
             width: @def-rail-width;
         }
     }
@@ -124,7 +124,7 @@
     /* Position of remaining overlay containers */
     .jw-volume-tip,
     .jw-menu {
-        bottom: .3em;
+        bottom: 0.3em;
     }
 
     /* For the dock, in the upper right corner */
@@ -132,6 +132,7 @@
         .jw-dock-button {
             border-radius: 50%;
         }
+
         .jw-overlay {
             border-radius: 2.5em;
         }

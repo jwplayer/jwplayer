@@ -1,7 +1,6 @@
 @import "../shared-imports/mixins";
 
 .jw-skin-five {
-
     @active-color: #000;
     @inactive-color: #464646;
     @hover-color: @active-color;
@@ -22,9 +21,9 @@
 
     @option-active-bg-color: rgba(255, 255, 255, 0.6);
 
-    @rail-height: .2em;
+    @rail-height: 0.2em;
     @thumb-size: 1em;
-    @cue-height: .4em;
+    @cue-height: 0.4em;
 
     @five-border-radius: 0;
 
@@ -37,7 +36,7 @@
 
     @fixed-time-slider-progress-color: #fff;
 
-    @slider-fixed-knob-border-radius: 0px;
+    @slider-fixed-knob-border-radius: 0;
     @slider-fixed-knob-height: 16px;
     @slider-fixed-knob-width: 4px;
 
@@ -57,7 +56,7 @@
         background: transparent;
 
         .jw-slider-container {
-            height: .9em;
+            height: 0.9em;
         }
 
         .jw-rail,
@@ -81,7 +80,7 @@
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-height);
 
-            width: .1em;
+            width: 0.1em;
             height: @cue-height;
             background-color: #000;
             border-left: 1px solid #fff;
@@ -97,7 +96,7 @@
 
         .jw-knob {
             margin-bottom: 2px/-2;
-            width: .8em;
+            width: 0.8em;
             height: 1px;
             border-radius: @five-border-radius;
             .horizontally-centered-rail-element(@rail-height, 0.8em);
@@ -119,11 +118,14 @@
             > .jw-text {
                 color: rgba(255, 255, 255, 0.6);
             }
+
             > .jw-button-color {
                 color: rgba(255, 255, 255, 0.6);
+
                 &:hover {
                     color: rgba(255, 255, 255, 1);
                 }
+
                 &:focus {
                     color: rgba(255, 255, 255, 1);
                 }

@@ -8,7 +8,6 @@
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
     background-color: #000;
-    user-select: none;
 
     // disallow text-select highlighting
     -webkit-touch-callout: none;
@@ -24,9 +23,11 @@
 
     // Aspect Ratio styles
     &.jw-flag-aspect-mode {
+        /* Height auto required for displaying aspect ratio correctly */
+        /* stylelint-disable-next-line declaration-no-important */
         height: auto !important;
 
-        & .jw-aspect{
+        & .jw-aspect {
             display: block;
         }
     }
@@ -35,7 +36,8 @@
         display: none;
     }
 
-    &.jw-no-focus:focus, .jw-swf {
+    &.jw-no-focus:focus,
+    .jw-swf {
         outline: none;
     }
 
@@ -44,7 +46,8 @@
     }
 }
 
-.jw-media, .jw-preview {
+.jw-media,
+.jw-preview {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -68,7 +71,7 @@
         opacity: 0;
         cursor: pointer;
         position: absolute;
-        margin: auto auto 0 auto;
+        margin: auto auto 0;
         left: 0;
         right: 0;
         bottom: 0;
@@ -76,12 +79,14 @@
     }
 }
 
-// Allow pointer events through to the provider
-.jw-preview, .jw-captions, .jw-title {
-    pointer-events : none;
+/* Allow pointer events through to the provider */
+.jw-preview,
+.jw-captions,
+.jw-title {
+    pointer-events: none;
 }
 
-// These items can intercept pointer-events
+/* These items can intercept pointer-events */
 .jw-media,
 .jw-logo {
     pointer-events: all;
