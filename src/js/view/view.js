@@ -38,6 +38,7 @@ define([
 
     return function View(_api, _model) {
         var _playerElement;
+        var _controls;
         var _controlsLayer;
         var _controlsTimeout = -1;
         var _timeoutDuration = _isMobile ? 4000 : 2000;
@@ -447,12 +448,9 @@ define([
                 });
             }
 
-            _model.on('change:skin', this.onChangeSkin, this);
-            this.onChangeSkin(_model, _model.get('skin'));
+            _model.change('skin', this.onChangeSkin, this);
 
             _videoLayer = _playerElement.querySelector('.jw-media');
-
-            _controlsLayer = _playerElement.querySelector('.jw-controls');
 
             var previewElem = _playerElement.querySelector('.jw-preview');
             _preview = new Preview(_model);
@@ -462,7 +460,12 @@ define([
             _title = new Title(_model);
             _title.setup(_titleElement);
 
-            _setupControls();
+            // captions rendering
+            _captionsRenderer = new CaptionsRenderer(_model);
+            _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
+
+            // captions should be place behind controls, and not hidden when controls are hidden
+            _playerElement.insertBefore(_captionsRenderer.element(), _title.element());
 
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
@@ -481,11 +484,9 @@ define([
                 window.addEventListener('orientationchange', _responsiveListener, false);
             }
 
-            _model.on('change:controls', _onChangeControls);
-            _onChangeControls(_model, _model.get('controls'));
+            _model.change('controls', _onChangeControls);
 
-            _model.on('change:flashBlocked', _onChangeFlashBlocked);
-            _onChangeFlashBlocked(_model, _model.get('flashBlocked'));
+            _model.change('flashBlocked', _onChangeFlashBlocked);
 
             _api.onPlaylistComplete(_playlistCompleteHandler);
             _api.onPlaylistItem(_playlistItemHandler);
@@ -496,7 +497,6 @@ define([
             }
             // watch for changes
             _model.on('change:state', _stateHandler);
-            _model.on('change:duration', _setLiveMode, this);
             _model.on('change:stretching', _onStretchChange);
             _model.on('change:fullscreen', _fullscreen);
             _model.on('change:errorEvent', _errorHandler);
@@ -509,11 +509,7 @@ define([
 
             var aspectratio = _model.get('aspectratio');
             if (aspectratio) {
-                utils.addClass(_playerElement, 'jw-flag-aspect-mode');
-                var aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
-                _styles(aspectRatioContainer, {
-                    paddingTop: aspectratio
-                });
+                _setAspectMode(aspectratio);
             }
 
             _model.set('iFrame', utils.isIframe());
@@ -623,7 +619,7 @@ define([
         }
 
         function _setupControls() {
-            var overlaysElement = _playerElement.getElementsByClassName('jw-overlays')[0];
+            var overlaysElement = _playerElement.querySelector('.jw-overlays');
             overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
             _displayClickHandler = new ClickHandler(_model, _videoLayer, { useHover: true });
@@ -653,13 +649,6 @@ define([
             rightside.appendChild(_dock.element());
             _logo.setup(rightside);
             _controlsLayer.appendChild(rightside);
-
-            // captions rendering
-            _captionsRenderer = new CaptionsRenderer(_model);
-            _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
-
-            // captions should be place behind controls, and not hidden when controls are hidden
-            _controlsLayer.parentNode.insertBefore(_captionsRenderer.element(), _title.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             height = _model.get('height');
@@ -703,7 +692,47 @@ define([
             _playerElement.addEventListener('keydown', handleKeydown);
             _playerElement.onmousedown = handleMouseDown;
             _playerElement.onmouseup = handleMouseUp;
+
+            _model.change('duration', _setLiveMode, this);
         }
+
+        var _destroyControls = function () {
+            var overlay = document.querySelector('.jw-overlays');
+            if (overlay) {
+                overlay.removeEventListener('mousemove', _userActivityCallback);
+            }
+
+            if (_displayClickHandler) {
+                _displayClickHandler.off();
+                _displayClickHandler = null;
+            }
+
+            if (_dock) {
+                _dock = null;
+            }
+
+            if (_logo) {
+                _logo.destroy();
+                _logo = null;
+            }
+
+            if (_rightClickMenu) {
+                _rightClickMenu.destroy();
+            }
+
+            _playerElement.removeEventListener('focus', handleFocus);
+            _playerElement.removeEventListener('blur', handleBlur);
+            _playerElement.removeEventListener('keydown', handleKeydown);
+            _playerElement.onmousedown = null;
+            _playerElement.onmouseup = null;
+
+            utils.removeClass(_playerElement, 'jw-flag-touch');
+            utils.clearCss(_model.get('id'));
+
+            clearTimeout(_previewDisplayStateTimeout);
+            clearTimeout(_resizeMediaTimeout);
+            clearTimeout(_controlsTimeout);
+        };
 
         // Perform the switch to fullscreen
         var _fullscreen = function (model, state) {
@@ -740,19 +769,16 @@ define([
         };
 
         function _resize(playerWidth, playerHeight, resetAspectMode) {
-            var className = _playerElement.className;
-            var playerStyle;
+            var playerStyle = {
+                width: playerWidth
+            };
 
             // when jwResize is called remove aspectMode and force layout
             resetAspectMode = !!resetAspectMode;
             if (resetAspectMode) {
-                className = className.replace(/\s*aspectMode/, '');
-                if (_playerElement.className !== className) {
-                    _playerElement.className = className;
-                }
-                _styles(_playerElement, {
-                    display: 'block'
-                }, resetAspectMode);
+                _model.set('aspectratio', null);
+                _setAspectMode(null);
+                playerStyle.display = 'block';
             }
 
             if (utils.exists(playerWidth) && utils.exists(playerHeight)) {
@@ -760,20 +786,26 @@ define([
                 _model.set('height', playerHeight);
             }
 
-            playerStyle = {
-                width: playerWidth
-            };
-            if (!utils.hasClass(_playerElement, 'jw-flag-aspect-mode')) {
+            if (!_model.get('aspectratio')) {
                 playerStyle.height = playerHeight;
             }
 
-            _styles(_playerElement, playerStyle, true);
+            _styles(_playerElement, playerStyle);
 
             _checkAudioMode(playerHeight);
 
             // pass width, height from jwResize if present
             _resizeMedia(playerWidth, playerHeight);
         }
+
+        function _setAspectMode(aspectratio) {
+            utils.toggleClass(_playerElement, 'jw-flag-aspect-mode', !!aspectratio);
+            var aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
+            _styles(aspectRatioContainer, {
+                paddingTop: aspectratio || null
+            });
+        }
+
 
         function _checkAudioMode(playerHeight) {
             var audioMode = _isAudioMode(playerHeight);
@@ -809,17 +841,17 @@ define([
         }
 
         function _resizeMedia(mediaWidth, mediaHeight) {
-            if (!mediaWidth || isNaN(Number(mediaWidth))) {
+            if (!mediaWidth || isNaN(1 * mediaWidth)) {
                 if (!_videoLayer) {
                     return;
                 }
-                mediaWidth = _model.get('containerWidth') || _videoLayer.clientWidth;
+                mediaWidth = _lastWidth || _videoLayer.clientWidth;
             }
-            if (!mediaHeight || isNaN(Number(mediaHeight))) {
+            if (!mediaHeight || isNaN(1 * mediaHeight)) {
                 if (!_videoLayer) {
                     return;
                 }
-                mediaHeight = _model.get('containerHeight') || _videoLayer.clientHeight;
+                mediaHeight = _lastHeight || _videoLayer.clientHeight;
             }
 
             if (_preview) {
@@ -934,7 +966,9 @@ define([
             _showing = false;
 
             clearTimeout(_controlsTimeout);
-            _controlbar.hideComponents();
+            if (_controlbar) {
+                _controlbar.hideComponents();
+            }
             utils.addClass(_playerElement, 'jw-flag-user-inactive');
             _captionsRenderer.renderCues(true);
         }
@@ -1121,7 +1155,9 @@ define([
         };
 
         this.setAltText = function (text) {
-            _controlbar.setAltText(text);
+            if (_controlbar) {
+                _controlbar.setAltText(text);
+            }
         };
 
         this.destroyInstream = function () {
@@ -1163,8 +1199,8 @@ define([
             var bounds = {
                 x: 0,
                 y: 0,
-                width: _model.get('containerWidth') || 0,
-                height: _model.get('containerHeight') || 0
+                width: _lastWidth || 0,
+                height: _lastHeight || 0
             };
 
             var controls = _model.get('controls');
@@ -1190,6 +1226,18 @@ define([
             _captionsRenderer.clear();
             _captionsRenderer.setup(_model.get('id'), captionsStyle);
             _captionsRenderer.resize();
+        };
+
+        this.addControls = function (controls) {
+            _controls = controls;
+            _controls.enable();
+            _controlsLayer = _controls.getElement();
+            _setupControls();
+        };
+
+        this.removeControls = function () {
+            _controls.disable();
+            _destroyControls();
         };
 
         this.destroy = function () {

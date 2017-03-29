@@ -10,7 +10,7 @@ define([
 
     var captionsRenderer = new CaptionsRenderer(new Model());
     captionsRenderer.setup();
-    
+
     QUnit.module('CaptionsRenderer.getCurrentCues');
 
     test('should show the correct number of cues at any given position in time', function (assert) {

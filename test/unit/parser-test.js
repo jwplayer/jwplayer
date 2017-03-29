@@ -59,7 +59,7 @@ define([
         test(['100%'], '100%', 'percentage values are not changed');
     });
 
-    test('parser.getScriptPath', function(assert) {
+    QUnit.skip('parser.getScriptPath', function(assert) {
         var path = parser.getScriptPath(null);
         assert.equal(path, '', 'returns an empty string when no file name is provided');
 

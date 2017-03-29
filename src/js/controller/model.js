@@ -452,7 +452,9 @@ define([
 
         this.autoStartOnMobile = function() {
             return this.get('autostart') && !this.get('sdkplatform') &&
-                ((_autoStartSupportedIOS() && (utils.isSafari() || utils.isChrome() || utils.isFacebook())) || (utils.isAndroid() && utils.isChrome())) &&
+                ((_autoStartSupportedIOS() &&
+                (utils.isSafari() || utils.isChrome() || utils.isFacebook())) ||
+                (utils.isAndroid() && utils.isChrome())) &&
                 (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
         };
     };
