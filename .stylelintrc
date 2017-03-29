@@ -22,7 +22,7 @@
 
         "length-zero-no-unit": true,
 
-        "unit-blacklist": ["pt", "en"],
+        "unit-blacklist": ["pt"],
         "unit-case": "lower",
         "unit-no-unknown": true,
 
