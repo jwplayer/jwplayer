@@ -1205,7 +1205,7 @@ define([
 
         this.destroy = function () {
             this.off();
-            clearTimeout(_previewDisplayStateTimeout);
+            _cancelDelayResize(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
             clearTimeout(_controlsTimeout);
             window.removeEventListener('resize', _responsiveListener);
