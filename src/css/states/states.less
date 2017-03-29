@@ -224,7 +224,9 @@ body .jwplayer.jw-state-error {
 .jwplayer.jw-state-playing:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting),
 .jwplayer.jw-state-paused:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
   .jw-display {
-    display: none;
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
   }
 }
 
