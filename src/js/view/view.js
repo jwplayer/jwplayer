@@ -649,9 +649,11 @@ define([
         }
 
         function _setLiveMode(model, streamType) {
-            var live = (streamType === 'LIVE');
-            utils.toggleClass(_playerElement, 'jw-flag-live', live);
-            _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
+            if (!_instreamModel) {
+                var live = (streamType === 'LIVE');
+                utils.toggleClass(_playerElement, 'jw-flag-live', live);
+                _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
+            }
         }
 
         function _errorHandler(model, evt) {
@@ -739,9 +741,7 @@ define([
         };
 
         this.setAltText = function (text) {
-            if (_controls) {
-                _controls.controlbar.setAltText(text);
-            }
+            _model.set('altText', text);
         };
 
         this.destroyInstream = function () {

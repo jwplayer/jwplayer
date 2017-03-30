@@ -223,6 +223,7 @@ define([
             _model.change('streamType', this.onStreamTypeChange, this);
             _model.change('nextUp', this.onNextUp, this);
             _model.change('cues', this.addCues, this);
+            _model.change('altText', this.setAltText, this);
 
             // Event listeners
 
@@ -392,7 +393,7 @@ define([
             return this.el;
         }
 
-        setAltText(altText) {
+        setAltText(model, altText) {
             this.elements.alt.innerHTML = altText;
         }
 
