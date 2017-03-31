@@ -94,6 +94,8 @@ define([
                 const displayContainer = new DisplayContainer();
                 const rewindDisplayIcon = new RewindDisplayIcon(model, api);
                 const playDisplayIcon = new PlayDisplayIcon(model);
+                const nextDisplayIcon = new NextDisplayIcon(model, api);
+
                 // toggle playback
                 playDisplayIcon.on('click tap', () => {
                     this.trigger(events.JWPLAYER_DISPLAY_CLICK);
@@ -116,10 +118,10 @@ define([
                         document.addEventListener('mouseup', resetPointerEvents);
                     });
                 }
-                const nextDisplayIcon = new NextDisplayIcon(model, api);
                 displayContainer.addButton(rewindDisplayIcon);
                 displayContainer.addButton(playDisplayIcon);
                 displayContainer.addButton(nextDisplayIcon);
+
                 this.element.appendChild(displayContainer.element());
                 this.displayContainer = displayContainer;
             }
@@ -336,27 +338,23 @@ define([
         }
 
         userActive(timeout) {
-            if (!this.showing) {
-                utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
-            }
-
-            this.showing = true;
-            this.trigger('userActive', this.showing);
-
             clearTimeout(this.activeTimeout);
             this.activeTimeout = setTimeout(() => this.userInactive(),
                 timeout || ACTIVE_TIMEOUT);
+            if (!this.showing) {
+                utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
+                this.showing = true;
+                this.trigger('userActive', this.showing);
+            }
         }
 
         userInactive() {
-            this.showing = false;
-
             clearTimeout(this.activeTimeout);
+            this.showing = false;
             if (this.controlbar) {
                 this.controlbar.hideComponents();
             }
             utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
-
             this.trigger('userInactive', this.showing);
         }
     };
