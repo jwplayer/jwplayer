@@ -195,8 +195,8 @@ define([
                 _this.triggerAfterReady(type, e);
             }
 
-            function changeControls(model, mode) {
-                if (mode) {
+            function changeControls(model, enable) {
+                if (enable) {
                     ControlsLoader.load()
                         .then(function (Controls) {
                             if (!_view.isSetup) {
@@ -217,7 +217,7 @@ define([
                 }
 
                 _this.trigger(events.JWPLAYER_CONTROLS, {
-                    controls: mode
+                    controls: enable
                 });
             }
 

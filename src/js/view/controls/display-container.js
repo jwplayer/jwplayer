@@ -4,7 +4,6 @@ define([
 ], function(utils, Template) {
 
     return class DisplayContainer {
-
         constructor() {
             this.el = utils.createElement(Template());
             this.container = this.el.querySelector('.jw-display-controls');

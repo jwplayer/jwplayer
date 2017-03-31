@@ -19,7 +19,6 @@ define([
     };
 
     return class Slider {
-
         constructor(className, orientation) {
             _.extend(this, Events);
 

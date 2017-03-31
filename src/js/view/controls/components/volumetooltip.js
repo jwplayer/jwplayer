@@ -6,7 +6,6 @@ define([
 ], function(Tooltip, Slider, UI) {
 
     return class VolumeTooltip extends Tooltip {
-
         constructor(_model, name, ariaText) {
             // Prevent Volume tooltip button from being aria-hidden="true"
             super(name, ariaText, true, true);

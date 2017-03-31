@@ -6,7 +6,6 @@ define([
 ], function(UI, events, Events, _) {
 
     return class ClickHandler {
-
         constructor(model, element) {
             _.extend(this, Events);
 

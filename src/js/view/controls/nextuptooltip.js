@@ -6,7 +6,6 @@ define([
 ], function(dom, UI, utils, nextUpTemplate) {
 
     return class NextUpTooltip {
-
         constructor(_model, _api, playerElement) {
             this._model = _model;
             this._api = _api;
@@ -16,8 +15,8 @@ define([
             this.state = 'tooltip';
         }
 
-        setup() {
-            this.container = document.createElement('div');
+        setup(context) {
+            this.container = context.createElement('div');
             this.container.className = 'jw-nextup-container jw-reset';
             var element = utils.createElement(nextUpTemplate());
             this.addContent(element);

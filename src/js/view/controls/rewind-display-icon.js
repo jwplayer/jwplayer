@@ -5,7 +5,6 @@ define([
 ], function(utils, UI, Template) {
 
     return class RewindDisplayIcon {
-
         constructor(model, api) {
 
             this.el = utils.createElement(Template({

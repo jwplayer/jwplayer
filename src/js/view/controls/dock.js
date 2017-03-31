@@ -19,7 +19,6 @@ define([
     };
 
     return class Dock {
-
         constructor(_model) {
             this.model = _model;
 

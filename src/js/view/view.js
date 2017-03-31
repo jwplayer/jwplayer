@@ -464,6 +464,7 @@ define([
             if (_controls) {
                 _controls.removeActiveListeners(_logo.element());
                 _controls.disable();
+                _controls = null;
             }
 
             var overlay = document.querySelector('.jw-overlays');

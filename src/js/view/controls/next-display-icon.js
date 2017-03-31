@@ -5,7 +5,6 @@ define([
 ], function(utils, UI, Template) {
 
     return class NextDisplayIcon {
-
         constructor(model, api) {
             const element = utils.createElement(Template({
                 iconName: 'next',

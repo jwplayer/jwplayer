@@ -5,7 +5,6 @@ define([
 ], function(_, utils, srt) {
 
     class Cue {
-
         constructor (time, text) {
             this.time = time;
             this.text = text;
@@ -58,8 +57,12 @@ define([
 
             _.each(this.cues, (cue) => {
                 cue.align(duration);
-                cue.el.addEventListener('mouseover', () => (this.activeCue = cue));
-                cue.el.addEventListener('mouseout', () => (this.activeCue = null));
+                cue.el.addEventListener('mouseover', () => {
+                    this.activeCue = cue;
+                });
+                cue.el.addEventListener('mouseout', () => {
+                    this.activeCue = null;
+                });
                 this.elementRail.appendChild(cue.el);
             });
         },

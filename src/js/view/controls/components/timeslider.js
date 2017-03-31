@@ -69,7 +69,6 @@ define([
     }
 
     class TimeSlider extends Slider {
-
         constructor(_model, _api) {
             super('jw-slider-time', 'horizontal');
 

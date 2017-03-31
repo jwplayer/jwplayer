@@ -5,7 +5,6 @@ define([
 ], function(Events, utils, _) {
 
     return class Tooltip {
-        
         constructor(name, ariaText, ariaShown, elementShown) {
             _.extend(this, Events);
             this.el = document.createElement('div');

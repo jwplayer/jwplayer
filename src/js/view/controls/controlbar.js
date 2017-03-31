@@ -83,7 +83,6 @@ define([
     }
 
     return class Controlbar {
-
         constructor(_api, _model) {
             _.extend(this, Events);
             this._api = _api;

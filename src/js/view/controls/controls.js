@@ -45,7 +45,6 @@ define([
     };
 
     return class Controls {
-
         constructor(context, playerContainer) {
             _.extend(this, Events);
 
@@ -78,7 +77,7 @@ define([
             element.className = 'jw-controls jw-reset';
             this.element = element;
 
-            const right = document.createElement('div');
+            const right = this.context.createElement('div');
             right.className = 'jw-controls-right jw-reset';
             element.appendChild(right);
             this.right = right;
@@ -110,12 +109,12 @@ define([
                         if (!isFlash) {
                             return;
                         }
-                        const resetPointerEvents = function() {
-                            document.removeEventListener('mouseup', resetPointerEvents);
+                        const resetPointerEvents = () => {
+                            this.context.removeEventListener('mouseup', resetPointerEvents);
                             playDisplayIcon.el.style.pointerEvents = 'auto';
                         };
                         this.style.pointerEvents = 'none';
-                        document.addEventListener('mouseup', resetPointerEvents);
+                        this.context.addEventListener('mouseup', resetPointerEvents);
                     });
                 }
                 displayContainer.addButton(rewindDisplayIcon);
@@ -138,7 +137,7 @@ define([
             // Next Up Tooltip
             if (model.get('nextUpDisplay') && !this.nextUpToolTip) {
                 const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
-                nextUpToolTip.setup();
+                nextUpToolTip.setup(this.context);
                 this.nextUpToolTip = nextUpToolTip;
 
                 // NextUp needs to be behind the controlbar to not block other tooltips
