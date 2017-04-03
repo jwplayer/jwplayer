@@ -1,0 +1,55 @@
+.jwplayer.jw-skin-seven {
+    .jw-slider-container {
+        .jw-knob {
+            width: 0;
+        }
+        &:hover {
+            .jw-knob {
+                width: @thumb-size;
+            }
+        }
+    }
+    .jw-overlays {
+         opacity: 0;
+         transition: opacity 1s;
+    }
+    &.jw-flag-overlay-open-related {
+         .jw-overlays {
+             opacity: 1;
+             transition: opacity 1s;
+         }
+         &.jw-flag-user-inactive {
+            .jw-overlays {
+                opacity: 0;
+                transition: opacity 1s;
+            }
+         }
+    }
+}
+
+.jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
+    &.jw-flag-user-inactive {
+        .jw-controlbar,
+        .jw-controls-right,
+        .jw-display {
+            opacity: 0;
+            transition: opacity 1s;
+        }
+    }
+
+    &:not(.jw-flag-user-inactive) {
+        .jw-controlbar,
+        .jw-controls-right,
+        .jw-display {
+            opacity: 1;
+            transition: opacity 1s;
+        }
+    }
+}
+
+.jwplayer.jw-skin-seven.jw-flag-user-inactive.jw-state-playing:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting):not(.jw-flag-ads) {
+    .jw-dock,
+    .jw-controlbar {
+        display: block;
+    }
+}
