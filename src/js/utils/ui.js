@@ -253,6 +253,7 @@ define([
         this.triggerEvent = triggerEvent;
 
         this.destroy = function() {
+            this.off();
             elem.removeEventListener('touchstart', interactStartHandler);
             elem.removeEventListener('mousedown', interactStartHandler);
 

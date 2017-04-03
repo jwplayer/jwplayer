@@ -100,26 +100,33 @@ define([
         });
     };
 
-    var hexToRgba = function (hexColor, opacity) {
+    var canvasColorContext;
+    var getRgba = function (color, opacity) {
         var style = 'rgb';
-        if (hexColor) {
-            hexColor = String(hexColor).replace('#', '');
-            if (hexColor.length === 3) {
-                hexColor = hexColor[0] + hexColor[0] + hexColor[1] + hexColor[1] + hexColor[2] + hexColor[2];
-            }
-        } else {
-            hexColor = '000000';
-        }
-        var channels = [
-            parseInt(hexColor.substr(0, 2), 16),
-            parseInt(hexColor.substr(2, 2), 16),
-            parseInt(hexColor.substr(4, 2), 16)
-        ];
-        if (opacity !== undefined && opacity !== 100) {
+        var hasAlpha = (opacity !== undefined && opacity !== 100);
+        if (hasAlpha) {
             style += 'a';
-            channels.push(opacity / 100);
         }
-        return style + '(' + channels.join(',') + ')';
+        if (!canvasColorContext) {
+            var canvas = document.createElement('canvas');
+            canvas.height = 1;
+            canvas.width = 1;
+            canvasColorContext = canvas.getContext('2d');
+        }
+        if (!color) {
+            color = '#000000';
+        } else if (!isNaN(parseInt(color, 16))) {
+            color = '#' + color;
+        }
+        canvasColorContext.clearRect(0, 0, 1, 1);
+        canvasColorContext.fillStyle = color;
+        canvasColorContext.fillRect(0, 0, 1, 1);
+        var data = canvasColorContext.getImageData(0, 0, 1, 1).data;
+        style += '(' + data[0] + ', ' + data[1] + ', ' + data[2];
+        if (hasAlpha) {
+            style += ', ' + (opacity / 100);
+        }
+        return style + ')';
     };
 
     return {
@@ -127,6 +134,7 @@ define([
         style: _style,
         clearCss: styleLoader.clear,
         transform: transform,
-        hexToRgba: hexToRgba
+        hexToRgba: getRgba, // deprecate in favor of getRgba
+        getRgba: getRgba
     };
 });

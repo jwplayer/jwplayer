@@ -10,7 +10,7 @@ define([
         this.img = obj.text;
     }
 
-    var ThumbnailsMixin = {
+    return {
         loadThumbnails: function (file) {
             if (!file) {
                 return;
@@ -100,6 +100,4 @@ define([
             this.thumbnails = [];
         }
     };
-
-    return ThumbnailsMixin;
 });

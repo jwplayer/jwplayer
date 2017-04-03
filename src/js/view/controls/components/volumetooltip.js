@@ -1,17 +1,20 @@
 define([
-    'view/components/tooltip',
-    'view/components/slider',
+    'view/controls/components/tooltip',
+    'view/controls/components/slider',
     'utils/ui',
     'utils/helpers'
 ], function(Tooltip, Slider, UI) {
-    return Tooltip.extend({
-        constructor: function(_model, name, ariaText) {
+
+    return class VolumeTooltip extends Tooltip {
+        constructor(_model, name, ariaText) {
+            // Prevent Volume tooltip button from being aria-hidden="true"
+            super(name, ariaText, true, true);
+
             this._model = _model;
 
-            // Prevent Volume tooltip button from being aria-hidden="true"
-            Tooltip.call(this, name, ariaText, true, true);
-
             this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', 'vertical');
+            this.volumeSlider.setup();
+
             this.addContent(this.volumeSlider.element());
 
             this.volumeSlider.on('update', function (evt) {
@@ -25,10 +28,11 @@ define([
                 .on('out', this.closeTooltip, this);
 
             this._model.on('change:volume', this.onVolume, this);
-        },
-        toggleValue: function() {
+        }
+
+        toggleValue() {
             this.trigger('toggleValue');
         }
-    });
+    };
 });
 

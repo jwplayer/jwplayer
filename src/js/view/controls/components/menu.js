@@ -1,12 +1,14 @@
 define([
-    'view/components/tooltip',
+    'view/controls/components/tooltip',
     'utils/helpers',
     'utils/underscore',
     'utils/ui',
     'templates/menu.html'
 ], function(Tooltip, utils, _, UI, menuTemplate) {
-    return Tooltip.extend({
-        setup: function (list, selectedIndex, options) {
+
+    return class Menu extends Tooltip {
+
+        setup(list, selectedIndex, options) {
             options = options || {};
             if (!this.iconUI) {
                 this.iconUI = new UI(this.el, { useHover: true, directSelect: true });
@@ -49,11 +51,13 @@ define([
             }
 
             this.selectItem(selectedIndex);
-        },
-        toggleValue: function() {
+        }
+
+        toggleValue() {
             this.trigger('toggleValue');
-        },
-        select: function (evt) {
+        }
+
+        select(evt) {
             if (evt.target.parentElement === this.content) {
                 var classes = utils.classList(evt.target);
 
@@ -67,16 +71,18 @@ define([
                     this.closeTooltipListener();
                 }
             }
-        },
-        selectItem: function(selectedIndex) {
+        }
+
+        selectItem(selectedIndex) {
             if (this.content) {
                 for (var i = 0; i < this.content.children.length; i++) {
                     utils.toggleClass(this.content.children[i], 'jw-active-option', (selectedIndex === i));
                 }
             }
             utils.toggleClass(this.el, 'jw-off', (selectedIndex === 0));
-        },
-        reset: function() {
+        }
+
+        reset() {
             utils.addClass(this.el, 'jw-off');
             this.iconUI.off();
             if (this.contentUI) {
@@ -84,5 +90,5 @@ define([
             }
             this.removeContent();
         }
-    });
+    };
 });

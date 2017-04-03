@@ -9,7 +9,6 @@ define([
     'unit/dom-test',
     'unit/dfxp-test',
     'unit/embed-swf-test',
-    'unit/extendable-test',
     'unit/helpers-test',
     'unit/jwplayer-selectplayer-test',
     'unit/model-qoe-test',
