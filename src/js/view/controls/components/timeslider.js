@@ -3,13 +3,15 @@ define([
     'utils/helpers',
     'utils/constants',
     'utils/ui',
-    'view/components/slider',
-    'view/components/tooltip',
-    'view/components/chapters.mixin',
-    'view/components/thumbnails.mixin'
+    'view/controls/components/slider',
+    'view/controls/components/tooltip',
+    'view/controls/components/chapters.mixin',
+    'view/controls/components/thumbnails.mixin'
 ], function(_, utils, Constants, UI, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
-    var TimeTip = Tooltip.extend({
-        setup: function() {
+
+    class TimeTip extends Tooltip {
+
+        setup() {
             this.text = document.createElement('span');
             this.text.className = 'jw-text jw-reset';
             this.img = document.createElement('div');
@@ -26,23 +28,25 @@ define([
             utils.removeClass(this.el, 'jw-hidden');
 
             this.addContent(wrapper);
-        },
+        }
 
-        image: function(style) {
+        image(style) {
             utils.style(this.img, style);
-        },
+        }
 
-        update: function(txt) {
+        update(txt) {
             this.text.innerHTML = txt;
-        },
-        getWidth: function () {
+        }
+
+        getWidth () {
             if (!this.containerWidth) {
                 this.setWidth();
             }
 
             return this.containerWidth;
-        },
-        setWidth: function (width) {
+        }
+
+        setWidth (width) {
             if (width) {
                 this.containerWidth = width + 16; // add a little padding so the image isn't flush against the edge
                 return;
@@ -53,18 +57,21 @@ define([
             }
 
             this.containerWidth = utils.bounds(this.container).width;
-        },
-        resetWidth: function () {
+        }
+
+        resetWidth () {
             this.containerWidth = 0;
         }
-    });
+    }
 
     function reasonInteraction() {
         return { reason: 'interaction' };
     }
 
-    var TimeSlider = Slider.extend({
-        constructor: function(_model, _api) {
+    class TimeSlider extends Slider {
+        constructor(_model, _api) {
+            super('jw-slider-time', 'horizontal');
+
             this._model = _model;
             this._api = _api;
 
@@ -77,22 +84,18 @@ define([
             this.seekThrottled = _.throttle(this.performSeek, 400);
             this.mobileHoverDistance = 5;
 
-            this._model
-                .on('change:playlistItem', this.onPlaylistItem, this)
-                .on('change:position', this.onPosition, this)
-                .on('change:duration', this.onDuration, this)
-                .on('change:buffer', this.onBuffer, this);
-
-            Slider.call(this, 'jw-slider-time', 'horizontal');
-        },
+            this.setup();
+        }
 
         // These overwrite Slider methods
-        setup: function() {
-            Slider.prototype.setup.apply(this, arguments);
+        setup() {
+            super.setup.apply(this, arguments);
 
-            if (this._model.get('playlistItem')) {
-                this.onPlaylistItem(this._model, this._model.get('playlistItem'));
-            }
+            this._model
+                .on('duration', this.onDuration, this)
+                .change('playlistItem', this.onPlaylistItem, this)
+                .change('position', this.onPosition, this)
+                .change('buffer', this.onBuffer, this);
 
             this.elementRail.appendChild(this.timeTip.element());
 
@@ -100,8 +103,9 @@ define([
             this.elementUI = new UI(this.el, { useHover: true, useMove: true })
                 .on('drag move over', this.showTimeTooltip.bind(this), this)
                 .on('dragEnd out', this.hideTimeTooltip.bind(this), this);
-        },
-        limit: function(percent) {
+        }
+
+        limit(percent) {
             if (this.activeCue && _.isNumber(this.activeCue.pct)) {
                 return this.activeCue.pct;
             }
@@ -115,45 +119,51 @@ define([
                 return 100 - updatedPercent;
             }
             return percent;
-        },
-        update: function(percent) {
+        }
+
+        update(percent) {
             this.seekTo = percent;
             this.seekThrottled();
-            Slider.prototype.update.apply(this, arguments);
-        },
-        dragStart: function() {
+            super.update.apply(this, arguments);
+        }
+
+        dragStart() {
             this._model.set('scrubbing', true);
-            Slider.prototype.dragStart.apply(this, arguments);
-        },
-        dragEnd: function() {
-            Slider.prototype.dragEnd.apply(this, arguments);
+            super.dragStart.apply(this, arguments);
+        }
+
+        dragEnd() {
+            super.dragEnd.apply(this, arguments);
             this._model.set('scrubbing', false);
             this.dragJustReleased = true;
-        },
-
+        }
 
         // Event Listeners
-        onSeeked: function () {
+        onSeeked () {
             // When we are done scrubbing there will be a final seeked event
             if (this._model.get('scrubbing')) {
                 this.performSeek();
             }
-        },
-        onBuffer: function (model, pct) {
+        }
+
+        onBuffer(model, pct) {
             this.updateBuffer(pct);
-        },
-        onPosition: function(model, position) {
+        }
+
+        onPosition(model, position) {
             if (this.dragJustReleased) {
                 // prevents firing an outdated position and causing the timeslider to jump back and forth
                 this.dragJustReleased = false;
                 return;
             }
             this.updateTime(position, model.get('duration'));
-        },
-        onDuration: function(model, duration) {
+        }
+
+        onDuration(model, duration) {
             this.updateTime(model.get('position'), duration);
-        },
-        updateTime: function(position, duration) {
+        }
+
+        updateTime(position, duration) {
             var pct = 0;
             if (duration) {
                 var streamType = this._model.get('streamType');
@@ -164,8 +174,12 @@ define([
                 }
             }
             this.render(pct);
-        },
-        onPlaylistItem: function (model, playlistItem) {
+        }
+
+        onPlaylistItem(model, playlistItem) {
+            if (!playlistItem) {
+                return;
+            }
             this.reset();
 
             model.mediaModel.on('seeked', this.onSeeked, this);
@@ -178,9 +192,9 @@ define([
                     this.loadChapters(track.file);
                 }
             }, this);
-        },
+        }
 
-        performSeek: function() {
+        performSeek() {
             var percent = this.seekTo;
             var duration = this._model.get('duration');
             var streamType = this._model.get('streamType');
@@ -194,18 +208,19 @@ define([
                 position = percent / 100 * duration;
                 this._api.seek(Math.min(position, duration - 0.25), reasonInteraction());
             }
-        },
-        showTimeTooltip: function(evt) {
+        }
+
+        showTimeTooltip(evt) {
             var duration = this._model.get('duration');
             if (duration === 0) {
                 return;
             }
 
             var playerWidth = this._model.get('containerWidth');
-            var _railBounds = utils.bounds(this.elementRail);
-            var position = (evt.pageX ? (evt.pageX - _railBounds.left) : evt.x);
-            position = utils.between(position, 0, _railBounds.width);
-            var pct = position / _railBounds.width;
+            var railBounds = utils.bounds(this.elementRail);
+            var position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
+            position = utils.between(position, 0, railBounds.width);
+            var pct = position / railBounds.width;
             var time = duration * pct;
 
             // For DVR we need to swap it around
@@ -219,7 +234,7 @@ define([
             // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
             if (UI.getPointerType(evt.sourceEvent) === 'touch') {
                 this.activeCue = _.reduce(this.cues, function(closeCue, cue) {
-                    if (Math.abs(position - (parseInt(cue.pct) / 100 * _railBounds.width)) < this.mobileHoverDistance) {
+                    if (Math.abs(position - (parseInt(cue.pct) / 100 * railBounds.width)) < this.mobileHoverDistance) {
                         return cue;
                     }
                     return closeCue;
@@ -250,8 +265,8 @@ define([
             utils.addClass(timeTip.el, 'jw-open');
 
             var timeTipWidth = timeTip.getWidth();
-            var widthPct = _railBounds.width / 100;
-            var tolerance = playerWidth - _railBounds.width;
+            var widthPct = railBounds.width / 100;
+            var tolerance = playerWidth - railBounds.width;
             var timeTipPct = 0;
             if (timeTipWidth > tolerance) {
                 // timeTip may go outside the bounds of the player. Determine the % of tolerance needed
@@ -259,19 +274,19 @@ define([
             }
             var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
             utils.style(timeTip.el, { left: safePct + '%' });
-        },
+        }
 
-        hideTimeTooltip: function() {
+        hideTimeTooltip() {
             utils.removeClass(this.timeTip.el, 'jw-open');
-        },
+        }
 
-        reset: function() {
+        reset() {
             this.resetChapters();
             this.resetThumbnails();
             this.timeTip.resetWidth();
             this.textLength = 0;
         }
-    });
+    }
 
     _.extend(TimeSlider.prototype, ChaptersMixin, ThumbnailsMixin);
 

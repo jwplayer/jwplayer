@@ -450,12 +450,17 @@ define([
             return !(utils.isIOS(6) || utils.isIOS(7) || utils.isIOS(8) || utils.isIOS(9));
         }
 
+        function platformCanAutostart() {
+            var autostartAdsIsEnabled = (!_this.get('advertising') || _this.get('advertising').autoplayadsmuted);
+            var iosBrowserIsSupported = _autoStartSupportedIOS() && (utils.isSafari() || utils.isChrome() || utils.isFacebook());
+            var androidBrowserIsSupported = utils.isAndroid() && utils.isChrome();
+            var mobileBrowserIsSupported = (iosBrowserIsSupported || androidBrowserIsSupported);
+            var isAndroidSdk = _this.get('sdkplatform') === 1;
+            return (!_this.get('sdkplatform') && autostartAdsIsEnabled && mobileBrowserIsSupported) || isAndroidSdk;
+        }
+
         this.autoStartOnMobile = function() {
-            return this.get('autostart') && !this.get('sdkplatform') &&
-                ((_autoStartSupportedIOS() &&
-                (utils.isSafari() || utils.isChrome() || utils.isFacebook())) ||
-                (utils.isAndroid() && utils.isChrome())) &&
-                (!this.get('advertising') || this.get('advertising').autoplayadsmuted);
+            return this.get('autostart') && platformCanAutostart();
         };
     };
 
