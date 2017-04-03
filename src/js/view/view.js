@@ -440,10 +440,10 @@ define([
                 _captionsRenderer.renderCues(true);
             });
 
-            _logo.setContainer(controls.right);
-
             controls.enable(_api, _model);
             controls.addActiveListeners(_logo.element());
+
+            _logo.setContainer(controls.right);
 
             _model.on('change:scrubbing', _stateHandler);
             _model.change('streamType', _setLiveMode, this);
