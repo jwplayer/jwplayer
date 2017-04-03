@@ -140,9 +140,9 @@ define([
             this.mediaModel = new MediaModel(this);
             this.set('mediaModel', this.mediaModel);
 
-            var innerHTMLNode = document.createElement('div');
-            innerHTMLNode.innerHTML = '<video src="//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" preload="none"></video>'
-            var mediaElement = innerHTMLNode.childNodes[0];
+            var mediaElement = document.createElement('video');
+            mediaElement.src = "//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4";
+            mediaElement.preload = "none";
 
             this.set('provider', {
                 name: 'flash',
@@ -156,7 +156,7 @@ define([
                 },
                 setVisibility: function(state) {
                     mediaElement.style.visibility = state ? 'visible': '';
-                    mediaElement.style.visibility = state ? 1 : 0;
+                    mediaElement.style.opacity = state ? 1 : 0;
                 },
                 seek: function(time) {
                     // mediaElement[0].load();
@@ -180,6 +180,7 @@ define([
                             style.objectFit = 'fill';
                         }
                     }
+
                     mediaElement.style.objectFit = style.objectFit;
                     mediaElement.style.width = style.width;
                     mediaElement.style.height = style.height;
