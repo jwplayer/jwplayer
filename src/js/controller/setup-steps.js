@@ -7,7 +7,11 @@ define([
     'utils/underscore',
     'utils/helpers',
     'events/events',
+<<<<<<< HEAD
     'view/controls/loader'
+=======
+    'controller/controls-loader'
+>>>>>>> 1f07cd43f823684ddbf5dd534750ac59d58f01c8
 ], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events, ControlsLoader) {
 
     var _pluginLoader;
@@ -45,8 +49,7 @@ define([
             LOAD_CONTROLS: {
                 method: _loadControls,
                 depends: [
-                    'LOAD_PROMISE_POLYFILL',
-                    'SETUP_VIEW'
+                    'LOAD_PROMISE_POLYFILL'
                 ]
             },
             SETUP_VIEW: {
@@ -91,6 +94,7 @@ define([
             SEND_READY: {
                 method: _sendReady,
                 depends: [
+                    'LOAD_CONTROLS',
                     'SET_ITEM',
                     'DEFERRED'
                 ]
@@ -293,6 +297,12 @@ define([
 
 
     function _setupView(resolve, _model, _api, _view) {
+        // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
+        var autoStartOnMobile = _model.autoStartOnMobile();
+        if (autoStartOnMobile) {
+            _model.set('autostartMuted', true);
+        }
+        _model.set('playOnViewable', autoStartOnMobile || _model.get('autostart') === 'viewable');
         _view.setup();
         resolve();
     }
@@ -308,15 +318,14 @@ define([
         });
     }
 
-    function _loadControls(resolve, _model, _api, _view) {
+    function _loadControls(resolve, _model) {
         if (!_model.get('controls')) {
             resolve();
             return;
         }
 
         ControlsLoader.load()
-            .then(function (Controls) {
-                _view.addControls(new Controls(document, _view.element()));
+            .then(function (/* Controls */) {
                 resolve();
             })
             .catch(function (reason) {

@@ -1,4 +1,3 @@
-/* eslint-env node */
 /* eslint no-process-env: 0 */
 const webpack = require('webpack');
 const path = require('path');
@@ -104,7 +103,7 @@ module.exports = function(config) {
                     __REPO__ : '\'\'',
                     __DEBUG__ : false,
                     __BUILD_VERSION__:  '\'' + '7.10.0' + '\'',
-                    __FLASH_VERSION__: 11.2
+                    __FLASH_VERSION__: 18.0
                 }),
             ]
         },

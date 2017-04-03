@@ -1,22 +1,22 @@
 define([
     'utils/dom',
     'utils/ui',
-    'utils/underscore',
     'utils/helpers',
     'templates/nextup.html'
-], function(dom, UI, _, utils, nextUpTemplate) {
-    var NextUpTooltip = function(_model, _api, playerElement) {
-        this._model = _model;
-        this._api = _api;
-        this._playerElement = playerElement;
-        this.nextUpText = _model.get('localization').nextUp;
-        this.nextUpClose = _model.get('localization').nextUpClose;
-        this.state = 'tooltip';
-    };
+], function(dom, UI, utils, nextUpTemplate) {
 
-    _.extend(NextUpTooltip.prototype, {
-        setup: function() {
-            this.container = document.createElement('div');
+    return class NextUpTooltip {
+        constructor(_model, _api, playerElement) {
+            this._model = _model;
+            this._api = _api;
+            this._playerElement = playerElement;
+            this.nextUpText = _model.get('localization').nextUp;
+            this.nextUpClose = _model.get('localization').nextUpClose;
+            this.state = 'tooltip';
+        }
+
+        setup(context) {
+            this.container = context.createElement('div');
             this.container.className = 'jw-nextup-container jw-reset';
             var element = utils.createElement(nextUpTemplate());
             this.addContent(element);
@@ -52,8 +52,9 @@ define([
             // Tooltip
             new UI(this.tooltip)
                 .on('click tap', this.click, this);
-        },
-        loadThumbnail: function(url) {
+        }
+
+        loadThumbnail(url) {
             this.nextUpImage = new Image();
             this.nextUpImage.onload = (function() {
                 this.nextUpImage.onload = null;
@@ -63,12 +64,14 @@ define([
             return {
                 backgroundImage: 'url("' + url + '")'
             };
-        },
-        click: function() {
+        }
+
+        click() {
             this.reset();
             this._api.next();
-        },
-        toggle: function(model, show) {
+        }
+
+        toggle(model, show) {
             show = !!show;
 
             if (!model.get('nextUpEnabled')) {
@@ -78,30 +81,31 @@ define([
             dom.toggleClass(this.container, 'jw-nextup-container-visible', show);
             dom.toggleClass(this._playerElement, 'jw-flag-nextup', show);
             dom.toggleClass(this.container, 'jw-nextup-sticky', !!model.get('nextUpSticky'));
-        },
-        setNextUpItem: function(nextUpItem) {
-            var _this = this;
+        }
+
+        setNextUpItem(nextUpItem) {
             // Give the previous item time to complete its animation
-            setTimeout(function () {
+            setTimeout(() => {
                 // Set thumbnail
-                _this.thumbnail = _this.content.querySelector('.jw-nextup-thumbnail');
-                dom.toggleClass(_this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
+                this.thumbnail = this.content.querySelector('.jw-nextup-thumbnail');
+                dom.toggleClass(this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
                 if (nextUpItem.image) {
-                    var thumbnailStyle = _this.loadThumbnail(nextUpItem.image);
-                    utils.style(_this.thumbnail, thumbnailStyle);
+                    var thumbnailStyle = this.loadThumbnail(nextUpItem.image);
+                    utils.style(this.thumbnail, thumbnailStyle);
                 }
 
                 // Set header
-                _this.header = _this.content.querySelector('.jw-nextup-header');
-                _this.header.innerText = _this.nextUpText;
+                this.header = this.content.querySelector('.jw-nextup-header');
+                this.header.innerText = this.nextUpText;
 
                 // Set title
-                _this.title = _this.content.querySelector('.jw-nextup-title');
+                this.title = this.content.querySelector('.jw-nextup-title');
                 var title = nextUpItem.title;
-                _this.title.innerText = title ? utils.createElement(title).textContent : '';
+                this.title.innerText = title ? utils.createElement(title).textContent : '';
             }, 500);
-        },
-        onNextUp: function(model, nextUp) {
+        }
+
+        onNextUp(model, nextUp) {
             this.reset();
             if (!nextUp) {
                 return;
@@ -117,8 +121,9 @@ define([
                 }
                 this.setNextUpItem(nextUp);
             }
-        },
-        onDuration: function(model, duration) {
+        }
+
+        onDuration(model, duration) {
             if (!duration) {
                 return;
             }
@@ -131,15 +136,17 @@ define([
             }
 
             this.offset = offset;
-        },
-        onMediaModel: function(model, mediaModel) {
+        }
+
+        onMediaModel(model, mediaModel) {
             mediaModel.on('change:state', function(stateChangeMediaModel, state) {
                 if (state === 'complete') {
                     model.set('nextUpVisible', false);
                 }
             });
-        },
-        onElapsed: function(model, val) {
+        }
+
+        onElapsed(model, val) {
             var nextUpSticky = model.get('nextUpSticky');
             if (!model.get('nextUpEnabled') || nextUpSticky === false) {
                 return;
@@ -154,34 +161,37 @@ define([
             } else if (!showTilEnd && nextUpSticky === true) { // reset if there was a backward seek
                 this.reset();
             }
-        },
-        onStreamType: function(model, streamType) {
+        }
+
+        onStreamType(model, streamType) {
             if (streamType !== 'VOD') {
                 model.set('nextUpSticky', false);
             }
-        },
-        element: function() {
+        }
+
+        element() {
             return this.container;
-        },
-        addContent: function(elem) {
+        }
+
+        addContent(elem) {
             if (this.content) {
                 this.removeContent();
             }
             this.content = elem;
             this.container.appendChild(elem);
-        },
-        removeContent: function() {
+        }
+
+        removeContent() {
             if (this.content) {
                 this.container.removeChild(this.content);
                 this.content = null;
             }
-        },
-        reset: function() {
+        }
+
+        reset() {
             var model = this._model;
             model.set('nextUpVisible', false);
             model.set('nextUpSticky', undefined);
         }
-    });
-
-    return NextUpTooltip;
+    };
 });

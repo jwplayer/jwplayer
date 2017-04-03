@@ -1,14 +1,16 @@
 define([
-    'utils/extendable',
+    'utils/backbone.events',
     'utils/ui',
+    'utils/helpers',
+    'utils/underscore',
     'templates/slider.html',
-    'utils/helpers'
-], function(Extendable, UI, SliderTemplate, utils) {
-    var getRailBounds = function(elementRail) {
-        var bounds = utils.bounds(elementRail);
+], function(Events, UI, utils, _, SliderTemplate) {
+
+    const getRailBounds = function(elementRail) {
+        const bounds = utils.bounds(elementRail);
         // Partial workaround of Android 'inert-visual-viewport'
         // https://bugs.chromium.org/p/chromium/issues/detail?id=489206
-        var pageXOffset = window.pageXOffset;
+        const pageXOffset = window.pageXOffset;
         if (pageXOffset && utils.isAndroid() && document.body.parentElement.getBoundingClientRect().left >= 0) {
             bounds.left -= pageXOffset;
             bounds.right -= pageXOffset;
@@ -16,8 +18,10 @@ define([
         return bounds;
     };
 
-    return Extendable.extend({
-        constructor: function(className, orientation) {
+    return class Slider {
+        constructor(className, orientation) {
+            _.extend(this, Events);
+
             this.className = className + ' jw-background-color jw-reset';
             this.orientation = orientation;
 
@@ -26,16 +30,15 @@ define([
             this.dragEndListener = this.dragEnd.bind(this);
 
             this.tapListener = this.tap.bind(this);
+        }
 
-            this.setup();
-        },
-        setup: function() {
-            var obj = {
+        setup() {
+            const configuration = {
                 'default': this.default,
                 className: this.className,
                 orientation: 'jw-slider-' + this.orientation
             };
-            this.el = utils.createElement(SliderTemplate(obj));
+            this.el = utils.createElement(SliderTemplate(configuration));
 
             this.elementRail = this.el.getElementsByClassName('jw-slider-container')[0];
             this.elementBuffer = this.el.getElementsByClassName('jw-buffer')[0];
@@ -49,19 +52,22 @@ define([
             this.userInteract.on('dragEnd', this.dragEndListener);
 
             this.userInteract.on('tap click', this.tapListener);
-        },
-        dragStart: function() {
+        }
+
+        dragStart() {
             this.trigger('dragStart');
             this.railBounds = getRailBounds(this.elementRail);
-        },
-        dragEnd: function(evt) {
+        }
+
+        dragEnd(evt) {
             this.dragMove(evt);
             this.trigger('dragEnd');
-        },
-        dragMove: function(evt) {
-            var dimension;
-            var bounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail);
-            var percentage;
+        }
+
+        dragMove(evt) {
+            const bounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail);
+            let dimension;
+            let percentage;
 
             if (this.orientation === 'horizontal') {
                 dimension = evt.pageX;
@@ -83,26 +89,28 @@ define([
                 }
             }
 
-            var updatedPercent = this.limit(percentage);
+            const updatedPercent = this.limit(percentage);
             this.render(updatedPercent);
             this.update(updatedPercent);
 
-
             return false;
-        },
-        tap: function(evt) {
+        }
+
+        tap(evt) {
             this.railBounds = getRailBounds(this.elementRail);
             this.dragMove(evt);
-        },
+        }
 
-        limit: function(percentage) {
+        limit(percentage) {
             // modules that extend Slider can set limits on the percentage (TimeSlider)
             return percentage;
-        },
-        update: function(percentage) {
+        }
+
+        update(percentage) {
             this.trigger('update', { percentage: percentage });
-        },
-        render: function(percentage) {
+        }
+
+        render(percentage) {
             percentage = Math.max(0, Math.min(percentage, 100));
 
             if (this.orientation === 'horizontal') {
@@ -112,13 +120,14 @@ define([
                 this.elementThumb.style.bottom = percentage + '%';
                 this.elementProgress.style.height = percentage + '%';
             }
-        },
-        updateBuffer: function(percentage) {
-            this.elementBuffer.style.width = percentage + '%';
-        },
+        }
 
-        element: function() {
+        updateBuffer(percentage) {
+            this.elementBuffer.style.width = percentage + '%';
+        }
+
+        element() {
             return this.el;
         }
-    });
+    };
 });
