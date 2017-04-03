@@ -1,0 +1,55 @@
+.jwplayer.jw-skin-seven.jw-state-playing:not(.jw-flag-ads):not(.jw-flag-overlay-open-related) {
+    &.jw-flag-user-inactive {
+        .jw-overlays,
+        .jw-controls {
+            opacity: 0;
+            -webkit-transition: opacity 1s;
+            -moz-transition: opacity 1s;
+            -ms-transition: opacity 1s;
+            -o-transition: opacity 1s;
+            transition: opacity 1s;
+        }
+    }
+
+    &:not(.jw-flag-user-inactive) {
+        .jw-overlays,
+        .jw-controls {
+            opacity: 1;
+            -webkit-transition: opacity 1s;
+            -moz-transition: opacity 1s;
+            -ms-transition: opacity 1s;
+            -o-transition: opacity 1s;
+            transition: opacity 1s;
+        }
+    }
+}
+
+.jwplayer.jw-skin-seven:not(.jw-state-playing):not(.jw-flag-ads) {
+    &.jw-flag-overlay-open-related {
+        .jw-overlays {
+            opacity: 1;
+            -webkit-transition: opacity 1s;
+            -moz-transition: opacity 1s;
+            -ms-transition: opacity 1s;
+            -o-transition: opacity 1s;
+            transition: opacity 1s;
+        }
+    }
+
+    &:not(.jw-flag-overlay-open-related) {
+        .jw-overlays {
+            opacity: 0;
+            -webkit-transition: opacity 1s;
+            -moz-transition: opacity 1s;
+            -ms-transition: opacity 1s;
+            -o-transition: opacity 1s;
+            transition: opacity 1s;
+        }
+    }
+}
+
+.jwplayer.jw-skin-seven.jw-flag-user-inactive.jw-state-playing:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
+    .jw-controlbar {
+        display: block;
+    }
+}
