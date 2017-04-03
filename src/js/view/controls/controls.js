@@ -44,11 +44,7 @@ define([
         return { reason: 'interaction' };
     };
 
-    // Include the separate chunk that contains the controls styles.  Check webpackJsonjwplayer so we don't
-    // run this in phantomjs because it breaks despite working in browser and including files like we want to.
-    if (window.webpackJsonpjwplayer) {
-        require('css/controls.less');
-    }
+    require('css/controls.less');
 
     return class Controls {
         constructor(context, playerContainer) {

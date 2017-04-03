@@ -27,11 +27,7 @@ define([
     var requestAnimationFrame = raf.requestAnimationFrame;
     var cancelAnimationFrame = raf.cancelAnimationFrame;
 
-    // Include the separate chunk that contains the @font-face definition.  Check webpackJsonjwplayer so we don't
-    // run this in phantomjs because it breaks despite it working in browser and including files like we want it to.
-    if (window.webpackJsonpjwplayer) {
-        require('css/jwplayer.less');
-    }
+    require('css/jwplayer.less');
 
     return function View(_api, _model) {
         var _this = _.extend(this, Events, {
