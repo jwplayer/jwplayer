@@ -44,6 +44,8 @@ define([
         return { reason: 'interaction' };
     };
 
+    require('css/controls.less');
+
     return class Controls {
         constructor(context, playerContainer) {
             _.extend(this, Events);
