@@ -1,24 +1,14 @@
 @import "vars";
 
-// Mixin for icon default formatting
+/* Mixin for icon default formatting */
 .jw-icon {
-    font-family: 'jw-icons';
+    font-family: "jw-icons";
     -webkit-font-smoothing: antialiased;
     font-style: normal;
     font-weight: normal;
-    //line-height: 1;
     text-transform: none;
     background-color: transparent;
     font-variant: normal;
-
-    /* Enable Ligatures ================ */
-    -webkit-font-feature-settings: "liga";
-    -moz-font-feature-settings: "liga=1";
-    -moz-font-feature-settings: "liga";
-    -ms-font-feature-settings: "liga" 1;
-    -o-font-feature-settings: "liga";
-    font-feature-settings: "liga";
-    -moz-osx-font-smoothing: grayscale;
 }
 
 .inset-controlbar() {
@@ -32,15 +22,16 @@
         }
     }
 
-    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0)  {
+    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0) {
         .jw-controlbar {
-            bottom: .7em;
+            bottom: 0.7em;
             max-width: @min-breakpoint-5-width;
             margin: 0 auto;
             left: 2%;
             right: 2%;
-            width: 96%; // width assignment is required for IE11 to center correctly
+            width: 96%; /* width assignment is required for IE11 to center correctly */
         }
+
         &.jw-flag-ads-googleima .jw-controlbar {
             bottom: 0;
         }
@@ -51,20 +42,20 @@
 
         .jwplayer& {
             video::-webkit-media-text-track-container {
-                max-height:  ~"calc(~'100%' - ~'46px')";
+                max-height: ~"calc(~'100%' - ~'46px')";
             }
         }
     }
 
     &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
-        &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt  {
+        &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt {
             top: 1px;
         }
     }
 
     &:not(.jw-flag-time-slider-above) {
         .jw-nextup-container {
-            bottom: @controlbar-height + .7em;
+            bottom: @controlbar-height + 0.7em;
             padding-left: 0;
             padding-right: 0;
             max-width: @min-breakpoint-5-width;
@@ -103,12 +94,11 @@
     }
 }
 
-// Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316
+/* Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316 */
 
 /* Mixin for common skin styles with variable colors */
 #namespace() {
     .basic-skin-styles() {
-
         .jw-background-color {
             background: @controlbar-background;
         }
@@ -134,12 +124,15 @@
 
         .jw-toggle {
             color: @hover-color;
+
             &.jw-off {
                 color: @inactive-color;
+
                 &:focus {
-                  color: @hover-color;
+                    color: @hover-color;
                 }
             }
+
             &:focus {
                 outline: none;
             }
@@ -160,7 +153,6 @@
         }
 
         /* Slider colors */
-
         .jw-rail {
             background: @rail-color;
         }
@@ -290,7 +282,7 @@
             color: @nextup-body-text-color;
         }
 
-        .jw-nextup-thumbnail-visible + .jw-nextup-title::after {
+        .jw-nextup-thumbnail-visible + .jw-nextup-title:after {
             background: linear-gradient(
                 -180deg,
                 fade(@nextup-body-text-color-overflow, 0%) 0%,
@@ -319,8 +311,9 @@
         .jw-dock-button {
             border-radius: @ui-corner-round;
         }
+
         &:not(.jw-ie) {
-            .jw-controlbar .jw-controlbar-center-group .jw-text-alt  {
+            .jw-controlbar .jw-controlbar-center-group .jw-text-alt {
                 top: 50%;
                 transform: translateY(-50%);
                 margin: auto;
@@ -365,7 +358,7 @@
 
             .jwplayer& {
                 video::-webkit-media-text-track-container {
-                    max-height:  ~"calc(~'100%' - ~'38px')";
+                    max-height: ~"calc(~'100%' - ~'38px')";
                 }
             }
 
@@ -400,13 +393,13 @@
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
         // Set the highlight color of the center display icon when we are hovering the player.
-        &.jwplayer:not(.jw-flag-touch){
+        &.jwplayer:not(.jw-flag-touch) {
             // When not in an error state or in a buffering state...
             &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
                 // Highlight the display icon's background when hovering the media container
                 .jw-media:hover ~ .jw-controls .jw-display-icon-display {
                     background-color: @display-bkgd-hover-color;
-                 }
+                }
 
                 // Highlight the display icon and the display icon's background
                 .jw-display-icon-container:hover {
@@ -448,12 +441,12 @@
         }
         /* Color for list item text in menu lists */
         .jw-option {
-          color: @option-inactive-color;
+            color: @option-inactive-color;
 
-          &.jw-active-option {
-            color: @option-active-color;
-            background-color: @option-active-bg-color;
-          }
+            &.jw-active-option {
+                color: @option-active-color;
+                background-color: @option-active-bg-color;
+            }
         }
 
         &:not(.jw-flag-touch) .jw-option:hover {

@@ -81,6 +81,20 @@ module.exports = function(grunt) {
             }
         },
 
+        stylelint: {
+            options: {
+                configFile: '.stylelintrc',
+                formatter: 'string',
+                ignoreDisables: false,
+                failOnError: true,
+                reportNeedlessDisables: false,
+                syntax: 'less'
+            },
+            src: [
+                'src/**/*.less'
+            ]
+        },
+
         watch : {
             options: {
                 interrupt: false,
@@ -101,7 +115,7 @@ module.exports = function(grunt) {
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
-                tasks: ['webpack:debug', 'less:debug']
+                tasks: ['stylelint', 'webpack:debug', 'less:debug']
             },
             tests: {
                 files : ['test/{,*/}*.js'],
@@ -295,6 +309,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build-js', [
         'webpack',
         'lint:player',
+        'stylelint',
         'less'
     ]);
 

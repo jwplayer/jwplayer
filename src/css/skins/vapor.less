@@ -3,7 +3,7 @@
 .jw-skin-vapor {
     @active-color: #0f9e60;
     @inactive-color: rgba(0, 0, 0, 0.5);
-   	@hover-color: @active-color;
+    @hover-color: @active-color;
 
     @display-icon-color: rgba(255, 255, 255, 0.5);
     @display-icon-hover-color: @progress-color;
@@ -20,7 +20,7 @@
 
     @controlbar-height: 2em;
     @rail-height: 2em;
-    @cue-size: .66em;
+    @cue-size: 0.66em;
     @def-rail-width: 0.5em;
 
     @volume-background: #333;
@@ -28,11 +28,11 @@
     @controlbar-height: 2em;
 
     @nextup-border-radius: @ui-padding / 2;
-    @nextup-header-background: fade(mix(white, black, 50%), 90%);
+    @nextup-header-background: fade(mix(#fff, #000, 50%), 90%);
     @nextup-body-background: darken(@nextup-header-background, 20%);
-    @nextup-body-text-color-overflow: darken(mix(white, black, 50%), 20%);
+    @nextup-body-text-color-overflow: darken(mix(#fff, #000, 50%), 20%);
 
-    @slider-fixed-knob-border-radius: 0px;
+    @slider-fixed-knob-border-radius: 0;
     @slider-fixed-knob-height: 16px;
     @slider-fixed-knob-width: 4px;
 
@@ -51,7 +51,7 @@
     .jw-volume-tip,
     .jw-menu {
         border-radius: @ui-padding;
-        bottom: .3em;
+        bottom: 0.3em;
     }
 
     .jw-skip {
@@ -78,7 +78,7 @@
         .jw-knob {
             margin-left: 0;
             background-color: #fff;
-            width: .2em;
+            width: 0.2em;
             .vertically-centered-rail-element(@rail-height, 2em);
         }
 
@@ -91,7 +91,7 @@
 
     /* Volume slider */
     .jw-slider-vertical {
-        padding: .4em;
+        padding: 0.4em;
         bottom: 3px;
         border-radius: 2px;
         border: 0;
@@ -128,6 +128,7 @@
         .jw-controlbar {
             background: @inactive-color;
         }
+
         .jw-controlbar-center-group {
             padding-bottom: 0;
         }
@@ -150,11 +151,14 @@
             > .jw-text {
                 color: rgba(255, 255, 255, 0.6);
             }
+
             > .jw-button-color {
                 color: rgba(255, 255, 255, 0.6);
+
                 &:hover {
                     color: @hover-color;
                 }
+
                 &:focus {
                     color: @hover-color;
                 }

@@ -24,7 +24,8 @@
     position: relative;
     width: 100%;
 
-    .jw-slider-time, .jw-text-alt {
+    .jw-slider-time,
+    .jw-text-alt {
         padding: 0;
     }
 
@@ -51,16 +52,6 @@
     white-space: nowrap;
 }
 
-.jw-knob,
-.jw-icon-inline,
-.jw-icon-tooltip,
-.jw-icon-display,
-.jw-option:before {
-    &:hover {
-        color: @hover-color;
-    }
-}
-
 .jw-icon-inline,
 .jw-icon-tooltip,
 .jw-slider-horizontal,
@@ -76,16 +67,26 @@
     padding: 0 @ui-padding;
 }
 
-.jw-controlbar-left-group {
-    .jw-text-duration {
-        display: none;
-    }
-}
-
 .jw-icon-inline,
 .jw-icon-tooltip {
     min-width: @controlbar-height * 5/8;
     text-align: center;
+}
+
+.jw-knob,
+.jw-icon-inline,
+.jw-icon-tooltip,
+.jw-icon-display,
+.jw-option:before {
+    &:hover {
+        color: @hover-color;
+    }
+}
+
+.jw-controlbar-left-group {
+    .jw-text-duration {
+        display: none;
+    }
 }
 
 .jw-icon-playback {
@@ -125,6 +126,8 @@
     display: none;
 }
 
+/* Indentation sometimes complains about multiple selections when :not()s are included */
+/* stylelint-disable indentation */
 .jw-breakpoint-0,
 .jw-breakpoint-1:not(.jw-flag-time-slider-above) {
     .jw-controlbar {
@@ -134,6 +137,7 @@
         }
     }
 }
+/* stylelint-enable indentation */
 
 .jw-flag-small-player:not(.jw-flag-audio-player) {
     .jw-group {

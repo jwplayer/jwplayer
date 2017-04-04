@@ -8,8 +8,12 @@
 
 // idle
 .jw-state-idle {
-    /* hide control bar and clear display container padding on idle state unless
-    cast available flag is set */
+    // Show the title
+    .jw-title {
+        display: block;
+    }
+
+    /* hide control bar and clear display container padding on idle state unless cast available flag is set */
     &:not(.jw-flag-cast-available) {
         .jw-display {
             padding: 0;
@@ -42,6 +46,7 @@
             }
         }
     }
+
     .jw-icon-playback {
         .jw-icon-pause;
     }
@@ -69,6 +74,7 @@
         .jw-icon-display {
             .jw-icon-replay;
         }
+
         .jw-text {
             display: none;
         }
@@ -114,13 +120,6 @@ body .jw-error .jw-icon-container {
     right: 0;
 }
 
-// Show the title
-.jw-state-idle {
-    .jw-title {
-        display: block;
-    }
-}
-
 body .jwplayer.jw-state-error.jw-flag-audio-player {
     .jw-preview {
         display: none;
@@ -140,13 +139,15 @@ body .jwplayer.jw-state-error.jw-flag-audio-player {
 }
 
 // Hide control bar
-.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available),
-body .jwplayer.jw-state-error {
+body .jwplayer.jw-state-error,
+.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available) {
     .jw-controlbar {
         display: none;
     }
 }
 
+/* Indentation sometimes complains about multiple selections when :not()s are included */
+/* stylelint-disable indentation */
 // Hide display
 .jwplayer.jw-state-playing.jw-flag-user-inactive,
 .jwplayer.jw-state-playing:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting),
@@ -155,6 +156,7 @@ body .jwplayer.jw-state-error {
         display: none;
     }
 }
+/* stylelint-enable indentation */
 
 // Hide text
 .jwplayer.jw-state-buffering .jw-display-icon-display,

@@ -1,8 +1,7 @@
 @import "../shared-imports/mixins";
 
 .jw-skin-beelden {
-
-    @active-color: #C93835;
+    @active-color: #c93835;
     @inactive-color: #c7c7c7;
     @hover-color: @active-color;
 
@@ -16,10 +15,10 @@
     @rail-color: @rail-gradient;
 
     @controlbar-background-color: #6c6c6c;
-    @controlbar-background-gradient: linear-gradient(to bottom,  #6c6c6c 0%,#444444 100%);
+    @controlbar-background-gradient: linear-gradient(to bottom, #6c6c6c 0%, #444 100%);
     @controlbar-background: @controlbar-background-gradient;
 
-    @volume-padding: 0.4em;;
+    @volume-padding: 0.4em;
     @volume-background: @controlbar-background-color;
     @volume-border: 1px solid #000;
 
@@ -33,7 +32,7 @@
     @toggle-active: @active-color;
     @toggle-inactive: #7d7d7d;
 
-    @rail-height: .5em;
+    @rail-height: 0.5em;
     @slider-height: @rail-height;
 
     @controlbar-height: 2em;
@@ -51,12 +50,12 @@
     .inset-controlbar();
 
     .jw-controlbar {
-        box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
+        box-shadow: inset 0 7px 1px -5px rgba(128, 128, 128, 1);
     }
 
     &:not(.jw-breakpoint-0) {
         .jw-controlbar {
-            border-radius: .3em;
+            border-radius: 0.3em;
         }
     }
 
@@ -66,17 +65,19 @@
 
         &:before {
             background-color: #333;
+            /* Hack to ensure that older browsers display gradients correctly */
+            /* stylelint-disable-next-line declaration-block-no-shorthand-property-overrides */
             background: linear-gradient(
-            to bottom,
-            #333,
-            #333 50%,
-            #2e2e2e 50%,
-            #2e2e2e
+                to bottom,
+                #333,
+                #333 50%,
+                #2e2e2e 50%,
+                #2e2e2e
             );
             background-size: 100% 2px;
-            border-radius: .3em;
-            padding: .2em .7em;
-            box-shadow: inset 0 0 1px 0px rgba(0,0,0,0.6);
+            border-radius: 0.3em;
+            padding: 0.2em 0.7em;
+            box-shadow: inset 0 0 1px 0 rgba(0, 0, 0, 0.6);
             border: 1px solid #000;
             box-sizing: border-box;
         }
@@ -86,7 +87,7 @@
     &.jw-state-playing {
         .jw-icon-playback {
             &:before {
-                padding-right: .8em;
+                padding-right: 0.8em;
             }
         }
     }
@@ -109,12 +110,12 @@
 
     .jw-buffer {
         background: #7d7d7d;
-        box-shadow: inset 0 -2px 4px -1px rgba(255,255,255,0.5);
+        box-shadow: inset 0 -2px 4px -1px rgba(255, 255, 255, 0.5);
     }
 
     .jw-knob {
         background-color: #bbb5b7;
-        box-shadow: inset 0 0px 5px 0px rgba(255,255,255,0.5);
+        box-shadow: inset 0 0 5px 0 rgba(255, 255, 255, 0.5);
         border: 1px solid #000;
         border-radius: 50%;
     }
@@ -134,11 +135,12 @@
         }
 
         .jw-cue {
+
             .vertically-centered-rail-element(@rail-height, .2em);
 
             background-color: #fff;
-            width: .2em;
-            height: .2em;
+            width: 0.2em;
+            height: 0.2em;
             border-radius: 1em;
         }
 
@@ -146,20 +148,19 @@
             .vertically-centered-rail-element(@rail-height, .8em);
 
             box-sizing: border-box;
-            width: .8em;
-            height: .8em;
+            width: 0.8em;
+            height: 0.8em;
         }
     }
 
     .jw-slider-vertical {
-
         .jw-slider-container {
             width: 0.4em;
         }
 
         .jw-rail,
         .jw-progress {
-            width: .4em;
+            width: 0.4em;
         }
 
         .jw-rail {
@@ -171,15 +172,15 @@
         }
 
         .jw-knob {
-            width: .7em;
-            height: .7em;
+            width: 0.7em;
+            height: 0.7em;
             .horizontally-centered-rail-element(0.4em, 0.7em);
         }
     }
 
     .jw-skip {
-        box-shadow: inset 0px 7px 1px -5px rgba(128,128,128,1);
-        border-radius: .3em;
+        box-shadow: inset 0 7px 1px -5px rgba(128, 128, 128, 1);
+        border-radius: 0.3em;
     }
 
     // Remove the gradients used and show the hover styles
@@ -194,7 +195,7 @@
     /* Styles for play button on idle */
     .jw-display-icon-container {
         border: @volume-border;
-        box-shadow: inset 0px 0px 2px 1px rgba(255,255,255,0.3);
+        box-shadow: inset 0 0 2px 1px rgba(255, 255, 255, 0.3);
     }
 
     /* For the overlay containers */
@@ -205,5 +206,4 @@
     .jw-skip {
         border-radius: @ui-padding;
     }
-
 }
