@@ -744,7 +744,7 @@ define([
 
         this.setContainer = function(containerElement) {
             _container = containerElement;
-            containerElement.appendChild(_videotag);
+            containerElement.insertBefore(_videotag, containerElement.firstChild);
         };
 
         this.getContainer = function() {
