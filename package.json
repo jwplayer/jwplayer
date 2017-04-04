@@ -1,6 +1,6 @@
 {
   "name": "jwplayer",
-  "version": "7.10.3",
+  "version": "7.10.4",
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
@@ -25,10 +25,11 @@
     "grunt-cli": "1.2.0",
     "grunt-contrib-clean": "1.0.0",
     "grunt-contrib-connect": "1.0.2",
+    "grunt-contrib-less": "1.4.1",
     "grunt-contrib-watch": "1.0.0",
     "grunt-flash-compiler": "0.3.5",
     "grunt-karma": "2.0.0",
-    "grunt-recess": "1.0.1",
+    "grunt-stylelint": "0.7.0",
     "handlebars": "4.0.6",
     "handlebars-loader": "1.4.0",
     "import-loader": "1.0.1",
@@ -67,9 +68,11 @@
   },
   "scripts": {
     "test": "karma start",
-    "lint": "eslint ./src/js",
-    "lint-tests": "eslint ./test/*.js",
-    "flow": "flow check ./src/js"
+    "lint": "npm run lint:js && npm run lint:styles",
+    "lint:js": "eslint './src/js'",
+    "lint:styles": "stylelint './src/css/**/*.less'",
+    "lint:tests": "eslint './test/*.js'",
+    "flow": "flow check './src/js'"
   },
   "engines": {
     "node": ">=4.3.1"

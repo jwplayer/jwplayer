@@ -140,7 +140,10 @@ define([
             this.mediaModel = new MediaModel(this);
             this.attributes.mediaModel = this.mediaModel;
 
-            var $mediaElement = $('<video src="//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" preload="none"></video>');
+            var mediaElement = document.createElement('video');
+            mediaElement.src = "//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4";
+            mediaElement.preload = "none";
+
             this.attributes.provider = {
                 name: 'flash',
                 getName: function() {
@@ -149,21 +152,19 @@ define([
                     };
                 },
                 setContainer: function(element) {
-                    // element.appendChild($mediaElement[0]);
+                    // element.appendChild(mediaElement[0]);
                 },
                 setVisibility: function(state) {
-                    $mediaElement.css({
-                        visibility: state ? 'visible': '',
-                        opacity: state ? 1 : 0
-                    })
+                    mediaElement.style.visibility = state ? 'visible': '';
+                    mediaElement.style.opacity = state ? 1 : 0;
                 },
                 seek: function(time) {
-                    // $mediaElement[0].load();
-                    // $mediaElement[0].currentTime = time;
-                    // $mediaElement[0].pause();
+                    // mediaElement[0].load();
+                    // mediaElement[0].currentTime = time;
+                    // mediaElement[0].pause();
                 },
                 resize: function(width, height, stretching) {
-                    if (!width || !height || !$mediaElement.videoWidth || !$mediaElement.videoHeight) {
+                    if (!width || !height || !mediaElement.videoWidth || !mediaElement.videoHeight) {
                         return false;
                     }
                     var style = {
@@ -174,12 +175,15 @@ define([
                     if (stretching === 'uniform') {
                         // snap video to edges when the difference in aspect ratio is less than 9%
                         var playerAspectRatio = width / height;
-                        var videoAspectRatio = $mediaElement.videoWidth / $mediaElement.videoHeight;
+                        var videoAspectRatio = mediaElement.videoWidth / mediaElement.videoHeight;
                         if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
                             style.objectFit = 'fill';
                         }
                     }
-                    $mediaElement.css(style);
+
+                    mediaElement.style.objectFit = style.objectFit;
+                    mediaElement.style.width = style.width;
+                    mediaElement.style.height = style.height;
                 },
                 setCurrentQuality: function(value) {
                     self.mediaModel.set('currentLevel', value);

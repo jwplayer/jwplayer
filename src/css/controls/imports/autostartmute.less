@@ -1,0 +1,24 @@
+@import "../../shared-imports/vars";
+@import "icons";
+
+.jw-autostart-mute {
+    .jw-icon-volume;
+    position: absolute;
+    bottom: 0.5em;
+    right: 0.5em;
+    height: @mobile-touch-target;
+    width: @mobile-touch-target;
+    text-align: center;
+
+    &:before {
+        background-color: @background-color;
+        padding: 5px 4px 5px 6px;
+    }
+}
+
+.jwplayer.jw-flag-autostart:not(.jw-flag-media-audio) {
+    &:not(.jw-state-buffering):not(.jw-state-error):not(.jw-state-complete) .jw-display,
+    .jw-nextup {
+        display: none;
+    }
+}
