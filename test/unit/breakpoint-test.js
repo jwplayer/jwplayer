@@ -1,6 +1,6 @@
 define([
     'utils/helpers',
-    'view/breakpoint'
+    'view/utils/breakpoint'
 ], function (utils, breakpoint) {
     /* jshint qunit: true */
     QUnit.module('browser');

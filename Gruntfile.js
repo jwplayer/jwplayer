@@ -41,41 +41,23 @@ module.exports = function(grunt) {
         starttime: new Date(),
         pkg: packageInfo,
 
-        // lints Less
-        recess: {
+        less: {
             options: {
-                // Set compile and compress to false to lint
-                compile: false,
                 compress: false,
-                noIDs: true,
-                noJSPrefix: true,
-                noOverqualifying: false,
-                noUnderscores: true,
-                noUniversalSelectors: false,// true,
-                strictPropertyOrder: false, // true,
-                zeroUnits: false,
-                includePaths: ['src/css', 'src/css/*']
-            },
-            lint: {
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-debug/skins/',
-                    cwd: 'src/css/',
-                    src: '{,*/}*.less'
-                }]
+                paths: ['src/css', 'src/css/*']
             },
             internal: {
                 options: {
-                    compile: true
+                    dumpLineNumbers: 'comments'
                 },
                 files: {
-                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less'
+                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less',
+                    'bin-debug/reference/controls.css': 'src/css/controls.less'
                 }
             },
             debug: {
                 options: {
-                    compile: true
+                    dumpLineNumbers: 'comments'
                 },
                 files: [{
                     expand: true,
@@ -87,7 +69,6 @@ module.exports = function(grunt) {
             },
             release: {
                 options: {
-                    compile: true,
                     compress: true
                 },
                 files: [{
@@ -120,7 +101,7 @@ module.exports = function(grunt) {
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
-                tasks: ['webpack:debug', 'recess:lint', 'recess:debug']
+                tasks: ['webpack:debug', 'less:debug']
             },
             tests: {
                 files : ['test/{,*/}*.js'],
@@ -314,7 +295,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build-js', [
         'webpack',
         'lint:player',
-        'recess'
+        'less'
     ]);
 
     grunt.registerTask('build-flash', [

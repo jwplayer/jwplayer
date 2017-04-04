@@ -138,13 +138,13 @@ define([
 
             this.mediaController = _.extend({}, Events);
             this.mediaModel = new MediaModel(this);
-            this.set('mediaModel', this.mediaModel);
+            this.attributes.mediaModel = this.mediaModel;
 
             var mediaElement = document.createElement('video');
             mediaElement.src = "//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4";
             mediaElement.preload = "none";
 
-            this.set('provider', {
+            this.attributes.provider = {
                 name: 'flash',
                 getName: function() {
                     return {
@@ -192,7 +192,7 @@ define([
                     self.mediaModel.set('currentAudioTrack', value);
                 },
                 setControls: function() {}
-            });
+            };
         },
 
         getVideo: function() {

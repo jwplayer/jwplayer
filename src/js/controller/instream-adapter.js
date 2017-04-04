@@ -111,7 +111,9 @@ define([
             _instream._adModel.set('state', states.BUFFERING);
 
             // don't trigger api play/pause on display click
-            _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
+            if (_view.clickHandler()) {
+                _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
+            }
 
             this.setText(_model.get('localization').loadingAd);
             return this;
@@ -256,7 +258,9 @@ define([
 
         this.addClickHandler = function() {
             // start listening for ad click
-            _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
+            if (_view.clickHandler()) {
+                _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
+            }
 
             _instream.on(events.JWPLAYER_MEDIA_META, this.metaHandler, this);
         };

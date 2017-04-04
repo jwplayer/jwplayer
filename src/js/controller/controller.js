@@ -15,9 +15,11 @@ define([
     'events/states',
     'events/events',
     'view/error',
-    'controller/events-middleware'
+    'controller/events-middleware',
+    'controller/controls-loader'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware,
+            ControlsLoader) {
 
     function _queueCommand(command) {
         return function() {
@@ -117,6 +119,12 @@ define([
 
             _model.on('change:state', changeStateEvent, this);
 
+            _model.on('change:duration', function(model, duration) {
+                var minDvrWindow = model.get('minDvrWindow');
+                var streamType = utils.streamType(duration, minDvrWindow);
+                model.set('streamType', streamType);
+            });
+
             _model.on('change:castState', function(model, evt) {
                 _this.trigger(events.JWPLAYER_CAST_SESSION, evt);
             });
@@ -126,7 +134,7 @@ define([
                 });
                 if (bool) {
                     // Stop autoplay behavior when the player enters fullscreen
-                    _model.set('playOnViewable', false);
+                    model.set('playOnViewable', false);
                 }
             });
             _model.on('itemReady', function() {
@@ -150,11 +158,6 @@ define([
             _model.on('change:mute', function(model, mute) {
                 _this.trigger(events.JWPLAYER_MEDIA_MUTE, {
                     mute: mute
-                });
-            });
-            _model.on('change:controls', function(model, mode) {
-                _this.trigger(events.JWPLAYER_CONTROLS, {
-                    controls: mode
                 });
             });
 
@@ -192,6 +195,32 @@ define([
                 _this.triggerAfterReady(type, e);
             }
 
+            function changeControls(model, enable) {
+                if (enable) {
+                    ControlsLoader.load()
+                        .then(function (Controls) {
+                            if (!_view.isSetup) {
+                                return;
+                            }
+                            var controls = new Controls(document, _this.currentContainer);
+                            _view.addControls(controls);
+                            controls.on('all', _triggerAfterReady, _this);
+                        })
+                        .catch(function (reason) {
+                            _this.triggerError({
+                                message: 'Controls failed to load',
+                                reason: reason
+                            });
+                        });
+                } else {
+                    _view.removeControls();
+                }
+
+                _this.trigger(events.JWPLAYER_CONTROLS, {
+                    controls: enable
+                });
+            }
+
             _model.on('change:viewSetup', function(model, viewSetup) {
                 if (viewSetup) {
                     _this.showView(_view.element());
@@ -201,6 +230,9 @@ define([
             _model.on('change:inDom', function(model, inDom) {
                 if (inDom) {
                     _observePlayerContainer(_view.element());
+
+                    model.off('change:controls', changeControls);
+                    model.change('controls', changeControls);
                 }
             });
 
@@ -209,8 +241,6 @@ define([
 
                 _view.on('all', _triggerAfterReady, _this);
 
-                // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
-                _model.set('playOnViewable', _model.autoStartOnMobile() || _model.get('autostart') === 'viewable');
                 _updateVisibility();
                 _updateViewable();
 
