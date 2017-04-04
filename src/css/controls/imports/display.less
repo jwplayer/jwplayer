@@ -1,0 +1,138 @@
+@import "../../shared-imports/vars";
+
+.jwplayer,
+.jw-error {
+    .jw-display-icon-container {
+        /* Enforce auto container sizing to prevent custom skin errors in 7.9 */
+        width: auto;
+        height: auto;
+        /* Prevent border styles from impacting width and height */
+        box-sizing: content-box;
+    }
+}
+
+/*
+display icons
+*/
+
+.jw-display {
+    display: table;
+    height: 100%;
+    padding: @controlbar-height 0;
+    position: relative;
+    width: 100%;
+
+    .jw-flag-dragging & {
+        display: none;
+    }
+
+    .jw-state-idle:not(.jw-flag-cast-available) & {
+        padding: 0;
+    }
+}
+
+.jw-display-container {
+    display: table-cell;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.jw-display-controls {
+    display: inline-block;
+}
+
+.jwplayer .jw-display-icon-container {
+    // float in case custom skin tries to override inline-block
+    float: left;
+}
+
+.jw-display-icon-container {
+    display: inline-block;
+    margin: 0 (@ui-padding * 0.5);
+
+    .jw-icon {
+        cursor: pointer;
+
+        // Default to .jw-breakpoint-2 to match pre 7.9 styles
+        width: 75px;
+        height: 75px;
+        line-height: 75px;
+        text-align: center;
+
+        &.jw-icon-rewind:before {
+            padding: 0.2em 0.05em;
+        }
+
+        &:before {
+            font-size: @mobile-touch-target * 0.75;
+            position: relative;
+        }
+
+        .jw-state-idle &.jw-icon-display:before,
+        .jw-state-paused &.jw-icon-display:before {
+            left: 1px;
+        }
+    }
+}
+
+// hide next and rewind buttons on extra small player
+.jw-breakpoint-0 {
+    .jw-display-icon-next,
+    .jw-display-icon-rewind {
+        display: none;
+    }
+
+    .jw-display .jw-icon {
+        height: @mobile-touch-target;
+        line-height: @mobile-touch-target;
+        width: @mobile-touch-target;
+
+        &:before {
+            font-size: @mobile-touch-target * 0.5;
+        }
+    }
+}
+
+.jw-breakpoint-1 {
+    .jw-display .jw-icon {
+        height: @mobile-touch-target * 1.25;
+        line-height: @mobile-touch-target * 1.25;
+        width: @mobile-touch-target * 1.25;
+
+        &:before {
+            font-size: @mobile-touch-target * 0.5;
+        }
+
+        &.jw-icon-rewind:before {
+            font-size: @mobile-touch-target * 0.75;
+        }
+    }
+}
+
+.jw-breakpoint-3 {
+    .jw-display .jw-icon {
+        height: @mobile-touch-target * 1.75;
+        line-height: @mobile-touch-target * 1.75;
+        width: @mobile-touch-target * 1.75;
+
+        &:before {
+            font-size: @mobile-touch-target * 0.875;
+        }
+    }
+}
+
+.jw-breakpoint-4,
+.jw-breakpoint-5,
+.jw-breakpoint-6,
+.jw-breakpoint-7 {
+    .jw-display .jw-icon {
+        height: @mobile-touch-target * 2;
+        line-height: @mobile-touch-target * 2;
+        width: @mobile-touch-target * 2;
+
+        &:before {
+            font-size: @mobile-touch-target;
+        }
+    }
+}

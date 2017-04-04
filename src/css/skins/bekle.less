@@ -1,4 +1,4 @@
-@import "../imports/mixins";
+@import "../shared-imports/mixins";
 
 .jw-skin-bekle {
     @active-color: #139ed5;
@@ -11,8 +11,8 @@
     @rail-gradient: linear-gradient(to bottom, #323b4c, #2f3847 50%, #323b4c 100%);
     @rail-vert-gradient: linear-gradient(to right, #323b4c, #2f3847 50%, #323b4c 100%);
 
-    @rail-height: .3em;
-    @cue-size: .2em;
+    @rail-height: 0.3em;
+    @cue-size: 0.2em;
 
     @progress-color: @progress-horz-gradient;
     @buffer-color: @buffer-gradient;
@@ -25,7 +25,7 @@
     @display-bkgd-color: @rail-color;
     @display-bkgd-hover-color: @active-color;
 
-    @volume-background: fade(#505863,90%);
+    @volume-background: fade(#505863, 90%);
 
     @controlbar-height: 2em;
 
@@ -43,7 +43,7 @@
 
     &:not(.jw-breakpoint-0) {
         .jw-controlbar {
-            border-radius: .3em;
+            border-radius: 0.3em;
         }
     }
 
@@ -51,17 +51,16 @@
     .jw-volume-tip,
     .jw-menu,
     .jw-skip {
-        border-radius: .3em;
+        border-radius: 0.3em;
     }
 
     .jw-volume-tip,
     .jw-menu {
-        bottom: .2em;
+        bottom: 0.2em;
     }
 
     .jw-slider-horizontal,
     .jw-slider-vertical {
-
         .jw-rail,
         .jw-progress,
         .jw-buffer {
@@ -70,8 +69,8 @@
 
         .jw-knob {
             background-color: #fff;
-            width: .7em;
-            height: .7em;
+            width: 0.7em;
+            height: 0.7em;
             border-radius: 50%;
             .horizontally-centered-rail-element(@def-rail-width, 0.7em);
         }
@@ -90,12 +89,11 @@
         }
 
         .jw-knob {
-            .vertically-centered-rail-element(@rail-height, .7em);
+            .vertically-centered-rail-element(@rail-height, 0.7em);
         }
     }
 
     .jw-slider-vertical {
-
         .jw-rail,
         .jw-progress {
             width: @rail-height;
@@ -108,7 +106,5 @@
         .jw-progress {
             background: @progress-vert-gradient;
         }
-
     }
-
 }

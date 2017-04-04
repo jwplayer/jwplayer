@@ -1,0 +1,85 @@
+@import "../../shared-imports/vars";
+
+.jw-captions {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: none;
+    max-height: ~"calc(100% - 40px)";
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0;
+    text-decoration: none;
+    pointer-events: none;
+    overflow: hidden;
+    top: 0;
+
+    &.jw-captions-enabled {
+        display: block;
+    }
+}
+
+.jw-captions-window {
+    display: none;
+    padding: 0.25em;
+    border-radius: 0.25em;
+
+    &.jw-captions-window-active {
+        display: inline-block;
+    }
+}
+
+.jw-captions-text {
+    display: inline-block;
+    color: #fff;
+    background-color: #000;
+    word-wrap: normal;
+    word-break: normal;
+    white-space: pre-line;
+    font-style: normal;
+    font-weight: normal;
+    text-align: center;
+    text-decoration: none;
+}
+
+.jw-text-track-display {
+    /* Override vtt.js font-size so text resizes as the player size changes */
+    font-size: inherit;
+    line-height: 1.5;
+}
+
+.jw-text-track-cue {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 0.1em 0.3em;
+}
+
+.jwplayer {
+    video {
+        /* Normalize the coordinate system to uniformly adjust the container height when the control bar is visible */
+        &::-webkit-media-controls {
+            justify-content: flex-start;
+        }
+
+        &::-webkit-media-text-track-container {
+            max-height: ~"calc(100% - 40px)";
+            line-height: normal;
+        }
+
+        /* Ensure captions aren't cropped when the pseudo element's width cannot accommodate all the text */
+        &::-webkit-media-text-track-display {
+            min-width: -webkit-min-content;
+        }
+
+        &::cue {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Safari's media controls should not show when not in fullscreen on iOS devices */
+        &::-webkit-media-controls-panel-container {
+            display: none;
+        }
+    }
+}

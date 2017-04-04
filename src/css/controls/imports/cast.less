@@ -1,0 +1,33 @@
+@import "../../shared-imports/vars";
+
+.jw-cast {
+    background-size: cover;
+    display: none;
+    height: 100%;
+    position: relative;
+    width: 100%;
+}
+
+.jw-cast-container {
+    background: linear-gradient(180deg, fade(mix(#000, #fff, 90%), 75%), fade(mix(#000, #fff, 90%), 25%), fade(mix(#000, #fff, 90%), 0%));
+    left: 0;
+    padding: 20px 20px 80px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.jw-cast-text {
+    color: #fff;
+    font-size: 1.6em;
+
+    .jw-breakpoint-0 & {
+        font-size: 1.15em;
+    }
+
+    .jw-breakpoint-1 &,
+    .jw-breakpoint-2 &,
+    .jw-breakpoint-3 & {
+        font-size: 1.3em;
+    }
+}

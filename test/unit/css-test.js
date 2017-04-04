@@ -108,13 +108,16 @@ define([
         css.hexToRgba(null, null);
 
         var rgba = css.hexToRgba('123456', 0.5);
-        assert.equal(rgba, 'rgba(18,52,86,0.005)', 'css hexToRgba test');
+        assert.equal(rgba, 'rgba(18, 52, 86, 0.005)', 'css hexToRgba test');
 
         rgba = css.hexToRgba('123', 0);
-        assert.equal(rgba, 'rgba(17,34,51,0)', 'css hexToRgba test with length 3');
+        assert.equal(rgba, 'rgba(17, 34, 51, 0)', 'css hexToRgba test with length 3');
 
         rgba = css.hexToRgba('', 0);
-        assert.equal(rgba, 'rgba(0,0,0,0)', 'css hexToRgba test with invalid value');
+        assert.equal(rgba, 'rgba(0, 0, 0, 0)', 'css hexToRgba test with invalid value');
+
+        rgba = css.hexToRgba('red');
+        assert.equal(rgba, 'rgb(255, 0, 0)', 'css hexToRgba test with color value and no alpha');
     });
 
 });

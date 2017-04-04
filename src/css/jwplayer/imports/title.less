@@ -1,0 +1,51 @@
+@import "../../shared-imports/vars";
+
+.jw-title {
+    display: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    font-size: 14/16em;
+    height: 8em;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0, rgba(0, 0, 0, 1) 18%, rgba(0, 0, 0, 0) 100%);
+}
+
+// if we set color on the parent, it is overwritten by the reset
+.jw-title-primary,
+.jw-title-secondary {
+    padding: @ui-margin/2 @ui-margin;
+    // require a certain height in case the titles are empty
+    min-height: @ui-margin + 1em;
+    width: 100%;
+    color: #fff;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.jw-title-primary {
+    font-weight: bold;
+}
+
+.jw-title-secondary {
+    margin-top: -0.5em;
+}
+
+.jw-flag-small-player {
+    .jw-title {
+        background: linear-gradient(180deg, fade(mix(#000, #fff, 80%), 75%), fade(mix(#000, #fff, 80%), 0%));
+        height: auto;
+        padding: @default-em-size 0;
+    }
+
+    .jw-title-primary,
+    .jw-title-secondary {
+        min-height: inherit;
+        padding: 0 @default-em-size;
+    }
+
+    .jw-title-secondary {
+        display: none;
+        margin-top: 5px;
+    }
+}

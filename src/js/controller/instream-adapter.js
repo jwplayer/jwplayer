@@ -111,7 +111,9 @@ define([
             _instream._adModel.set('state', states.BUFFERING);
 
             // don't trigger api play/pause on display click
-            _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
+            if (_view.clickHandler()) {
+                _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
+            }
 
             this.setText(_model.get('localization').loadingAd);
             return this;
@@ -170,7 +172,7 @@ define([
             if (_array && _arrayIndex + 1 < _array.length) {
                 _loadNextItem();
             } else {
-                /// notify vast of breakEnd
+                // notify vast of breakEnd
                 this.trigger('adBreakEnd', {});
                 if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
                     // Dispatch playlist complete event for ad pods
@@ -256,7 +258,9 @@ define([
 
         this.addClickHandler = function() {
             // start listening for ad click
-            _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
+            if (_view.clickHandler()) {
+                _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
+            }
 
             _instream.on(events.JWPLAYER_MEDIA_META, this.metaHandler, this);
         };

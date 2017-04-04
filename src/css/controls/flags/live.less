@@ -1,0 +1,30 @@
+@import "../../shared-imports/vars";
+
+.jwplayer.jw-flag-live {
+    .jw-display-icon-rewind {
+        display: none;
+    }
+
+    .jw-controlbar {
+        .jw-text-elapsed,
+        .jw-text-duration,
+        .jw-text-countdown,
+        .jw-slider-time {
+            display: none;
+        }
+
+        .jw-text-alt {
+            display: inline-block;
+        }
+    }
+
+    &.jw-ie {
+        .jw-controlbar-center-group {
+            overflow: hidden;
+
+            .jw-text-alt {
+                display: table;
+            }
+        }
+    }
+}

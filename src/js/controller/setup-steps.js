@@ -6,8 +6,9 @@ define([
     'utils/constants',
     'utils/underscore',
     'utils/helpers',
-    'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events) {
+    'events/events',
+    'controller/controls-loader'
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events, ControlsLoader) {
 
     var _pluginLoader;
     var _playlistLoader;
@@ -40,6 +41,12 @@ define([
             LOAD_PLAYLIST: {
                 method: _loadPlaylist,
                 depends: []
+            },
+            LOAD_CONTROLS: {
+                method: _loadControls,
+                depends: [
+                    'LOAD_PROMISE_POLYFILL'
+                ]
             },
             SETUP_VIEW: {
                 method: _setupView,
@@ -83,6 +90,7 @@ define([
             SEND_READY: {
                 method: _sendReady,
                 depends: [
+                    'LOAD_CONTROLS',
                     'SET_ITEM',
                     'DEFERRED'
                 ]
@@ -285,6 +293,12 @@ define([
 
 
     function _setupView(resolve, _model, _api, _view) {
+        // Mobile players always wait to become viewable. Desktop players must have autostart set to viewable
+        var autoStartOnMobile = _model.autoStartOnMobile();
+        if (autoStartOnMobile) {
+            _model.set('autostartMuted', true);
+        }
+        _model.set('playOnViewable', autoStartOnMobile || _model.get('autostart') === 'viewable');
         _view.setup();
         resolve();
     }
@@ -298,6 +312,21 @@ define([
         resolve({
             type: 'complete'
         });
+    }
+
+    function _loadControls(resolve, _model) {
+        if (!_model.get('controls')) {
+            resolve();
+            return;
+        }
+
+        ControlsLoader.load()
+            .then(function (/* Controls */) {
+                resolve();
+            })
+            .catch(function (reason) {
+                error(resolve, 'Failed to load controls', reason);
+            });
     }
 
     function error(resolve, msg, reason) {

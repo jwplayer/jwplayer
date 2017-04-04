@@ -3,25 +3,26 @@ define([
     'simple-style-loader/addStyles'
 ], function(Strings, styleLoader) {
 
-    var _css = function(selector, styles, playerId) {
+    var _css = function(selector, styles, playerId, important) {
         playerId = playerId || 'all-players';
         var cssText = '';
         if (typeof styles === 'object') {
-            var style;
-            for (style in styles) {
-                if (Object.prototype.hasOwnProperty.call(styles, style)) {
-                    break;
-                }
-            }
-            if (!style) {
-                return;
-            }
             var el = document.createElement('div');
             _style(el, styles);
-            cssText = '{' + el.style.cssText + '}';
+            var styleCSSText = el.style.cssText;
+            if (important && styleCSSText) {
+                styleCSSText = styleCSSText.replace(/;$/g, ' !important;');
+            }
+            cssText = '{' + styleCSSText + '}';
         } else if (typeof styles === 'string') {
             cssText = styles;
         }
+
+        if (cssText === '' || cssText === '{}') {
+            styleLoader.clear(playerId, selector);
+            return;
+        }
+
         styleLoader.style([[selector, selector + cssText]], playerId);
     };
 
@@ -66,29 +67,27 @@ define([
         return name.join('');
     }
 
-    function _styleValue(style, value, important) {
+    function _styleValue(style, value) {
         if (value === '' || value === undefined || value === null) {
             return '';
         }
-        var importantString = important ? ' !important' : '';
-
         // string
         if (typeof value === 'string' && isNaN(value)) {
             if ((/png|gif|jpe?g/i).test(value) && value.indexOf('url') < 0) {
                 return 'url(' + value + ')';
             }
-            return value + importantString;
+            return value;
         }
         // number
         if (value === 0 ||
             style === 'z-index' ||
             style === 'opacity') {
-            return '' + value + importantString;
+            return '' + value;
         }
         if ((/color/i).test(style)) {
-            return '#' + Strings.pad(value.toString(16).replace(/^0x/i, ''), 6) + importantString;
+            return '#' + Strings.pad(value.toString(16).replace(/^0x/i, ''), 6);
         }
-        return Math.ceil(value) + 'px' + importantString;
+        return Math.ceil(value) + 'px';
     }
 
     var transform = function (element, value) {
@@ -101,26 +100,33 @@ define([
         });
     };
 
-    var hexToRgba = function (hexColor, opacity) {
+    var canvasColorContext;
+    var getRgba = function (color, opacity) {
         var style = 'rgb';
-        if (hexColor) {
-            hexColor = String(hexColor).replace('#', '');
-            if (hexColor.length === 3) {
-                hexColor = hexColor[0] + hexColor[0] + hexColor[1] + hexColor[1] + hexColor[2] + hexColor[2];
-            }
-        } else {
-            hexColor = '000000';
-        }
-        var channels = [
-            parseInt(hexColor.substr(0, 2), 16),
-            parseInt(hexColor.substr(2, 2), 16),
-            parseInt(hexColor.substr(4, 2), 16)
-        ];
-        if (opacity !== undefined && opacity !== 100) {
+        var hasAlpha = (opacity !== undefined && opacity !== 100);
+        if (hasAlpha) {
             style += 'a';
-            channels.push(opacity / 100);
         }
-        return style + '(' + channels.join(',') + ')';
+        if (!canvasColorContext) {
+            var canvas = document.createElement('canvas');
+            canvas.height = 1;
+            canvas.width = 1;
+            canvasColorContext = canvas.getContext('2d');
+        }
+        if (!color) {
+            color = '#000000';
+        } else if (!isNaN(parseInt(color, 16))) {
+            color = '#' + color;
+        }
+        canvasColorContext.clearRect(0, 0, 1, 1);
+        canvasColorContext.fillStyle = color;
+        canvasColorContext.fillRect(0, 0, 1, 1);
+        var data = canvasColorContext.getImageData(0, 0, 1, 1).data;
+        style += '(' + data[0] + ', ' + data[1] + ', ' + data[2];
+        if (hasAlpha) {
+            style += ', ' + (opacity / 100);
+        }
+        return style + ')';
     };
 
     return {
@@ -128,6 +134,7 @@ define([
         style: _style,
         clearCss: styleLoader.clear,
         transform: transform,
-        hexToRgba: hexToRgba
+        hexToRgba: getRgba, // deprecate in favor of getRgba
+        getRgba: getRgba
     };
 });
