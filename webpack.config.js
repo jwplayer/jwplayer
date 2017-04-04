@@ -149,11 +149,6 @@ var multiConfig = _.compact(_.map([
                     loader: 'babel-loader'
                 }
             ]
-        },
-        postcss: function() {
-            return [
-                require('autoprefixer')
-            ];
         }
     });
 }));
