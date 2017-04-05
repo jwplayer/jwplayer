@@ -124,7 +124,7 @@ var multiConfig = _.compact(_.map([
                     loaders: [
                         'simple-style-loader',
                         'css',
-                        'autoprefixer?browsers=' + encodeURIComponent('> 1%'),
+                        'postcss-loader',
                         'less?compress'
                     ]
                 },

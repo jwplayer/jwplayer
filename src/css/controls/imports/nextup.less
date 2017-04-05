@@ -2,8 +2,9 @@
 @import "icons";
 
 .jw-nextup-container {
-    -webkit-font-smoothing: antialiased;
-    -moz-font-smoothing: antialiased;
+    font-smoothing: antialiased;
+    /* Firefox specific style for improving legibility on OSX */
+    -moz-osx-font-smoothing: grayscale;
     background-color: transparent;
     bottom: @controlbar-height;
     cursor: pointer;
