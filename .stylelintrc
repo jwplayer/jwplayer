@@ -37,7 +37,10 @@
         "shorthand-property-no-redundant-values": true,
 
         "property-case": "lower",
-        "property-no-unknown": true,
+        "property-no-unknown": [
+            true,
+            { "ignoreProperties": ["font-smoothing"] }
+        ],
 
         "declaration-bang-space-after": "never",
         "declaration-bang-space-before": "always",
