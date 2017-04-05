@@ -17,9 +17,6 @@ define([
         var list = [];
         var providers = model.getProviders();
         var preload = model.get('preload');
-        var feedid = model.get('feedid');
-        var feedInstanceId = model.get('feed_instance_id');
-        var pinSetId = model.get('pin_set_id');
 
         _.each(playlist, function(item) {
             item = _.extend({}, item);
@@ -38,19 +35,6 @@ define([
             // set preload for the item, if it is defined
             if (item.preload || preload) {
                 item.preload = item.preload || preload;
-            }
-
-            // set feedid for the item, if it is defined
-            if (item.feedid || feedid) {
-                item.feedid = item.feedid || feedid;
-            }
-
-            if (item.feedInstanceId || feedInstanceId) {
-                item.feedInstanceId = item.feedInstanceId || feedInstanceId;
-            }
-
-            if (item.pinSetId || pinSetId) {
-                item.pinSetId = item.pinSetId || pinSetId;
             }
 
             list.push(item);
