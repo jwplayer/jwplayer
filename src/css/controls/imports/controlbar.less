@@ -155,7 +155,9 @@
 .jw-flag-user-inactive.jw-state-buffering {
     &:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
         .jw-controlbar {
-            display: none;
+            visibility: hidden;
+            pointer-events: none;
+            opacity: 0;
         }
     }
 }

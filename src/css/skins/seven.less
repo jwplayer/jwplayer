@@ -1,4 +1,5 @@
 @import "../shared-imports/vars";
+@import "../controls/imports/transitions";
 
 .jw-skin-seven {
     @display-bkgd-color: @controlbar-background;
@@ -46,5 +47,17 @@
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+    }
+
+    .jw-slider-container {
+        .jw-knob {
+            display: none;
+        }
+
+        &:hover {
+            .jw-knob {
+                display: block;
+            }
+        }
     }
 }
