@@ -1,10 +1,10 @@
+import menuTemplate from 'view/controls/templates/menu';
 define([
     'view/controls/components/tooltip',
     'utils/helpers',
     'utils/underscore',
     'utils/ui',
-    'templates/menu.html'
-], function(Tooltip, utils, _, UI, menuTemplate) {
+], function(Tooltip, utils, _, UI) {
 
     return class Menu extends Tooltip {
 

@@ -130,7 +130,7 @@
         "one-var": [2, "never"],
         "operator-assignment": [0, "never"],
         "quote-props": [1, "as-needed", {"keywords": true}],
-        "quotes": [1, "single"],
+        "quotes": [1, "single", {"allowTemplateLiterals": true}],
         "semi": [2, "always"],
         "semi-spacing": [1, {"before": false, "after": true}],
         "sort-vars": 0,
