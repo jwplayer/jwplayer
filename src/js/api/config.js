@@ -42,7 +42,7 @@ define([
             rewind: 'Rewind 10s',
             nextUp: 'Next Up',
             nextUpClose: 'Next Up Close',
-            related: 'Discovery'
+            related: 'Discover'
         },
         renderCaptionsNatively: false,
         nextUpDisplay: true
