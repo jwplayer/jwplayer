@@ -13,10 +13,12 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function(playlist, model) {
+    Playlist.filterPlaylist = function(playlist, model, feedData) {
         var list = [];
         var providers = model.getProviders();
         var preload = model.get('preload');
+        var itemFeedData = _.extend({}, feedData);
+        delete itemFeedData.playlist;
 
         _.each(playlist, function(item) {
             item = _.extend({}, item);
@@ -33,8 +35,12 @@ define([
             item.file = item.sources[0].file;
 
             // set preload for the item, if it is defined
-            if (item.preload || preload) {
+            if (preload) {
                 item.preload = item.preload || preload;
+            }
+
+            if (feedData) {
+                item.feedData = itemFeedData;
             }
 
             list.push(item);

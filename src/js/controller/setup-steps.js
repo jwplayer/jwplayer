@@ -162,8 +162,8 @@ define([
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
+                _model.set('feedData', data);
                 _model.set('playlist', data.playlist);
-                _model.set('feedid', data.feedid);
                 resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
@@ -215,10 +215,8 @@ define([
     }
 
     function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
-        var playlist = _model.get('playlist');
-
         // Performs filtering
-        var success = _setPlaylist(playlist);
+        var success = _setPlaylist(_model.get('playlist'), _model.get('feedData'));
 
         if (success) {
             resolve();

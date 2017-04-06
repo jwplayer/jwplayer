@@ -107,7 +107,8 @@ define([
             delete config.aspectratio;
         }
 
-        if (!config.playlist) {
+        var configPlaylist = config.playlist;
+        if (!configPlaylist) {
             // This is a legacy fallback, assuming a playlist item has been flattened into the config
             var obj = _.pick(config, [
                 'title',
@@ -122,6 +123,9 @@ define([
             ]);
 
             config.playlist = [ obj ];
+        } else if (_.isArray(configPlaylist.playlist)) {
+            config.feedData = configPlaylist;
+            config.playlist = configPlaylist.playlist;
         }
 
         config.qualityLabels = config.qualityLabels || config.hlslabels;
