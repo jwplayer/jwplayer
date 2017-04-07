@@ -1,11 +1,12 @@
+import displayContainerTemplate from 'view/controls/templates/display-container';
+
 define([
     'utils/helpers',
-    'templates/display-container.html'
-], function(utils, Template) {
+], function(utils) {
 
     return class DisplayContainer {
         constructor() {
-            this.el = utils.createElement(Template());
+            this.el = utils.createElement(displayContainerTemplate());
             this.container = this.el.querySelector('.jw-display-controls');
         }
 

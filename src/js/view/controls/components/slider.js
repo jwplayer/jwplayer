@@ -1,10 +1,11 @@
+import sliderTemplate from 'view/controls/templates/slider';
+
 define([
     'utils/backbone.events',
     'utils/ui',
     'utils/helpers',
     'utils/underscore',
-    'templates/slider.html',
-], function(Events, UI, utils, _, SliderTemplate) {
+], function(Events, UI, utils, _) {
 
     const getRailBounds = function(elementRail) {
         const bounds = utils.bounds(elementRail);
@@ -33,12 +34,7 @@ define([
         }
 
         setup() {
-            const configuration = {
-                'default': this.default,
-                className: this.className,
-                orientation: 'jw-slider-' + this.orientation
-            };
-            this.el = utils.createElement(SliderTemplate(configuration));
+            this.el = utils.createElement(sliderTemplate(this.className, 'jw-slider-' + this.orientation));
 
             this.elementRail = this.el.getElementsByClassName('jw-slider-container')[0];
             this.elementBuffer = this.el.getElementsByClassName('jw-buffer')[0];

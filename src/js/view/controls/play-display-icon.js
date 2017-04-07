@@ -1,20 +1,18 @@
+import displayIconTemplate from 'view/controls/templates/display-icon';
+
 define([
     'utils/helpers',
     'utils/backbone.events',
     'utils/ui',
-    'templates/display-icon.html',
     'utils/underscore'
-], function(utils, Events, UI, Template, _) {
+], function(utils, Events, UI, _) {
 
     return class PlayDisplayIcon {
         constructor(_model) {
             _.extend(this, Events);
             this.model = _model;
 
-            this.el = utils.createElement(Template({
-                iconName: 'display',
-                ariaLabel: this.model.get('localization').playback
-            }));
+            this.el = utils.createElement(displayIconTemplate('display', this.model.get('localization').playback));
 
             this.iconUI = new UI(this.el).on('click tap', (evt) => {
                 this.trigger(evt.type);

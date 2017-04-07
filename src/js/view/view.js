@@ -1,3 +1,5 @@
+import playerTemplate from 'templates/player';
+
 define([
     'events/events',
     'events/states',
@@ -14,9 +16,8 @@ define([
     'view/logo',
     'view/preview',
     'view/title',
-    'templates/player.html',
 ], function(events, states, Events, utils, _, activeTab, raf, requestFullscreenHelper, setBreakpoint, flagNoFocus,
-            ClickHandler, CaptionsRenderer, Logo, Preview, Title, playerTemplate) {
+            ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     var _styles = utils.style;
     var _bounds = utils.bounds;
@@ -36,7 +37,7 @@ define([
             model: _model
         });
 
-        var _playerElement = utils.createElement(playerTemplate({ id: _model.get('id') }));
+        var _playerElement = utils.createElement(playerTemplate(_model.get('id')));
         var _videoLayer;
         var _preview;
         var _title;

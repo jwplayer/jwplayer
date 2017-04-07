@@ -1,16 +1,13 @@
+import displayIconTemplate from 'view/controls/templates/display-icon';
+
 define([
     'utils/helpers',
     'utils/ui',
-    'templates/display-icon.html'
-], function(utils, UI, Template) {
+], function(utils, UI) {
 
     return class RewindDisplayIcon {
         constructor(model, api) {
-
-            this.el = utils.createElement(Template({
-                iconName: 'rewind',
-                ariaLabel: model.get('localization').playback
-            }));
+            this.el = utils.createElement(displayIconTemplate('rewind', model.get('localization').playback));
 
             this.iconUI = new UI(this.el).on('click tap', function() {
                 const currentPosition = model.get('position');
