@@ -124,6 +124,7 @@ define([
 
             config.playlist = [ obj ];
         } else if (_.isArray(configPlaylist.playlist)) {
+            // The "playlist" in the config is actually a feed that contains a playlist
             config.feedData = configPlaylist;
             config.playlist = configPlaylist.playlist;
         }
