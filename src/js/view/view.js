@@ -1,16 +1,5 @@
-// import events from 'events/events';
-// import states from 'events/states';
-// import Events from 'utils/backbone.events';
-// import utils from 'utils/helpers';
-// import _ from 'utils/underscore';
-// import activeTab from 'utils/active-tab';
-// import raf from 'utils/request-animation-frame';
-// import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
-// import setBreakpoint from 'view/utils/breakpoint';
-// import flagNoFocus from 'view/utils/flag-no-focus';
-// import ClickHandler from 'view/utils/clickhandler';
-
 import playerTemplate from 'templates/player';
+
 define([
     'events/events',
     'events/states',
