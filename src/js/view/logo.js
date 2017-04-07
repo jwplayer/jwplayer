@@ -1,11 +1,12 @@
+import logoTemplate from 'templates/logo';
+
 define([
     'utils/ui',
     'utils/helpers',
     'events/events',
     'utils/underscore',
     'utils/backbone.events',
-    'templates/logo.html'
-], function(UI, utils, events, _, Events, logoTemplate) {
+], function(UI, utils, events, _, Events) {
     var _styles = utils.style;
 
     var LogoDefaults = {

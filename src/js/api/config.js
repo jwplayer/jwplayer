@@ -42,8 +42,8 @@ define([
             rewind: 'Rewind 10s',
             nextUp: 'Next Up',
             nextUpClose: 'Next Up Close',
-            related: 'Related',
-            close: 'Close'
+            related: 'Discover',
+            close: 'Close',
         },
         renderCaptionsNatively: false,
         nextUpDisplay: true

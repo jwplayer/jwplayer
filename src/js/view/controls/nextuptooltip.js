@@ -1,9 +1,10 @@
+import nextUpTemplate from 'view/controls/templates/nextup';
+
 define([
     'utils/dom',
     'utils/ui',
     'utils/helpers',
-    'templates/nextup.html'
-], function(dom, UI, utils, nextUpTemplate) {
+], function(dom, UI, utils) {
 
     return class NextUpTooltip {
         constructor(_model, _api, playerElement) {

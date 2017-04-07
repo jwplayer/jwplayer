@@ -129,10 +129,6 @@ var multiConfig = _.compact(_.map([
                     ]
                 },
                 {
-                    test: /\.html$/,
-                    loader: 'handlebars-loader'
-                },
-                {
                     test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
                     loader: 'file-loader?name=[name].[ext]'
                 },

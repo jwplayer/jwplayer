@@ -1,15 +1,13 @@
+import displayIconTemplate from 'view/controls/templates/display-icon';
+
 define([
     'utils/helpers',
-    'utils/ui',
-    'templates/display-icon.html'
-], function(utils, UI, Template) {
+    'utils/ui'
+], function(utils, UI) {
 
     return class NextDisplayIcon {
         constructor(model, api) {
-            const element = utils.createElement(Template({
-                iconName: 'next',
-                ariaLabel: model.get('localization').next
-            }));
+            const element = utils.createElement(displayIconTemplate('next', model.get('localization').next));
 
             this.iconUI = new UI(element).on('click tap', function() {
                 api.next();

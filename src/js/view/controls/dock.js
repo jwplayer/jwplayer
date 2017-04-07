@@ -1,9 +1,10 @@
+import dockTemplate from 'view/controls/templates/dock';
+
 define([
-    'templates/dock.html',
     'utils/helpers',
     'utils/underscore',
     'utils/ui'
-], function(dockTemplate, utils, _, UI) {
+], function(utils, _, UI) {
 
     const getDockButton = function(evt) {
         if (utils.hasClass(evt.target, 'jw-dock-button')) {
