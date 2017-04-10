@@ -12,7 +12,7 @@ export default (items = []) => {
     );
 };
 
-const menuItem = (index, label) => {
+const menuItem = (index = '', label = '') => {
     return (
         `<li class='jw-text jw-option jw-item-${index} jw-reset'>${label}</li>`
     );

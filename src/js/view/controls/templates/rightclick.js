@@ -15,7 +15,7 @@ export default (menu) => {
     );
 };
 
-const rightClickItem = (link, title, featured, showLogo) => {
+const rightClickItem = (link = '', title = '', featured, showLogo) => {
     const logo = showLogo ? `<span class="jw-icon jw-rightclick-logo jw-reset"></span>` : '';
     return (
       `<li class="jw-reset ${featured ? 'jw-featured' : ''}">` +

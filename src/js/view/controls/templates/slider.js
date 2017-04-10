@@ -1,4 +1,4 @@
-export default (className, orientation) => {
+export default (className = '', orientation = '') => {
     return (
         `<div class="${className} ${orientation} jw-reset" aria-hidden="true">` +
             `<div class="jw-slider-container jw-reset">` +

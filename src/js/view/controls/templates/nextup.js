@@ -1,4 +1,4 @@
-export default (header, title, closeAriaLabel) => {
+export default (header = '', title = '', closeAriaLabel = '') => {
     return (
         `<div class="jw-nextup jw-reset">` +
              `<div class="jw-nextup-tooltip jw-reset">` +
