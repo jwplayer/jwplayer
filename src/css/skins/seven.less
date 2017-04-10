@@ -51,17 +51,21 @@
         -moz-osx-font-smoothing: grayscale;
     }
 
-    &:not(.jw-flag-touch) {
-        .jw-slider-container {
-            .jw-knob {
-                display: none;
-            }
+    .jw-slider-container {
+        .jw-knob {
+            display: none;
+        }
 
-            &:hover {
-                .jw-knob {
-                    display: block;
-                }
+        &:hover {
+            .jw-knob {
+                display: block;
             }
+        }
+    }
+
+    &.jw-flag-touch {
+        .jw-knob {
+            display: block;
         }
     }
 }
