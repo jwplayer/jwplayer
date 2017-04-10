@@ -45,8 +45,8 @@ define([
 
             _model.set('logo', _settings);
 
-            accommodateDock();
-            _model.on('change:dock', accommodateDock);
+            _model.change('dock', accommodateDock);
+            _model.on('change:controls', accommodateDock);
 
             // apply styles onload when image width and height are known
             _img.onload = function () {
@@ -101,13 +101,14 @@ define([
 
         this.destroy = function() {
             _model.off('change:dock', accommodateDock);
+            _model.off('change:controls', accommodateDock);
             _img.onload = null;
         };
 
         function accommodateDock() {
             // When positioned in the top right, the logo needs to be shifted down to accommodate dock buttons
             var dockButtons = _model.get('dock');
-            var belowDock = !!(dockButtons && dockButtons.length && _settings.position === 'top-right');
+            var belowDock = !!(dockButtons && dockButtons.length && _settings.position === 'top-right' && _model.get('controls'));
             utils.toggleClass(_logo, 'jw-below', belowDock);
         }
 
