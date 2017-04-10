@@ -16,8 +16,8 @@ const dockButton = (buttonClass, buttonId, image, tooltipText) => {
     const style = image ? `style='background-image: url("${image}")` : '';
     const tooltipHtml = tooltipText ? tooltip(tooltipText) : '';
     return (
-        `<div class="jw-dock-button jw-background-color jw-reset ${buttonClass || ''}" button="${buttonId}">` +
-            `<div class="jw-icon jw-dock-image jw-reset" ${style}</div>` +
+        `<div class="jw-dock-button jw-background-color jw-reset ${buttonClass || ''}" button=${buttonId}">` +
+            `<div class="jw-icon jw-dock-image jw-reset ${style}"></div>` +
             `<div class="jw-arrow jw-reset"></div>` +
             `${tooltipHtml}` +
         `</div>`
