@@ -21,6 +21,7 @@ define([
         height: 270,
         audioMode: false,
         localization: {
+            player: 'Video Player',
             play: 'Play',
             playback: 'Start playback',
             pause: 'Pause',
