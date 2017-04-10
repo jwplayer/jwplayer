@@ -1,0 +1,11 @@
+@import "../../shared-imports/vars";
+
+.jwplayer.jw-flag-user-inactive:not(.jw-flag-media-audio) {
+    &.jw-state-playing {
+        .jw-logo.jw-hide {
+            visibility: hidden;
+            pointer-events: none;
+            opacity: 0;
+        }
+    }
+}

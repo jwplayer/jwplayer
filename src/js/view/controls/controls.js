@@ -18,7 +18,6 @@ define([
              DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
              NextUpToolTip, RightClick) {
 
-    const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
     const CONTOLBAR_ONLY_HEIGHT = 44;
 
     const isAudioMode = function(model) {
@@ -52,7 +51,6 @@ define([
 
             // Alphabetic order
             // Any property on the prototype should be initialized here first
-            this.activeTimeout = -1;
             this.context = context;
             this.controlbar = null;
             this.displayContainer = null;
@@ -64,17 +62,12 @@ define([
             this.nextUpToolTip = null;
             this.playerContainer = playerContainer;
             this.rightClickMenu = null;
-            this.showing = false;
             this.unmuteCallback = null;
             this.element = null;
             this.right = null;
-            this.activeListeners = {
-                mousemove: () => clearTimeout(this.activeTimeout),
-                mouseout: () => this.userActive()
-            };
         }
 
-        enable(api, model) {
+        enable(api, model, userActivity) {
             const element = this.context.createElement('div');
             element.className = 'jw-controls jw-reset';
             this.element = element;
@@ -100,7 +93,7 @@ define([
                 // toggle playback
                 playDisplayIcon.on('click tap', () => {
                     this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                    this.userActive(1000);
+                    userActivity.userActive(1000);
                     api.play(reasonInteraction());
                 });
                 // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
@@ -149,9 +142,7 @@ define([
             // Controlbar
             if (!this.controlbar) {
                 this.controlbar = new Controlbar(api, model);
-                this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
             }
-            this.addActiveListeners(this.controlbar.element());
             this.element.appendChild(this.controlbar.element());
 
             // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
@@ -193,7 +184,7 @@ define([
                 }
                 // On keypress show the controlbar for a few seconds
                 if (!this.instreamState) {
-                    this.userActive();
+                    userActivity.userActive();
                 }
                 switch (evt.keyCode) {
                     case 27: // Esc
@@ -254,20 +245,16 @@ define([
             this.keydownCallback = handleKeydown;
 
             // Show controls when enabled
-            this.userActive();
+            userActivity.userActive();
 
             this.playerContainer.appendChild(this.element);
         }
 
         disable() {
             this.off();
-            clearTimeout(this.activeTimeout);
 
             if (this.element.parentNode) {
                 this.playerContainer.removeChild(this.element);
-            }
-            if (this.controlbar) {
-                this.removeActiveListeners(this.controlbar.element());
             }
             if (this.rightClickMenu) {
                 this.rightClickMenu.destroy();
@@ -322,41 +309,6 @@ define([
             this.controlbar.renderVolume(mute, model.get('volume'));
             this.mute.hide();
             utils.removeClass(this.playerContainer, 'jw-flag-autostart');
-        }
-
-        addActiveListeners(element) {
-            if (element && !utils.isMobile()) {
-                element.addEventListener('mousemove', this.activeListeners.mousemove);
-                element.addEventListener('mouseout', this.activeListeners.mouseout);
-            }
-        }
-
-        removeActiveListeners(element) {
-            if (element) {
-                element.removeEventListener('mousemove', this.activeListeners.mousemove);
-                element.removeEventListener('mouseout', this.activeListeners.mouseout);
-            }
-        }
-
-        userActive(timeout) {
-            clearTimeout(this.activeTimeout);
-            this.activeTimeout = setTimeout(() => this.userInactive(),
-                timeout || ACTIVE_TIMEOUT);
-            if (!this.showing) {
-                utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
-                this.showing = true;
-                this.trigger('userActive', this.showing);
-            }
-        }
-
-        userInactive() {
-            clearTimeout(this.activeTimeout);
-            this.showing = false;
-            if (this.controlbar) {
-                this.controlbar.hideComponents();
-            }
-            utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
-            this.trigger('userInactive', this.showing);
         }
     };
 });
