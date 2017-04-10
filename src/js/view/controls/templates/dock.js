@@ -14,7 +14,7 @@ export default (dockButtons = []) => {
 
 const dockButton = (buttonClass, buttonId, image, tooltipText) => {
     const style = image ? `style='background-image: url("${image}")` : '';
-    const aria = tooltipText? `aria-label="{{tooltip}}" role="button" tabindex="0"` : '';
+    const aria = tooltipText? `aria-label="${tooltipText}" role="button" tabindex="0"` : '';
     const tooltipHtml = tooltipText ? tooltip(tooltipText) : '';
     return (
         `<div class="jw-dock-button jw-background-color jw-reset ${buttonClass || ''}" button="${buttonId}">` +
