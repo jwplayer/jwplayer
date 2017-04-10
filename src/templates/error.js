@@ -1,6 +1,6 @@
-export default (id, skin, title, body) => {
+export default (id, skin = '', title = '', body = '') => {
     return (
-        `<div id="${id}" class="jw-skin${skin} jw-error jw-reset">` +
+        `<div id="${id}" class="jw-skin-${skin} jw-error jw-reset">` +
             `<div class="jw-title jw-reset">` +
                 `<div class="jw-title-primary jw-reset">${title}</div>` +
                 `<div class="jw-title-secondary jw-reset">${body}</div>` +
