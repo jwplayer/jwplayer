@@ -38,8 +38,7 @@
 
         "property-case": "lower",
         "property-no-unknown": [
-            true,
-            { "ignoreProperties": ["font-smoothing"] }
+            true
         ],
 
         "declaration-bang-space-after": "never",

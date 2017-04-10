@@ -45,8 +45,9 @@
 
     .jw-text {
         text-rendering: optimizeLegibility;
-        font-smoothing: antialiased;
-        /* OSX Safari specific style for improving legibility */
+        /* font-smoothing is a private setting not transformed by PostCSS */
+        -webkit-font-smoothing: antialiased;
+        /* OSX Firefox specific style for improving legibility */
         -moz-osx-font-smoothing: grayscale;
     }
 
