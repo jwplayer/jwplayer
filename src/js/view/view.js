@@ -1,4 +1,5 @@
 import playerTemplate from 'templates/player';
+import UserActivity from 'view/utils/user-activity';
 
 define([
     'events/events',
@@ -58,6 +59,7 @@ define([
         var displayClickHandler;
         var fullscreenHelpers;
         var focusHelper;
+        var userActivity;
 
         var _controls;
 
@@ -280,6 +282,26 @@ define([
             window.removeEventListener('orientationchange', _responsiveListener);
             window.addEventListener('orientationchange', _responsiveListener);
 
+            var overlaysElement = _playerElement.querySelector('.jw-overlays');
+            userActivity = new UserActivity();
+            userActivity.addActiveListeners(_logo.element());
+            overlaysElement.addEventListener('mousemove', _userActivityCallback);
+            userActivity.on('all', function(eventType) {
+                if (eventType === 'userActive') {
+                    utils.removeClass(_playerElement, 'jw-flag-user-inactive');
+                } else {
+                    // eventType === 'userInactive'
+                    if (_controls && _controls.controlbar) {
+                        _controls.controlbar.closeMenus();
+                    }
+                    utils.addClass(_playerElement, 'jw-flag-user-inactive');
+                }
+                if (_controls) {
+                    _captionsRenderer.renderCues(true);
+                }
+                _this.trigger(eventType);
+            });
+
             _model.on('change:state', (model, state) => {
                 if (state === states.COMPLETE) {
                     _api.setFullscreen(false);
@@ -364,17 +386,17 @@ define([
                         }
                         utils.toggleClass(_playerElement, 'jw-flag-controls-hidden');
                         _captionsRenderer.renderCues(true);
-                    } else if (_controls) {
-                        if (!_controls.showing) {
-                            _controls.userActive();
+                    } else {
+                        if (!userActivity.showing) {
+                            userActivity.userActive();
                         } else {
-                            _controls.userInactive();
+                            userActivity.userInactive();
                         }
                     }
                 },
                 doubleClick: () => api.setFullscreen(),
-                move: () => _controls && _controls.userActive(),
-                over: () => _controls && _controls.userActive()
+                move: () => userActivity && userActivity.userActive(),
+                over: () => userActivity && userActivity.userActive()
             });
             return clickHandler;
         }
@@ -434,15 +456,8 @@ define([
         this.addControls = function (controls) {
             _controls = controls;
 
-            var overlaysElement = _playerElement.querySelector('.jw-overlays');
-            overlaysElement.addEventListener('mousemove', _userActivityCallback);
-
-            controls.on('uiActivity', function(/* showing */) {
-                _captionsRenderer.renderCues(true);
-            });
-
-            controls.enable(_api, _model);
-            controls.addActiveListeners(_logo.element());
+            controls.enable(_api, _model, userActivity);
+            userActivity.addActiveListeners(controls.controlbar.element());
 
             _logo.setContainer(controls.right);
 
@@ -461,14 +476,9 @@ define([
             _logo.setContainer(_playerElement);
 
             if (_controls) {
-                _controls.removeActiveListeners(_logo.element());
+                userActivity.removeActiveListeners(_controls.controlbar.element());
                 _controls.disable();
                 _controls = null;
-            }
-
-            var overlay = document.querySelector('.jw-overlays');
-            if (overlay) {
-                overlay.removeEventListener('mousemove', _userActivityCallback);
             }
 
             utils.removeClass(_playerElement, 'jw-flag-touch');
@@ -614,8 +624,8 @@ define([
                 });
 
                 // On going fullscreen we want the control bar to fade after a few seconds
-                if (_controls) {
-                    _controls.userActive();
+                if (userActivity) {
+                    userActivity.userActive();
                 }
             } else {
                 utils.removeClass(playerElement, 'jw-flag-fullscreen');
@@ -629,7 +639,9 @@ define([
         }
 
         function _userActivityCallback(/* event */) {
-            _controls.userActive();
+            if (userActivity) {
+                userActivity.userActive();
+            }
         }
 
         function _onMediaTypeChange(model, val) {
@@ -718,8 +730,8 @@ define([
 
         function onFocus() {
             // On tab-focus, show the control bar for a few seconds
-            if (_controls && !_instreamModel && !_isMobile) {
-                _controls.userActive();
+            if (userActivity && !_instreamModel && !_isMobile) {
+                userActivity.userActive();
             }
         }
 
@@ -734,9 +746,9 @@ define([
 
             utils.addClass(_playerElement, 'jw-flag-ads');
 
-            // Call Controls.userActivity to display the UI temporarily for the start of the ad
-            if (_controls) {
-                _controls.userActive();
+            // Call userActivity.userActive to display the UI temporarily for the start of the ad
+            if (userActivity) {
+                userActivity.userActive();
             }
         };
 
@@ -843,6 +855,15 @@ define([
 
             if (_instreamModel) {
                 this.destroyInstream();
+            }
+            if (userActivity) {
+                if (_logo) {
+                    userActivity.removeActiveListeners(_logo.element());
+                }
+                var overlay = document.querySelector('.jw-overlays');
+                if (overlay) {
+                    overlay.removeEventListener('mousemove', _userActivityCallback);
+                }
             }
             if (_logo) {
                 _logo.destroy();
