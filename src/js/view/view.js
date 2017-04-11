@@ -1,4 +1,5 @@
 import playerTemplate from 'templates/player';
+import UserActivity from 'view/utils/user-activity';
 
 define([
     'events/events',
@@ -12,13 +13,12 @@ define([
     'view/utils/breakpoint',
     'view/utils/flag-no-focus',
     'view/utils/clickhandler',
-    'view/utils/user-activity',
     'view/captionsrenderer',
     'view/logo',
     'view/preview',
     'view/title',
 ], function(events, states, Events, utils, _, activeTab, raf, requestFullscreenHelper, setBreakpoint, flagNoFocus,
-            ClickHandler, UserActivity, CaptionsRenderer, Logo, Preview, Title) {
+            ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     var _styles = utils.style;
     var _bounds = utils.bounds;
