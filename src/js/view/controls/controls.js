@@ -353,7 +353,9 @@ define([
             clearTimeout(this.activeTimeout);
             this.showing = false;
             if (this.controlbar) {
-                this.controlbar.hideComponents();
+                this.controlbar.closeMenus({
+                    type: 'userInactive'
+                });
             }
             utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
             this.trigger('userInactive', this.showing);

@@ -1,3 +1,4 @@
-export default () => {
-    return `<div class="jw-logo jw-reset"></div>`;
+export default (position, hide) => {
+    const jwhide = hide ? ' jw-hide' : '';
+    return `<div class="jw-logo jw-logo-${position}${jwhide} jw-reset"></div>`;
 };

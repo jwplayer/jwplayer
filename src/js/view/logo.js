@@ -17,31 +17,24 @@ define([
     };
 
     return function Logo(_model) {
+        _.extend(this, Events);
+
         var _logo;
         var _settings;
         var _img = new Image();
-        var _logoConfig = _.extend({}, _model.get('logo'));
-
-        _.extend(this, Events);
 
         this.setup = function() {
-            _settings = _.extend({}, LogoDefaults, _logoConfig);
-            _settings.hide = (_settings.hide.toString() === 'true');
-
+            _settings = _.extend({}, LogoDefaults, _model.get('logo'));
             if (!_settings.file) {
                 return;
             }
 
+            _settings.position = _settings.position || LogoDefaults.position;
+            _settings.hide = (_settings.hide.toString() === 'true');
+
             if (!_logo) {
-                _logo = utils.createElement(logoTemplate());
+                _logo = utils.createElement(logoTemplate(_settings.position, _settings.hide));
             }
-
-            if (_settings.hide) {
-                // This causes it to fade out when jw-flag-user-inactive
-                utils.addClass(_logo, 'jw-hide');
-            }
-
-            utils.addClass(_logo, 'jw-logo-' + (_settings.position || LogoDefaults.position));
 
             _model.set('logo', _settings);
 
