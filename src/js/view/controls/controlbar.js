@@ -414,10 +414,6 @@ define([
             });
         }
 
-        hideComponents() {
-            this.closeMenus();
-        }
-
         rewind() {
             const currentPosition = this._model.get('position');
             const duration = this._model.get('duration');
