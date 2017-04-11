@@ -451,7 +451,9 @@ define([
 
             // refresh breakpoint and timeslider classes
             if (_lastHeight) {
-                _setContainerDimensions();
+                var breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
+                controls.resize(_model, breakPoint);
+                _captionsRenderer.renderCues(true);
             }
         };
 
