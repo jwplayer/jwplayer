@@ -21,6 +21,7 @@ define([
         height: 270,
         audioMode: false,
         localization: {
+            player: 'Video Player',
             play: 'Play',
             playback: 'Start playback',
             pause: 'Pause',
@@ -42,7 +43,8 @@ define([
             rewind: 'Rewind 10s',
             nextUp: 'Next Up',
             nextUpClose: 'Next Up Close',
-            related: 'Discover'
+            related: 'Discover',
+            close: 'Close',
         },
         renderCaptionsNatively: false,
         nextUpDisplay: true
