@@ -121,7 +121,7 @@ define([
                 height: containerHeight
             });
         }
-        
+
         function _responsiveListener() {
             cancelAnimationFrame(_resizeContainerRequestId);
             _resizeContainerRequestId = requestAnimationFrame(_setContainerDimensions);
@@ -268,7 +268,7 @@ define([
             displayClickHandler = clickHandlerHelper(_api, _model, _videoLayer);
 
             focusHelper = flagNoFocus(_playerElement);
-            fullscreenHelpers = requestFullscreenHelper(_playerElement, document);
+            fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
             _playerElement.addEventListener('focus', onFocus);
 
