@@ -30,6 +30,80 @@ define([
 
     require('css/jwplayer.less');
 
+    var viewsManager = (function(global, context) {
+        var views = [];
+        var responsiveRepaintRequestId = -1;
+
+        function scheduleResponsiveRedraw() {
+            cancelAnimationFrame(responsiveRepaintRequestId);
+            responsiveRepaintRequestId = requestAnimationFrame(function responsiveRepaint() {
+                views.forEach(view => {
+                    view.updateBounds();
+                });
+                views.forEach(view => {
+                    if (view.model.get('visibility')) {
+                        view.updateStyles();
+                    }
+                });
+            });
+        }
+
+        function onVisibilityChange() {
+            views.forEach(view => {
+                view.visibilityChange();
+            });
+        }
+
+        context.addEventListener('visibilitychange', onVisibilityChange);
+        context.addEventListener('webkitvisibilitychange', onVisibilityChange);
+        global.addEventListener('resize', scheduleResponsiveRedraw);
+        global.addEventListener('orientationchange', scheduleResponsiveRedraw);
+
+        function onIntersection(entries) {
+            if (entries && entries.length) {
+                for (let i = entries.length; i--;) {
+                    const entry = entries[i];
+                    views.forEach(view => {
+                        if (entry.target === view.getContainer()) {
+                            view.model.set('intersectionRatio', entry.intersectionRatio);
+                        }
+                    });
+                }
+            }
+        }
+
+        var _xo = (function (IntersectionObserver) {
+            if (!IntersectionObserver) {
+                return null;
+            }
+            // Fire the callback every time 25% of the player comes in/out of view
+            return new IntersectionObserver(onIntersection, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+        }(global.IntersectionObserver));
+
+        return {
+            add: function(view) {
+                views.push(view);
+            },
+            remove: function(view) {
+                var index = views.indexOf(view);
+                if (index !== -1) {
+                    views.splice(index, 1);
+                }
+            },
+            observe(container) {
+                if (_xo) {
+                    _xo.unobserve(container);
+                    _xo.observe(container);
+                }
+            },
+            unobserve(container) {
+                if (_xo) {
+                    _xo.unobserve(container);
+                }
+            }
+        };
+    }(window, document));
+
     return function View(_api, _model) {
         var _this = _.extend(this, Events, {
             isSetup: false,
@@ -65,13 +139,16 @@ define([
             return { reason: 'interaction' };
         }
 
-        function _setContainerDimensions() {
+        this.updateBounds = function() {
+            cancelAnimationFrame(_resizeContainerRequestId);
             var inDOM = document.body.contains(_playerElement);
+            if (!inDOM) {
+                _model.set('inDom', inDOM);
+                return;
+            }
             var bounds = _bounds(_playerElement);
             var containerWidth = Math.round(bounds.width);
             var containerHeight = Math.round(bounds.height);
-
-            cancelAnimationFrame(_resizeContainerRequestId);
 
             // If the container is the same size as before, return early
             if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
@@ -100,18 +177,22 @@ define([
             _model.set('containerHeight', containerHeight);
             _model.set('inDom', inDOM);
 
-            var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
+            if (inDOM) {
+                viewsManager.observe(_playerElement);
+            }
+        };
 
+        this.updateStyles = function() {
+            var containerWidth = _model.get('containerWidth');
+            var containerHeight = _model.get('containerHeight');
+            var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
             if (_controls) {
                 _controls.resize(_model, breakPoint);
             }
-
             _resizeMedia(containerWidth, containerHeight);
-
             _captionsRenderer.resize();
-
             _resized(containerWidth, containerHeight);
-        }
+        };
 
         function _resized(containerWidth, containerHeight) {
             _lastWidth = containerWidth;
@@ -124,30 +205,7 @@ define([
 
         function _responsiveListener() {
             cancelAnimationFrame(_resizeContainerRequestId);
-            _resizeContainerRequestId = requestAnimationFrame(_setContainerDimensions);
-        }
-
-        // Set global colors, used by related plugin
-        // If a color is undefined simple-style-loader won't add their styles to the dom
-        function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
-            if (activeColor) {
-                var activeColorSet = {
-                    color: activeColor,
-                    borderColor: activeColor,
-                    stroke: activeColor
-                };
-                utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
-                utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
-            }
-            if (inactiveColor) {
-                var inactiveColorSet = {
-                    color: inactiveColor,
-                    borderColor: inactiveColor,
-                    stroke: inactiveColor
-                };
-                utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
-                utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
-            }
+            _resizeContainerRequestId = requestAnimationFrame(_this.updateBounds);
         }
 
         this.handleColorOverrides = function () {
@@ -241,6 +299,29 @@ define([
             insertGlobalColorClasses(activeColor, inactiveColor, id);
         };
 
+        // Set global colors, used by related plugin
+        // If a color is undefined simple-style-loader won't add their styles to the dom
+        function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
+            if (activeColor) {
+                var activeColorSet = {
+                    color: activeColor,
+                    borderColor: activeColor,
+                    stroke: activeColor
+                };
+                utils.css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
+                utils.css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
+            }
+            if (inactiveColor) {
+                var inactiveColorSet = {
+                    color: inactiveColor,
+                    borderColor: inactiveColor,
+                    stroke: inactiveColor
+                };
+                utils.css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
+                utils.css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
+            }
+        }
+
         this.setup = function () {
             _videoLayer = _playerElement.querySelector('.jw-media');
 
@@ -272,21 +353,13 @@ define([
 
             _playerElement.addEventListener('focus', onFocus);
 
-            document.addEventListener('visibilitychange', onVisibilityChange);
-            document.addEventListener('webkitvisibilitychange', onVisibilityChange);
-
-            window.removeEventListener('resize', _responsiveListener);
-            window.addEventListener('resize', _responsiveListener);
-            window.removeEventListener('orientationchange', _responsiveListener);
-            window.addEventListener('orientationchange', _responsiveListener);
+            viewsManager.add(this);
 
             _model.on('change:state', (model, state) => {
                 if (state === states.COMPLETE) {
                     _api.setFullscreen(false);
                 }
             });
-            _model.on('change:state', _stateHandler);
-            _model.on('change:fullscreen', _fullscreen);
             _model.on('change:errorEvent', _errorHandler);
             _model.on('change:hideAdsControls', function (model, val) {
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
@@ -304,10 +377,7 @@ define([
 
             var width = _model.get('width');
             var height = _model.get('height');
-            _styles(_playerElement, {
-                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
-                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
-            });
+            _resize(width, height);
             if (_isIE) {
                 utils.addClass(_playerElement, 'jw-ie');
             }
@@ -319,6 +389,7 @@ define([
                 });
             }
             this.handleColorOverrides();
+
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
             _model.set('iFrame', utils.isIframe());
@@ -329,11 +400,106 @@ define([
             _model.set('inDom', document.body.contains(_playerElement));
         };
 
+        function _getVisibility() {
+            // Set visibility to 1 if we're in fullscreen
+            if (_model.get('fullscreen')) {
+                return 1;
+            }
+
+            // Set visibility to 0 if we're not in the active tab
+            if (!_model.get('activeTab')) {
+                return 0;
+            }
+            // Otherwise, set it to the intersection ratio reported from the intersection observer
+            var intersectionRatio = _model.get('intersectionRatio');
+
+            if (_.isUndefined(intersectionRatio)) {
+                // Get intersectionRatio through brute force
+                intersectionRatio = _computeVisibility(_playerElement);
+            }
+
+            return intersectionRatio;
+        }
+
+        function _computeVisibility(target) {
+            var html = document.documentElement;
+            var body = document.body;
+            var rootRect = {
+                top: 0,
+                left: 0,
+                right: html.clientWidth || body.clientWidth,
+                width: html.clientWidth || body.clientWidth,
+                bottom: html.clientHeight || body.clientHeight,
+                height: html.clientHeight || body.clientHeight
+            };
+
+            if (!body.contains(target)) {
+                return 0;
+            }
+            var targetRect = target.getBoundingClientRect();
+
+            var intersectionRect = targetRect;
+            var parent = target.parentNode;
+            var atRoot = false;
+
+            while (!atRoot) {
+                var parentRect = null;
+                if (!parent || parent.nodeType !== 1) {
+                    atRoot = true;
+                    parentRect = rootRect;
+                } else if (window.getComputedStyle(parent).overflow !== 'visible') {
+                    parentRect = utils.bounds(parent);
+                }
+                if (parentRect) {
+                    intersectionRect = computeRectIntersection(parentRect, intersectionRect);
+                    if (!intersectionRect) {
+                        return 0;
+                    }
+                }
+                parent = parent.parentNode;
+            }
+            var targetArea = targetRect.width * targetRect.height;
+            var intersectionArea = intersectionRect.width * intersectionRect.height;
+            return targetArea ? (intersectionArea / targetArea) : 0;
+        }
+
+        function computeRectIntersection(rect1, rect2) {
+            var top = Math.max(rect1.top, rect2.top);
+            var bottom = Math.min(rect1.bottom, rect2.bottom);
+            var left = Math.max(rect1.left, rect2.left);
+            var right = Math.min(rect1.right, rect2.right);
+            var width = right - left;
+            var height = bottom - top;
+            return (width >= 0 && height >= 0) && {
+                top: top,
+                bottom: bottom,
+                left: left,
+                right: right,
+                width: width,
+                height: height
+            };
+        }
+
+        function _updateVisibility() {
+            _model.set('visibility', _getVisibility());
+        }
+
         this.init = function() {
-            _resize(_model.get('width'), _model.get('height'));
-            _stateHandler(_instreamModel || _model);
             _lastWidth = _lastHeight = null;
-            _setContainerDimensions();
+            this.updateBounds();
+            _updateVisibility();
+
+            _model.on('change:state', _stateHandler);
+            _model.on('change:fullscreen', _fullscreen);
+            _model.on('change:activeTab', _updateVisibility);
+            _model.on('change:fullscreen', _updateVisibility);
+            _model.on('change:intersectionRatio', _updateVisibility);
+            _model.change('visibility', function observedVisibilityChange(model, visibility) {
+                if (visibility) {
+                    _stateHandler(_instreamModel || _model);
+                    this.updateStyles();
+                }
+            }, this);
         };
 
         function clickHandlerHelper(api, model, videoLayer) {
@@ -522,6 +688,11 @@ define([
             if (resetAspectMode) {
                 _model.set('aspectratio', null);
                 playerStyle.display = 'block';
+            } else {
+                playerStyle.width = playerWidth.toString().indexOf('%') > 0 ? playerWidth : (playerWidth + 'px');
+                if (!_model.get('aspectratio')) {
+                    playerStyle.height = playerHeight.toString().indexOf('%') > 0 ? playerHeight : (playerHeight + 'px');
+                }
             }
 
             if (utils.exists(playerWidth) && utils.exists(playerHeight)) {
@@ -529,28 +700,21 @@ define([
                 _model.set('height', playerHeight);
             }
 
-            if (!_model.get('aspectratio')) {
-                playerStyle.height = playerHeight;
-            }
-
             _styles(_playerElement, playerStyle);
-
-            // pass width, height from jwResize if present
-            _resizeMedia(playerWidth, playerHeight);
         }
 
         function _resizeMedia(mediaWidth, mediaHeight) {
             if (!mediaWidth || isNaN(1 * mediaWidth)) {
-                if (!_videoLayer) {
+                if (!_lastWidth) {
                     return;
                 }
-                mediaWidth = _lastWidth || _videoLayer.clientWidth;
+                mediaWidth = _lastWidth;
             }
             if (!mediaHeight || isNaN(1 * mediaHeight)) {
-                if (!_videoLayer) {
+                if (!_lastHeight) {
                     return;
                 }
-                mediaHeight = _lastHeight || _videoLayer.clientHeight;
+                mediaHeight = _lastHeight;
             }
 
             if (_preview) {
@@ -573,7 +737,9 @@ define([
         this.resize = function (playerWidth, playerHeight) {
             var resetAspectMode = true;
             _resize(playerWidth, playerHeight, resetAspectMode);
-            _setContainerDimensions();
+            // this.resize is called within the context of controller
+            _this.updateBounds();
+            _this.updateStyles();
         };
         this.resizeMedia = _resizeMedia;
 
@@ -668,10 +834,6 @@ define([
             }
         }
 
-        function _updateStateClass() {
-            utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _playerState);
-        }
-
         function _stateHandler(model) {
             if (!_model.get('viewSetup')) {
                 return;
@@ -704,16 +866,7 @@ define([
 
         function _stateUpdate(model, state) {
             utils.toggleClass(_playerElement, 'jw-flag-dragging', model.get('scrubbing'));
-            _updateStateClass();
-
-            // player display
-            switch (state) {
-                case states.PLAYING:
-                    _resizeMedia();
-                    break;
-                default:
-                    break;
-            }
+            utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
         }
 
         function onFocus() {
@@ -723,9 +876,9 @@ define([
             }
         }
 
-        function onVisibilityChange() {
+        this.visibilityChange = function() {
             _model.set('activeTab', activeTab());
-        }
+        };
 
         this.setupInstream = function (instreamModel) {
             this.instreamModel = _instreamModel = instreamModel;
@@ -814,13 +967,13 @@ define([
         };
 
         this.destroy = function () {
+            viewsManager.unobserve(_playerElement);
+            viewsManager.remove(this);
             this.isSetup = false;
             this.off();
             cancelAnimationFrame(_previewDisplayStateTimeout);
+            cancelAnimationFrame(_resizeContainerRequestId);
             clearTimeout(_resizeMediaTimeout);
-            window.removeEventListener('resize', _responsiveListener);
-            window.removeEventListener('orientationchange', _responsiveListener);
-            document.removeEventListener('visibilitychange', onVisibilityChange);
             _playerElement.removeEventListener('focus', onFocus);
             if (focusHelper) {
                 focusHelper.destroy();

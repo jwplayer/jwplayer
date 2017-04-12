@@ -72,7 +72,6 @@ define([
             var _stopPlaylist = false;
             var _interruptPlay;
             var _this = this;
-            var _xo; // Intersection Observer - used for playing video on mobile when visible
 
             var _video = function () {
                 return _model.getVideo();
@@ -236,8 +235,6 @@ define([
 
             _model.on('change:inDom', function(model, inDom) {
                 if (inDom) {
-                    _observePlayerContainer(_view.element());
-
                     model.off('change:controls', changeControls);
                     model.change('controls', changeControls);
                 }
@@ -248,13 +245,7 @@ define([
 
                 _view.on('all', _triggerAfterReady, _this);
 
-                _updateVisibility();
-                _updateViewable();
-
-                _model.on('change:activeTab', _updateVisibility);
-                _model.on('change:fullscreen', _updateVisibility);
-                _model.on('change:intersectionRatio', _updateVisibility);
-                _model.on('change:visibility', _onVisibilityChange);
+                _model.change('visibility', _onVisibilityChange);
 
                 var related = _api.getPlugin('related');
                 if (related) {
@@ -287,119 +278,6 @@ define([
                 }
 
                 _checkAutoStart();
-            }
-
-            function _observePlayerContainer(container) {
-                if (!container) {
-                    return;
-                }
-                if (!window.IntersectionObserver) {
-                    return;
-                }
-                _stopObserving();
-                // Fire the callback every time 25% of the player comes in/out of view
-                _xo = new window.IntersectionObserver(_onIntersection, { threshold: [0, 0.25, 0.5, 0.75, 1] });
-                _xo.observe(container);
-            }
-
-            function _stopObserving() {
-                if (_xo) {
-                    _xo.disconnect();
-                    _xo = undefined;
-                }
-            }
-
-            function _onIntersection(entries) {
-                if (entries && entries.length) {
-                    var entry = entries[0];
-                    if (entry.target === _this.getContainer()) {
-                        _model.set('intersectionRatio', entry.intersectionRatio);
-                    }
-                }
-            }
-
-            function _getVisibility() {
-                // Set visibility to 1 if we're in fullscreen
-                if (_model.get('fullscreen')) {
-                    return 1;
-                }
-
-                // Set visibility to 0 if we're not in the active tab
-                if (!_model.get('activeTab')) {
-                    return 0;
-                }
-                // Otherwise, set it to the intersection ratio reported from the intersection observer
-                var intersectionRatio = _model.get('intersectionRatio');
-
-                if (_.isUndefined(intersectionRatio)) {
-                    // Get intersectionRatio through brute force
-                    intersectionRatio = _computeVisibility(_view.element());
-                }
-
-                return intersectionRatio;
-            }
-
-            function _computeVisibility(target) {
-                var html = document.documentElement;
-                var body = document.body;
-                var rootRect = {
-                    top: 0,
-                    left: 0,
-                    right: html.clientWidth || body.clientWidth,
-                    width: html.clientWidth || body.clientWidth,
-                    bottom: html.clientHeight || body.clientHeight,
-                    height: html.clientHeight || body.clientHeight
-                };
-
-                if (!body.contains(target)) {
-                    return 0;
-                }
-                var targetRect = target.getBoundingClientRect();
-
-                var intersectionRect = targetRect;
-                var parent = target.parentNode;
-                var atRoot = false;
-
-                while (!atRoot) {
-                    var parentRect = null;
-                    if (!parent || parent.nodeType !== 1) {
-                        atRoot = true;
-                        parentRect = rootRect;
-                    } else if (window.getComputedStyle(parent).overflow !== 'visible') {
-                        parentRect = utils.bounds(parent);
-                    }
-                    if (parentRect) {
-                        intersectionRect = computeRectIntersection(parentRect, intersectionRect);
-                        if (!intersectionRect) {
-                            return 0;
-                        }
-                    }
-                    parent = parent.parentNode;
-                }
-                var targetArea = targetRect.width * targetRect.height;
-                var intersectionArea = intersectionRect.width * intersectionRect.height;
-                return targetArea ? (intersectionArea / targetArea) : 0;
-            }
-
-            function computeRectIntersection(rect1, rect2) {
-                var top = Math.max(rect1.top, rect2.top);
-                var bottom = Math.min(rect1.bottom, rect2.bottom);
-                var left = Math.max(rect1.left, rect2.left);
-                var right = Math.min(rect1.right, rect2.right);
-                var width = right - left;
-                var height = bottom - top;
-                return (width >= 0 && height >= 0) && {
-                    top: top,
-                    bottom: bottom,
-                    left: left,
-                    right: right,
-                    width: width,
-                    height: height
-                };
-            }
-
-            function _updateVisibility() {
-                _model.set('visibility', _getVisibility());
             }
 
             function _updateViewable() {
@@ -963,7 +841,6 @@ define([
 
             this.playerDestroy = function () {
                 this.stop();
-                _stopObserving();
                 this.showView(this.originalContainer);
 
                 if (_view) {
