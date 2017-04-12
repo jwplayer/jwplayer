@@ -52,6 +52,7 @@ define([
                 method: _setupView,
                 depends: [
                     'LOAD_SKIN',
+                    'LOAD_CONTROLS',
                     'LOAD_XO_POLYFILL'
                 ]
             },
