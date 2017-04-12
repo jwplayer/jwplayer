@@ -1,6 +1,5 @@
 define([
-    'utils/helpers',
-    'utils/underscore',
+    'utils/helpers'
 ], function (utils) {
     return function setBreakpoint(playerElement, playerWidth, playerHeight) {
         var width = playerWidth;
