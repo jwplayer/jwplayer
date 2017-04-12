@@ -172,8 +172,8 @@ define([
             return _controller._model.getMute();
         };
 
-        this.load = function (toLoad) {
-            _controller.load(toLoad);
+        this.load = function (toLoad, feedData) {
+            _controller.load(toLoad, feedData);
             return _this;
         };
 
