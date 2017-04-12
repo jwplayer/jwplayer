@@ -132,19 +132,27 @@ define([
     });
 
     test('replaces and restores container', function(assert) {
+        var done = assert.async();
+
         var originalContainer = createContainer('player');
         var api = new Api(originalContainer, _.noop);
 
         var elementInDom = document.getElementById('player');
         assert.strictEqual(elementInDom, originalContainer, 'container is not replaced before setup');
 
-        api.setup({});
-        elementInDom = document.getElementById('player');
-        assert.notEqual(elementInDom, originalContainer, 'container is replaced after setup');
+        api.setup(_.extend({}, configSmall)).on('ready', function() {
+            elementInDom = document.getElementById('player');
+            assert.notEqual(elementInDom, originalContainer, 'container is replaced after setup');
 
-        api.remove();
-        elementInDom = document.getElementById('player');
-        assert.strictEqual(elementInDom, originalContainer, 'container is restored after remove');
+            api.remove();
+            elementInDom = document.getElementById('player');
+            assert.strictEqual(elementInDom, originalContainer, 'container is restored after remove');
+
+            done();
+        }).on('setupError', function() {
+            assert.ok(false, 'FAIL');
+            done();
+        });
     });
 
     test('event dispatching', function(assert) {

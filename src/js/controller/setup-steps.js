@@ -52,7 +52,8 @@ define([
                 method: _setupView,
                 depends: [
                     'LOAD_SKIN',
-                    'LOAD_XO_POLYFILL'
+                    'LOAD_XO_POLYFILL',
+                    'LOAD_PROMISE_POLYFILL'
                 ]
             },
             INIT_PLUGINS: {
