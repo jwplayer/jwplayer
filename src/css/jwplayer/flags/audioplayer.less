@@ -1,20 +1,14 @@
 .jw-flag-audio-player {
-    .jw-media {
+    &:not(.jw-flag-flash-blocked) .jw-media {
         visibility: hidden;
     }
 
-    &:not(.jw-ie) {
-        // small object tag prevents chrome Power Save throttle
-        object {
-            width: 1px;
-            height: 1px;
-        }
+    .jw-title {
+        background: none;
     }
 
-    .jw-ie {
-        // min 45px object tag prevents IE11 CORS Flash Blocking
-        object {
-            min-height: 45px;
-        }
+    // min 45px object tag prevents IE11 CORS Flash Blocking
+    object {
+        min-height: 45px;
     }
 }
