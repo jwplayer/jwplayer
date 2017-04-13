@@ -199,9 +199,11 @@ define([
                 if (enable) {
                     ControlsLoader.load()
                         .then(function (Controls) {
-                            if (!_view.isSetup) {
+                            var hasError = _this.currentContainer.classList.contains('jw-error');
+                            if (!_view.isSetup || hasError) {
                                 return;
                             }
+
                             var controls = new Controls(document, _this.currentContainer);
                             _view.addControls(controls);
                             controls.on('all', _triggerAfterReady, _this);
