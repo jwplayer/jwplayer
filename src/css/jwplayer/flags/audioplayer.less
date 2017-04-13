@@ -1,12 +1,14 @@
 .jw-flag-audio-player {
-    // Hack may not currently work
-    .jw-media {
+    &:not(.jw-flag-flash-blocked) .jw-media {
         visibility: hidden;
+    }
 
-        // small object tag prevents chrome Power Save throttle
-        object {
-            width: 1px;
-            height: 1px;
-        }
+    .jw-title {
+        background: none;
+    }
+
+    // min 45px object tag prevents IE11 CORS Flash Blocking
+    object {
+        min-height: 45px;
     }
 }

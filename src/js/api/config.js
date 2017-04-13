@@ -21,6 +21,7 @@ define([
         height: 270,
         audioMode: false,
         localization: {
+            player: 'Video Player',
             play: 'Play',
             playback: 'Start playback',
             pause: 'Pause',
@@ -42,7 +43,8 @@ define([
             rewind: 'Rewind 10s',
             nextUp: 'Next Up',
             nextUpClose: 'Next Up Close',
-            related: 'Discover'
+            related: 'Discover',
+            close: 'Close',
         },
         renderCaptionsNatively: false,
         nextUpDisplay: true
@@ -107,7 +109,8 @@ define([
             delete config.aspectratio;
         }
 
-        if (!config.playlist) {
+        var configPlaylist = config.playlist;
+        if (!configPlaylist) {
             // This is a legacy fallback, assuming a playlist item has been flattened into the config
             var obj = _.pick(config, [
                 'title',
@@ -122,6 +125,10 @@ define([
             ]);
 
             config.playlist = [ obj ];
+        } else if (_.isArray(configPlaylist.playlist)) {
+            // The "playlist" in the config is actually a feed that contains a playlist
+            config.feedData = configPlaylist;
+            config.playlist = configPlaylist.playlist;
         }
 
         config.qualityLabels = config.qualityLabels || config.hlslabels;

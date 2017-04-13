@@ -145,9 +145,16 @@ define([
             });
             _model.on('change:playlist', function(model, playlist) {
                 if (playlist.length) {
-                    _this.triggerAfterReady(events.JWPLAYER_PLAYLIST_LOADED, {
+                    var eventData = {
                         playlist: playlist
-                    });
+                    };
+                    var feedData = _model.get('feedData');
+                    if (feedData) {
+                        var eventFeedData = _.extend({}, feedData);
+                        delete eventFeedData.playlist;
+                        eventData.feedData = eventFeedData;
+                    }
+                    _this.triggerAfterReady(events.JWPLAYER_PLAYLIST_LOADED, eventData);
                 }
             });
             _model.on('change:volume', function(model, vol) {
@@ -455,7 +462,7 @@ define([
                 }
             }
 
-            function _load(item) {
+            function _load(item, feedData) {
                 if (_model.get('state') === states.ERROR) {
                     _model.set('state', states.IDLE);
                 }
@@ -471,7 +478,7 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                        var success = _setPlaylist(item);
+                        var success = _setPlaylist(item, feedData);
                         if (success) {
                             _setItem(0);
                         }
@@ -486,8 +493,8 @@ define([
 
             function _loadPlaylist(toLoad) {
                 var loader = new PlaylistLoader();
-                loader.on(events.JWPLAYER_PLAYLIST_LOADED, function(evt) {
-                    _load(evt.playlist);
+                loader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
+                    _load(data.playlist, data);
                 });
                 loader.on(events.JWPLAYER_ERROR, function(evt) {
                     evt.message = 'Error loading playlist: ' + evt.message;
@@ -657,9 +664,11 @@ define([
                 _play(meta);
             }
 
-            function _setPlaylist(p) {
-                var playlist = Playlist(p);
-                playlist = Playlist.filterPlaylist(playlist, _model);
+            function _setPlaylist(array, feedData) {
+                _model.set('feedData', feedData);
+
+                var playlist = Playlist(array);
+                playlist = Playlist.filterPlaylist(playlist, _model, feedData);
 
                 _model.set('playlist', playlist);
 

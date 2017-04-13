@@ -17,6 +17,7 @@ define([
     // Parse an RSS playlist for feed items.
     rssparser.parse = function (dat) {
         var arr = [];
+        arr.feedData = {};
         for (var i = 0; i < _numChildren(dat); i++) {
             var node = _getChildNode(dat, i);
             var localName = _localName(node).toLowerCase();
@@ -24,8 +25,11 @@ define([
             if (localName === 'channel') {
                 for (var j = 0; j < _numChildren(node); j++) {
                     var subNode = _getChildNode(node, j);
-                    if (_localName(subNode).toLowerCase() === 'item') {
+                    var nodeName = _localName(subNode).toLowerCase();
+                    if (nodeName === 'item') {
                         arr.push(_parseItem(subNode));
+                    } else if (nodeName) {
+                        arr.feedData[nodeName] = _textContent(subNode);
                     }
                 }
             }

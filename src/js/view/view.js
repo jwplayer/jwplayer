@@ -37,7 +37,7 @@ define([
             model: _model
         });
 
-        var _playerElement = utils.createElement(playerTemplate(_model.get('id')));
+        var _playerElement = utils.createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
         var _videoLayer;
         var _preview;
         var _title;

@@ -28,19 +28,16 @@ define([
             return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
         }
 
-        const castButton = document.createElement('button', 'google-cast-button');
-        const element = document.createElement('div');
         const ariaText = localization.cast;
 
+        const castButton = document.createElement('button', 'google-cast-button');
         castButton.className = 'jw-button-color jw-icon-inline';
+        utils.addAriaLabel(castButton, ariaText);
+
+        const element = document.createElement('div');
         element.className = 'jw-reset jw-icon-cast';
         element.style.display = 'none';
         element.style.cursor = 'pointer';
-        element.setAttribute('role', 'button');
-        element.setAttribute('tabindex', '0');
-        if (ariaText) {
-            element.setAttribute('aria-label', ariaText);
-        }
         element.appendChild(castButton);
 
         return {
