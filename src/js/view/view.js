@@ -712,7 +712,7 @@ define([
                     break;
                 case states.PAUSED:
                     if (_model.get('controls')) {
-                        _captionsRenderer.resize();
+                        _captionsRenderer.renderCues(true);
                     }
                     break;
                 default:
