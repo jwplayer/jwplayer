@@ -209,7 +209,8 @@ define([
                             if (!_view.isSetup) {
                                 return;
                             }
-                            var controls = new Controls(document, _this.currentContainer);
+
+                            var controls = new Controls(document, _view.element());
                             _view.addControls(controls);
                             controls.on('all', _triggerAfterReady, _this);
                         })
