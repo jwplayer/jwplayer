@@ -206,16 +206,12 @@ define([
                 if (enable) {
                     ControlsLoader.load()
                         .then(function (Controls) {
-                            const hasError = _this.currentContainer.classList.contains('jw-error');
                             if (!_view.isSetup) {
                                 return;
                             }
 
-                            var controls = new Controls(document, _this.currentContainer);
+                            var controls = new Controls(document, _view.element());
                             _view.addControls(controls);
-                            if (hasError) {
-                                controls.controlbar.element().style.display = 'none';
-                            }
                             controls.on('all', _triggerAfterReady, _this);
                         })
                         .catch(function (reason) {
