@@ -372,7 +372,7 @@ define([
                         }
                     }
                 },
-                doubleClick: () => api.setFullscreen(),
+                doubleClick: () => _controls && api.setFullscreen(),
                 move: () => _controls && _controls.userActive(),
                 over: () => _controls && _controls.userActive()
             });
