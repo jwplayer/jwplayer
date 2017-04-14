@@ -67,6 +67,9 @@ define([
             this.swf.triggerFlash('instream:init');
 
             this.applyProviderListeners = function(provider) {
+                if (!provider) {
+                    return;
+                }
                 this.model.on('change:volume', function(data, value) {
                     provider.volume(value);
                 }, this);
