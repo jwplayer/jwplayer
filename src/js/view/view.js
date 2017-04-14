@@ -714,6 +714,7 @@ define([
                     if (_model.get('controls')) {
                         _captionsRenderer.resize();
                     }
+                    break;
                 default:
                     break;
             }
