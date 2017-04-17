@@ -79,17 +79,6 @@ define([
             element.className = 'jw-controls jw-reset';
             this.element = element;
 
-            const right = this.context.createElement('div');
-            right.className = 'jw-controls-right jw-reset';
-            element.appendChild(right);
-            this.right = right;
-
-            // Dock Area and Buttons
-            if (!this.dock) {
-                this.dock = new Dock(model);
-            }
-            this.right.appendChild(this.dock.element());
-
             // Display Buttons
             if (!this.displayContainer) {
                 const displayContainer = new DisplayContainer();
@@ -126,6 +115,17 @@ define([
                 this.element.appendChild(displayContainer.element());
                 this.displayContainer = displayContainer;
             }
+
+            const right = this.context.createElement('div');
+            right.className = 'jw-controls-right jw-reset';
+            element.appendChild(right);
+            this.right = right;
+
+            // Dock Area and Buttons
+            if (!this.dock) {
+                this.dock = new Dock(model);
+            }
+            this.right.appendChild(this.dock.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             const height = model.get('height');
