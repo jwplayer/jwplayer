@@ -60,6 +60,10 @@ define([
             // check provider after item change
             _checkProvider(provider);
 
+            if (!provider) {
+                return;
+            }
+
             // Match the main player's controls state
             provider.off(events.JWPLAYER_ERROR);
             provider.on(events.JWPLAYER_ERROR, function(data) {
