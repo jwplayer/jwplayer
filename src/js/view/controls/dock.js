@@ -6,7 +6,7 @@ define([
     'utils/ui'
 ], function(utils, _, UI) {
 
-    const getDockButton = function(evt) {
+    function getDockButton(evt) {
         if (utils.hasClass(evt.target, 'jw-dock-button')) {
             // Clicks on button container
             return evt.target;
@@ -17,23 +17,29 @@ define([
 
         // Clicks on any other children
         return evt.target.parentElement;
-    };
+    }
+
+    function getDockContainer(buttons) {
+        const html = dockTemplate(buttons);
+        return utils.createElement(html);
+    }
 
     return class Dock {
         constructor(_model) {
             this.model = _model;
 
-            this.setup();
-            this.model.on('change:dock', this.render, this);
-        }
-
-        setup() {
             const buttons = this.model.get('dock');
-            const clickHandler = this.click.bind(this);
 
-            const html = dockTemplate(buttons);
-            this.el = utils.createElement(html);
-            new UI(this.el).on('click tap', clickHandler);
+            this.el = getDockContainer(buttons);
+            new UI(this.el).on('click tap', this.click, this);
+
+            this.model.on('change:dock', (model, changedButtons) => {
+                const newEl = getDockContainer(changedButtons);
+                utils.emptyElement(this.el);
+                for (let i = newEl.childNodes.length; i--;) {
+                    this.el.appendChild(newEl.firstChild);
+                }
+            }, this);
         }
 
         click(evt) {
@@ -46,14 +52,6 @@ define([
             if (btn && btn.callback) {
                 btn.callback(evt);
             }
-        }
-
-        render() {
-            const buttons = this.model.get('dock');
-            const html = dockTemplate(buttons);
-            const newEl = utils.createElement(html);
-
-            this.el.innerHTML = newEl.innerHTML;
         }
 
         element() {

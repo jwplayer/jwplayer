@@ -66,18 +66,22 @@ define([
             this.rightClickMenu = null;
             this.showing = false;
             this.unmuteCallback = null;
-            this.element = null;
+            this.div = null;
             this.right = null;
             this.activeListeners = {
                 mousemove: () => clearTimeout(this.activeTimeout),
                 mouseout: () => this.userActive()
             };
+            this.dimensions = {};
         }
 
         enable(api, model) {
             const element = this.context.createElement('div');
             element.className = 'jw-controls jw-reset';
-            this.element = element;
+            this.div = element;
+
+            const height = model.get('height');
+            const touchMode = utils.isMobile() && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT);
 
             // Display Buttons
             if (!this.displayContainer) {
@@ -86,33 +90,23 @@ define([
                 const playDisplayIcon = new PlayDisplayIcon(model);
                 const nextDisplayIcon = new NextDisplayIcon(model, api);
 
-                // toggle playback
-                playDisplayIcon.on('click tap', () => {
-                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                    this.userActive(1000);
-                    api.play(reasonInteraction());
-                });
-                // make playDisplayIcon clickthrough on chrome for flash to avoid power safe throttle
-                if (utils.isChrome() && !utils.isMobile()) {
-                    playDisplayIcon.el.addEventListener('mousedown', () => {
-                        const provider = model.getVideo();
-                        const isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
-                        if (!isFlash) {
-                            return;
-                        }
-                        const resetPointerEvents = () => {
-                            this.context.removeEventListener('mouseup', resetPointerEvents);
-                            playDisplayIcon.el.style.pointerEvents = 'auto';
-                        };
-                        this.style.pointerEvents = 'none';
-                        this.context.addEventListener('mouseup', resetPointerEvents);
+                // Toggle playback on mobile
+                if (touchMode) {
+                    playDisplayIcon.on('tap', () => {
+                        this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                        this.userActive(1000);
+                        api.play(reasonInteraction());
                     });
+                } else {
+                    // On desktop allow media element to capture all play/pause toggle clicks
+                    playDisplayIcon.el.style.pointerEvents = 'none';
                 }
+
                 displayContainer.addButton(rewindDisplayIcon);
                 displayContainer.addButton(playDisplayIcon);
                 displayContainer.addButton(nextDisplayIcon);
 
-                this.element.appendChild(displayContainer.element());
+                this.div.appendChild(displayContainer.element());
                 this.displayContainer = displayContainer;
             }
 
@@ -128,12 +122,17 @@ define([
             this.right.appendChild(this.dock.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
-            const height = model.get('height');
-            if (utils.isMobile() && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT)) {
+            if (touchMode) {
                 utils.addClass(this.playerContainer, 'jw-flag-touch');
             } else {
                 this.rightClickMenu = new RightClick();
-                this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
+                model.change('flashBlocked', (modelChanged, isBlocked) => {
+                    if (isBlocked) {
+                        this.rightClickMenu.destroy();
+                    } else {
+                        this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
+                    }
+                });
             }
 
             // Next Up Tooltip
@@ -143,7 +142,7 @@ define([
                 this.nextUpToolTip = nextUpToolTip;
 
                 // NextUp needs to be behind the controlbar to not block other tooltips
-                this.element.appendChild(nextUpToolTip.element());
+                this.div.appendChild(nextUpToolTip.element());
             }
 
             // Controlbar
@@ -152,14 +151,14 @@ define([
                 this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
             }
             this.addActiveListeners(this.controlbar.element());
-            this.element.appendChild(this.controlbar.element());
+            this.div.appendChild(this.controlbar.element());
 
             // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
             if (model.get('autostartMuted')) {
                 const unmuteCallback = () => this.unmuteAutoplay(api, model);
                 this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').volume);
                 this.mute.show();
-                this.element.appendChild(this.mute.element());
+                this.div.appendChild(this.mute.element());
                 // Set mute state in the controlbar
                 this.controlbar.renderVolume(true, model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
@@ -256,15 +255,16 @@ define([
             // Show controls when enabled
             this.userActive();
 
-            this.playerContainer.appendChild(this.element);
+            this.playerContainer.appendChild(this.div);
         }
 
         disable() {
             this.off();
             clearTimeout(this.activeTimeout);
 
-            if (this.element.parentNode) {
-                this.playerContainer.removeChild(this.element);
+            if (this.div.parentNode) {
+                utils.removeClass(this.playerContainer, 'jw-flag-touch');
+                this.playerContainer.removeChild(this.div);
             }
             if (this.controlbar) {
                 this.removeActiveListeners(this.controlbar.element());
@@ -280,8 +280,19 @@ define([
             }
         }
 
-        getElement() {
-            return this.element;
+        controlbarHeight() {
+            if (!this.dimensions.cbHeight) {
+                this.dimensions.cbHeight = this.controlbar.element().clientHeight;
+            }
+            return this.dimensions.cbHeight;
+        }
+
+        element() {
+            return this.div;
+        }
+
+        logoContainer() {
+            return this.right;
         }
 
         resize(model, breakPoint) {
@@ -295,6 +306,7 @@ define([
             utils.toggleClass(this.playerContainer, 'jw-flag-small-player', smallPlayer);
             utils.toggleClass(this.playerContainer, 'jw-flag-audio-player', audioMode);
             utils.toggleClass(this.playerContainer, 'jw-flag-time-slider-above', timeSliderAbove);
+            this.dimensions = {};
 
             model.set('audioMode', audioMode);
         }
