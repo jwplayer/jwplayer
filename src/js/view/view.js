@@ -437,7 +437,7 @@ define([
             var overlaysElement = _playerElement.querySelector('.jw-overlays');
             overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
-            controls.on('uiActivity', function(/* showing */) {
+            controls.on('userActive userInactive', function() {
                 _captionsRenderer.renderCues(true);
             });
 
@@ -454,6 +454,9 @@ define([
                 var breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
                 controls.resize(_model, breakPoint);
                 _captionsRenderer.renderCues(true);
+                _styles(_videoLayer, {
+                    cursor: 'pointer'
+                });
             }
         };
 
@@ -473,6 +476,9 @@ define([
 
             utils.removeClass(_playerElement, 'jw-flag-touch');
             utils.clearCss(_model.get('id'));
+            _styles(_videoLayer, {
+                cursor: ''
+            });
 
             cancelAnimationFrame(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
@@ -610,7 +616,7 @@ define([
             if (fullscreenState) {
                 utils.addClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
-                    'overflow-y': 'hidden'
+                    overflowY: 'hidden'
                 });
 
                 // On going fullscreen we want the control bar to fade after a few seconds
@@ -620,7 +626,7 @@ define([
             } else {
                 utils.removeClass(playerElement, 'jw-flag-fullscreen');
                 _styles(document.body, {
-                    'overflow-y': ''
+                    overflowY: ''
                 });
             }
 

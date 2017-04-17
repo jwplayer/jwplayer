@@ -345,7 +345,7 @@ define([
             if (!this.showing) {
                 utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
                 this.showing = true;
-                this.trigger('userActive', this.showing);
+                this.trigger('userActive');
             }
         }
 
@@ -358,7 +358,7 @@ define([
                 });
             }
             utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
-            this.trigger('userInactive', this.showing);
+            this.trigger('userInactive');
         }
     };
 });
