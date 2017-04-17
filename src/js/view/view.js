@@ -107,7 +107,6 @@ define([
             }
 
             _resizeMedia(containerWidth, containerHeight);
-
             _captionsRenderer.resize();
 
             _resized(containerWidth, containerHeight);
@@ -716,6 +715,11 @@ define([
             switch (state) {
                 case states.PLAYING:
                     _resizeMedia();
+                    break;
+                case states.PAUSED:
+                    if (_model.get('controls')) {
+                        _captionsRenderer.renderCues(true);
+                    }
                     break;
                 default:
                     break;
