@@ -1,8 +1,9 @@
 define([
     'utils/backbone.events',
+    'controller/aria',
     'utils/helpers',
     'utils/underscore',
-], function(Events, utils, _) {
+], function(Events, Aria, utils, _) {
 
     return class Tooltip {
         constructor(name, ariaText, elementShown) {
@@ -12,7 +13,7 @@ define([
             if (!elementShown) {
                 className += ' jw-hidden';
             }
-            utils.addAriaLabel(this.el, ariaText);
+            Aria.addLabel(this.el, ariaText);
 
             this.el.className = className;
             this.container = document.createElement('div');
