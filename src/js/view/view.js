@@ -1,4 +1,6 @@
 import playerTemplate from 'templates/player';
+import viewsManager from 'view/utils/views-manager';
+import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 
 define([
     'events/events',
@@ -7,7 +9,6 @@ define([
     'utils/helpers',
     'utils/underscore',
     'utils/active-tab',
-    'utils/request-animation-frame',
     'view/utils/request-fullscreen-helper',
     'view/utils/breakpoint',
     'view/utils/flag-no-focus',
@@ -16,7 +17,7 @@ define([
     'view/logo',
     'view/preview',
     'view/title',
-], function(events, states, Events, utils, _, activeTab, raf, requestFullscreenHelper, setBreakpoint, flagNoFocus,
+], function(events, states, Events, utils, _, activeTab, requestFullscreenHelper, setBreakpoint, flagNoFocus,
             ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     var _styles = utils.style;
@@ -24,11 +25,7 @@ define([
     var _isMobile = utils.isMobile();
     var _isIE = utils.isIE();
 
-    // These must be assigned to variables to avoid illegal invocation
-    var requestAnimationFrame = raf.requestAnimationFrame;
-    var cancelAnimationFrame = raf.cancelAnimationFrame;
-
-    require('css/jwplayer.less');
+    var stylesInjected = false;
 
     return function View(_api, _model) {
         var _this = _.extend(this, Events, {
@@ -65,13 +62,16 @@ define([
             return { reason: 'interaction' };
         }
 
-        function _setContainerDimensions() {
+        this.updateBounds = function () {
+            cancelAnimationFrame(_resizeContainerRequestId);
             var inDOM = document.body.contains(_playerElement);
+            if (!inDOM) {
+                _model.set('inDom', inDOM);
+                return;
+            }
             var bounds = _bounds(_playerElement);
             var containerWidth = Math.round(bounds.width);
             var containerHeight = Math.round(bounds.height);
-
-            cancelAnimationFrame(_resizeContainerRequestId);
 
             // If the container is the same size as before, return early
             if (containerWidth === _lastWidth && containerHeight === _lastHeight) {
@@ -99,18 +99,20 @@ define([
             _model.set('containerWidth', containerWidth);
             _model.set('containerHeight', containerHeight);
             _model.set('inDom', inDOM);
+        };
 
-            var breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
+        this.updateStyles = function() {
+            const containerWidth = _model.get('containerWidth');
+            const containerHeight = _model.get('containerHeight');
+            const breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
 
             if (_controls) {
                 _controls.resize(_model, breakPoint);
             }
-
             _resizeMedia(containerWidth, containerHeight);
             _captionsRenderer.resize();
-
             _resized(containerWidth, containerHeight);
-        }
+        };
 
         function _resized(containerWidth, containerHeight) {
             _lastWidth = containerWidth;
@@ -123,7 +125,10 @@ define([
 
         function _responsiveListener() {
             cancelAnimationFrame(_resizeContainerRequestId);
-            _resizeContainerRequestId = requestAnimationFrame(_setContainerDimensions);
+            _resizeContainerRequestId = requestAnimationFrame(() => {
+                _this.updateBounds();
+                _this.updateStyles();
+            });
         }
 
         // Set global colors, used by related plugin
@@ -271,20 +276,8 @@ define([
 
             _playerElement.addEventListener('focus', onFocus);
 
-            document.addEventListener('visibilitychange', onVisibilityChange);
-            document.addEventListener('webkitvisibilitychange', onVisibilityChange);
+            viewsManager.add(this);
 
-            window.removeEventListener('resize', _responsiveListener);
-            window.addEventListener('resize', _responsiveListener);
-            window.removeEventListener('orientationchange', _responsiveListener);
-            window.addEventListener('orientationchange', _responsiveListener);
-
-            _model.on('change:state', (model, state) => {
-                if (state === states.COMPLETE) {
-                    _api.setFullscreen(false);
-                }
-            });
-            _model.on('change:state', _stateHandler);
             _model.on('change:fullscreen', _fullscreen);
             _model.on('change:errorEvent', _errorHandler);
             _model.on('change:hideAdsControls', function (model, val) {
@@ -303,10 +296,11 @@ define([
 
             var width = _model.get('width');
             var height = _model.get('height');
-            _styles(_playerElement, {
-                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
-                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
-            });
+            _resize(width, height);
+            if (!stylesInjected) {
+                stylesInjected = true;
+                require('css/jwplayer.less');
+            }
             if (_isIE) {
                 utils.addClass(_playerElement, 'jw-ie');
             }
@@ -329,10 +323,13 @@ define([
         };
 
         this.init = function() {
-            _resize(_model.get('width'), _model.get('height'));
-            _stateHandler(_instreamModel || _model);
             _lastWidth = _lastHeight = null;
-            _setContainerDimensions();
+            this.updateBounds();
+            cancelAnimationFrame(_resizeContainerRequestId);
+            _resizeContainerRequestId = requestAnimationFrame(() => {
+                _model.change('state', _stateHandler);
+                _this.updateStyles();
+            });
         };
 
         function clickHandlerHelper(api, model, videoLayer) {
@@ -427,7 +424,9 @@ define([
             overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
             controls.on('userActive userInactive', function() {
-                _captionsRenderer.renderCues(true);
+                if (_playerState === states.PLAYING || _playerState === states.BUFFERING) {
+                    _captionsRenderer.renderCues(true);
+                }
             });
 
             controls.enable(_api, _model);
@@ -538,16 +537,16 @@ define([
 
         function _resizeMedia(mediaWidth, mediaHeight) {
             if (!mediaWidth || isNaN(1 * mediaWidth)) {
-                if (!_videoLayer) {
+                if (!_lastWidth) {
                     return;
                 }
-                mediaWidth = _lastWidth || _videoLayer.clientWidth;
+                mediaWidth = _lastWidth;
             }
             if (!mediaHeight || isNaN(1 * mediaHeight)) {
-                if (!_videoLayer) {
+                if (!_lastHeight) {
                     return;
                 }
-                mediaHeight = _lastHeight || _videoLayer.clientHeight;
+                mediaHeight = _lastHeight;
             }
 
             if (_preview) {
@@ -568,9 +567,11 @@ define([
         }
 
         this.resize = function (playerWidth, playerHeight) {
-            var resetAspectMode = true;
+            const resetAspectMode = true;
             _resize(playerWidth, playerHeight, resetAspectMode);
-            _setContainerDimensions();
+            // this.resize is called within the context of controller
+            _this.updateBounds();
+            _this.updateStyles();
         };
         this.resizeMedia = _resizeMedia;
 
@@ -705,6 +706,9 @@ define([
 
             // player display
             switch (state) {
+                case states.COMPLETE:
+                    _api.setFullscreen(false);
+                    break;
                 case states.PLAYING:
                     _resizeMedia();
                     break;
@@ -716,6 +720,17 @@ define([
                 default:
                     break;
             }
+
+            switch (state) {
+                case states.IDLE:
+                case states.ERROR:
+                case states.COMPLETE:
+                    _captionsRenderer.hide();
+                    break;
+                default:
+                    _captionsRenderer.show();
+                    break;
+            }
         }
 
         function onFocus() {
@@ -725,9 +740,9 @@ define([
             }
         }
 
-        function onVisibilityChange() {
+        this.visibilityChange = function() {
             _model.set('activeTab', activeTab());
-        }
+        };
 
         this.setupInstream = function (instreamModel) {
             this.instreamModel = _instreamModel = instreamModel;
@@ -809,13 +824,11 @@ define([
         };
 
         this.destroy = function () {
+            viewsManager.remove(this);
             this.isSetup = false;
             this.off();
             cancelAnimationFrame(_previewDisplayStateTimeout);
             clearTimeout(_resizeMediaTimeout);
-            window.removeEventListener('resize', _responsiveListener);
-            window.removeEventListener('orientationchange', _responsiveListener);
-            document.removeEventListener('visibilitychange', onVisibilityChange);
             _playerElement.removeEventListener('focus', onFocus);
             if (focusHelper) {
                 focusHelper.destroy();

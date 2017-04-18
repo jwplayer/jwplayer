@@ -329,19 +329,6 @@ define([
             this.selectCues(_captionsTrack, _timeEvent);
         }, this);
 
-        _model.on('change:state', function (model, state) {
-            switch (state) {
-                case states.IDLE:
-                case states.ERROR:
-                case states.COMPLETE:
-                    this.hide();
-                    break;
-                default:
-                    this.show();
-                    break;
-            }
-        }, this);
-
         _model.on('itemReady', _itemReadyHandler, this);
     };
 

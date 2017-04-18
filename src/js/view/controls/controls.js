@@ -44,7 +44,7 @@ define([
         return { reason: 'interaction' };
     };
 
-    require('css/controls.less');
+    let stylesInjected = false;
 
     return class Controls {
         constructor(context, playerContainer) {
@@ -73,6 +73,10 @@ define([
                 mouseout: () => this.userActive()
             };
             this.dimensions = {};
+            if (!stylesInjected) {
+                stylesInjected = true;
+                require('css/controls.less');
+            }
         }
 
         enable(api, model) {

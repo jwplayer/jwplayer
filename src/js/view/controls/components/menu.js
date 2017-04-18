@@ -42,8 +42,8 @@ define([
                     .on('over', this.openTooltipListener)
                     .on('out', this.closeTooltipListener);
 
-                var innerHtml = menuTemplate(list);
-                var elem = utils.createElement(innerHtml);
+                var html = menuTemplate(list);
+                var elem = utils.createElement(html);
                 this.addContent(elem);
                 this.contentUI = new UI(this.content).on('click tap', this.selectListener);
             } else if (isToggle) {
