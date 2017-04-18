@@ -395,17 +395,7 @@ define([
         }
 
         function onFlashBlockedChange(model, isBlocked) {
-            if (isBlocked) {
-                if (_controls && _controls.rightClickMenu) {
-                    _controls.rightClickMenu.destroy();
-                }
-                utils.addClass(_playerElement, 'jw-flag-flash-blocked');
-            } else {
-                if (_controls && _controls.rightClickMenu) {
-                    _controls.rightClickMenu.setup(_model, _playerElement, _playerElement);
-                }
-                utils.removeClass(_playerElement, 'jw-flag-flash-blocked');
-            }
+            utils.toggleClass(_playerElement, 'jw-flag-flash-blocked', isBlocked);
         }
 
         function _logoClickHandler(evt) {
@@ -443,7 +433,10 @@ define([
             controls.enable(_api, _model);
             controls.addActiveListeners(_logo.element());
 
-            _logo.setContainer(controls.right);
+            var logoContainer = controls.logoContainer();
+            if (logoContainer) {
+                _logo.setContainer(logoContainer);
+            }
 
             _model.on('change:scrubbing', _stateHandler);
             _model.change('streamType', _setLiveMode, this);
@@ -473,7 +466,6 @@ define([
                 overlay.removeEventListener('mousemove', _userActivityCallback);
             }
 
-            utils.removeClass(_playerElement, 'jw-flag-touch');
             utils.clearCss(_model.get('id'));
             _styles(_videoLayer, {
                 cursor: ''
@@ -717,7 +709,7 @@ define([
                     _resizeMedia();
                     break;
                 case states.PAUSED:
-                    if (_model.get('controls')) {
+                    if (_controls && !_controls.showing) {
                         _captionsRenderer.renderCues(true);
                     }
                     break;
@@ -785,7 +777,7 @@ define([
 
         this.controlsContainer = function() {
             if (_controls) {
-                return _controls.element;
+                return _controls.element();
             }
             // return controls stand-in element not in DOM
             return document.createElement('div');
@@ -800,17 +792,10 @@ define([
             };
 
             if (_controls) {
-                // If we are using a dock, subtract that from the top
-                var dockButtons = _model.get('dock');
-                if (dockButtons && dockButtons.length) {
-                    bounds.y = _controls.dock.element().clientHeight;
-                    bounds.height -= bounds.y;
-                }
-
                 // Subtract controlbar from the bottom when using one
                 includeCB = includeCB || !utils.exists(includeCB);
                 if (includeCB) {
-                    bounds.height -= _controls.controlbar.element().clientHeight;
+                    bounds.height -= _controls.controlbarHeight();
                 }
             }
 
