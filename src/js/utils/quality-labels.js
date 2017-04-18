@@ -6,7 +6,7 @@ function generateLabel(level, qualityLabels, redundant) {
         return '';
     }
     // Flash uses bitrate instead of bandwidth
-    const bandwidth = level.bandwidth || level.bitrate;
+    const bandwidth = level.bitrate || level.bandwidth;
     // Flash, in some cases, will create its own label. Prefer it over creating a new label
     return getCustomLabel(qualityLabels, bandwidth) ||
         level.label ||
@@ -77,7 +77,7 @@ function hasRedundantLevels(levels) {
         return false;
     }
     return _.some(levels, function (level) {
-        const key = level.height || level.bandwidth;
+        const key = level.height || level.bitrate || level.bandwidth;
         const foundDuplicate = this[key];
         this[key] = 1;
         return foundDuplicate;
