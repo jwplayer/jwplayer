@@ -9,7 +9,7 @@ export default function getVisibility(model, element, bounds) {
         return 0;
     }
     // Otherwise, set it to the intersection ratio reported from the intersection observer
-    var intersectionRatio = model.get('intersectionRatio');
+    let intersectionRatio = model.get('intersectionRatio');
 
     if (intersectionRatio === undefined) {
         // Get intersectionRatio through brute force
@@ -20,9 +20,9 @@ export default function getVisibility(model, element, bounds) {
 }
 
 function computeVisibility(target, bounds) {
-    var html = document.documentElement;
-    var body = document.body;
-    var rootRect = {
+    const html = document.documentElement;
+    const body = document.body;
+    const rootRect = {
         top: 0,
         left: 0,
         right: html.clientWidth || body.clientWidth,
@@ -34,14 +34,14 @@ function computeVisibility(target, bounds) {
     if (!body.contains(target)) {
         return 0;
     }
-    var targetRect = target.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
 
-    var intersectionRect = targetRect;
-    var parent = target.parentNode;
-    var atRoot = false;
+    let intersectionRect = targetRect;
+    let parent = target.parentNode;
+    let atRoot = false;
 
     while (!atRoot) {
-        var parentRect = null;
+        let parentRect = null;
         if (!parent || parent.nodeType !== 1) {
             atRoot = true;
             parentRect = rootRect;
@@ -56,18 +56,18 @@ function computeVisibility(target, bounds) {
         }
         parent = parent.parentNode;
     }
-    var targetArea = targetRect.width * targetRect.height;
-    var intersectionArea = intersectionRect.width * intersectionRect.height;
+    const targetArea = targetRect.width * targetRect.height;
+    const intersectionArea = intersectionRect.width * intersectionRect.height;
     return targetArea ? (intersectionArea / targetArea) : 0;
 }
 
 function computeRectIntersection(rect1, rect2) {
-    var top = Math.max(rect1.top, rect2.top);
-    var bottom = Math.min(rect1.bottom, rect2.bottom);
-    var left = Math.max(rect1.left, rect2.left);
-    var right = Math.min(rect1.right, rect2.right);
-    var width = right - left;
-    var height = bottom - top;
+    const top = Math.max(rect1.top, rect2.top);
+    const bottom = Math.min(rect1.bottom, rect2.bottom);
+    const left = Math.max(rect1.left, rect2.left);
+    const right = Math.min(rect1.right, rect2.right);
+    const width = right - left;
+    const height = bottom - top;
     return (width >= 0 && height >= 0) && {
         top: top,
         bottom: bottom,

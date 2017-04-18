@@ -1,3 +1,4 @@
+import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 
 const views = [];
@@ -19,7 +20,7 @@ function scheduleResponsiveRedraw() {
 
 function onVisibilityChange() {
     views.forEach(view => {
-        view.visibilityChange();
+        view.model.set('activeTab', activeTab());
     });
 }
 
@@ -27,6 +28,13 @@ document.addEventListener('visibilitychange', onVisibilityChange);
 document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 window.addEventListener('resize', scheduleResponsiveRedraw);
 window.addEventListener('orientationchange', scheduleResponsiveRedraw);
+
+window.addEventListener('beforeunload', () => {
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
+    window.removeEventListener('resize', scheduleResponsiveRedraw);
+    window.removeEventListener('orientationchange', scheduleResponsiveRedraw);
+});
 
 let intersectionObserver;
 const IntersectionObserver = window.IntersectionObserver;

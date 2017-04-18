@@ -1,6 +1,7 @@
 import playerTemplate from 'templates/player';
 import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
+import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 
 define([
@@ -9,7 +10,6 @@ define([
     'utils/backbone.events',
     'utils/helpers',
     'utils/underscore',
-    'utils/active-tab',
     'view/utils/request-fullscreen-helper',
     'view/utils/breakpoint',
     'view/utils/flag-no-focus',
@@ -18,7 +18,7 @@ define([
     'view/logo',
     'view/preview',
     'view/title',
-], function(events, states, Events, utils, _, activeTab, requestFullscreenHelper, setBreakpoint, flagNoFocus,
+], function(events, states, Events, utils, _, requestFullscreenHelper, setBreakpoint, flagNoFocus,
             ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     const _styles = utils.style;
@@ -46,7 +46,6 @@ define([
 
         let _playerState;
 
-        let _lastVisibility = 0;
         let _lastWidth;
         let _lastHeight;
 
@@ -278,8 +277,6 @@ define([
 
             _playerElement.addEventListener('focus', onFocus);
 
-            viewsManager.add(this);
-
             _model.on('change:errorEvent', _errorHandler);
             _model.on('change:hideAdsControls', function (model, val) {
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
@@ -320,6 +317,8 @@ define([
             _model.set('iFrame', utils.isIframe());
             _model.set('activeTab', activeTab());
 
+            viewsManager.add(this);
+
             this.isSetup = true;
             _model.set('viewSetup', true);
             _model.set('inDom', document.body.contains(_playerElement));
@@ -332,20 +331,20 @@ define([
         this.init = function() {
             _lastWidth = _lastHeight = null;
             this.updateBounds();
-            updateVisibility();
 
             _model.change('state', _stateHandler);
             _model.on('change:fullscreen', _fullscreen);
             _model.on('change:activeTab', updateVisibility);
             _model.on('change:fullscreen', updateVisibility);
             _model.on('change:intersectionRatio', updateVisibility);
-            _model.change('visibility', function observedVisibilityChange(model, visibility) {
-                if (visibility && !_lastVisibility) {
+            _model.on('change:visibility', (model, visibility, lastVisibility) => {
+                if (visibility && !lastVisibility) {
                     _stateHandler(_instreamModel || _model);
                     this.updateStyles();
                 }
-                _lastVisibility = visibility;
-            }, this);
+            });
+
+            updateVisibility();
         };
 
         function clickHandlerHelper(api, model, videoLayer) {
@@ -711,20 +710,11 @@ define([
             utils.toggleClass(_playerElement, 'jw-flag-dragging', model.get('scrubbing'));
             utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _playerState);
 
-            // player display
-            switch (state) {
-                case states.COMPLETE:
-                    _api.setFullscreen(false);
-                    break;
-                case states.PAUSED:
-                    if (_controls && !_controls.showing) {
-                        _captionsRenderer.renderCues(true);
-                    }
-                    break;
-                default:
-                    break;
+            if (state === states.COMPLETE) {
+                _api.setFullscreen(false);
             }
 
+            // Update captions renderer
             switch (state) {
                 case states.IDLE:
                 case states.ERROR:
@@ -733,6 +723,9 @@ define([
                     break;
                 default:
                     _captionsRenderer.show();
+                    if (state === states.PAUSED && _controls && !_controls.showing) {
+                        _captionsRenderer.renderCues(true);
+                    }
                     break;
             }
         }
@@ -743,10 +736,6 @@ define([
                 _controls.userActive();
             }
         }
-
-        this.visibilityChange = function() {
-            _model.set('activeTab', activeTab());
-        };
 
         this.setupInstream = function (instreamModel) {
             this.instreamModel = _instreamModel = instreamModel;
