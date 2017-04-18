@@ -1,3 +1,5 @@
+import { qualityLevel } from 'providers/data-normalizer';
+
 define([
     'providers/html5-android-hls',
     'utils/css',
@@ -899,7 +901,7 @@ define([
         };
 
         this.getQualityLevels = function() {
-            return _getPublicLevels(_levels);
+            return _.map(_levels, level => qualityLevel(level));
         };
 
         this.getName = function() {
