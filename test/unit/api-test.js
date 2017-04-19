@@ -155,6 +155,24 @@ define([
         });
     });
 
+    test('uses video tag in container', function(assert) {
+        var done = assert.async();
+
+        var originalContainer = createWithVideoContainer('player');
+        var api = new Api(originalContainer, _.noop);
+
+        api.setup(_.extend({}, configSmall)).on('ready', function() {
+
+            var video = document.getElementById('player').querySelector('video');
+            assert.strictEqual(video.id, 'custom-video', 'video tag in setup container is used by player');
+
+            done();
+        }).on('setupError', function() {
+            assert.ok(false, 'FAIL');
+            done();
+        });
+    });
+
     test('event dispatching', function(assert) {
         var api = createApi('player');
         var originalEvent = {
@@ -362,6 +380,12 @@ define([
 
     function createContainer(id) {
         var container = $('<div id="' + id + '"></div>')[0];
+        $('#qunit-fixture').append(container);
+        return container;
+    }
+
+    function createWithVideoContainer(id) {
+        var container = $('<div id="' + id + '"><video id="custom-video"></video></div>')[0];
         $('#qunit-fixture').append(container);
         return container;
     }
