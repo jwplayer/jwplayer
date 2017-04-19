@@ -337,15 +337,22 @@ define([
             _model.on('change:activeTab', updateVisibility);
             _model.on('change:fullscreen', updateVisibility);
             _model.on('change:intersectionRatio', updateVisibility);
-            _model.on('change:visibility', (model, visibility, lastVisibility) => {
-                if (visibility && !lastVisibility) {
-                    _stateHandler(_instreamModel || _model);
-                    this.updateStyles();
-                }
-            });
+            _model.on('change:visibility', redraw);
 
             updateVisibility();
+
+            // Always draw first player for icons to load
+            if (viewsManager.size() === 1 && !_model.get('visibility')) {
+                redraw(_model, 1, 0);
+            }
         };
+
+        function redraw(model, visibility, lastVisibility) {
+            if (visibility && !lastVisibility) {
+                _stateHandler(_instreamModel || model);
+                _this.updateStyles();
+            }
+        }
 
         function clickHandlerHelper(api, model, videoLayer) {
             const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });

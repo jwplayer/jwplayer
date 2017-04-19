@@ -64,6 +64,9 @@ export default {
             views.splice(index, 1);
         }
     },
+    size: function() {
+        return views.length;
+    },
     observe(container) {
         if (intersectionObserver) {
             intersectionObserver.unobserve(container);
