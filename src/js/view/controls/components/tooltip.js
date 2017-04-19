@@ -12,7 +12,9 @@ define([
             if (!elementShown) {
                 className += ' jw-hidden';
             }
-            utils.addAriaLabel(this.el, ariaText);
+            if (ariaText) {
+                utils.addAriaLabel(this.el, ariaText);
+            }
 
             this.el.className = className;
             this.container = document.createElement('div');

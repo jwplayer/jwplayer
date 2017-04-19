@@ -44,7 +44,7 @@ define([
         return { reason: 'interaction' };
     };
 
-    require('css/controls.less');
+    let stylesInjected = false;
 
     return class Controls {
         constructor(context, playerContainer) {
@@ -73,6 +73,10 @@ define([
                 mouseout: () => this.userActive()
             };
             this.dimensions = {};
+            if (!stylesInjected) {
+                stylesInjected = true;
+                require('css/controls.less');
+            }
         }
 
         enable(api, model) {
@@ -90,16 +94,17 @@ define([
                 const playDisplayIcon = new PlayDisplayIcon(model);
                 const nextDisplayIcon = new NextDisplayIcon(model, api);
 
-                // Toggle playback on mobile
-                if (touchMode) {
-                    playDisplayIcon.on('tap', () => {
-                        this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                        this.userActive(1000);
-                        api.play(reasonInteraction());
-                    });
-                } else {
-                    // On desktop allow media element to capture all play/pause toggle clicks
+                playDisplayIcon.on('click tap', () => {
+                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    this.userActive(1000);
+                    api.play(reasonInteraction());
+                });
+
+                if (utils.isChrome() && !touchMode) {
+                    // On Chrome desktop allow media element to capture all play/pause toggle clicks
+                    // This allows swfs to capture clicks on start preventing flash-throttling
                     playDisplayIcon.el.style.pointerEvents = 'none';
+                    playDisplayIcon.icon.style.pointerEvents = 'none';
                 }
 
                 displayContainer.addButton(rewindDisplayIcon);

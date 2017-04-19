@@ -366,8 +366,8 @@ define([
                 elapsedTime = utils.timeFormat(val);
                 countdownTime = utils.timeFormat(duration - val);
             }
-            this.elements.elapsed.innerHTML = elapsedTime;
-            this.elements.countdown.innerHTML = countdownTime;
+            this.elements.elapsed.textContent = elapsedTime;
+            this.elements.countdown.textContent = countdownTime;
         }
 
         onDuration(model, val) {
@@ -377,8 +377,8 @@ define([
             } else {
                 totalTime = utils.timeFormat(val);
             }
-            this.elements.duration.innerHTML = totalTime;
-            this.elements.durationLeft.innerHTML = totalTime;
+            this.elements.duration.textContent = totalTime;
+            this.elements.durationLeft.textContent = totalTime;
         }
 
         onFullscreen(model, val) {
@@ -390,7 +390,7 @@ define([
         }
 
         setAltText(model, altText) {
-            this.elements.alt.innerHTML = altText;
+            this.elements.alt.textContent = altText;
         }
 
         addCues(model, cues) {
@@ -430,8 +430,8 @@ define([
             const streamType = model.get('streamType');
             this.elements.rewind.toggle(streamType !== 'LIVE');
             if (streamType === 'DVR') {
-                this.elements.duration.innerHTML = 'Live';
-                this.elements.durationLeft.innerHTML = 'Live';
+                this.elements.duration.textContent = 'Live';
+                this.elements.durationLeft.textContent = 'Live';
             }
             const duration = model.get('duration');
             this.onDuration(model, duration);

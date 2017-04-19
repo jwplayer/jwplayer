@@ -24,6 +24,20 @@ define([
                     }
                 ]
             }, configuration.playlistItem);
+
+            var customCaptions = {
+                back: true,
+                    fontSize: 14,
+                fontFamily: 'Arial,sans-serif',
+                fontOpacity: 100,
+                color: '#FFF',
+                backgroundColor: '#000',
+                backgroundOpacity: 100,
+                edgeStyle: null,
+                windowColor: '#FFF',
+                windowOpacity: 0
+            };
+
             this.attributes = _.extend({}, {
                 id: '',
                 // See api/config `Defaults`:
@@ -78,18 +92,7 @@ define([
                     { label: 'English' }
                 ],
                 captionsIndex: 1,
-                captions: {
-                    back: true,
-                    fontSize: 14,
-                    fontFamily: 'Arial,sans-serif',
-                    fontOpacity: 100,
-                    color: '#FFF',
-                    backgroundColor: '#000',
-                    backgroundOpacity: 100,
-                    edgeStyle: null,
-                    windowColor: '#FFF',
-                    windowOpacity: 0
-                },
+                captions: {}, // customCaptions
                 nextupoffset: -10,
                 streamType: 'VOD', // 'DVR', 'Live'
                 position: 0,

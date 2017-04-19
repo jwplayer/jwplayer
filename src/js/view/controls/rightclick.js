@@ -43,15 +43,6 @@ define([
             return menu;
         }
 
-        buildMenu() {
-            var obj = this.buildArray();
-            return utils.createElement(rightclickTemplate(obj));
-        }
-
-        updateHtml() {
-            this.el.innerHTML = this.buildMenu().innerHTML;
-        }
-
         rightClick(evt) {
             this.lazySetup();
 
@@ -91,7 +82,7 @@ define([
             utils.addClass(this.playerElement, 'jw-flag-rightclick-open');
             utils.addClass(this.el, 'jw-open');
             clearTimeout(this._menuTimeout);
-            this._menuTimeout = setTimeout(this.hideMenu.bind(this), 3000);
+            this._menuTimeout = setTimeout(() => this.hideMenu(), 3000);
             return false;
         }
 
@@ -107,20 +98,27 @@ define([
         }
 
         lazySetup() {
+            const html = rightclickTemplate(this.buildArray());
             if (this.el) {
+                if (this.html !== html) {
+                    this.html = html;
+                    const newEl = utils.createElement(html);
+                    utils.emptyElement(this.el);
+                    for (let i = newEl.childNodes.length; i--;) {
+                        this.el.appendChild(newEl.firstChild);
+                    }
+                }
                 return;
             }
 
-            this.el = this.buildMenu();
+            this.html = html;
+            this.el = utils.createElement(this.html);
 
             this.layer.appendChild(this.el);
 
             this.hideMenuHandler = this.hideMenu.bind(this);
             this.addOffListener(this.playerElement);
             this.addOffListener(document);
-
-            // Update the menu if the provider changes
-            this.model.on('change:provider', this.updateHtml, this);
 
             // Track if the mouse is above the menu or not
             this.elementUI = new UI(this.el, { useHover: true })
@@ -171,10 +169,8 @@ define([
             }
 
             if (this.model) {
-                this.model.off('change:provider', this.updateHtml);
                 this.model = null;
             }
-
         }
     };
 });
