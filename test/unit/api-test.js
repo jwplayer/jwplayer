@@ -163,8 +163,26 @@ define([
 
         api.setup(_.extend({}, configSmall)).on('ready', function() {
 
-            var video = document.getElementById('player').querySelector('video');
-            assert.strictEqual(video.id, 'custom-video', 'video tag in setup container is used by player');
+            var media = document.getElementById('player').querySelector('video');
+            assert.strictEqual(media.id, 'custom-video', 'video tag in setup container is used by player');
+
+            done();
+        }).on('setupError', function() {
+            assert.ok(false, 'FAIL');
+            done();
+        });
+    });
+
+    test('uses audio tag in container', function(assert) {
+        var done = assert.async();
+
+        var originalContainer = createWithAudioContainer('player');
+        var api = new Api(originalContainer, _.noop);
+
+        api.setup(_.extend({}, configSmall)).on('ready', function() {
+
+            var media = document.getElementById('player').querySelector('audio');
+            assert.strictEqual(media.id, 'custom-audio', 'video tag in setup container is used by player');
 
             done();
         }).on('setupError', function() {
@@ -386,6 +404,12 @@ define([
 
     function createWithVideoContainer(id) {
         var container = $('<div id="' + id + '"><video id="custom-video"></video></div>')[0];
+        $('#qunit-fixture').append(container);
+        return container;
+    }
+
+    function createWithAudioContainer(id) {
+        var container = $('<div id="' + id + '"><audio id="custom-audio"></audio></div>')[0];
         $('#qunit-fixture').append(container);
         return container;
     }
