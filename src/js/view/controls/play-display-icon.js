@@ -14,12 +14,11 @@ define([
             const localization = _model.get('localization');
             const element = utils.createElement(displayIconTemplate('display', localization.playback));
             const iconDisplay = element.getElementsByClassName('jw-icon-display')[0];
-            iconDisplay.style.pointerEvents = 'none';
             element.style.cursor = 'pointer';
-
+            this.icon = iconDisplay;
             this.el = element;
 
-            this.iconUI = new UI(this.el).on('tap', (evt) => {
+            this.iconUI = new UI(this.el).on('click tap', (evt) => {
                 this.trigger(evt.type);
             });
 
