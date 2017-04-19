@@ -407,7 +407,7 @@ define([
 
         function onAspectRatioChange(model, aspectratio) {
             utils.toggleClass(_playerElement, 'jw-flag-aspect-mode', !!aspectratio);
-            var aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
+            const aspectRatioContainer = _playerElement.querySelector('.jw-aspect');
             _styles(aspectRatioContainer, {
                 paddingTop: aspectratio || null
             });
@@ -430,7 +430,7 @@ define([
             }
         }
 
-        var _onChangeControls = function (model, bool) {
+        const _onChangeControls = function (model, bool) {
             if (bool) {
                 // ignore model that triggered this event and use current state model
                 _stateHandler(_instreamModel || _model);
@@ -442,7 +442,7 @@ define([
         this.addControls = function (controls) {
             _controls = controls;
 
-            var overlaysElement = _playerElement.querySelector('.jw-overlays');
+            const overlaysElement = _playerElement.querySelector('.jw-overlays');
             overlaysElement.addEventListener('mousemove', _userActivityCallback);
 
             controls.on('userActive userInactive', function() {
@@ -454,22 +454,23 @@ define([
             controls.enable(_api, _model);
             controls.addActiveListeners(_logo.element());
 
-            var logoContainer = controls.logoContainer();
+            const logoContainer = controls.logoContainer();
             if (logoContainer) {
                 _logo.setContainer(logoContainer);
             }
+
+            _styles(_videoLayer, {
+                cursor: 'pointer'
+            });
 
             _model.on('change:scrubbing', _stateHandler);
             _model.change('streamType', _setLiveMode, this);
 
             // refresh breakpoint and timeslider classes
             if (_lastHeight) {
-                var breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
+                const breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
                 controls.resize(_model, breakPoint);
                 _captionsRenderer.renderCues(true);
-                _styles(_videoLayer, {
-                    cursor: 'pointer'
-                });
             }
         };
 
@@ -482,7 +483,7 @@ define([
                 _controls = null;
             }
 
-            var overlay = document.querySelector('.jw-overlays');
+            const overlay = document.querySelector('.jw-overlays');
             if (overlay) {
                 overlay.removeEventListener('mousemove', _userActivityCallback);
             }
@@ -497,10 +498,10 @@ define([
         };
 
         // Perform the switch to fullscreen
-        var _fullscreen = function (model, state) {
+        const _fullscreen = function (model, state) {
 
             // If it supports DOM fullscreen
-            var provider = _model.getVideo();
+            const provider = _model.getVideo();
 
             // Unmute the video so volume can be adjusted with native controls in fullscreen
             if (state && _controls && _model.get('autostartMuted')) {
@@ -531,7 +532,7 @@ define([
         };
 
         function _resize(playerWidth, playerHeight, resetAspectMode) {
-            var playerStyle = {
+            const playerStyle = {
                 width: playerWidth
             };
 
@@ -570,11 +571,11 @@ define([
                 _preview.resize(mediaWidth, mediaHeight, _model.get('stretching'));
             }
 
-            var provider = _model.getVideo();
+            const provider = _model.getVideo();
             if (!provider) {
                 return;
             }
-            var transformScale = provider.resize(mediaWidth, mediaHeight, _model.get('stretching'));
+            const transformScale = provider.resize(mediaWidth, mediaHeight, _model.get('stretching'));
 
             // poll resizing if video is transformed
             if (transformScale) {
@@ -597,7 +598,7 @@ define([
          */
         function _isNativeFullscreen() {
             if (fullscreenHelpers.supportsDomFullscreen()) {
-                var fsElement = fullscreenHelpers.fullscreenElement();
+                const fsElement = fullscreenHelpers.fullscreenElement();
                 return !!(fsElement && fsElement.id === _model.get('id'));
             }
             // if player element view fullscreen not available, return video fullscreen state
@@ -607,8 +608,8 @@ define([
 
 
         function _fullscreenChangeHandler(event) {
-            var modelState = _model.get('fullscreen');
-            var newState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
+            const modelState = _model.get('fullscreen');
+            const newState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
 
             // If fullscreen was triggered by something other than the player
             //  then we want to sync up our internal state
@@ -648,9 +649,9 @@ define([
         }
 
         function _onMediaTypeChange(model, val) {
-            var isAudioFile = (val === 'audio');
-            var provider = _model.getVideo();
-            var isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+            const isAudioFile = (val === 'audio');
+            const provider = _model.getVideo();
+            const isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
 
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
@@ -665,7 +666,7 @@ define([
 
         function _setLiveMode(model, streamType) {
             if (!_instreamModel) {
-                var live = (streamType === 'LIVE');
+                const live = (streamType === 'LIVE');
                 utils.toggleClass(_playerElement, 'jw-flag-live', live);
                 _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
             }
@@ -690,7 +691,7 @@ define([
 
             _playerState = model.get('state');
 
-            var instreamState = null;
+            let instreamState = null;
             if (_instreamModel) {
                 instreamState = _playerState;
             }
@@ -770,7 +771,7 @@ define([
             utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
             _model.set('hideAdsControls', false);
             if (_model.getVideo) {
-                var provider = _model.getVideo();
+                const provider = _model.getVideo();
                 provider.setContainer(_videoLayer);
             }
             _setLiveMode(_model, _model.get('streamType'));
