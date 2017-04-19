@@ -22,7 +22,9 @@
     width: 2.5em;
 
     .jw-arrow {
-        display: none;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
         position: absolute;
         bottom: -0.2em;
         width: 0.5em;
@@ -32,7 +34,9 @@
     }
 
     .jw-overlay {
-        display: none;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
         position: absolute;
         top: 2.5em;
         right: 0;
@@ -43,7 +47,8 @@
 
     &:hover .jw-overlay,
     &:hover .jw-arrow {
-        display: block;
+        visibility: visible;
+        opacity: 1;
     }
 }
 
