@@ -96,7 +96,7 @@ define([
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
-        var _videotag = (element) ? element.querySelector('video') : undefined;
+        var _videotag = (element) ? element.querySelector('video, audio') : undefined;
 
         function _setAttribute(name, value) {
             _videotag.setAttribute(name, value || '');

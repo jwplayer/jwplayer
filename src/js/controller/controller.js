@@ -230,9 +230,14 @@ define([
 
             _model.on('change:viewSetup', function(model, viewSetup) {
                 if (viewSetup) {
+                    const mediaElement = this.currentContainer.querySelector('video, audio');
                     _this.showView(_view.element());
+                    if (mediaElement) {
+                        const mediaContainer = _model.get('mediaContainer');
+                        mediaContainer.appendChild(mediaElement);
+                    }
                 }
-            });
+            }, this);
 
             _model.on('change:inDom', function(model, inDom) {
                 if (inDom) {
