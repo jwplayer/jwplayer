@@ -1,6 +1,6 @@
 define([
     'utils/backbone.events',
-    'controller/aria',
+    'utils/aria',
     'utils/helpers',
     'utils/underscore',
 ], function(Events, Aria, utils, _) {

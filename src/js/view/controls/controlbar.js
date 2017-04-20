@@ -4,13 +4,13 @@ define([
     'utils/backbone.events',
     'utils/constants',
     'utils/ui',
+    'utils/aria',
     'view/controls/components/slider',
     'view/controls/components/timeslider',
     'view/controls/components/menu',
     'view/controls/components/volumetooltip',
     'view/controls/components/button',
-    'controller/aria'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button, Aria) {
+], function(utils, _, Events, Constants, UI, Aria, Slider, TimeSlider, Menu, VolumeTooltip, button) {
     function text(name, role) {
         const element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
