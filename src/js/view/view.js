@@ -87,12 +87,13 @@ define([
                 if (!_lastWidth || !_lastHeight) {
                     _responsiveListener();
                 }
-                _model.set('inDom', inDOM);
-                return;
             }
 
-            _model.set('containerWidth', containerWidth);
-            _model.set('containerHeight', containerHeight);
+            // Don't update container dimensions to 0, 0 when not in DOM
+            if (containerWidth || containerHeight || inDOM) {
+                _model.set('containerWidth', containerWidth);
+                _model.set('containerHeight', containerHeight);
+            }
             _model.set('inDom', inDOM);
 
             if (inDOM) {
@@ -540,8 +541,9 @@ define([
             resetAspectMode = !!resetAspectMode;
             if (resetAspectMode) {
                 _model.set('aspectratio', null);
-                playerStyle.display = 'block';
-            } else if (!_model.get('aspectratio')) {
+                // playerStyle.display = 'block';
+            }
+            if (!_model.get('aspectratio')) {
                 playerStyle.height = playerHeight;
             }
 
