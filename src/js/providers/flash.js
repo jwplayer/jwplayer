@@ -1,3 +1,5 @@
+import { qualityLevel } from 'providers/data-normalizer';
+
 define([
     'utils/helpers',
     'utils/underscore',
@@ -362,7 +364,7 @@ define([
                 return { name: 'flash' };
             },
             getQualityLevels: function() {
-                return _qualityLevels || (_item && _item.sources);
+                return _.map(_qualityLevels || (_item && _item.sources), level => qualityLevel(level));
             },
             getAudioTracks: function() {
                 return _audioTracks;

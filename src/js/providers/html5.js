@@ -1,3 +1,5 @@
+import { qualityLevel } from 'providers/data-normalizer';
+
 define([
     'providers/html5-android-hls',
     'utils/css',
@@ -94,7 +96,7 @@ define([
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
-        var _videotag = (element) ? element.querySelector('video') : undefined;
+        var _videotag = (element) ? element.querySelector('video, audio') : undefined;
 
         function _setAttribute(name, value) {
             _videotag.setAttribute(name, value || '');
@@ -899,7 +901,7 @@ define([
         };
 
         this.getQualityLevels = function() {
-            return _getPublicLevels(_levels);
+            return _.map(_levels, level => qualityLevel(level));
         };
 
         this.getName = function() {

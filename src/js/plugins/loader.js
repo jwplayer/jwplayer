@@ -16,9 +16,9 @@ define([
                 return;
             }
 
-            overlaysElement.appendChild(div);
             div.left = overlaysElement.style.left;
             div.top = overlaysElement.style.top;
+            overlaysElement.appendChild(div);
 
             pluginInstance.displayArea = overlaysElement;
         };

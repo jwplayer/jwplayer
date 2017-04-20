@@ -1,4 +1,4 @@
-define([], function() {
+export default (function() {
     if ('hidden' in document) {
         return function () {
             return !document.hidden;
@@ -13,4 +13,4 @@ define([], function() {
     return function () {
         return true;
     };
-});
+}());

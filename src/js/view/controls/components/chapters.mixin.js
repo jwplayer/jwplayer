@@ -49,9 +49,9 @@ define([
 
         drawCues: function () {
             // We won't want to draw them until we have a duration
-            const duration = this._model.mediaModel.get('duration');
+            const duration = this._model.get('duration');
             if (!duration || duration <= 0) {
-                this._model.mediaModel.once('change:duration', this.drawCues, this);
+                this._model.once('change:duration', this.drawCues, this);
                 return;
             }
 

@@ -16,7 +16,7 @@ define([
             this.text.className = 'jw-text jw-reset';
             this.img = document.createElement('div');
             this.img.className = 'jw-reset';
-            this.resetWidth();
+            this.containerWidth = 0;
             this.textLength = 0;
             this.dragJustReleased = false;
 
@@ -24,8 +24,6 @@ define([
             wrapper.className = 'jw-time-tip jw-background-color jw-reset';
             wrapper.appendChild(this.img);
             wrapper.appendChild(this.text);
-
-            utils.removeClass(this.el, 'jw-hidden');
 
             this.addContent(wrapper);
         }
@@ -35,7 +33,7 @@ define([
         }
 
         update(txt) {
-            this.text.innerHTML = txt;
+            this.text.textContent = txt;
         }
 
         getWidth () {
@@ -75,7 +73,7 @@ define([
             this._model = _model;
             this._api = _api;
 
-            this.timeTip = new TimeTip('jw-tooltip-time');
+            this.timeTip = new TimeTip('jw-tooltip-time', null, true);
             this.timeTip.setup();
 
             this.cues = [];

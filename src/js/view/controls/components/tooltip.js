@@ -13,6 +13,7 @@ define([
             if (!elementShown) {
                 className += ' jw-hidden';
             }
+
             Aria.addLabel(this.el, ariaText);
 
             this.el.className = className;
