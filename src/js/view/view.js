@@ -68,10 +68,6 @@ define([
         this.updateBounds = function () {
             cancelAnimationFrame(_resizeContainerRequestId);
             const inDOM = document.body.contains(_playerElement);
-            if (!inDOM) {
-                _model.set('inDom', inDOM);
-                return;
-            }
             const bounds = _bounds(_playerElement);
             const containerWidth = Math.round(bounds.width);
             const containerHeight = Math.round(bounds.height);
@@ -82,6 +78,7 @@ define([
                 if (!_lastWidth || !_lastHeight) {
                     _responsiveListener();
                 }
+                _model.set('inDom', inDOM);
                 return;
             }
             // If we have bad values for either dimension, return early
