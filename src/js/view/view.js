@@ -88,11 +88,6 @@ define([
                     _responsiveListener();
                 }
                 _model.set('inDom', inDOM);
-                // Fire resize 0,0 if the player element is not in the DOM
-                // This allows setup to complete even if element was removed from DOM
-                if (!inDOM) {
-                    _resized(containerWidth, containerHeight);
-                }
                 return;
             }
 
@@ -103,8 +98,6 @@ define([
             if (inDOM) {
                 viewsManager.observe(_playerElement);
             }
-
-            _resized(containerWidth, containerHeight);
         };
 
         this.updateStyles = function() {
@@ -119,21 +112,28 @@ define([
             _captionsRenderer.resize();
         };
 
-        function _resized(containerWidth, containerHeight) {
-            _lastWidth = containerWidth;
-            _lastHeight = containerHeight;
-            _this.trigger(events.JWPLAYER_RESIZE, {
-                width: containerWidth,
-                height: containerHeight
-            });
-        }
+        this.checkResized = function() {
+            const containerWidth = _model.get('containerWidth');
+            const containerHeight = _model.get('containerHeight');
+            if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
+                _lastWidth = containerWidth;
+                _lastHeight = containerHeight;
+                _this.trigger(events.JWPLAYER_RESIZE, {
+                    width: containerWidth,
+                    height: containerHeight
+                });
+            }
+        };
 
         function _responsiveListener() {
             cancelAnimationFrame(_resizeContainerRequestId);
-            _resizeContainerRequestId = requestAnimationFrame(() => {
-                _this.updateBounds();
-                _this.updateStyles();
-            });
+            _resizeContainerRequestId = requestAnimationFrame(_responsiveUpdate);
+        }
+
+        function _responsiveUpdate() {
+            _this.updateBounds();
+            _this.updateStyles();
+            _this.checkResized();
         }
 
         // Set global colors, used by related plugin
@@ -291,7 +291,7 @@ define([
 
             const width = _model.get('width');
             const height = _model.get('height');
-            _resize(width, height);
+            _resizePlayer(width, height);
 
             if (!stylesInjected) {
                 stylesInjected = true;
@@ -326,7 +326,6 @@ define([
         }
 
         this.init = function() {
-            _lastWidth = _lastHeight = null;
             this.updateBounds();
 
             _model.change('state', _stateHandler);
@@ -342,6 +341,10 @@ define([
             if (viewsManager.size() === 1 && !_model.get('visibility')) {
                 redraw(_model, 1, 0);
             }
+
+            // Triggering 'resize' resulting in player 'ready'
+            _lastWidth = _lastHeight = null;
+            this.checkResized();
         };
 
         function redraw(model, visibility, lastVisibility) {
@@ -528,7 +531,7 @@ define([
             }
         };
 
-        function _resize(playerWidth, playerHeight, resetAspectMode) {
+        function _resizePlayer(playerWidth, playerHeight, resetAspectMode) {
             const playerStyle = {
                 width: playerWidth
             };
@@ -583,10 +586,8 @@ define([
 
         this.resize = function (playerWidth, playerHeight) {
             const resetAspectMode = true;
-            _resize(playerWidth, playerHeight, resetAspectMode);
-            // this.resize is called within the context of controller
-            _this.updateBounds();
-            _this.updateStyles();
+            _resizePlayer(playerWidth, playerHeight, resetAspectMode);
+            _responsiveUpdate();
         };
         this.resizeMedia = _resizeMedia;
 

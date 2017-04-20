@@ -251,8 +251,6 @@ define([
 
                 _view.on('all', _triggerAfterReady, _this);
 
-                _model.change('visibility', _onVisibilityChange);
-
                 var related = _api.getPlugin('related');
                 if (related) {
                     related.on('nextUp', _model.setNextUp, _model);
@@ -266,6 +264,8 @@ define([
             }
 
             function _playerReadyNotify() {
+                _model.change('visibility', _onVisibilityChange);
+
                 // Tell the api that we are loaded
                 _this.trigger(events.JWPLAYER_READY, {
                     // this will be updated by Api
