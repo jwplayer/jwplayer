@@ -1,8 +1,7 @@
 define([
 
 ], function() {
-
-    const addLabel = function(element, ariaLabel) {
+    return function(element, ariaLabel) {
         if (!element || !ariaLabel) {
             return;
         }
@@ -10,9 +9,5 @@ define([
         element.setAttribute('aria-label', ariaLabel);
         element.setAttribute('role', 'button');
         element.setAttribute('tabindex', '0');
-    };
-
-    return {
-        addLabel: addLabel
     };
 });

@@ -3,7 +3,7 @@ define([
     'utils/aria',
     'utils/helpers',
     'utils/underscore',
-], function(Events, Aria, utils, _) {
+], function(Events, ariaLabel, utils, _) {
 
     return class Tooltip {
         constructor(name, ariaText, elementShown) {
@@ -14,7 +14,7 @@ define([
                 className += ' jw-hidden';
             }
 
-            Aria.addLabel(this.el, ariaText);
+            ariaLabel(this.el, ariaText);
 
             this.el.className = className;
             this.container = document.createElement('div');
