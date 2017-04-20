@@ -26,13 +26,9 @@
     background-color: @buffer-color;
 }
 
-.jw-cue,
-.jw-knob {
+.jw-cue {
     position: absolute;
     cursor: pointer;
-}
-
-.jw-cue {
     height: @rail-height;
     background-color: rgba(33, 33, 33, 0.9);
     border-radius: 25%;
@@ -40,6 +36,8 @@
 }
 
 .jw-knob {
+    position: absolute;
+    pointer-events: none;
     width: @thumb-size;
     height: @thumb-size;
     border-radius: @ui-corner-round;
