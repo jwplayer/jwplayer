@@ -15,6 +15,9 @@ function scheduleResponsiveRedraw() {
                 view.updateStyles();
             }
         });
+        views.forEach(view => {
+            view.checkResized();
+        });
     });
 }
 
