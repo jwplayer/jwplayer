@@ -1,5 +1,5 @@
 import playerTemplate from 'templates/player';
-import { isAudioMode, CONTOLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
+import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
@@ -338,7 +338,7 @@ define([
             _model.set('mediaContainer', _videoLayer);
             _model.set('iFrame', utils.isIframe());
             _model.set('activeTab', activeTab());
-            _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT));
+            _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT));
 
             viewsManager.add(this);
 

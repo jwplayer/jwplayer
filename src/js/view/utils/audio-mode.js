@@ -1,4 +1,4 @@
-export const CONTOLBAR_ONLY_HEIGHT = 44;
+export const CONTROLBAR_ONLY_HEIGHT = 44;
 
 export const isAudioMode = function(model) {
     const playerHeight = model.get('height');
@@ -16,5 +16,5 @@ export const isAudioMode = function(model) {
         return false;
     }
 
-    return verticalPixels && verticalPixels <= CONTOLBAR_ONLY_HEIGHT;
+    return verticalPixels && verticalPixels <= CONTROLBAR_ONLY_HEIGHT;
 };
