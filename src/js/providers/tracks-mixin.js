@@ -123,15 +123,20 @@ define(['utils/underscore',
             }
         }
 
-        if (this.renderNatively) {
+        if (this.renderNatively || utils.isIE(11)) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-            if (utils.isEdge() || utils.isFF() || utils.isSafari()) {
+            if (utils.isEdge() || utils.isIE(11) || utils.isFF() || utils.isSafari()) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-                this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
+                this.addTracksListener(this.video, 'addtrack', this.addTrackHandler);
+
+                if (utils.isIE(11)) {
+                    this.addCueHandler = this.addCueHandler || addCueHandler.bind(this);
+                    this.addTracksListener(this.video, 'addcue', this.addCueHandler);
+                }
             }
         }
 
@@ -413,6 +418,20 @@ define(['utils/underscore',
         this.setTextTracks(this.video.textTracks);
     }
 
+    function addCueHandler(event) {
+        var cue = event.cueData;
+
+        cue.vertical = '';
+        cue.snapToLines = true;
+        cue.lineAlign = 'start';
+        cue.position = 50;
+        cue.positionAlign = 'middle';
+        cue.size = 50;
+        cue.align = 'middle';
+
+        this.addVTTCue(cue);
+    }
+
     function addTextTracks(tracksArray) {
         if (!tracksArray) {
             return;
@@ -624,7 +643,7 @@ define(['utils/underscore',
             this._cachedVTTCues[track._id] = {};
         }
         var cachedCues = this._cachedVTTCues[track._id];
-        var cacheKey;
+        var cacheKeyTime;
 
         switch (trackKind) {
             case 'captions':
@@ -632,24 +651,25 @@ define(['utils/underscore',
                 // active cues. This is safer than ensuring text is unique, which may be violated on seek.
                 // Captions within .05s of each other are treated as unique to account for
                 // quality switches where start/end times are slightly different.
-                cacheKey = Math.floor(vttCue.startTime * 20);
+                cacheKeyTime = Math.floor(vttCue.startTime * 20);
+                var cacheLine = "_" + vttCue.line;
                 var cacheValue = Math.floor(vttCue.endTime * 20);
-                var cueExists = cachedCues[cacheKey] || cachedCues[cacheKey + 1] || cachedCues[cacheKey - 1];
+                var cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
 
                 if (cueExists && Math.abs(cueExists - cacheValue) <= 1) {
                     return false;
                 }
 
-                cachedCues[cacheKey] = cacheValue;
+                cachedCues[cacheKeyTime + cacheLine] = cacheValue;
                 return true;
             case 'metadata':
                 var text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
-                cacheKey = vttCue.startTime + text;
-                if (cachedCues[cacheKey]) {
+                cacheKeyTime = vttCue.startTime + text;
+                if (cachedCues[cacheKeyTime]) {
                     return false;
                 }
 
-                cachedCues[cacheKey] = vttCue.endTime;
+                cachedCues[cacheKeyTime] = vttCue.endTime;
                 return true;
             default:
                 break;

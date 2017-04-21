@@ -534,6 +534,9 @@ define([
         this.bottom = obj.bottom || (top + (obj.height || height));
         this.width = obj.width || width;
         this.lineHeight = lh !== undefined ? lh : obj.lineHeight;
+
+        // Sets the width to be slightly larger to prevent text wrapping in IE 11
+        this.width = Math.ceil(this.width + 1);
     }
 
     // Move the box along a particular axis. Optionally pass in an amount to move
