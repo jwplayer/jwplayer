@@ -88,6 +88,10 @@ define([
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _controller.detachMedia();
 
+            this.on('vpaidstate', function(data) {
+                _instream._adModel.set('state', data.newstate);
+            }, this);
+
             _model.mediaModel.set('state', states.BUFFERING);
 
             if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {
@@ -283,6 +287,7 @@ define([
 
         this.destroy = function() {
             this.off();
+            this.off(null, null, this);
 
             _model.set('skipButton', false);
 
