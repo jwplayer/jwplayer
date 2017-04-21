@@ -489,7 +489,6 @@ define([
                 overlay.removeEventListener('mousemove', _userActivityCallback);
             }
 
-            utils.clearCss(_model.get('id'));
             _styles(_videoLayer, {
                 cursor: ''
             });
