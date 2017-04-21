@@ -1,4 +1,5 @@
 import playerTemplate from 'templates/player';
+import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
@@ -104,11 +105,15 @@ define([
         this.updateStyles = function() {
             const containerWidth = _model.get('containerWidth');
             const containerHeight = _model.get('containerHeight');
-            const breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
+
+            if (_model.get('controls')) {
+                updateContainerStyles(containerWidth, containerHeight);
+            }
 
             if (_controls) {
-                _controls.resize(_model, breakPoint);
+                _controls.resize(containerWidth, containerHeight);
             }
+
             _resizeMedia(containerWidth, containerHeight);
             _captionsRenderer.resize();
         };
@@ -135,6 +140,22 @@ define([
             _this.updateBounds();
             _this.updateStyles();
             _this.checkResized();
+        }
+
+        function updateContainerStyles(width, height) {
+            const audioMode = isAudioMode(_model);
+            // Set timeslider flags
+            if (_.isNumber(width) && _.isNumber(height)) {
+                const breakPoint = setBreakpoint(_playerElement, width, height);
+                const smallPlayer = breakPoint < 2;
+                const timeSliderAboveConfig = _model.get('timeSliderAbove');
+                const timeSliderAbove = !audioMode &&
+                    (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
+                utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
+                utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
+            }
+            utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
+            _model.set('audioMode', audioMode);
         }
 
         // Set global colors, used by related plugin
@@ -293,6 +314,9 @@ define([
             const width = _model.get('width');
             const height = _model.get('height');
             _resizePlayer(width, height);
+            if (_model.get('controls')) {
+                updateContainerStyles(width, height);
+            }
 
             if (!stylesInjected) {
                 stylesInjected = true;
@@ -314,6 +338,7 @@ define([
             _model.set('mediaContainer', _videoLayer);
             _model.set('iFrame', utils.isIframe());
             _model.set('activeTab', activeTab());
+            _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT));
 
             viewsManager.add(this);
 
@@ -360,7 +385,7 @@ define([
             clickHandler.on({
                 click: () => {
                     _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                    if (_controls) {
+                    if (_model.get('controls')) {
                         api.play(reasonInteraction());
                     }
                 },
@@ -368,7 +393,7 @@ define([
                     _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
                     const state = model.get('state');
 
-                    if (_controls &&
+                    if (_model.get('controls') &&
                         ((state === states.IDLE || state === states.COMPLETE) ||
                         (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
                         api.play(reasonInteraction());
@@ -469,8 +494,6 @@ define([
 
             // refresh breakpoint and timeslider classes
             if (_lastHeight) {
-                const breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
-                controls.resize(_model, breakPoint);
                 _captionsRenderer.renderCues(true);
             }
         };
@@ -794,8 +817,7 @@ define([
             if (_controls) {
                 return _controls.element();
             }
-            // return controls stand-in element not in DOM
-            return document.createElement('div');
+            return null;
         };
 
         this.getSafeRegion = function (includeCB) {

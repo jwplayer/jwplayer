@@ -19,26 +19,6 @@ define([
              NextUpToolTip, RightClick) {
 
     const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
-    const CONTOLBAR_ONLY_HEIGHT = 44;
-
-    const isAudioMode = function(model) {
-        const playerHeight = model.get('height');
-        if (model.get('aspectratio')) {
-            return false;
-        }
-        if (typeof playerHeight === 'string' && playerHeight.indexOf('%') > -1) {
-            return false;
-        }
-
-        // Coerce into Number (don't parse out CSS units)
-        let verticalPixels = (playerHeight * 1) || NaN;
-        verticalPixels = (!isNaN(verticalPixels) ? verticalPixels : model.get('containerHeight'));
-        if (!verticalPixels) {
-            return false;
-        }
-
-        return verticalPixels && verticalPixels <= CONTOLBAR_ONLY_HEIGHT;
-    };
 
     const reasonInteraction = function() {
         return { reason: 'interaction' };
@@ -84,8 +64,7 @@ define([
             element.className = 'jw-controls jw-reset';
             this.div = element;
 
-            const height = model.get('height');
-            const touchMode = utils.isMobile() && (typeof height === 'string' || height >= CONTOLBAR_ONLY_HEIGHT);
+            const touchMode = model.get('touchMode');
 
             // Display Buttons
             if (!this.displayContainer) {
@@ -300,20 +279,8 @@ define([
             return this.right;
         }
 
-        resize(model, breakPoint) {
-            const audioMode = isAudioMode(model);
-
-            // Set timeslider flags
-            const smallPlayer = breakPoint < 2;
-            const timeSliderAboveConfig = model.get('timeSliderAbove');
-            const timeSliderAbove = !audioMode &&
-                (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
-            utils.toggleClass(this.playerContainer, 'jw-flag-small-player', smallPlayer);
-            utils.toggleClass(this.playerContainer, 'jw-flag-audio-player', audioMode);
-            utils.toggleClass(this.playerContainer, 'jw-flag-time-slider-above', timeSliderAbove);
+        resize() {
             this.dimensions = {};
-
-            model.set('audioMode', audioMode);
         }
 
         unmuteAutoplay(api, model) {
