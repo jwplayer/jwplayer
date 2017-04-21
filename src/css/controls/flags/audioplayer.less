@@ -1,6 +1,19 @@
 .jw-flag-audio-player {
     background-color: transparent;
 
+    &:not(.jw-flag-flash-blocked) .jw-media {
+        visibility: hidden;
+    }
+
+    .jw-title {
+        background: none;
+    }
+
+    // min 45px object tag prevents IE11 CORS Flash Blocking
+    object {
+        min-height: 45px;
+    }
+
     .jw-preview, // overrides 'block' from .jw-state-idle
     .jw-display, // overrides 'block' from .jw-flag-touch.jw-state-paused
     .jw-title, // overrides 'block' from .jw-state-idle
@@ -28,7 +41,6 @@
         .jw-icon-inline.jw-icon-volume {
             display: inline-block;
         }
-
         .jw-icon-tooltip.jw-icon-volume {
             display: none;
         }
