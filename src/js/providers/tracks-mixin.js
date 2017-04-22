@@ -196,7 +196,7 @@ define(['utils/underscore',
         // Set the provider's index to the model's index, then show the selected track if it exists
         this._currentTextTrackIndex = menuIndex - 1;
 
-        if (this.renderNatively) {
+        if (this.renderNatively || utils.isIE(11)) {
             if (this._textTracks[this._currentTextTrackIndex]) {
                 this._textTracks[this._currentTextTrackIndex].mode = 'showing';
             }
@@ -206,6 +206,12 @@ define(['utils/underscore',
                 currentTrack: this._currentTextTrackIndex + 1,
                 tracks: this._textTracks
             });
+
+            if (utils.isIE(11)) {
+                var e = document.createEvent('Event');
+                e.initEvent('change', false, false);
+                this.video.textTracks.dispatchEvent(e);
+            }
         }
     }
 
@@ -255,7 +261,7 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        var trackId = 'native' + cueData.type;
+        var trackId = cueData.track ? cueData.track : 'native' + cueData.type;
         var track = this._tracksById[trackId];
         var label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
         var vttCue = cueData.cue;
@@ -419,17 +425,15 @@ define(['utils/underscore',
     }
 
     function addCueHandler(event) {
-        var cue = event.cueData;
+        event.cueData.cue.vertical = '';
+        event.cueData.cue.snapToLines = true;
+        event.cueData.cue.lineAlign = 'start';
+        event.cueData.cue.position = 50;
+        event.cueData.cue.positionAlign = 'middle';
+        event.cueData.cue.size = 50;
+        event.cueData.cue.align = 'middle';
 
-        cue.vertical = '';
-        cue.snapToLines = true;
-        cue.lineAlign = 'start';
-        cue.position = 50;
-        cue.positionAlign = 'middle';
-        cue.size = 50;
-        cue.align = 'middle';
-
-        this.addVTTCue(cue);
+        this.addVTTCue(event.cueData);
     }
 
     function addTextTracks(tracksArray) {
@@ -647,6 +651,7 @@ define(['utils/underscore',
 
         switch (trackKind) {
             case 'captions':
+            case 'subtitles':
                 // VTTCues should have unique start and end times, even in cases where there are multiple
                 // active cues. This is safer than ensuring text is unique, which may be violated on seek.
                 // Captions within .05s of each other are treated as unique to account for
