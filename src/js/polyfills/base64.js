@@ -1,3 +1,5 @@
+/* eslint no-unused-expressions: 0 */
+
 define([], function() {
     // https://github.com/davidchambers/Base64.js
     // v0.3.0
@@ -7,7 +9,7 @@ define([], function() {
     function InvalidCharacterError(message) {
         this.message = message;
     }
-    InvalidCharacterError.prototype = new Error;
+    InvalidCharacterError.prototype = new Error();
     InvalidCharacterError.prototype.name = 'InvalidCharacterError';
 
     // encoder
@@ -38,10 +40,12 @@ define([], function() {
     // [https://gist.github.com/1020396] by [https://github.com/atk]
     window.atob || (
         window.atob = function (input) {
+            /* eslint no-div-regex: 0 */
             var str = String(input).replace(/=+$/, '');
-            if (str.length % 4 == 1) {
+            if (str.length % 4 === 1) {
                 throw new InvalidCharacterError('\'atob\' failed: The string to be decoded is not correctly encoded.');
             }
+            /* eslint no-cond-assign: 0 */
             for (
                 // initialize result and counters
                 var bc = 0, bs, buffer, idx = 0, output = '';
