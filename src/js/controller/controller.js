@@ -264,7 +264,7 @@ define([
             }
 
             function _playerReadyNotify() {
-                _model.change('visibility', _onVisibilityChange);
+                _model.change('visibility', _updateViewable);
 
                 // Tell the api that we are loaded
                 _this.trigger(events.JWPLAYER_READY, {
@@ -284,10 +284,10 @@ define([
                 }
 
                 _checkAutoStart();
+                _model.on('change:viewable', _checkPlayOnViewable);
             }
 
-            function _updateViewable() {
-                var visibility = _model.get('visibility');
+            function _updateViewable(model, visibility) {
                 if (!_.isUndefined(visibility)) {
                     _model.set('viewable', Math.round(visibility));
                 }
@@ -299,13 +299,11 @@ define([
                     // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
                     _autoStart();
                 } else {
-                    _onVisibilityChange(_model, _model.get('visibility'));
+                    _checkPlayOnViewable(_model, _model.get('viewable'));
                 }
             }
 
-            function _onVisibilityChange() {
-                _updateViewable();
-                var viewable = _model.get('viewable');
+            function _checkPlayOnViewable(model, viewable) {
                 if (_model.get('playOnViewable')) {
                     if (viewable) {
                         _autoStart();
@@ -452,12 +450,15 @@ define([
             }
 
             function _autoStart() {
-                _play({ reason: 'autostart' });
+                var state = _model.get('state');
+                if (state === states.IDLE || state === states.PAUSED) {
+                    _play({ reason: 'autostart' });
+                }
             }
 
             function _stop(internal) {
                 // Reset the autostart play
-                _model.off('itemReady', _autoStart);
+                _model.off('itemReady', _checkAutoStart);
 
                 var fromApi = !internal;
 
