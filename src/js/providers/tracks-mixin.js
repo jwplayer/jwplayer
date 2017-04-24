@@ -123,7 +123,7 @@ define(['utils/underscore',
             }
         }
 
-        if (this.renderNatively || utils.isIE(11)) {
+        if (!(this.renderNatively && utils.isIOS())) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
@@ -132,11 +132,11 @@ define(['utils/underscore',
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
                 this.addTracksListener(this.video, 'addtrack', this.addTrackHandler);
+            }
 
-                if (utils.isIE(11)) {
-                    this.addCueHandler = this.addCueHandler || addCueHandler.bind(this);
-                    this.addTracksListener(this.video, 'addcue', this.addCueHandler);
-                }
+            if (!this.renderNatively) {
+                this.addCueHandler = this.addCueHandler || addCueHandler.bind(this);
+                this.addTracksListener(this.video, 'addcue', this.addCueHandler);
             }
         }
 
@@ -207,6 +207,7 @@ define(['utils/underscore',
                 tracks: this._textTracks
             });
 
+            // IE 11 does not sent a change event when changing text track properties, so we manually send it.
             if (utils.isIE(11)) {
                 var e = document.createEvent('Event');
                 e.initEvent('change', false, false);
@@ -425,14 +426,6 @@ define(['utils/underscore',
     }
 
     function addCueHandler(event) {
-        event.cueData.cue.vertical = '';
-        event.cueData.cue.snapToLines = true;
-        event.cueData.cue.lineAlign = 'start';
-        event.cueData.cue.position = 50;
-        event.cueData.cue.positionAlign = 'middle';
-        event.cueData.cue.size = 50;
-        event.cueData.cue.align = 'middle';
-
         this.addVTTCue(event.cueData);
     }
 
@@ -657,7 +650,7 @@ define(['utils/underscore',
                 // Captions within .05s of each other are treated as unique to account for
                 // quality switches where start/end times are slightly different.
                 cacheKeyTime = Math.floor(vttCue.startTime * 20);
-                var cacheLine = "_" + vttCue.line;
+                var cacheLine = '_' + vttCue.line;
                 var cacheValue = Math.floor(vttCue.endTime * 20);
                 var cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
 
