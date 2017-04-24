@@ -41,14 +41,12 @@ export const networkErrorData = (url, statusCode, responseText) => {
 const createMessage = (category, code, severity, data) => {
     let message = '';
     switch (category) {
-        case errorCategory.NETWORK: {
+        case errorCategory.NETWORK:
             message = createNetworkErrorMessage(code, data);
             break;
-        }
-        default: {
+        default:
             message = 'Unknown Error';
             break;
-        }
     }
 
     return message;
@@ -57,22 +55,18 @@ const createMessage = (category, code, severity, data) => {
 const createNetworkErrorMessage = (code, data) => {
     let message = '';
     switch (code) {
-        case errorCode.BAD_HTTP_STATUS: {
+        case errorCode.BAD_HTTP_STATUS:
             message = createStatusCodeError(data.statusCode, data.responseText);
             break;
-        }
-        case errorCode.CROSSDOMAIN_ERROR: {
+        case errorCode.CROSSDOMAIN_ERROR:
             message = 'Crossdomain access denied';
             break;
-        }
-        case errorCode.BLOCKED_MIXED_CONTENT: {
+        case errorCode.BLOCKED_MIXED_CONTENT:
             message = 'Unable to fetch HTTP resource over HTTPS';
             break;
-        }
-        default: {
+        default:
             message = 'Unknown Network Error';
             break;
-        }
     }
 
     return message;
@@ -81,17 +75,14 @@ const createNetworkErrorMessage = (code, data) => {
 const createStatusCodeError = (statusCode = 0, responseText = '') => {
     let message = '';
     switch (statusCode) {
-        case 403: {
+        case 403:
             message = 'You do not have permission to access this content';
             break;
-        }
-        case 404: {
+        case 404:
             message = '404 Not Found';
             break;
-        }
-        default: {
+        default:
             message = `${statusCode} ${responseText}`;
-        }
     }
 
     return message;
