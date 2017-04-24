@@ -316,6 +316,8 @@ define([
             _resizePlayer(width, height);
             if (_model.get('controls')) {
                 updateContainerStyles(width, height);
+            } else {
+                utils.addClass(_playerElement, 'jw-flag-controls-hidden');
             }
 
             if (!stylesInjected) {
@@ -392,13 +394,14 @@ define([
                 tap: () => {
                     _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
                     const state = model.get('state');
+                    const controls = _model.get('controls');
 
-                    if (_model.get('controls') &&
+                    if (controls &&
                         ((state === states.IDLE || state === states.COMPLETE) ||
                         (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
                         api.play(reasonInteraction());
                     }
-                    if (state === states.PAUSED) {
+                    if (controls && state === states.PAUSED) {
                         // Toggle visibility of the controls when tapping the media
                         // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
                         if (_instreamModel ||
@@ -461,8 +464,6 @@ define([
                 // ignore model that triggered this event and use current state model
                 _stateHandler(_instreamModel || _model);
             }
-
-            utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
         };
 
         this.addControls = function (controls) {
@@ -484,6 +485,8 @@ define([
             if (logoContainer) {
                 _logo.setContainer(logoContainer);
             }
+
+            utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
 
             _styles(_videoLayer, {
                 cursor: 'pointer'
@@ -511,6 +514,8 @@ define([
             if (overlay) {
                 overlay.removeEventListener('mousemove', _userActivityCallback);
             }
+
+            utils.addClass(_playerElement, 'jw-flag-controls-hidden');
 
             _styles(_videoLayer, {
                 cursor: ''
@@ -731,7 +736,7 @@ define([
                     _stateUpdate(model, _playerState);
                 });
             }
-            if (_playerState !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
+            if (_model.get('controls') && _playerState !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
             }
         }
