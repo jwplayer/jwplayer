@@ -123,21 +123,19 @@ define(['utils/underscore',
             }
         }
 
-        if (!(this.renderNatively && utils.isIOS())) {
-            // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
-            this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-            this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
+        // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
+        this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
+        this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-            if (utils.isEdge() || utils.isIE(11) || utils.isFF() || utils.isSafari()) {
-                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
-                this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-                this.addTracksListener(this.video, 'addtrack', this.addTrackHandler);
-            }
+        if (!this.renderNatively || utils.isEdge() || utils.isIE(11) || utils.isFF() || utils.isSafari()) {
+            // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
+            this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
+            this.addTracksListener(this.video, 'addtrack', this.addTrackHandler);
+        }
 
-            if (!this.renderNatively) {
-                this.addCueHandler = this.addCueHandler || addCueHandler.bind(this);
-                this.addTracksListener(this.video, 'addcue', this.addCueHandler);
-            }
+        if (!this.renderNatively) {
+            this.addCueHandler = this.addCueHandler || addCueHandler.bind(this);
+            this.addTracksListener(this.video, 'addcue', this.addCueHandler);
         }
 
         if (this._textTracks.length) {
@@ -196,23 +194,21 @@ define(['utils/underscore',
         // Set the provider's index to the model's index, then show the selected track if it exists
         this._currentTextTrackIndex = menuIndex - 1;
 
-        if (this.renderNatively || utils.isIE(11)) {
-            if (this._textTracks[this._currentTextTrackIndex]) {
-                this._textTracks[this._currentTextTrackIndex].mode = 'showing';
-            }
+        if (this._textTracks[this._currentTextTrackIndex]) {
+            this._textTracks[this._currentTextTrackIndex].mode = 'showing';
+        }
 
-            // Update the model index since the track change may have come from a browser event
-            this.trigger('subtitlesTrackChanged', {
-                currentTrack: this._currentTextTrackIndex + 1,
-                tracks: this._textTracks
-            });
+        // Update the model index since the track change may have come from a browser event
+        this.trigger('subtitlesTrackChanged', {
+            currentTrack: this._currentTextTrackIndex + 1,
+            tracks: this._textTracks
+        });
 
-            // IE 11 does not sent a change event when changing text track properties, so we manually send it.
-            if (utils.isIE(11)) {
-                var e = document.createEvent('Event');
-                e.initEvent('change', false, false);
-                this.video.textTracks.dispatchEvent(e);
-            }
+        // IE 11 does not sent a change event when changing text track properties, so we manually send it.
+        if (utils.isIE(11)) {
+            var e = document.createEvent('Event');
+            e.initEvent('change', false, false);
+            this.video.textTracks.dispatchEvent(e);
         }
     }
 
