@@ -123,19 +123,16 @@ define(['utils/underscore',
             }
         }
 
-        // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
-        this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
-        this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
+        if (this.renderNatively) {
+            // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
+            this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
+            this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-        if (!this.renderNatively || utils.isEdge() || utils.isIE(11) || utils.isFF() || utils.isSafari()) {
-            // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
-            this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-            this.addTracksListener(this.video, 'addtrack', this.addTrackHandler);
-        }
-
-        if (!this.renderNatively) {
-            this.addCueHandler = this.addCueHandler || addCueHandler.bind(this);
-            this.addTracksListener(this.video, 'addcue', this.addCueHandler);
+            if (utils.isEdge() || utils.isFF() || utils.isSafari()) {
+                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
+                this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
+                this.addTracksListener(this.video, 'addtrack', this.addTrackHandler);
+            }
         }
 
         if (this._textTracks.length) {
@@ -171,6 +168,14 @@ define(['utils/underscore',
     }
 
     function setSubtitlesTrack(menuIndex) {
+        if (!this.renderNatively) {
+            //this.trigger('textTrackChanged', { currentTrack: menuIndex + 1 });
+            if (this.setCurrentSubtitleTrack) {
+                this.setCurrentSubtitleTrack(menuIndex-1);
+            }
+            return;
+        }
+
         if (!this._textTracks) {
             return;
         }
@@ -205,11 +210,12 @@ define(['utils/underscore',
         });
 
         // IE 11 does not sent a change event when changing text track properties, so we manually send it.
-        if (utils.isIE(11)) {
+        //if (utils.isIE(11)) {
             var e = document.createEvent('Event');
             e.initEvent('change', false, false);
+
             this.video.textTracks.dispatchEvent(e);
-        }
+        //}
     }
 
     function addCaptionsCue(cueData) {
@@ -419,10 +425,6 @@ define(['utils/underscore',
     // Used in MS Edge to get tracks from the videotag as they're added
     function addTrackHandler() {
         this.setTextTracks(this.video.textTracks);
-    }
-
-    function addCueHandler(event) {
-        this.addVTTCue(event.cueData);
     }
 
     function addTextTracks(tracksArray) {
@@ -666,7 +668,7 @@ define(['utils/underscore',
                 cachedCues[cacheKeyTime] = vttCue.endTime;
                 return true;
             default:
-                break;
+                return false;
         }
     }
 

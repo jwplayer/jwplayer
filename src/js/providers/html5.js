@@ -48,7 +48,7 @@ define([
 
         _.extend(this, Events, Tracks);
 
-        this.renderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari() || utils.isEdge();
+        this.renderNatively = renderNatively(_playerConfig.renderCaptionsNatively);
 
         var _this = this;
         var _mediaEvents = {
@@ -1029,6 +1029,14 @@ define([
 
     VideoProvider.getName = function() {
         return { name: 'html5' };
+    };
+
+    // Render natively if we have this is iOS or Desktop Safari OR we set renderCaptionsNatively and the platforms supports native rendering
+    const renderNatively = (configRenderNatively) => {
+        if (utils.isIOS() || utils.isSafari()) {
+            return true;
+        }
+        return configRenderNatively && (utils.isChrome() || utils.isEdge());
     };
 
     return VideoProvider;
