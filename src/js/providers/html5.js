@@ -571,9 +571,6 @@ define([
                 // don't change state on mobile before user initiates playback
                 _this.setState(states.LOADING);
             }
-            if (item.title) {
-                _videotag.setAttribute('title', item.title);
-            }
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
