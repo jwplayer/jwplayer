@@ -469,23 +469,6 @@ define([
         this.addControls = function (controls) {
             _controls = controls;
 
-            const overlaysElement = _playerElement.querySelector('.jw-overlays');
-            overlaysElement.addEventListener('mousemove', _userActivityCallback);
-
-            controls.on('userActive userInactive', function() {
-                if (_playerState === states.PLAYING || _playerState === states.BUFFERING) {
-                    _captionsRenderer.renderCues(true);
-                }
-            });
-
-            controls.enable(_api, _model);
-            controls.addActiveListeners(_logo.element());
-
-            const logoContainer = controls.logoContainer();
-            if (logoContainer) {
-                _logo.setContainer(logoContainer);
-            }
-
             utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
 
             _styles(_videoLayer, {
@@ -495,10 +478,29 @@ define([
             _model.on('change:scrubbing', _stateHandler);
             _model.change('streamType', _setLiveMode, this);
 
+            controls.enable(_api, _model);
+            controls.addActiveListeners(_logo.element());
+
+            const logoContainer = controls.logoContainer();
+            if (logoContainer) {
+                _logo.setContainer(logoContainer);
+            }
+
             // refresh breakpoint and timeslider classes
             if (_lastHeight) {
+                updateContainerStyles(_lastWidth, _lastHeight);
+                controls.resize(_lastWidth, _lastHeight);
                 _captionsRenderer.renderCues(true);
             }
+
+            controls.on('userActive userInactive', function() {
+                if (_playerState === states.PLAYING || _playerState === states.BUFFERING) {
+                    _captionsRenderer.renderCues(true);
+                }
+            });
+
+            const overlaysElement = _playerElement.querySelector('.jw-overlays');
+            overlaysElement.addEventListener('mousemove', _userActivityCallback);
         };
 
         this.removeControls = function () {
