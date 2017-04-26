@@ -58,7 +58,6 @@ define([
             logoWidth: 0,
         });
 
-
         const _playerElement = utils.createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
         const _videoLayer = _playerElement.querySelector('.jw-media');
 
