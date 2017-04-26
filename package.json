@@ -72,7 +72,7 @@
     "lint": "npm run lint:js && npm run lint:styles",
     "lint:js": "eslint './src/js'",
     "lint:styles": "stylelint './src/css/**/*.less'",
-    "lint:tests": "eslint './test/*.js'",
+    "lint:tests": "eslint './test/*.js'"
   },
   "engines": {
     "node": ">=4.3.1"
