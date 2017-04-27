@@ -169,9 +169,8 @@ define(['utils/underscore',
 
     function setSubtitlesTrack(menuIndex) {
         if (!this.renderNatively) {
-            //this.trigger('textTrackChanged', { currentTrack: menuIndex + 1 });
             if (this.setCurrentSubtitleTrack) {
-                this.setCurrentSubtitleTrack(menuIndex-1);
+                this.setCurrentSubtitleTrack(menuIndex - 1);
             }
             return;
         }
@@ -208,14 +207,6 @@ define(['utils/underscore',
             currentTrack: this._currentTextTrackIndex + 1,
             tracks: this._textTracks
         });
-
-        // IE 11 does not sent a change event when changing text track properties, so we manually send it.
-        //if (utils.isIE(11)) {
-            var e = document.createEvent('Event');
-            e.initEvent('change', false, false);
-
-            this.video.textTracks.dispatchEvent(e);
-        //}
     }
 
     function addCaptionsCue(cueData) {
