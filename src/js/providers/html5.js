@@ -50,6 +50,16 @@ define([
 
         this.renderNatively = renderNatively(_playerConfig.renderCaptionsNatively);
 
+        // Always render natively in iOS, Safari and Edge, where HLS is supported.
+        // Otherwise, use native rendering when set in the config for browsers that have adequate support.
+        // FF and IE are excluded due to styling/positioning drawbacks.
+        function renderNatively (configRenderNatively) {
+            if (utils.isIOS() || utils.isSafari() || utils.isEdge()) {
+                return true;
+            }
+            return configRenderNatively && utils.isChrome();
+        }
+
         var _this = this;
         var _mediaEvents = {
             click: _clickHandler,
@@ -1029,14 +1039,6 @@ define([
 
     VideoProvider.getName = function() {
         return { name: 'html5' };
-    };
-
-    // Render natively if we have this is iOS or Desktop Safari OR we set renderCaptionsNatively and the platforms supports native rendering
-    const renderNatively = (configRenderNatively) => {
-        if (utils.isIOS() || utils.isSafari()) {
-            return true;
-        }
-        return configRenderNatively && (utils.isChrome() || utils.isEdge());
     };
 
     return VideoProvider;
