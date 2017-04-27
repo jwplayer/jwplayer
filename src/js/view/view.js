@@ -36,6 +36,28 @@ define([
             model: _model
         });
 
+        // init/reset view model properties
+        _.extend(_model.attributes, {
+            containerWidth: undefined,
+            containerHeight: undefined,
+            mediaContainer: undefined,
+            fullscreen: false,
+            inDom: undefined,
+            iFrame: undefined,
+            activeTab: undefined,
+            intersectionRatio: undefined,
+            visibility: undefined,
+            viewable: undefined,
+            viewSetup: false,
+            audioMode: undefined,
+            touchMode: undefined,
+            altText: '',
+            cues: undefined,
+            castClicked: false,
+            scrubbing: false,
+            logoWidth: 0,
+        });
+
         const _playerElement = utils.createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
         const _videoLayer = _playerElement.querySelector('.jw-media');
 
@@ -308,12 +330,12 @@ define([
             });
             _model.change('skin', onSkinChange, this);
             _model.change('stretching', onStretchChange);
-            _model.change('aspectratio', onAspectRatioChange);
             _model.change('flashBlocked', onFlashBlockedChange);
 
             const width = _model.get('width');
             const height = _model.get('height');
             _resizePlayer(width, height);
+            _model.change('aspectratio', onAspectRatioChange);
             if (_model.get('controls')) {
                 updateContainerStyles(width, height);
             } else {

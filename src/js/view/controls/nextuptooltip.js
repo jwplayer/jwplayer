@@ -14,6 +14,7 @@ define([
             this.nextUpText = _model.get('localization').nextUp;
             this.nextUpClose = _model.get('localization').nextUpClose;
             this.state = 'tooltip';
+            this.reset();
         }
 
         setup(context) {
