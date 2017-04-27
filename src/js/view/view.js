@@ -327,7 +327,7 @@ define([
 
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
-                mediaModel.on('change:visualQuality', _resizeMedia, this);
+                mediaModel.on('change:visualQuality', () => {_resizeMedia()}, this);
             });
             _model.change('skin', onSkinChange, this);
             _model.change('stretching', onStretchChange);
