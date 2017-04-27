@@ -131,7 +131,7 @@ define(['utils/underscore',
             if (utils.isEdge() || utils.isFF() || utils.isSafari()) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-                this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
+                this.addTracksListener(this.video, 'addtrack', this.addTrackHandler);
             }
         }
 
@@ -168,6 +168,13 @@ define(['utils/underscore',
     }
 
     function setSubtitlesTrack(menuIndex) {
+        if (!this.renderNatively) {
+            if (this.setCurrentSubtitleTrack) {
+                this.setCurrentSubtitleTrack(menuIndex - 1);
+            }
+            return;
+        }
+
         if (!this._textTracks) {
             return;
         }
@@ -191,17 +198,15 @@ define(['utils/underscore',
         // Set the provider's index to the model's index, then show the selected track if it exists
         this._currentTextTrackIndex = menuIndex - 1;
 
-        if (this.renderNatively) {
-            if (this._textTracks[this._currentTextTrackIndex]) {
-                this._textTracks[this._currentTextTrackIndex].mode = 'showing';
-            }
-
-            // Update the model index since the track change may have come from a browser event
-            this.trigger('subtitlesTrackChanged', {
-                currentTrack: this._currentTextTrackIndex + 1,
-                tracks: this._textTracks
-            });
+        if (this._textTracks[this._currentTextTrackIndex]) {
+            this._textTracks[this._currentTextTrackIndex].mode = 'showing';
         }
+
+        // Update the model index since the track change may have come from a browser event
+        this.trigger('subtitlesTrackChanged', {
+            currentTrack: this._currentTextTrackIndex + 1,
+            tracks: this._textTracks
+        });
     }
 
     function addCaptionsCue(cueData) {
@@ -250,7 +255,7 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        var trackId = 'native' + cueData.type;
+        var trackId = cueData.track ? cueData.track : 'native' + cueData.type;
         var track = this._tracksById[trackId];
         var label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
         var vttCue = cueData.cue;
@@ -624,35 +629,37 @@ define(['utils/underscore',
             this._cachedVTTCues[track._id] = {};
         }
         var cachedCues = this._cachedVTTCues[track._id];
-        var cacheKey;
+        var cacheKeyTime;
 
         switch (trackKind) {
             case 'captions':
+            case 'subtitles':
                 // VTTCues should have unique start and end times, even in cases where there are multiple
                 // active cues. This is safer than ensuring text is unique, which may be violated on seek.
                 // Captions within .05s of each other are treated as unique to account for
                 // quality switches where start/end times are slightly different.
-                cacheKey = Math.floor(vttCue.startTime * 20);
+                cacheKeyTime = Math.floor(vttCue.startTime * 20);
+                var cacheLine = '_' + vttCue.line;
                 var cacheValue = Math.floor(vttCue.endTime * 20);
-                var cueExists = cachedCues[cacheKey] || cachedCues[cacheKey + 1] || cachedCues[cacheKey - 1];
+                var cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
 
                 if (cueExists && Math.abs(cueExists - cacheValue) <= 1) {
                     return false;
                 }
 
-                cachedCues[cacheKey] = cacheValue;
+                cachedCues[cacheKeyTime + cacheLine] = cacheValue;
                 return true;
             case 'metadata':
                 var text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
-                cacheKey = vttCue.startTime + text;
-                if (cachedCues[cacheKey]) {
+                cacheKeyTime = vttCue.startTime + text;
+                if (cachedCues[cacheKeyTime]) {
                     return false;
                 }
 
-                cachedCues[cacheKey] = vttCue.endTime;
+                cachedCues[cacheKeyTime] = vttCue.endTime;
                 return true;
             default:
-                break;
+                return false;
         }
     }
 

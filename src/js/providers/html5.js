@@ -48,7 +48,17 @@ define([
 
         _.extend(this, Events, Tracks);
 
-        this.renderNatively = utils.isChrome() || utils.isIOS() || utils.isSafari() || utils.isEdge();
+        this.renderNatively = renderNatively(_playerConfig.renderCaptionsNatively);
+
+        // Always render natively in iOS, Safari and Edge, where HLS is supported.
+        // Otherwise, use native rendering when set in the config for browsers that have adequate support.
+        // FF and IE are excluded due to styling/positioning drawbacks.
+        function renderNatively (configRenderNatively) {
+            if (utils.isIOS() || utils.isSafari() || utils.isEdge()) {
+                return true;
+            }
+            return configRenderNatively && utils.isChrome();
+        }
 
         var _this = this;
         var _mediaEvents = {

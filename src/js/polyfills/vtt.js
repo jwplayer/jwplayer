@@ -534,6 +534,9 @@ define([
         this.bottom = obj.bottom || (top + (obj.height || height));
         this.width = obj.width || width;
         this.lineHeight = lh !== undefined ? lh : obj.lineHeight;
+
+        // Sets the width to be slightly larger to prevent text wrapping in IE 11
+        this.width = Math.ceil(this.width + 1);
     }
 
     // Move the box along a particular axis. Optionally pass in an amount to move
@@ -883,6 +886,7 @@ define([
 
         var boxPositions = [];
         var containerBox = BoxPosition.getSimpleBoxPosition(paddedOverlay);
+        var currentNumOfLines = cues.reduce(function(totalLines, cue) { return totalLines + cue.text.split('\n').length; }, 0);
 
         (function () {
             for (var j = 0; j < cues.length; j++) {
@@ -897,8 +901,8 @@ define([
                 // Move the cue div to it's correct line position.
                 // Added on 08/03/2016 by Evol Greaves: evol@jwplayer.com for determining the correct
                 // position to place the containerBox.
-                var numLinesOfText = cue.text.split('\n').length;
-                moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, numLinesOfText);
+                moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, currentNumOfLines);
+                currentNumOfLines -= cue.text.split('\n').length;
 
                 // Remember the computed div so that we don't have to recompute it later
                 // if we don't have too.
