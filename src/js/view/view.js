@@ -892,10 +892,6 @@ define([
                 fullscreenHelpers.destroy();
                 fullscreenHelpers = null;
             }
-            if (displayClickHandler) {
-                displayClickHandler.destroy();
-                displayClickHandler = null;
-            }
             if (_model.mediaController) {
                 _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
             }
@@ -905,6 +901,10 @@ define([
 
             if (_instreamModel) {
                 this.destroyInstream();
+            }
+            if (displayClickHandler) {
+                displayClickHandler.destroy();
+                displayClickHandler = null;
             }
             if (_logo) {
                 _logo.destroy();
