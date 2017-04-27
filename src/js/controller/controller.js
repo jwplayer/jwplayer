@@ -177,20 +177,15 @@ define([
 
             // For onCaptionsList and onCaptionsChange
             _model.on('change:captionsList', function(model, captionsList) {
-                try {
-                    _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
-                        tracks: captionsList,
-                        track: _getCurrentCaptions()
-                    });
-                } catch (e) {
-                    utils.log('Error with captionsList event:', e);
-                }
+                _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
+                    tracks: captionsList,
+                    track: _model.get('captionsIndex') || 0
+                });
             });
 
             _model.on('change:mediaModel', function(model) {
                 model.mediaModel.on('change:state', function(mediaModel, state) {
-                    var modelState = normalizeState(state);
-                    model.set('state', modelState);
+                    model.set('state', normalizeState(state));
                 });
             });
 
@@ -222,7 +217,9 @@ define([
                 } else {
                     _view.removeControls();
                 }
+            }
 
+            function triggerControls(model, enable) {
                 _this.trigger(events.JWPLAYER_CONTROLS, {
                     controls: enable
                 });
@@ -265,6 +262,7 @@ define([
 
             function _playerReadyNotify() {
                 _model.change('visibility', _updateViewable);
+                _model.on('change:controls', triggerControls);
 
                 // Tell the api that we are loaded
                 _this.trigger(events.JWPLAYER_READY, {
