@@ -59,7 +59,7 @@
     "qunitjs": "2.3.0",
     "raw-loader": "0.5.1",
     "requirejs": "2.3.3",
-    "simple-style-loader": "0.4.0",
+    "simple-style-loader": "0.4.1",
     "sinon": "2.1.0",
     "sinon-qunit": "2.0.0",
     "source-map": "0.5.6",
