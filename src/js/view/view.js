@@ -322,6 +322,9 @@ define([
             _model.on('change:hideAdsControls', function (model, val) {
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
             });
+            _model.on('change:scrubbing', function (model, val) {
+                utils.toggleClass(_playerElement, 'jw-flag-dragging', val);
+            });
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
 
@@ -497,7 +500,6 @@ define([
                 cursor: 'pointer'
             });
 
-            _model.on('change:scrubbing', _stateHandler);
             _model.change('streamType', _setLiveMode, this);
 
             controls.enable(_api, _model);
@@ -766,7 +768,6 @@ define([
         }
 
         function _stateUpdate(model, state) {
-            utils.toggleClass(_playerElement, 'jw-flag-dragging', model.get('scrubbing'));
             utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _playerState);
 
             if (state === states.COMPLETE) {
