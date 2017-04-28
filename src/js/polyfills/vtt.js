@@ -453,12 +453,15 @@ define([
         // value is applied.
         switch (cue.align) {
             case 'start':
+            case 'left':
                 textPos = cue.position;
                 break;
             case 'middle':
+            case 'center':
                 textPos = cue.position - (cue.size / 2);
                 break;
             case 'end':
+            case 'right':
                 textPos = cue.position - cue.size;
                 break;
             default:
