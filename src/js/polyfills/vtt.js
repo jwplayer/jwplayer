@@ -756,10 +756,12 @@ define([
                 axis = axis.reverse();
             }
 
+            // Shift the position of the captions up to prevent minor overlaps as the text is laid out in IE11
+            position -= numLinesOfText;
+
             // Move the box to the specified position. This may not be its best
             // position.
             boxPosition.move(initialAxis, position);
-
         } else {
             // If we have a percentage line value for the cue.
             var calculatedPercentage = (boxPosition.lineHeight / containerBox.height) * 100;
