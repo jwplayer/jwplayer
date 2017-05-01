@@ -20,6 +20,7 @@ define(['utils/underscore',
         _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
         clearTracks: clearTracks,
+        clearCueData: clearCueData,
         disableTextTrack: disableTextTrack,
         enableTextTrack: enableTextTrack,
         getSubtitlesTrack: getSubtitlesTrack,
@@ -364,6 +365,14 @@ define(['utils/underscore',
             // Removing listener first to ensure that removing cues does not trigger it unnecessarily
             this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
             _removeCues(this.renderNatively, this.video.textTracks);
+        }
+    }
+
+    // Clear track cues to prevent duplicates
+    function clearCueData(trackId) {
+        if (this._cachedVTTCues[trackId]) {
+            this._cachedVTTCues[trackId] = {};
+            this._tracksById[trackId].data = [];
         }
     }
 
