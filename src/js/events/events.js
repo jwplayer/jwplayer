@@ -87,7 +87,8 @@ define([], function() {
         JWPLAYER_PROVIDER_CLICK: 'providerClick',
         JWPLAYER_VIEW_TAB_FOCUS: 'tabFocus',
         JWPLAYER_CONTROLBAR_DRAGGING: 'scrubbing',
-        JWPLAYER_INSTREAM_CLICK: 'instreamClick'
+        JWPLAYER_INSTREAM_CLICK: 'instreamClick',
+        JWPLAYER_BREAKPOINT: 'breakpoint'
     };
 
     events.touchEvents = touchEvents;

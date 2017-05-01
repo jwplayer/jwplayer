@@ -4,6 +4,7 @@ import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 
 define([
     'events/events',
@@ -12,14 +13,13 @@ define([
     'utils/helpers',
     'utils/underscore',
     'view/utils/request-fullscreen-helper',
-    'view/utils/breakpoint',
     'view/utils/flag-no-focus',
     'view/utils/clickhandler',
     'view/captionsrenderer',
     'view/logo',
     'view/preview',
     'view/title',
-], function(events, states, Events, utils, _, requestFullscreenHelper, setBreakpoint, flagNoFocus,
+], function(events, states, Events, utils, _, requestFullscreenHelper, flagNoFocus,
             ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     const _styles = utils.style;
@@ -150,6 +150,7 @@ define([
                     width: containerWidth,
                     height: containerHeight
                 });
+                _this.trigger(events.JWPLAYER_BREAKPOINT,{ breakpoint: getBreakpoint(containerWidth) });
             }
         };
 
@@ -168,13 +169,16 @@ define([
             const audioMode = isAudioMode(_model);
             // Set timeslider flags
             if (_.isNumber(width) && _.isNumber(height)) {
-                const breakPoint = setBreakpoint(_playerElement, width, height);
-                const smallPlayer = breakPoint < 2;
+                const breakpoint = getBreakpoint(width);
+                setBreakpoint(_playerElement, breakpoint);
+
+                const smallPlayer = breakpoint < 2;
                 const timeSliderAboveConfig = _model.get('timeSliderAbove');
                 const timeSliderAbove = !audioMode &&
                     (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
                 utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
                 utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
+                utils.toggleClass(_playerElement, 'jw-orientation-portrait', (height > width));
             }
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
             _model.set('audioMode', audioMode);
