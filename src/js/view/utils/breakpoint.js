@@ -1,4 +1,4 @@
-const utils = require('utils/helpers');
+const domUtils = require('utils/dom');
 
 export function getBreakpoint(width) {
     let breakpoint = 0;
@@ -24,5 +24,5 @@ export function getBreakpoint(width) {
 
 export function setBreakpoint(playerElement, breakpointNumber) {
     const breakpointClass = 'jw-breakpoint-' + breakpointNumber;
-    utils.replaceClass(playerElement, /jw-breakpoint-\d+/, breakpointClass);
+    domUtils.replaceClass(playerElement, /jw-breakpoint-\d+/, breakpointClass);
 }

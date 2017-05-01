@@ -150,7 +150,9 @@ define([
                     width: containerWidth,
                     height: containerHeight
                 });
-                _this.trigger(events.JWPLAYER_BREAKPOINT,{ breakpoint: getBreakpoint(containerWidth) });
+                _this.trigger(events.JWPLAYER_BREAKPOINT, {
+                    breakpoint: getBreakpoint(containerWidth)
+                });
             }
         };
 

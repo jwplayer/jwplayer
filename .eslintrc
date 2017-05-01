@@ -105,7 +105,7 @@
         "indent": [1, 4, {"SwitchCase":1}],
         "brace-style": 1,
         "camelcase": 1,
-        "comma-spacing": [1, {"before": false, "after": true}],
+        "comma-spacing": [2, {"before": false, "after": true}],
         "comma-style": [1, "last"],
         "consistent-this": [0, "_this"],
         "eol-last": 1,
