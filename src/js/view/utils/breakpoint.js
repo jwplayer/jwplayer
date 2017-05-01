@@ -1,31 +1,28 @@
-define([
-    'utils/helpers'
-], function (utils) {
-    return function setBreakpoint(playerElement, playerWidth, playerHeight) {
-        var width = playerWidth;
-        var height = playerHeight;
+const domUtils = require('utils/dom');
 
-        var breakPoint = 0;
-        if (width >= 1280) {
-            breakPoint = 7;
-        } else if (width >= 960) {
-            breakPoint = 6;
-        } else if (width >= 800) {
-            breakPoint = 5;
-        } else if (width >= 640) {
-            breakPoint = 4;
-        } else if (width >= 540) {
-            breakPoint = 3;
-        } else if (width >= 420) {
-            breakPoint = 2;
-        } else if (width >= 320) {
-            breakPoint = 1;
-        }
+export function getBreakpoint(width) {
+    let breakpoint = 0;
 
-        var className = 'jw-breakpoint-' + breakPoint;
-        utils.replaceClass(playerElement, /jw-breakpoint-\d+/, className);
-        utils.toggleClass(playerElement, 'jw-orientation-portrait', (height > width));
+    if (width >= 1280) {
+        breakpoint = 7;
+    } else if (width >= 960) {
+        breakpoint = 6;
+    } else if (width >= 800) {
+        breakpoint = 5;
+    } else if (width >= 640) {
+        breakpoint = 4;
+    } else if (width >= 540) {
+        breakpoint = 3;
+    } else if (width >= 420) {
+        breakpoint = 2;
+    } else if (width >= 320) {
+        breakpoint = 1;
+    }
 
-        return breakPoint;
-    };
-});
+    return breakpoint;
+}
+
+export function setBreakpoint(playerElement, breakpointNumber) {
+    const breakpointClass = 'jw-breakpoint-' + breakpointNumber;
+    domUtils.replaceClass(playerElement, /jw-breakpoint-\d+/, breakpointClass);
+}
