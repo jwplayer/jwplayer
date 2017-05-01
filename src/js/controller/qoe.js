@@ -13,8 +13,6 @@ define([
     var TAB_HIDDEN = 'tabHidden';
     var TAB_VISIBLE = 'tabVisible';
 
-    var VISIBILITY_CHANGE = 'visibilitychange';
-
     // This is to provide a first frame event even when
     //  a provider does not give us one.
     var onTimeIncreasesGenerator = (function(callback) {
@@ -34,11 +32,13 @@ define([
         model.mediaController.off(JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
         model.mediaController.off(JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.off(JWPLAYER_MEDIA_TIME, model._onTime);
-        document.removeEventListener(VISIBILITY_CHANGE, model._onTabVisible);
+        model.off('change:activeTab', model._onTabVisible);
     }
 
     function trackFirstFrame(model) {
-        unbindFirstFrameEvents(model);
+        if (model._onTabVisible) {
+            unbindFirstFrameEvents(model);
+        }
 
         // When it occurs, send the event, and unbind all listeners
         model._triggerFirstFrame = _.once(function() {
@@ -57,16 +57,15 @@ define([
         };
 
         // track visibility change
-        model._onTabVisible = function(e) {
-            var hidden = e.target.hidden;
-            if (hidden === true) {
-                model._qoeItem.tick(TAB_HIDDEN);
-            } else if (hidden === false) {
+        model._onTabVisible = function(modelChanged, activeTab) {
+            if (activeTab) {
                 model._qoeItem.tick(TAB_VISIBLE);
+            } else {
+                model._qoeItem.tick(TAB_HIDDEN);
             }
         };
-        document.addEventListener(VISIBILITY_CHANGE, model._onTabVisible, false);
 
+        model.on('change:activeTab', model._onTabVisible);
         model.mediaController.on(JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
         model.mediaController.once(JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
         model.mediaController.on(JWPLAYER_MEDIA_TIME, model._onTime);

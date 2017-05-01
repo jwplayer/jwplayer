@@ -77,7 +77,9 @@ export default {
     },
     observe(container) {
         lazyInitIntersectionObserver();
-        intersectionObserver.unobserve(container);
+        try {
+            intersectionObserver.unobserve(container);
+        } catch (e) {/* catch Exception thrown by Edge 15 browser */}
         intersectionObserver.observe(container);
     },
     unobserve(container) {
