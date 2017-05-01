@@ -492,8 +492,10 @@ define([
                 _videotag.removeAttribute('src');
                 _videotag.removeAttribute('jw-loaded');
                 _videotag.removeAttribute('jw-played');
-
                 dom.emptyElement(_videotag);
+                cssUtils.style(_videotag, {
+                    objectFit: ''
+                });
                 _currentQuality = -1;
                 // Don't call load in iE9/10 and check for load in PhantomJS
                 if (!_isMSIE && 'load' in _videotag) {

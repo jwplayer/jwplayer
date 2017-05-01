@@ -330,6 +330,9 @@ define([
 
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
+                mediaModel.on('change:visualQuality', () => {
+                    _resizeMedia();
+                }, this);
             });
             _model.change('skin', onSkinChange, this);
             _model.change('stretching', onStretchChange);
@@ -608,29 +611,29 @@ define([
             _styles(_playerElement, playerStyle);
         }
 
-        function _resizeMedia(mediaWidth, mediaHeight) {
-            if (!mediaWidth || isNaN(1 * mediaWidth)) {
-                if (!_lastWidth) {
+        function _resizeMedia(containerWidth, containerHeight) {
+            if (!containerWidth || isNaN(1 * containerWidth)) {
+                containerWidth = _model.get('containerWidth');
+                if (!containerWidth) {
                     return;
                 }
-                mediaWidth = _lastWidth;
             }
-            if (!mediaHeight || isNaN(1 * mediaHeight)) {
-                if (!_lastHeight) {
+            if (!containerHeight || isNaN(1 * containerHeight)) {
+                containerHeight = _model.get('containerHeight');
+                if (!containerHeight) {
                     return;
                 }
-                mediaHeight = _lastHeight;
             }
 
             if (_preview) {
-                _preview.resize(mediaWidth, mediaHeight, _model.get('stretching'));
+                _preview.resize(containerWidth, containerHeight, _model.get('stretching'));
             }
 
             const provider = _model.getVideo();
             if (!provider) {
                 return;
             }
-            const transformScale = provider.resize(mediaWidth, mediaHeight, _model.get('stretching'));
+            const transformScale = provider.resize(containerWidth, containerHeight, _model.get('stretching'));
 
             // poll resizing if video is transformed
             if (transformScale) {
@@ -892,10 +895,6 @@ define([
                 fullscreenHelpers.destroy();
                 fullscreenHelpers = null;
             }
-            if (displayClickHandler) {
-                displayClickHandler.destroy();
-                displayClickHandler = null;
-            }
             if (_model.mediaController) {
                 _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
             }
@@ -905,6 +904,10 @@ define([
 
             if (_instreamModel) {
                 this.destroyInstream();
+            }
+            if (displayClickHandler) {
+                displayClickHandler.destroy();
+                displayClickHandler = null;
             }
             if (_logo) {
                 _logo.destroy();
