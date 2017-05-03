@@ -685,21 +685,12 @@ define([
         }
 
         function _toggleDOMFullscreen(playerElement, fullscreenState) {
-            if (fullscreenState) {
-                utils.addClass(playerElement, 'jw-flag-fullscreen');
-                _styles(document.body, {
-                    overflowY: 'hidden'
-                });
+            utils.toggleClass(playerElement, 'jw-flag-fullscreen', fullscreenState);
+            _styles(document.body, { overflowY: (fullscreenState) ? 'hidden' : '' });
 
-                // On going fullscreen we want the control bar to fade after a few seconds
-                if (_controls) {
-                    _controls.userActive();
-                }
-            } else {
-                utils.removeClass(playerElement, 'jw-flag-fullscreen');
-                _styles(document.body, {
-                    overflowY: ''
-                });
+            if (fullscreenState && _controls) {
+                // When going into fullscreen, we want the control bar to fade after a few seconds
+                _controls.userActive();
             }
 
             _resizeMedia();
