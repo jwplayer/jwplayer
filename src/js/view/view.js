@@ -76,12 +76,12 @@ define([
 
         let _resizeMediaTimeout = -1;
         let _resizeContainerRequestId = -1;
-        let _previewDisplayStateTimeout = -1;
 
         let displayClickHandler;
         let fullscreenHelpers;
         let focusHelper;
 
+        let _breakpoint = null;
         let _controls;
 
         function reasonInteraction() {
@@ -150,9 +150,13 @@ define([
                     width: containerWidth,
                     height: containerHeight
                 });
-                _this.trigger(events.JWPLAYER_BREAKPOINT, {
-                    breakpoint: getBreakpoint(containerWidth)
-                });
+                const breakpoint = getBreakpoint(containerWidth);
+                if (_breakpoint !== breakpoint) {
+                    _breakpoint = breakpoint;
+                    _this.trigger(events.JWPLAYER_BREAKPOINT, {
+                        breakpoint: _breakpoint
+                    });
+                }
             }
         };
 
@@ -555,9 +559,6 @@ define([
             _styles(_videoLayer, {
                 cursor: ''
             });
-
-            cancelAnimationFrame(_previewDisplayStateTimeout);
-            clearTimeout(_resizeMediaTimeout);
         };
 
         // Perform the switch to fullscreen
@@ -761,23 +762,14 @@ define([
                 _controls.instreamState = instreamState;
             }
 
-            // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
-            cancelAnimationFrame(_previewDisplayStateTimeout);
-
-            if (_playerState === states.PLAYING) {
-                _stateUpdate(model, _playerState);
-            } else {
-                _previewDisplayStateTimeout = requestAnimationFrame(function () {
-                    _stateUpdate(model, _playerState);
-                });
-            }
-            if (_model.get('controls') && _playerState !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
-                utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
-            }
+            _stateUpdate(_playerState);
         }
 
-        function _stateUpdate(model, state) {
-            utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _playerState);
+        function _stateUpdate(state) {
+            if (_model.get('controls') && state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
+                utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
+            }
+            utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
             if (state === states.COMPLETE) {
                 _api.setFullscreen(false);
@@ -889,7 +881,6 @@ define([
             viewsManager.remove(this);
             this.isSetup = false;
             this.off();
-            cancelAnimationFrame(_previewDisplayStateTimeout);
             cancelAnimationFrame(_resizeContainerRequestId);
             clearTimeout(_resizeMediaTimeout);
             _playerElement.removeEventListener('focus', onFocus);
