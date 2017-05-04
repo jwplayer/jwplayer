@@ -81,6 +81,7 @@ define([
         let fullscreenHelpers;
         let focusHelper;
 
+        let _breakpoint = null;
         let _controls;
 
         function reasonInteraction() {
@@ -149,9 +150,13 @@ define([
                     width: containerWidth,
                     height: containerHeight
                 });
-                _this.trigger(events.JWPLAYER_BREAKPOINT, {
-                    breakpoint: getBreakpoint(containerWidth)
-                });
+                const breakpoint = getBreakpoint(containerWidth);
+                if (_breakpoint !== breakpoint) {
+                    _breakpoint = breakpoint;
+                    _this.trigger(events.JWPLAYER_BREAKPOINT, {
+                        breakpoint: _breakpoint
+                    });
+                }
             }
         };
 
