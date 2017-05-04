@@ -132,7 +132,7 @@ define(['utils/underscore',
             if (utils.isEdge() || utils.isFF() || utils.isSafari()) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
-                this.addTracksListener(this.video, 'addtrack', this.addTrackHandler);
+                this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
             }
         }
 
