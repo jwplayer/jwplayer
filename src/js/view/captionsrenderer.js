@@ -1,9 +1,10 @@
 define([
     'utils/helpers',
     'utils/css',
+    'utils/dom',
     'events/states',
     'utils/underscore'
-], function (utils, cssUtils, states, _) {
+], function (utils, cssUtils, dom, states, _) {
     /** Component that renders the actual captions on screen. **/
     var CaptionsRenderer;
     var _style = cssUtils.style;
@@ -36,11 +37,11 @@ define([
         _display.className = 'jw-captions jw-reset';
 
         this.show = function () {
-            _display.className = 'jw-captions jw-captions-enabled jw-reset';
+            dom.addClass(_display, 'jw-captions-enabled');
         };
 
         this.hide = function () {
-            _display.className = 'jw-captions jw-reset';
+            dom.removeClass(_display, 'jw-captions-enabled');
         };
 
         // Assign list of captions to the renderer
@@ -101,7 +102,7 @@ define([
             if (!cues.length) {
                 _currentCues = [];
             } else if (_.difference(cues, _currentCues).length) {
-                _captionsWindow.className = 'jw-captions-window jw-reset jw-captions-window-active';
+                dom.addClass(_captionsWindow, 'jw-captions-window-active');
                 _currentCues = cues;
             }
 
