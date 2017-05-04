@@ -30,7 +30,7 @@ define([
         'hls_androidhls_true': { file: 'http://playertest.longtailvideo.com/adaptive/bipbop/bipbopall.hls', type: 'm3u8', androidhls: true },
 
         'hls_androidhls_false': { file: 'http://playertest.longtailvideo.com/adaptive/bipbop/bipbopall.hls', type: 'm3u8', androidhls: false },
-        'mov': { file: 'assets/os/bunny.mov' },
+        'mov': { file: 'http://playertest.longtailvideo.com/bunny.mov' },
         'youtube': { file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4' }
     };
 
