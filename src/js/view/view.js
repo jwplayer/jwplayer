@@ -416,7 +416,7 @@ define([
         };
 
         function itemReady() {
-            var title = _model.get('playlistItem').title || '';
+            const title = _model.get('playlistItem').title || '';
             var videotag = _videoLayer.querySelector('video, audio');
             videotag.setAttribute('title', title);
         }
