@@ -908,6 +908,10 @@ define([
             }
         };
 
+        this.setPlaybackRate = function(playbackRate) {
+            _videotag.playbackRate = _videotag.defaultPlaybackRate = playbackRate;
+        };
+
         this.getCurrentQuality = function() {
             return _currentQuality;
         };

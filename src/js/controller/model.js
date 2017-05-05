@@ -31,6 +31,7 @@ define([
                 // always start on first playlist item
                 item: 0,
                 itemMeta: {},
+                playbackRate: 1,
                 playlistItem: undefined,
                 // Initial state, upon setup
                 state: states.IDLE,
@@ -229,6 +230,8 @@ define([
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
+            _provider.setPlaybackRate(_this.get('playbackRate'));
+
             _provider.on('all', _videoEventHandler, this);
 
             if (this.get('instreamMode') === true) {
@@ -378,6 +381,31 @@ define([
                 var volume = Math.max(10, this.get('volume'));
                 this.set('autostartMuted', false);
                 this.setVolume(volume);
+            }
+        };
+
+        this.setStreamType = function(streamType) {
+            if (streamType === 'LIVE') {
+                this.setPlaybackRate(1);
+            }
+            this.set('streamType', streamType);
+        };
+
+        this.setPlaybackRate = function(playbackRate) {
+            if (!playbackRate || this.get('streamType') === 'LIVE' || !_attached) {
+                return false;
+            }
+
+            // If the provider does not support playback rate changes, then we go back to normal speed.
+            if (_provider.setPlaybackRate === utils.noop) {
+                playbackRate = 1;
+            }
+
+            // Clamp the rate between 0.25x and 4x speed
+            this.set('playbackRate', Math.max(0.25, Math.min(playbackRate, 4)));
+
+            if (_provider) {
+                _provider.setPlaybackRate(this.get('playbackRate'));
             }
         };
 

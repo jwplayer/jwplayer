@@ -13,6 +13,7 @@ define([
             'volume',
             'item', // this was playlistindex
             'stretching',
+            'playbackRate',
             'playlist',
             'captions',
             'viewable'
@@ -70,6 +71,7 @@ define([
             'setFullscreen',
             'setVolume',
             'setMute',
+            'setPlaybackRate',
             'setCues',
             'setCaptions'
         ];
