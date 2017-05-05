@@ -52,7 +52,6 @@ Check out an interactive example in this [JSFiddle](https://jsfiddle.net/Lgs0ou8
  We appreciate all contributions towards the player! Before submitting an issue or PR, please see our contributing docs [here](CONTRIBUTING.md).
 
 ## Building the Player
-
 We use `grunt` and a few `npm scripts` to build the player, lint code, and run tests. Debug code is built to `/bin-debug`, while minified & uglified code is built to `/bin-release`. Code is built with `webpack`, linted with `eslint`, and tested with `karma`, `mocha` and `chai`.
 
 #### Requirements:

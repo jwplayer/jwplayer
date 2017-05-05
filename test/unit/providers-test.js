@@ -39,7 +39,7 @@ define([
         mov: { file: 'http://playertest.longtailvideo.com/bunny.mov' },
         youtube: { file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4' },
         mov: { file: 'http://playertest.longtailvideo.com/bunny.mov' },
-        'youtube': { file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4' }
+        youtube: { file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4' }
     };
 
     // Exists to protect against undefined results.  If no provider is chosen we get undefined.
