@@ -400,8 +400,10 @@ define([
             _model.on('change:fullscreen', updateVisibility);
             _model.on('change:intersectionRatio', updateVisibility);
             _model.on('change:visibility', redraw);
+            _model.on('itemReady', itemReady);
 
             updateVisibility();
+            itemReady();
 
             // Always draw first player for icons to load
             if (viewsManager.size() === 1 && !_model.get('visibility')) {
@@ -412,6 +414,12 @@ define([
             _lastWidth = _lastHeight = null;
             this.checkResized();
         };
+
+        function itemReady() {
+            const title = _model.get('playlistItem').title || '';
+            var videotag = _videoLayer.querySelector('video, audio');
+            videotag.setAttribute('title', title);
+        }
 
         function redraw(model, visibility, lastVisibility) {
             if (visibility && !lastVisibility) {
