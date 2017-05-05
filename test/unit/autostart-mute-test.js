@@ -5,13 +5,9 @@ define([
     'api/api'
 ], function (_, $, utils, Api) {
 
-    var tru = function() {
-        return true;
-    };
-    var fals = function() {
-        return false;
-    };
-
+    const tru = () => true;
+    const fals = () => false;
+    
     var config = {
         file: 'http://playertest.longtailvideo.com/mp4.mp4'
     };
