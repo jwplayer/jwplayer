@@ -156,6 +156,7 @@ define([
                 provider.attachMedia();
                 provider.volume(_model.get('volume'));
                 provider.mute(_model.get('mute') || _model.get('autostartMuted'));
+                provider.setPlaybackRate(1);
 
                 _adModel.on('change:state', changeStateEvent, _this);
             }

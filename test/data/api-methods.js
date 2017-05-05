@@ -113,6 +113,7 @@ define({
     onMute: null,
     onPause: null,
     onPlay: null,
+    onPlaybackRateChange: null,
     onPlaylist: null,
     onPlaylistComplete: null,
     onPlaylistItem: null,
