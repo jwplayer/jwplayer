@@ -4,12 +4,13 @@ define([
     'utils/backbone.events',
     'utils/constants',
     'utils/ui',
+    'utils/aria',
     'view/controls/components/slider',
     'view/controls/components/timeslider',
     'view/controls/components/menu',
     'view/controls/components/volumetooltip',
-    'view/controls/components/button'
-], function(utils, _, Events, Constants, UI, Slider, TimeSlider, Menu, VolumeTooltip, button) {
+    'view/controls/components/button',
+], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, VolumeTooltip, button) {
     function text(name, role) {
         const element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
@@ -32,7 +33,7 @@ define([
 
         const castButton = document.createElement('button', 'google-cast-button');
         castButton.className = 'jw-button-color jw-icon-inline';
-        utils.addAriaLabel(castButton, ariaText);
+        ariaLabel(castButton, ariaText);
 
         const element = document.createElement('div');
         element.className = 'jw-reset jw-icon-cast';

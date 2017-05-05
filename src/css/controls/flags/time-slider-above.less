@@ -270,7 +270,7 @@
                 background-color: #fff;
                 border-radius: @slider-fixed-knob-border-radius;
                 box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
-                display: block;
+                opacity: 1;
                 height: @slider-fixed-knob-height;
                 margin-left: @slider-fixed-knob-width / -2;
                 margin-top: @slider-fixed-knob-height / -2;
@@ -386,7 +386,7 @@
 
         .jw-captions,
         /* captions styles code specific to native text track rendering */
-        video:-webkit-media-text-track-container {
+        video::-webkit-media-text-track-container {
             max-height: ~"calc(100% - 64px)";
         }
 

@@ -14,20 +14,14 @@
     .jw-nextup-container {
         bottom: 0.5em;
     }
-
-    .jw-captions {
-        max-height: none;
-    }
-
-    /* captions styles code specific to native text track rendering */
-    video::-webkit-media-text-track-container {
-        max-height: none;
-    }
 }
 
 .jw-flag-controls-hidden {
-    .jw-controls {
+    .jw-controlbar,
+    .jw-display {
         visibility: hidden;
+        pointer-events: none;
+        opacity: 0;
     }
 
     .jw-logo {

@@ -32,11 +32,11 @@ define([
     });
 
     function noop() {
-        //console.log('I shouldn\'t exist.');
+        // console.log('I shouldn\'t exist.');
     }
 
     function noopChained() {
-        //console.log('I shouldn\'t exist too.');
+        // console.log('I shouldn\'t exist too.');
         return this;
     }
 

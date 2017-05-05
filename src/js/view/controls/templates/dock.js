@@ -17,7 +17,7 @@ const dockButton = (buttonClass = '', buttonId = '', image, tooltipText) => {
     const aria = tooltipText ? `aria-label="${tooltipText}" role="button" tabindex="0"` : '';
     return (
         `<div class="jw-dock-button jw-background-color jw-reset ${buttonClass}" button="${buttonId}">` +
-            `<div class="jw-icon jw-dock-image jw-reset" ${style} ${aria}></div>` +
+            `<div class="jw-icon jw-dock-image jw-button-color jw-reset" ${style} ${aria}></div>` +
             `<div class="jw-arrow jw-reset"></div>` +
             `${tooltipHtml}` +
         `</div>`

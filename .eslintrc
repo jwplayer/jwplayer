@@ -3,7 +3,8 @@
     "env": {
         "browser": true,
         "amd": true,
-        "es6": true
+        "es6": true,
+        "mocha": true
     },
     "globals": {
         "__webpack_public_path__": true,
@@ -13,7 +14,9 @@
         "__REPO__": true,
         "__SELF_HOSTED__": true,
         "__DEBUG__": true,
-        "__BUILD_VERSION__": true
+        "__BUILD_VERSION__": true,
+        "assert": true,
+        "expect": true
     },
     "parserOptions": {
         "sourceType": "module"
@@ -105,7 +108,7 @@
         "indent": [1, 4, {"SwitchCase":1}],
         "brace-style": 1,
         "camelcase": 1,
-        "comma-spacing": [1, {"before": false, "after": true}],
+        "comma-spacing": [2, {"before": false, "after": true}],
         "comma-style": [1, "last"],
         "consistent-this": [0, "_this"],
         "eol-last": 1,

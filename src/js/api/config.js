@@ -46,7 +46,7 @@ define([
             related: 'Discover',
             close: 'Close',
         },
-        renderCaptionsNatively: false,
+        renderCaptionsNatively: true,
         nextUpDisplay: true
     };
 

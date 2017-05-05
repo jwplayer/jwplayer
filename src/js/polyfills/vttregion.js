@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-(function(root) {
+(function() {
 
     var scrollSetting = {
         '': true,
-        'up': true
+        up: true
     };
 
     function findScrollSetting(value) {
@@ -44,7 +44,7 @@
         var _scroll = '';
 
         Object.defineProperties(this, {
-            'width': {
+            width: {
                 enumerable: true,
                 get: function() {
                     return _width;
@@ -56,7 +56,7 @@
                     _width = value;
                 }
             },
-            'lines': {
+            lines: {
                 enumerable: true,
                 get: function() {
                     return _lines;
@@ -68,7 +68,7 @@
                     _lines = value;
                 }
             },
-            'regionAnchorY': {
+            regionAnchorY: {
                 enumerable: true,
                 get: function() {
                     return _regionAnchorY;
@@ -80,19 +80,19 @@
                     _regionAnchorY = value;
                 }
             },
-            'regionAnchorX': {
+            regionAnchorX: {
                 enumerable: true,
                 get: function() {
                     return _regionAnchorX;
                 },
                 set: function(value) {
-                    if(!isValidPercentValue(value)) {
+                    if (!isValidPercentValue(value)) {
                         throw new Error('RegionAnchorY must be between 0 and 100.');
                     }
                     _regionAnchorX = value;
                 }
             },
-            'viewportAnchorY': {
+            viewportAnchorY: {
                 enumerable: true,
                 get: function() {
                     return _viewportAnchorY;
@@ -104,7 +104,7 @@
                     _viewportAnchorY = value;
                 }
             },
-            'viewportAnchorX': {
+            viewportAnchorX: {
                 enumerable: true,
                 get: function() {
                     return _viewportAnchorX;
@@ -116,14 +116,14 @@
                     _viewportAnchorX = value;
                 }
             },
-            'scroll': {
+            scroll: {
                 enumerable: true,
                 get: function() {
                     return _scroll;
                 },
                 set: function(value) {
                     var setting = findScrollSetting(value);
-          // Have to check for false as an empty string is a legal value.
+                    // Have to check for false as an empty string is a legal value.
                     if (setting === false) {
                         throw new SyntaxError('An invalid or illegal string was specified.');
                     }
@@ -134,4 +134,4 @@
     }
 
     return VTTRegion;
-}(this));
+}());

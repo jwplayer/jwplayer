@@ -14,62 +14,11 @@
  * limitations under the License.
  */
 
-/* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
+/* eslint no-unused-expressions: 0, no-nested-ternary: 0 */
 
 define([
 
 ], function () {
-    function makeColorSet(color, opacity) {
-        if (opacity === undefined) {
-            opacity = 1;
-        }
-        return 'rgba(' + [parseInt(color.substring(0, 2), 16),
-                parseInt(color.substring(2, 4), 16),
-                parseInt(color.substring(4, 6), 16),
-                opacity].join(',') + ')';
-    }
-
-    var WebVTTPrefs = ['webvtt.font.color', 'webvtt.font.opacity', 'webvtt.font.scale',
-        'webvtt.bg.color', 'webvtt.bg.opacity',
-        'webvtt.edge.color', 'webvtt.edge.type'];
-
-    var fontScale = 1;
-
-    function observe(subject, topic, data) {
-        switch (data) {
-            case 'webvtt.font.color':
-            case 'webvtt.font.opacity':
-                var fontColor = Services.prefs.getCharPref('webvtt.font.color');
-                var fontOpacity = Services.prefs.getIntPref('webvtt.font.opacity') / 100;
-                WebVTTSet.fontSet = makeColorSet(fontColor, fontOpacity);
-                break;
-            case 'webvtt.font.scale':
-                fontScale = Services.prefs.getIntPref('webvtt.font.scale') / 100;
-                break;
-            case 'webvtt.bg.color':
-            case 'webvtt.bg.opacity':
-                var backgroundColor = Services.prefs.getCharPref('webvtt.bg.color');
-                var backgroundOpacity = Services.prefs.getIntPref('webvtt.bg.opacity') / 100;
-                WebVTTSet.backgroundSet = makeColorSet(backgroundColor, backgroundOpacity);
-                break;
-            case 'webvtt.edge.color':
-            case 'webvtt.edge.type':
-                var edgeTypeList = ['', '0px 0px ', '4px 4px 4px ', '-2px -2px ', '2px 2px '];
-                var edgeType = Services.prefs.getIntPref('webvtt.edge.type');
-                var edgeColor = Services.prefs.getCharPref('webvtt.edge.color');
-                WebVTTSet.edgeSet = edgeTypeList[edgeType] + makeColorSet(edgeColor);
-                break;
-        }
-    }
-
-    if (typeof Services !== 'undefined') {
-        var WebVTTSet = {};
-        WebVTTPrefs.forEach(function (pref) {
-            observe(undefined, undefined, pref);
-            Services.prefs.addObserver(pref, observe, false);
-        });
-    }
 
     // Creates a new ParserError object from an errorData object. The errorData
     // object should have default code and message properties. The default message
@@ -115,10 +64,9 @@ define([
             // Timestamp takes the form of [hours]:[minutes].[milliseconds]
             // First position is hours as it's over 59.
             return computeSeconds(m[1], m[2], 0, m[4]);
-        } else {
-            // Timestamp takes the form of [minutes]:[seconds].[milliseconds]
-            return computeSeconds(0, m[1], m[2], m[4]);
         }
+        // Timestamp takes the form of [minutes]:[seconds].[milliseconds]
+        return computeSeconds(0, m[1], m[2], m[4]);
     }
 
     // A settings object holds key/value pairs and will ignore anything but the first
@@ -166,8 +114,7 @@ define([
         },
         // Accept a setting if its a valid percentage.
         percent: function (k, v) {
-            var m;
-            if ((m = v.match(/^([\d]{1,3})(\.[\d]*)?%$/))) {
+            if ((/^[\d]{1,3}(\.[\d]*)?%$/).test(v)) {
                 v = parseFloat(v);
                 if (v >= 0 && v <= 100) {
                     this.set(k, v);
@@ -177,24 +124,6 @@ define([
             return false;
         }
     };
-
-    // Helper function to parse input into groups separated by 'groupDelim', and
-    // interprete each group as a key/value pair separated by 'keyValueDelim'.
-    function parseOptions(input, callback, keyValueDelim, groupDelim) {
-        var groups = groupDelim ? input.split(groupDelim) : [input];
-        for (var i in groups) {
-            if (typeof groups[i] !== 'string') {
-                continue;
-            }
-            var kv = groups[i].split(keyValueDelim);
-            if (kv.length !== 2) {
-                continue;
-            }
-            var k = kv[0];
-            var v = kv[1];
-            callback(k, v);
-        }
-    }
 
     var ESCAPE = {
         '&amp;': '&',
@@ -277,10 +206,10 @@ define([
             return element;
         }
 
-        var rootDiv = window.document.createElement('div'),
-            current = rootDiv,
-            t,
-            tagStack = [];
+        var rootDiv = window.document.createElement('div');
+        var current = rootDiv;
+        var t;
+        var tagStack = [];
 
         while ((t = nextToken()) !== null) {
             if (t[0] === '<') {
@@ -378,46 +307,46 @@ define([
         return false;
     }
 
-    function determineBidi(cueDiv) {
-        var nodeStack = [],
-            text = '',
-            charCode;
+    function pushNodes(nodeStack, node) {
+        for (var i = node.childNodes.length - 1; i >= 0; i--) {
+            nodeStack.push(node.childNodes[i]);
+        }
+    }
 
+    function nextTextNode(nodeStack) {
+        if (!nodeStack || !nodeStack.length) {
+            return null;
+        }
+
+        var node = nodeStack.pop();
+        var text = node.textContent || node.innerText;
+        if (text) {
+            // TODO: This should match all unicode type B characters (paragraph
+            // separator characters). See issue #115.
+            var m = text.match(/^.*(\n|\r)/);
+            if (m) {
+                nodeStack.length = 0;
+                return m[0];
+            }
+            return text;
+        }
+        if (node.tagName === 'ruby') {
+            return nextTextNode(nodeStack);
+        }
+        if (node.childNodes) {
+            pushNodes(nodeStack, node);
+            return nextTextNode(nodeStack);
+        }
+    }
+
+    function determineBidi(cueDiv) {
         if (!cueDiv || !cueDiv.childNodes) {
             return 'ltr';
         }
 
-        function pushNodes(nodeStack, node) {
-            for (var i = node.childNodes.length - 1; i >= 0; i--) {
-                nodeStack.push(node.childNodes[i]);
-            }
-        }
-
-        function nextTextNode(nodeStack) {
-            if (!nodeStack || !nodeStack.length) {
-                return null;
-            }
-
-            var node = nodeStack.pop(),
-                text = node.textContent || node.innerText;
-            if (text) {
-                // TODO: This should match all unicode type B characters (paragraph
-                // separator characters). See issue #115.
-                var m = text.match(/^.*(\n|\r)/);
-                if (m) {
-                    nodeStack.length = 0;
-                    return m[0];
-                }
-                return text;
-            }
-            if (node.tagName === 'ruby') {
-                return nextTextNode(nodeStack);
-            }
-            if (node.childNodes) {
-                pushNodes(nodeStack, node);
-                return nextTextNode(nodeStack);
-            }
-        }
+        var nodeStack = [];
+        var text;
+        var charCode;
 
         pushNodes(nodeStack, cueDiv);
         while ((text = nextTextNode(nodeStack))) {
@@ -439,9 +368,9 @@ define([
         if (!cue.track || !cue.track.textTrackList || !cue.track.textTrackList.mediaElement) {
             return -1;
         }
-        var track = cue.track,
-            trackList = track.textTrackList,
-            count = 0;
+        var track = cue.track;
+        var trackList = track.textTrackList;
+        var count = 0;
         for (var i = 0; i < trackList.length && trackList[i] !== track; i++) {
             if (trackList[i].mode === 'showing') {
                 count++;
@@ -471,22 +400,6 @@ define([
     // Constructs the computed display state of the cue (a div). Places the div
     // into the overlay which should be a block level element (usually a div).
     function CueStyleBox(window, cue) {
-        var isIE8 = (typeof navigator !== 'undefined') &&
-            (/MSIE\s8\.0/).test(navigator.userAgent);
-        var color = 'rgba(255, 255, 255, 1)';
-        var backgroundColor = 'rgba(0, 0, 0, 0.8)';
-        var textShadow = '';
-
-        if (typeof WebVTTSet !== 'undefined') {
-            color = WebVTTSet.fontSet;
-            backgroundColor = WebVTTSet.backgroundSet;
-            textShadow = WebVTTSet.edgeSet;
-        }
-
-        if (isIE8) {
-            color = 'rgb(255, 255, 255)';
-            backgroundColor = 'rgb(0, 0, 0)';
-        }
 
         StyleBox.call(this);
         this.cue = cue;
@@ -497,21 +410,17 @@ define([
         // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
         this.cueDiv.className = 'jw-text-track-cue jw-reset';
         var styles = {
-            textShadow: textShadow,
+            textShadow: '',
             position: 'relative',
             left: 0,
             right: 0,
             top: 0,
             bottom: 0,
-            display: 'inline'
+            display: 'inline',
+            writingMode: cue.vertical === '' ? 'horizontal-tb' : cue.vertical === 'lr' ? 'vertical-lr' : 'vertical-rl',
+            unicodeBidi: 'plaintext',
         };
 
-        if (!isIE8) {
-            styles.writingMode = cue.vertical === '' ? 'horizontal-tb'
-                : cue.vertical === 'lr' ? 'vertical-lr'
-                    : 'vertical-rl';
-            styles.unicodeBidi = 'plaintext';
-        }
         this.applyStyles(styles, this.cueDiv);
 
         // Create an absolutely positioned div that will be used to position the cue
@@ -521,16 +430,11 @@ define([
         styles = {
             textAlign: cue.align === 'middle' ? 'center' : cue.align,
             whiteSpace: 'pre-line',
-            position: 'absolute'
+            position: 'absolute',
+            direction: determineBidi(this.cueDiv),
+            writingMode: cue.vertical === '' ? 'horizontal-tb' : cue.vertical === 'lr' ? 'vertical-lr' : 'vertical-rl',
+            unicodeBidi: 'plaintext',
         };
-
-        if (!isIE8) {
-            styles.direction = determineBidi(this.cueDiv);
-            styles.writingMode = cue.vertical === '' ? 'horizontal-tb'
-                : cue.vertical === 'lr' ? 'vertical-lr'
-                    : 'vertical-rl';
-            styles.unicodeBidi = 'plaintext';
-        }
 
         this.applyStyles(styles);
 
@@ -549,13 +453,18 @@ define([
         // value is applied.
         switch (cue.align) {
             case 'start':
+            case 'left':
                 textPos = cue.position;
                 break;
             case 'middle':
+            case 'center':
                 textPos = cue.position - (cue.size / 2);
                 break;
             case 'end':
+            case 'right':
                 textPos = cue.position - cue.size;
+                break;
+            default:
                 break;
         }
 
@@ -600,18 +509,15 @@ define([
     // compute things with such as if it overlaps or intersects with another Element.
     // Can initialize it with either a StyleBox or another BoxPosition.
     function BoxPosition(obj) {
-        var isIE8 = (typeof navigator !== 'undefined') &&
-            (/MSIE\s8\.0/).test(navigator.userAgent);
-
         // Either a BoxPosition was passed in and we need to copy it, or a StyleBox
         // was passed in and we need to copy the results of 'getBoundingClientRect'
         // as the object returned is readonly. All co-ordinate values are in reference
         // to the viewport origin (top left).
-        var lh, height, width, top;
+        var lh;
         if (obj.div) {
-            height = obj.div.offsetHeight;
-            width = obj.div.offsetWidth;
-            top = obj.div.offsetTop;
+            var height = obj.div.offsetHeight;
+            var width = obj.div.offsetWidth;
+            var top = obj.div.offsetTop;
 
             var rects = (rects = obj.div.childNodes) && (rects = rects[0]) &&
                 rects.getClientRects && rects.getClientRects();
@@ -632,9 +538,8 @@ define([
         this.width = obj.width || width;
         this.lineHeight = lh !== undefined ? lh : obj.lineHeight;
 
-        if (isIE8 && !this.lineHeight) {
-            this.lineHeight = 13;
-        }
+        // Sets the width to be slightly larger to prevent text wrapping in IE 11
+        this.width = Math.ceil(this.width + 1);
     }
 
     // Move the box along a particular axis. Optionally pass in an amount to move
@@ -658,6 +563,8 @@ define([
             case '-y':
                 this.top -= toMove;
                 this.bottom -= toMove;
+                break;
+            default:
                 break;
         }
     };
@@ -702,15 +609,17 @@ define([
                 return this.top < container.top;
             case '-y':
                 return this.bottom > container.bottom;
+            default:
+                break;
         }
     };
 
     // Find the percentage of the area that this box is overlapping with another
     // box.
     BoxPosition.prototype.intersectPercentage = function (b2) {
-        var x = Math.max(0, Math.min(this.right, b2.right) - Math.max(this.left, b2.left)),
-            y = Math.max(0, Math.min(this.bottom, b2.bottom) - Math.max(this.top, b2.top)),
-            intersectArea = x * y;
+        var x = Math.max(0, Math.min(this.right, b2.right) - Math.max(this.left, b2.left));
+        var y = Math.max(0, Math.min(this.bottom, b2.bottom) - Math.max(this.top, b2.top));
+        var intersectArea = x * y;
         return intersectArea / (this.height * this.width);
     };
 
@@ -762,9 +671,9 @@ define([
         // direction. If it doesn't find a good position for it there it will then move
         // it along the x axis in the negative direction.
         function findBestPosition(b, axis) {
-            var bestPosition,
-                specifiedPosition = new BoxPosition(b),
-                percentage = 1; // Highest possible so the first thing we get is better.
+            var bestPosition;
+            var specifiedPosition = new BoxPosition(b);
+            var percentage = 1; // Highest possible so the first thing we get is better.
 
             for (var i = 0; i < axis.length; i++) {
                 while (b.overlapsOppositeAxis(containerBox, axis[i]) ||
@@ -789,10 +698,10 @@ define([
             return bestPosition || specifiedPosition;
         }
 
-        var boxPosition = new BoxPosition(styleBox),
-            cue = styleBox.cue,
-            linePos = computeLinePos(cue),
-            axis = [];
+        var boxPosition = new BoxPosition(styleBox);
+        var cue = styleBox.cue;
+        var linePos = computeLinePos(cue);
+        var axis = [];
 
         // If we have a line number to align the cue to.
         if (cue.snapToLines) {
@@ -810,19 +719,21 @@ define([
                     axis = ['-x', '+x'];
                     size = 'width';
                     break;
+                default:
+                    break;
             }
 
-            var step = boxPosition.lineHeight,
+            var step = boxPosition.lineHeight;
                 // maxLines added on 8/03/2016 by Evol Greaves: evol@jwplayer.com.
                 // This ensures that cues are positioned according to the maximum number of lines
                 // that can be displayed based on the container size.
                 // The position also needs to account for the number of lines of text to ensure
                 // text isn't cut off at the bottom of the container
-                maxLines = Math.floor(containerBox[size] / step),
-                linePos = Math.min(linePos, maxLines - numLinesOfText),
-                position = step * Math.round(linePos),
-                maxPosition = containerBox[size] + step,
-                initialAxis = axis[0];
+            var maxLines = Math.floor(containerBox[size] / step);
+            linePos = Math.min(linePos, maxLines - numLinesOfText);
+            var position = step * Math.round(linePos);
+            var maxPosition = containerBox[size] + step;
+            var initialAxis = axis[0];
 
             // If the specified initial position is greater than the max position, then
             // clamp the box to the amount of steps it would take for the box to
@@ -845,10 +756,12 @@ define([
                 axis = axis.reverse();
             }
 
+            // Shift the position of the captions up to prevent minor overlaps as the text is laid out in IE11
+            position -= numLinesOfText;
+
             // Move the box to the specified position. This may not be its best
             // position.
             boxPosition.move(initialAxis, position);
-
         } else {
             // If we have a percentage line value for the cue.
             var calculatedPercentage = (boxPosition.lineHeight / containerBox.height) * 100;
@@ -859,6 +772,8 @@ define([
                     break;
                 case 'end':
                     linePos -= calculatedPercentage;
+                    break;
+                default:
                     break;
             }
 
@@ -878,6 +793,8 @@ define([
                     styleBox.applyStyles({
                         right: styleBox.formatStyle(linePos, '%')
                     });
+                    break;
+                default:
                     break;
             }
 
@@ -920,6 +837,19 @@ define([
 
     var CUE_BACKGROUND_PADDING = '1.5%';
 
+
+    // Determine if we need to compute the display states of the cues. This could
+    // be the case if a cue's state has been changed since the last computation or
+    // if it has not been computed yet.
+    function shouldCompute(cues) {
+        for (var i = 0; i < cues.length; i++) {
+            if (cues[i].hasBeenReset || !cues[i].displayState) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Runs the processing model over the cues and regions passed to it.
     // @param overlay A block level element (usually a div) that the computed cues
     //                and regions will be placed into.
@@ -951,18 +881,6 @@ define([
         paddedOverlay.style.margin = CUE_BACKGROUND_PADDING;
         overlay.appendChild(paddedOverlay);
 
-        // Determine if we need to compute the display states of the cues. This could
-        // be the case if a cue's state has been changed since the last computation or
-        // if it has not been computed yet.
-        function shouldCompute(cues) {
-            for (var i = 0; i < cues.length; i++) {
-                if (cues[i].hasBeenReset || !cues[i].displayState) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         // We don't need to recompute the cues' display states. Just reuse them.
         if (!shouldCompute(cues) && !updateBoxPosition) {
             for (var i = 0; i < cues.length; i++) {
@@ -971,17 +889,16 @@ define([
             return;
         }
 
-        var boxPositions = [],
-            containerBox = BoxPosition.getSimpleBoxPosition(paddedOverlay);
+        var boxPositions = [];
+        var containerBox = BoxPosition.getSimpleBoxPosition(paddedOverlay);
+        var currentNumOfLines = cues.reduce(function(totalLines, cue) { return totalLines + cue.text.split('\n').length; }, 0);
 
         (function () {
-            var styleBox, cue;
-
-            for (var i = 0; i < cues.length; i++) {
-                cue = cues[i];
+            for (var j = 0; j < cues.length; j++) {
+                var cue = cues[j];
 
                 // Compute the initial position and styles of the cue div.
-                styleBox = new CueStyleBox(window, cue);
+                var styleBox = new CueStyleBox(window, cue);
                 // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
                 styleBox.div.className = 'jw-text-track-display jw-reset';
                 paddedOverlay.appendChild(styleBox.div);
@@ -989,8 +906,8 @@ define([
                 // Move the cue div to it's correct line position.
                 // Added on 08/03/2016 by Evol Greaves: evol@jwplayer.com for determining the correct
                 // position to place the containerBox.
-                var numLinesOfText = cue.text.split('\n').length;
-                moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, numLinesOfText);
+                moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, currentNumOfLines);
+                currentNumOfLines -= cue.text.split('\n').length;
 
                 // Remember the computed div so that we don't have to recompute it later
                 // if we don't have too.
@@ -998,7 +915,7 @@ define([
 
                 boxPositions.push(BoxPosition.getSimpleBoxPosition(styleBox));
             }
-        })();
+        }());
     };
 
     window.WebVTT || (window.WebVTT = WebVTT);

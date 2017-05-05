@@ -11,7 +11,7 @@ define([
             _style(el, styles);
             var styleCSSText = el.style.cssText;
             if (important && styleCSSText) {
-                styleCSSText = styleCSSText.replace(/;$/g, ' !important;');
+                styleCSSText = styleCSSText.replace(/;/g, ' !important;');
             }
             cssText = '{' + styleCSSText + '}';
         } else if (typeof styles === 'string') {

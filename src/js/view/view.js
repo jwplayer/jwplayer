@@ -1,8 +1,10 @@
 import playerTemplate from 'templates/player';
+import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 
 define([
     'events/events',
@@ -11,14 +13,13 @@ define([
     'utils/helpers',
     'utils/underscore',
     'view/utils/request-fullscreen-helper',
-    'view/utils/breakpoint',
     'view/utils/flag-no-focus',
     'view/utils/clickhandler',
     'view/captionsrenderer',
     'view/logo',
     'view/preview',
     'view/title',
-], function(events, states, Events, utils, _, requestFullscreenHelper, setBreakpoint, flagNoFocus,
+], function(events, states, Events, utils, _, requestFullscreenHelper, flagNoFocus,
             ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     const _styles = utils.style;
@@ -33,6 +34,28 @@ define([
             isSetup: false,
             api: _api,
             model: _model
+        });
+
+        // init/reset view model properties
+        _.extend(_model.attributes, {
+            containerWidth: undefined,
+            containerHeight: undefined,
+            mediaContainer: undefined,
+            fullscreen: false,
+            inDom: undefined,
+            iFrame: undefined,
+            activeTab: undefined,
+            intersectionRatio: undefined,
+            visibility: undefined,
+            viewable: undefined,
+            viewSetup: false,
+            audioMode: undefined,
+            touchMode: undefined,
+            altText: '',
+            cues: undefined,
+            castClicked: false,
+            scrubbing: false,
+            logoWidth: 0,
         });
 
         const _playerElement = utils.createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
@@ -53,12 +76,12 @@ define([
 
         let _resizeMediaTimeout = -1;
         let _resizeContainerRequestId = -1;
-        let _previewDisplayStateTimeout = -1;
 
         let displayClickHandler;
         let fullscreenHelpers;
         let focusHelper;
 
+        let _breakpoint = null;
         let _controls;
 
         function reasonInteraction() {
@@ -68,10 +91,6 @@ define([
         this.updateBounds = function () {
             cancelAnimationFrame(_resizeContainerRequestId);
             const inDOM = document.body.contains(_playerElement);
-            if (!inDOM) {
-                _model.set('inDom', inDOM);
-                return;
-            }
             const bounds = _bounds(_playerElement);
             const containerWidth = Math.round(bounds.width);
             const containerHeight = Math.round(bounds.height);
@@ -82,6 +101,7 @@ define([
                 if (!_lastWidth || !_lastHeight) {
                     _responsiveListener();
                 }
+                _model.set('inDom', inDOM);
                 return;
             }
             // If we have bad values for either dimension, return early
@@ -90,53 +110,84 @@ define([
                 if (!_lastWidth || !_lastHeight) {
                     _responsiveListener();
                 }
-                _model.set('inDom', inDOM);
-                // Fire resize 0,0 if the player element is not in the DOM
-                // This allows setup to complete even if element was removed from DOM
-                if (!inDOM) {
-                    _resized(containerWidth, containerHeight);
-                }
-                return;
             }
 
-            _model.set('containerWidth', containerWidth);
-            _model.set('containerHeight', containerHeight);
+            // Don't update container dimensions to 0, 0 when not in DOM
+            if (containerWidth || containerHeight || inDOM) {
+                _model.set('containerWidth', containerWidth);
+                _model.set('containerHeight', containerHeight);
+            }
             _model.set('inDom', inDOM);
 
             if (inDOM) {
                 viewsManager.observe(_playerElement);
             }
-
-            _resized(containerWidth, containerHeight);
         };
 
         this.updateStyles = function() {
             const containerWidth = _model.get('containerWidth');
             const containerHeight = _model.get('containerHeight');
-            const breakPoint = setBreakpoint(_playerElement, containerWidth, containerHeight);
+
+            if (_model.get('controls')) {
+                updateContainerStyles(containerWidth, containerHeight);
+            }
 
             if (_controls) {
-                _controls.resize(_model, breakPoint);
+                _controls.resize(containerWidth, containerHeight);
             }
+
             _resizeMedia(containerWidth, containerHeight);
             _captionsRenderer.resize();
         };
 
-        function _resized(containerWidth, containerHeight) {
-            _lastWidth = containerWidth;
-            _lastHeight = containerHeight;
-            _this.trigger(events.JWPLAYER_RESIZE, {
-                width: containerWidth,
-                height: containerHeight
-            });
-        }
+        this.checkResized = function() {
+            const containerWidth = _model.get('containerWidth');
+            const containerHeight = _model.get('containerHeight');
+            if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
+                _lastWidth = containerWidth;
+                _lastHeight = containerHeight;
+                _this.trigger(events.JWPLAYER_RESIZE, {
+                    width: containerWidth,
+                    height: containerHeight
+                });
+                const breakpoint = getBreakpoint(containerWidth);
+                if (_breakpoint !== breakpoint) {
+                    _breakpoint = breakpoint;
+                    _this.trigger(events.JWPLAYER_BREAKPOINT, {
+                        breakpoint: _breakpoint
+                    });
+                }
+            }
+        };
 
         function _responsiveListener() {
             cancelAnimationFrame(_resizeContainerRequestId);
-            _resizeContainerRequestId = requestAnimationFrame(() => {
-                _this.updateBounds();
-                _this.updateStyles();
-            });
+            _resizeContainerRequestId = requestAnimationFrame(_responsiveUpdate);
+        }
+
+        function _responsiveUpdate() {
+            _this.updateBounds();
+            _this.updateStyles();
+            _this.checkResized();
+        }
+
+        function updateContainerStyles(width, height) {
+            const audioMode = isAudioMode(_model);
+            // Set timeslider flags
+            if (_.isNumber(width) && _.isNumber(height)) {
+                const breakpoint = getBreakpoint(width);
+                setBreakpoint(_playerElement, breakpoint);
+
+                const smallPlayer = breakpoint < 2;
+                const timeSliderAboveConfig = _model.get('timeSliderAbove');
+                const timeSliderAbove = !audioMode &&
+                    (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
+                utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
+                utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
+                utils.toggleClass(_playerElement, 'jw-orientation-portrait', (height > width));
+            }
+            utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
+            _model.set('audioMode', audioMode);
         }
 
         // Set global colors, used by related plugin
@@ -281,20 +332,31 @@ define([
             _model.on('change:hideAdsControls', function (model, val) {
                 utils.toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
             });
+            _model.on('change:scrubbing', function (model, val) {
+                utils.toggleClass(_playerElement, 'jw-flag-dragging', val);
+            });
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
 
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
+                mediaModel.on('change:visualQuality', () => {
+                    _resizeMedia();
+                }, this);
             });
             _model.change('skin', onSkinChange, this);
             _model.change('stretching', onStretchChange);
-            _model.change('aspectratio', onAspectRatioChange);
             _model.change('flashBlocked', onFlashBlockedChange);
 
             const width = _model.get('width');
             const height = _model.get('height');
-            _resize(width, height);
+            _resizePlayer(width, height);
+            _model.change('aspectratio', onAspectRatioChange);
+            if (_model.get('controls')) {
+                updateContainerStyles(width, height);
+            } else {
+                utils.addClass(_playerElement, 'jw-flag-controls-hidden');
+            }
 
             if (!stylesInjected) {
                 stylesInjected = true;
@@ -316,6 +378,7 @@ define([
             _model.set('mediaContainer', _videoLayer);
             _model.set('iFrame', utils.isIframe());
             _model.set('activeTab', activeTab());
+            _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT));
 
             viewsManager.add(this);
 
@@ -329,7 +392,6 @@ define([
         }
 
         this.init = function() {
-            _lastWidth = _lastHeight = null;
             this.updateBounds();
 
             _model.change('state', _stateHandler);
@@ -345,6 +407,10 @@ define([
             if (viewsManager.size() === 1 && !_model.get('visibility')) {
                 redraw(_model, 1, 0);
             }
+
+            // Triggering 'resize' resulting in player 'ready'
+            _lastWidth = _lastHeight = null;
+            this.checkResized();
         };
 
         function redraw(model, visibility, lastVisibility) {
@@ -359,20 +425,21 @@ define([
             clickHandler.on({
                 click: () => {
                     _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
-                    if (_controls) {
+                    if (_model.get('controls')) {
                         api.play(reasonInteraction());
                     }
                 },
                 tap: () => {
                     _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
                     const state = model.get('state');
+                    const controls = _model.get('controls');
 
-                    if (_controls &&
+                    if (controls &&
                         ((state === states.IDLE || state === states.COMPLETE) ||
                         (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
                         api.play(reasonInteraction());
                     }
-                    if (state === states.PAUSED) {
+                    if (controls && state === states.PAUSED) {
                         // Toggle visibility of the controls when tapping the media
                         // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
                         if (_instreamModel ||
@@ -435,21 +502,18 @@ define([
                 // ignore model that triggered this event and use current state model
                 _stateHandler(_instreamModel || _model);
             }
-
-            utils.toggleClass(_playerElement, 'jw-flag-controls-disabled', !bool);
         };
 
         this.addControls = function (controls) {
             _controls = controls;
 
-            const overlaysElement = _playerElement.querySelector('.jw-overlays');
-            overlaysElement.addEventListener('mousemove', _userActivityCallback);
+            utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
 
-            controls.on('userActive userInactive', function() {
-                if (_playerState === states.PLAYING || _playerState === states.BUFFERING) {
-                    _captionsRenderer.renderCues(true);
-                }
+            _styles(_videoLayer, {
+                cursor: 'pointer'
             });
+
+            _model.change('streamType', _setLiveMode, this);
 
             controls.enable(_api, _model);
             controls.addActiveListeners(_logo.element());
@@ -459,19 +523,21 @@ define([
                 _logo.setContainer(logoContainer);
             }
 
-            _styles(_videoLayer, {
-                cursor: 'pointer'
-            });
-
-            _model.on('change:scrubbing', _stateHandler);
-            _model.change('streamType', _setLiveMode, this);
-
             // refresh breakpoint and timeslider classes
             if (_lastHeight) {
-                const breakPoint = setBreakpoint(_playerElement, _lastWidth, _lastHeight);
-                controls.resize(_model, breakPoint);
+                updateContainerStyles(_lastWidth, _lastHeight);
+                controls.resize(_lastWidth, _lastHeight);
                 _captionsRenderer.renderCues(true);
             }
+
+            controls.on('userActive userInactive', function() {
+                if (_playerState === states.PLAYING || _playerState === states.BUFFERING) {
+                    _captionsRenderer.renderCues(true);
+                }
+            });
+
+            const overlaysElement = _playerElement.querySelector('.jw-overlays');
+            overlaysElement.addEventListener('mousemove', _userActivityCallback);
         };
 
         this.removeControls = function () {
@@ -488,13 +554,11 @@ define([
                 overlay.removeEventListener('mousemove', _userActivityCallback);
             }
 
-            utils.clearCss(_model.get('id'));
+            utils.addClass(_playerElement, 'jw-flag-controls-hidden');
+
             _styles(_videoLayer, {
                 cursor: ''
             });
-
-            cancelAnimationFrame(_previewDisplayStateTimeout);
-            clearTimeout(_resizeMediaTimeout);
         };
 
         // Perform the switch to fullscreen
@@ -531,7 +595,7 @@ define([
             }
         };
 
-        function _resize(playerWidth, playerHeight, resetAspectMode) {
+        function _resizePlayer(playerWidth, playerHeight, resetAspectMode) {
             const playerStyle = {
                 width: playerWidth
             };
@@ -540,8 +604,9 @@ define([
             resetAspectMode = !!resetAspectMode;
             if (resetAspectMode) {
                 _model.set('aspectratio', null);
-                playerStyle.display = 'block';
-            } else if (!_model.get('aspectratio')) {
+                // playerStyle.display = 'block';
+            }
+            if (!_model.get('aspectratio')) {
                 playerStyle.height = playerHeight;
             }
 
@@ -553,29 +618,29 @@ define([
             _styles(_playerElement, playerStyle);
         }
 
-        function _resizeMedia(mediaWidth, mediaHeight) {
-            if (!mediaWidth || isNaN(1 * mediaWidth)) {
-                if (!_lastWidth) {
+        function _resizeMedia(containerWidth, containerHeight) {
+            if (!containerWidth || isNaN(1 * containerWidth)) {
+                containerWidth = _model.get('containerWidth');
+                if (!containerWidth) {
                     return;
                 }
-                mediaWidth = _lastWidth;
             }
-            if (!mediaHeight || isNaN(1 * mediaHeight)) {
-                if (!_lastHeight) {
+            if (!containerHeight || isNaN(1 * containerHeight)) {
+                containerHeight = _model.get('containerHeight');
+                if (!containerHeight) {
                     return;
                 }
-                mediaHeight = _lastHeight;
             }
 
             if (_preview) {
-                _preview.resize(mediaWidth, mediaHeight, _model.get('stretching'));
+                _preview.resize(containerWidth, containerHeight, _model.get('stretching'));
             }
 
             const provider = _model.getVideo();
             if (!provider) {
                 return;
             }
-            const transformScale = provider.resize(mediaWidth, mediaHeight, _model.get('stretching'));
+            const transformScale = provider.resize(containerWidth, containerHeight, _model.get('stretching'));
 
             // poll resizing if video is transformed
             if (transformScale) {
@@ -586,10 +651,8 @@ define([
 
         this.resize = function (playerWidth, playerHeight) {
             const resetAspectMode = true;
-            _resize(playerWidth, playerHeight, resetAspectMode);
-            // this.resize is called within the context of controller
-            _this.updateBounds();
-            _this.updateStyles();
+            _resizePlayer(playerWidth, playerHeight, resetAspectMode);
+            _responsiveUpdate();
         };
         this.resizeMedia = _resizeMedia;
 
@@ -699,24 +762,14 @@ define([
                 _controls.instreamState = instreamState;
             }
 
-            // Throttle all state change UI updates except for play to prevent iOS 10 animation bug
-            cancelAnimationFrame(_previewDisplayStateTimeout);
-
-            if (_playerState === states.PLAYING) {
-                _stateUpdate(model, _playerState);
-            } else {
-                _previewDisplayStateTimeout = requestAnimationFrame(function () {
-                    _stateUpdate(model, _playerState);
-                });
-            }
-            if (_playerState !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
-                utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
-            }
+            _stateUpdate(_playerState);
         }
 
-        function _stateUpdate(model, state) {
-            utils.toggleClass(_playerElement, 'jw-flag-dragging', model.get('scrubbing'));
-            utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + _playerState);
+        function _stateUpdate(state) {
+            if (_model.get('controls') && state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
+                utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
+            }
+            utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
             if (state === states.COMPLETE) {
                 _api.setFullscreen(false);
@@ -795,8 +848,7 @@ define([
             if (_controls) {
                 return _controls.element();
             }
-            // return controls stand-in element not in DOM
-            return document.createElement('div');
+            return null;
         };
 
         this.getSafeRegion = function (includeCB) {
@@ -829,7 +881,6 @@ define([
             viewsManager.remove(this);
             this.isSetup = false;
             this.off();
-            cancelAnimationFrame(_previewDisplayStateTimeout);
             cancelAnimationFrame(_resizeContainerRequestId);
             clearTimeout(_resizeMediaTimeout);
             _playerElement.removeEventListener('focus', onFocus);
@@ -841,10 +892,6 @@ define([
                 fullscreenHelpers.destroy();
                 fullscreenHelpers = null;
             }
-            if (displayClickHandler) {
-                displayClickHandler.destroy();
-                displayClickHandler = null;
-            }
             if (_model.mediaController) {
                 _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
             }
@@ -854,6 +901,10 @@ define([
 
             if (_instreamModel) {
                 this.destroyInstream();
+            }
+            if (displayClickHandler) {
+                displayClickHandler.destroy();
+                displayClickHandler = null;
             }
             if (_logo) {
                 _logo.destroy();

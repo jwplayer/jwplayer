@@ -177,20 +177,15 @@ define([
 
             // For onCaptionsList and onCaptionsChange
             _model.on('change:captionsList', function(model, captionsList) {
-                try {
-                    _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
-                        tracks: captionsList,
-                        track: _getCurrentCaptions()
-                    });
-                } catch (e) {
-                    utils.log('Error with captionsList event:', e);
-                }
+                _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
+                    tracks: captionsList,
+                    track: _model.get('captionsIndex') || 0
+                });
             });
 
             _model.on('change:mediaModel', function(model) {
                 model.mediaModel.on('change:state', function(mediaModel, state) {
-                    var modelState = normalizeState(state);
-                    model.set('state', modelState);
+                    model.set('state', normalizeState(state));
                 });
             });
 
@@ -222,7 +217,9 @@ define([
                 } else {
                     _view.removeControls();
                 }
+            }
 
+            function triggerControls(model, enable) {
                 _this.trigger(events.JWPLAYER_CONTROLS, {
                     controls: enable
                 });
@@ -251,8 +248,6 @@ define([
 
                 _view.on('all', _triggerAfterReady, _this);
 
-                _model.change('visibility', _onVisibilityChange);
-
                 var related = _api.getPlugin('related');
                 if (related) {
                     related.on('nextUp', _model.setNextUp, _model);
@@ -266,6 +261,9 @@ define([
             }
 
             function _playerReadyNotify() {
+                _model.change('visibility', _updateViewable);
+                _model.on('change:controls', triggerControls);
+
                 // Tell the api that we are loaded
                 _this.trigger(events.JWPLAYER_READY, {
                     // this will be updated by Api
@@ -284,10 +282,10 @@ define([
                 }
 
                 _checkAutoStart();
+                _model.on('change:viewable', _checkPlayOnViewable);
             }
 
-            function _updateViewable() {
-                var visibility = _model.get('visibility');
+            function _updateViewable(model, visibility) {
                 if (!_.isUndefined(visibility)) {
                     _model.set('viewable', Math.round(visibility));
                 }
@@ -299,13 +297,11 @@ define([
                     // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
                     _autoStart();
                 } else {
-                    _onVisibilityChange(_model, _model.get('visibility'));
+                    _checkPlayOnViewable(_model, _model.get('viewable'));
                 }
             }
 
-            function _onVisibilityChange() {
-                _updateViewable();
-                var viewable = _model.get('viewable');
+            function _checkPlayOnViewable(model, viewable) {
                 if (_model.get('playOnViewable')) {
                     if (viewable) {
                         _autoStart();
@@ -452,12 +448,15 @@ define([
             }
 
             function _autoStart() {
-                _play({ reason: 'autostart' });
+                var state = _model.get('state');
+                if (state === states.IDLE || state === states.PAUSED) {
+                    _play({ reason: 'autostart' });
+                }
             }
 
             function _stop(internal) {
                 // Reset the autostart play
-                _model.off('itemReady', _autoStart);
+                _model.off('itemReady', _checkAutoStart);
 
                 var fromApi = !internal;
 
