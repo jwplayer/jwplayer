@@ -134,7 +134,7 @@ define([
 
 
             if (configuration.autostartMobile) {
-                this.autoStartOnMobile = function() {
+                    this.autoStartOnMobile = function() {
                     return true;
                 };
             }
@@ -204,8 +204,11 @@ define([
 
         autoStartOnMobile: function() {
             return false;
-        }
+        },
 
+        setAutoStart: function() {
+            return false;
+        }
     });
 
     // Represents the state of the provider/media element
