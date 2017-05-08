@@ -16,7 +16,6 @@
     "babel-preset-es2015": "6.24.0",
     "babel-preset-es2015-loose": "8.0.0",
     "chai": "3.5.0",
-    "chai-as-promised": "6.0.0",
     "css-loader": "0.26.4",
     "eslint": "3.19.0",
     "eslint-config-jwplayer-base": "7.1.0",
