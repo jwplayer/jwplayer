@@ -1,125 +1,129 @@
 define([
     'utils/language',
-], function (langUtils, _) {
+], function (langUtils) {
+    describe('languageUtils', function() {
 
-    QUnit.module('languageUtils');
-    var test = QUnit.test.bind(QUnit);
+        describe('getLabel from unsupported codes', function() {
 
-    QUnit.module('getLabel from unsupported codes');
+            it('should not change value if there is no matching language code', function() {
+                assert.equal(langUtils.getLabel(), undefined);
+                assert.equal(langUtils.getLabel(null), null);
+                assert.equal(langUtils.getLabel('po'), 'po');
+                assert.equal(langUtils.getLabel('pol'), 'pol');
+            });
 
-    test('should not change value if there is no matching language code', function (assert) {
-        assert.equal(langUtils.getLabel(), undefined);
-        assert.equal(langUtils.getLabel(null), null);
-        assert.equal(langUtils.getLabel('po'), 'po');
-        assert.equal(langUtils.getLabel('pol'), 'pol');
-    });
+            describe('getLabel from ISO 639-1 codes', function() {
 
-    QUnit.module('getLabel from ISO 639-1 codes');
+                it('should be English for its codes', function() {
+                    var expected = 'English';
 
-    test('should be English for its codes', function (assert) {
-        var expected = 'English';
+                    assert.equal(langUtils.getLabel('en'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('en'), expected);
-    });
+                it('should be Chinese for its codes', function() {
+                    var expected = 'Chinese';
 
-    test('should be Chinese for its codes', function (assert) {
-        var expected = 'Chinese';
+                    assert.equal(langUtils.getLabel('zh'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('zh'), expected);
-    });
+                it('should be Dutch for its codes', function() {
+                    var expected = 'Dutch';
 
-    test('should be Dutch for its codes', function (assert) {
-        var expected = 'Dutch';
+                    assert.equal(langUtils.getLabel('nl'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('nl'), expected);
-    });
+                it('should be French for its codes', function() {
+                    var expected = 'French';
 
-    test('should be French for its codes', function (assert) {
-        var expected = 'French';
+                    assert.equal(langUtils.getLabel('fr'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('fr'), expected);
-    });
+                it('should be German for its codes', function() {
+                    var expected = 'German';
 
-    test('should be German for its codes', function (assert) {
-        var expected = 'German';
+                    assert.equal(langUtils.getLabel('de'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('de'), expected);
-    });
+                it('should be Japanese for its codes', function() {
+                    var expected = 'Japanese';
 
-    test('should be Japanese for its codes', function (assert) {
-        var expected = 'Japanese';
+                    assert.equal(langUtils.getLabel('ja'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('ja'), expected);
-    });
+                it('should be Portuguese for its codes', function() {
+                    var expected = 'Portuguese';
 
-    test('should be Portuguese for its codes', function (assert) {
-        var expected = 'Portuguese';
+                    assert.equal(langUtils.getLabel('pt'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('pt'), expected);
-    });
+                it('should be Italian for its codes', function() {
+                    var expected = 'Italian';
 
-    test('should be Italian for its codes', function (assert) {
-        var expected = 'Italian';
+                    assert.equal(langUtils.getLabel('it'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('it'), expected);
-    });
+                it('should be Russian for its codes', function() {
+                    var expected = 'Russian';
 
-    test('should be Russian for its codes', function (assert) {
-        var expected = 'Russian';
+                    assert.equal(langUtils.getLabel('ru'), expected);
+                });
 
-        assert.equal(langUtils.getLabel('ru'), expected);
-    });
+                it('should be Spanish for its codes', function() {
+                    var expected = 'Spanish';
 
-    test('should be Spanish for its codes', function (assert) {
-        var expected = 'Spanish';
+                    assert.equal(langUtils.getLabel('es'), expected);
+                });
+            });
 
-        assert.equal(langUtils.getLabel('es'), expected);
-    });
 
-    QUnit.module('getLabel from ISO 639-2 codes');
+            describe('getLabel from ISO 639-2 codes', function() {
 
-    test('should not change for its English codes', function (assert) {
-        assert.equal(langUtils.getLabel('eng'), 'eng');
-    });
+                it('should not change for its English codes', function() {
+                    assert.equal(langUtils.getLabel('eng'), 'eng');
+                });
 
-    test('should not change for its Chinese codes', function (assert) {
-        assert.equal(langUtils.getLabel('zho'), 'zho');
-        assert.equal(langUtils.getLabel('chi'), 'chi');
-    });
+                it('should not change for its Chinese codes', function() {
+                    assert.equal(langUtils.getLabel('zho'), 'zho');
+                    assert.equal(langUtils.getLabel('chi'), 'chi');
+                });
 
-    test('should not change for its Dutch codes', function (assert) {
-        assert.equal(langUtils.getLabel('nld'), 'nld');
-        assert.equal(langUtils.getLabel('dut'), 'dut');
-    });
+                it('should not change for its Dutch codes', function() {
+                    assert.equal(langUtils.getLabel('nld'), 'nld');
+                    assert.equal(langUtils.getLabel('dut'), 'dut');
+                });
 
-    test('should not change for its French codes', function (assert) {
-        assert.equal(langUtils.getLabel('fra'), 'fra');
-        assert.equal(langUtils.getLabel('fre'), 'fre');
-    });
+                it('should not change for its French codes', function() {
+                    assert.equal(langUtils.getLabel('fra'), 'fra');
+                    assert.equal(langUtils.getLabel('fre'), 'fre');
+                });
 
-    test('should not change for its Herman codes', function (assert) {
-        assert.equal(langUtils.getLabel('deu'), 'deu');
-        assert.equal(langUtils.getLabel('ger'), 'ger');
-    });
+                it('should not change for its Herman codes', function() {
+                    assert.equal(langUtils.getLabel('deu'), 'deu');
+                    assert.equal(langUtils.getLabel('ger'), 'ger');
+                });
 
-    test('should not change for its Japanese codes', function (assert) {
-        assert.equal(langUtils.getLabel('jpn'), 'jpn');
-    });
+                it('should not change for its Japanese codes', function() {
+                    assert.equal(langUtils.getLabel('jpn'), 'jpn');
+                });
 
-    test('should not change for its Portuguese codes', function (assert) {
-        assert.equal(langUtils.getLabel('por'), 'por');
-    });
+                it('should not change for its Portuguese codes', function() {
+                    assert.equal(langUtils.getLabel('por'), 'por');
+                });
 
-    test('should not change for its Italian codes', function (assert) {
-        assert.equal(langUtils.getLabel('ita'), 'ita');
-    });
+                it('should not change for its Italian codes', function() {
+                    assert.equal(langUtils.getLabel('ita'), 'ita');
+                });
 
-    test('should not change for its Russion codes', function (assert) {
-        assert.equal(langUtils.getLabel('rus'), 'rus');
-    });
+                it('should not change for its Russion codes', function() {
+                    assert.equal(langUtils.getLabel('rus'), 'rus');
+                });
 
-    test('should not change for its Spanish codes', function (assert) {
-        assert.equal(langUtils.getLabel('esp'), 'esp');
-        assert.equal(langUtils.getLabel('spa'), 'spa');
+                it('should not change for its Spanish codes', function() {
+                    assert.equal(langUtils.getLabel('esp'), 'esp');
+                    assert.equal(langUtils.getLabel('spa'), 'spa');
+                });
+            });
+        });
     });
 });
+

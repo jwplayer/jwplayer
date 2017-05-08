@@ -31,12 +31,9 @@ define([
         }
     });
 
-    function noop() {
-        //console.log('I shouldn\'t exist.');
-    }
+    function noop() {}
 
     function noopChained() {
-        //console.log('I shouldn\'t exist too.');
         return this;
     }
 

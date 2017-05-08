@@ -6,11 +6,11 @@ const webpackConfig = require('./webpack.config.js')[0];
 
 const aliases = {
     'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
-    'jquery': path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
-    'sinon': path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
-    'data': path.resolve(__dirname + '/test/data'),
-    'mock': path.resolve(__dirname + '/test/mock'),
-    'utils/video': path.resolve(__dirname + '/test/mock/video.js')
+    'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
+    jquery: path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
+    sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
+    data: path.resolve(__dirname + '/test/data'),
+    mock: path.resolve(__dirname + '/test/mock')
 };
 
 webpackConfig.resolve.alias = Object.assign(webpackConfig.resolve.alias || {}, aliases);
@@ -20,7 +20,7 @@ module.exports = function(config) {
     var isJenkins = !!process.env.JENKINS_HOME;
     var serverPort = process.env.KARMA_PORT || 9876;
     var testReporters = [
-        // 'dots', // "dots" is useful for writing browser console logs to stdio
+        // 'dots', // useful for writing browser console logs to stdio
         'spec',
         'coverage'
     ];
@@ -30,7 +30,7 @@ module.exports = function(config) {
     var packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
     config.set({
-        frameworks: ['qunit'],
+        frameworks: ['mocha', 'chai', 'sinon'],
         reporters: testReporters,
         port: serverPort, // web server port
         colors: !isJenkins, // colors in the output (reporters and logs)
@@ -52,33 +52,32 @@ module.exports = function(config) {
         browsers: [
             'PhantomJS',
             'Chrome',
-            //'Safari', // experiencing issues with safari-launcher@1.0.0 and Safari 9.1.1
+            // 'Safari', // experiencing issues with safari-launcher@1.0.0 and Safari 9.1.1
             'Firefox'
         ],
 
-        customLaunchers: require( './test/karma/browserstack-launchers' ),
+        customLaunchers: require('./test/karma/browserstack-launchers'),
 
         browserStack: {
-            username:  env.BS_USERNAME,
+            username: env.BS_USERNAME,
             accessKey: env.BS_AUTHKEY,
             name: 'Unit Tests',
             project: 'jwplayer',
-            build: '' + (env.JOB_NAME || 'local' ) + ' ' +
+            build: '' + (env.JOB_NAME || 'local') + ' ' +
             (env.BUILD_NUMBER || env.USER) + ' ' +
-            (env.GIT_BRANCH || '') +' '+
-            packageInfo.version,
+            (env.GIT_BRANCH || '') + ' ' + packageInfo.version,
             timeout: 300 // 5 minutes
         },
 
         // to avoid DISCONNECTED messages when connecting to BrowserStack
-        browserDisconnectTimeout : 20 * 1000, // default 2000
-        browserDisconnectTolerance : 1, // default 0
-        browserNoActivityTimeout : 10 * 1000, //default 10000
-        captureTimeout : 120 * 1000, //default 60000
+        browserDisconnectTimeout: 20 * 1000, // default 2000
+        browserDisconnectTolerance: 1, // default 0
+        browserNoActivityTimeout: 10 * 1000, // default 10000
+        captureTimeout: 120 * 1000, // default 60000
 
-        files : [
-            //3rd Party Code
-            { pattern: 'test-context.js' },
+        files: [
+            // 3rd Party Code
+            { pattern: 'test-context.js' }
         ],
 
         // preprocess matching files before serving them to the browser
@@ -86,6 +85,7 @@ module.exports = function(config) {
         preprocessors: {
             'test-context.js': ['webpack']
         },
+
         coverageReporter: {
             type: 'html',
             dir: 'reports/coverage'
@@ -100,9 +100,9 @@ module.exports = function(config) {
                 }),
                 new webpack.DefinePlugin({
                     __SELF_HOSTED__: true,
-                    __REPO__ : '\'\'',
-                    __DEBUG__ : false,
-                    __BUILD_VERSION__:  '\'' + '7.10.0' + '\'',
+                    __REPO__: '\'\'',
+                    __DEBUG__: false,
+                    __BUILD_VERSION__: '\'' + '7.10.0' + '\'',
                     __FLASH_VERSION__: 18.0
                 }),
             ]
