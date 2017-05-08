@@ -416,6 +416,7 @@ define([
         };
 
         function itemReady() {
+            const provider = _model.getVideo();
             if (provider && provider.getName().name.indexOf('flash') === 0) {
                 return;
             }
