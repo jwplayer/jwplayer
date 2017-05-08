@@ -416,6 +416,9 @@ define([
         };
 
         function itemReady() {
+            if (provider && provider.getName().name.indexOf('flash') === 0) {
+                return;
+            }
             const title = _model.get('playlistItem').title || '';
             var videotag = _videoLayer.querySelector('video, audio');
             videotag.setAttribute('title', title);
