@@ -337,7 +337,8 @@ define([
             });
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
-
+            
+            itemReady(_model.get('playlistItem'));
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
                 mediaModel.on('change:visualQuality', () => {
@@ -403,7 +404,6 @@ define([
             _model.on('itemReady', itemReady);
 
             updateVisibility();
-            itemReady();
 
             // Always draw first player for icons to load
             if (viewsManager.size() === 1 && !_model.get('visibility')) {
@@ -415,12 +415,12 @@ define([
             this.checkResized();
         };
 
-        function itemReady() {
+        function itemReady(item) {
             const provider = _model.getVideo();
             if (provider && provider.getName().name.indexOf('flash') === 0) {
                 return;
             }
-            const title = _model.get('playlistItem').title || '';
+            const title = item.title || '';
             var videotag = _videoLayer.querySelector('video, audio');
             videotag.setAttribute('title', title);
         }
