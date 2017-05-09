@@ -259,6 +259,9 @@ define([
                 this.playbackComplete();
             }
 
+            // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
+            this.setPlaybackRate(this.get('playbackRate'));
+
             return _provider.attachMedia();
         };
 
@@ -384,15 +387,9 @@ define([
             }
         };
 
-        this.setStreamType = function(streamType) {
-            if (streamType === 'LIVE') {
-                this.setPlaybackRate(1);
-            }
-            this.set('streamType', streamType);
-        };
 
         this.setPlaybackRate = function(playbackRate) {
-            if (!playbackRate || this.get('streamType') === 'LIVE' || !_attached) {
+            if (!_.isNumber(playbackRate) || this.get('streamType') === 'LIVE' || !_attached) {
                 return false;
             }
 

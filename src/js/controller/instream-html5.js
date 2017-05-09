@@ -129,8 +129,8 @@ define([
          ****** Private methods ******
          *****************************/
 
-        function _checkProvider(pseduoProvider) {
-            var provider = pseduoProvider || _adModel.getVideo();
+        function _checkProvider(pseudoProvider) {
+            var provider = pseudoProvider || _adModel.getVideo();
 
             if (_currentProvider !== provider) {
                 _currentProvider = provider;
