@@ -417,13 +417,15 @@ define([
 
         function itemReady(item) {
             const provider = _model.getVideo();
+            // Youtube, chromecast and flash providers do no support video tags
             if (provider && /^(youtube|chromecast|flash)/.test(provider.getName().name)) {
                 return;
             }
             const title = item.title || '';
             var videotag = _videoLayer.querySelector('video, audio');
-            videotag.innerHTML = title;
-            videotag.setAttribute('title', videotag.innerHTML);
+            const dummyDiv = document.createElement('DIV');
+            dummyDiv.innerHTML = title;
+            videotag.setAttribute('title', dummyDiv.innerHTML);
         }
 
         function redraw(model, visibility, lastVisibility) {
