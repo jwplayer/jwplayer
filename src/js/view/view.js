@@ -417,7 +417,7 @@ define([
 
         function itemReady() {
             const provider = _model.getVideo();
-            if (provider && provider.getName().name.indexOf('flash') === 0) {
+            if (provider && provider.getName().name === 'flash') {
                 return;
             }
             const title = _model.get('playlistItem').title || '';
@@ -602,7 +602,7 @@ define([
             }
             // pass fullscreen state to Flash provider
             // provider.getName() is the same as _api.getProvider() or _model.get('provider')
-            if (provider && provider.getName().name.indexOf('flash') === 0) {
+            if (provider && provider.getName().name === 'flash') {
                 provider.setFullscreen(state);
             }
         };
@@ -717,7 +717,7 @@ define([
         function _onMediaTypeChange(model, val) {
             const isAudioFile = (val === 'audio');
             const provider = _model.getVideo();
-            const isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+            const isFlash = provider && provider.getName().name === 'flash';
 
             utils.toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
