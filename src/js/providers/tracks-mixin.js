@@ -503,7 +503,7 @@ define(['utils/underscore',
     }
 
     function _removeCues(renderNatively, tracks) {
-        if (tracks.length) {
+        if (tracks && tracks.length) {
             _.each(tracks, function(track) {
                 // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
                 if (utils.isIE() && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
