@@ -423,7 +423,7 @@ define([
             }
             var videotag = _videoLayer.querySelector('video, audio');
             const dummyDiv = document.createElement('DIV');
-            // The item's title is set to the div's innerHTML to decrypt strings
+            // Writing a string to innerHTML completely decodes multiple-encoded strings
             dummyDiv.innerHTML = item.title || '';
             videotag.setAttribute('title', dummyDiv.innerHTML);
         }
