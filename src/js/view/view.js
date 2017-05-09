@@ -425,7 +425,8 @@ define([
             }
             const title = item.title || '';
             var videotag = _videoLayer.querySelector('video, audio');
-            videotag.setAttribute('title', title);
+            videotag.innerHTML = title;
+            videotag.setAttribute('title', videotag.innerHTML);
         }
 
         function redraw(model, visibility, lastVisibility) {
