@@ -421,10 +421,10 @@ define([
             if (provider && /^(youtube|chromecast|flash)/.test(provider.getName().name)) {
                 return;
             }
-            const title = item.title || '';
             var videotag = _videoLayer.querySelector('video, audio');
             const dummyDiv = document.createElement('DIV');
-            dummyDiv.innerHTML = title;
+            // The item's title is set to the div's innerHTML to decrypt strings
+            dummyDiv.innerHTML = item.title || '';
             videotag.setAttribute('title', dummyDiv.innerHTML);
         }
 
