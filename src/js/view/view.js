@@ -338,7 +338,6 @@ define([
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
             
-            itemReady(_model.get('playlistItem'));
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
                 mediaModel.on('change:visualQuality', () => {
@@ -393,6 +392,7 @@ define([
         }
 
         this.init = function() {
+            itemReady(_model.get('playlistItem'));
             this.updateBounds();
 
             _model.change('state', _stateHandler);
