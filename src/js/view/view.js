@@ -417,10 +417,7 @@ define([
 
         function itemReady(item) {
             const provider = _model.getVideo();
-            if (provider &&
-                (provider.getName().name === 'youtube' ||
-                 provider.getName().name === 'chromecast' ||
-                 provider.getName().name.indexOf('flash') === 0 )) {
+            if (provider && /^(youtube|chromecast|flash)/.test(provider.getName().name)) {
                 return;
             }
             const title = item.title || '';
