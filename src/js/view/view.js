@@ -417,15 +417,15 @@ define([
 
         function itemReady(item) {
             const provider = _model.getVideo();
+            var videotag = _videoLayer.querySelector('video, audio');
             // Youtube, chromecast and flash providers do no support video tags
-            if (provider && /^(youtube|chromecast|flash)/.test(provider.getName().name)) {
+            if (!videotag) {
                 return;
             }
-            var videotag = _videoLayer.querySelector('video, audio');
             const dummyDiv = document.createElement('DIV');
             // Writing a string to innerHTML completely decodes multiple-encoded strings
             dummyDiv.innerHTML = item.title || '';
-            videotag.setAttribute('title', dummyDiv.innerHTML);
+            videotag.setAttribute('title', dummyDiv.textContent);
         }
 
         function redraw(model, visibility, lastVisibility) {
