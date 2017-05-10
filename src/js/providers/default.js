@@ -43,7 +43,9 @@ define([
         getCurrentAudioTrack: noop,
         setCurrentAudioTrack: noop,
 
-        setPlaybackRate: noop,
+        setPlaybackRate: function() {
+            return 1;
+        },
         getPlaybackRate: noop,
 
         // TODO :: The following are targets for removal after refactoring

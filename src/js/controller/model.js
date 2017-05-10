@@ -230,7 +230,8 @@ define([
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
-            _provider.setPlaybackRate(_this.get('playbackRate'));
+            // Set the playback rate to be the value that the provider supports and will play at
+            this.set('playbackRate', _provider.setPlaybackRate(_this.get('playbackRate')));
 
             _provider.on('all', _videoEventHandler, this);
 
@@ -397,7 +398,7 @@ define([
             var clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
 
             // Providers which support changes in playback rate will return the rate that we changed to
-            this.set('playbackRate', _provider.setPlaybackRate(clampedRate) || 1);
+            this.set('playbackRate', _provider.setPlaybackRate(clampedRate));
         };
 
         // The model is also the mediaController for now
