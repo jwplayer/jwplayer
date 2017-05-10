@@ -429,6 +429,7 @@ define([
             if (_provider && _provider.setSubtitlesTrack) {
                 _provider.setSubtitlesTrack(trackIndex);
             }
+
         };
 
         this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
@@ -459,20 +460,6 @@ define([
 
         this.autoStartOnMobile = function() {
             return this.get('autostart') && platformCanAutostart();
-        };
-
-        // Mobile players always wait to become viewable.
-        // Desktop players must have autostart set to viewable
-        this.setAutoStart = function(autoStart) {
-            if (!_.isUndefined(autoStart)) {
-                this.set('autostart', autoStart);
-            }
-
-            const autoStartOnMobile = this.autoStartOnMobile();
-            if (autoStartOnMobile) {
-                this.set('autostartMuted', true);
-            }
-            this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
         };
     };
 

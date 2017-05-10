@@ -64,7 +64,6 @@ define({
     resize: null,
     seek: null,
     setCaptions: null,
-    setConfig: null,
     setControls: null,
     setCues: null,
     setCurrentAudioTrack: null,

@@ -2,28 +2,34 @@ define([
     'test/underscore',
     'utils/helpers',
     'sinon',
-], function (_, utils, sinon) {
+], function ( _, utils, sinon) {
+    /* jshint qunit: true */
+    var test = QUnit.test.bind(QUnit);
     var log = console.log;
 
-    describe('utils', function() {
-
-        beforeEach(function() {
-            console.log = sinon.stub().returns(utils.noop);
-        });
-
-        afterEach(function() {
-            console.log = log;
-        });
-
-        it('utils.log', function() {
-            assert.equal(typeof utils.log, 'function', 'is defined');
-            assert.strictEqual(utils.log(), undefined, 'utils.log returns undefined');
-        });
-
-        it('utils.indexOf', function() {
-            assert.equal(typeof utils.indexOf, 'function', 'is defined');
-            // provided by underscore 1.6
-        });
-
+    QUnit.module('utils', {
+        beforeEach: beforeEach,
+        afterEach: afterEach,
     });
+
+    function beforeEach() {
+        console.log = sinon.stub().returns(utils.noop);
+    }
+
+    function afterEach() {
+        console.log = log;
+    }
+
+    test('utils.log', function(assert) {
+        assert.expect(2);
+        assert.equal(typeof utils.log, 'function', 'is defined');
+        assert.strictEqual(utils.log(), undefined, 'utils.log returns undefined');
+    });
+
+    test('utils.indexOf', function (assert) {
+        assert.expect(1);
+        assert.equal(typeof utils.indexOf, 'function', 'is defined');
+        // provided by underscore 1.6
+    });
+
 });

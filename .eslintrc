@@ -3,8 +3,7 @@
     "env": {
         "browser": true,
         "amd": true,
-        "es6": true,
-        "mocha": true
+        "es6": true
     },
     "globals": {
         "__webpack_public_path__": true,
@@ -14,9 +13,7 @@
         "__REPO__": true,
         "__SELF_HOSTED__": true,
         "__DEBUG__": true,
-        "__BUILD_VERSION__": true,
-        "assert": true,
-        "expect": true
+        "__BUILD_VERSION__": true
     },
     "parserOptions": {
         "sourceType": "module"

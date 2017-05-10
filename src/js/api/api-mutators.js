@@ -65,7 +65,6 @@ define([
 
         var passthroughsChain = [
             // Sisters of the model getters
-            'setConfig',
             'setControls',
             'setFullscreen',
             'setVolume',

@@ -1,5 +1,3 @@
-import setConfig from 'api/set-config';
-
 define([
     'api/config',
     'controller/instream-adapter',
@@ -788,7 +786,7 @@ define([
             this.setCues = _view.addCues;
             this.setCaptions = _view.setCaptions;
             this.next = _nextUp;
-            this.setConfig = (newConfig) => setConfig(_this, newConfig);
+
             this.addButton = function(img, tooltip, callback, id, btnClass) {
                 var newButton = {
                     img: img,

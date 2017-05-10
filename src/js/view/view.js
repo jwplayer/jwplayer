@@ -400,10 +400,8 @@ define([
             _model.on('change:fullscreen', updateVisibility);
             _model.on('change:intersectionRatio', updateVisibility);
             _model.on('change:visibility', redraw);
-            _model.on('itemReady', itemReady);
 
             updateVisibility();
-            itemReady();
 
             // Always draw first player for icons to load
             if (viewsManager.size() === 1 && !_model.get('visibility')) {
@@ -414,12 +412,6 @@ define([
             _lastWidth = _lastHeight = null;
             this.checkResized();
         };
-
-        function itemReady() {
-            const title = _model.get('playlistItem').title || '';
-            var videotag = _videoLayer.querySelector('video, audio');
-            videotag.setAttribute('title', title);
-        }
 
         function redraw(model, visibility, lastVisibility) {
             if (visibility && !lastVisibility) {
@@ -694,12 +686,21 @@ define([
         }
 
         function _toggleDOMFullscreen(playerElement, fullscreenState) {
-            utils.toggleClass(playerElement, 'jw-flag-fullscreen', fullscreenState);
-            _styles(document.body, { overflowY: (fullscreenState) ? 'hidden' : '' });
+            if (fullscreenState) {
+                utils.addClass(playerElement, 'jw-flag-fullscreen');
+                _styles(document.body, {
+                    overflowY: 'hidden'
+                });
 
-            if (fullscreenState && _controls) {
-                // When going into fullscreen, we want the control bar to fade after a few seconds
-                _controls.userActive();
+                // On going fullscreen we want the control bar to fade after a few seconds
+                if (_controls) {
+                    _controls.userActive();
+                }
+            } else {
+                utils.removeClass(playerElement, 'jw-flag-fullscreen');
+                _styles(document.body, {
+                    overflowY: ''
+                });
             }
 
             _resizeMedia();

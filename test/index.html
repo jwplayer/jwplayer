@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Test Suite</title>
+
+    <style>
+        .menu {
+            font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+            list-style-type: none;
+        }
+        .menu li {
+            display: inline;
+            padding: 0.2em;
+        }
+    </style>
+
+    <!-- Load local QUnit. -->
+    <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css" media="screen">
+    <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+
+    <script>
+        var __DEBUG__ = true;
+        QUnit.config.autostart = false;
+    </script>
+
+    <!-- load requirejs library and run config.js -->
+    <script data-main="config" src="../node_modules/requirejs/require.js"></script>
+</head>
+
+<body>
+    <ul class="menu">
+        <li><a href="manual">manual tests (debug)</a></li>
+        <li><a href="manual/release.html">manual tests (release)</a></li>
+        <li><a href="manual/view.html">view states</a></li>
+        <li><a href="manual/css-skins/skin-demo.html">css skins</a></li>
+    </ul>
+
+    <div id="qunit"></div>
+</body>
+</html>
