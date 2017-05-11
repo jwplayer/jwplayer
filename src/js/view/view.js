@@ -416,7 +416,6 @@ define([
         };
 
         function itemReady(item) {
-            const provider = _model.getVideo();
             var videotag = _videoLayer.querySelector('video, audio');
             // Youtube, chromecast and flash providers do no support video tags
             if (!videotag) {
