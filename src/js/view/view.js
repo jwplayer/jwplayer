@@ -588,21 +588,21 @@ define([
         };
 
         function _resizePlayer(playerWidth, playerHeight, resetAspectMode) {
+            const widthSet = utils.exists(playerWidth);
+            const heightSet = utils.exists(playerHeight);
             const playerStyle = {
                 width: playerWidth
             };
 
             // when jwResize is called remove aspectMode and force layout
-            resetAspectMode = !!resetAspectMode;
-            if (resetAspectMode) {
+            if (heightSet && resetAspectMode) {
                 _model.set('aspectratio', null);
-                // playerStyle.display = 'block';
             }
             if (!_model.get('aspectratio')) {
                 playerStyle.height = playerHeight;
             }
 
-            if (utils.exists(playerWidth) && utils.exists(playerHeight)) {
+            if (widthSet && heightSet) {
                 _model.set('width', playerWidth);
                 _model.set('height', playerHeight);
             }
