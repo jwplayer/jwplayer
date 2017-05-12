@@ -416,13 +416,15 @@ define([
         };
 
         function itemReady(item) {
-            const provider = _model.getVideo();
-            if (provider && provider.getName().name.indexOf('flash') === 0) {
+            var videotag = _videoLayer.querySelector('video, audio');
+            // Youtube, chromecast and flash providers do no support video tags
+            if (!videotag) {
                 return;
             }
-            const title = item.title || '';
-            var videotag = _videoLayer.querySelector('video, audio');
-            videotag.setAttribute('title', title);
+            const dummyDiv = document.createElement('DIV');
+            // Writing a string to innerHTML completely decodes multiple-encoded strings
+            dummyDiv.innerHTML = item.title || '';
+            videotag.setAttribute('title', dummyDiv.textContent);
         }
 
         function redraw(model, visibility, lastVisibility) {
