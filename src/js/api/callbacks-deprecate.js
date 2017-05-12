@@ -11,7 +11,6 @@ define([
             onFullscreen: events.JWPLAYER_FULLSCREEN,
             onMeta: events.JWPLAYER_MEDIA_META,
             onMute: events.JWPLAYER_MEDIA_MUTE,
-            onPlaybackRateChange: events.JWPLAYER_PLAYBACK_RATE_CHANGED,
             onPlaylist: events.JWPLAYER_PLAYLIST_LOADED,
             onPlaylistItem: events.JWPLAYER_PLAYLIST_ITEM,
             onPlaylistComplete: events.JWPLAYER_PLAYLIST_COMPLETE,

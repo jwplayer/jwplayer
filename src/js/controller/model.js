@@ -390,7 +390,7 @@ define([
 
 
         this.setPlaybackRate = function(playbackRate) {
-            if (!_provider || !_.isNumber(playbackRate) || this.get('streamType') === 'LIVE' || !_attached) {
+            if (!_.isNumber(playbackRate) || this.get('streamType') === 'LIVE' || !_attached) {
                 return false;
             }
 
@@ -398,7 +398,7 @@ define([
             var clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
 
             // Providers which support changes in playback rate will return the rate that we changed to
-            this.set('playbackRate', _provider.setPlaybackRate(clampedRate));
+            this.set('playbackRate', _provider ? _provider.setPlaybackRate(clampedRate) : clampedRate);
         };
 
         // The model is also the mediaController for now
