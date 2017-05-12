@@ -73,6 +73,11 @@ define([
 
                     assert.equal(langUtils.getLabel('es'), expected);
                 });
+
+                it('should map based only on the first two characters', function () {
+                   var expected = 'Portuguese';
+                   assert.equal(langUtils.getLabel('pt-br'), expected);
+                });
             });
 
 
@@ -114,7 +119,7 @@ define([
                     assert.equal(langUtils.getLabel('ita'), 'ita');
                 });
 
-                it('should not change for its Russion codes', function() {
+                it('should not change for its Russian codes', function() {
                     assert.equal(langUtils.getLabel('rus'), 'rus');
                 });
 
