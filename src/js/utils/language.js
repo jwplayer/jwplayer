@@ -20,8 +20,14 @@ define([
 
     function getLabel(language) {
         if (!language) {
-            return '';
+            return;
         }
+
+        // We do not map ISO 639-2 (3-letter codes)
+        if (language.length === 3) {
+            return language;
+        }
+
         return twoCharMap[language.slice(0, 2)] || language;
     }
 
