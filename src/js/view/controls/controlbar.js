@@ -145,6 +145,7 @@ define([
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
+                playbackRates: menu('jw-icon-playback-rate', this._localization.playbackRates),
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
@@ -170,6 +171,7 @@ define([
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
+                    this.elements.playbackRates,
                     this.elements.mute,
                     this.elements.cast,
                     this.elements.volume,
@@ -182,6 +184,7 @@ define([
                 this.elements.hd,
                 this.elements.cc,
                 this.elements.audiotracks,
+                this.elements.playbackRates,
                 this.elements.volumetooltip
             ]);
 
@@ -270,6 +273,30 @@ define([
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
 
+            if (_model.get('playbackRateControls')) {
+                _model.change('playbackRates', this.onPlaybackRates, this);
+                _model.change('playbackRate', this.onPlaybackRate, this);
+
+                this.elements.playbackRates.on('select', function (index) {
+                    this._model.setPlaybackRate(this._model.get('playbackRates')[index]);
+                }, this);
+            }
+
+            //this._model.on('playbackRates')
+            //    let playbackRates = this._model.get('playbackRates');
+            //    let selectedIndex = playbackRates.indexOf(1);
+            //    playbackRates = playbackRates.map((playbackRate) => { return { label: playbackRate+'x', rate: playbackRate }; });
+            //    this.elements.playbackRates.setup(playbackRates, selectedIndex);
+            //
+            //    this.elements.playbackRates.on('select', function(index) {
+            //        this._model.setPlaybackRate(this._model.get('playbackRates')[index]);
+            //    }, this);
+            //
+            //    this._model.on('change:playbackRate', function(model, value) {
+            //        this.elements.playbackRates.selectItem(this._model.get('playbackRates').indexOf(value));
+            //    }, this);
+            //}
+
             new UI(this.elements.duration).on('click tap', function() {
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
@@ -305,6 +332,31 @@ define([
             this.elements.cc.selectItem(index);
         }
 
+        onPlaybackRates(model, rates) {
+            if (rates) {
+                let selectedIndex = rates.indexOf(model.get('playbackRate'));
+                // TODO: Will "Normal" be localized?
+                let playbackRateLabels = rates.map((playbackRate) => {
+                    return {
+                        label: (playbackRate === 1) ? 'Normal' : (Math.round(playbackRate * 100) / 100) + 'x',
+                        rate: playbackRate
+                    };
+                });
+                this.elements.playbackRates.setup(
+                    playbackRateLabels,
+                    selectedIndex,
+                    { toggle: false, showSelection: true }
+                );
+            }
+        }
+
+        onPlaybackRate(model, value) {
+            let playbackRates = this._model.get('playbackRates');
+            if (playbackRates) {
+                this.elements.playbackRates.selectItem(playbackRates.indexOf(value));
+            }
+        }
+
         onPlaylistItem() {
             this.elements.audiotracks.setup();
         }
@@ -313,7 +365,7 @@ define([
             mediaModel.on('change:levels', function(levelsChangeModel, levels) {
                 this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
             }, this);
-            mediaModel.on('change:currentLevel', function(currentLevelChangemodel, level) {
+            mediaModel.on('change:currentLevel', function(currentLevelChangeModel, level) {
                 this.elements.hd.selectItem(level);
             }, this);
             mediaModel.on('change:audioTracks', function(audioTracksChangeModel, audioTracks) {

@@ -11,6 +11,7 @@ define([
         displaytitle: true,
         displaydescription: true,
         mobilecontrols: false,
+        playbackRateControls: false,
         repeat: false,
         castAvailable: false,
         skin: 'seven',
@@ -35,6 +36,7 @@ define([
             hd: 'Quality',
             cc: 'Closed captions',
             audioTracks: 'Audio tracks',
+            playbackRates: 'Playback rates',
             replay: 'Replay',
             buffer: 'Loading',
             more: 'More',
@@ -104,6 +106,32 @@ define([
             console.warn('JW Player does not support XML skins, please update your config');
             config.skin = config.skin.replace('.xml', '');
         }
+
+
+        // TODO: Change so that we use defaultPlaybackRates that can be copied over when using a correct provider?
+        if (config.playbackRateControls) {
+            var playbackRates;
+
+            var validRatesFilter = function(value) {
+                return _.isNumber(value) && value >= 0.25 && value <= 4;
+            };
+
+            // TODO: Turn to crazy SWITCH statement?
+            // If it's already an array, then it will be trusted to be formatted correctly
+            if (_.isBoolean(config.playbackRateControls)) {
+                playbackRates = [0.5, 1, 1.25, 1.5, 2];
+            } else if (_.isArray(config.playbackRateControls)) {
+                var filteredResults = config.playbackRateControls.filter(validRatesFilter);
+                playbackRates = filteredResults.length ? filteredResults : false;
+            }
+
+            if (playbackRates) {
+                config.playbackRateControls = playbackRates;
+            } else {
+                config.playbackRateControls = false;
+            }
+        }
+
 
         if (!config.aspectratio) {
             delete config.aspectratio;
