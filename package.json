@@ -35,6 +35,7 @@
     "import-loader": "1.0.1",
     "intersection-observer": "0.2.1",
     "jquery": "3.2.1",
+    "jwplayer-errors": "2.0.0",
     "karma": "1.5.0",
     "karma-browserstack-launcher": "1.2.0",
     "karma-chai": "0.1.0",

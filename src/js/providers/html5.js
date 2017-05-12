@@ -103,6 +103,7 @@ define([
         var _lastEndOfBuffer = null;
         var _stale = false;
         var _edgeOfLiveStream = false;
+        var _playbackRate = 1;
 
         // Find video tag, or create it if it doesn't exist.  View may not be built yet.
         var element = document.getElementById(_playerId);
@@ -750,6 +751,7 @@ define([
 
             // In case the video tag was modified while we shared it
             _videotag.loop = false;
+            this.setPlaybackRate(_playbackRate);
 
             // If there was a showing track, re-enable it
             this.enableTextTrack();
@@ -909,8 +911,12 @@ define([
         };
 
         this.setPlaybackRate = function(playbackRate) {
-            _videotag.playbackRate = _videotag.defaultPlaybackRate = playbackRate;
+            _videotag.playbackRate = _videotag.defaultPlaybackRate = _playbackRate = playbackRate;
             return playbackRate;
+        };
+
+        this.getPlaybackRate = function() {
+            return _videotag.playbackRate;
         };
 
         this.getCurrentQuality = function() {

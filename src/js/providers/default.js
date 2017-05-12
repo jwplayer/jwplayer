@@ -46,7 +46,9 @@ define([
         setPlaybackRate: function() {
             return 1;
         },
-        getPlaybackRate: noop,
+        getPlaybackRate: function() {
+            return 1;
+        },
 
         // TODO :: The following are targets for removal after refactoring
         checkComplete: noop,

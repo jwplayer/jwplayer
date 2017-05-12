@@ -79,8 +79,6 @@ define([
             _oldProvider = _model.getVideo();
             _oldpos = _model.get('position');
             _olditem = _model.get('playlist')[_model.get('item')];
-            // Reset playback rate to 1 in case we reuse the video tag used to play back ad content
-            _oldProvider.setPlaybackRate(1);
 
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);

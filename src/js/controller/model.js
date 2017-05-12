@@ -260,10 +260,10 @@ define([
                 this.playbackComplete();
             }
 
-            // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
-            this.setPlaybackRate(this.get('playbackRate'));
+            _provider.attachMedia();
 
-            return _provider.attachMedia();
+            // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
+            this.set('playbackRate', _provider.getPlaybackRate());
         };
 
         this.playbackComplete = function() {
