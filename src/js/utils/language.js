@@ -14,11 +14,15 @@ define([
         ja: 'Japanese',
         pt: 'Portuguese',
         ru: 'Russian',
-        es: 'Spanish'
+        es: 'Spanish',
+        el: 'Greek',
     };
 
     function getLabel(language) {
-        return twoCharMap[language] || language;
+        if (!language) {
+            return '';
+        }
+        return twoCharMap[language.slice(0, 2)] || language;
     }
 
     return {
