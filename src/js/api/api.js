@@ -213,6 +213,26 @@ define([
             return this.play(meta);
         };
 
+        this.seek = function(pos, meta = { reason: 'external' }) {
+            _controller.seek(pos, meta);
+            return _this;
+        };
+
+        this.playlistNext = function(meta = { reason: 'external' }) {
+            _controller.playlistNext(meta);
+            return _this;
+        };
+
+        this.playlistPrev = function(meta = { reason: 'external' }) {
+            _controller.playlistPrev(meta);
+            return _this;
+        };
+
+        this.playlistItem = function(index, meta = { reason: 'external' }) {
+            _controller.playlistItem(index, meta);
+            return _this;
+        };
+
         this.createInstream = function () {
             return _controller.createInstream();
         };

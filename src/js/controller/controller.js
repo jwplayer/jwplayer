@@ -395,10 +395,8 @@ define([
                 return _model.get('state');
             }
 
-            function _play(meta) {
-                if (meta) {
-                    _model.set('playReason', meta.reason);
-                }
+            function _play(meta = {}) {
+                _model.set('playReason', meta.reason);
 
                 if (_model.get('state') === states.ERROR) {
                     return;
@@ -484,15 +482,13 @@ define([
                 return true;
             }
 
-            function _pause(meta) {
+            function _pause(meta = {}) {
                 _actionOnAttach = null;
 
-                if (meta) {
-                    _model.set('pauseReason', meta.reason);
-                    // Stop autoplay behavior if the video is paused by the user or an api call
-                    if (meta.reason === 'interaction' || meta.reason === 'external') {
-                        _model.set('playOnViewable', false);
-                    }
+                _model.set('pauseReason', meta.reason);
+                // Stop autoplay behavior if the video is paused by the user or an api call
+                if (meta.reason === 'interaction' || meta.reason === 'external') {
+                    _model.set('playOnViewable', false);
                 }
 
                 var adState = _getAdState();
@@ -572,11 +568,11 @@ define([
             }
 
             function _prev(meta) {
-                _item(_model.get('item') - 1, meta || { reason: 'external' });
+                _item(_model.get('item') - 1, meta);
             }
 
             function _next(meta) {
-                _item(_model.get('item') + 1, meta || { reason: 'external' });
+                _item(_model.get('item') + 1, meta);
             }
 
             function _completeHandler() {
