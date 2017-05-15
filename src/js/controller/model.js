@@ -233,7 +233,8 @@ define([
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
             // Set the playback rate to be the value that the provider supports and will play at
-            this.set('playbackRate', _provider.setPlaybackRate(_this.get('defaultPlaybackRate')));
+            _provider.setPlaybackRate(_this.get('defaultPlaybackRate'));
+            this.set('playbackRate', _provider.getPlaybackRate());
 
             _provider.on('all', _videoEventHandler, this);
 
@@ -402,7 +403,8 @@ define([
             this.set('defaultPlaybackRate', clampedRate);
             // Providers which support changes in playback rate will return the rate that we changed to
             if (_provider) {
-                this.set('playbackRate', _provider.setPlaybackRate(clampedRate));
+                _provider.setPlaybackRate(clampedRate);
+                this.set('playbackRate', _provider.getPlaybackRate());
             }
         };
 

@@ -43,9 +43,7 @@ define([
         getCurrentAudioTrack: noop,
         setCurrentAudioTrack: noop,
 
-        setPlaybackRate: function() {
-            return 1;
-        },
+        setPlaybackRate: noop,
         getPlaybackRate: function() {
             return 1;
         },
