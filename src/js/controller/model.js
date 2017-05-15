@@ -31,6 +31,7 @@ define([
                 // always start on first playlist item
                 item: 0,
                 itemMeta: {},
+                defaultPlaybackRate: 1,
                 playbackRate: 1,
                 playlistItem: undefined,
                 // Initial state, upon setup
@@ -112,6 +113,7 @@ define([
                             this.playVideo();
                         }, this);
                     }
+                    _provider.setPlaybackRate(this.get('defaultPlaybackRate'));
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
                     mediaModel.set('position', data.position);
@@ -231,7 +233,7 @@ define([
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
             // Set the playback rate to be the value that the provider supports and will play at
-            this.set('playbackRate', _provider.setPlaybackRate(_this.get('playbackRate')));
+            this.set('playbackRate', _provider.setPlaybackRate(_this.get('defaultPlaybackRate')));
 
             _provider.on('all', _videoEventHandler, this);
 
@@ -263,7 +265,7 @@ define([
             _provider.attachMedia();
 
             // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
-            this.set('playbackRate', _provider.getPlaybackRate());
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
         };
 
         this.playbackComplete = function() {
@@ -391,14 +393,17 @@ define([
 
         this.setPlaybackRate = function(playbackRate) {
             if (!_.isNumber(playbackRate) || this.get('streamType') === 'LIVE' || !_attached) {
-                return false;
+                return;
             }
 
             // Clamp the rate between 0.25x and 4x speed
             var clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
 
+            this.set('defaultPlaybackRate', clampedRate);
             // Providers which support changes in playback rate will return the rate that we changed to
-            this.set('playbackRate', _provider ? _provider.setPlaybackRate(clampedRate) : clampedRate);
+            if (_provider) {
+                this.set('playbackRate', _provider.setPlaybackRate(clampedRate));
+            }
         };
 
         // The model is also the mediaController for now
