@@ -27,7 +27,7 @@ define([
         return function() {
             var args = Array.prototype.slice.call(arguments, 0);
 
-            if (!this._model.getVideo()) {
+            if (!this._model.getVideo() || !this._firstPlaylistItemEvent) {
                 this.eventsQueue.push([command, args]);
             } else {
                 this['_' + command].apply(this, args);
@@ -49,6 +49,7 @@ define([
         _.extend(this, Events);
 
         this._model = new Model();
+        this._firstPlaylistItemEvent = false;
     };
 
     Controller.prototype = {
@@ -326,14 +327,16 @@ define([
                 return providersManager.load(providersNeeded)
                     .then(function() {
                         if (!_this.getProvider()) {
-                            _model.setProvider(_model.get('playlistItem'));
+                            var playlistItem = _model.get('playlistItem');
+                            _model.setProvider(playlistItem);
 
-                            _executeQueuedEvents();
+                            _this.once('apiPlaylistItem', _executeQueuedEvents);
                         }
                     });
             }
 
             function _executeQueuedEvents() {
+                _this._firstPlaylistItemEvent = true;
                 while (_this.eventsQueue.length > 0) {
                     var q = _this.eventsQueue.shift();
                     var method = q[0];
