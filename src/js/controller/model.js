@@ -404,6 +404,11 @@ define([
             _provider.play();
         };
 
+        this.styleCaptions = function(options) {
+            this.trigger('captionStylesLoaded', options);
+//            _provider.styleCaptions(options);
+        };
+
         this.persistCaptionsTrack = function() {
             var track = this.get('captionsTrack');
 
