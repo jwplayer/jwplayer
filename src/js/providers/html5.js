@@ -916,7 +916,7 @@ define([
         };
 
         this.setPlaybackRate = function(playbackRate) {
-            _videotag.playbackRate = _videotag.defaultPlaybackRate = playbackRate;
+            _videotag.playbackRate = playbackRate;
         };
 
         this.getPlaybackRate = function() {
