@@ -785,9 +785,7 @@ define([
             this.setCaptions = function(options) {
                 const provider = this.getProvider();
                 if (provider.name === 'chromecast') {
-//                    _model.styleCaptions(options);
-                    const castProvider = _video();
-                    castProvider.styleCaptions(options);
+                    _model.styleCaptions(options);
                 }
                 _view.setCaptions(options);
             }
