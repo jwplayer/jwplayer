@@ -100,10 +100,8 @@ define([
             this.right = right;
 
             // Dock Area and Buttons
-            if (!this.dock) {
-                this.dock = new Dock(model);
-            }
-            this.right.appendChild(this.dock.element());
+            const dock = this.dock = new Dock(model);
+            this.right.appendChild(dock.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             if (touchMode) {
@@ -119,23 +117,20 @@ define([
                 });
             }
 
+            // Controlbar
+            const controlbar = this.controlbar = new Controlbar(api, model);
+            controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
             // Next Up Tooltip
-            if (model.get('nextUpDisplay') && !this.nextUpToolTip) {
+            if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
                 const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
                 nextUpToolTip.setup(this.context);
-                this.nextUpToolTip = nextUpToolTip;
+                controlbar.nextUpToolTip = nextUpToolTip;
 
                 // NextUp needs to be behind the controlbar to not block other tooltips
                 this.div.appendChild(nextUpToolTip.element());
             }
-
-            // Controlbar
-            if (!this.controlbar) {
-                this.controlbar = new Controlbar(api, model);
-                this.controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
-            }
-            this.addActiveListeners(this.controlbar.element());
-            this.div.appendChild(this.controlbar.element());
+            this.addActiveListeners(controlbar.element());
+            this.div.appendChild(controlbar.element());
 
             // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
             if (model.get('autostartMuted')) {
@@ -144,7 +139,7 @@ define([
                 this.mute.show();
                 this.div.appendChild(this.mute.element());
                 // Set mute state in the controlbar
-                this.controlbar.renderVolume(true, model.get('volume'));
+                controlbar.renderVolume(true, model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
                 utils.addClass(this.playerContainer, 'jw-flag-autostart');
 
