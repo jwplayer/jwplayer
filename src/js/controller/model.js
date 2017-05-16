@@ -233,8 +233,7 @@ define([
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
             // Set the playback rate to be the value that the provider supports and will play at
-            _provider.setPlaybackRate(_this.get('defaultPlaybackRate'));
-            this.set('playbackRate', _provider.getPlaybackRate());
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
 
             _provider.on('all', _videoEventHandler, this);
 
