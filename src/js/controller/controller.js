@@ -178,7 +178,7 @@ define([
 
             _model.on('change:playbackRate', function(model, rate) {
                 _this.trigger(events.JWPLAYER_PLAYBACK_RATE_CHANGED, {
-                    speed: rate,
+                    playbackRate: rate,
                     position: model.get('position')
                 });
             });
