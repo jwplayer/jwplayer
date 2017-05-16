@@ -523,10 +523,6 @@ define([
 
             utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
 
-            _styles(_videoLayer, {
-                cursor: 'pointer'
-            });
-
             _model.change('streamType', _setLiveMode, this);
 
             controls.enable(_api, _model);
@@ -569,10 +565,6 @@ define([
             }
 
             utils.addClass(_playerElement, 'jw-flag-controls-hidden');
-
-            _styles(_videoLayer, {
-                cursor: ''
-            });
         };
 
         // Perform the switch to fullscreen
@@ -705,8 +697,8 @@ define([
 
             if (fullscreenState && _controls) {
                 // When going into fullscreen, we want the control bar to fade after a few seconds
-                _controls.userActive();
-            }
+                    _controls.userActive();
+                }
 
             _resizeMedia();
             _responsiveListener();
