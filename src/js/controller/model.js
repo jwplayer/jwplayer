@@ -123,6 +123,9 @@ define([
                         this.set('duration', data.duration);
                     }
                     break;
+                case events.JWPLAYER_PLAYBACK_RATE_CHANGED:
+                    this.set('playbackRate', data.playbackRate);
+                    break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
                     break;
@@ -141,7 +144,6 @@ define([
                         this.playbackComplete();
                     }
                     return;
-
                 case events.JWPLAYER_AUDIO_TRACKS:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     mediaModel.set('audioTracks', data.tracks);

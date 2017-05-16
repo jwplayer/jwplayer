@@ -75,6 +75,7 @@ define([
             pause: _pauseHandler,
             seeked: _seekedHandler,
             timeupdate: _timeUpdateHandler,
+            ratechange: _playbackRateHandler,
             volumechange: _volumeChangeHandler,
             webkitbeginfullscreen: _fullscreenBeginHandler,
             webkitendfullscreen: _fullscreenEndHandler
@@ -185,6 +186,12 @@ define([
 
                 _checkVisualQuality();
             }
+        }
+
+        function _playbackRateHandler() {
+            _this.trigger(events.JWPLAYER_PLAYBACK_RATE_CHANGED, {
+                playbackRate: _videotag.playbackRate
+            });
         }
 
         function _checkVisualQuality() {
