@@ -228,9 +228,10 @@ define([
                 this.set('flashBlocked', false);
             }
 
+            var presetPlaybackRate;
             // If there is no current provider, then the video tag might have a preset playback rate...
             if (!_provider) {
-                this.set('defaultPlaybackRate', _currentProvider.getPlaybackRate());
+                presetPlaybackRate = _currentProvider.getPlaybackRate();
             }
 
             _provider = _currentProvider;
@@ -239,8 +240,13 @@ define([
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
-            // Set the playback rate to be the value that the provider supports and will play at
-            this.setPlaybackRate(this.get('defaultPlaybackRate'));
+            if (!presetPlaybackRate) {
+                // Attempt setting the playback rate to be the user selected value
+                this.setPlaybackRate(this.get('defaultPlaybackRate'));
+            } else {
+                // Set to playback rate that was in use before setting up the player.  defaultPlaybackRate is user value
+                this.set('playbackRate', presetPlaybackRate);
+            }
 
             _provider.on('all', _videoEventHandler, this);
 
@@ -410,7 +416,6 @@ define([
             // Providers which support changes in playback rate will return the rate that we changed to
             if (_provider) {
                 _provider.setPlaybackRate(clampedRate);
-                this.set('playbackRate', _provider.getPlaybackRate());
             }
         };
 
