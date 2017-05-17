@@ -250,9 +250,11 @@ define([
 
                 _view.on('all', _triggerAfterReady, _this);
 
-                var related = _api.getPlugin('related');
+                const related = _api.getPlugin('related');
                 if (related) {
-                    related.on('nextUp', _model.setNextUp, _model);
+                    related.on('nextUp', (nextUp) => {
+                        _model.set('nextUp', nextUp);
+                    });
                 }
 
                 // Fire 'ready' once the view has resized so that player width and height are available

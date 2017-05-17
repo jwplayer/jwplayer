@@ -118,7 +118,7 @@ define([
                     .on('over', function () {
                         const nextUpToolTip = this.nextUpToolTip;
                         if (nextUpToolTip) {
-                            nextUpToolTip.toggle(true);
+                            nextUpToolTip.toggle(true, 'hover');
                         }
                     }, this)
                     .on('out', function () {

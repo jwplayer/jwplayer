@@ -123,6 +123,7 @@ define([
             // Next Up Tooltip
             if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
                 const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
+                nextUpToolTip.on('all', this.trigger, this);
                 nextUpToolTip.setup(this.context);
                 controlbar.nextUpToolTip = nextUpToolTip;
 
@@ -250,12 +251,15 @@ define([
             }
             if (this.rightClickMenu) {
                 this.rightClickMenu.destroy();
-                this.rightClickMenu = null;
             }
 
             if (this.keydownCallback) {
                 this.playerContainer.removeEventListener('keydown', this.keydownCallback);
-                this.keydownCallback = null;
+            }
+
+            const nextUpToolTip = this.nextUpToolTip;
+            if (nextUpToolTip) {
+                nextUpToolTip.destroy();
             }
         }
 

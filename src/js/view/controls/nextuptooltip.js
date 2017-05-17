@@ -3,11 +3,14 @@ import nextUpTemplate from 'view/controls/templates/nextup';
 define([
     'utils/dom',
     'utils/ui',
+    'utils/underscore',
+    'utils/backbone.events',
     'utils/helpers',
-], function(dom, UI, utils) {
+], function(dom, UI, _, Events, utils) {
 
     return class NextUpTooltip {
         constructor(_model, _api, playerElement) {
+            _.extend(this, Events);
             this._model = _model;
             this._api = _api;
             this._playerElement = playerElement;
@@ -15,6 +18,7 @@ define([
             this.nextUpClose = _model.get('localization').nextUpClose;
             this.state = 'tooltip';
             this.enabled = false;
+            this.shown = false;
             this.reset();
         }
 
@@ -71,13 +75,27 @@ define([
             this._api.next();
         }
 
-        toggle(show) {
+        toggle(show, reason) {
             if (!this.enabled) {
                 return;
             }
             dom.toggleClass(this.container, 'jw-nextup-sticky', !!this.nextUpSticky);
-            dom.toggleClass(this.container, 'jw-nextup-container-visible', show);
-            dom.toggleClass(this._playerElement, 'jw-flag-nextup', show);
+            if (this.shown !== show) {
+                this.shown = show;
+                dom.toggleClass(this.container, 'jw-nextup-container-visible', show);
+                dom.toggleClass(this._playerElement, 'jw-flag-nextup', show);
+                const nextUp = this._model.get('nextUp');
+                if (show && nextUp) {
+                    this.trigger('nextShown', {
+                        mode: nextUp.mode,
+                        ui: 'nextup',
+                        itemsShown: [ nextUp ],
+                        page: 0,
+                        feedData: nextUp.feedData,
+                        reason: reason,
+                    });
+                }
+            }
         }
 
         setNextUpItem(nextUpItem) {
@@ -154,7 +172,7 @@ define([
             const showUntilEnd = val >= this.offset;
             if (showUntilEnd && nextUpSticky === undefined) { // show if nextUpSticky is unset
                 this.nextUpSticky = showUntilEnd;
-                this.toggle(showUntilEnd);
+                this.toggle(showUntilEnd, 'time');
             } else if (!showUntilEnd && nextUpSticky === false) { // reset if there was a backward seek
                 this.reset();
             }
@@ -189,6 +207,11 @@ define([
         reset() {
             this.nextUpSticky = undefined;
             this.toggle(false);
+        }
+
+        destroy() {
+            this.off();
+            this._model.off(null, null, this);
         }
     };
 });

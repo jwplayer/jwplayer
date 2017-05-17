@@ -436,10 +436,6 @@ define([
             this.persistCaptionsTrack();
         };
 
-        this.setNextUp = function (nextUp) {
-            this.set('nextUp', nextUp);
-        };
-
         function _autoStartSupportedIOS() {
             if (!utils.isIOS()) {
                 return false;
