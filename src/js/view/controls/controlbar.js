@@ -87,10 +87,8 @@ define([
             this._model = _model;
             this._isMobile = utils.isMobile();
             this._localization = _model.get('localization');
-            this.setup(_api, _model);
-        }
 
-        setup(_api, _model) {
+            this.nextUpToolTip = null;
 
             const timeSlider = new TimeSlider(_model, _api);
             let volumeSlider;
@@ -118,13 +116,19 @@ define([
             if (_model.get('nextUpDisplay')) {
                 new UI(nextButton.element(), { useHover: true, directSelect: true })
                     .on('over', function () {
-                        this._model.set('nextUpVisible', true);
+                        const nextUpToolTip = this.nextUpToolTip;
+                        if (nextUpToolTip) {
+                            nextUpToolTip.toggle(true);
+                        }
                     }, this)
                     .on('out', function () {
-                        if (this._model.get('nextUpSticky')) {
-                            return;
+                        const nextUpToolTip = this.nextUpToolTip;
+                        if (nextUpToolTip) {
+                            if (nextUpToolTip.nextUpSticky) {
+                                return;
+                            }
+                            nextUpToolTip.toggle(false);
                         }
-                        this._model.set('nextUpVisible', false);
                     }, this);
             }
 
