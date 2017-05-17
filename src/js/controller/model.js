@@ -226,7 +226,7 @@ define([
                 this.set('flashThrottle', undefined);
                 this.set('flashBlocked', false);
             }
-
+            
             _provider.volume(_this.get('volume'));
 
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
