@@ -406,7 +406,6 @@ define([
 
         this.styleCaptions = function(options) {
             this.trigger('captionStylesLoaded', options);
-//            _provider.styleCaptions(options);
         };
 
         this.persistCaptionsTrack = function() {
