@@ -17,11 +17,9 @@ define([
     'events/states',
     'events/events',
     'view/error',
-    'controller/events-middleware',
-    'controller/controls-loader'
+    'controller/events-middleware'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware,
-            ControlsLoader) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
 
     function _queueCommand(command) {
         return function() {
@@ -192,33 +190,10 @@ define([
             });
 
             // Ensure captionsList event is raised after playlistItem
-            _captions = new Captions(_api, _model);
+            _captions = new Captions(_model);
 
             function _triggerAfterReady(type, e) {
                 _this.triggerAfterReady(type, e);
-            }
-
-            function changeControls(model, enable) {
-                if (enable) {
-                    ControlsLoader.load()
-                        .then(function (Controls) {
-                            if (!_view.isSetup) {
-                                return;
-                            }
-
-                            var controls = new Controls(document, _view.element());
-                            _view.addControls(controls);
-                            controls.on('all', _triggerAfterReady, _this);
-                        })
-                        .catch(function (reason) {
-                            _this.triggerError({
-                                message: 'Controls failed to load',
-                                reason: reason
-                            });
-                        });
-                } else {
-                    _view.removeControls();
-                }
             }
 
             function triggerControls(model, enable) {
@@ -237,13 +212,6 @@ define([
                     }
                 }
             }, this);
-
-            _model.on('change:inDom', function(model, inDom) {
-                if (inDom) {
-                    model.off('change:controls', changeControls);
-                    model.change('controls', changeControls);
-                }
-            });
 
             function _playerReady() {
                 _setup = null;
