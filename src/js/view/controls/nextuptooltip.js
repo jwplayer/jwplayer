@@ -172,7 +172,7 @@ define([
             if (showUntilEnd && nextUpSticky === undefined) { // show if nextUpSticky is unset
                 this.nextUpSticky = showUntilEnd;
                 this.toggle(showUntilEnd, 'time');
-            } else if (!showUntilEnd && nextUpSticky === false) { // reset if there was a backward seek
+            } else if (!showUntilEnd && nextUpSticky) { // reset if there was a backward seek
                 this.reset();
             }
         }
