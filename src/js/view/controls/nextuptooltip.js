@@ -90,7 +90,6 @@ define([
                         mode: nextUp.mode,
                         ui: 'nextup',
                         itemsShown: [ nextUp ],
-                        page: 0,
                         feedData: nextUp.feedData,
                         reason: reason,
                     });

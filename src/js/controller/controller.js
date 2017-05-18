@@ -732,8 +732,18 @@ define([
             }
 
             function _nextUp() {
-                var related = _api.getPlugin('related');
+                const related = _api.getPlugin('related');
                 if (related) {
+                    const nextUp = _model.get('nextUp');
+                    if (nextUp) {
+                        _this.trigger('nextClick', {
+                            mode: nextUp.mode,
+                            ui: 'nextup',
+                            target: nextUp,
+                            itemsShown: [ nextUp ],
+                            feedData: nextUp.feedData,
+                        });
+                    }
                     related.next();
                 }
             }
