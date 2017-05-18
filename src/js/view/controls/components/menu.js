@@ -7,21 +7,8 @@ define([
 ], function(Tooltip, utils, _, UI) {
 
     return class Menu extends Tooltip {
-        constructor(name, ariaText, elementShown) {
-            super(name, ariaText, elementShown);
-
-            this.customIcon = document.createElement('span');
-            this.customIcon.className = 'jw-menu-custom-icon jw-reset';
-            this.customIcon.textContent = '2x';
-
-            this.el.insertBefore(this.customIcon, this.container);
-        }
-
         setup(list, selectedIndex, options) {
             options = options || {};
-            this.showSelection = !!options.showSelection;
-
-            utils.toggleClass(this.el, 'jw-icon', !this.showSelection);
 
             if (!this.iconUI) {
                 this.iconUI = new UI(this.el, { useHover: true, directSelect: true });
@@ -90,10 +77,6 @@ define([
             if (this.content) {
                 for (var i = 0; i < this.content.children.length; i++) {
                     utils.toggleClass(this.content.children[i], 'jw-active-option', (selectedIndex === i));
-
-                    if (this.showSelection && selectedIndex === i) {
-                        this.customIcon.textContent = this.content.children[i].textContent;
-                    }
                 }
             }
             utils.toggleClass(this.el, 'jw-off', (selectedIndex === 0));

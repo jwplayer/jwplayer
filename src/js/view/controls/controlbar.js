@@ -1,3 +1,5 @@
+import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
+
 define([
     'utils/helpers',
     'utils/underscore',
@@ -8,9 +10,10 @@ define([
     'view/controls/components/slider',
     'view/controls/components/timeslider',
     'view/controls/components/menu',
+    'view/controls/components/status-display-menu',
     'view/controls/components/volumetooltip',
     'view/controls/components/button',
-], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, VolumeTooltip, button) {
+], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, StatusMenu, VolumeTooltip, button) {
     function text(name, role) {
         const element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
@@ -145,7 +148,11 @@ define([
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
-                playbackRates: menu('jw-icon-playback-rate', this._localization.playbackRates),
+                playbackRates: new StatusMenu(
+                    'jw-icon-playback-rate',
+                    this._localization.playbackRates,
+                    utils.createElement(PLAYBACK_RATE_ICON)
+                ),
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
@@ -345,7 +352,7 @@ define([
                 this.elements.playbackRates.setup(
                     playbackRateLabels,
                     selectedIndex,
-                    { toggle: false, showSelection: true }
+                    { toggle: false, defaultIndex: rates.indexOf(1) }
                 );
             }
         }

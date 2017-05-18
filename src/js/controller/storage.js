@@ -47,7 +47,9 @@ define([
             'volume',
             'mute',
             'captionLabel',
-            'qualityLabel'
+            'qualityLabel',
+            // TODO: Change to defaultPlaybackRate
+            'playbackRate'
         ];
     }
 
