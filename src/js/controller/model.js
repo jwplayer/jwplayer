@@ -113,7 +113,7 @@ define([
                             this.playVideo();
                         }, this);
                     }
-                    _provider.setPlaybackRate(this.get('defaultPlaybackRate'));
+                    this.setPlaybackRate(this.get('defaultPlaybackRate'));
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
                     mediaModel.set('position', data.position);
@@ -228,25 +228,14 @@ define([
                 this.set('flashBlocked', false);
             }
 
-            var presetPlaybackRate;
-            // If there is no current provider, then the video tag might have a preset playback rate...
-            if (!_provider) {
-                presetPlaybackRate = _currentProvider.getPlaybackRate();
-            }
-
             _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
 
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
-            if (!presetPlaybackRate) {
-                // Attempt setting the playback rate to be the user selected value
-                this.setPlaybackRate(this.get('defaultPlaybackRate'));
-            } else {
-                // Set to playback rate that was in use before setting up the player.  defaultPlaybackRate is user value
-                this.set('playbackRate', presetPlaybackRate);
-            }
+            // Attempt setting the playback rate to be the user selected value
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
 
             _provider.on('all', _videoEventHandler, this);
 
@@ -403,14 +392,25 @@ define([
             }
         };
 
+        this.setStreamType = function(streamType) {
+            if (streamType === 'LIVE' && this.get('streamType') !== 'LIVE') {
+                this.setPlaybackRate(1);
+            }
+            this.set('streamType', streamType);
+        };
 
         this.setPlaybackRate = function(playbackRate) {
-            if (!_.isNumber(playbackRate) || this.get('streamType') === 'LIVE' || !_attached) {
+            if (!_attached || !_.isNumber(playbackRate)) {
                 return;
             }
 
-            // Clamp the rate between 0.25x and 4x speed
-            var clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
+            var clampedRate;
+            if (this.get('streamType') === 'LIVE') {
+                clampedRate = 1;
+            } else {
+                // Clamp the rate between 0.25x and 4x speed
+                clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
+            }
 
             this.set('defaultPlaybackRate', clampedRate);
             // Providers which support changes in playback rate will return the rate that we changed to

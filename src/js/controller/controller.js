@@ -124,13 +124,7 @@ define([
             _model.on('change:duration', function(model, duration) {
                 var minDvrWindow = model.get('minDvrWindow');
                 var streamType = utils.streamType(duration, minDvrWindow);
-                model.set('streamType', streamType);
-            });
-
-            _model.on('change:streamType', function(model, type) {
-                if (type === 'LIVE') {
-                    model.setPlaybackRate(1);
-                }
+                model.setStreamType(streamType);
             });
 
             _model.on('change:castState', function(model, evt) {
