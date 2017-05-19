@@ -10,10 +10,10 @@ define([
     'view/controls/components/slider',
     'view/controls/components/timeslider',
     'view/controls/components/menu',
-    'view/controls/components/status-display-menu',
+    'view/controls/components/selection-display-menu',
     'view/controls/components/volumetooltip',
     'view/controls/components/button',
-], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, StatusMenu, VolumeTooltip, button) {
+], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip, button) {
     function text(name, role) {
         const element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
@@ -148,7 +148,7 @@ define([
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
-                playbackRates: new StatusMenu(
+                playbackRates: new SelectionDisplayMenu(
                     'jw-icon-playback-rate',
                     this._localization.playbackRates,
                     utils.createElement(PLAYBACK_RATE_ICON)

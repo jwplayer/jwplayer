@@ -2,9 +2,7 @@ define([
     'view/controls/components/menu',
     'utils/helpers',
 ], function(Menu, utils) {
-    // TODO: Constructor sends a base class for the tooltip to Tooltip
-
-    return class StatusDisplayMenu extends Menu {
+    return class SelectionDisplayMenu extends Menu {
         constructor(name, ariaText, defaultIconEl) {
             super(name, ariaText, false);
 
