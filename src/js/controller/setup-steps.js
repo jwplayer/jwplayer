@@ -308,14 +308,15 @@ define([
         });
     }
 
-    function _loadControls(resolve, _model) {
+    function _loadControls(resolve, _model, _api, _view) {
         if (!_model.get('controls')) {
             resolve();
             return;
         }
 
         ControlsLoader.load()
-            .then(function (/* Controls */) {
+            .then(function (Controls) {
+                _view.setControlsModule(Controls);
                 resolve();
             })
             .catch(function (reason) {
