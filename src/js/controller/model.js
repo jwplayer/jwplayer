@@ -31,6 +31,8 @@ define([
                 // always start on first playlist item
                 item: 0,
                 itemMeta: {},
+                defaultPlaybackRate: 1,
+                playbackRate: 1,
                 playlistItem: undefined,
                 // Initial state, upon setup
                 state: states.IDLE,
@@ -111,6 +113,7 @@ define([
                             this.playVideo();
                         }, this);
                     }
+                    this.setPlaybackRate(this.get('defaultPlaybackRate'));
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
                     mediaModel.set('position', data.position);
@@ -119,6 +122,9 @@ define([
                         mediaModel.set('duration', data.duration);
                         this.set('duration', data.duration);
                     }
+                    break;
+                case events.JWPLAYER_PLAYBACK_RATE_CHANGED:
+                    this.set('playbackRate', data.playbackRate);
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
@@ -138,7 +144,6 @@ define([
                         this.playbackComplete();
                     }
                     return;
-
                 case events.JWPLAYER_AUDIO_TRACKS:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     mediaModel.set('audioTracks', data.tracks);
@@ -229,6 +234,9 @@ define([
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
+            // Attempt setting the playback rate to be the user selected value
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
+
             _provider.on('all', _videoEventHandler, this);
 
             if (this.get('instreamMode') === true) {
@@ -256,7 +264,10 @@ define([
                 this.playbackComplete();
             }
 
-            return _provider.attachMedia();
+            _provider.attachMedia();
+
+            // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
         };
 
         this.playbackComplete = function() {
@@ -378,6 +389,31 @@ define([
                 var volume = Math.max(10, this.get('volume'));
                 this.set('autostartMuted', false);
                 this.setVolume(volume);
+            }
+        };
+
+        this.setStreamType = function(streamType) {
+            this.set('streamType', streamType);
+            if (streamType === 'LIVE') {
+                this.setPlaybackRate(1);
+            }
+        };
+
+        this.setPlaybackRate = function(playbackRate) {
+            if (!_attached || !_.isNumber(playbackRate)) {
+                return;
+            }
+
+            // Clamp the rate between 0.25x and 4x speed
+            var clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
+            if (this.get('streamType') === 'LIVE') {
+                clampedRate = 1;
+            }
+
+            this.set('defaultPlaybackRate', clampedRate);
+            // Providers which support changes in playback rate will return the rate that we changed to
+            if (_provider) {
+                _provider.setPlaybackRate(clampedRate);
             }
         };
 

@@ -62,6 +62,7 @@ define([
         setCurrentCaptions: _queueCommand('setCurrentCaptions'),
         setCurrentQuality: _queueCommand('setCurrentQuality'),
         setFullscreen: _queueCommand('setFullscreen'),
+        setPlaybackRate: _queueCommand('setPlaybackRate'),
         setup: function(options, _api) {
             var _model = this._model;
             var _view;
@@ -121,7 +122,7 @@ define([
             _model.on('change:duration', function(model, duration) {
                 var minDvrWindow = model.get('minDvrWindow');
                 var streamType = utils.streamType(duration, minDvrWindow);
-                model.set('streamType', streamType);
+                model.setStreamType(streamType);
             });
 
             _model.on('change:castState', function(model, evt) {
@@ -164,6 +165,13 @@ define([
             _model.on('change:mute', function(model, mute) {
                 _this.trigger(events.JWPLAYER_MEDIA_MUTE, {
                     mute: mute
+                });
+            });
+
+            _model.on('change:playbackRate', function(model, rate) {
+                _this.trigger(events.JWPLAYER_PLAYBACK_RATE_CHANGED, {
+                    playbackRate: rate,
+                    position: model.get('position')
                 });
             });
 
@@ -745,6 +753,7 @@ define([
             // Model passthroughs
             this.setVolume = _model.setVolume.bind(_model);
             this.setMute = _model.setMute.bind(_model);
+            this.setPlaybackRate = _model.setPlaybackRate.bind(_model);
             this.getProvider = function() {
                 return _model.get('provider');
             };
