@@ -404,12 +404,10 @@ define([
                 return;
             }
 
-            var clampedRate;
+            // Clamp the rate between 0.25x and 4x speed
+            var clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
             if (this.get('streamType') === 'LIVE') {
                 clampedRate = 1;
-            } else {
-                // Clamp the rate between 0.25x and 4x speed
-                clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
             }
 
             this.set('defaultPlaybackRate', clampedRate);
