@@ -11,6 +11,8 @@ define([
         displaytitle: true,
         displaydescription: true,
         mobilecontrols: false,
+        // TODO: Change to defaultPlaybackRate...
+        playbackRate: 1,
         playbackRateControls: false,
         repeat: false,
         castAvailable: false,
@@ -112,11 +114,8 @@ define([
         if (config.playbackRateControls) {
             var playbackRates;
 
-            var validRatesFilter = function(value) {
-                return _.isNumber(value) && value >= 0.25 && value <= 4;
-            };
+            var validRatesFilter = (value) => { return _.isNumber(value) && value >= 0.25 && value <= 4; };
 
-            // TODO: Turn to crazy SWITCH statement?
             // If it's already an array, then it will be trusted to be formatted correctly
             if (_.isBoolean(config.playbackRateControls)) {
                 playbackRates = [0.5, 1, 1.25, 1.5, 2];
@@ -132,6 +131,10 @@ define([
             }
         }
 
+        // TODO: Change to defaultPlaybackRate...
+        if (!config.playbackRateControls || config.playbackRateControls.indexOf(config.playbackRate) < 0) {
+            config.playbackRate = 1;
+        }
 
         if (!config.aspectratio) {
             delete config.aspectratio;

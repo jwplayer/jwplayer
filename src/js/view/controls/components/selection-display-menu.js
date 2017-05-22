@@ -13,7 +13,7 @@ define([
 
             this.el.insertBefore(this.customIconContainer, this.container);
 
-            utils.addClass(this.el, 'jw-status-menu');
+            utils.addClass(this.el, 'jw-selection-menu');
             utils.removeClass(this.el, 'jw-icon');
         }
 
