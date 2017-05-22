@@ -559,6 +559,11 @@ define([
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
             this.setupSideloadedTracks(item.tracks);
+
+            // Update poster image for video element.
+            if (item.image) {
+                _setAttribute('poster', item.image);
+            }
         };
 
         this.load = function(item) {
