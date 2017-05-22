@@ -393,10 +393,10 @@ define([
         };
 
         this.setStreamType = function(streamType) {
-            if (streamType === 'LIVE' && this.get('streamType') !== 'LIVE') {
+            this.set('streamType', streamType);
+            if (streamType === 'LIVE') {
                 this.setPlaybackRate(1);
             }
-            this.set('streamType', streamType);
         };
 
         this.setPlaybackRate = function(playbackRate) {
