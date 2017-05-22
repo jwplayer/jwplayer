@@ -290,21 +290,6 @@ define([
                 }, this);
             }
 
-            //this._model.on('playbackRates')
-            //    let playbackRates = this._model.get('playbackRates');
-            //    let selectedIndex = playbackRates.indexOf(1);
-            //    playbackRates = playbackRates.map((playbackRate) => { return { label: playbackRate+'x', rate: playbackRate }; });
-            //    this.elements.playbackRates.setup(playbackRates, selectedIndex);
-            //
-            //    this.elements.playbackRates.on('select', function(index) {
-            //        this._model.setPlaybackRate(this._model.get('playbackRates')[index]);
-            //    }, this);
-            //
-            //    this._model.on('change:playbackRate', function(model, value) {
-            //        this.elements.playbackRates.selectItem(this._model.get('playbackRates').indexOf(value));
-            //    }, this);
-            //}
-
             new UI(this.elements.duration).on('click tap', function() {
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
@@ -343,10 +328,10 @@ define([
         onPlaybackRates(model, rates) {
             if (rates) {
                 let selectedIndex = rates.indexOf(model.get('playbackRate'));
-                // TODO: Will "Normal" be localized?
                 let playbackRateLabels = rates.map((playbackRate) => {
                     return {
-                        label: (playbackRate === 1) ? 'Normal' : (Math.round(playbackRate * 100) / 100) + 'x',
+                        label: (playbackRate === 1) ?
+                            this._localization.normal : Math.round(playbackRate * 100) / 100 + 'x',
                         rate: playbackRate
                     };
                 });
@@ -355,6 +340,8 @@ define([
                     selectedIndex,
                     { isToggle: false, defaultIndex: rates.indexOf(1) }
                 );
+            } else {
+                this.elements.playbackRates.setup([1], 0, { isToggle: false, defaultIndex: 0 });
             }
         }
 

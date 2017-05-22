@@ -11,8 +11,7 @@ define([
         displaytitle: true,
         displaydescription: true,
         mobilecontrols: false,
-        // TODO: Change to defaultPlaybackRate...
-        playbackRate: 1,
+        defaultPlaybackRate: 1,
         playbackRateControls: false,
         repeat: false,
         castAvailable: false,
@@ -39,6 +38,7 @@ define([
             cc: 'Closed captions',
             audioTracks: 'Audio tracks',
             playbackRates: 'Playback rates',
+            normal: 'Normal',
             replay: 'Replay',
             buffer: 'Loading',
             more: 'More',
@@ -109,8 +109,6 @@ define([
             config.skin = config.skin.replace('.xml', '');
         }
 
-
-        // TODO: Change so that we use defaultPlaybackRates that can be copied over when using a correct provider?
         if (config.playbackRateControls) {
             var playbackRates;
 
@@ -125,16 +123,18 @@ define([
             }
 
             if (playbackRates) {
-                config.playbackRateControls = playbackRates;
+                config.playbackRates = config.playbackRateControls = playbackRates;
             } else {
                 config.playbackRateControls = false;
             }
         }
 
-        // TODO: Change to defaultPlaybackRate...
-        if (!config.playbackRateControls || config.playbackRateControls.indexOf(config.playbackRate) < 0) {
-            config.playbackRate = 1;
+        if (!config.playbackRateControls || config.playbackRateControls.indexOf(config.defaultPlaybackRate) < 0) {
+            config.defaultPlaybackRate = 1;
         }
+
+        config.playbackRate = config.defaultPlaybackRate;
+        config.playbackRates = (config.playbackRates) ? config.playbackRates : false;
 
         if (!config.aspectratio) {
             delete config.aspectratio;

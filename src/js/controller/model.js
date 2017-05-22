@@ -30,8 +30,6 @@ define([
                 // always start on first playlist item
                 item: 0,
                 itemMeta: {},
-                defaultPlaybackRate: 1,
-                playbackRate: 1,
                 playlistItem: undefined,
                 // Initial state, upon setup
                 state: states.IDLE,
@@ -234,6 +232,7 @@ define([
 
             // Attempt setting the playback rate to be the user selected value
             this.setPlaybackRate(this.get('defaultPlaybackRate'));
+            this.setPlaybackRates();
 
             _provider.on('all', _videoEventHandler, this);
 
@@ -395,6 +394,7 @@ define([
             if (streamType === 'LIVE') {
                 this.setPlaybackRate(1);
             }
+            this.setPlaybackRates();
         };
 
         this.setPlaybackRate = function(playbackRate) {
@@ -413,6 +413,15 @@ define([
             if (_provider) {
                 _provider.setPlaybackRate(clampedRate);
             }
+        };
+
+        this.setPlaybackRates = function() {
+            var supportsPlaybackRates =
+                this.get('playbackRateControls') &&
+                _provider.supportsPlaybackRate &&
+                this.get('streamType') !== 'LIVE';
+
+            this.set('playbackRates', supportsPlaybackRates ? this.get('playbackRateControls') : false);
         };
 
         // The model is also the mediaController for now
