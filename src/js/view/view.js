@@ -63,8 +63,8 @@ define([
 
         const _preview = new Preview(_model);
         const _title = new Title(_model);
+        const _captionsRenderer = new CaptionsRenderer(_model);
 
-        let _captionsRenderer;
         let _logo;
 
         let _playerState;
@@ -166,6 +166,9 @@ define([
         }
 
         function _responsiveUpdate() {
+            if (!_this.isSetup) {
+                return;
+            }
             _this.updateBounds();
             _this.updateStyles();
             _this.checkResized();
@@ -314,7 +317,6 @@ define([
             _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
 
             // captions rendering
-            _captionsRenderer = new CaptionsRenderer(_model);
             _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
             // captions should be place behind controls, and not hidden when controls are hidden
