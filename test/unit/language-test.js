@@ -80,7 +80,6 @@ define([
                 });
             });
 
-
             describe('getLabel from ISO 639-2 codes', function() {
 
                 it('should not change for its English codes', function() {
@@ -126,6 +125,53 @@ define([
                 it('should not change for its Spanish codes', function() {
                     assert.equal(langUtils.getLabel('esp'), 'esp');
                     assert.equal(langUtils.getLabel('spa'), 'spa');
+                });
+            });
+
+            describe('getCode from ISO 639-1 codes', function() {
+
+                it('should be English for its codes', function() {
+                    expect(langUtils.getCode('English')).to.equal('en');
+                });
+
+                it('should be Chinese for its codes', function() {
+                    expect(langUtils.getCode('Chinese')).to.equal('zh');
+                });
+
+                it('should be Dutch for its codes', function() {
+                    expect(langUtils.getCode('Dutch')).to.equal('nl');
+                });
+
+                it('should be French for its codes', function() {
+                    expect(langUtils.getCode('French')).to.equal('fr');
+                });
+
+                it('should be German for its codes', function() {
+                    expect(langUtils.getCode('German')).to.equal('de');
+                });
+
+                it('should be Japanese for its codes', function() {
+                    expect(langUtils.getCode('Japanese')).to.equal('ja');
+                });
+
+                it('should be Portuguese for its codes', function() {
+                    expect(langUtils.getCode('Portuguese')).to.equal('pt');
+                });
+
+                it('should be Italian for its codes', function() {
+                    expect(langUtils.getCode('Italian')).to.equal('it');
+                });
+
+                it('should be Russian for its codes', function() {
+                    expect(langUtils.getCode('Russian')).to.equal('ru');
+                });
+
+                it('should be Spanish for its codes', function() {
+                    expect(langUtils.getCode('Spanish')).to.equal('es');
+                });
+
+                it('should be Greek for its codes', function() {
+                    expect(langUtils.getCode('Greek')).to.equal('el');
                 });
             });
         });
