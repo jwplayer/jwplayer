@@ -368,7 +368,7 @@ define([
                     return { label: track.name };
                 });
                 this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'),
-                    { toggle: false });
+                    { isToggle: false });
             }, this);
             mediaModel.on('change:currentAudioTrack', function(currentAudioTrackChangeModel, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);

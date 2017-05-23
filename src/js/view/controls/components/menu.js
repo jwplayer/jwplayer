@@ -28,7 +28,7 @@ define([
 
             utils.toggleClass(this.el, 'jw-hidden', (list.length < 2));
 
-            var isMenu = list.length > 2 || (list.length === 2 && options && options.toggle === false);
+            var isMenu = list.length > 2 || (list.length === 2 && options && options.isToggle === false);
             var isToggle = !isMenu && list.length === 2;
             // Make caption menu always a toggle to show active color
             utils.toggleClass(this.el, 'jw-toggle', isToggle || options.isToggle);
