@@ -1,10 +1,12 @@
+const _ = require('utils/underscore');
+
 define([
 ], function () {
 
     /**
      * A map of 2-letter language codes (ISO 639-1) to language name in English
      */
-    var twoCharMap = {
+    const codeToLang = {
         zh: 'Chinese',
         nl: 'Dutch',
         en: 'English',
@@ -17,6 +19,7 @@ define([
         es: 'Spanish',
         el: 'Greek',
     };
+    const langToCode = _.invert(codeToLang);
 
     function getLabel(language) {
         if (!language) {
@@ -28,11 +31,16 @@ define([
             return language;
         }
 
-        return twoCharMap[language.slice(0, 2)] || language;
+        return codeToLang[language.slice(0, 2)] || language;
+    }
+
+    function getCode(language) {
+        return langToCode[language] || '';
     }
 
     return {
-        getLabel: getLabel
+        getLabel: getLabel,
+        getCode: getCode
     };
 });
 
