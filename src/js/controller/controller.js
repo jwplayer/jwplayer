@@ -262,7 +262,7 @@ define([
                 }
 
                 _checkAutoStart();
-                _model.on('change:viewable', _checkPlayOnViewable);
+                _model.change('viewable', viewableChange);
             }
 
             function _updateViewable(model, visibility) {
@@ -272,13 +272,17 @@ define([
             }
 
             function _checkAutoStart() {
-                var autostart = _model.get('autostart');
-                if (!utils.isMobile() && autostart === true) {
+                if (!utils.isMobile() && _model.get('autostart') === true) {
                     // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
                     _autoStart();
-                } else {
-                    _checkPlayOnViewable(_model, _model.get('viewable'));
                 }
+            }
+
+            function viewableChange(model, viewable) {
+                _this.trigger('viewable', {
+                    viewable: viewable
+                });
+                _checkPlayOnViewable(model, viewable);
             }
 
             function _checkPlayOnViewable(model, viewable) {
