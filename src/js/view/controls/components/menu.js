@@ -42,7 +42,7 @@ define([
                     .on('over', this.openTooltipListener)
                     .on('out', this.closeTooltipListener);
 
-                var html = menuTemplate(list, this.showSelection);
+                var html = menuTemplate(list);
                 var elem = utils.createElement(html);
                 this.addContent(elem);
                 this.contentUI = new UI(this.content).on('click tap', this.selectListener);

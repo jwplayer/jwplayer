@@ -110,31 +110,31 @@ define([
         }
 
         if (config.playbackRateControls) {
-            var playbackRates;
+            var playbackRateOptions;
 
             var validRatesFilter = (value) => { return _.isNumber(value) && value >= 0.25 && value <= 4; };
 
-            // If it's already an array, then it will be trusted to be formatted correctly
             if (_.isBoolean(config.playbackRateControls)) {
-                playbackRates = [0.5, 1, 1.25, 1.5, 2];
+                playbackRateOptions = [0.5, 1, 1.25, 1.5, 2];
             } else if (_.isArray(config.playbackRateControls)) {
                 var filteredResults = config.playbackRateControls.filter(validRatesFilter);
-                playbackRates = filteredResults.length ? filteredResults : false;
+                playbackRateOptions = filteredResults.length ? filteredResults : false;
             }
 
-            if (playbackRates) {
-                config.playbackRates = config.playbackRateControls = playbackRates;
+            if (playbackRateOptions) {
+                config.playbackRateOptions = config.playbackRateControls = playbackRateOptions;
             } else {
                 config.playbackRateControls = false;
             }
         }
 
+        // Set defaultPlaybackRate to 1 if the value from storage isn't in the playbackRateControls menu
         if (!config.playbackRateControls || config.playbackRateControls.indexOf(config.defaultPlaybackRate) < 0) {
             config.defaultPlaybackRate = 1;
         }
 
         config.playbackRate = config.defaultPlaybackRate;
-        config.playbackRates = (config.playbackRates) ? config.playbackRates : false;
+        config.playbackRateOptions = (config.playbackRateOptions) ? config.playbackRateOptions : false;
 
         if (!config.aspectratio) {
             delete config.aspectratio;

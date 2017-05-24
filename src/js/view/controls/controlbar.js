@@ -149,10 +149,10 @@ define([
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
-                playbackRates: new SelectionDisplayMenu(
+                playbackrates: new SelectionDisplayMenu(
                     'jw-icon-playback-rate',
                     this._localization.playbackRates,
-                    utils.createElement(PLAYBACK_RATE_ICON)
+                    PLAYBACK_RATE_ICON
                 ),
                 mute: muteButton,
                 volume: volumeSlider,
@@ -179,7 +179,7 @@ define([
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
-                    this.elements.playbackRates,
+                    this.elements.playbackrates,
                     this.elements.mute,
                     this.elements.cast,
                     this.elements.volume,
@@ -192,7 +192,7 @@ define([
                 this.elements.hd,
                 this.elements.cc,
                 this.elements.audiotracks,
-                this.elements.playbackRates,
+                this.elements.playbackrates,
                 this.elements.volumetooltip
             ]);
 
@@ -282,11 +282,11 @@ define([
             }, this);
 
             if (_model.get('playbackRateControls')) {
-                _model.change('playbackRates', this.onPlaybackRates, this);
+                _model.change('playbackRateOptions', this.onPlaybackRateOptions, this);
                 _model.change('playbackRate', this.onPlaybackRate, this);
 
-                this.elements.playbackRates.on('select', function (index) {
-                    this._model.setPlaybackRate(this._model.get('playbackRates')[index]);
+                this.elements.playbackrates.on('select', function (index) {
+                    this._model.setPlaybackRate(this._model.get('playbackRateOptions')[index]);
                 }, this);
             }
 
@@ -325,7 +325,7 @@ define([
             this.elements.cc.selectItem(index);
         }
 
-        onPlaybackRates(model, rates) {
+        onPlaybackRateOptions(model, rates) {
             if (rates) {
                 let selectedIndex = rates.indexOf(model.get('playbackRate'));
                 let playbackRateLabels = rates.map((playbackRate) => {
@@ -335,20 +335,20 @@ define([
                         rate: playbackRate
                     };
                 });
-                this.elements.playbackRates.setup(
+                this.elements.playbackrates.setup(
                     playbackRateLabels,
                     selectedIndex,
                     { isToggle: false, defaultIndex: rates.indexOf(1) }
                 );
             } else {
-                this.elements.playbackRates.setup([1], 0, { isToggle: false, defaultIndex: 0 });
+                this.elements.playbackrates.setup();
             }
         }
 
         onPlaybackRate(model, value) {
-            let playbackRates = this._model.get('playbackRates');
-            if (playbackRates) {
-                this.elements.playbackRates.selectItem(playbackRates.indexOf(value));
+            let playbackRateOptions = this._model.get('playbackRateOptions');
+            if (playbackRateOptions) {
+                this.elements.playbackrates.selectItem(playbackRateOptions.indexOf(value));
             }
         }
 

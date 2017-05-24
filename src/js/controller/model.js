@@ -232,7 +232,7 @@ define([
 
             // Attempt setting the playback rate to be the user selected value
             this.setPlaybackRate(this.get('defaultPlaybackRate'));
-            this.setPlaybackRates();
+            this.setPlaybackRateOptions();
 
             _provider.on('all', _videoEventHandler, this);
 
@@ -394,7 +394,7 @@ define([
             if (streamType === 'LIVE') {
                 this.setPlaybackRate(1);
             }
-            this.setPlaybackRates();
+            this.setPlaybackRateOptions();
         };
 
         this.setPlaybackRate = function(playbackRate) {
@@ -415,13 +415,13 @@ define([
             }
         };
 
-        this.setPlaybackRates = function() {
+        this.setPlaybackRateOptions = function() {
             var supportsPlaybackRates =
                 this.get('playbackRateControls') &&
                 _provider.supportsPlaybackRate &&
                 this.get('streamType') !== 'LIVE';
 
-            this.set('playbackRates', supportsPlaybackRates ? this.get('playbackRateControls') : false);
+            this.set('playbackRateOptions', supportsPlaybackRates ? this.get('playbackRateControls') : false);
         };
 
         // The model is also the mediaController for now
