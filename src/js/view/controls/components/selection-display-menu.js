@@ -20,7 +20,7 @@ define([
         }
 
         setup(list, selectedIndex, options) {
-            this.defaultIndex = options.defaultIndex;
+            this.defaultIndex = (options && options.defaultIndex > -1) ? options.defaultIndex : -1;
             super.setup(list, selectedIndex, options);
         }
 

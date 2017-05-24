@@ -346,7 +346,7 @@ define([
         }
 
         onPlaybackRate(model, value) {
-            let playbackRateOptions = this._model.get('playbackRateOptions');
+            let playbackRateOptions = model.get('playbackRateOptions');
             if (playbackRateOptions) {
                 this.elements.playbackrates.selectItem(playbackRateOptions.indexOf(value));
             }

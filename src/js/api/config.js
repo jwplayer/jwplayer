@@ -110,22 +110,15 @@ define([
         }
 
         if (config.playbackRateControls) {
-            var playbackRateOptions;
-
             var validRatesFilter = (value) => { return _.isNumber(value) && value >= 0.25 && value <= 4; };
+            var playbackRateOptions = [0.5, 1, 1.25, 1.5, 2];
 
-            if (_.isBoolean(config.playbackRateControls)) {
-                playbackRateOptions = [0.5, 1, 1.25, 1.5, 2];
-            } else if (_.isArray(config.playbackRateControls)) {
+            if (_.isArray(config.playbackRateControls)) {
                 var filteredResults = config.playbackRateControls.filter(validRatesFilter);
                 playbackRateOptions = filteredResults.length ? filteredResults : false;
             }
 
-            if (playbackRateOptions) {
-                config.playbackRateOptions = config.playbackRateControls = playbackRateOptions;
-            } else {
-                config.playbackRateControls = false;
-            }
+            config.playbackRateControls = (playbackRateOptions.length) ? playbackRateOptions : false;
         }
 
         // Set defaultPlaybackRate to 1 if the value from storage isn't in the playbackRateControls menu
@@ -134,7 +127,6 @@ define([
         }
 
         config.playbackRate = config.defaultPlaybackRate;
-        config.playbackRateOptions = (config.playbackRateOptions) ? config.playbackRateOptions : false;
 
         if (!config.aspectratio) {
             delete config.aspectratio;
