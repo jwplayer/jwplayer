@@ -281,12 +281,33 @@ define([
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
 
-            if (_model.get('playbackRateControls')) {
-                _model.change('playbackRateOptions', this.onPlaybackRateOptions, this);
+            let playbackRateControls = _model.get('playbackRateControls');
+            if (playbackRateControls) {
+                let selectedIndex = playbackRateControls.indexOf(this._model.get('playbackRate'));
+                let playbackRateLabels = playbackRateControls.map((playbackRate) => {
+                    return {
+                        label: (playbackRate === 1) ?
+                            this._localization.normal : Math.round(playbackRate * 100) / 100 + 'x',
+                        rate: playbackRate
+                    };
+                });
+
+                this.elements.playbackrates.setup(
+                    playbackRateLabels,
+                    selectedIndex,
+                    { defaultIndex: playbackRateControls.indexOf(1) }
+                );
+
+                _model.change('playbackRatesAvailable', this.onPlaybackRatesAvailable, this);
                 _model.change('playbackRate', this.onPlaybackRate, this);
 
                 this.elements.playbackrates.on('select', function (index) {
-                    this._model.setPlaybackRate(this._model.get('playbackRateOptions')[index]);
+                    this._model.setPlaybackRate(playbackRateControls[index]);
+                }, this);
+
+                this.elements.playbackrates.on('toggleValue', function () {
+                    let index = playbackRateControls.indexOf(this._model.get('playbackRate'));
+                    this._model.setPlaybackRate(playbackRateControls[index ? 0 : 1]);
                 }, this);
             }
 
@@ -325,31 +346,12 @@ define([
             this.elements.cc.selectItem(index);
         }
 
-        onPlaybackRateOptions(model, rates) {
-            if (rates) {
-                let selectedIndex = rates.indexOf(model.get('playbackRate'));
-                let playbackRateLabels = rates.map((playbackRate) => {
-                    return {
-                        label: (playbackRate === 1) ?
-                            this._localization.normal : Math.round(playbackRate * 100) / 100 + 'x',
-                        rate: playbackRate
-                    };
-                });
-                this.elements.playbackrates.setup(
-                    playbackRateLabels,
-                    selectedIndex,
-                    { isToggle: false, defaultIndex: rates.indexOf(1) }
-                );
-            } else {
-                this.elements.playbackrates.setup();
-            }
+        onPlaybackRatesAvailable(model, playbackRatesAvailable) {
+            utils.toggleClass(this.elements.playbackrates.el, 'jw-hidden', !playbackRatesAvailable);
         }
 
         onPlaybackRate(model, value) {
-            let playbackRateOptions = model.get('playbackRateOptions');
-            if (playbackRateOptions) {
-                this.elements.playbackrates.selectItem(playbackRateOptions.indexOf(value));
-            }
+            this.elements.playbackrates.selectItem(model.get('playbackRateControls').indexOf(value));
         }
 
         onPlaylistItem() {

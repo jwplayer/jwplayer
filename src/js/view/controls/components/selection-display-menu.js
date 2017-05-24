@@ -20,24 +20,24 @@ define([
         }
 
         setup(list, selectedIndex, options) {
+            this.list = list;
             this.defaultIndex = (options && options.defaultIndex > -1) ? options.defaultIndex : -1;
             super.setup(list, selectedIndex, options);
+            utils.addClass(this.el, 'jw-button-color');
         }
 
         selectItem(selectedIndex) {
             super.selectItem(selectedIndex);
 
-            if (this.content) {
-                if (selectedIndex !== -1) {
-                    var isDefaultOption = selectedIndex === this.defaultIndex;
+            if (selectedIndex !== -1) {
+                var isDefaultOption = selectedIndex === this.defaultIndex;
 
-                    if (!isDefaultOption) {
-                        this.selectionText.textContent = this.content.children[selectedIndex].textContent;
-                    }
-
-                    utils.toggleClass(this.defaultIcon, 'jw-hidden', !isDefaultOption);
-                    utils.toggleClass(this.selectionText, 'jw-hidden', isDefaultOption);
+                if (!isDefaultOption) {
+                    this.selectionText.textContent = this.list[selectedIndex].label;
                 }
+
+                utils.toggleClass(this.defaultIcon, 'jw-hidden', !isDefaultOption);
+                utils.toggleClass(this.selectionText, 'jw-hidden', isDefaultOption);
             }
         }
     };

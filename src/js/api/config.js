@@ -118,7 +118,7 @@ define([
                 playbackRateOptions = filteredResults.length ? filteredResults : false;
             }
 
-            config.playbackRateControls = (playbackRateOptions.length) ? playbackRateOptions : false;
+            config.playbackRateControls = (playbackRateOptions.length > 1) ? playbackRateOptions : false;
         }
 
         // Set defaultPlaybackRate to 1 if the value from storage isn't in the playbackRateControls menu
