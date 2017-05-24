@@ -189,9 +189,7 @@ define([
         }
 
         function _playbackRateHandler() {
-            _this.trigger(events.JWPLAYER_PLAYBACK_RATE_CHANGED, {
-                playbackRate: _videotag.playbackRate
-            });
+            _this.trigger('ratechange', { playbackRate: _videotag.playbackRate });
         }
 
         function _checkVisualQuality() {

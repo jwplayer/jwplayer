@@ -81,6 +81,9 @@ define([
                         this.set(type, data[type]);
                     }
                     return;
+                case 'ratechange':
+                    this.set('playbackRate', data.playbackRate);
+                    return;
                 case events.JWPLAYER_MEDIA_TYPE:
                     if (mediaModel.get('mediaType') !== data.mediaType) {
                         mediaModel.set('mediaType', data.mediaType);
@@ -122,9 +125,6 @@ define([
                         mediaModel.set('duration', data.duration);
                         this.set('duration', data.duration);
                     }
-                    break;
-                case events.JWPLAYER_PLAYBACK_RATE_CHANGED:
-                    this.set('playbackRate', data.playbackRate);
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
