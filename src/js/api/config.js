@@ -38,7 +38,7 @@ define([
             cc: 'Closed captions',
             audioTracks: 'Audio tracks',
             playbackRates: 'Playback rates',
-            normal: 'Normal',
+            playbackRatesNormal: 'Normal',
             replay: 'Replay',
             buffer: 'Loading',
             more: 'More',
@@ -114,11 +114,13 @@ define([
             var playbackRateOptions = [0.5, 1, 1.25, 1.5, 2];
 
             if (_.isArray(config.playbackRateControls)) {
-                var filteredResults = config.playbackRateControls.filter(validRatesFilter);
-                playbackRateOptions = filteredResults.length ? filteredResults : false;
+                playbackRateOptions = config.playbackRateControls.filter(validRatesFilter);
+                if (playbackRateOptions.indexOf(1) < 0) {
+                    playbackRateOptions.push(1);
+                }
             }
 
-            config.playbackRateControls = (playbackRateOptions.length > 1) ? playbackRateOptions : false;
+            config.playbackRateControls = playbackRateOptions;
         }
 
         // Set defaultPlaybackRate to 1 if the value from storage isn't in the playbackRateControls menu
