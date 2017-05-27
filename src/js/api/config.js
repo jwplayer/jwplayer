@@ -5,7 +5,7 @@ define([
     /* global __webpack_public_path__:true*/
     /* eslint camelcase: 0 */
     // Defaults
-    var Defaults = {
+    const Defaults = {
         autostart: false,
         controls: true,
         displaytitle: true,
@@ -38,7 +38,6 @@ define([
             cc: 'Closed captions',
             audioTracks: 'Audio tracks',
             playbackRates: 'Playback rates',
-            playbackRatesNormal: 'Normal',
             replay: 'Replay',
             buffer: 'Loading',
             more: 'More',
@@ -67,15 +66,15 @@ define([
         return val;
     }
 
-    var createConfig = function (options, storage) {
-        var persisted = storage && storage.getAllItems();
-        var allOptions = _.extend({}, (window.jwplayer || {}).defaults, persisted, options);
+    const createConfig = function (options, storage) {
+        const persisted = storage && storage.getAllItems();
+        let allOptions = _.extend({}, (window.jwplayer || {}).defaults, persisted, options);
 
         _deserialize(allOptions);
 
         allOptions.localization = _.extend({}, Defaults.localization, allOptions.localization);
 
-        var config = _.extend({}, Defaults, allOptions);
+        let config = _.extend({}, Defaults, allOptions);
         if (config.base === '.') {
             config.base = utils.getScriptPath('jwplayer.js');
         }
@@ -83,7 +82,7 @@ define([
         __webpack_public_path__ = config.base;
         config.width = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
-        var pathToFlash = (utils.getScriptPath('jwplayer.js') || config.base);
+        const pathToFlash = (utils.getScriptPath('jwplayer.js') || config.base);
         config.flashplayer = config.flashplayer || pathToFlash + 'jwplayer.flash.swf';
         config.flashloader = config.flashloader || pathToFlash + 'jwplayer.loader.swf';
 
@@ -109,18 +108,24 @@ define([
             config.skin = config.skin.replace('.xml', '');
         }
 
-        if (config.playbackRateControls) {
-            var validRatesFilter = (value) => { return _.isNumber(value) && value >= 0.25 && value <= 4; };
-            var playbackRateOptions = [0.5, 1, 1.25, 1.5, 2];
+        let rateControls = config.playbackRateControls;
 
-            if (_.isArray(config.playbackRateControls)) {
-                playbackRateOptions = config.playbackRateControls.filter(validRatesFilter);
-                if (playbackRateOptions.indexOf(1) < 0) {
-                    playbackRateOptions.push(1);
+        if (rateControls) {
+            let rates = [0.5, 1, 1.25, 1.5, 2];
+
+            if (_.isArray(rateControls)) {
+                rates = rateControls
+                    .filter(rate => _.isNumber(rate) && utils.between(rate, 0.25, 4))
+                    .map(rate => Math.round(rate * 4) / 4);
+
+                if (rates.indexOf(1) < 0) {
+                    rates.push(1);
                 }
+
+                rates.sort();
             }
 
-            config.playbackRateControls = playbackRateOptions;
+            config.playbackRateControls = rates;
         }
 
         // Set defaultPlaybackRate to 1 if the value from storage isn't in the playbackRateControls menu
@@ -134,10 +139,10 @@ define([
             delete config.aspectratio;
         }
 
-        var configPlaylist = config.playlist;
+        const configPlaylist = config.playlist;
         if (!configPlaylist) {
             // This is a legacy fallback, assuming a playlist item has been flattened into the config
-            var obj = _.pick(config, [
+            const obj = _.pick(config, [
                 'title',
                 'description',
                 'type',
@@ -172,12 +177,12 @@ define([
         if (/^\d*\.?\d+%$/.test(ar)) {
             return ar;
         }
-        var index = ar.indexOf(':');
+        const index = ar.indexOf(':');
         if (index === -1) {
             return 0;
         }
-        var w = parseFloat(ar.substr(0, index));
-        var h = parseFloat(ar.substr(index + 1));
+        const w = parseFloat(ar.substr(0, index));
+        const h = parseFloat(ar.substr(index + 1));
         if (w <= 0 || h <= 0) {
             return 0;
         }

@@ -286,8 +286,7 @@ define([
                 let selectedIndex = playbackRateControls.indexOf(this._model.get('playbackRate'));
                 let playbackRateLabels = playbackRateControls.map((playbackRate) => {
                     return {
-                        label: (playbackRate === 1) ?
-                            this._localization.playbackRatesNormal : Math.round(playbackRate * 100) / 100 + 'x',
+                        label: playbackRate + 'x',
                         rate: playbackRate
                     };
                 });
@@ -298,7 +297,7 @@ define([
                     { defaultIndex: playbackRateControls.indexOf(1) }
                 );
 
-                _model.change('streamType provider', this.onShowPlaybackRates, this);
+                _model.change('streamType provider', this.togglePlaybackRateControls, this);
                 _model.change('playbackRate', this.onPlaybackRate, this);
 
                 this.elements.playbackrates.on('select', function (index) {
@@ -306,7 +305,7 @@ define([
                 }, this);
 
                 this.elements.playbackrates.on('toggleValue', function () {
-                    let index = playbackRateControls.indexOf(this._model.get('playbackRate'));
+                    const index = playbackRateControls.indexOf(this._model.get('playbackRate'));
                     this._model.setPlaybackRate(playbackRateControls[index ? 0 : 1]);
                 }, this);
             }
@@ -346,13 +345,13 @@ define([
             this.elements.cc.selectItem(index);
         }
 
-        onShowPlaybackRates(model, value) {
-            const hidePlaybackRates =
-                !model.getVideo().supportsPlaybackRate ||
-                model.get('streamType') === 'LIVE' ||
-                model.get('playbackRateControls').length < 2;
+        togglePlaybackRateControls(model) {
+            const showPlaybackRateControls =
+                model.getVideo().supportsPlaybackRate &&
+                model.get('streamType') !== 'LIVE' &&
+                model.get('playbackRateControls').length > 1;
 
-            utils.toggleClass(this.elements.playbackrates.el, 'jw-hidden', hidePlaybackRates);
+            utils.toggleClass(this.elements.playbackrates.el, 'jw-hidden', !showPlaybackRateControls);
         }
 
         onPlaybackRate(model, value) {
