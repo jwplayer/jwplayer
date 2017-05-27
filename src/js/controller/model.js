@@ -16,7 +16,6 @@ define([
         var _provider;
         var _beforecompleted = false;
         var _attached = true;
-        var _currentProvider = utils.noop;
 
         this.mediaController = _.extend({}, Events);
         this.mediaModel = new MediaModel();
@@ -192,7 +191,7 @@ define([
 
         this.onMediaContainer = function() {
             var container = this.get('mediaContainer');
-            _currentProvider.setContainer(container);
+            _provider.setContainer(container);
         };
 
         this.changeVideoProvider = function(Provider) {
@@ -207,28 +206,27 @@ define([
             }
 
             if (!Provider) {
-                _provider = _currentProvider = Provider;
+                this.resetProvider();
                 this.set('provider', undefined);
                 return;
             }
 
-            _currentProvider = new Provider(_this.get('id'), _this.getConfiguration());
+            _provider = new Provider(_this.get('id'), _this.getConfiguration());
 
             var container = this.get('mediaContainer');
             if (container) {
-                _currentProvider.setContainer(container);
+                _provider.setContainer(container);
             } else {
                 this.once('change:mediaContainer', this.onMediaContainer);
             }
 
-            this.set('provider', _currentProvider.getName());
+            this.set('provider', _provider.getName());
 
-            if (_currentProvider.getName().name.indexOf('flash') === -1) {
+            if (_provider.getName().name.indexOf('flash') === -1) {
                 this.set('flashThrottle', undefined);
                 this.set('flashBlocked', false);
             }
 
-            _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
 
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
@@ -334,17 +332,17 @@ define([
 
             var provider = this.chooseProvider(source);
             // If we are changing video providers
-            if (!provider || !(_currentProvider instanceof provider)) {
+            if (!provider || !(_provider instanceof provider)) {
                 _this.changeVideoProvider(provider);
             }
 
-            if (!_currentProvider) {
+            if (!_provider) {
                 return;
             }
 
             // this allows the providers to preload
-            if (_currentProvider.init) {
-                _currentProvider.init(item);
+            if (_provider.init) {
+                _provider.init(item);
             }
 
             // Listening for change:item won't suffice when loading the same index or file
@@ -358,7 +356,7 @@ define([
         };
 
         this.resetProvider = function() {
-            _currentProvider = null;
+            _provider = null;
         };
 
         this.setVolume = function(volume) {
