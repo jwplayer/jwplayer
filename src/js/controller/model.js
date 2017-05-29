@@ -139,7 +139,8 @@ define([
                 case events.JWPLAYER_MEDIA_COMPLETE:
                     _beforecompleted = true;
                     this.mediaController.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE, evt);
-                    if (_attached) {
+                    if (_attached && mediaModel.get('state') !== states.COMPLETE &&
+                        mediaModel.get('state') !== states.IDLE) {
                         this.playbackComplete();
                     }
                     return;
