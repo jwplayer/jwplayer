@@ -115,7 +115,7 @@ define([
 
             if (_.isArray(rateControls)) {
                 rates = rateControls
-                    .filter(rate => _.isNumber(rate) && utils.between(rate, 0.25, 4))
+                    .filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
                     .map(rate => Math.round(rate * 4) / 4);
 
                 if (rates.indexOf(1) < 0) {
