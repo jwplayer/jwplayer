@@ -765,10 +765,6 @@ define([
             }
             utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
-            if (state === states.COMPLETE) {
-                _api.setFullscreen(false);
-            }
-
             // Update captions renderer
             switch (state) {
                 case states.IDLE:
