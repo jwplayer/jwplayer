@@ -3,17 +3,14 @@ define([
     'utils/underscore'
 ], function(clock, _) {
 
-    var Timer = function() {
-        var startTimes = {};
-        var sum = {};
-        var counts = {};
+    const Timer = function() {
+        const startTimes = {};
+        const sum = {};
+        const counts = {};
 
-        var ticks = {};
+        const ticks = {};
 
-        var started = new Date().getTime();
-        if (started < 1) {
-            started = 1;
-        }
+        const started = Math.max(1, new Date().getTime());
 
         return {
             // Profile methods
@@ -25,19 +22,19 @@ define([
                 if (!startTimes[methodName]) {
                     return;
                 }
-                var now = started + clock.now();
-                var e = now - startTimes[methodName];
+                const now = started + clock.now();
+                const e = now - startTimes[methodName];
                 delete startTimes[methodName];
                 sum[methodName] = sum[methodName] + e || e;
             },
             dump: function() {
                 // Add running sum of latest method
                 // This lets `jwplayer().qoe().item.sums` return a tally of running playing/paused time
-                var runningSums = _.extend({}, sum);
-                for (var methodName in startTimes) {
+                const runningSums = _.extend({}, sum);
+                for (const methodName in startTimes) {
                     if (Object.prototype.hasOwnProperty.call(startTimes, methodName)) {
-                        var now = started + clock.now();
-                        var e = now - startTimes[methodName];
+                        const now = started + clock.now();
+                        const e = now - startTimes[methodName];
                         runningSums[methodName] = runningSums[methodName] + e || e;
                     }
                 }
