@@ -21,12 +21,15 @@ define([
             return _.clone(this.attributes);
         },
         change: function (name, callback, context) {
-            // Register a change handler and immediately invoke the callback with the current value
-            var eventName = 'change:' + name;
-            var currentVal = this.get(name);
+            name.split(' ').forEach((handlerName) => {
+                // Register a change handler and immediately invoke the callback with the current value
+                var eventName = 'change:' + handlerName;
+                var currentVal = this.get(handlerName);
 
-            this.on(eventName, callback, context);
-            callback.call(context, this, currentVal, currentVal);
+                this.on(eventName, callback, context);
+                callback.call(context, this, currentVal, currentVal);
+            });
+
             return this;
         }
     }, Events);

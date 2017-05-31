@@ -125,6 +125,7 @@ define([
 
         this.isSDK = _isSDK;
         this.video = _videotag;
+        this.supportsPlaybackRate = true;
 
         _setupListeners(_mediaEvents, _videotag);
 
@@ -919,6 +920,10 @@ define([
 
         this.getPlaybackRate = function() {
             return _videotag.playbackRate;
+        };
+
+        this.getPlaybackRate = function() {
+            return _videotag.defaultPlaybackRate;
         };
 
         this.getCurrentQuality = function() {

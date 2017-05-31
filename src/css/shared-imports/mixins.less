@@ -104,12 +104,14 @@
 
         .jw-button-color {
             color: @inactive-color;
+            fill: @inactive-color;
         }
 
         &:not(.jw-flag-touch) .jw-button-color:hover,
         .jw-button-color:focus {
             outline: none;
             color: @hover-color;
+            fill: @hover-color;
         }
 
         .jw-toggle {
@@ -328,6 +330,11 @@
                 height: @controlbar-height;
                 line-height: @controlbar-height;
             }
+
+            .jw-selection-menu .jw-menu-selection-text {
+                height: @controlbar-height * 1.334;
+                line-height: @controlbar-height * 1.334;
+            }
         }
 
         &.jw-flag-ads.jw-ie .jw-text-alt,
@@ -376,6 +383,10 @@
             .jw-icon-inline,
             .jw-icon-tooltip {
                 min-width: @controlbar-height * 5/8;
+            }
+
+            .jw-selection-menu {
+                padding: 0 @ui-padding / 2;
             }
         }
     }

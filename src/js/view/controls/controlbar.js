@@ -1,3 +1,5 @@
+import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
+
 define([
     'utils/helpers',
     'utils/underscore',
@@ -8,9 +10,11 @@ define([
     'view/controls/components/slider',
     'view/controls/components/timeslider',
     'view/controls/components/menu',
+    'view/controls/components/selection-display-menu',
     'view/controls/components/volumetooltip',
     'view/controls/components/button',
-], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, VolumeTooltip, button) {
+], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip,
+            button) {
     function text(name, role) {
         const element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
@@ -145,6 +149,11 @@ define([
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
+                playbackrates: new SelectionDisplayMenu(
+                    'jw-icon-playback-rate',
+                    this._localization.playbackRates,
+                    PLAYBACK_RATE_ICON
+                ),
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
@@ -170,6 +179,7 @@ define([
                     this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
+                    this.elements.playbackrates,
                     this.elements.mute,
                     this.elements.cast,
                     this.elements.volume,
@@ -182,6 +192,7 @@ define([
                 this.elements.hd,
                 this.elements.cc,
                 this.elements.audiotracks,
+                this.elements.playbackrates,
                 this.elements.volumetooltip
             ]);
 
@@ -270,6 +281,35 @@ define([
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
 
+            let playbackRateControls = _model.get('playbackRateControls');
+            if (playbackRateControls) {
+                let selectedIndex = playbackRateControls.indexOf(this._model.get('playbackRate'));
+                let playbackRateLabels = playbackRateControls.map((playbackRate) => {
+                    return {
+                        label: playbackRate + 'x',
+                        rate: playbackRate
+                    };
+                });
+
+                this.elements.playbackrates.setup(
+                    playbackRateLabels,
+                    selectedIndex,
+                    { defaultIndex: playbackRateControls.indexOf(1) }
+                );
+
+                _model.change('streamType provider', this.togglePlaybackRateControls, this);
+                _model.change('playbackRate', this.onPlaybackRate, this);
+
+                this.elements.playbackrates.on('select', function (index) {
+                    this._model.setPlaybackRate(playbackRateControls[index]);
+                }, this);
+
+                this.elements.playbackrates.on('toggleValue', function () {
+                    const index = playbackRateControls.indexOf(this._model.get('playbackRate'));
+                    this._model.setPlaybackRate(playbackRateControls[index ? 0 : 1]);
+                }, this);
+            }
+
             new UI(this.elements.duration).on('click tap', function() {
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
@@ -305,6 +345,19 @@ define([
             this.elements.cc.selectItem(index);
         }
 
+        togglePlaybackRateControls(model) {
+            const showPlaybackRateControls =
+                model.getVideo().supportsPlaybackRate &&
+                model.get('streamType') !== 'LIVE' &&
+                model.get('playbackRateControls').length > 1;
+
+            utils.toggleClass(this.elements.playbackrates.el, 'jw-hidden', !showPlaybackRateControls);
+        }
+
+        onPlaybackRate(model, value) {
+            this.elements.playbackrates.selectItem(model.get('playbackRateControls').indexOf(value));
+        }
+
         onPlaylistItem() {
             this.elements.audiotracks.setup();
         }
@@ -313,7 +366,7 @@ define([
             mediaModel.on('change:levels', function(levelsChangeModel, levels) {
                 this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
             }, this);
-            mediaModel.on('change:currentLevel', function(currentLevelChangemodel, level) {
+            mediaModel.on('change:currentLevel', function(currentLevelChangeModel, level) {
                 this.elements.hd.selectItem(level);
             }, this);
             mediaModel.on('change:audioTracks', function(audioTracksChangeModel, audioTracks) {
@@ -321,7 +374,7 @@ define([
                     return { label: track.name };
                 });
                 this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'),
-                    { toggle: false });
+                    { isToggle: false });
             }, this);
             mediaModel.on('change:currentAudioTrack', function(currentAudioTrackChangeModel, currentAudioTrack) {
                 this.elements.audiotracks.selectItem(currentAudioTrack);

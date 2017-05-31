@@ -30,8 +30,6 @@ define([
                 // always start on first playlist item
                 item: 0,
                 itemMeta: {},
-                defaultPlaybackRate: 1,
-                playbackRate: 1,
                 playlistItem: undefined,
                 // Initial state, upon setup
                 state: states.IDLE,
@@ -398,20 +396,23 @@ define([
         };
 
         this.setPlaybackRate = function(playbackRate) {
-            if (!_attached || !_.isNumber(playbackRate)) {
+            playbackRate = parseFloat(playbackRate);
+
+            if (!_attached || _.isNaN(playbackRate)) {
                 return;
             }
 
-            // Clamp the rate between 0.25x and 4x speed
-            var clampedRate = Math.max(0.25, Math.min(playbackRate, 4));
+            // Clamp the rate between 0.25x and 4x
+            playbackRate = utils.between(playbackRate, 0.25, 4);
+
             if (this.get('streamType') === 'LIVE') {
-                clampedRate = 1;
+                playbackRate = 1;
             }
 
-            this.set('defaultPlaybackRate', clampedRate);
-            // Providers which support changes in playback rate will return the rate that we changed to
-            if (_provider) {
-                _provider.setPlaybackRate(clampedRate);
+            this.set('defaultPlaybackRate', playbackRate);
+
+            if (_provider && _provider.setPlaybackRate) {
+                _provider.setPlaybackRate(playbackRate);
             }
         };
 
