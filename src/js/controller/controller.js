@@ -579,6 +579,9 @@ define([
                         // This prevents media from replaying when a completed video scrolls into view
                         _model.set('playOnViewable', false);
                         _model.set('state', states.COMPLETE);
+                        if (utils.isIOS()) {
+                            this.exitFullscreen();
+                        }
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                     }
                     return;
