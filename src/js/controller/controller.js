@@ -601,9 +601,6 @@ define([
                         }
                         // Autoplay/pause no longer needed since there's no more media to play
                         // This prevents media from replaying when a completed video scrolls into view
-                        if (utils.isIOS()) {
-                            _this.exitFullscreen();
-                        }
                         _model.set('playOnViewable', false);
                         _model.set('state', states.COMPLETE);
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
