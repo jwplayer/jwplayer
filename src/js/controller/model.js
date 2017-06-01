@@ -198,7 +198,6 @@ define([
 
         this.changeVideoProvider = function(Provider) {
             this.off('change:mediaContainer', this.onMediaContainer);
-            var previousProviderPlaybackRateSupported = null;
 
             if (_provider) {
                 _provider.off(null, null, this);
@@ -206,7 +205,6 @@ define([
                     _provider.remove();
                 }
                 delete _provider.instreamMode;
-                previousProviderPlaybackRateSupported = _provider.supportsPlaybackRate;
             }
 
             if (!Provider) {
@@ -241,10 +239,8 @@ define([
             // Attempt setting the playback rate to be the user selected value
             this.setPlaybackRate(this.get('defaultPlaybackRate'));
 
-            // Trigger ratechange because the provider may already have the rate in the above setPlaybackRate()
-            if (_provider.supportsPlaybackRate !== previousProviderPlaybackRateSupported) {
-                _provider.trigger('ratechange', { playbackRate: _provider.getPlaybackRate() });
-            }
+            // Set playbackRate because provider support for playbackRate may have changed and not sent an update
+            this.set('playbackRate', _provider.getPlaybackRate());
 
             if (this.get('instreamMode') === true) {
                 _provider.instreamMode = true;

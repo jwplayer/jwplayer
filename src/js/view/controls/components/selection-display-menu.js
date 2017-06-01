@@ -29,15 +29,15 @@ define([
         selectItem(selectedIndex) {
             super.selectItem(selectedIndex);
 
-            // Show the default icon if we have the default value selected, or one that isn't in the menu
-            var isDefaultOption = selectedIndex === this.defaultIndex || selectedIndex === -1;
+            // Show the selected item's label.  If it's not in the menu, show the default icon instead.
+            var showSelectionLabel = selectedIndex !== this.defaultIndex && selectedIndex !== -1;
 
-            if (!isDefaultOption) {
+            if (showSelectionLabel) {
                 this.selectionText.textContent = this.list[selectedIndex].label;
             }
 
-            utils.toggleClass(this.defaultIcon, 'jw-hidden', !isDefaultOption);
-            utils.toggleClass(this.selectionText, 'jw-hidden', isDefaultOption);
+            utils.toggleClass(this.defaultIcon, 'jw-hidden', showSelectionLabel);
+            utils.toggleClass(this.selectionText, 'jw-hidden', !showSelectionLabel);
         }
     };
 });
