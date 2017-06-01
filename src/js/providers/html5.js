@@ -915,15 +915,12 @@ define([
         };
 
         this.setPlaybackRate = function(playbackRate) {
-            _videotag.playbackRate = playbackRate;
+            // Set defaultPlaybackRate so that we do not send ratechange events when setting src
+            _videotag.playbackRate = _videotag.defaultPlaybackRate = playbackRate;
         };
 
         this.getPlaybackRate = function() {
             return _videotag.playbackRate;
-        };
-
-        this.getPlaybackRate = function() {
-            return _videotag.defaultPlaybackRate;
         };
 
         this.getCurrentQuality = function() {
