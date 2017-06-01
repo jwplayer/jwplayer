@@ -29,16 +29,15 @@ define([
         selectItem(selectedIndex) {
             super.selectItem(selectedIndex);
 
-            if (selectedIndex !== -1) {
-                var isDefaultOption = selectedIndex === this.defaultIndex;
+            // Show the default icon if we have the default value selected, or one that isn't in the menu
+            var isDefaultOption = selectedIndex === this.defaultIndex || selectedIndex === -1;
 
-                if (!isDefaultOption) {
-                    this.selectionText.textContent = this.list[selectedIndex].label;
-                }
-
-                utils.toggleClass(this.defaultIcon, 'jw-hidden', !isDefaultOption);
-                utils.toggleClass(this.selectionText, 'jw-hidden', isDefaultOption);
+            if (!isDefaultOption) {
+                this.selectionText.textContent = this.list[selectedIndex].label;
             }
+
+            utils.toggleClass(this.defaultIcon, 'jw-hidden', !isDefaultOption);
+            utils.toggleClass(this.selectionText, 'jw-hidden', isDefaultOption);
         }
     };
 });
