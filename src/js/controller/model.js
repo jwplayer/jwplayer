@@ -396,9 +396,7 @@ define([
         };
 
         this.setPlaybackRate = function(playbackRate) {
-            playbackRate = parseFloat(playbackRate);
-
-            if (!_attached || _.isNaN(playbackRate)) {
+            if (!_attached || !_.isNumber(playbackRate)) {
                 return;
             }
 
