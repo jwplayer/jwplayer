@@ -6,6 +6,8 @@ import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 
+let ControlsModule;
+
 define([
     'events/events',
     'events/states',
@@ -19,8 +21,9 @@ define([
     'view/logo',
     'view/preview',
     'view/title',
+    'controller/controls-loader',
 ], function(events, states, Events, utils, _, requestFullscreenHelper, flagNoFocus,
-            ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
+            ClickHandler, CaptionsRenderer, Logo, Preview, Title, ControlsLoader) {
 
     const _styles = utils.style;
     const _bounds = utils.bounds;
@@ -29,7 +32,7 @@ define([
 
     let stylesInjected = false;
 
-    return function View(_api, _model) {
+    function View(_api, _model) {
         const _this = _.extend(this, Events, {
             isSetup: false,
             api: _api,
@@ -339,7 +342,7 @@ define([
             });
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
-
+            
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
                 mediaModel.on('change:visualQuality', () => {
@@ -394,14 +397,15 @@ define([
         }
 
         this.init = function() {
+            itemReady(_model.get('playlistItem'));
             this.updateBounds();
 
-            _model.change('state', _stateHandler);
             _model.on('change:fullscreen', _fullscreen);
             _model.on('change:activeTab', updateVisibility);
             _model.on('change:fullscreen', updateVisibility);
             _model.on('change:intersectionRatio', updateVisibility);
             _model.on('change:visibility', redraw);
+            _model.on('itemReady', itemReady);
 
             updateVisibility();
 
@@ -410,10 +414,52 @@ define([
                 redraw(_model, 1, 0);
             }
 
+            _model.change('state', _stateHandler);
+            _model.change('controls', changeControls);
+
             // Triggering 'resize' resulting in player 'ready'
             _lastWidth = _lastHeight = null;
             this.checkResized();
         };
+
+        function changeControls(model, enable) {
+            if (enable) {
+                if (!ControlsModule) {
+                    ControlsLoader.load()
+                        .then(function (Controls) {
+                            ControlsModule = Controls;
+                            addControls();
+                        })
+                        .catch(function (reason) {
+                            _this.trigger('error', {
+                                message: 'Controls failed to load',
+                                reason: reason
+                            });
+                        });
+                } else {
+                    addControls();
+                }
+            } else {
+                _this.removeControls();
+            }
+        }
+
+        function addControls() {
+            const controls = new ControlsModule(document, _this.element());
+            _this.addControls(controls);
+        }
+
+        function itemReady(item) {
+            var videotag = _videoLayer.querySelector('video, audio');
+            // Youtube, chromecast and flash providers do no support video tags
+            if (!videotag) {
+                return;
+            }
+            const dummyDiv = document.createElement('DIV');
+            // Writing a string to innerHTML completely decodes multiple-encoded strings
+            dummyDiv.innerHTML = item.title || '';
+            videotag.setAttribute('title', dummyDiv.textContent);
+        }
 
         function redraw(model, visibility, lastVisibility) {
             if (visibility && !lastVisibility) {
@@ -533,6 +579,8 @@ define([
                     _captionsRenderer.renderCues(true);
                 }
             });
+
+            controls.on('all', _this.trigger, _this);
 
             const overlaysElement = _playerElement.querySelector('.jw-overlays');
             overlaysElement.addEventListener('mousemove', _userActivityCallback);
@@ -680,21 +728,12 @@ define([
         }
 
         function _toggleDOMFullscreen(playerElement, fullscreenState) {
-            if (fullscreenState) {
-                utils.addClass(playerElement, 'jw-flag-fullscreen');
-                _styles(document.body, {
-                    overflowY: 'hidden'
-                });
+            utils.toggleClass(playerElement, 'jw-flag-fullscreen', fullscreenState);
+            _styles(document.body, { overflowY: (fullscreenState) ? 'hidden' : '' });
 
-                // On going fullscreen we want the control bar to fade after a few seconds
-                if (_controls) {
-                    _controls.userActive();
-                }
-            } else {
-                utils.removeClass(playerElement, 'jw-flag-fullscreen');
-                _styles(document.body, {
-                    overflowY: ''
-                });
+            if (fullscreenState && _controls) {
+                // When going into fullscreen, we want the control bar to fade after a few seconds
+                _controls.userActive();
             }
 
             _resizeMedia();
@@ -902,5 +941,11 @@ define([
             }
             utils.clearCss(_model.get('id'));
         };
+    }
+
+    View.prototype.setControlsModule = function(Controls) {
+        ControlsModule = Controls;
     };
+
+    return View;
 });

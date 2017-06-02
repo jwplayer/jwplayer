@@ -75,6 +75,7 @@ define([
             pause: _pauseHandler,
             seeked: _seekedHandler,
             timeupdate: _timeUpdateHandler,
+            ratechange: _playbackRateHandler,
             volumechange: _volumeChangeHandler,
             webkitbeginfullscreen: _fullscreenBeginHandler,
             webkitendfullscreen: _fullscreenEndHandler
@@ -124,6 +125,7 @@ define([
 
         this.isSDK = _isSDK;
         this.video = _videotag;
+        this.supportsPlaybackRate = true;
 
         _setupListeners(_mediaEvents, _videotag);
 
@@ -185,6 +187,10 @@ define([
 
                 _checkVisualQuality();
             }
+        }
+
+        function _playbackRateHandler() {
+            _this.trigger('ratechange', { playbackRate: _videotag.playbackRate });
         }
 
         function _checkVisualQuality() {
@@ -906,6 +912,18 @@ define([
                     _completeLoad(time, duration);
                 }
             }
+        };
+
+        this.setPlaybackRate = function(playbackRate) {
+            _videotag.playbackRate = playbackRate;
+        };
+
+        this.getPlaybackRate = function() {
+            return _videotag.playbackRate;
+        };
+
+        this.getPlaybackRate = function() {
+            return _videotag.defaultPlaybackRate;
         };
 
         this.getCurrentQuality = function() {

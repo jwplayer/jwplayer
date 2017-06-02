@@ -891,7 +891,9 @@ define([
 
         var boxPositions = [];
         var containerBox = BoxPosition.getSimpleBoxPosition(paddedOverlay);
-        var currentNumOfLines = cues.reduce(function(totalLines, cue) { return totalLines + cue.text.split('\n').length; }, 0);
+        var currentNumOfLines = cues.reduce(function(totalLines, cue) {
+            return totalLines + cue.text.split('\n').length;
+        }, 0);
 
         (function () {
             for (var j = 0; j < cues.length; j++) {

@@ -27,7 +27,6 @@ define([
     };
 
     var InstreamAdapter = function(_controller, _model, _view) {
-
         var InstreamMethod = chooseInstreamMethod(_model);
         var _instream = new InstreamMethod(_controller, _model);
 
@@ -74,11 +73,12 @@ define([
         this.type = 'instream';
 
         this.init = function(sharedVideoTag) {
-
             // Keep track of the original player state
             _oldProvider = _model.getVideo();
             _oldpos = _model.get('position');
             _olditem = _model.get('playlist')[_model.get('item')];
+            // Reset playback rate to 1 in case we reuse the video tag used to play back ad content
+            _oldProvider.setPlaybackRate(1);
 
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);

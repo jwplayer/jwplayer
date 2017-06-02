@@ -70,6 +70,7 @@ define([], function() {
         JWPLAYER_PLAYLIST_LOADED: 'playlist',
         JWPLAYER_AUDIO_TRACKS: 'audioTracks',
         JWPLAYER_AUDIO_TRACK_CHANGED: 'audioTrackChanged',
+        JWPLAYER_PLAYBACK_RATE_CHANGED: 'playbackRateChanged',
 
         // View Component Actions
         JWPLAYER_LOGO_CLICK: 'logoClick',

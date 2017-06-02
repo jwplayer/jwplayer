@@ -1,24 +1,24 @@
 define([], function() {
 
-    var performance = window.performance;
+    const performance = window.performance;
 
-    var supportsPerformance = !!(performance && performance.now);
+    const supportsPerformance = !!(performance && performance.now);
     
-    var MAX_INTERVAL = 1000;
+    const MAX_INTERVAL = 10000;
 
-    var getTime = function() {
+    const getTime = function() {
         if (supportsPerformance) {
             return performance.now();
         }
         return new Date().getTime();
     };
 
-    var Clock = function() {
-        var started = getTime();
-        var updated = started;
+    const Clock = function() {
+        const started = getTime();
+        let updated = started;
 
-        var updateClock = function() {
-            var delta = getTime() - updated;
+        const updateClock = function() {
+            let delta = getTime() - updated;
             if (delta > MAX_INTERVAL) {
                 delta = MAX_INTERVAL;
             } else if (delta < 0) {
@@ -26,7 +26,7 @@ define([], function() {
             }
             updated += delta;
         };
-        setInterval(updateClock, 50);
+        setInterval(updateClock, 1000);
 
         Object.defineProperty(this, 'currentTime', {
             get: function() {

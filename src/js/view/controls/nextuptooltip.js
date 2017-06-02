@@ -3,53 +3,55 @@ import nextUpTemplate from 'view/controls/templates/nextup';
 define([
     'utils/dom',
     'utils/ui',
+    'utils/underscore',
+    'utils/backbone.events',
     'utils/helpers',
-], function(dom, UI, utils) {
+], function(dom, UI, _, Events, utils) {
 
     return class NextUpTooltip {
         constructor(_model, _api, playerElement) {
+            _.extend(this, Events);
             this._model = _model;
             this._api = _api;
             this._playerElement = playerElement;
             this.nextUpText = _model.get('localization').nextUp;
             this.nextUpClose = _model.get('localization').nextUpClose;
             this.state = 'tooltip';
+            this.enabled = false;
+            this.shown = false;
             this.reset();
         }
 
         setup(context) {
             this.container = context.createElement('div');
             this.container.className = 'jw-nextup-container jw-reset';
-            var element = utils.createElement(nextUpTemplate());
+            const element = utils.createElement(nextUpTemplate());
             this.addContent(element);
 
             this.closeButton = this.content.querySelector('.jw-nextup-close');
             this.closeButton.setAttribute('aria-label', this.nextUpClose);
             this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
 
-            var model = this._model;
+            const model = this._model;
             // Next Up is hidden until we get a valid NextUp item from the nextUp event
-            model.set('nextUpEnabled', false);
+            this.enabled = false;
 
             // Events
-            model.on('change:mediaModel', this.onMediaModel, this);
-            model.on('change:streamType', this.onStreamType, this);
             model.on('change:nextUp', this.onNextUp, this);
-            model.on('change:nextUpVisible', this.toggle, this);
-            model.on('change:nextUpSticky', this.toggle, this);
 
             // Listen for duration changes to determine the offset from the end for when next up should be shown
-            model.on('change:duration', this.onDuration, this);
+            model.change('duration', this.onDuration, this);
             // Listen for position changes so we can show the tooltip when the offset has been crossed
-            model.on('change:position', this.onElapsed, this);
+            model.change('position', this.onElapsed, this);
 
-            this.onMediaModel(model, model.get('mediaModel'));
+            model.change('streamType', this.onStreamType, this);
+            model.change('mediaModel', this.onMediaModel, this);
 
             // Close button
             new UI(this.closeButton, { directSelect: true })
                 .on('click tap', function() {
-                    model.set('nextUpSticky', false);
-                    model.set('nextUpVisible', false);
+                    this.nextUpSticky = false;
+                    this.toggle(false);
                 }, this);
             // Tooltip
             new UI(this.tooltip)
@@ -73,16 +75,26 @@ define([
             this._api.next();
         }
 
-        toggle(model, show) {
-            show = !!show;
-
-            if (!model.get('nextUpEnabled')) {
+        toggle(show, reason) {
+            if (!this.enabled) {
                 return;
             }
-
-            dom.toggleClass(this.container, 'jw-nextup-container-visible', show);
-            dom.toggleClass(this._playerElement, 'jw-flag-nextup', show);
-            dom.toggleClass(this.container, 'jw-nextup-sticky', !!model.get('nextUpSticky'));
+            dom.toggleClass(this.container, 'jw-nextup-sticky', !!this.nextUpSticky);
+            if (this.shown !== show) {
+                this.shown = show;
+                dom.toggleClass(this.container, 'jw-nextup-container-visible', show);
+                dom.toggleClass(this._playerElement, 'jw-flag-nextup', show);
+                const nextUp = this._model.get('nextUp');
+                if (show && nextUp) {
+                    this.trigger('nextShown', {
+                        mode: nextUp.mode,
+                        ui: 'nextup',
+                        itemsShown: [ nextUp ],
+                        feedData: nextUp.feedData,
+                        reason: reason,
+                    });
+                }
+            }
         }
 
         setNextUpItem(nextUpItem) {
@@ -92,7 +104,7 @@ define([
                 this.thumbnail = this.content.querySelector('.jw-nextup-thumbnail');
                 dom.toggleClass(this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
                 if (nextUpItem.image) {
-                    var thumbnailStyle = this.loadThumbnail(nextUpItem.image);
+                    const thumbnailStyle = this.loadThumbnail(nextUpItem.image);
                     utils.style(this.thumbnail, thumbnailStyle);
                 }
 
@@ -102,7 +114,7 @@ define([
 
                 // Set title
                 this.title = this.content.querySelector('.jw-nextup-title');
-                var title = nextUpItem.title;
+                const title = nextUpItem.title;
                 this.title.innerText = title ? utils.createElement(title).textContent : '';
             }, 500);
         }
@@ -113,13 +125,13 @@ define([
                 return;
             }
 
-            var nextUpEnabled = !!(nextUp.title || nextUp.image);
-            model.set('nextUpEnabled', nextUpEnabled);
+            this.enabled = !!(nextUp.title || nextUp.image);
 
-            if (nextUpEnabled) {
+            if (this.enabled) {
                 if (!nextUp.showNextUp) {
                     // The related plugin will countdown the nextUp item
-                    model.set('nextUpSticky', false);
+                    this.nextUpSticky = false;
+                    this.toggle(false);
                 }
                 this.setNextUpItem(nextUp);
             }
@@ -131,7 +143,7 @@ define([
             }
 
             // Use nextupoffset if set or default to 10 seconds from the end of playback
-            var offset = utils.seconds(model.get('nextupoffset') || -10);
+            let offset = utils.seconds(model.get('nextupoffset') || -10);
             if (offset < 0) {
                 // Determine offset from the end. Duration may change.
                 offset += duration;
@@ -141,33 +153,34 @@ define([
         }
 
         onMediaModel(model, mediaModel) {
-            mediaModel.on('change:state', function(stateChangeMediaModel, state) {
+            mediaModel.change('state', function(stateChangeMediaModel, state) {
                 if (state === 'complete') {
-                    model.set('nextUpVisible', false);
+                    this.toggle(false);
                 }
-            });
+            }, this);
         }
 
         onElapsed(model, val) {
-            var nextUpSticky = model.get('nextUpSticky');
-            if (!model.get('nextUpEnabled') || nextUpSticky === false) {
+            const nextUpSticky = this.nextUpSticky;
+            if (!this.enabled || nextUpSticky === false) {
                 return;
             }
             // Show nextup during VOD streams if:
             // - in playlist mode but not playing an ad
             // - autoplaying in related mode and autoplaytimer is set to 0
-            var showTilEnd = val >= this.offset;
-            if (showTilEnd && nextUpSticky === undefined) { // show if nextUpSticky is unset
-                model.set('nextUpVisible', showTilEnd);
-                model.set('nextUpSticky', showTilEnd);
-            } else if (!showTilEnd && nextUpSticky === true) { // reset if there was a backward seek
+            const showUntilEnd = val >= this.offset;
+            if (showUntilEnd && nextUpSticky === undefined) { // show if nextUpSticky is unset
+                this.nextUpSticky = showUntilEnd;
+                this.toggle(showUntilEnd, 'time');
+            } else if (!showUntilEnd && nextUpSticky) { // reset if there was a backward seek
                 this.reset();
             }
         }
 
         onStreamType(model, streamType) {
             if (streamType !== 'VOD') {
-                model.set('nextUpSticky', false);
+                this.nextUpSticky = false;
+                this.toggle(false);
             }
         }
 
@@ -191,9 +204,13 @@ define([
         }
 
         reset() {
-            var model = this._model;
-            model.set('nextUpVisible', false);
-            model.set('nextUpSticky', undefined);
+            this.nextUpSticky = undefined;
+            this.toggle(false);
+        }
+
+        destroy() {
+            this.off();
+            this._model.off(null, null, this);
         }
     };
 });

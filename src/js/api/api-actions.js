@@ -8,17 +8,17 @@ define([
         //   Ultimately they should be moved into this file
         var passthroughs = [
             // 'setup',
+            // 'remove',
             // 'load',
             // 'play',
             // 'pause',
-            // 'remove',
+            // 'playlistNext',
+            // 'playlistPrev',
+            // 'playlistItem',
+            // 'seek',
 
-            'seek',
             'skipAd',
             'stop',
-            'playlistNext',
-            'playlistPrev',
-            'playlistItem',
             'resize',
 
             'addButton',

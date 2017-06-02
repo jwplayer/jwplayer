@@ -3,7 +3,7 @@ define(['utils/helpers',
     'controller/tracks-helper'
 ], function(utils, tracksLoader, tracksHelper) {
     /** Displays closed captions or subtitles on top of the video. **/
-    var Captions = function(_api, _model) {
+    var Captions = function(_model) {
         // Reset and load external captions on playlist item
         _model.on('change:playlistItem', _itemHandler, this);
 

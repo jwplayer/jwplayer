@@ -1,3 +1,5 @@
+import setConfig from 'api/set-config';
+
 define([
     'api/config',
     'controller/instream-adapter',
@@ -15,11 +17,9 @@ define([
     'events/states',
     'events/events',
     'view/error',
-    'controller/events-middleware',
-    'controller/controls-loader'
+    'controller/events-middleware'
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware,
-            ControlsLoader) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
 
     function _queueCommand(command) {
         return function() {
@@ -62,6 +62,7 @@ define([
         setCurrentCaptions: _queueCommand('setCurrentCaptions'),
         setCurrentQuality: _queueCommand('setCurrentQuality'),
         setFullscreen: _queueCommand('setFullscreen'),
+        setPlaybackRate: _queueCommand('setPlaybackRate'),
         setup: function(options, _api) {
             var _model = this._model;
             var _view;
@@ -121,7 +122,7 @@ define([
             _model.on('change:duration', function(model, duration) {
                 var minDvrWindow = model.get('minDvrWindow');
                 var streamType = utils.streamType(duration, minDvrWindow);
-                model.set('streamType', streamType);
+                model.setStreamType(streamType);
             });
 
             _model.on('change:castState', function(model, evt) {
@@ -167,6 +168,13 @@ define([
                 });
             });
 
+            _model.on('change:playbackRate', function(model, rate) {
+                _this.trigger(events.JWPLAYER_PLAYBACK_RATE_CHANGED, {
+                    playbackRate: rate,
+                    position: model.get('position')
+                });
+            });
+
             _model.on('change:scrubbing', function(model, state) {
                 if (state) {
                     _pause();
@@ -190,33 +198,10 @@ define([
             });
 
             // Ensure captionsList event is raised after playlistItem
-            _captions = new Captions(_api, _model);
+            _captions = new Captions(_model);
 
             function _triggerAfterReady(type, e) {
                 _this.triggerAfterReady(type, e);
-            }
-
-            function changeControls(model, enable) {
-                if (enable) {
-                    ControlsLoader.load()
-                        .then(function (Controls) {
-                            if (!_view.isSetup) {
-                                return;
-                            }
-
-                            var controls = new Controls(document, _view.element());
-                            _view.addControls(controls);
-                            controls.on('all', _triggerAfterReady, _this);
-                        })
-                        .catch(function (reason) {
-                            _this.triggerError({
-                                message: 'Controls failed to load',
-                                reason: reason
-                            });
-                        });
-                } else {
-                    _view.removeControls();
-                }
             }
 
             function triggerControls(model, enable) {
@@ -236,21 +221,16 @@ define([
                 }
             }, this);
 
-            _model.on('change:inDom', function(model, inDom) {
-                if (inDom) {
-                    model.off('change:controls', changeControls);
-                    model.change('controls', changeControls);
-                }
-            });
-
             function _playerReady() {
                 _setup = null;
 
                 _view.on('all', _triggerAfterReady, _this);
 
-                var related = _api.getPlugin('related');
+                const related = _api.getPlugin('related');
                 if (related) {
-                    related.on('nextUp', _model.setNextUp, _model);
+                    related.on('nextUp', (nextUp) => {
+                        _model.set('nextUp', nextUp);
+                    });
                 }
 
                 // Fire 'ready' once the view has resized so that player width and height are available
@@ -282,7 +262,7 @@ define([
                 }
 
                 _checkAutoStart();
-                _model.on('change:viewable', _checkPlayOnViewable);
+                _model.change('viewable', viewableChange);
             }
 
             function _updateViewable(model, visibility) {
@@ -292,13 +272,17 @@ define([
             }
 
             function _checkAutoStart() {
-                var autostart = _model.get('autostart');
-                if (!utils.isMobile() && autostart === true) {
+                if (!utils.isMobile() && _model.get('autostart') === true) {
                     // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
                     _autoStart();
-                } else {
-                    _checkPlayOnViewable(_model, _model.get('viewable'));
                 }
+            }
+
+            function viewableChange(model, viewable) {
+                _this.trigger('viewable', {
+                    viewable: viewable
+                });
+                _checkPlayOnViewable(model, viewable);
             }
 
             function _checkPlayOnViewable(model, viewable) {
@@ -393,10 +377,8 @@ define([
                 return _model.get('state');
             }
 
-            function _play(meta) {
-                if (meta) {
-                    _model.set('playReason', meta.reason);
-                }
+            function _play(meta = {}) {
+                _model.set('playReason', meta.reason);
 
                 if (_model.get('state') === states.ERROR) {
                     return;
@@ -482,15 +464,13 @@ define([
                 return true;
             }
 
-            function _pause(meta) {
+            function _pause(meta = {}) {
                 _actionOnAttach = null;
 
-                if (meta) {
-                    _model.set('pauseReason', meta.reason);
-                    // Stop autoplay behavior if the video is paused by the user or an api call
-                    if (meta.reason === 'interaction' || meta.reason === 'external') {
-                        _model.set('playOnViewable', false);
-                    }
+                _model.set('pauseReason', meta.reason);
+                // Stop autoplay behavior if the video is paused by the user or an api call
+                if (meta.reason === 'interaction' || meta.reason === 'external') {
+                    _model.set('playOnViewable', false);
                 }
 
                 var adState = _getAdState();
@@ -570,11 +550,11 @@ define([
             }
 
             function _prev(meta) {
-                _item(_model.get('item') - 1, meta || { reason: 'external' });
+                _item(_model.get('item') - 1, meta);
             }
 
             function _next(meta) {
-                _item(_model.get('item') + 1, meta || { reason: 'external' });
+                _item(_model.get('item') + 1, meta);
             }
 
             function _completeHandler() {
@@ -601,6 +581,9 @@ define([
                         }
                         // Autoplay/pause no longer needed since there's no more media to play
                         // This prevents media from replaying when a completed video scrolls into view
+                        if (utils.isIOS()) {
+                            _this.exitFullscreen();
+                        }
                         _model.set('playOnViewable', false);
                         _model.set('state', states.COMPLETE);
                         _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
@@ -736,8 +719,18 @@ define([
             }
 
             function _nextUp() {
-                var related = _api.getPlugin('related');
+                const related = _api.getPlugin('related');
                 if (related) {
+                    const nextUp = _model.get('nextUp');
+                    if (nextUp) {
+                        _this.trigger('nextClick', {
+                            mode: nextUp.mode,
+                            ui: 'nextup',
+                            target: nextUp,
+                            itemsShown: [ nextUp ],
+                            feedData: nextUp.feedData,
+                        });
+                    }
                     related.next();
                 }
             }
@@ -771,6 +764,7 @@ define([
             // Model passthroughs
             this.setVolume = _model.setVolume.bind(_model);
             this.setMute = _model.setMute.bind(_model);
+            this.setPlaybackRate = _model.setPlaybackRate.bind(_model);
             this.getProvider = function() {
                 return _model.get('provider');
             };
@@ -790,7 +784,7 @@ define([
             this.setCues = _view.addCues;
             this.setCaptions = _view.setCaptions;
             this.next = _nextUp;
-
+            this.setConfig = (newConfig) => setConfig(_this, newConfig);
             this.addButton = function(img, tooltip, callback, id, btnClass) {
                 var newButton = {
                     img: img,

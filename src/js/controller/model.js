@@ -16,7 +16,6 @@ define([
         var _provider;
         var _beforecompleted = false;
         var _attached = true;
-        var _currentProvider = utils.noop;
 
         this.mediaController = _.extend({}, Events);
         this.mediaModel = new MediaModel();
@@ -79,6 +78,9 @@ define([
                         this.set(type, data[type]);
                     }
                     return;
+                case 'ratechange':
+                    this.set('playbackRate', data.playbackRate);
+                    return;
                 case events.JWPLAYER_MEDIA_TYPE:
                     if (mediaModel.get('mediaType') !== data.mediaType) {
                         mediaModel.set('mediaType', data.mediaType);
@@ -111,6 +113,7 @@ define([
                             this.playVideo();
                         }, this);
                     }
+                    this.setPlaybackRate(this.get('defaultPlaybackRate'));
                     break;
                 case events.JWPLAYER_MEDIA_TIME:
                     mediaModel.set('position', data.position);
@@ -138,7 +141,6 @@ define([
                         this.playbackComplete();
                     }
                     return;
-
                 case events.JWPLAYER_AUDIO_TRACKS:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     mediaModel.set('audioTracks', data.tracks);
@@ -187,7 +189,7 @@ define([
 
         this.onMediaContainer = function() {
             var container = this.get('mediaContainer');
-            _currentProvider.setContainer(container);
+            _provider.setContainer(container);
         };
 
         this.changeVideoProvider = function(Provider) {
@@ -202,32 +204,34 @@ define([
             }
 
             if (!Provider) {
-                _provider = _currentProvider = Provider;
+                this.resetProvider();
                 this.set('provider', undefined);
                 return;
             }
 
-            _currentProvider = new Provider(_this.get('id'), _this.getConfiguration());
+            _provider = new Provider(_this.get('id'), _this.getConfiguration());
 
             var container = this.get('mediaContainer');
             if (container) {
-                _currentProvider.setContainer(container);
+                _provider.setContainer(container);
             } else {
                 this.once('change:mediaContainer', this.onMediaContainer);
             }
 
-            this.set('provider', _currentProvider.getName());
+            this.set('provider', _provider.getName());
 
-            if (_currentProvider.getName().name.indexOf('flash') === -1) {
+            if (_provider.getName().name.indexOf('flash') === -1) {
                 this.set('flashThrottle', undefined);
                 this.set('flashBlocked', false);
             }
 
-            _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
 
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
+
+            // Attempt setting the playback rate to be the user selected value
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
 
             _provider.on('all', _videoEventHandler, this);
 
@@ -256,7 +260,10 @@ define([
                 this.playbackComplete();
             }
 
-            return _provider.attachMedia();
+            _provider.attachMedia();
+
+            // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
         };
 
         this.playbackComplete = function() {
@@ -323,17 +330,17 @@ define([
 
             var provider = this.chooseProvider(source);
             // If we are changing video providers
-            if (!provider || !(_currentProvider instanceof provider)) {
+            if (!provider || !(_provider instanceof provider)) {
                 _this.changeVideoProvider(provider);
             }
 
-            if (!_currentProvider) {
+            if (!_provider) {
                 return;
             }
 
             // this allows the providers to preload
-            if (_currentProvider.init) {
-                _currentProvider.init(item);
+            if (_provider.init) {
+                _provider.init(item);
             }
 
             // Listening for change:item won't suffice when loading the same index or file
@@ -347,7 +354,7 @@ define([
         };
 
         this.resetProvider = function() {
-            _currentProvider = null;
+            _provider = null;
         };
 
         this.setVolume = function(volume) {
@@ -378,6 +385,34 @@ define([
                 var volume = Math.max(10, this.get('volume'));
                 this.set('autostartMuted', false);
                 this.setVolume(volume);
+            }
+        };
+
+        this.setStreamType = function(streamType) {
+            this.set('streamType', streamType);
+            if (streamType === 'LIVE') {
+                this.setPlaybackRate(1);
+            }
+        };
+
+        this.setPlaybackRate = function(playbackRate) {
+            playbackRate = parseFloat(playbackRate);
+
+            if (!_attached || _.isNaN(playbackRate)) {
+                return;
+            }
+
+            // Clamp the rate between 0.25x and 4x
+            playbackRate = utils.between(playbackRate, 0.25, 4);
+
+            if (this.get('streamType') === 'LIVE') {
+                playbackRate = 1;
+            }
+
+            this.set('defaultPlaybackRate', playbackRate);
+
+            if (_provider && _provider.setPlaybackRate) {
+                _provider.setPlaybackRate(playbackRate);
             }
         };
 
@@ -429,16 +464,11 @@ define([
             if (_provider && _provider.setSubtitlesTrack) {
                 _provider.setSubtitlesTrack(trackIndex);
             }
-
         };
 
         this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
             this.setVideoSubtitleTrack(trackIndex, tracks);
             this.persistCaptionsTrack();
-        };
-
-        this.setNextUp = function (nextUp) {
-            this.set('nextUp', nextUp);
         };
 
         function _autoStartSupportedIOS() {
@@ -460,6 +490,20 @@ define([
 
         this.autoStartOnMobile = function() {
             return this.get('autostart') && platformCanAutostart();
+        };
+
+        // Mobile players always wait to become viewable.
+        // Desktop players must have autostart set to viewable
+        this.setAutoStart = function(autoStart) {
+            if (!_.isUndefined(autoStart)) {
+                this.set('autostart', autoStart);
+            }
+
+            const autoStartOnMobile = this.autoStartOnMobile();
+            if (autoStartOnMobile) {
+                this.set('autostartMuted', true);
+            }
+            this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
         };
     };
 

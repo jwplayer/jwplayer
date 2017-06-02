@@ -13,6 +13,7 @@ define([
             'volume',
             'item', // this was playlistindex
             'stretching',
+            'playbackRate',
             'playlist',
             'captions',
             'viewable'
@@ -65,10 +66,12 @@ define([
 
         var passthroughsChain = [
             // Sisters of the model getters
+            'setConfig',
             'setControls',
             'setFullscreen',
             'setVolume',
             'setMute',
+            'setPlaybackRate',
             'setCues',
             'setCaptions'
         ];

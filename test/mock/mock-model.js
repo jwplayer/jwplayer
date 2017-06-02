@@ -6,7 +6,7 @@ define([
     var MockModel = function() {};
 
     _.extend(MockModel.prototype, SimpleModel, {
-        setup : function(configuration) {
+        setup: function(configuration) {
             var self = this;
             var playlistItem = _.extend({
                 file: '//playertest.longtailvideo.com/bunny.mp4',
@@ -27,7 +27,7 @@ define([
 
             var customCaptions = {
                 back: true,
-                    fontSize: 14,
+                fontSize: 14,
                 fontFamily: 'Arial,sans-serif',
                 fontOpacity: 100,
                 color: '#FFF',
@@ -41,10 +41,10 @@ define([
             this.attributes = _.extend({}, {
                 id: '',
                 // See api/config `Defaults`:
-                state : 'idle',
+                state: 'idle',
                 autostart: false,
                 controls: true,
-                displaytitle : true,
+                displaytitle: true,
                 displaydescription: true,
                 mobilecontrols: false,
                 repeat: false,
@@ -55,7 +55,7 @@ define([
                 volume: 90,
                 width: '100%',
                 height: 270,
-                aspectratio : '56.25%',
+                aspectratio: '56.25%',
                 localization: {
                     play: 'Play',
                     playback: 'Start playback',
@@ -121,7 +121,7 @@ define([
                 ],
                 related: null,
                 sharing: null,
-                playlist : [
+                playlist: [
                     playlistItem,
                     {
                         file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4',
@@ -134,7 +134,7 @@ define([
 
 
             if (configuration.autostartMobile) {
-                this.autoStartOnMobile = function() {
+                    this.autoStartOnMobile = function() {
                     return true;
                 };
             }
@@ -144,8 +144,8 @@ define([
             this.attributes.mediaModel = this.mediaModel;
 
             var mediaElement = document.createElement('video');
-            mediaElement.src = "//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4";
-            mediaElement.preload = "none";
+            mediaElement.src = '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4';
+            mediaElement.preload = 'none';
 
             this.attributes.provider = {
                 name: 'flash',
@@ -158,7 +158,7 @@ define([
                     // element.appendChild(mediaElement[0]);
                 },
                 setVisibility: function(state) {
-                    mediaElement.style.visibility = state ? 'visible': '';
+                    mediaElement.style.visibility = state ? 'visible' : '';
                     mediaElement.style.opacity = state ? 1 : 0;
                 },
                 seek: function(time) {
@@ -204,8 +204,11 @@ define([
 
         autoStartOnMobile: function() {
             return false;
-        }
+        },
 
+        setAutoStart: function() {
+            return false;
+        }
     });
 
     // Represents the state of the provider/media element
