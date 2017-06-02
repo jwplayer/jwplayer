@@ -79,7 +79,11 @@ define([
                     }
                     return;
                 case 'ratechange':
-                    this.set('playbackRate', data.playbackRate);
+                    var rate = data.playbackRate;
+                    // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
+                    if (rate > 0) {
+                        this.set('playbackRate', rate);
+                    }
                     return;
                 case events.JWPLAYER_MEDIA_TYPE:
                     if (mediaModel.get('mediaType') !== data.mediaType) {
@@ -230,10 +234,13 @@ define([
             // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
             _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
 
+            _provider.on('all', _videoEventHandler, this);
+
             // Attempt setting the playback rate to be the user selected value
             this.setPlaybackRate(this.get('defaultPlaybackRate'));
 
-            _provider.on('all', _videoEventHandler, this);
+            // Set playbackRate because provider support for playbackRate may have changed and not sent an update
+            this.set('playbackRate', _provider.getPlaybackRate());
 
             if (this.get('instreamMode') === true) {
                 _provider.instreamMode = true;
