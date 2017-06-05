@@ -294,7 +294,7 @@ define([
                 this.elements.playbackrates.setup(
                     playbackRateLabels,
                     selectedIndex,
-                    { defaultIndex: playbackRateControls.indexOf(1) }
+                    { defaultIndex: playbackRateControls.indexOf(1), isToggle: false }
                 );
 
                 _model.change('streamType provider', this.togglePlaybackRateControls, this);
