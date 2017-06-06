@@ -575,6 +575,10 @@ define([
                     if (_model.get('repeat')) {
                         _next({ reason: 'repeat' });
                     } else {
+                        // Exit fullscreen on IOS so that our overlays show to the user
+                        if (utils.isIOS()) {
+                            _setFullscreen(false);
+                        }
                         // Autoplay/pause no longer needed since there's no more media to play
                         // This prevents media from replaying when a completed video scrolls into view
                         _model.set('playOnViewable', false);
