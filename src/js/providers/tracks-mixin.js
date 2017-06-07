@@ -354,6 +354,7 @@ define(['utils/underscore',
                 metadataTrack.oncuechange = null;
             }
         }
+
         this._itemTracks = null;
         this._textTracks = null;
         this._tracksById = null;
@@ -553,7 +554,6 @@ define(['utils/underscore',
             if (track) {
                 track.kind = itemTrack.kind;
                 track.language = itemTrack.language || '';
-                track._id = null;
             } else {
                 track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
             }
