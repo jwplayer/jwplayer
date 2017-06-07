@@ -355,11 +355,6 @@ define(['utils/underscore',
             }
         }
 
-        // If we reuse the track we want to force the creation of a new _id
-        _.forEach(this._tracksById, track => {
-            track._id = null;
-        });
-
         this._itemTracks = null;
         this._textTracks = null;
         this._tracksById = null;
