@@ -452,8 +452,7 @@ define(['utils/underscore',
             }
         }
 
-        // We can setup the captions menu now since we're not rendering textTracks natively
-        if (!this.renderNatively && this._textTracks && this._textTracks.length) {
+        if (this._textTracks && this._textTracks.length) {
             this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
     }
@@ -554,6 +553,7 @@ define(['utils/underscore',
             if (track) {
                 track.kind = itemTrack.kind;
                 track.language = itemTrack.language || '';
+                track._id = null;
             } else {
                 track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
             }
