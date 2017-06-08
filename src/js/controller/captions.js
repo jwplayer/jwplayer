@@ -105,7 +105,7 @@ define(['utils/helpers',
                 _unknownCount = labelInfo.unknownCount;
             }
 
-            // During the same playlist we reuse tracks and add them with the same ID; allow the new track to replace the old
+            // During the same playlist we may reu and readd tracks with the same _id; allow the new track to replace the old
             _tracksById[track._id] = track;
             _tracks.push(track);
         }
