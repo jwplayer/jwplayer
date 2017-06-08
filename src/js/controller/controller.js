@@ -779,7 +779,13 @@ define([
             this.resize = _view.resize;
             this.getSafeRegion = _view.getSafeRegion;
             this.setCues = _view.addCues;
-            this.setCaptions = _view.setCaptions;
+            this.setCaptions = function(stylingOptions) {
+                const provider = this.getProvider();
+                if (provider.name === 'chromecast') {
+                    _model.styleCaptions(stylingOptions);
+                }
+                _view.setCaptions(stylingOptions);
+            };
             this.next = _nextUp;
             this.setConfig = (newConfig) => setConfig(_this, newConfig);
             this.addButton = function(img, tooltip, callback, id, btnClass) {

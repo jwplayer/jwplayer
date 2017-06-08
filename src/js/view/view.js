@@ -342,7 +342,6 @@ define([
             });
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
-            
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
                 mediaModel.on('change:visualQuality', () => {
