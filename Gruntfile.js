@@ -275,24 +275,18 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('webpack', 'Run webpack compiler', function() {
-        var done = this.async();
+        const done = this.async();
 
-        var targets = this.args;
-        var configs = [];
-        for (var i in targets) {
-            var target = targets[i];
-            configs.push(webpackConfigs.find(function(obj) {
-                return obj.name === target;
-            }));
-        }
-        if (!configs.length) {
-            configs = webpackConfigs;
-        }
+        const targets = {};
+        this.args.forEach(t => {
+            targets[t] = true;
+        });
+        const configs = webpackConfigs(targets);
 
         // Store compiler for faster "watch" and "server" task running
         // this works as long as the watch task doesn't spawn a new process
-        var id = targets.join('_') || 'all';
-        var compiler = webpackCompilers[id] || webpack(configs);
+        const id = this.args.join('_') || 'all';
+        const compiler = webpackCompilers[id] || webpack(configs);
         webpackCompilers[id] = compiler;
 
         compiler.run(function(err, stats) {
