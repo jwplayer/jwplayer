@@ -25,7 +25,6 @@ define([
         this.set('mediaModel', this.mediaModel);
 
         this.setup = function(config) {
-
             _.extend(this.attributes, config, {
                 // always start on first playlist item
                 item: 0,
@@ -38,7 +37,8 @@ define([
                 provider: undefined,
                 duration: 0,
                 position: 0,
-                buffer: 0
+                buffer: 0,
+                sdkplatform: config.analytics.sdkplatform
             });
 
             this.updateProviders();
