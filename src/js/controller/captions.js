@@ -24,12 +24,12 @@ define(['utils/helpers',
 
             var tracks = e.tracks || [];
             for (var i = 0; i < tracks.length; i++) {
-                var track = tracks[i];
-                if (_tracksById[track._id]) {
-                    continue;
-                }
-                _addTrack(track);
+                _addTrack(tracks[i]);
             }
+
+            // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
+            _tracks = Object.keys(_tracksById).map(id => _tracksById[id]);
+
             var captionsMenu = _captionsMenu();
             _selectDefaultIndex();
             this.setCaptionsList(captionsMenu);
@@ -105,8 +105,9 @@ define(['utils/helpers',
                 _unknownCount = labelInfo.unknownCount;
             }
 
-            _tracks.push(track);
+            // During the same playlist we may reu and readd tracks with the same _id; allow the new track to replace the old
             _tracksById[track._id] = track;
+            _tracks.push(track);
         }
 
         function _captionsMenu() {
