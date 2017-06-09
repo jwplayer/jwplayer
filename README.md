@@ -14,6 +14,9 @@
 - [Support](http://support.jwplayer.com/)
 
 
+This is the free version of JW Player. It does not contain the same features as the Premium, Platinum, or Enterprise editions. If you are a paid customer and want a player, please download it from the "Downloads" section of your JW Dashboard.
+
+
 ## A Simple Example
 
 The example below will render a video player into the div with the `player` id, listens to an event, and makes a few calls using the API.
@@ -108,5 +111,5 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
 The use of this library is governed by a [Creative Commons license](http://creativecommons.org/licenses/by-nc-sa/3.0/). You can use, modify, copy, and distribute this edition as long as it’s for non-commercial use, you provide attribution, and share under a similar license.
 http://www.jwplayer.com/license/
 
-## If you have purchased a Premium, Platinum, or Enterprise version of the player do not use this version as it does not contain the same features as the commercial version avilable in the DOWNLOADS section of your JW Dashboard.
+
 
