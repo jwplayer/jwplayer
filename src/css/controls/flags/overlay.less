@@ -1,13 +1,9 @@
 .jwplayer.jw-flag-overlay-open {
-    .jw-title {
-        display: none;
-    }
-
     .jw-controls-right .jw-logo {
         display: none;
     }
 
-    &-sharing,
+    &-sharing.jw-flag-small-player,
     &-related {
         .jw-controls,
         .jw-title {
@@ -17,7 +13,7 @@
 
     &-sharing:not(.jw-flag-small-player) {
         .jw-controls,
-        .jw-title {
+        .jw-controls-right .jw-logo {
             display: block;
         }
     }
