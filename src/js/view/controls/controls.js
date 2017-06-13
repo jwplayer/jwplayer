@@ -234,8 +234,8 @@ define([
 
             // Show controls when enabled
             this.userActive();
-
-            this.playerContainer.appendChild(this.div);
+            const overlaysElement = this.playerContainer.querySelector('.jw-overlays');
+            this.playerContainer.insertBefore(this.div, overlaysElement);
         }
 
         disable() {
