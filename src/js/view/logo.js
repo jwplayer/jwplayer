@@ -80,12 +80,7 @@ define([
 
         this.setContainer = function(container) {
             if (_logo) {
-                const dock = container.querySelector('.jw-dock');
-                if (dock) {
-                    container.insertBefore(_logo, dock);
-                } else {
-                    container.appendChild(_logo);
-                }
+                container.appendChild(_logo);
             }
         };
 
