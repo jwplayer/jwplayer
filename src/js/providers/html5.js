@@ -125,7 +125,7 @@ define([
 
         this.isSDK = _isSDK;
         this.video = _videotag;
-        this.supportsPlaybackRate = true;
+        this.supportsPlaybackRate = !_isAndroidHLS;
 
         _setupListeners(_mediaEvents, _videotag);
 
