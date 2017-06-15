@@ -125,7 +125,7 @@ define([
 
         this.isSDK = _isSDK;
         this.video = _videotag;
-        this.supportsPlaybackRate = !_isAndroidHLS;
+        this.supportsPlaybackRate = true;
 
         _setupListeners(_mediaEvents, _videotag);
 
@@ -478,6 +478,10 @@ define([
             _canSeek = false;
             _bufferFull = false;
             _isAndroidHLS = getIsAndroidHLS(source);
+            if (_isAndroidHLS) {
+                // Playback rate is broken on Android HLS
+                _this.supportsPlaybackRate = false;
+            }
             if (source.preload && source.preload !== _videotag.getAttribute('preload')) {
                 _setAttribute('preload', source.preload);
             }
