@@ -1,6 +1,6 @@
 {
   "name": "jwplayer",
-  "version": "7.12.0-beta.1",
+  "version": "7.12.0-beta.2",
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
@@ -29,7 +29,7 @@
     "grunt-flash-compiler": "0.3.5",
     "grunt-karma": "2.0.0",
     "grunt-postcss": "0.8.0",
-    "grunt-stylelint": "0.7.0",
+    "grunt-stylelint": "0.8.0",
     "import-loader": "1.0.1",
     "intersection-observer": "0.2.1",
     "jquery": "3.2.1",
@@ -61,6 +61,7 @@
     "simple-style-loader": "0.4.1",
     "sinon": "2.1.0",
     "source-map": "0.5.6",
+    "stylelint": "7.11.0",
     "underscore": "1.8.3",
     "url-loader": "0.5.8",
     "webpack": "^2.6.1"
