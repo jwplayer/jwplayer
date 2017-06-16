@@ -1,4 +1,6 @@
-/* eslint-env node */
+'use strict';
+
+/* eslint-env node *w/
 /* eslint no-process-env: 0 */
 
 var webpack = require('webpack');
