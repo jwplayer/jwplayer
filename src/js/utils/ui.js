@@ -210,9 +210,11 @@ define([
             elem.removeEventListener('pointerup', interactEndHandler);
             document.removeEventListener('mousemove', interactDragHandler);
             document.removeEventListener('mouseup', interactEndHandler);
-            _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
-            _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
-            _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            if (_touchListenerTarget) {
+                _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
+                _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
+                _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            }
 
             if (_hasMoved) {
                 triggerEvent(JW_TOUCH_EVENTS.DRAG_END, evt);
