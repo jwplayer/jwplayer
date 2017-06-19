@@ -51,7 +51,6 @@ define([
         // TODO :: The following are targets for removal after refactoring
         checkComplete: noop,
         setControls: noop,
-        setConfig: noop,
         attachMedia: noop,
         detachMedia: noop,
 
