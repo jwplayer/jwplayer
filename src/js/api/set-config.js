@@ -6,57 +6,41 @@ const supportedFields = [
     'mute',
     'autostart'
 ];
-let model;
 
-function setVolume(mute, volume) {
-    const muteSet = !_.isUndefined(mute);
-    const volumeSet = !_.isUndefined(volume);
-
-    if (volumeSet) {
-        model.setVolume(volume);
-        if (!muteSet) {
-            model.setMute(volume === 0);
-        }
-    }
-
-    if (muteSet) {
-        model.setMute(mute);
-    }
-}
-
-function setAutoStart(controller, autoStart) {
+function setAutoStart(model, controller, autoStart) {
     model.setAutoStart(autoStart);
 
     if (model.get('state') === 'idle' && autoStart === true) {
-        controller._play({ reason: 'autostart' });
+        controller.play({ reason: 'autostart' });
     }
 }
 
-export default (controller, newConfig = {}) => {
-    model = controller._model;
+export default (controller, newConfig) => {
+    const model = controller._model;
 
     if (!_.size(newConfig)) {
         return;
     }
 
-    let newValue;
-    for (let field of supportedFields) {
-        newValue = newConfig[field];
+    supportedFields.forEach(field => {
+        const newValue = newConfig[field];
 
         if (_.isUndefined(newValue)) {
-            continue;
+            return;
         }
 
         switch (field) {
             case 'mute':
+                controller.setMute(newValue);
+                break;
             case 'volume':
-                setVolume(newConfig.mute, newConfig.volume);
+                controller.setVolume(newValue);
                 break;
             case 'autostart':
-                setAutoStart(controller, newConfig.autostart);
+                setAutoStart(model, controller, newValue);
                 break;
             default:
                 model.set(field, newValue);
         }
-    }
+    });
 };

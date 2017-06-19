@@ -397,7 +397,6 @@ define([
         }
 
         this.init = function() {
-            itemReady(_model.get('playlistItem'));
             this.updateBounds();
 
             _model.on('change:fullscreen', _fullscreen);
@@ -405,7 +404,6 @@ define([
             _model.on('change:fullscreen', updateVisibility);
             _model.on('change:intersectionRatio', updateVisibility);
             _model.on('change:visibility', redraw);
-            _model.on('itemReady', itemReady);
 
             updateVisibility();
 
@@ -416,6 +414,11 @@ define([
 
             _model.change('state', _stateHandler);
             _model.change('controls', changeControls);
+            // Set the title attribute of the video tag to display background media information on mobile devices
+            if (_isMobile) {
+                setMediaTitleAttribute(_model.get('playlistItem'));
+                _model.on('itemReady', setMediaTitleAttribute);
+            }
 
             // Triggering 'resize' resulting in player 'ready'
             _lastWidth = _lastHeight = null;
@@ -449,14 +452,15 @@ define([
             _this.addControls(controls);
         }
 
-        function itemReady(item) {
+        function setMediaTitleAttribute(item) {
             var videotag = _videoLayer.querySelector('video, audio');
             // Youtube, chromecast and flash providers do no support video tags
             if (!videotag) {
                 return;
             }
-            const dummyDiv = document.createElement('DIV');
+
             // Writing a string to innerHTML completely decodes multiple-encoded strings
+            const dummyDiv = document.createElement('div');
             dummyDiv.innerHTML = item.title || '';
             videotag.setAttribute('title', dummyDiv.textContent);
         }
