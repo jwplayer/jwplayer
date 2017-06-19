@@ -6,9 +6,8 @@ const supportedFields = [
     'mute',
     'autostart'
 ];
-let model;
 
-function setVolume(mute, volume) {
+function setVolume(model, mute, volume) {
     const muteSet = !_.isUndefined(mute);
     const volumeSet = !_.isUndefined(volume);
 
@@ -24,7 +23,7 @@ function setVolume(mute, volume) {
     }
 }
 
-function setAutoStart(controller, autoStart) {
+function setAutoStart(model, controller, autoStart) {
     model.setAutoStart(autoStart);
 
     if (model.get('state') === 'idle' && autoStart === true) {
@@ -33,30 +32,30 @@ function setAutoStart(controller, autoStart) {
 }
 
 export default (controller, newConfig = {}) => {
-    model = controller._model;
+    const model = controller._model;
 
     if (!_.size(newConfig)) {
         return;
     }
 
     let newValue;
-    for (let field of supportedFields) {
+    supportedFields.forEach(field => {
         newValue = newConfig[field];
 
         if (_.isUndefined(newValue)) {
-            continue;
+            return;
         }
 
         switch (field) {
             case 'mute':
             case 'volume':
-                setVolume(newConfig.mute, newConfig.volume);
+                setVolume(model, newConfig.mute, newConfig.volume);
                 break;
             case 'autostart':
-                setAutoStart(controller, newConfig.autostart);
+                setAutoStart(model, controller, newConfig.autostart);
                 break;
             default:
                 model.set(field, newValue);
         }
-    }
+    });
 };
