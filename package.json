@@ -51,7 +51,6 @@
     "less-loader": "4.0.3",
     "load-grunt-tasks": "3.5.2",
     "loader-utils": "1.1.0",
-    "lodash": "4.17.4",
     "mocha": "3.2.0",
     "node-libs-browser": "2.0.0",
     "phantomjs-polyfill": "0.0.2",
@@ -65,7 +64,7 @@
     "stylelint": "7.11.0",
     "underscore": "1.8.3",
     "url-loader": "0.5.8",
-    "webpack": "1.13.1"
+    "webpack": "^2.6.1"
   },
   "scripts": {
     "test": "karma start",

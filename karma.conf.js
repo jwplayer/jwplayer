@@ -1,8 +1,7 @@
 /* eslint no-process-env: 0 */
 const webpack = require('webpack');
 const path = require('path');
-// Use the debug config
-const webpackConfig = require('./webpack.config.js')[0];
+const webpackConfig = require('./webpack.config.js')({ release: true });
 
 const aliases = {
     'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
