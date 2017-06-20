@@ -222,8 +222,6 @@ define([
                 this.once('change:mediaContainer', this.onMediaContainer);
             }
 
-            this.set('provider', _provider.getName());
-
             if (_provider.getName().name.indexOf('flash') === -1) {
                 this.set('flashThrottle', undefined);
                 this.set('flashBlocked', false);
@@ -349,6 +347,9 @@ define([
             if (_provider.init) {
                 _provider.init(item);
             }
+
+            // Set the Provider after calling init because some Provider properties are only set afterwards
+            this.set('provider', _provider.getName());
 
             // Listening for change:item won't suffice when loading the same index or file
             // We also can't listen for change:mediaModel because it triggers whether or not
