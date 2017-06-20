@@ -509,7 +509,7 @@ define(['utils/underscore',
                 if (utils.isIE() && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
                     return;
                 }
-                
+
                 // Cues are inaccessible if the track is disabled. While hidden,
                 // we can remove cues while the track is in a non-visible state
                 // Set to disabled before hidden to ensure active cues disappear
@@ -551,10 +551,7 @@ define(['utils/underscore',
             // already have one with the same label
             track = _.findWhere(tracks, { label: label });
 
-            if (track) {
-                track.kind = itemTrack.kind;
-                track.language = itemTrack.language || '';
-            } else {
+            if (!track) {
                 track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
             }
 
