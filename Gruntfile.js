@@ -102,7 +102,6 @@ module.exports = function(grunt) {
                 processors: [
                     require('autoprefixer')
                 ],
-                map: true,
                 failOnError: true,
                 writeDest: true
             },
