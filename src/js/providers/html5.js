@@ -924,7 +924,8 @@ define([
         };
 
         this.getPlaybackRate = function() {
-            return _videotag.playbackRate;
+            // playbackRate should never be 0 or undefined. By default it should return 1.
+            return _videotag.playbackRate || 1;
         };
 
         this.getCurrentQuality = function() {
