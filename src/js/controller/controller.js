@@ -262,6 +262,8 @@ define([
                 }
 
                 _checkAutoStart();
+
+                _model.set('preloaded', false);
                 _model.change('viewable', viewableChange);
             }
 
@@ -283,16 +285,28 @@ define([
                     viewable: viewable
                 });
                 _checkPlayOnViewable(model, viewable);
+                _checkPreload(model, viewable);
             }
 
             function _checkPlayOnViewable(model, viewable) {
-                if (_model.get('playOnViewable')) {
+                if (model.get('playOnViewable')) {
                     if (viewable) {
                         _autoStart();
                     } else if (utils.isMobile()) {
                         _this.pause({ reason: 'autostart' });
                     }
                 }
+            }
+
+            function _checkPreload(model, viewable) {
+                const attemptPreload = (viewable === 1 || _api.uniqueId === 1);
+
+                if (model.get('preloaded') || !attemptPreload) {
+                    return;
+                }
+
+                model.getVideo().preload();
+                model.set('preloaded', true);
             }
 
             this.triggerAfterReady = function(type, args) {
