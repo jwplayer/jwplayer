@@ -11,16 +11,20 @@ const aliases = {
     data: path.resolve(__dirname + '/test/data'),
     mock: path.resolve(__dirname + '/test/mock')
 };
-
-const rules =  [{
+const rules = [{
     enforce: 'post',
     test: /\.js$/,
     include: /(src)\/(js)\//,
     loader: 'istanbul-instrumenter-loader'
 }];
+const noParse = [
+    /node_modules\/sinon\//,
+    /node_modules\/jquery\//
+];
 
 webpackConfig.resolve.alias = Object.assign(webpackConfig.resolve.alias || {}, aliases);
-webpackConfig.module.rules = Object.assign(webpackConfig.module.rules || {}, rules);
+webpackConfig.module.rules = rules.concat(webpackConfig.module.rules || []);
+webpackConfig.module.noParse = noParse.concat(webpackConfig.module.noParse || []);
 
 module.exports = function(config) {
     var env = process.env;
@@ -112,9 +116,6 @@ module.exports = function(config) {
                     __BUILD_VERSION__: '\'' + '7.10.0' + '\'',
                     __FLASH_VERSION__: 18.0
                 }),
-            ],
-            noParse: [
-                /node_modules\/sinon\//
             ]
         },
         // number of browsers to run at once

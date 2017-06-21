@@ -1,5 +1,4 @@
 'use strict';
-
 const webpack = require('webpack');
 const env = process.env;
 const packageInfo = require('./package.json');
