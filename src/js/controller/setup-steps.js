@@ -7,7 +7,9 @@ define([
     'utils/underscore',
     'utils/helpers',
     'events/events',
-    'controller/controls-loader'
+    'controller/controls-loader',
+    'polyfills/promise',
+    'polyfills/base64'
 ], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events, ControlsLoader) {
 
     var _pluginLoader;
@@ -15,20 +17,10 @@ define([
 
     function getQueue() {
         var Components = {
-            LOAD_PROMISE_POLYFILL: {
-                method: _loadPromisePolyfill,
-                depends: []
-            },
-            LOAD_BASE64_POLYFILL: {
-                method: _loadBase64Polyfill,
-                depends: []
-            },
             LOAD_PLUGINS: {
                 method: _loadPlugins,
                 // Plugins require JavaScript Promises
-                depends: [
-                    'LOAD_PROMISE_POLYFILL'
-                ]
+                depends: []
             },
             LOAD_XO_POLYFILL: {
                 method: _loadIntersectionObserverPolyfill,
@@ -44,16 +36,13 @@ define([
             },
             LOAD_CONTROLS: {
                 method: _loadControls,
-                depends: [
-                    'LOAD_PROMISE_POLYFILL'
-                ]
+                depends: []
             },
             SETUP_VIEW: {
                 method: _setupView,
                 depends: [
                     'LOAD_SKIN',
-                    'LOAD_XO_POLYFILL',
-                    'LOAD_PROMISE_POLYFILL'
+                    'LOAD_XO_POLYFILL'
                 ]
             },
             INIT_PLUGINS: {
@@ -103,28 +92,6 @@ define([
 
     function _deferred(resolve) {
         setTimeout(resolve, 0);
-    }
-
-    function _loadPromisePolyfill(resolve) {
-        if (!window.Promise) {
-            require.ensure(['polyfills/promise'], function (require) {
-                require('polyfills/promise');
-                resolve();
-            }, 'polyfills.promise');
-        } else {
-            resolve();
-        }
-    }
-
-    function _loadBase64Polyfill(resolve) {
-        if (!window.btoa || !window.atob) {
-            require.ensure(['polyfills/base64'], function(require) {
-                require('polyfills/base64');
-                resolve();
-            }, 'polyfills.base64');
-        } else {
-            resolve();
-        }
     }
 
     function _loadIntersectionObserverPolyfill(resolve) {
