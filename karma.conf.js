@@ -12,20 +12,15 @@ const aliases = {
     mock: path.resolve(__dirname + '/test/mock')
 };
 
+const rules =  [{
+    enforce: 'post',
+    test: /\.js$/,
+    include: /(src)\/(js)\//,
+    loader: 'istanbul-instrumenter-loader'
+}];
+
 webpackConfig.resolve.alias = Object.assign(webpackConfig.resolve.alias || {}, aliases);
-
-webpackConfig.module.rules = [{
-    test: /\.js$/,
-    include: /(src)\/(js)\//,
-    loader: 'istanbul-instrumenter-loader'
-}];
-
-webpackConfig.module.postLoaders = [{
-    test: /\.js$/,
-    include: /(src)\/(js)\//,
-    exclude: /(test|node_modules)\//,
-    loader: 'istanbul-instrumenter-loader'
-}];
+webpackConfig.module.rules = Object.assign(webpackConfig.module.rules || {}, rules);
 
 module.exports = function(config) {
     var env = process.env;
@@ -104,7 +99,6 @@ module.exports = function(config) {
         },
 
         webpack: {
-            umdNamedDefine: webpackConfig.umdNamedDefine,
             resolve: webpackConfig.resolve,
             module: webpackConfig.module,
             plugins: [
