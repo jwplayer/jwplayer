@@ -11,17 +11,28 @@ const aliases = {
     data: path.resolve(__dirname + '/test/data'),
     mock: path.resolve(__dirname + '/test/mock')
 };
+const rules = [{
+    enforce: 'post',
+    test: /\.js$/,
+    include: /(src)\/(js)\//,
+    loader: 'istanbul-instrumenter-loader'
+}];
+const noParse = [
+    /node_modules\/sinon\//,
+    /node_modules\/jquery\//
+];
 
 webpackConfig.resolve.alias = Object.assign(webpackConfig.resolve.alias || {}, aliases);
+webpackConfig.module.rules = rules.concat(webpackConfig.module.rules || []);
+webpackConfig.module.noParse = noParse.concat(webpackConfig.module.noParse || []);
 
 module.exports = function(config) {
     var env = process.env;
     var isJenkins = !!process.env.JENKINS_HOME;
     var serverPort = process.env.KARMA_PORT || 9876;
     var testReporters = [
-        // 'dots', // useful for writing browser console logs to stdio
-        'spec',
-        'coverage'
+        'mocha',
+        'coverage-istanbul'
     ];
     if (isJenkins) {
         testReporters.push('junit');
@@ -82,15 +93,16 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'test-context.js': ['webpack']
+            'test-context.js': ['webpack'],
         },
 
-        coverageReporter: {
-            type: 'html',
-            dir: 'reports/coverage'
+        coverageIstanbulReporter: {
+            reports: [ 'text-summary', 'html' ],
+            dir: 'reports/coverage',
+            fixWebpackSourcePaths: true
         },
+
         webpack: {
-            umdNamedDefine: webpackConfig.umdNamedDefine,
             resolve: webpackConfig.resolve,
             module: webpackConfig.module,
             plugins: [
