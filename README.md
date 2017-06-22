@@ -91,7 +91,7 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
  # Complete Watch - builds FLash and JS, lints, and tests on each change
  grunt serve
  # Quick JS Watch - build only. Requires webpack-dev-server to be installed globally
-  webpack-dev-server --only debug -w --port 8888 --output-public-path /bin-debug/
+webpack-dev-server -w --env.debug --port 8888 --output-public-path /bin-debug/
  ````
  
 4. Test your code:
