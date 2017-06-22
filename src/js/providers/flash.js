@@ -188,7 +188,7 @@ define([
                         // After plugins load, then execute commandqueue
                     _swf.once('pluginsLoaded', function() {
                         _flashCommand('setupCommandQueue', _swf.__commandQueue);
-                        _swf.__commandQueue = [];
+                        _swf.__commandQueue.length = 0;
                     });
 
                         // setup flash player
