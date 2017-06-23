@@ -305,7 +305,7 @@ define([
                     return;
                 }
 
-                model.getVideo().preload();
+                model.getVideo().preload(model.get('playlistItem'));
                 model.set('preloaded', true);
             }
 

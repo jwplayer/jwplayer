@@ -565,16 +565,11 @@ define([
             _duration = item.duration || 0;
             _visualQuality.reason = '';
             _setVideotagSource(_levels[_currentQuality]);
-            this.preloadSource = _levels[_currentQuality];
             this.setupSideloadedTracks(item.tracks);
         };
 
-        this.preload = function() {
-            if (!this.preloadSource || this.preloadSource.preload === 'none') {
-                return;
-            }
-
-            _setAttribute('preload', this.preloadSource.preload);
+        this.preload = function(item) {
+            _setAttribute('preload', item.sources[_currentQuality]);
         };
 
         this.load = function(item) {
