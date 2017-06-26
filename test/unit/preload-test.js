@@ -26,13 +26,13 @@ describe('getPreload', function() {
         expect(preload).to.equal('auto');
     });
 
-    it('should return if auto is primary and there is a valid fallback', function() {
+    it('should return auto if it is the primary value and there is a valid fallback', function() {
         const preload = getPreload('auto', 'none');
 
         expect(preload).to.equal('auto');
     });
 
-    it('should return if none is primary and there is a valid fallback', function() {
+    it('should return none if it is the primary value and there is a valid fallback', function() {
         const preload = getPreload('none', 'auto');
 
         expect(preload).to.equal('none');
