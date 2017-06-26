@@ -47,7 +47,7 @@ define([
             nextUp: 'Next Up',
             nextUpClose: 'Next Up Close',
             related: 'Discover',
-            close: 'Close',
+            close: 'Close'
         },
         renderCaptionsNatively: true,
         nextUpDisplay: true
@@ -165,7 +165,6 @@ define([
 
         return config;
     };
-
 
     function _evaluateAspectRatio(ar, width) {
         if (width.toString().indexOf('%') === -1) {
