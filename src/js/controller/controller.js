@@ -287,7 +287,7 @@ define([
                 _checkPlayOnViewable(model, viewable);
 
                 if (shouldPreload(model.get('preloaded'), viewable)) {
-                    model.getVideo().preload();
+                    model.getVideo().preload(model.get('playlistItem'));
                     model.set('preloaded', true);
                 }
             }

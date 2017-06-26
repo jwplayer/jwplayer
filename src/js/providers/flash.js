@@ -101,9 +101,8 @@ define([
             }
         }
 
-
         _.extend(this, Events, Tracks, {
-            init: function(item) {
+            preload: function(item) {
                 // if not preloading or autostart is true, do nothing
                 if (item.preload && item.preload !== 'none' && !_playerConfig.autostart) {
                     _item = item;
