@@ -569,7 +569,8 @@ define([
         };
 
         this.preload = function(item) {
-            _setAttribute('preload', item.sources[_currentQuality]);
+            let preload = item.sources[_currentQuality] ? item.sources[_currentQuality].preload : 'metadata';
+            _setAttribute('preload', preload);
         };
 
         this.load = function(item) {
