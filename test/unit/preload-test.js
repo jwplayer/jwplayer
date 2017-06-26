@@ -1,4 +1,4 @@
-import { getPreload } from 'utils/preload';
+import { getPreload } from 'playlist/preload';
 
 describe('getPreload', function() {
 
@@ -16,6 +16,12 @@ describe('getPreload', function() {
 
     it('should default to metadata when primary value is invalid', function() {
         const preload = getPreload('aut');
+
+        expect(preload).to.equal('metadata');
+    });
+
+    it('should default to metadata when primary and fallback values are invalid', function() {
+        const preload = getPreload('aut', 'non');
 
         expect(preload).to.equal('metadata');
     });

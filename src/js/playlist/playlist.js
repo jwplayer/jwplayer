@@ -1,4 +1,4 @@
-import { getPreload } from '../utils/preload';
+import { getPreload } from './preload';
 
 define([
     'playlist/item',
