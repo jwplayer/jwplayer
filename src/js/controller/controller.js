@@ -262,6 +262,8 @@ define([
                 }
 
                 _checkAutoStart();
+
+                _model.set('preloaded', false);
                 _model.change('viewable', viewableChange);
             }
 
@@ -283,16 +285,28 @@ define([
                     viewable: viewable
                 });
                 _checkPlayOnViewable(model, viewable);
+
+                if (shouldPreload(model.get('preloaded'), viewable)) {
+                    model.getVideo().preload(model.get('playlistItem'));
+                    model.set('preloaded', true);
+                }
             }
 
             function _checkPlayOnViewable(model, viewable) {
-                if (_model.get('playOnViewable')) {
+                if (model.get('playOnViewable')) {
                     if (viewable) {
                         _autoStart();
                     } else if (utils.isMobile()) {
                         _this.pause({ reason: 'autostart' });
                     }
                 }
+            }
+
+            // Should only attempt to preload if the player is viewable.
+            // Otherwise, it should try to preload the first player on the page,
+            // which is the player that has a uniqueId of 1
+            function shouldPreload(preloaded, viewable) {
+                return !preloaded && (viewable === 1 || _api.uniqueId === 1);
             }
 
             this.triggerAfterReady = function(type, args) {

@@ -14,6 +14,7 @@ define([
 
         // Basic playback features
         play: noop,
+        preload: noop,
         load: noop,
         stop: noop,
         volume: noop,
@@ -53,6 +54,7 @@ define([
         setControls: noop,
         attachMedia: noop,
         detachMedia: noop,
+        init: noop,
 
         setState: function(state) {
             var oldState = this.state || states.IDLE;
