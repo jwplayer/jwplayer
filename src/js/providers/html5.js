@@ -483,6 +483,8 @@ define([
                 _this.supportsPlaybackRate = false;
             }
 
+            _setAttribute('preload', 'none');
+
             var sourceElement = document.createElement('source');
             sourceElement.src = source.file;
             var sourceChanged = (_videotag.src !== sourceElement.src);

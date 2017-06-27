@@ -73,6 +73,7 @@ define([
             var _stopPlaylist = false;
             var _interruptPlay;
             var _this = this;
+            let _preloaded = false;
 
             var _video = function () {
                 return _model.getVideo();
@@ -263,7 +264,7 @@ define([
 
                 _checkAutoStart();
 
-                _model.set('preloaded', false);
+                _preloaded = false;
                 _model.change('viewable', viewableChange);
             }
 
@@ -286,9 +287,9 @@ define([
                 });
                 _checkPlayOnViewable(model, viewable);
 
-                if (shouldPreload(model.get('preloaded'), viewable)) {
+                if (shouldPreload(_preloaded, viewable)) {
                     model.getVideo().preload(model.get('playlistItem'));
-                    model.set('preloaded', true);
+                    _preloaded = true;
                 }
             }
 
@@ -306,7 +307,7 @@ define([
             // Otherwise, it should try to preload the first player on the page,
             // which is the player that has a uniqueId of 1
             function shouldPreload(preloaded, viewable) {
-                return !preloaded && (viewable === 1 || _api.uniqueId === 1);
+                return !preloaded && (_api === window.jwplayer(0) || viewable === 1);
             }
 
             this.triggerAfterReady = function(type, args) {
