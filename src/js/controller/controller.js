@@ -288,7 +288,6 @@ define([
                 _checkPlayOnViewable(model, viewable);
 
                 if (shouldPreload(_preloaded, viewable)) {
-                    console.log('Preloading Player:', _api.uniqueId);
                     model.getVideo().preload(model.get('playlistItem'));
                     _preloaded = true;
                 }
