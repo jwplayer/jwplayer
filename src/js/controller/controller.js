@@ -308,9 +308,7 @@ define([
             // Otherwise, it should try to preload the first player on the page,
             // which is the player that has a uniqueId of 1
             function shouldPreload(preloaded, viewable) {
-                console.log('_api.isInstance(0)', _api.isInstance(0));
-
-                return !preloaded && (_api.isInstance(0) || viewable === 1);
+                return !preloaded && (_api.isFirstPlayer() || viewable === 1);
             }
 
             this.triggerAfterReady = function(type, args) {
