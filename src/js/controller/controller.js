@@ -17,7 +17,7 @@ define([
     'events/states',
     'events/events',
     'view/error',
-    'controller/events-middleware'
+    'controller/events-middleware',
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
             Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
 
@@ -288,6 +288,7 @@ define([
                 _checkPlayOnViewable(model, viewable);
 
                 if (shouldPreload(_preloaded, viewable)) {
+                    console.log('Preloading Player:', _api.uniqueId);
                     model.getVideo().preload(model.get('playlistItem'));
                     _preloaded = true;
                 }
@@ -307,7 +308,9 @@ define([
             // Otherwise, it should try to preload the first player on the page,
             // which is the player that has a uniqueId of 1
             function shouldPreload(preloaded, viewable) {
-                return !preloaded && (_api === window.jwplayer(0) || viewable === 1);
+                console.log('_api.isInstance(0)', _api.isInstance(0));
+
+                return !preloaded && (_api.isInstance(0) || viewable === 1);
             }
 
             this.triggerAfterReady = function(type, args) {

@@ -53,6 +53,9 @@ define([
     var _addPlayer = function (api) {
         _uniqueIndex++;
         api.uniqueId = _uniqueIndex;
+        api.isInstance = function(index) {
+            return this === _instances[index];
+        };
         _instances.push(api);
         return api;
     };
