@@ -213,6 +213,7 @@ define([
                     if (_instream === null) {
                         return;
                     }
+                    _instream._adModel.set('state', states.BUFFERING);
                     // Dispatch playlist item event for ad pods
                     _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
                         index: _arrayIndex,
