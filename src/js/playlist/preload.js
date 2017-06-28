@@ -1,10 +1,12 @@
-const _ = require('utils/underscore');
-
-const preloadValues = ['none', 'metadata', 'auto'];
+const preloadValues = {
+    none: true,
+    metadata: true,
+    auto: true
+};
 
 export function getPreload(preload, fallback) {
-    if (_.contains(preloadValues, preload)) {
+    if (preloadValues[preload]) {
         return preload;
     }
-    return _.contains(preloadValues, fallback) ? fallback : 'metadata';
+    return preloadValues[fallback] ? fallback : 'metadata';
 }
