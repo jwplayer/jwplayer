@@ -208,12 +208,12 @@ define([
             var providersNeeded = providersManager.required(playlist, primary);
 
             _model.set('hideAdsControls', false);
+            _instream._adModel.set('state', states.BUFFERING);
             providersManager.load(providersNeeded)
                 .then(function() {
                     if (_instream === null) {
                         return;
                     }
-                    _instream._adModel.set('state', states.BUFFERING);
                     // Dispatch playlist item event for ad pods
                     _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
                         index: _arrayIndex,
