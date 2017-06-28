@@ -1,4 +1,5 @@
 import setConfig from 'api/set-config';
+import instances from 'api/players';
 
 define([
     'api/config',
@@ -17,7 +18,7 @@ define([
     'events/states',
     'events/events',
     'view/error',
-    'controller/events-middleware'
+    'controller/events-middleware',
 ], function(Config, InstreamAdapter, _, Setup, Captions, Model, Storage,
             Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
 
@@ -73,6 +74,7 @@ define([
             var _stopPlaylist = false;
             var _interruptPlay;
             var _this = this;
+            let _preloaded = false;
 
             var _video = function () {
                 return _model.getVideo();
@@ -263,7 +265,6 @@ define([
 
                 _checkAutoStart();
 
-                _model.set('preloaded', false);
                 _model.change('viewable', viewableChange);
             }
 
@@ -286,9 +287,9 @@ define([
                 });
                 _checkPlayOnViewable(model, viewable);
 
-                if (shouldPreload(model.get('preloaded'), viewable)) {
+                if (shouldPreload(_preloaded, viewable)) {
                     model.getVideo().preload(model.get('playlistItem'));
-                    model.set('preloaded', true);
+                    _preloaded = true;
                 }
             }
 
@@ -306,7 +307,7 @@ define([
             // Otherwise, it should try to preload the first player on the page,
             // which is the player that has a uniqueId of 1
             function shouldPreload(preloaded, viewable) {
-                return !preloaded && (viewable === 1 || _api.uniqueId === 1);
+                return !preloaded && (instances[0] === _api || viewable === 1);
             }
 
             this.triggerAfterReady = function(type, args) {
@@ -457,6 +458,7 @@ define([
                 var fromApi = !internal;
 
                 _actionOnAttach = null;
+                _preloaded = false;
 
                 var status = utils.tryCatch(function() {
                     _model.stopVideo();

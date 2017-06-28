@@ -1,3 +1,5 @@
+import { getPreload } from './preload';
+
 define([
     'playlist/item',
     'playlist/source',
@@ -23,6 +25,8 @@ define([
         _.each(playlist, function(item) {
             item = _.extend({}, item);
 
+            item.preload = getPreload(item.preload, preload);
+
             item.allSources = _formatSources(item, model);
 
             item.sources = _filterSources(item.allSources, providers);
@@ -33,11 +37,6 @@ define([
 
             // include selected file in item for backwards compatibility
             item.file = item.sources[0].file;
-
-            // set preload for the item, if it is defined
-            if (preload) {
-                item.preload = item.preload || preload;
-            }
 
             if (feedData) {
                 item.feedData = itemFeedData;
@@ -53,7 +52,6 @@ define([
         var sources = item.sources;
         var androidhls = model.get('androidhls');
         var itemDrm = item.drm || model.get('drm');
-        var preload = item.preload || model.get('preload');
         var withCredentials = _fallbackIfUndefined(item.withCredentials, model.get('withCredentials'));
         var hlsjsdefault = model.get('hlsjsdefault');
 
@@ -69,9 +67,7 @@ define([
                 originalSource.drm = originalSource.drm || itemDrm;
             }
 
-            if (originalSource.preload || preload) {
-                originalSource.preload = originalSource.preload || preload;
-            }
+            originalSource.preload = getPreload(originalSource.preload, item.preload);
 
             // withCredentials is assigned in ascending priority order, source > playlist > model
             // a false value that is a higher priority than true must result in a false withCredentials value

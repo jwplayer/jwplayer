@@ -483,6 +483,8 @@ define([
                 _this.supportsPlaybackRate = false;
             }
 
+            _setAttribute('preload', 'none');
+
             var sourceElement = document.createElement('source');
             sourceElement.src = source.file;
             var sourceChanged = (_videotag.src !== sourceElement.src);
@@ -569,7 +571,7 @@ define([
         };
 
         this.preload = function(item) {
-            let preload = item.sources[_currentQuality] ? item.sources[_currentQuality].preload : 'metadata';
+            const preload = item.sources[_currentQuality] ? item.sources[_currentQuality].preload : 'metadata';
             _setAttribute('preload', preload);
         };
 
