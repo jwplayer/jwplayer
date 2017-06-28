@@ -1,4 +1,5 @@
 import setConfig from 'api/set-config';
+import instances from 'api/players';
 
 define([
     'api/config',
@@ -264,7 +265,6 @@ define([
 
                 _checkAutoStart();
 
-                _preloaded = false;
                 _model.change('viewable', viewableChange);
             }
 
@@ -307,7 +307,7 @@ define([
             // Otherwise, it should try to preload the first player on the page,
             // which is the player that has a uniqueId of 1
             function shouldPreload(preloaded, viewable) {
-                return !preloaded && (_api.isFirstPlayer() || viewable === 1);
+                return !preloaded && (instances[0] === _api || viewable === 1);
             }
 
             this.triggerAfterReady = function(type, args) {
@@ -458,6 +458,7 @@ define([
                 var fromApi = !internal;
 
                 _actionOnAttach = null;
+                _preloaded = false;
 
                 var status = utils.tryCatch(function() {
                     _model.stopVideo();
