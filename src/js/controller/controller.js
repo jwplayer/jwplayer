@@ -287,8 +287,9 @@ define([
                 });
                 _checkPlayOnViewable(model, viewable);
 
-                if (shouldPreload(_preloaded, viewable)) {
-                    model.getVideo().preload(model.get('playlistItem'));
+                const item = model.get('playlistItem');
+                if (shouldPreload(_preloaded, viewable) && item.preload !== 'none') {
+                    model.getVideo().preload(item);
                     _preloaded = true;
                 }
             }
