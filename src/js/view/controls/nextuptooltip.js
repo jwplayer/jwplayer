@@ -93,6 +93,8 @@ define([
                         feedData: nextUp.feedData,
                         reason: reason,
                     });
+                } else if (!show && nextUp) {
+                    this.trigger('nextHidden');
                 }
             }
         }
