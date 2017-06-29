@@ -1,4 +1,2 @@
-export const BufferLengths = {
-    METADATA: 1,
-    MAX: 25
-};
+export const MetaBufferLength = 1;
+export const MaxBufferLength = 1;
