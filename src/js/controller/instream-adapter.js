@@ -208,6 +208,7 @@ define([
             var providersNeeded = providersManager.required(playlist, primary);
 
             _model.set('hideAdsControls', false);
+            _instream._adModel.set('state', states.BUFFERING);
             providersManager.load(providersNeeded)
                 .then(function() {
                     if (_instream === null) {
