@@ -287,8 +287,9 @@ define([
                 });
                 _checkPlayOnViewable(model, viewable);
 
-                const item = model.get('playlistItem');
-                if (shouldPreload(_preloaded, viewable) && item.preload !== 'none') {
+                if (shouldPreload(model, viewable)) {
+                    const item = model.get('playlistItem');
+
                     model.getVideo().preload(item);
                     _preloaded = true;
                 }
@@ -307,8 +308,11 @@ define([
             // Should only attempt to preload if the player is viewable.
             // Otherwise, it should try to preload the first player on the page,
             // which is the player that has a uniqueId of 1
-            function shouldPreload(preloaded, viewable) {
-                return !preloaded && (instances[0] === _api || viewable === 1);
+            function shouldPreload(model, viewable) {
+                return model.get('playlistItem').preload !== 'none' &&
+                    _preloaded === false &&
+                    model.get('autostart') === false &&
+                    (instances[0] === _api || viewable === 1);
             }
 
             this.triggerAfterReady = function(type, args) {
