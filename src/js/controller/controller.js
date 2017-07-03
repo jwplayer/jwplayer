@@ -264,7 +264,7 @@ define([
                 _checkAutoStart();
                 _model.change('viewable', viewableChange);
                 _model.change('viewable', _checkPlayOnViewable);
-                _model.on('change:autostartFailed change:autostartMuted change:mute', function(model) {
+                _model.once('change:autostartFailed change:autostartMuted change:mute', function(model) {
                     model.off('change:viewable', _checkPlayOnViewable);
                 });
             }
