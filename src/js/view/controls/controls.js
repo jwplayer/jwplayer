@@ -296,7 +296,6 @@ define([
             }
             if (this.unmuteCallback) {
                 model.off('change:autostartFailed change:autostartMuted change:mute', this.unmuteCallback);
-                model.off('viewable', _checkPlayOnViewable);
                 this.unmuteCallback = null;
             }
             model.set('autostartFailed', undefined);

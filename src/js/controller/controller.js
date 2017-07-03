@@ -197,6 +197,10 @@ define([
                 });
             });
 
+            _model.on('change:autostartFailed change:autostartMuted change:mute', function(model) {
+                model.off('viewable', _checkPlayOnViewable);
+            });
+
             // Ensure captionsList event is raised after playlistItem
             _captions = new Captions(_model);
 
