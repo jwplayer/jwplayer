@@ -263,6 +263,7 @@ define([
 
                 _checkAutoStart();
                 _model.change('viewable', viewableChange);
+                _model.change('viewable', _checkPlayOnViewable);
             }
 
             function _updateViewable(model, visibility) {
@@ -282,7 +283,6 @@ define([
                 _this.trigger('viewable', {
                     viewable: viewable
                 });
-                _checkPlayOnViewable(model, viewable);
             }
 
             function _checkPlayOnViewable(model, viewable) {
