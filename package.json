@@ -34,6 +34,7 @@
     "intersection-observer": "0.2.1",
     "istanbul-instrumenter-loader": "1.2.0",
     "jquery": "3.2.1",
+    "jsdoc": "^3.4.3",
     "karma": "1.5.0",
     "karma-browserstack-launcher": "1.2.0",
     "karma-chai": "0.1.0",
@@ -68,11 +69,12 @@
     "webpack": "^2.6.1"
   },
   "scripts": {
-    "test": "karma start",
+    "docs": "jsdoc -c docs/jsdoc.conf.json",
     "lint": "npm run lint:js && npm run lint:styles",
     "lint:js": "eslint './src/js'",
     "lint:styles": "stylelint './src/css/**/*.less'",
-    "lint:tests": "eslint './test/*.js'"
+    "lint:tests": "eslint './test/*.js'",
+    "test": "karma start"
   },
   "engines": {
     "node": ">=4.3.1"

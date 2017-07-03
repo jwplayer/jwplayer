@@ -1,4 +1,8 @@
 'use strict';
+
+/* eslint-env node */
+/* eslint no-process-env: 0 */
+
 const webpack = require('webpack');
 const env = process.env;
 const packageInfo = require('./package.json');

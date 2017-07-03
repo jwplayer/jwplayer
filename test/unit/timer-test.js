@@ -1,5 +1,5 @@
 define([
-    'utils/timer'
+    'api/timer'
 ], function (timer) {
 
     describe('timer', function() {

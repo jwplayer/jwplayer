@@ -9,7 +9,7 @@ define([
     'utils/ajax',
     'utils/validator',
     'utils/playerutils',
-    'utils/timer',
+    'api/timer',
     'utils/trycatch',
     'utils/stream-type',
     'utils/quality-labels'

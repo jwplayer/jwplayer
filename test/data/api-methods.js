@@ -6,6 +6,7 @@ define({
     //   getPlaylistIndex: null,
     //   jw...: null,
 
+    callInternal: null,
     dispatchEvent: null,
     removeEventListener: null,
     addButton: null,

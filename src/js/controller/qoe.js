@@ -1,5 +1,5 @@
 define([
-    'utils/timer',
+    'api/timer',
     'utils/underscore'
 ], function(Timer, _) {
 

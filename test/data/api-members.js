@@ -3,6 +3,7 @@ define([
 ], function(_) {
     return {
         id: '',
+        uniqueId: 0,
         version: '',
         _qoe: {},
         utils: {},
