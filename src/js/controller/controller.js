@@ -197,10 +197,6 @@ define([
                 });
             });
 
-            _model.on('change:autostartFailed change:autostartMuted change:mute', function(model) {
-                model.off('viewable', _checkPlayOnViewable);
-            });
-
             // Ensure captionsList event is raised after playlistItem
             _captions = new Captions(_model);
 
@@ -268,6 +264,9 @@ define([
                 _checkAutoStart();
                 _model.change('viewable', viewableChange);
                 _model.change('viewable', _checkPlayOnViewable);
+                _model.on('change:autostartFailed change:autostartMuted change:mute', function(model) {
+                    model.off('change:viewable', _checkPlayOnViewable);
+                });
             }
 
             function _updateViewable(model, visibility) {
