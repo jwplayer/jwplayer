@@ -7,6 +7,15 @@ define([
         'default': false
     };
 
+    /**
+     * A media source variant present in a playlist item
+     * @typedef {object} PlaylistItemSource
+     * @property {string} file - The media URL.
+     * @property {string} type - The type (common file extension) of media.
+     * @property {boolean} default - Default sources are prioritized over others.
+     * @property {string} label - The quality label to be used with multiple mp4/webm sources.
+     */
+
     return function Source(config) {
         // file is the only hard requirement
         if (!config || !config.file) {

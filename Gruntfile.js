@@ -1,6 +1,6 @@
 'use strict';
 
-/* eslint-env node *w/
+/* eslint-env node */
 /* eslint no-process-env: 0 */
 
 var webpack = require('webpack');
@@ -140,19 +140,24 @@ module.exports = function(grunt) {
                 options: {
                     atBegin: true
                 },
-                files : ['src/js/**/*.js'],
-                tasks: ['webpack:debug', 'lint:player', 'karma:local']
+                files: ['src/js/**/*.js'],
+                tasks: [
+                    'webpack:debug',
+                    'lint:player',
+                    'karma:local',
+                    'docs'
+                ]
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
                 tasks: ['stylelint', 'webpack:debug', 'less:debug', 'postcss:debug']
             },
             tests: {
-                files : ['test/{,*/}*.js'],
+                files: ['test/{,*/}*.js'],
                 tasks: ['lint:tests', 'karma:local']
             },
             flash: {
-                files : [
+                files: [
                     'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
@@ -271,6 +276,11 @@ module.exports = function(grunt) {
                     'bin-debug/',
                     'bin-release/'
                 ]
+            },
+            docs: {
+                src: [
+                    'docs/api/'
+                ]
             }
         }
     });
@@ -316,6 +326,14 @@ module.exports = function(grunt) {
         });
     });
 
+    grunt.registerTask('docs', 'Generate API documentation', function() {
+        var command = 'npm run docs';
+        execSync(command, {
+            cwd: '.',
+            stdio: [0, 1, 2]
+        });
+    });
+
     grunt.registerTask('karma:local', 'karma:phantomjs');
 
     grunt.registerTask('karma:remote', [
@@ -335,7 +353,8 @@ module.exports = function(grunt) {
         'lint:player',
         'stylelint',
         'less',
-        'postcss'
+        'postcss',
+        'docs'
     ]);
 
     grunt.registerTask('build-flash', [

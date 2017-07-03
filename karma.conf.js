@@ -1,4 +1,8 @@
+'use strict';
+
+/* eslint-env node */
 /* eslint no-process-env: 0 */
+
 const webpack = require('webpack');
 const path = require('path');
 const webpackConfig = require('./webpack.config.js')({ release: true });
