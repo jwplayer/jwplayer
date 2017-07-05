@@ -1,6 +1,6 @@
 (function(playerLibrary) {
     // Check if the version of the player requires the compatibility shim
-    if (pauseInt(playerLibrary.version, 10) >= 8) {
+    if (parseInt(playerLibrary.version, 10) >= 8) {
 
       // Redefine jwplayer global
       window.jwplayer = function(query) {
@@ -9,10 +9,6 @@
         var playerInstance = playerLibrary(query);
 
         // Add deprecated API methods
-        playerInstance.onPlay = function(callback) {
-          playerInstance.on('play', callback);
-        };
-
         var callbackMapping = {
             onBuffer: 'buffer',
             onPause: 'pause',
@@ -62,6 +58,37 @@
                 playerInstance.on(name, callback);
             };
         });
+
+        var passthroughs = [
+            'attachMedia',
+        ];
+        passthroughs.forEach(function (name) {
+            _api[name] = function() {
+                _controller[name].apply(_controller, arguments);
+                return _api;
+            };
+        });
+
+        this.createInstream = function () {
+            return _controller.createInstream();
+        };
+
+        var passthroughs2 = [
+            'getMeta',
+            'detachMedia'
+        ];
+        passthroughs2.forEach(function (name) {
+            _api[name] = function() {
+                if (_controller[name]) {
+                    return _controller[name].apply(_controller, arguments);
+                }
+                return null;
+            };
+        });
+        playerInstance.dispatchEvent = playerInstance.trigger;
+        playerInstance.removeEventListener = playerInstance.off.bind(this);
+        playerInstance.getItem = playerInstance.getPlaylistIndex;
+        playerInstance.getMeta = playerInstance.getItemMeta;
 
         playerInstance.getRenderingMode = function () {
             return 'html5';
