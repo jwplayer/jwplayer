@@ -17,8 +17,6 @@ define([
 
     /**
      * Factory method which creates controllers before calling `jwplayer().setup()`.
-     * @private
-     * @static
      * @param {Api} api
      * @param {HTMLElement} element
      */
@@ -39,8 +37,6 @@ define([
 
     /**
      * Detaches Api event listeners and destroys the controller.
-     * @private
-     * @static
      * @param {Api} api
      * @param {Controller} controller
      */
@@ -56,8 +52,6 @@ define([
     /**
      * Removes the Api instance from the list of active players.
      * The instance will no longer be queryable via `jwplayer()`
-     * @private
-     * @static
      * @param {Api} api
      */
     function removePlayer(api) {
@@ -83,7 +77,7 @@ define([
             const uniqueId = instancesCreated++;
             const id = element.id;
             const qoeTimer = new Timer();
-
+            const pluginsMap = {};
 
             Object.defineProperties(this, {
                 /**
@@ -112,6 +106,18 @@ define([
                     }
                 },
                 /**
+                 * A map of plugin instances.
+                 * @memberOf Api
+                 * @type object
+                 * @readonly
+                 * @instance
+                 */
+                plugins: {
+                    get: function() {
+                        return pluginsMap;
+                    }
+                },
+                /**
                  * The internal QoE Timer.
                  * @memberOf Api
                  * @type Timer
@@ -125,6 +131,15 @@ define([
                 }
             });
 
+            /**
+             * A map of event listeners.
+             * @memberOf Api
+             * @type object
+             * @readonly
+             * @instance
+             */
+            this._events = {};
+
             qoeTimer.tick('init');
 
             let _controller = setupController(this, element);
@@ -132,8 +147,9 @@ define([
             /**
              * Calls an internal method on the Player's controller.
              * @param {string} name - The method to call.
-             * @param {...*} [args] - Additional arguments passed to the internal method.
-             * @return {*} The return value of the called function, or null if the method is undefined.
+             * @param {...*} [args] - Any arguments made after the name are passed to the internal method.
+             * @return {*} Returns the result or null if the method is undefined.
+             * @deprecate maybe - need a controller that only exposes the interface used here.
              */
             this.callInternal = function(name, ...args) {
                 if (_controller[name]) {
@@ -150,8 +166,8 @@ define([
              * @returns {Api}
              */
             this.setup = function(options) {
-                qoeTimer.tick('setup');
                 qoeTimer.clear('ready');
+                qoeTimer.tick('setup');
 
                 resetPlayer(this, _controller);
                 _controller = setupController(this, element);
@@ -191,8 +207,6 @@ define([
                 return this;
             };
 
-            // TODO: Prevent object properties from being added or reassigned
-            // Object.seal(this);
         }
 
         /**
@@ -967,7 +981,7 @@ define([
          * @return {any} The plugin instance.
          */
         getPlugin(name) {
-            return this.plugins && this.plugins[name];
+            return this.plugins[name];
         }
 
         /**
@@ -976,14 +990,13 @@ define([
          * @param {any} pluginInstance - The plugin instance.
          */
         addPlugin(name, pluginInstance) {
-            this.plugins = this.plugins || {};
             this.plugins[name] = pluginInstance;
 
             this.on('ready', pluginInstance.addToPlayer);
 
             // A swf plugin may rely on resize events
             if (pluginInstance.resize) {
-                this.on('resize'.pluginInstance.resizeHandler);
+                this.on('resize', pluginInstance.resizeHandler);
             }
         }
 

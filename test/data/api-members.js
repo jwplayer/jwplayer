@@ -2,12 +2,13 @@ define([
     'utils/underscore'
 ], function(_) {
     return {
+        version: '',
         id: '',
         uniqueId: 0,
-        version: '',
         _qoe: {},
-        utils: {},
+        _events: {},
         Events: {},
+        utils: {},
         _: _
     };
 });
