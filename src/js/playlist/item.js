@@ -13,7 +13,7 @@ define([
      * An item in the playlist
      * @typedef {object} PlaylistItem
      * @property {Array.<PlaylistItemSource>} sources - A list of alternative media sources for the player to choose from.
-     * @property {Array.<PlaylistItemTrack>} tracks - A list tracks associated with this item.
+     * @property {Array.<PlaylistItemTrack>} tracks - A list of tracks associated with this item.
      * @property {string} file - The selected source URL to be played.
      * @property {string} [image] - The poster image.
      * @property {'none'|'metadata'|'auto'} preload - The selected preload setting.

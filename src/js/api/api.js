@@ -542,7 +542,7 @@ define([
          */
 
         /**
-         * Gets information about the how the player is handling playback.
+         * Gets information about how the player is handling playback.
          * @returns {ProviderInfo}
          */
         getProvider() {
