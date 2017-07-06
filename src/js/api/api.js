@@ -16,7 +16,7 @@ define([
     let instancesCreated = 0;
 
     /**
-     * Factory method for creating new controllers before calling `jwplayer().setup()`.
+     * Factory method which creates controllers before calling `jwplayer().setup()`.
      * @private
      * @static
      * @param {Api} api
@@ -38,7 +38,7 @@ define([
     }
 
     /**
-     * Detach Api events listeners and destroy the controller.
+     * Detaches Api event listeners and destroys the controller.
      * @private
      * @static
      * @param {Api} api
@@ -54,7 +54,7 @@ define([
     }
 
     /**
-     * Remove the Api instance from the list of active players.
+     * Removes the Api instance from the list of active players.
      * The instance will no longer be queryable via `jwplayer()`
      * @private
      * @static
@@ -74,7 +74,7 @@ define([
     class Api {
 
         /**
-         * Create a player instance.
+         * Creates an instance of the Player
          * @param {HTMLElement} element - The element that will be replaced by the player's div container.
          */
         constructor(element) {
@@ -87,7 +87,7 @@ define([
 
             Object.defineProperties(this, {
                 /**
-                 * The player's query id.
+                 * The Player's query id.
                  * This matches the id of the element used to create the player at the time is was setup.
                  * @memberOf Api
                  * @type string
@@ -100,7 +100,7 @@ define([
                     }
                 },
                 /**
-                 * The player's unique id. It's value represents the number of player instances created on the page.
+                 * The player's unique id.
                  * @memberOf Api
                  * @type number
                  * @readonly
@@ -130,10 +130,10 @@ define([
             let _controller = setupController(this, element);
 
             /**
-             * Call an internal method on the player's controller.
+             * Calls an internal method on the Player's controller.
              * @param {string} name - The method to call.
-             * @param {...*} [args] - Any arguments made after the name are passed to the internal method.
-             * @return {any} Returns the result or null if the method is undefined.
+             * @param {...*} [args] - Additional arguments passed to the internal method.
+             * @return {*} The return value of the called function, or null if the method is undefined.
              */
             this.callInternal = function(name, ...args) {
                 if (_controller[name]) {
@@ -143,10 +143,10 @@ define([
             };
 
             /**
-             * Creates a new player on the page. Setup is asynchronous.
-             * A "ready" event is triggered once successful.
-             * A "setupError" event is triggered if setup fails.
-             * @param {object} options - The player configuration options.
+             * Creates a new Player on the page and asynchronously begins setup.
+             * A "ready" event is triggered on success.
+             * A "setupError" event is triggered on failure.
+             * @param {object} options - The Player configuration options.
              * @returns {Api}
              */
             this.setup = function(options) {
@@ -171,9 +171,9 @@ define([
                 return this;
             };
 
-            /** Remove the player from the page. Remove is synchronous.
-             * A "remove" event is fired [EDIT] as the player is removed.
-             * Playback is stopped. The DOM used by the player is reset.
+            /** Asynchronously removes the Player from the page.
+             * A "remove" event is fired once removal begins.
+             * Playback is stopped, and the DOM used by the player is reset.
              * All event listeners attached to the player are removed.
              * @returns {Api}
              */
@@ -204,7 +204,8 @@ define([
         }
 
         /**
-         * Provide Events module access to plugins from the player instance.
+         * Returns the Events module from the Player instance.
+         * Used by Plugins to listen to Player events.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
@@ -213,7 +214,8 @@ define([
         }
 
         /**
-         * Provide plugins with access to utils from the player instance.
+         * Returns the Utils module from the Player instance.
+         * Used by Plugins.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
@@ -222,7 +224,8 @@ define([
         }
 
         /**
-         * Provide plugins with access to underscore from the player instance.
+         * Returns the Underscore module from the Player instance.
+         * Used by Plugins.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
@@ -231,10 +234,10 @@ define([
         }
 
         /**
-         * Add an event listener.
-         * @param {string} name - The event name. Passing "all" will bind the callback to all events fired.
+         * Adds an event listener.
+         * @param {string} name - The event name. Passing "all" will bind the callback to all events.
          * @param {function} callback - The event callback.
-         * @param {any} [context] - The context to apply to the callback function's invocation.
+         * @param {any} [context] - The context to apply to the callback's function invocation.
          * @return {Api}
          */
         on(name, callback, context) {
@@ -242,11 +245,11 @@ define([
         }
 
         /**
-         * Add an event listener to only be triggered a single time.
-         * After the first time the callback is invoked, it will be removed.
-         * @param {string} name - The event name. Passing "all" will bind the callback to all events fired.
+         * Adds an event listener which is triggered at most once.
+         * After the first time the callback is invoked, the listener is removed.
+         * @param {string} name - The event name. Passing "all" will bind the callback to all event.
          * @param {function} callback - The event callback.
-         * @param {any} [context] - The context to apply to the callback function's invocation.
+         * @param {any} [context] - The context to apply to the callback's function invocation.
          * @return {Api}
          */
         once(name, callback, context) {
@@ -254,10 +257,10 @@ define([
         }
 
         /**
-         * Remove one or many callbacks.
-         * @param {string} [name] - The event name. If null, removes all bound callbacks for all events.
-         * @param {function} [callback] - If null, removes all callbacks for the event.
-         * @param {any} [context] - If null, removes all callbacks with that function.
+         * Removes one or more callbacks.
+         * @param {string} [name] - The event name. If null, all bound callbacks for all events will be removed.
+         * @param {function} [callback] - If null, all callbacks for the event will be removed.
+         * @param {any} [context] - If null, all callbacks with that function will be removed.
          * @return {Api}
          */
         off(name, callback, context) {
@@ -265,7 +268,7 @@ define([
         }
 
         /**
-         * Trigger one or many events.
+         * Triggers one or more events.
          * By default, the player will invoke callbacks inside a try-catch block
          * to prevent exceptions from breaking normal player behavior.
          * To disable this safety measure set `jwplayer.debug` to `true`.
