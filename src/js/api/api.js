@@ -16,7 +16,7 @@ define([
     let instancesCreated = 0;
 
     /**
-     * Factory method for creating new controllers before calling `jwplayer().setup()`.
+     * Factory method which creates controllers before calling `jwplayer().setup()`.
      * @param {Api} api
      * @param {HTMLElement} element
      */
@@ -36,7 +36,7 @@ define([
     }
 
     /**
-     * Detach Api events listeners and destroy the controller.
+     * Detaches Api event listeners and destroys the controller.
      * @param {Api} api
      * @param {Controller} controller
      */
@@ -50,7 +50,7 @@ define([
     }
 
     /**
-     * Remove the Api instance from the list of active players.
+     * Removes the Api instance from the list of active players.
      * The instance will no longer be queryable via `jwplayer()`
      * @param {Api} api
      */
@@ -68,7 +68,7 @@ define([
     class Api {
 
         /**
-         * Create a player instance.
+         * Creates an instance of the player
          * @param {HTMLElement} element - The element that will be replaced by the player's div container.
          */
         constructor(element) {
@@ -94,7 +94,7 @@ define([
                     }
                 },
                 /**
-                 * The player's unique id. It's value represents the number of player instances created on the page.
+                 * The player's unique id.
                  * @memberOf Api
                  * @type number
                  * @readonly
@@ -145,7 +145,7 @@ define([
             let _controller = setupController(this, element);
 
             /**
-             * Call an internal method on the player's controller.
+             * Calls an internal method on the player's controller.
              * @param {string} name - The method to call.
              * @param {...*} [args] - Any arguments made after the name are passed to the internal method.
              * @return {*} Returns the result or null if the method is undefined.
@@ -159,9 +159,9 @@ define([
             };
 
             /**
-             * Creates a new player on the page. Setup is asynchronous.
-             * A "ready" event is triggered once successful.
-             * A "setupError" event is triggered if setup fails.
+             * Creates a new player on the page and asynchronously begins setup.
+             * A "ready" event is triggered on success.
+             * A "setupError" event is triggered on failure.
              * @param {object} options - The player configuration options.
              * @returns {Api}
              */
@@ -187,9 +187,9 @@ define([
                 return this;
             };
 
-            /** Remove the player from the page. Remove is synchronous.
-             * A "remove" event is fired [EDIT] as the player is removed.
-             * Playback is stopped. The DOM used by the player is reset.
+            /** Asynchronously removes the player from the page.
+             * A "remove" event is fired once removal begins.
+             * Playback is stopped, and the DOM used by the player is reset.
              * All event listeners attached to the player are removed.
              * @returns {Api}
              */
@@ -210,7 +210,7 @@ define([
         }
 
         /**
-         * @return {string} The Player API version.
+         * @return {string} The player API version.
          * @readonly
          */
         get version() {
@@ -218,7 +218,8 @@ define([
         }
 
         /**
-         * Provide Events module access to plugins from the player instance.
+         * Returns the Events module from the player instance.
+         * Used by plugins to listen to player events.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
@@ -227,7 +228,8 @@ define([
         }
 
         /**
-         * Provide plugins with access to utils from the player instance.
+         * Returns the Utils module from the player instance.
+         * Used by plugins.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
@@ -236,7 +238,8 @@ define([
         }
 
         /**
-         * Provide plugins with access to underscore from the player instance.
+         * Returns the Underscore module from the player instance.
+         * Used by plugins.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
@@ -245,10 +248,10 @@ define([
         }
 
         /**
-         * Add an event listener.
-         * @param {string} name - The event name. Passing "all" will bind the callback to all events fired.
+         * Adds an event listener.
+         * @param {string} name - The event name. Passing "all" will bind the callback to all events.
          * @param {function} callback - The event callback.
-         * @param {any} [context] - The context to apply to the callback function's invocation.
+         * @param {any} [context] - The context to apply to the callback's function invocation.
          * @return {Api}
          */
         on(name, callback, context) {
@@ -256,11 +259,11 @@ define([
         }
 
         /**
-         * Add an event listener to only be triggered a single time.
-         * After the first time the callback is invoked, it will be removed.
-         * @param {string} name - The event name. Passing "all" will bind the callback to all events fired.
+         * Adds an event listener which is triggered at most once.
+         * The listener is removed after the first call.
+         * @param {string} name - The event name. Passing "all" will bind the callback to all events.
          * @param {function} callback - The event callback.
-         * @param {any} [context] - The context to apply to the callback function's invocation.
+         * @param {any} [context] - The context to apply to the callback's function invocation.
          * @return {Api}
          */
         once(name, callback, context) {
@@ -268,10 +271,10 @@ define([
         }
 
         /**
-         * Remove one or many callbacks.
-         * @param {string} [name] - The event name. If null, removes all bound callbacks for all events.
-         * @param {function} [callback] - If null, removes all callbacks for the event.
-         * @param {any} [context] - If null, removes all callbacks with that function.
+         * Removes one or more callbacks.
+         * @param {string} [name] - The event name. If null, all bound callbacks for all events will be removed.
+         * @param {function} [callback] - If null, all callbacks for the event will be removed.
+         * @param {any} [context] - If null, all callbacks with that function will be removed.
          * @return {Api}
          */
         off(name, callback, context) {
@@ -279,9 +282,8 @@ define([
         }
 
         /**
-         * Trigger one or many events.
-         * By default, the player will invoke callbacks inside a try-catch block
-         * to prevent exceptions from breaking normal player behavior.
+         * Triggers one or more events.
+         * By default, the player will invoke callbacks inside a try-catch block to prevent exceptions from breaking normal player behavior.
          * To disable this safety measure set `jwplayer.debug` to `true`.
          * @param {string} name - The event name.
          * @param {object} [args] - An object containing the event properties.
@@ -302,7 +304,7 @@ define([
         }
 
         /**
-         * Trigger event callback inside a try catch block.
+         * Triggers an event callback inside a try catch block.
          * @deprecated TODO: in version 8.0.0-0
          */
         triggerSafe(type, args) {
@@ -310,7 +312,7 @@ define([
         }
 
         /**
-         * Get the QoE properties of the player and current playlist item.
+         * Gets the QoE properties of the player and current playlist item.
          * @returns {PlayerQoE}
          */
         qoe() {
@@ -322,7 +324,7 @@ define([
             /** Player QoE returned from {@link Api#qoe jwplayer().qoe()}
              * @typedef {object} PlayerQoE
              * @property {number} setupTime - The number of milliseconds from `jwplayer().setup()` to the "ready" event.
-             * @property {number} firstFrame - The number of milleseconds from the "playAttempt" event to the "firstFrame" event.
+             * @property {number} firstFrame - The number of milliseconds from the "playAttempt" event to the "firstFrame" event.
              * @property {TimerMetrics} player - The QoE metrics of the player.
              * @property {TimerMetrics} item - The QoE metrics of the current playlist item.
              */
@@ -336,7 +338,7 @@ define([
         }
 
         /**
-         * Get the list of available audio tracks.
+         * Gets the list of available audio tracks.
          * @returns {Array.<AudioTrackOption>}
          */
         getAudioTracks() {
@@ -344,7 +346,7 @@ define([
         }
 
         /**
-         * Get the percentage of the media's duration which has been buffered.
+         * Gets the percentage of the media's duration which has been buffered.
          * @returns {number} A number from 0-100 indicating the percentage of media buffered.
          */
         getBuffer() {
@@ -352,7 +354,7 @@ define([
         }
 
         /**
-         * Get custom captions styles.
+         * Gets the captions style.
          * @returns {object}
          */
         getCaptions() {
@@ -368,9 +370,8 @@ define([
          */
 
         /**
-         * Get the list of available captions tracks.
-         * The first item in the array will always be the "off" option,
-         * regardless of whether the media contains captions.
+         * Gets the list of available captions tracks.
+         * The first item in the array will always be the "off" option, regardless of whether the media contains captions.
          * @returns {Array.<CaptionsTrackOption>}
          */
         getCaptionsList() {
@@ -378,7 +379,7 @@ define([
         }
 
         /**
-         * Get a static representation of the player model.
+         * Gets a static representation of the player's model.
          * @returns {object}
          */
         getConfig() {
@@ -386,7 +387,7 @@ define([
         }
 
         /**
-         * Get the player's top level DOM element.
+         * Gets the player's top level DOM element.
          * @returns {HTMLElement}
          */
         getContainer() {
@@ -394,7 +395,7 @@ define([
         }
 
         /**
-         * Get whether or not controls are enabled.
+         * Gets whether or not controls are enabled.
          * @returns {boolean}
          */
         getControls() {
@@ -402,23 +403,23 @@ define([
         }
 
         /**
-         * Get the index of the active audio track.
-         * @returns {number} The index of the active audio track. -1 if there are no alternative audio tracks.
+         * Gets the index of the active audio track.
+         * @returns {number} The index of the active audio track, or -1 if there are no alternative audio tracks.
          */
         getCurrentAudioTrack() {
             return this.callInternal('getCurrentAudioTrack');
         }
 
         /**
-         * Get the index of the active captions option.
-         * @returns {number} The index of the active captions option. 0 when captions are off.
+         * Gets the index of the active captions selection.
+         * @returns {number} The index of the active selection option, or 0 if captions are off.
          */
         getCurrentCaptions() {
             return this.callInternal('getCurrentCaptions');
         }
 
         /**
-         * Get the index of the active quality option.
+         * Gets the index of the active quality selection.
          * @returns {number}
          */
         getCurrentQuality() {
@@ -426,17 +427,17 @@ define([
         }
 
         /**
-         * Get the duration of the current playlist item.
+         * Gets the duration of the current playlist item.
          * @returns {number} The duration in seconds.
          * Live streams always return `Infinity`.
-         * DVR streams return a negative value, indicating how far back from the live edge the stream goes.
+         * DVR streams return a negative value, indicating how far back playback is from the live edge.
          */
         getDuration() {
             return this.callInternal('get', 'duration');
         }
 
         /**
-         * Get the player fullscreen state.
+         * Gets the player's fullscreen state.
          * @returns {boolean} Whether or not the player is in fullscreen mode.
          */
         getFullscreen() {
@@ -444,7 +445,7 @@ define([
         }
 
         /**
-         * Get the player height.
+         * Gets the player's height.
          * @returns {number} The height of the player in pixels.
          */
         getHeight() {
@@ -460,7 +461,7 @@ define([
         }
 
         /**
-         * Get all the metadata for the current playlist item, merged into one object.
+         * Gets all metadata for the current playlist item.
          * @returns {object}
          */
         getItemMeta() {
@@ -476,7 +477,7 @@ define([
         }
 
         /**
-         * Get the player mute state.
+         * Gets the player's mute state.
          * @returns {boolean} Whether or not the player is muted.
          */
         getMute() {
@@ -484,7 +485,7 @@ define([
         }
 
         /**
-         * Get the rate at which playback should occur when media is playing.
+         * Gets the rate at which playback should occur while media is playing.
          * @default 1.0
          * @returns {number} The playback rate of the media element (`HTMLMediaElement.playbackRate`).
          * @since v7.12.0
@@ -494,7 +495,7 @@ define([
         }
 
         /**
-         * Get the player playlist.
+         * Gets the player's playlist.
          * @returns {Array.<PlaylistItem>}
          */
         getPlaylist() {
@@ -502,7 +503,7 @@ define([
         }
 
         /**
-         * Get the index of the current playlist item.
+         * Gets the index of the current playlist item.
          * @returns {number}
          */
         getPlaylistIndex() {
@@ -510,8 +511,8 @@ define([
         }
 
         /**
-         * Get the current playlist item, or the item specified by `index`.
-         * @param {number} [index] When specified, get the playlist item a this 0-based index.
+         * Gets the current playlist item, or the item specified by `index`.
+         * @param {number} [index] A 0-based index of the desired playlist item.
          * @returns {PlaylistItem|null} Returns `null` when `index` is out of range.
          */
         getPlaylistItem(index) {
@@ -526,7 +527,7 @@ define([
         }
 
         /**
-         * Get the current playback time of the active media item.
+         * Gets the current playback time of the active media item.
          * @returns {number} The current playback time in seconds.
          * Live streams return the number of seconds played relative to when playback started (not since the live stream started).
          * DVR streams return a negative value, indicating how far playback is from the live edge.
@@ -537,11 +538,11 @@ define([
 
         /**
          * @typedef {object} ProviderInfo
-         * @property {string} name - The name of the provider handling playback.
+         * @property {string} name - The name of the Provider handling playback.
          */
 
         /**
-         * Get information about the player is handling playback.
+         * Gets information about the how the player is handling playback.
          * @returns {ProviderInfo}
          */
         getProvider() {
@@ -549,7 +550,7 @@ define([
         }
 
         /**
-         * Get the list of available quality options.
+         * Gets the list of available quality options.
          * @returns {Array.<QualityOption>}
          */
         getQualityLevels() {
@@ -565,7 +566,7 @@ define([
          */
 
         /**
-         * Get the area of the player not obscured by controls.
+         * Gets the area of the player not obscured by controls.
          * @returns {SafeRegion}
          */
         getSafeRegion() {
@@ -573,14 +574,14 @@ define([
         }
 
         /**
-         * Get the player state.
+         * Gets the player state.
          * @returns {'idle'|'buffering'|'playing'|'paused'|'complete'} The current state of the player.
          */
         getState() {
             return this.callInternal('getState');
         }
 
-        /** Get the mode of stretching used to fit media in the player.
+        /** Gets the mode of stretching used to fit media in the player.
          * @returns {'uniform'|'exactfit'|'fill'|'none'}
          */
         getStretching() {
@@ -588,7 +589,7 @@ define([
         }
 
         /**
-         * Get player viewability.
+         * Gets the player's viewability.
          * @returns {1|0} Returns `1` when more than half the player is in the document viewport and the page's tab is active.
          * Also returns `1` when the player is in fullscreen mode. `0` otherwise.
          * @since v7.10.0
@@ -606,7 +607,7 @@ define([
          */
 
         /**
-         * Get information about the visual quality of the active media.
+         * Gets information about the visual quality of the active media.
          * @returns {VisualQuality}
          */
         getVisualQuality() {
@@ -614,7 +615,7 @@ define([
         }
 
         /**
-         * Get the player volume level.
+         * Gets the player's volume level.
          * @returns {number} A number from 0-100.
          */
         getVolume() {
@@ -622,7 +623,7 @@ define([
         }
 
         /**
-         * Get the player width.
+         * Gets the player's width.
          * @returns {number} The width of the player in pixels.
          */
         getWidth() {
@@ -630,7 +631,7 @@ define([
         }
 
         /**
-         * Sets custom captions styles.
+         * Sets captions styles.
          * @param {object} captionsStyles
          * @returns {Api}
          * @since v7.5.0
@@ -641,7 +642,7 @@ define([
         }
 
         /**
-         * Update player config options.
+         * Updates the player's config options.
          * @param options
          * @returns {Api}
          * @since v7.12.0
@@ -652,7 +653,7 @@ define([
         }
 
         /**
-         * Toggle player controls.
+         * Toggles player controls.
          * @param {boolean} [toggle] - Specifies whether controls should be enabled or disabled.
          * @returns {Api}
          */
@@ -662,7 +663,7 @@ define([
         }
 
         /**
-         * Set the active audio track.
+         * Sets the active audio track.
          * @param {number} index
          */
         setCurrentAudioTrack(index) {
@@ -671,7 +672,7 @@ define([
         }
 
         /**
-         * Set the active captions option.
+         * Sets the active captions option.
          * @param {number} index
          */
         setCurrentCaptions(index) {
@@ -680,7 +681,7 @@ define([
         }
 
         /**
-         * Set the active quality option.
+         * Sets the active quality option.
          * @param {number} index
          */
         setCurrentQuality(index) {
@@ -689,7 +690,7 @@ define([
         }
 
         /**
-         * Toggle fullscreen state. Most browsers require a user gesture to trigger entering fullscreen mode.
+         * Toggles fullscreen state. Most browsers require a user gesture to trigger entering fullscreen mode.
          * @param {boolean} [toggle] - Specifies whether to enter or exit fullscreen mode.
          * @returns {Api}
          */
@@ -699,7 +700,7 @@ define([
         }
 
         /**
-         * Toggle the player mute state.
+         * Toggles the player's mute state.
          * @param {boolean} [toggle] - Specifies whether to mute or unmute the player.
          * @returns {Api}
          */
@@ -709,8 +710,8 @@ define([
         }
 
         /**
-         * Set the player default playerback rate. During playback, the rate of the current media will be set immediately if supported. Not supported when streaming live.
-         * @param {number} playbackRate - The desired rate of playback. Limited to values between 0.25-4.0.
+         * Sets the player's default playeback rate. During playback, the rate of the current media will be set immediately if supported. Not supported when streaming live.
+         * @param {number} playbackRate - The desired rate of playback. Limited to numbers between 0.25-4.0.
          * @returns {Api}
          * @since v7.12.0
          */
@@ -736,7 +737,7 @@ define([
         }
 
         /**
-         * Set the player volume level.
+         * Set the player's volume level.
          * @param {number} level - A value from 0-100.
          * @returns {Api}
          */
@@ -746,7 +747,7 @@ define([
         }
 
         /**
-         * Stop any active playback, and load either a new playlist, a new playlist item,
+         * Stop any active playback, and loads either a new playlist, a new playlist item,
          * or an item already in the current playlist.
          * @param {string|Array.<PlaylistItem>|PlaylistItem|number} toLoad - The feed url, playlist,
          * playlist item, or playlist item index to load.
@@ -760,7 +761,7 @@ define([
         }
 
         /**
-         * Toggle or un-pause playback.
+         * Toggles or un-pauses playback.
          * @param {boolean} [state] - An optional argument that indicates whether to play (true) or pause (false).
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
@@ -794,7 +795,7 @@ define([
         }
 
         /**
-         * Toggle or pause playback.
+         * Toggles or pauses playback.
          * @param {boolean} [state] - An optional argument that indicates whether to pause (true) or play (false).
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
@@ -809,7 +810,7 @@ define([
         }
 
         /**
-         * Seek to a specific time in the active media. Resumes playback if the player is paused.
+         * Seeks to a specific time within the active media. Resumes playback if the player is paused.
          * @param {number} position - The time to seek to.
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
@@ -820,7 +821,7 @@ define([
         }
 
         /**
-         * Stop any active playback, and play the item at the 0-based index in the playlist.
+         * Stops any active playback, and plays the item at the 0-based index in the playlist.
          * @param {number} index - If outside the range of the playlist,
          * the value will be wrapped to the playlist length.
          * @param [meta] - An optional argument used to specify cause.
@@ -832,8 +833,8 @@ define([
         }
 
         /**
-         * Stop any active playback, and play the next item in the playlist.
-         * When the player is at the end of the playlist, this plays the first playlist item.
+         * Stops any active playback, and plays the next item in the playlist.
+         * When the player is at the end of the playlist, this will play the first playlist item.
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
          */
@@ -843,8 +844,8 @@ define([
         }
 
         /**
-         * Stop any active playback, and play the previous item in the playlist.
-         * When the player is at the beginning of the playlist, this plays the last playlist item.
+         * Stops any active playback, and plays the previous item in the playlist.
+         * When the player is at the beginning of the playlist, this will play the last playlist item.
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
          */
@@ -854,7 +855,7 @@ define([
         }
 
         /**
-         * Stop any active playback, and play the next up item specified by the related plugin.
+         * Stops any active playback, and plays the next up item specified by the related plugin.
          * The next up item is the next playlist item, or the first recommended video when at the end of the playlist.
          * @returns {Api}
          * @since v7.7.0
@@ -865,7 +866,7 @@ define([
         }
 
         /**
-         * Toggle the presence of the Airplay button in Safari (calls `HTMLMediaElement.webkitShowPlaybackTargetPicker`).
+         * Toggles the presence of the Airplay button in Safari (calls `HTMLMediaElement.webkitShowPlaybackTargetPicker`).
          * Does not affect the Chromecast button in Chrome.
          * @returns {Api}
          */
@@ -892,7 +893,7 @@ define([
         }
 
         /**
-         * Stop any active playback.
+         * Stops any active playback.
          * @returns {Api}
          */
         stop() {
@@ -901,7 +902,7 @@ define([
         }
 
         /**
-         * Set the player width and height.
+         * Sets the player width and height.
          * @param {number|string} width - Set the width in pixel (number) or CSS measurement units ('100%', '100em')
          * @param {number|string} [height] - Set the height in pixel (number) or CSS measurement units ('100%', '100em')
          * When specified, the "aspectratio" option included at setup is cleared.
@@ -912,12 +913,12 @@ define([
             return this;
         }
 
-        /** Add or update a button in the player doc. The button is only displayed when controls are active.
+        /** Adds or updates a button in the player's dock. The button is only displayed when controls are active.
          * @param {string} img - An image URL to use as the button icon.
-         * @param {string} tooltip - A tooltip label to display when the button is hovered over.
+         * @param {string} tooltip - A tooltip label to display when the button is hovered.
          * @param {function} callback - A callback to invoke when the button is clicked.
          * @param {string} id - The id of the button to add or update.
-         * @param {string} [btnClass] - CSS class(es) to add to the button element.
+         * @param {string} [btnClass] - CSS classes to add to the button element.
          * @returns {Api}
          */
         addButton(img, tooltip, callback, id, btnClass) {
@@ -926,7 +927,7 @@ define([
         }
 
         /**
-         * Remove a button from the player doc.
+         * Removes a button from the player's dock.
          * @param {string} id - The id of the button to remove.
          * @returns {Api}
          */
@@ -936,7 +937,8 @@ define([
         }
 
         /**
-         * Resume normal playback after an ad break
+         * Reattaches a player instance to it's underlying video tag.
+         * Used after ad breaks to record state changes and resume playback.
          * @deprecated TODO: in version 8.0.0-0
          */
         attachMedia() {
@@ -945,7 +947,8 @@ define([
         }
 
         /**
-         * Detach player state from current playback media before an ad break
+         * Detaches a player instance from it's underlying video tag.
+         * Used to stop recording state changes before an ad break begins.
          * @deprecated TODO: in version 8.0.0-0
          */
         detachMedia() {
@@ -954,8 +957,8 @@ define([
         }
 
         /**
-         * Check if the player has finished playing the current playlist item,
-         * and has not yet transitioned to the "complete" state or started the next item.
+         * Checks if the player has finished playing the current playlist item,
+         * but has not yet transitioned to the "complete" state or began the next item.
          * This state is entered when playing postroll ads.
          * @returns {boolean}
          */
@@ -964,7 +967,7 @@ define([
         }
 
         /**
-         * Check if the player has yet to begin playback after playback has been requested.
+         * Checks if playback has been requested, but the player has not begun to play.
          * This state is entered when playing preroll ads.
          * @returns {boolean}
          */
@@ -973,7 +976,7 @@ define([
         }
 
         /**
-         * Return the specified plugin instance.
+         * Gets the specified plugin instance.
          * @param {string} name - The name of the plugin.
          * @return {any} The plugin instance.
          */
@@ -982,7 +985,7 @@ define([
         }
 
         /**
-         * Add a plugin instance to the player instance.
+         * Adds a plugin instance to the player's instance.
          * @param {string} name - The name of the plugin.
          * @param {any} pluginInstance - The plugin instance.
          */
@@ -998,7 +1001,7 @@ define([
         }
 
         /**
-         * Register a plugin class with the library.
+         * Registers a plugin class with the player library.
          * @param {string} name - The name of the plugin.
          * @param {string} minimumVersion - The minimum player version required by the plugin.
          * @param {function} constructor - The plugin function or class to instantiate with new player instances.
@@ -1009,7 +1012,7 @@ define([
         }
 
         /**
-         * Check for the presence of an ad blocker. Implementation is done in jwplayer-commercial.
+         * Checks for the presence of an ad blocker. Implemented by jwplayer-commercial.
          * @returns {boolean} - Returns true when an ad blocker is detected, otherwise false.
          */
         getAdBlock() {
@@ -1017,14 +1020,14 @@ define([
         }
 
         /**
-         * Play an ad. Implementation is done in ad plugin.
+         * Plays an ad. Implemented by ad plugins.
          * @param {string|Array} adBreak - The ad tag or waterfall array.
          */
         playAd(/* eslint-disable no-unused-vars */adBreak/* eslint-enable no-unused-vars */) {
         }
 
         /**
-         * Play an ad. Implementation is done in ad plugin.
+         * Pauses or toggles ad playback. Implemented by ad plugins.
          * @param {boolean} toggle - Specifies whether ad playback should be paused or resumed.
          */
         pauseAd(/* eslint-disable no-unused-vars */toggle/* eslint-enable no-unused-vars */) {
