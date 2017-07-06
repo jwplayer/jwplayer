@@ -909,6 +909,14 @@ define([
             _setup.start();
         },
 
+        get: function(property) {
+            return this._model.get(property);
+        },
+
+        getMute: function() {
+            return this._model.getMute();
+        },
+
         showView: function(viewElement) {
             if (!document.body.contains(this.currentContainer)) {
                 // This implies the player was removed from the DOM before setup completed

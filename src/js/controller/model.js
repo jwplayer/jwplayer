@@ -107,6 +107,8 @@ define([
                         mediaModel.set('duration', duration);
                         this.set('duration', duration);
                     }
+                    var itemMeta = this.get('itemMeta');
+                    _.extend(itemMeta, data.metadata);
                     break;
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
