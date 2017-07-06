@@ -378,7 +378,6 @@ define([
                 removeBlockedCheck();
                 this.remove();
                 if (_swf) {
-                    _swf.off();
                     _swf = null;
                 }
                 _container = null;
