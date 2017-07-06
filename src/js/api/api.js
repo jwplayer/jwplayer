@@ -68,7 +68,7 @@ define([
     class Api {
 
         /**
-         * Creates an instance of the Player
+         * Creates an instance of the player
          * @param {HTMLElement} element - The element that will be replaced by the player's div container.
          */
         constructor(element) {
@@ -81,7 +81,7 @@ define([
 
             Object.defineProperties(this, {
                 /**
-                 * The Player's query id.
+                 * The player's query id.
                  * This matches the id of the element used to create the player at the time is was setup.
                  * @memberOf Api
                  * @type string
@@ -145,7 +145,7 @@ define([
             let _controller = setupController(this, element);
 
             /**
-             * Calls an internal method on the Player's controller.
+             * Calls an internal method on the player's controller.
              * @param {string} name - The method to call.
              * @param {...*} [args] - Any arguments made after the name are passed to the internal method.
              * @return {*} Returns the result or null if the method is undefined.
@@ -159,10 +159,10 @@ define([
             };
 
             /**
-             * Creates a new Player on the page and asynchronously begins setup.
+             * Creates a new player on the page and asynchronously begins setup.
              * A "ready" event is triggered on success.
              * A "setupError" event is triggered on failure.
-             * @param {object} options - The Player configuration options.
+             * @param {object} options - The player configuration options.
              * @returns {Api}
              */
             this.setup = function(options) {
@@ -187,7 +187,7 @@ define([
                 return this;
             };
 
-            /** Asynchronously removes the Player from the page.
+            /** Asynchronously removes the player from the page.
              * A "remove" event is fired once removal begins.
              * Playback is stopped, and the DOM used by the player is reset.
              * All event listeners attached to the player are removed.
@@ -210,7 +210,7 @@ define([
         }
 
         /**
-         * @return {string} The Player API version.
+         * @return {string} The player API version.
          * @readonly
          */
         get version() {
@@ -218,8 +218,8 @@ define([
         }
 
         /**
-         * Returns the Events module from the Player instance.
-         * Used by plugins to listen to Player events.
+         * Returns the Events module from the player instance.
+         * Used by plugins to listen to player events.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
@@ -228,7 +228,7 @@ define([
         }
 
         /**
-         * Returns the Utils module from the Player instance.
+         * Returns the Utils module from the player instance.
          * Used by plugins.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
@@ -238,7 +238,7 @@ define([
         }
 
         /**
-         * Returns the Underscore module from the Player instance.
+         * Returns the Underscore module from the player instance.
          * Used by plugins.
          * @deprecated TODO: in version 8.0.0-0
          * @readonly
@@ -283,7 +283,7 @@ define([
 
         /**
          * Triggers one or more events.
-         * By default, the Player will invoke callbacks inside a try-catch block to prevent exceptions from breaking normal Player behavior.
+         * By default, the player will invoke callbacks inside a try-catch block to prevent exceptions from breaking normal player behavior.
          * To disable this safety measure set `jwplayer.debug` to `true`.
          * @param {string} name - The event name.
          * @param {object} [args] - An object containing the event properties.
@@ -312,7 +312,7 @@ define([
         }
 
         /**
-         * Gets the QoE properties of the Player and current playlist item.
+         * Gets the QoE properties of the player and current playlist item.
          * @returns {PlayerQoE}
          */
         qoe() {
@@ -379,7 +379,7 @@ define([
         }
 
         /**
-         * Gets a static representation of the Player's model.
+         * Gets a static representation of the player's model.
          * @returns {object}
          */
         getConfig() {
@@ -387,7 +387,7 @@ define([
         }
 
         /**
-         * Gets the Player's top level DOM element.
+         * Gets the player's top level DOM element.
          * @returns {HTMLElement}
          */
         getContainer() {
@@ -437,7 +437,7 @@ define([
         }
 
         /**
-         * Gets the Player's fullscreen state.
+         * Gets the player's fullscreen state.
          * @returns {boolean} Whether or not the player is in fullscreen mode.
          */
         getFullscreen() {
@@ -445,7 +445,7 @@ define([
         }
 
         /**
-         * Gets the Player's height.
+         * Gets the player's height.
          * @returns {number} The height of the player in pixels.
          */
         getHeight() {
@@ -477,7 +477,7 @@ define([
         }
 
         /**
-         * Gets the Player's mute state.
+         * Gets the player's mute state.
          * @returns {boolean} Whether or not the player is muted.
          */
         getMute() {
@@ -495,7 +495,7 @@ define([
         }
 
         /**
-         * Gets the Player's playlist.
+         * Gets the player's playlist.
          * @returns {Array.<PlaylistItem>}
          */
         getPlaylist() {
@@ -542,7 +542,7 @@ define([
          */
 
         /**
-         * Gets information about the how the Player is handling playback.
+         * Gets information about the how the player is handling playback.
          * @returns {ProviderInfo}
          */
         getProvider() {
@@ -566,7 +566,7 @@ define([
          */
 
         /**
-         * Gets the area of the Player not obscured by controls.
+         * Gets the area of the player not obscured by controls.
          * @returns {SafeRegion}
          */
         getSafeRegion() {
@@ -589,8 +589,8 @@ define([
         }
 
         /**
-         * Gets the Player's viewability.
-         * @returns {1|0} Returns `1` when more than half the Player is in the document viewport and the page's tab is active.
+         * Gets the player's viewability.
+         * @returns {1|0} Returns `1` when more than half the player is in the document viewport and the page's tab is active.
          * Also returns `1` when the player is in fullscreen mode. `0` otherwise.
          * @since v7.10.0
          */
@@ -615,7 +615,7 @@ define([
         }
 
         /**
-         * Gets the Player's volume level.
+         * Gets the player's volume level.
          * @returns {number} A number from 0-100.
          */
         getVolume() {
@@ -623,7 +623,7 @@ define([
         }
 
         /**
-         * Gets the Player's width.
+         * Gets the player's width.
          * @returns {number} The width of the player in pixels.
          */
         getWidth() {
@@ -642,7 +642,7 @@ define([
         }
 
         /**
-         * Updates the Player's config options.
+         * Updates the player's config options.
          * @param options
          * @returns {Api}
          * @since v7.12.0
@@ -653,7 +653,7 @@ define([
         }
 
         /**
-         * Toggles Player controls.
+         * Toggles player controls.
          * @param {boolean} [toggle] - Specifies whether controls should be enabled or disabled.
          * @returns {Api}
          */
@@ -700,7 +700,7 @@ define([
         }
 
         /**
-         * Toggles the Player's mute state.
+         * Toggles the player's mute state.
          * @param {boolean} [toggle] - Specifies whether to mute or unmute the player.
          * @returns {Api}
          */
@@ -710,7 +710,7 @@ define([
         }
 
         /**
-         * Sets the Player's default playeback rate. During playback, the rate of the current media will be set immediately if supported. Not supported when streaming live.
+         * Sets the player's default playeback rate. During playback, the rate of the current media will be set immediately if supported. Not supported when streaming live.
          * @param {number} playbackRate - The desired rate of playback. Limited to numbers between 0.25-4.0.
          * @returns {Api}
          * @since v7.12.0
@@ -737,7 +737,7 @@ define([
         }
 
         /**
-         * Set the Player's volume level.
+         * Set the player's volume level.
          * @param {number} level - A value from 0-100.
          * @returns {Api}
          */
@@ -834,7 +834,7 @@ define([
 
         /**
          * Stops any active playback, and plays the next item in the playlist.
-         * When the Player is at the end of the playlist, this will play the first playlist item.
+         * When the player is at the end of the playlist, this will play the first playlist item.
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
          */
@@ -845,7 +845,7 @@ define([
 
         /**
          * Stops any active playback, and plays the previous item in the playlist.
-         * When the Player is at the beginning of the playlist, this will play the last playlist item.
+         * When the player is at the beginning of the playlist, this will play the last playlist item.
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
          */
@@ -913,7 +913,7 @@ define([
             return this;
         }
 
-        /** Adds or updates a button in the Player's dock. The button is only displayed when controls are active.
+        /** Adds or updates a button in the player's dock. The button is only displayed when controls are active.
          * @param {string} img - An image URL to use as the button icon.
          * @param {string} tooltip - A tooltip label to display when the button is hovered.
          * @param {function} callback - A callback to invoke when the button is clicked.
@@ -927,7 +927,7 @@ define([
         }
 
         /**
-         * Removes a button from the Player's dock.
+         * Removes a button from the player's dock.
          * @param {string} id - The id of the button to remove.
          * @returns {Api}
          */
@@ -937,7 +937,7 @@ define([
         }
 
         /**
-         * Reattaches a Player instance to it's underlying video tag.
+         * Reattaches a player instance to it's underlying video tag.
          * Used after ad breaks to record state changes and resume playback.
          * @deprecated TODO: in version 8.0.0-0
          */
@@ -947,7 +947,7 @@ define([
         }
 
         /**
-         * Detaches a Player instance from it's underlying video tag.
+         * Detaches a player instance from it's underlying video tag.
          * Used to stop recording state changes before an ad break begins.
          * @deprecated TODO: in version 8.0.0-0
          */
@@ -957,7 +957,7 @@ define([
         }
 
         /**
-         * Checks if the Player has finished playing the current playlist item,
+         * Checks if the player has finished playing the current playlist item,
          * but has not yet transitioned to the "complete" state or began the next item.
          * This state is entered when playing postroll ads.
          * @returns {boolean}
@@ -967,7 +967,7 @@ define([
         }
 
         /**
-         * Checks if playback has been requested, but the Player has not begun to play.
+         * Checks if playback has been requested, but the player has not begun to play.
          * This state is entered when playing preroll ads.
          * @returns {boolean}
          */
@@ -985,7 +985,7 @@ define([
         }
 
         /**
-         * Adds a plugin instance to the Player's instance.
+         * Adds a plugin instance to the player's instance.
          * @param {string} name - The name of the plugin.
          * @param {any} pluginInstance - The plugin instance.
          */
@@ -1001,7 +1001,7 @@ define([
         }
 
         /**
-         * Registers a plugin class with the Player library.
+         * Registers a plugin class with the player library.
          * @param {string} name - The name of the plugin.
          * @param {string} minimumVersion - The minimum player version required by the plugin.
          * @param {function} constructor - The plugin function or class to instantiate with new player instances.
