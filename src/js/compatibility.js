@@ -1,11 +1,8 @@
-(function (playerLibrary) {
-
+(function(playerLibrary) {
     // Check if the version of the player requires the compatibility shim
     if (parseInt(playerLibrary.version, 10) >= 8) {
-
         // Redefine jwplayer global
         window.jwplayer = function(query) {
-
             // Get JW Player 8 instance
             var playerInstance = playerLibrary(query);
             if (!playerInstance) {
@@ -65,14 +62,14 @@
                 onAudioTracks: 'audioTracks'
             };
 
-            Object.keys(callbackMap).forEach( function(key) {
+            Object.keys(callbackMap).forEach(function(key) {
                 playerInstance[key] = function (callback) {
                     playerInstance.on(callbackMap[key], callback);
                 };
             });
 
             return playerInstance;
-        }
+        };
     }
     // Add deprecated library items
-})(window.jwplayer);
+}(window.jwplayer));
