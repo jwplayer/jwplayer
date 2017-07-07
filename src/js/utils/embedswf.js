@@ -22,14 +22,6 @@ define([
         });
     }
 
-    function addSetter(obj, property, value) {
-        Object.defineProperty(obj, property, {
-            set: function() {
-                return value;
-            }
-        });
-    }
-
     function embed(swfUrl, container, id, wmode) {
         var swf;
         var queueCommands = true;
