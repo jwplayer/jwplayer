@@ -794,9 +794,6 @@ define([
             };
 
             // View passthroughs
-            this.getContainer = function() {
-                return this.currentContainer;
-            };
             this.resize = _view.resize;
             this.getSafeRegion = _view.getSafeRegion;
             this.setCues = _view.addCues;
@@ -911,6 +908,10 @@ define([
 
         get: function(property) {
             return this._model.get(property);
+        },
+
+        getContainer: function() {
+            return this.currentContainer || this.originalContainer;
         },
 
         getMute: function() {

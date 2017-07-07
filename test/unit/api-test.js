@@ -239,11 +239,12 @@ define([
         });
 
         it('has getters that return values before setup', function() {
-            var api = createApi('player');
+            var container = createContainer('player');
+            var api = new Api(container);
 
-            assert.strictEqual(api.getContainer(), document.getElementById('player'),
+            assert.ok(container instanceof HTMLElement, 'container is an element');
+            assert.strictEqual(api.getContainer(), container,
                 'getContainer returns the player DOM element before setup');
-
 
             var result = api.registerPlugin('', '7.0', function() {});
             assert.strictEqual(result, undefined, 'registerPlugin returns undefined');
@@ -357,17 +358,14 @@ define([
         }
 
         function createContainer(id) {
-            var container = $('<div id="' + id + '"></div>')[0];
-            return container;
+            return $('<div id="' + id + '"></div>')[0];
         }
         function createWithVideoContainer(id) {
-            var container = $('<div id="' + id + '"><video id="custom-video"></video></div>')[0];
-            return container;
+            return $('<div id="' + id + '"><video id="custom-video"></video></div>')[0];
         }
 
         function createWithAudioContainer(id) {
-            var container = $('<div id="' + id + '"><audio id="custom-audio"></audio></div>')[0];
-            return container;
+            return $('<div id="' + id + '"><audio id="custom-audio"></audio></div>')[0];
         }
     });
 });
