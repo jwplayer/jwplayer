@@ -22,6 +22,14 @@ define([
         });
     }
 
+    function addSetter(obj, property, value) {
+        Object.defineProperty(obj, property, {
+            set: function() {
+                return value;
+            }
+        });
+    }
+
     function embed(swfUrl, container, id, wmode) {
         var swf;
         var queueCommands = true;
@@ -114,7 +122,16 @@ define([
                 }
             });
         });
-        addGetter(swf, '_events', {});
+
+        let events = {};
+        Object.defineProperty(swf, '_events', {
+            get: function () {
+                return events;
+            },
+            set: function (value) {
+                events = value;
+            }
+        });
 
         // javascript can trigger SwfEventRouter callbacks
         addGetter(swf, 'triggerFlash', function(name) {
