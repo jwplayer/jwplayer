@@ -1,13 +1,16 @@
 (function (playerLibrary) {
 
     // Check if the version of the player requires the compatibility shim
-    if (parseInt(playerLibrary.version, 10) >= 7) {
+    if (parseInt(playerLibrary.version, 10) >= 8) {
 
         // Redefine jwplayer global
         window.jwplayer = function(query) {
 
             // Get JW Player 8 instance
             var playerInstance = playerLibrary(query);
+            if (!playerInstance) {
+                return;
+            }
 
             playerInstance.dispatchEvent = playerInstance.trigger;
             playerInstance.removeEventListener = playerInstance.off.bind(this);
