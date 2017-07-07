@@ -67,21 +67,21 @@ define([
             _loader.load();
         };
 
-        this.registerPlugin = function(id, target, arg1, arg2) {
+        this.registerPlugin = function(name, minimumVersion, pluginClass, pluginClass2) {
             if (_completeTimeout) {
                 clearTimeout(_completeTimeout);
                 _completeTimeout = undefined;
             }
-            _target = target;
-            if (arg1 && arg2) {
-                _flashPath = arg2;
-                _js = arg1;
-            } else if (typeof arg1 === 'string') {
-                _flashPath = arg1;
-            } else if (typeof arg1 === 'function') {
-                _js = arg1;
-            } else if (!arg1 && !arg2) {
-                _flashPath = id;
+            _target = minimumVersion;
+            if (pluginClass && pluginClass2) {
+                _flashPath = pluginClass2;
+                _js = pluginClass;
+            } else if (typeof pluginClass === 'string') {
+                _flashPath = pluginClass;
+            } else if (typeof pluginClass === 'function') {
+                _js = pluginClass;
+            } else if (!pluginClass && !pluginClass2) {
+                _flashPath = name;
             }
             _status = Scriptloader.loaderstatus.COMPLETE;
             _this.trigger(events.COMPLETE);

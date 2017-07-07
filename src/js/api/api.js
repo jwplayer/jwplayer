@@ -991,11 +991,11 @@ define([
          * Registers a plugin class with the player library.
          * @param {string} name - The name of the plugin.
          * @param {string} minimumVersion - The minimum player version required by the plugin.
-         * @param {function} constructor - The plugin function or class to instantiate with new player instances.
-         * @param {function} [constructor2] - (TODO: Deprecated in 8.0.0) When passed in, the previous argument is a path to the flash plugin and this argument is the JS contructor.
+         * @param {function} pluginClass - The plugin function or class to instantiate with new player instances.
+         * @param {function} [pluginClass2] - (TODO: remove in 8.0.0) When passed in, the previous argument is a path to the flash plugin and this argument is the JS contructor.
          */
-        registerPlugin(name, minimumVersion, constructor, constructor2) {
-            plugins.registerPlugin(name, minimumVersion, constructor, constructor2);
+        registerPlugin(name, minimumVersion, pluginClass, pluginClass2) {
+            plugins.registerPlugin(name, minimumVersion, pluginClass, pluginClass2);
         },
 
         /**
