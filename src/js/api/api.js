@@ -65,7 +65,7 @@ define([
             _controller.on('all', _this.trigger);
         };
         _setupController();
-//        legacyInit(this);
+        legacyInit(this);
 
         // These should be read-only model properties
         this.id = container.id;

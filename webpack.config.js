@@ -82,8 +82,7 @@ const multiConfig = [
 ].map(configuration =>
     Object.assign({}, configuration, {
         entry: {
-            jwplayer: './src/js/jwplayer.js',
-            'jwplayer.compatibility': './src/js/compatibility.js'
+            jwplayer: './src/js/jwplayer.js'
         },
         stats: {
             timings: true
