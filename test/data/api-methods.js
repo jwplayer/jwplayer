@@ -6,7 +6,6 @@ define({
     //   getPlaylistIndex: null,
     //   jw...: null,
 
-    callInternal: null,
     dispatchEvent: null,
     removeEventListener: null,
     addButton: null,
@@ -16,6 +15,7 @@ define({
     createInstream: null,
     attachMedia: null,
     detachMedia: null,
+    getAdBlock: null,
     getAudioTracks: null,
     getBuffer: null,
     getCaptions: null,
