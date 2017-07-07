@@ -87,11 +87,6 @@ define([
 
     // A playlist item may have multiple different sources, but we want to stick with one.
     var _filterSources = function(sources, providers) {
-        // legacy plugin support
-        if (!providers || !providers.choose) {
-            providers = new Providers({ primary: providers ? 'flash' : null });
-        }
-
         var chosenProviderAndType = _chooseProviderAndType(sources, providers);
         if (!chosenProviderAndType) {
             return [];

@@ -8,7 +8,7 @@ define([
 
     function Providers(config) {
         this.config = config || {};
-        this.providers = this.reorderProviders(this.config.primary);
+        this.providers = ProvidersSupported;
     }
 
     Providers.loaders = {
@@ -78,25 +78,13 @@ define([
             }));
         },
 
-        reorderProviders: function (primary) {
-            var providers = _.clone(ProvidersSupported);
-
-            if (primary === 'flash') {
-                var flashIdx = _.indexOf(providers, _.findWhere(providers, { name: 'flash' }));
-                var flashProvider = providers.splice(flashIdx, 1)[0];
-                var html5Idx = _.indexOf(providers, _.findWhere(providers, { name: 'html5' }));
-                providers.splice(html5Idx, 0, flashProvider);
-            }
-            return providers;
-        },
-
         providerSupports: function(provider, source) {
             return provider.supports(source);
         },
 
-        required: function(playlist, primary) {
+        required: function(playlist) {
             var _this = this;
-            var providers = this.reorderProviders(primary);
+            var providers = ProvidersSupported;
 
             playlist = playlist.slice();
             return _.compact(_.map(providers, function(provider) {
