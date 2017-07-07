@@ -1,4 +1,8 @@
 (function(playerLibrary) {
+    // Verify JW Player is loaded
+    if (!window.jwplayer) {
+        return;
+    }
     // Check if the version of the player requires the compatibility shim
     if (parseInt(playerLibrary.version, 10) >= 8) {
         // Redefine jwplayer global
