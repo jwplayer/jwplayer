@@ -1,3 +1,5 @@
+import { Browser } from 'environment/environment';
+
 define([
     'utils/helpers',
     'utils/css',
@@ -224,7 +226,7 @@ define([
         }
 
         function _styleNativeCaptions(playerId, textStyle) {
-            if (utils.isSafari()) {
+            if (Browser.safari) {
                 // Only Safari uses a separate element for styling text background
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop', {
                     backgroundColor: textStyle.backgroundColor

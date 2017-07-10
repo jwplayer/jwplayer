@@ -1,3 +1,5 @@
+import { Features } from 'environment/environment';
+
 define([
     'plugins/plugins',
     'playlist/loader',

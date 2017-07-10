@@ -1,4 +1,5 @@
 import instances from 'api/players';
+import * as Environment from 'environment/environment';
 
 define([
     'api/timer',
@@ -353,6 +354,22 @@ define([
              */
             getDuration() {
                 return _controller.get('duration');
+            },
+
+            /**
+             * Environment information for the current session, return by {@link Api#getEnvironment jwplayer().getEnvironment()}
+             * @typedef {object} Environment
+             * @property {BrowserEnvironment} Browser - Information about the current session's browser.
+             * @property {OSEnvironment} OS - Information about the current session's operating system.
+             * @property {FeatureEnvironment} Features - Information about the current sessions's supported features.
+             */
+
+            /**
+             * Gets information about the current session's environment
+             * @returns {Environment} An object detailing the current session's browser, operating system, and supported features.
+             */
+            getEnvironment() {
+                return Environment;
             },
 
             /**
@@ -1039,6 +1056,173 @@ define([
          */
         removeEventListener() {
             this.off.apply(this, arguments);
+        },
+
+        /**
+         * @deprecated TODO: in version 8.0.0-0
+         */
+        onBuffer(callback) {
+            this.on('buffer', callback);
+        },
+
+        onPause(callback) {
+            this.on('pause', callback);
+        },
+
+        onPlay(callback) {
+            this.on('play', callback);
+        },
+
+        onIdle(callback) {
+            this.on('idle', callback);
+        },
+
+        onBufferChange(callback) {
+            this.on(events.JWPLAYER_MEDIA_BUFFER, callback);
+        },
+
+        onBufferFull(callback) {
+            this.on(events.JWPLAYER_MEDIA_BUFFER_FULL, callback);
+        },
+
+        onError(callback) {
+            this.on(events.JWPLAYER_ERROR, callback);
+        },
+
+        onSetupError(callback) {
+            this.on(events.JWPLAYER_SETUP_ERROR, callback);
+        },
+
+        onFullscreen(callback) {
+            this.on(events.JWPLAYER_FULLSCREEN, callback);
+        },
+
+        onMeta(callback) {
+            this.on(events.JWPLAYER_MEDIA_META, callback);
+        },
+
+        onMute(callback) {
+            this.on(events.JWPLAYER_MEDIA_MUTE, callback);
+        },
+
+        onPlaylist(callback) {
+            this.on(events.JWPLAYER_PLAYLIST_LOADED, callback);
+        },
+
+        onPlaylistItem(callback) {
+            this.on(events.JWPLAYER_PLAYLIST_ITEM, callback);
+        },
+
+        onPlaylistComplete(callback) {
+            this.on(events.JWPLAYER_PLAYLIST_COMPLETE, callback);
+        },
+
+        onReady(callback) {
+            this.on(events.JWPLAYER_READY, callback);
+        },
+
+        onResize(callback) {
+            this.on(events.JWPLAYER_RESIZE, callback);
+        },
+
+        onComplete(callback) {
+            this.on(events.JWPLAYER_MEDIA_COMPLETE, callback);
+        },
+
+        onSeek(callback) {
+            this.on(events.JWPLAYER_MEDIA_SEEK, callback);
+        },
+
+        onTime(callback) {
+            this.on(events.JWPLAYER_MEDIA_TIME, callback);
+        },
+
+        onVolume(callback) {
+            this.on(events.JWPLAYER_MEDIA_VOLUME, callback);
+        },
+
+        onBeforePlay(callback) {
+            this.on(events.JWPLAYER_MEDIA_BEFOREPLAY, callback);
+        },
+
+        onBeforeComplete(callback) {
+            this.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, callback);
+        },
+
+        onDisplayClick(callback) {
+            this.on(events.JWPLAYER_DISPLAY_CLICK, callback);
+        },
+
+        onControls(callback) {
+            this.on(events.JWPLAYER_CONTROLS, callback);
+        },
+
+        onQualityLevels(callback) {
+            this.on(events.JWPLAYER_MEDIA_LEVELS, callback);
+        },
+
+        onQualityChange(callback) {
+            this.on(events.JWPLAYER_MEDIA_LEVEL_CHANGED, callback);
+        },
+
+        onCaptionsList(callback) {
+            this.on(events.JWPLAYER_CAPTIONS_LIST, callback);
+        },
+
+        onCaptionsChange(callback) {
+            this.on(events.JWPLAYER_CAPTIONS_CHANGED, callback);
+        },
+
+        onAdError(callback) {
+            this.on(events.JWPLAYER_AD_ERROR, callback);
+        },
+
+        onAdClick(callback) {
+            this.on(events.JWPLAYER_AD_CLICK, callback);
+        },
+
+        onAdImpression(callback) {
+            this.on(events.JWPLAYER_AD_IMPRESSION, callback);
+        },
+
+        onAdTime(callback) {
+            this.on(events.JWPLAYER_AD_TIME, callback);
+        },
+
+        onAdComplete(callback) {
+            this.on(events.JWPLAYER_AD_COMPLETE, callback);
+        },
+
+        onAdCompanions(callback) {
+            this.on(events.JWPLAYER_AD_COMPANIONS, callback);
+        },
+
+        onAdSkipped(callback) {
+            this.on(events.JWPLAYER_AD_SKIPPED, callback);
+        },
+
+        onAdPlay(callback) {
+            this.on(events.JWPLAYER_AD_PLAY, callback);
+        },
+
+        onAdPause(callback) {
+            this.on(events.JWPLAYER_AD_PAUSE, callback);
+        },
+
+        onAdMeta(callback) {
+            this.on(events.JWPLAYER_AD_META, callback);
+        },
+
+        onCast(callback) {
+            this.on(events.JWPLAYER_CAST_SESSION, callback);
+        },
+
+        onAudioTrackChange(callback) {
+            this.on(events.JWPLAYER_AUDIO_TRACK_CHANGED, callback);
+        },
+
+        onAudioTracks(callback) {
+            this.on(events.JWPLAYER_AUDIO_TRACKS, callback);
         }
     });
 

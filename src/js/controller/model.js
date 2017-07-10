@@ -1,3 +1,5 @@
+import { Browser, OS } from 'environment/environment';
+
 define([
     'utils/helpers',
     'providers/providers',
@@ -480,17 +482,17 @@ define([
         };
 
         function _autoStartSupportedIOS() {
-            if (!utils.isIOS()) {
+            if (OS.iOS) {
                 return false;
             }
             // Autostart only supported in iOS 10 or higher - check if the version is 9 or less
-            return !(utils.isIOS(6) || utils.isIOS(7) || utils.isIOS(8) || utils.isIOS(9));
+            return OS.version.major >= 10;
         }
 
         function platformCanAutostart() {
             var autostartAdsIsEnabled = (!_this.get('advertising') || _this.get('advertising').autoplayadsmuted);
-            var iosBrowserIsSupported = _autoStartSupportedIOS() && (utils.isSafari() || utils.isChrome() || utils.isFacebook());
-            var androidBrowserIsSupported = utils.isAndroid() && utils.isChrome();
+            var iosBrowserIsSupported = _autoStartSupportedIOS() && (Browser.safari || Browser.chrome || Browser.facebook);
+            var androidBrowserIsSupported = OS.android && Browser.chrome;
             var mobileBrowserIsSupported = (iosBrowserIsSupported || androidBrowserIsSupported);
             var isAndroidSdk = _this.get('sdkplatform') === 1;
             return (!_this.get('sdkplatform') && autostartAdsIsEnabled && mobileBrowserIsSupported) || isAndroidSdk;

@@ -5,6 +5,7 @@ import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
+import { Browser, OS, Features } from 'environment/environment';
 
 let ControlsModule;
 
@@ -27,8 +28,8 @@ define([
 
     const _styles = utils.style;
     const _bounds = utils.bounds;
-    const _isMobile = utils.isMobile();
-    const _isIE = utils.isIE();
+    const _isMobile = OS.mobile;
+    const _isIE = Browser.ie;
 
     let stylesInjected = false;
 
@@ -381,7 +382,7 @@ define([
 
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
-            _model.set('iFrame', utils.isIframe());
+            _model.set('iFrame', Features.iframe);
             _model.set('activeTab', activeTab());
             _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT));
 

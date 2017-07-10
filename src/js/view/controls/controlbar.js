@@ -1,4 +1,5 @@
 import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
+import { Browser, OS } from 'environment/environment';
 
 define([
     'utils/helpers',
@@ -29,7 +30,7 @@ define([
     }
 
     function createCastButton(castToggle, localization) {
-        if (!utils.isChrome() || utils.isIOS()) {
+        if (Browser.chrome && OS.iOS) {
             return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
         }
 
@@ -89,7 +90,7 @@ define([
             _.extend(this, Events);
             this._api = _api;
             this._model = _model;
-            this._isMobile = utils.isMobile();
+            this._isMobile = OS.mobile;
             this._localization = _model.get('localization');
 
             this.nextUpToolTip = null;
@@ -111,7 +112,7 @@ define([
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
-            if (!_model.get('sdkplatform') && !(utils.isIOS(8) || utils.isIOS(9))) {
+            if (!_model.get('sdkplatform') && !(OS.iOS && OS.major.version < 10)) {
                 muteButton = button('jw-icon-volume', () => { _api.setMute(); }, vol);
             }
 

@@ -1,3 +1,5 @@
+import { Browser, OS } from 'environment/environment';
+
 define([
     'events/events',
     'events/states',
@@ -18,7 +20,7 @@ define([
              DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
              NextUpToolTip, RightClick) {
 
-    const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
+    const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
     const reasonInteraction = function() {
         return { reason: 'interaction' };
@@ -79,7 +81,7 @@ define([
                     api.play(reasonInteraction());
                 });
 
-                if (utils.isChrome() && !touchMode) {
+                if (Browser.chrome && !touchMode) {
                     // On Chrome desktop allow media element to capture all play/pause toggle clicks
                     // This allows swfs to capture clicks on start preventing flash-throttling
                     playDisplayIcon.el.style.pointerEvents = 'none';
@@ -308,7 +310,7 @@ define([
         }
 
         addActiveListeners(element) {
-            if (element && !utils.isMobile()) {
+            if (element && !OS.mobile) {
                 element.addEventListener('mousemove', this.activeListeners.mousemove);
                 element.addEventListener('mouseout', this.activeListeners.mouseout);
             }

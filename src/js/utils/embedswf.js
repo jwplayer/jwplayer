@@ -1,3 +1,5 @@
+import { Browser } from 'environment/environment';
+
 define([
     'utils/helpers',
     'utils/backbone.events',
@@ -28,7 +30,7 @@ define([
 
         wmode = wmode || 'opaque';
 
-        if (utils.isMSIE()) {
+        if (Browser.MSIE) {
             // IE9 works best with outerHTML
             var temp = document.createElement('div');
             container.appendChild(temp);
@@ -77,7 +79,7 @@ define([
         swf.style.right = 0;
         swf.style.top = 0;
         swf.style.bottom = 0;
-        if (utils.isIE() && ('PointerEvent' in window)) {
+        if (Browser.ie && ('PointerEvent' in window)) {
             swf.style.pointerEvents = 'none';
         }
 

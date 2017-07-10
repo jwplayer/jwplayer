@@ -1,7 +1,8 @@
 import { qualityLevel } from 'providers/data-normalizer';
+import { Browser, OS } from 'environment/environment';
+import { isAndroidHls } from 'providers/html5-android-hls';
 
 define([
-    'providers/html5-android-hls',
     'utils/css',
     'utils/helpers',
     'utils/dom',
@@ -12,19 +13,11 @@ define([
     'utils/backbone.events',
     'providers/tracks-mixin',
     'utils/time-ranges',
-], function(getIsAndroidHLS, cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks, timeRangesUtil) {
+], function(cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks, timeRangesUtil) {
 
     var clearTimeout = window.clearTimeout;
     var STALL_DELAY = 256;
     var MIN_DVR_DURATION = 120;
-    var _isIE = utils.isIE();
-    var _isIE9 = utils.isIE(9);
-    var _isMSIE = utils.isMSIE();
-    var _isMobile = utils.isMobile();
-    var _isFirefox = utils.isFF();
-    var _isAndroid = utils.isAndroidNative();
-    var _isIOS7 = utils.isIOS(7);
-    var _isIOS8 = utils.isIOS(8);
     var _name = 'html5';
 
     function _setupListeners(eventsHash, videoTag) {
@@ -54,10 +47,10 @@ define([
         // Otherwise, use native rendering when set in the config for browsers that have adequate support.
         // FF and IE are excluded due to styling/positioning drawbacks.
         function renderNatively (configRenderNatively) {
-            if (utils.isIOS() || utils.isSafari() || utils.isEdge()) {
+            if (OS.iOS || Browser.safari || Browser.edge) {
                 return true;
             }
-            return configRenderNatively && utils.isChrome();
+            return configRenderNatively && Browser.chrome;
         }
 
         var _this = this;
@@ -116,7 +109,7 @@ define([
         if (!_videotag) {
             _videotag = document.createElement('video');
 
-            if (_isMobile) {
+            if (OS.mobile) {
                 _setAttribute('jw-gesture-required');
             }
         }
@@ -271,7 +264,7 @@ define([
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
-            if (_isIE9) {
+            if (Browser.ie && Browser.version.major === 9) {
                 // In IE9, set tracks here since they are not ready
                 // on load
                 _this.setTextTracks(_this._textTracks);
@@ -286,7 +279,7 @@ define([
 
         function _sendBufferFull() {
             // Wait until the canplay event on iOS to send the bufferFull event
-            if (!_bufferFull && (!utils.isIOS() || _canPlay)) {
+            if (!_bufferFull && (OS.iOS || _canPlay)) {
                 _bufferFull = true;
                 _canPlay = false;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
@@ -339,7 +332,7 @@ define([
             }
 
             // Workaround for iOS not completing after midroll with HLS streams
-            if (utils.isIOS() && (_videotag.duration - _videotag.currentTime <= 0.1)) {
+            if (OS.iOS && (_videotag.duration - _videotag.currentTime <= 0.1)) {
                 _endedHandler();
                 return;
             }
@@ -449,7 +442,7 @@ define([
 
             _position = _videotag.currentTime;
 
-            if (_isMobile && !hasPlayed) {
+            if (OS.mobile && !hasPlayed) {
                 // results in html5.controller calling video.play()
                 _sendBufferFull();
                 // If we're still paused, then the tag isn't loading yet due to mobile interaction restrictions.
@@ -459,7 +452,7 @@ define([
             }
 
             // in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
-            if (utils.isIOS() && _this.getFullScreen()) {
+            if (OS.iOS && _this.getFullScreen()) {
                 _videotag.controls = true;
             }
 
@@ -477,7 +470,7 @@ define([
             }
             _canSeek = false;
             _bufferFull = false;
-            _isAndroidHLS = getIsAndroidHLS(source);
+            _isAndroidHLS = isAndroidHls(source);
             if (_isAndroidHLS) {
                 // Playback rate is broken on Android HLS
                 _this.supportsPlaybackRate = false;
@@ -507,7 +500,7 @@ define([
                 });
                 _currentQuality = -1;
                 // Don't call load in iE9/10 and check for load in PhantomJS
-                if (!_isMSIE && 'load' in _videotag) {
+                if (!Browser.MSIE && 'load' in _videotag) {
                     _videotag.load();
                 }
             }
@@ -539,7 +532,7 @@ define([
             this.clearTracks();
             // IE/Edge continue to play a video after changing video.src and calling video.load()
             // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5383483/ (not fixed in Edge 14)
-            if (utils.isIE()) {
+            if (Browser.ie) {
                 _videotag.pause();
             }
             this.setState(states.IDLE);
@@ -581,7 +574,7 @@ define([
             if (item.sources.length && item.sources[0].type !== 'hls') {
                 this.sendMediaType(item.sources);
             }
-            if (!_isMobile || _videotag.hasAttribute('jw-played')) {
+            if (!OS.mobile || _videotag.hasAttribute('jw-played')) {
                 // don't change state on mobile before user initiates playback
                 _this.setState(states.LOADING);
             }
@@ -646,7 +639,7 @@ define([
                 _delayedSeek = seekPos;
                 // Firefox isn't firing canplay event when in a paused state
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=1194624
-                if (_isFirefox && _videotag.paused) {
+                if (Browser.firefox && _videotag.paused) {
                     _play();
                 }
             }
@@ -708,7 +701,7 @@ define([
             _fullscreenState = true;
             _sendFullscreen(e);
             // show controls on begin fullscreen so that they are disabled properly at end
-            if (utils.isIOS()) {
+            if (OS.iOS) {
                 _videotag.controls = false;
             }
         }
@@ -727,7 +720,7 @@ define([
         function _fullscreenEndHandler(e) {
             _fullscreenState = false;
             _sendFullscreen(e);
-            if (utils.isIOS()) {
+            if (OS.iOS) {
                 _videotag.controls = false;
             }
         }
@@ -792,7 +785,7 @@ define([
 
         this.setVisibility = function(state) {
             state = !!state;
-            if (state || _isAndroid) {
+            if (state || OS.android) {
                 // Changing visibility to hidden on Android < 4.2 causes
                 // the pause event to be fired. This causes audio files to
                 // become unplayable. Hence the video tag is always kept
@@ -831,7 +824,7 @@ define([
             // object-fit is not implemented in IE or Android Browser in 4.4 and lower
             // http://caniuse.com/#feat=object-fit
             // feature detection may work for IE but not for browsers where object-fit works for images only
-            var fitVideoUsingTransforms = _isIE || _isIOS7 || _isIOS8 || (_isAndroid && !_isFirefox);
+            var fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major >= 9) || (OS.android && Browser.firefox);
             if (fitVideoUsingTransforms) {
                 // Use transforms to center and scale video in container
                 var x = -Math.floor(_videotag.videoWidth / 2 + 1);

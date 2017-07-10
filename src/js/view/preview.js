@@ -1,3 +1,5 @@
+import { OS } from 'environment/environment';
+
 define([
     'utils/underscore',
     'utils/helpers'
@@ -19,7 +21,7 @@ define([
     }
 
     function onPlaylistItem(model, playlistItem) {
-        var delayPosterLoad = (model.get('autostart') && !utils.isMobile()) ||
+        var delayPosterLoad = (model.get('autostart') && !OS.mobile) ||
             (model.get('item') > 0);
 
         if (delayPosterLoad) {
