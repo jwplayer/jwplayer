@@ -53,17 +53,10 @@ define([
                     'SETUP_VIEW'
                 ]
             },
-            CHECK_FLASH: {
-                method: _checkFlash,
-                depends: [
-                    'SETUP_VIEW'
-                ]
-            },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
                 depends: [
-                    'LOAD_PLAYLIST',
-                    'CHECK_FLASH'
+                    'LOAD_PLAYLIST'
                 ]
             },
             SET_ITEM: {
@@ -136,47 +129,6 @@ define([
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
             _playlistLoader.load(playlist);
-        } else {
-            resolve();
-        }
-    }
-
-    function _checkFlash(resolve, _model, _api, _view) {
-        var primaryFlash = _model.get('primary') === 'flash';
-        var flashVersion = utils.flashVersion();
-        if (primaryFlash && flashVersion) {
-            var embedTimeout;
-            var done = function() {
-                if (embedTimeout === -1) {
-                    return;
-                }
-                clearTimeout(embedTimeout);
-                embedTimeout = -1;
-                setTimeout(function() {
-                    EmbedSwf.remove(mediaContainer.querySelector('#' + flashHealthCheckId));
-                    resolve();
-                }, 0);
-            };
-            var failed = function() {
-                _model.set('primary', undefined);
-                _model.updateProviders();
-                done();
-            };
-            var viewContainer = _view.element();
-            var mediaContainer = viewContainer.querySelector('.jw-media');
-            if (!viewContainer.parentElement) {
-                // Cannot perform test when player container has no parent
-                failed();
-            }
-            var flashHealthCheckId = '' + _model.get('id') + '-' + Math.random().toString(16).substr(2);
-            var flashHealthCheckSwf = _model.get('flashloader');
-            Object.defineProperty(EmbedSwf.embed(flashHealthCheckSwf, mediaContainer, flashHealthCheckId, null), 'embedCallback', {
-                get: function() {
-                    return done;
-                }
-            });
-            // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
-            embedTimeout = setTimeout(failed, 3000);
         } else {
             resolve();
         }

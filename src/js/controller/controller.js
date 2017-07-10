@@ -326,7 +326,7 @@ define([
 
             function _loadProvidersForPlaylist(playlist) {
                 var providersManager = _model.getProviders();
-                var providersNeeded = providersManager.required(playlist, _model.get('primary'));
+                var providersNeeded = providersManager.required(playlist);
                 return providersManager.load(providersNeeded)
                     .then(function() {
                         if (!_this.getProvider()) {
