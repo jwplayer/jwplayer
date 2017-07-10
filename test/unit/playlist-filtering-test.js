@@ -23,17 +23,10 @@ define([
         });
     }
 
-    function testSource(sourceName, desiredType, isFlash, isAndroidHls) {
-
-        const primary = isFlash ? 'flash' : undefined;
-
-        if (primary === 'flash' && !helpers.flashVersion()) {
-            assert.isOk(true, 'Ignore flash test when plugin is unavailable');
-            return;
-        }
+    function testSource(sourceName, desiredType, isAndroidHls) {
         const model = {
             getProviders: function() {
-                return new Providers({ primary: primary });
+                return new Providers();
             },
             get: function (attribute) {
                 switch (attribute) {
@@ -52,7 +45,7 @@ define([
 
     describe('playlist.filterSources', function() {
 
-        it('flash primary', function() {
+        it('should filter sources when androidhls is enabled', function() {
             testSource('flv_mp4', 'flv', true);
             testSource('mp4_flv', 'mp4', true);
             testSource('aac_mp4', 'aac', true);
@@ -62,7 +55,7 @@ define([
             testSource('mixed', 'mp4', true);
         });
 
-        it('html5 primary', function() {
+        it('should filter sources when androidhls is disabled', function() {
             testSource('flv_mp4', 'flv', false);
             testSource('mp4_flv', 'mp4', false);
             testSource('aac_mp4', 'aac', false);
@@ -142,15 +135,11 @@ define([
                     }]
                 }];
 
-                const providersConfig = {
-                    primary: 'html5'
-                };
-
                 const withCredentialsOnModel = true;
 
                 const model = {
                     getProviders: function() {
-                        return new Providers(providersConfig);
+                        return new Providers();
                     },
                     get: function (attribute) {
                         switch (attribute) {
