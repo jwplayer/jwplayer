@@ -266,6 +266,10 @@ define([
                 _checkAutoStart();
 
                 _model.change('viewable', viewableChange);
+                _model.change('viewable', _checkPlayOnViewable);
+                _model.once('change:autostartFailed change:autostartMuted change:mute', function(model) {
+                    model.off('change:viewable', _checkPlayOnViewable);
+                });
             }
 
             function _updateViewable(model, visibility) {
@@ -285,8 +289,6 @@ define([
                 _this.trigger('viewable', {
                     viewable: viewable
                 });
-                _checkPlayOnViewable(model, viewable);
-
                 if (shouldPreload(model, viewable)) {
                     const item = model.get('playlistItem');
 

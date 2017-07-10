@@ -10,12 +10,6 @@ define([
             dom.removeClass(elementContext, 'jw-no-focus');
         };
 
-        const onMouseUp = function (e) {
-            if (e.target && e.target.blur) {
-                e.target.blur();
-            }
-        };
-
         const onMouseDown = function () {
             _focusFromClick = true;
             dom.addClass(elementContext, 'jw-no-focus');
@@ -30,14 +24,12 @@ define([
         elementContext.addEventListener('focus', onFocus);
         elementContext.addEventListener('blur', onBlur);
         elementContext.addEventListener('mousedown', onMouseDown);
-        elementContext.addEventListener('mouseup', onMouseUp);
 
         return {
             destroy: function() {
                 elementContext.removeEventListener('focus', onFocus);
                 elementContext.removeEventListener('blur', onBlur);
                 elementContext.removeEventListener('mousedown', onMouseDown);
-                elementContext.removeEventListener('mouseup', onMouseUp);
             }
         };
     };
