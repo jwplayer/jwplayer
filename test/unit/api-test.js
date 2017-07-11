@@ -6,9 +6,10 @@ define([
     'data/api-members',
     'data/api-methods',
     'data/api-methods-chainable',
+    'data/api-methods-deprecated',
     'data/config-small',
     'utils/backbone.events',
-], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events) {
+], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, apiMethodsDeprecated, configSmall, Events) {
     var log = console.log;
 
     var vid = document.createElement('video');
@@ -181,7 +182,14 @@ define([
             _.each(apiMethods, function (args, method) {
                 assert.isOk(_.isFunction(api[method]), 'api.' + method + ' is defined');
             });
+        });
 
+        it('does not recognize deprecated methods', function() {
+            var api = createApi('player');
+
+            _.each(apiMethodsDeprecated, function (args, method) {
+                assert.isNotOk(_.isFunction(api[method]), 'deprecated api.' + method + ' is not defined');
+            });
         });
 
         it('defines expected members', function() {
