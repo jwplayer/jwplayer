@@ -372,27 +372,11 @@ define([
             },
 
             /**
-             * Alias of `getPlaylistIndex()`
-             * @deprecated TODO: in version 8.0.0-0
-             */
-            getItem() {
-                return this.getPlaylistIndex();
-            },
-
-            /**
              * Gets all metadata for the current playlist item.
              * @returns {object}
              */
             getItemMeta() {
                 return _controller.get('itemMeta') || {};
-            },
-
-            /**
-             * Alias of `getItemMeta()`
-             * @deprecated TODO: in version 8.0.0-0
-             */
-            getMeta() {
-                return this.getItemMeta();
             },
 
             /**
@@ -1019,13 +1003,6 @@ define([
          * @param {boolean} toggle - Specifies whether ad playback should be paused or resumed.
          */
         pauseAd(/* eslint-disable no-unused-vars */toggle/* eslint-enable no-unused-vars */) {},
-
-        /**
-         * @deprecated since version 7.0. TODO: remove in 8.0.0-0
-         */
-        getRenderingMode() {
-            return 'html5';
-        },
 
         /**
          * @deprecated TODO: in version 8.0.0-0
