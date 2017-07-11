@@ -109,12 +109,6 @@ define([
             delete window.jwplayer.debug;
         });
 
-        it('rendering mode is html5', function() {
-            var api = createApi('player');
-
-            assert.equal(api.getRenderingMode(), 'html5', 'api.getRenderingMode() returns "html5"');
-        });
-
         it('can be removed and reused', function() {
             var api = createApi('player');
 

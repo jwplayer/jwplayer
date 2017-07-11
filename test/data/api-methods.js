@@ -40,7 +40,6 @@ define({
     getPosition: null,
     getProvider: null,
     getQualityLevels: null,
-    getRenderingMode: null,
     getSafeRegion: null,
     getState: null,
     getStretching: null,
