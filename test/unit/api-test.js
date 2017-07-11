@@ -252,7 +252,7 @@ define([
             assert.strictEqual(result, undefined, 'registerPlugin returns undefined');
 
             assert.deepEqual(api.getItemMeta(), {}, 'getItemMeta returns {}');
-            assert.strictEqual(api.getItem(), undefined, 'getItem returns undefined');
+            assert.strictEqual(api.getPlaylistIndex(), undefined, 'getPlaylistIndex returns undefined');
             assert.strictEqual(api.getPlaylist(), undefined, 'getPlaylist returns undefined');
             assert.strictEqual(api.getPlaylistItem(), undefined, 'getPlaylistItem() returns undefined');
             assert.strictEqual(api.getPlaylistItem(0), null, 'getPlaylistItem(0) returns null');

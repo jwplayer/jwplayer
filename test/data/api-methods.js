@@ -29,7 +29,6 @@ define({
     getDuration: null,
     getFullscreen: null,
     getHeight: null,
-    getItem: null,
     getItemMeta: null,
     getMute: null,
     getPlaybackRate: null,
