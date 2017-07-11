@@ -31,7 +31,6 @@ define({
     getHeight: null,
     getItem: null,
     getItemMeta: null,
-    getMeta: null,
     getMute: null,
     getPlaybackRate: null,
     getPlaylist: null,

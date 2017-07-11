@@ -251,7 +251,7 @@ define([
             var result = api.registerPlugin('', '7.0', function() {});
             assert.strictEqual(result, undefined, 'registerPlugin returns undefined');
 
-            assert.deepEqual(api.getMeta(), {}, 'getMeta returns {}');
+            assert.deepEqual(api.getItemMeta(), {}, 'getItemMeta returns {}');
             assert.strictEqual(api.getItem(), undefined, 'getItem returns undefined');
             assert.strictEqual(api.getPlaylist(), undefined, 'getPlaylist returns undefined');
             assert.strictEqual(api.getPlaylistItem(), undefined, 'getPlaylistItem() returns undefined');
@@ -267,7 +267,7 @@ define([
         it('has methods that can only be called after setup', function (done) {
             var api = createApi('player');
 
-            var meta = api.getMeta();
+            var meta = api.getItemMeta();
 
             var config = _.extend({}, configSmall, {
                 events: {
@@ -287,7 +287,7 @@ define([
                 assert.equal(e.setupTime, qoe.setupTime,
                     'ready event setup time equals QOE setup time');
 
-                assert.notEqual(api.getMeta(), meta,
+                assert.notEqual(api.getItemMeta(), meta,
                     'it.skipem meta is reset on ready');
 
                 assert.strictEqual(api.getContainer(), document.getElementById('player'),
