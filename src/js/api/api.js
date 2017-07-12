@@ -486,10 +486,12 @@ define([
 
             /**
              * Gets the area of the player not obscured by controls.
+             * @param {boolean} [excludeControlbar=true] When set to false, the safe region will not exclude
+             * the area used by the controlbar.
              * @returns {SafeRegion}
              */
-            getSafeRegion() {
-                return _controller.getSafeRegion();
+            getSafeRegion(excludeControlbar = true) {
+                return _controller.getSafeRegion(excludeControlbar);
             },
 
             /**

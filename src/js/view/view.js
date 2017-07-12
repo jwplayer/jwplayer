@@ -342,7 +342,7 @@ define([
             });
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
-            
+
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
                 mediaModel.on('change:visualQuality', () => {
@@ -884,7 +884,7 @@ define([
             return null;
         };
 
-        this.getSafeRegion = function (includeCB) {
+        this.getSafeRegion = function (excludeControlbar = true) {
             const bounds = {
                 x: 0,
                 y: 0,
@@ -894,8 +894,7 @@ define([
 
             if (_controls) {
                 // Subtract controlbar from the bottom when using one
-                includeCB = includeCB || !utils.exists(includeCB);
-                if (includeCB) {
+                if (excludeControlbar) {
                     bounds.height -= _controls.controlbarHeight();
                 }
             }
