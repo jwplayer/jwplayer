@@ -144,8 +144,7 @@ module.exports = function(grunt) {
                 tasks: [
                     'webpack:debug',
                     'lint:player',
-                    'karma:local',
-                    'docs'
+                    'karma:local'
                 ]
             },
             css: {
@@ -343,8 +342,7 @@ module.exports = function(grunt) {
         'lint:player',
         'stylelint',
         'less',
-        'postcss',
-        'docs'
+        'postcss'
     ]);
 
     grunt.registerTask('build-flash', [
