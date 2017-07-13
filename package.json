@@ -74,7 +74,7 @@
     "lint:js": "eslint './src/js'",
     "lint:styles": "stylelint './src/css/**/*.less'",
     "lint:tests": "eslint './test/*.js'",
-    "preversion": "grunt && npm run docs && git add docs",
+    "preversion": "grunt && grunt clean:docs && npm run docs && git add docs",
     "test": "karma start"
   },
   "engines": {

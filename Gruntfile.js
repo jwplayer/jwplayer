@@ -351,7 +351,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build', [
-        'clean',
+        'clean:dist',
         'build-js',
         'build-flash',
         'karma:local'
