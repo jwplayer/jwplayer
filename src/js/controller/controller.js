@@ -62,7 +62,6 @@ define([
         setCurrentCaptions: _queueCommand('setCurrentCaptions'),
         setCurrentQuality: _queueCommand('setCurrentQuality'),
         setFullscreen: _queueCommand('setFullscreen'),
-        setPlaybackRate: _queueCommand('setPlaybackRate'),
         setup: function(options, _api) {
             var _model = this._model;
             var _view;
