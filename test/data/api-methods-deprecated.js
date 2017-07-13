@@ -39,5 +39,10 @@ define({
     onSeek: null,
     onSetupError: null,
     onTime: null,
-    onVolume: null
+    onVolume: null,
+    dispatchEvent: null,
+    getRenderingMode: null,
+    removeEventListener: null,
+    getMeta: null,
+    getItem: null
 });

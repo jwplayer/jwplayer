@@ -1003,20 +1003,6 @@ define([
          * @param {boolean} toggle - Specifies whether ad playback should be paused or resumed.
          */
         pauseAd(/* eslint-disable no-unused-vars */toggle/* eslint-enable no-unused-vars */) {},
-
-        /**
-         * @deprecated TODO: in version 8.0.0-0
-         */
-        dispatchEvent() {
-            this.trigger.apply(this, arguments);
-        },
-
-        /**
-         * @deprecated TODO: in version 8.0.0-0
-         */
-        removeEventListener() {
-            this.off.apply(this, arguments);
-        }
     });
 
     return Api;
