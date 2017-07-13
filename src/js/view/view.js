@@ -186,11 +186,7 @@ define([
                 setBreakpoint(_playerElement, breakpoint);
 
                 const smallPlayer = breakpoint < 2;
-                const timeSliderAboveConfig = _model.get('timeSliderAbove');
-                const timeSliderAbove = !audioMode &&
-                    (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
                 utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
-                utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
                 utils.toggleClass(_playerElement, 'jw-orientation-portrait', (height > width));
             }
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
@@ -289,22 +285,20 @@ define([
                     '.jw-background-color'
                 ], 'background', 'none ' + backgroundColor);
 
-                if (_model.get('timeSliderAbove') !== false) {
-                    const backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
-                        utils.getRgba(backgroundColor, 0) + ' 0%, ' +
-                        utils.getRgba(backgroundColor, 0.25) + ' 30%, ' +
-                        utils.getRgba(backgroundColor, 0.4) + ' 70%, ' +
-                        utils.getRgba(backgroundColor, 0.5) + ') 100%';
+                const backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
+                    utils.getRgba(backgroundColor, 0) + ' 0%, ' +
+                    utils.getRgba(backgroundColor, 0.25) + ' 30%, ' +
+                    utils.getRgba(backgroundColor, 0.4) + ' 70%, ' +
+                    utils.getRgba(backgroundColor, 0.5) + ') 100%';
 
-                    addStyle([
-                        // for small player, set the control bar gradient to the config background color
-                        '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
-                    ], 'background', backgroundColorGradient, true);
-                }
+                addStyle([
+                    // for small player, set the control bar gradient to the config background color
+                    '.jw-background-color.jw-controlbar'
+                ], 'background', backgroundColorGradient, true);
 
                 // remove the config background on time slider
                 addStyle([
-                    '.jw-flag-time-slider-above .jw-background-color.jw-slider-time'
+                    '.jw-background-color.jw-slider-time'
                 ], 'background', 'transparent', true);
             }
 
