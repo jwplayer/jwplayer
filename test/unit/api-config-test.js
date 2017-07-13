@@ -39,6 +39,13 @@ define([
                 return x;
             }
 
+            it('should have default width of 640 and height of 360', function() {
+                let x = testConfig();
+
+                expect(x.width).to.equal(640);
+                expect(x.height).to.equal(360);
+            });
+
             it('should accept widths in different formats', function () {
                 let x = testConfig({ width: '100px' });
                 expect(x.width, 'pixel').to.equal('100');

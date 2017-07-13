@@ -19,8 +19,8 @@ define([
         stretching: 'uniform',
         mute: false,
         volume: 90,
-        width: 480,
-        height: 270,
+        width: 640,
+        height: 360,
         audioMode: false,
         localization: {
             player: 'Video Player',
