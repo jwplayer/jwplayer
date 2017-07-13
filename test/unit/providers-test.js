@@ -1,5 +1,3 @@
-import { isAndroidHls } from 'providers/html5-android-hls';
-
 define([
     'playlist/source',
     'providers/providers',
