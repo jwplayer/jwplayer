@@ -78,7 +78,7 @@ define([
             if (!videoLayer) {
                 // if jwplayer DOM is not ready, do Youtube embed on jwplayer ready
                 if (!_listeningForReady) {
-                    window.jwplayer(_playerId).onReady(_readyCheck);
+                    window.jwplayer(_playerId).on('ready', _readyCheck);
                     _listeningForReady = true;
                 }
                 return false;
