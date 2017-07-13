@@ -90,8 +90,9 @@ module.exports = function(config) {
         captureTimeout: 120 * 1000, // default 60000
 
         files: [
-            // 3rd Party Code
-            { pattern: 'test-context.js' }
+            { pattern: 'test-context.js' },
+            { pattern: 'node_modules/jquery/dist/jquery.js' },
+            { pattern: 'node_modules/sinon/pkg/sinon.js' }
         ],
 
         // preprocess matching files before serving them to the browser
@@ -110,9 +111,6 @@ module.exports = function(config) {
             resolve: webpackConfig.resolve,
             module: webpackConfig.module,
             plugins: [
-                new webpack.optimize.LimitChunkCountPlugin({
-                    maxChunks: 1
-                }),
                 new webpack.DefinePlugin({
                     __SELF_HOSTED__: true,
                     __REPO__: '\'\'',
@@ -120,7 +118,15 @@ module.exports = function(config) {
                     __BUILD_VERSION__: '\'' + '7.10.0' + '\'',
                     __FLASH_VERSION__: 18.0
                 }),
-            ]
+            ],
+            externals: {
+                $: {
+                    commonjs: 'jquery',
+                    amd: 'jquery',
+                    root: '$'
+                },
+                sinon: 'sinon'
+            }
         },
         // number of browsers to run at once
         concurrency: Infinity
