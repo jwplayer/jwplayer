@@ -96,7 +96,7 @@
             */
             var environment = playerInstance.getEnvironment();
             var utils = playerInstance.utils;
-            var valueFn = function (getter) { return function() { return getter; } };
+            var valueFn = function (getter) { return function() { return getter; }; };
 
             utils.isAndroidNative = valueFn(environment.OS.androidNative);
             utils.isAndroid = valueFn(environment.OS.android);
