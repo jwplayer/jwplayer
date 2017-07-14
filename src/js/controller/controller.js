@@ -280,7 +280,7 @@ define([
             }
 
             function _checkAutoStart() {
-                if (OS.mobile && _model.get('autostart') === true) {
+                if (!OS.mobile && _model.get('autostart') === true) {
                     // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
                     _autoStart();
                 }
