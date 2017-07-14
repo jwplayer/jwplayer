@@ -96,23 +96,24 @@
             */
             var environment = playerInstance.getEnvironment();
             var utils = playerInstance.utils;
+            var valueFn = function (getter) { return function() { return getter; } };
 
-            utils.isAndroidNative = environment.OS.androidNative;
-            utils.isAndroid = environment.OS.android;
-            utils.isChrome = environment.Browser.chrome;
-            utils.isEdge = environment.Browser.edge;
-            utils.isFF = environment.Browser.firefox;
-            utils.isFacebook = environment.Browser.facebook;
-            utils.isFlashSupported = environment.Features.flash;
-            utils.isIE = environment.Browser.ie;
-            utils.isIETrident = environment.Browser.ie && environment.Browser.version.major >= 11;
-            utils.isIOS = environment.OS.iOS;
-            utils.isIPad = environment.OS.iPad;
-            utils.isIPod = environment.OS.iPhone;
-            utils.isMSIE = environment.Browser.MSIE;
-            utils.isMobile = environment.OS.mobile;
-            utils.isOSX = environment.OS.OSX;
-            utils.isSafari = environment.Browser.safari;
+            utils.isAndroidNative = valueFn(environment.OS.androidNative);
+            utils.isAndroid = valueFn(environment.OS.android);
+            utils.isChrome = valueFn(environment.Browser.chrome);
+            utils.isEdge = valueFn(environment.Browser.edge);
+            utils.isFF = valueFn(environment.Browser.firefox);
+            utils.isFacebook = valueFn(environment.Browser.facebook);
+            utils.isFlashSupported = valueFn(environment.Features.flash);
+            utils.isIE = valueFn(environment.Browser.ie);
+            utils.isIETrident = function () { return environment.Browser.ie && environment.Browser.version.major >= 11; };
+            utils.isIOS = valueFn(environment.OS.iOS);
+            utils.isIPad = valueFn(environment.OS.iPad);
+            utils.isIPod = valueFn(environment.OS.iPhone);
+            utils.isMSIE = valueFn(environment.Browser.MSIE);
+            utils.isMobile = valueFn(environment.OS.mobile);
+            utils.isOSX = valueFn(environment.OS.OSX);
+            utils.isSafari = valueFn(environment.Browser.safari);
 
             return playerInstance;
         };
