@@ -27,25 +27,6 @@ define([
             assert.equal(typeof utils.youTubeID, 'function', 'youTubeID function is defined');
             assert.equal(typeof utils.typeOf, 'function', 'typeOf function is defined');
 
-            // inherit from browser
-            assert.equal(typeof utils.isFlashSupported, 'function', 'isFlashSupported function is defined');
-            assert.equal(typeof utils.isFF, 'function', 'isFF function is defined');
-            assert.equal(typeof utils.isChrome, 'function', 'isChrome function is defined');
-            assert.equal(typeof utils.isEdge, 'function', 'isEdge function is defined');
-            assert.equal(typeof utils.isIPod, 'function', 'isIPod function is defined');
-            assert.equal(typeof utils.isIPad, 'function', 'isIPad function is defined');
-            assert.equal(typeof utils.isSafari602, 'function', 'isSafari602 function is defined');
-            assert.equal(typeof utils.isIETrident, 'function', 'isIETrident function is defined');
-            assert.equal(typeof utils.isMSIE, 'function', 'isMSIE function is defined');
-            assert.equal(typeof utils.isIE, 'function', 'isIE function is defined');
-            assert.equal(typeof utils.isSafari, 'function', 'isSafari function is defined');
-            assert.equal(typeof utils.isIOS, 'function', 'isIOS function is defined');
-            assert.equal(typeof utils.isAndroidNative, 'function', 'isAndroidNative function is defined');
-            assert.equal(typeof utils.isAndroid, 'function', 'isAndroid function is defined');
-            assert.equal(typeof utils.isMobile, 'function', 'isMobile function is defined');
-            assert.equal(typeof utils.isIframe, 'function', 'isIframe function is defined');
-            assert.equal(typeof utils.flashVersion, 'function', 'flashVersion function is defined');
-
             // inherit from ajax
             assert.equal(typeof utils.ajax, 'function', 'ajax function is defined');
 

@@ -1,5 +1,6 @@
 import setConfig from 'api/set-config';
 import instances from 'api/players';
+import { Browser, OS } from 'environment/environment';
 
 define([
     'api/config',
@@ -279,7 +280,7 @@ define([
             }
 
             function _checkAutoStart() {
-                if (!utils.isMobile() && _model.get('autostart') === true) {
+                if (OS.mobile && _model.get('autostart') === true) {
                     // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
                     _autoStart();
                 }
@@ -301,7 +302,7 @@ define([
                 if (model.get('playOnViewable')) {
                     if (viewable) {
                         _autoStart();
-                    } else if (utils.isMobile()) {
+                    } else if (OS.mobile) {
                         _this.pause({ reason: 'autostart' });
                     }
                 }
@@ -599,7 +600,7 @@ define([
                         _next({ reason: 'repeat' });
                     } else {
                         // Exit fullscreen on IOS so that our overlays show to the user
-                        if (utils.isIOS()) {
+                        if (Browser.iOS) {
                             _setFullscreen(false);
                         }
                         // Autoplay/pause no longer needed since there's no more media to play

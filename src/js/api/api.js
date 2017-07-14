@@ -1,4 +1,5 @@
 import instances from 'api/players';
+import * as Environment from 'environment/environment';
 
 define([
     'api/timer',
@@ -353,6 +354,22 @@ define([
              */
             getDuration() {
                 return _controller.get('duration');
+            },
+
+            /**
+             * Environment information for the current session, return by {@link Api#getEnvironment jwplayer().getEnvironment()}
+             * @typedef {object} Environment
+             * @property {BrowserEnvironment} Browser - Information about the current session's browser.
+             * @property {OSEnvironment} OS - Information about the current session's operating system.
+             * @property {FeatureEnvironment} Features - Information about the current sessions's supported features.
+             */
+
+            /**
+             * Gets information about the current session's environment
+             * @returns {Environment} An object detailing the current session's browser, operating system, and supported features.
+             */
+            getEnvironment() {
+                return Environment;
             },
 
             /**

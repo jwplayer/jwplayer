@@ -25,6 +25,7 @@ define({
     getCurrentCaptions: null,
     getCurrentQuality: null,
     getDuration: null,
+    getEnvironment: null,
     getFullscreen: null,
     getHeight: null,
     getItemMeta: null,

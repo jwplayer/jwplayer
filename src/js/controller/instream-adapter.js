@@ -1,3 +1,5 @@
+import { OS } from 'environment/environment';
+
 define([
     'controller/instream-html5',
     'controller/instream-flash',
@@ -183,7 +185,7 @@ define([
         };
 
         this.loadItem = function(item, options) {
-            if (utils.isAndroid(2.3)) {
+            if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
                 this.trigger({
                     type: events.JWPLAYER_ERROR,
                     message: 'Error loading instream: Cannot play instream on Android 2.3'
@@ -313,7 +315,7 @@ define([
 
                         // On error, mediaModel has buffering states in mobile, but oldProvider's state is playing.
                         // So, changing mediaModel's state to playing does not change provider state unless we do this
-                        if (utils.isMobile() && (_model.mediaModel.get('state') === states.BUFFERING)) {
+                        if (OS.mobile && (_model.mediaModel.get('state') === states.BUFFERING)) {
                             _oldProvider.setState(states.BUFFERING);
                         }
                         _oldProvider.play();
