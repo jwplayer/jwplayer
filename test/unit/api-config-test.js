@@ -39,8 +39,8 @@ define([
                 return x;
             }
 
-            it('should have default width of 640 and height of 360', function() {
-                let x = testConfig();
+            it('should have default width of 640 and height of 360', function () {
+                const x = testConfig();
 
                 expect(x.width).to.equal(640);
                 expect(x.height).to.equal(360);
