@@ -1,11 +1,9 @@
 import setConfig from '../api/set-config';
 import instances from '../api/players';
 import { Browser, OS } from 'environment/environment';
-import Storage from '../model/storage';
 import ApiQueueDecorator from '../api/api-queue';
 
 define([
-    'api/config',
     'controller/instream-adapter',
     'utils/underscore',
     'controller/Setup',
@@ -21,7 +19,7 @@ define([
     'events/events',
     'view/error',
     'controller/events-middleware',
-], function(Config, InstreamAdapter, _, Setup, Captions, Model,
+], function(InstreamAdapter, _, Setup, Captions, Model,
             Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
     
     // The model stores a different state than the provider
@@ -35,7 +33,7 @@ define([
     const Controller = function() {};
 
     Object.assign(Controller.prototype, {
-        setup(_api, options, originalContainer, loaderEvents, commandQueue) {
+        setup(config, _api, originalContainer, eventListeners, commandQueue) {
             const _this = this;
             const _model = _this._model = new Model();
 
@@ -49,20 +47,12 @@ define([
             let _preloaded = false;
 
             _this.originalContainer = _this.currentContainer = originalContainer;
-            _this._events = loaderEvents;
+            _this._events = eventListeners;
 
-            const storage = new Storage('jwplayer', [
-                'volume',
-                'mute',
-                'captionLabel',
-                'qualityLabel'
-            ]);
-            storage.track(_model);
-            const config = new Config(options, storage);
 
             const _eventQueuedUntilReady = [];
 
-            _model.setup(config, storage);
+            _model.setup(config);
             _view = this._view = new View(_api, _model);
 
             _setup = new Setup(_api, _model, _view, _setPlaylist);

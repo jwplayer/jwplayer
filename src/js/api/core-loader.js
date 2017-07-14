@@ -1,4 +1,6 @@
 import ApiQueueDecorator from './api-queue';
+import Config from './config';
+import Storage from '../model/storage';
 import SimpleModel from '../model/simplemodel';
 import Timer from 'api/timer';
 import Events from 'utils/backbone.events';
@@ -48,6 +50,9 @@ const CoreLoader = function CoreSetup(originalContainer) {
         'addButton',
         'removeButton',
         'castToggle',
+        'setMute',
+        'setVolume',
+        'setPlaybackRate',
 
         // These commands require the view instance to be available
         'resize',
@@ -65,17 +70,30 @@ Object.assign(CoreLoader.prototype, {
     off: Events.off,
     trigger: Events.trigger,
     init(options, api) {
+
+        const storage = new Storage('jwplayer', [
+            'volume',
+            'mute',
+            'captionLabel',
+            'qualityLabel'
+        ]);
+        const persisted = storage && storage.getAllItems();
+        this.model.attributes = this.model.attributes || {};
+        Object.assign(this.model.attributes, new Config(options, persisted));
+
         loadController().then(CoreMixin => {
             if (!this.apiQueue) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
             }
+            const config = this.model.clone();
             // copy queued commands
             const commandQueue = this.apiQueue.queue.slice(0);
             this.apiQueue.destroy();
             // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
             Object.assign(this, CoreMixin.prototype);
-            this.setup(api, options, this.originalContainer, this._events, commandQueue);
+            this.setup(config, api, this.originalContainer, this._events, commandQueue);
+            storage.track(this._model);
         });
     },
     playerDestroy() {
@@ -115,15 +133,6 @@ Object.assign(CoreLoader.prototype, {
     },
     getMute() {
         return this.get('mute');
-    },
-    setMute(toggle) {
-        this.model.set('mute', toggle);
-    },
-    setVolume(value) {
-        this.model.set('volume', value);
-    },
-    setPlaybackRate(value) {
-        this.model.set('defaultPlaybackRate', value);
     },
     getProvider() {
         return this.get('provider');
