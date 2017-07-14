@@ -1,8 +1,7 @@
 define([
     'utils/helpers',
-    'utils/strings',
-    'utils/underscore'
-], function(utils, strings, _) {
+    'utils/strings'
+], function(utils, strings) {
     var Defaults = {
         'default': false
     };
@@ -22,7 +21,7 @@ define([
             return;
         }
 
-        var _source = _.extend({}, Defaults, config);
+        var _source = Object.assign({}, Defaults, config);
 
         // normalize for odd strings
         _source.file = strings.trim('' + _source.file);
@@ -71,8 +70,8 @@ define([
         }
 
         // remove empty strings
-        _.each(_source, function(val, key) {
-            if (val === '') {
+        Object.keys(_source).forEach(function(key) {
+            if (_source[key] === '') {
                 delete _source[key];
             }
         });

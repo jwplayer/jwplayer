@@ -1,7 +1,6 @@
 define([
-    'utils/clock',
-    'utils/underscore'
-], function(clock, _) {
+    'utils/clock'
+], function(clock) {
 
     /**
      * QoE metrics returned by `jwplayer()._qoe.dump()`.
@@ -63,7 +62,7 @@ define([
             dump: function() {
                 // Add running sum of latest method
                 // This lets `jwplayer().qoe().item.sums` return a tally of running playing/paused time
-                const runningSums = _.extend({}, sum);
+                const runningSums = Object.assign({}, sum);
                 for (const methodName in startTimes) {
                     if (Object.prototype.hasOwnProperty.call(startTimes, methodName)) {
                         const now = started + clock.now();
@@ -72,9 +71,9 @@ define([
                     }
                 }
                 return {
-                    counts: _.extend({}, counts),
+                    counts: Object.assign({}, counts),
                     sums: runningSums,
-                    events: _.extend({}, ticks)
+                    events: Object.assign({}, ticks)
                 };
             },
 

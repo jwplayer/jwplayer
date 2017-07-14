@@ -1,11 +1,11 @@
 import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
 import { Browser, OS } from 'environment/environment';
+import { dvrSeekLimit } from 'view/constants';
 
 define([
     'utils/helpers',
     'utils/underscore',
     'utils/backbone.events',
-    'utils/constants',
     'utils/ui',
     'utils/aria',
     'view/controls/components/slider',
@@ -14,7 +14,7 @@ define([
     'view/controls/components/selection-display-menu',
     'view/controls/components/volumetooltip',
     'view/controls/components/button',
-], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip,
+], function(utils, _, Events, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip,
             button) {
     function text(name, role) {
         const element = document.createElement('span');
@@ -315,7 +315,7 @@ define([
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
                     const currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition), reasonInteraction());
+                    this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
                 }
             }, this);
 
@@ -323,7 +323,7 @@ define([
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
                     const currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
+                    this._api.seek(Math.max(dvrSeekLimit, currentPosition));
                 }
             }, this);
 

@@ -1,7 +1,9 @@
+import { loadFrom } from '../utils/playerutils';
+
 define([
-    'utils/helpers',
+    'utils/parser',
     'utils/underscore'
-], function(utils, _) {
+], function(parser, _) {
     /* global __webpack_public_path__:true*/
     /* eslint camelcase: 0 */
     // Defaults
@@ -55,7 +57,7 @@ define([
 
     function _deserialize(options) {
         _.each(options, function(val, key) {
-            options[key] = utils.serialize(val);
+            options[key] = parser.serialize(val);
         });
     }
 
@@ -66,23 +68,23 @@ define([
         return val;
     }
 
-    const createConfig = function (options, storage) {
+    const createConfig = function(options, storage) {
         const persisted = storage && storage.getAllItems();
-        let allOptions = _.extend({}, (window.jwplayer || {}).defaults, persisted, options);
+        let allOptions = Object.assign({}, (window.jwplayer || {}).defaults, persisted, options);
 
         _deserialize(allOptions);
 
-        allOptions.localization = _.extend({}, Defaults.localization, allOptions.localization);
+        allOptions.localization = Object.assign({}, Defaults.localization, allOptions.localization);
 
-        let config = _.extend({}, Defaults, allOptions);
+        let config = Object.assign({}, Defaults, allOptions);
         if (config.base === '.') {
-            config.base = utils.getScriptPath('jwplayer.js');
+            config.base = parser.getScriptPath('jwplayer.js');
         }
-        config.base = (config.base || utils.loadFrom()).replace(/\/?$/, '/');
+        config.base = (config.base || loadFrom()).replace(/\/?$/, '/');
         __webpack_public_path__ = config.base;
         config.width = _normalizeSize(config.width);
         config.height = _normalizeSize(config.height);
-        const pathToFlash = (utils.getScriptPath('jwplayer.js') || config.base);
+        const pathToFlash = (parser.getScriptPath('jwplayer.js') || config.base);
         config.flashplayer = config.flashplayer || pathToFlash + 'jwplayer.flash.swf';
         config.flashloader = config.flashloader || pathToFlash + 'jwplayer.loader.swf';
 
@@ -170,7 +172,7 @@ define([
         if (width.toString().indexOf('%') === -1) {
             return 0;
         }
-        if (typeof ar !== 'string' || !utils.exists(ar)) {
+        if (typeof ar !== 'string' || !ar) {
             return 0;
         }
         if (/^\d*\.?\d+%$/.test(ar)) {
@@ -187,7 +189,6 @@ define([
         }
         return (h / w * 100) + '%';
     }
-
 
     return createConfig;
 });
