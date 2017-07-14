@@ -1,6 +1,7 @@
 define([
     'utils/strings',
     'utils/underscore',
+    'utils/browser',
     'utils/dom',
     'utils/css',
     'utils/parser',
@@ -12,7 +13,7 @@ define([
     'utils/trycatch',
     'utils/stream-type',
     'utils/quality-labels'
-], function(strings, _, dom, css, parser, id3Parser, ajax, validator, playerutils, Timer, trycatch, streamType, qualityLabels) {
+], function(strings, _, browser, dom, css, parser, id3Parser, ajax, validator, playerutils, Timer, trycatch, streamType, qualityLabels) {
     var utils = {};
 
     utils.log = function () {
@@ -63,7 +64,7 @@ define([
 
     utils.Timer = Timer;
 
-    _.extend(utils, parser, id3Parser, validator, ajax, dom, css, playerutils, trycatch, streamType, qualityLabels);
+    _.extend(utils, parser, id3Parser, validator, browser, ajax, dom, css, playerutils, trycatch, streamType, qualityLabels);
 
     return utils;
 });
