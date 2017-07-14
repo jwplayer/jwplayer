@@ -27,7 +27,34 @@ const CoreLoader = function CoreSetup(originalContainer) {
     this.model = new CoreModel();
     this.model._qoeItem = new Timer();
     this.originalContainer = originalContainer;
-    this.apiQueue = new ApiQueueDecorator(this, () => true);
+    this.apiQueue = new ApiQueueDecorator(this, [
+        // These commands require a provider instance to be available
+        'load',
+        'play',
+        'pause',
+        'seek',
+        'stop',
+        'playlistItem',
+        'playlistNext',
+        'playlistPrev',
+        'next',
+
+        // These should just update state that could be acted on later, but need to be queued given v7 model
+        'setConfig',
+        'setCurrentAudioTrack',
+        'setCurrentCaptions',
+        'setCurrentQuality',
+        'setFullscreen',
+        'addButton',
+        'removeButton',
+        'castToggle',
+
+        // These commands require the view instance to be available
+        'resize',
+        'setCaptions',
+        'setControls',
+        'setCues',
+    ], () => true);
 };
 
 /* eslint no-unused-vars: 0 */
@@ -105,21 +132,6 @@ Object.assign(CoreLoader.prototype, {
         // instream.model.state || model.state
         return this.get('state');
     },
-    // Ads specific
-    isBeforeComplete() {
-        return false;
-    },
-    isBeforePlay() {
-        return false;
-    },
-    createInstream() {
-        return null;
-    },
-    skipAd() {},
-    attachMedia() {},
-    detachMedia() {
-        return null; // video tag;
-    },
 
     // These methods require a provider
     getAudioTracks() {
@@ -140,56 +152,8 @@ Object.assign(CoreLoader.prototype, {
     getCurrentAudioTrack() {
         return -1;
     },
-    castToggle() {},
 
-    // Queue these
-    setConfig(newConfig) {},
-    setControls(toggle) {},
-    setCurrentCaptions(index) {},
-    setFullscreen(toggle) {},
-    setCurrentQuality(index) {},
-    setCurrentAudioTrack(index) {},
-    load(item, feedData) {
-
-    },
-    play(meta = {}) {
-
-    },
-    pause(meta = {}) {
-
-    },
-    seek(pos, meta) {
-
-    },
-    stop(internal) {
-
-    },
-    playlistItem(index, meta) {
-
-    },
-    playlistNext(meta) {
-
-    },
-    playlistPrev(meta) {
-
-    },
-    next() {
-        // nextUp or related.next();
-    },
-
-    addButton(img, tooltip, callback, id, btnClass) {},
-    removeButton(id) {},
-
-    // These are pass-throughs to the view
-    setCaptions(captionsStyle) {
-        // queue this for the view _captionsRenderer
-    },
-    resize(playerWidth, playerHeight) {
-        // queue this for the view OR update model/config
-    },
-    setCues(cues) {
-        // queue this for the view.addCues(cues) OR _model.set('cues', cues);
-    },
+    // These methods require the view
     getSafeRegion(excludeControlbar) {
         return {
             x: 0,
@@ -197,6 +161,22 @@ Object.assign(CoreLoader.prototype, {
             width: 0,
             height: 0
         };
+    },
+
+    // Ads specific
+    isBeforeComplete() {
+        return false;
+    },
+    isBeforePlay() {
+        return false;
+    },
+    createInstream() {
+        return null;
+    },
+    skipAd() {},
+    attachMedia() {},
+    detachMedia() {
+        return null; // video tag;
     }
 });
 

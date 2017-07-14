@@ -881,7 +881,21 @@ define([
             };
 
             // Setup ApiQueueDecorator after instance methods have been assigned
-            const apiQueue = new ApiQueueDecorator(this, () => !_model.getVideo());
+            const apiQueue = new ApiQueueDecorator(this, [
+                'load',
+                'play',
+                'pause',
+                'seek',
+                'stop',
+                'playlistItem',
+                'playlistNext',
+                'playlistPrev',
+                'next',
+                'setCurrentAudioTrack',
+                'setCurrentCaptions',
+                'setCurrentQuality',
+                'setFullscreen',
+            ], () => !_model.getVideo());
             // copy CoreLoader commands into controller
             apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
