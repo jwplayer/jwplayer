@@ -112,7 +112,7 @@
             utils.isIPod = valueFn(environment.OS.iPhone);
             utils.isMSIE = valueFn(environment.Browser.msie);
             utils.isMobile = valueFn(environment.OS.mobile);
-            utils.isOSX = valueFn(environment.OS.OSX);
+            utils.isOSX = valueFn(environment.OS.osx);
             utils.isSafari = valueFn(environment.Browser.safari);
 
             return playerInstance;
