@@ -30,7 +30,7 @@ define([
 
         wmode = wmode || 'opaque';
 
-        if (Browser.MSIE) {
+        if (Browser.msie) {
             // IE9 works best with outerHTML
             var temp = document.createElement('div');
             container.appendChild(temp);

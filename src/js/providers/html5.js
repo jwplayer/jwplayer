@@ -500,7 +500,7 @@ define([
                 });
                 _currentQuality = -1;
                 // Don't call load in iE9/10 and check for load in PhantomJS
-                if (!Browser.MSIE && 'load' in _videotag) {
+                if (!Browser.msie && 'load' in _videotag) {
                     _videotag.load();
                 }
             }

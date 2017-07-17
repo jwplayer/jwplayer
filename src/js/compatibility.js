@@ -110,7 +110,7 @@
             utils.isIOS = valueFn(environment.OS.iOS);
             utils.isIPad = valueFn(environment.OS.iPad);
             utils.isIPod = valueFn(environment.OS.iPhone);
-            utils.isMSIE = valueFn(environment.Browser.MSIE);
+            utils.isMSIE = valueFn(environment.Browser.msie);
             utils.isMobile = valueFn(environment.OS.mobile);
             utils.isOSX = valueFn(environment.OS.OSX);
             utils.isSafari = valueFn(environment.Browser.safari);

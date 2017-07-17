@@ -72,7 +72,7 @@ Object.defineProperties(Browser, {
         get: memoize(BrowserUtils.isIE),
         enumerable: true
     },
-    MSIE: {
+    msie: {
         get: memoize(BrowserUtils.isMSIE),
         enumerable: true
     },
