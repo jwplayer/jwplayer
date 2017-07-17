@@ -3,7 +3,7 @@ import { osVersion } from 'environment/os-version';
 describe('os-version', function () {
     it('returns the OS version from a Mac OS/OS X user agent, underscore separated', function () {
         const agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36';
-        assert.deepEqual(osVersion({ OSX: true }, agent), {
+        assert.deepEqual(osVersion({ osx: true }, agent), {
             version: '10_12_4',
             major: 10,
             minor: 12
@@ -12,7 +12,7 @@ describe('os-version', function () {
 
     it('returns the OS version from a Mac OS/OS X user agent, period separated', function () {
         const agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:54.0) Gecko/20100101 Firefox/54.0';
-        assert.deepEqual(osVersion({ OSX: true }, agent), {
+        assert.deepEqual(osVersion({ osx: true }, agent), {
             version: '10.12',
             major: 10,
             minor: 12
