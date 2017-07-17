@@ -886,7 +886,7 @@ define([
                 'setCurrentQuality',
                 'setFullscreen',
             ], () => !_model.getVideo());
-            // copy CoreLoader commands into controller
+            // Add commands from CoreLoader to queue
             apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
             _setup.start();

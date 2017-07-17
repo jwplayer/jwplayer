@@ -2,6 +2,7 @@ import ApiQueueDecorator from './api-queue';
 import Config from './config';
 import Storage from '../model/storage';
 import SimpleModel from '../model/simplemodel';
+import { playerDefaults } from '../model/player-model';
 import Timer from 'api/timer';
 import Events from 'utils/backbone.events';
 
@@ -62,8 +63,6 @@ const CoreLoader = function CoreSetup(originalContainer) {
     ], () => true);
 };
 
-/* eslint no-unused-vars: 0 */
-
 Object.assign(CoreLoader.prototype, {
     on: Events.on,
     once: Events.once,
@@ -79,7 +78,7 @@ Object.assign(CoreLoader.prototype, {
         ]);
         const persisted = storage && storage.getAllItems();
         this.model.attributes = this.model.attributes || {};
-        Object.assign(this.model.attributes, new Config(options, persisted));
+        Object.assign(this.model.attributes, new Config(options, persisted), playerDefaults);
 
         loadController().then(CoreMixin => {
             if (!this.apiQueue) {
@@ -119,7 +118,6 @@ Object.assign(CoreLoader.prototype, {
         return this.model._qoeItem;
     },
     getConfig() {
-        // TODO: include normalized config from setup
         return Object.assign({}, this.model.attributes);
     },
     getCurrentCaptions() {
@@ -138,7 +136,6 @@ Object.assign(CoreLoader.prototype, {
         return this.get('provider');
     },
     getState() {
-        // instream.model.state || model.state
         return this.get('state');
     },
 
