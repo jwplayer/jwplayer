@@ -19,7 +19,7 @@ export function osVersion(osEnvironment, agent) {
             default:
                 break;
         }
-    } else if (osEnvironment.osx) {
+    } else if (osEnvironment.mac) {
         version = /Mac OS X (10[._\d]+)/.exec(agent)[1];
     } else if (osEnvironment.android) {
         version = /Android ([._\d]+)/.exec(agent)[1];

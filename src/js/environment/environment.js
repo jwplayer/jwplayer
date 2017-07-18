@@ -103,7 +103,7 @@ Object.defineProperties(OS, {
         get: memoize(BrowserUtils.isMobile),
         enumerable: true
     },
-    osx: {
+    mac: {
         get: memoize(BrowserUtils.isOSX),
         enumerable: true
     },
