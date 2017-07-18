@@ -19,7 +19,7 @@ const userAgent = navigator.userAgent;
  * @property {boolean} facebook - Is the browser a Facebook webview?
  * @property {boolean} firefox - Is the browser Firefox?
  * @property {boolean} ie - Is the browser Internet Explorer?
- * @property {boolean} MSIE - Is the browser MSIE?
+ * @property {boolean} msie - Is the browser MSIE?
  * @property {boolean} safari - Is the browser Safari?
  * @property {EnvironmentVersion} version - The browser version.
  */
@@ -31,7 +31,7 @@ export const Browser = {};
  * @property {boolean} androidNative - Is the operating system Android Native?
  * @property {boolean} iOS - Is the operating system iOS?
  * @property {boolean} mobile - Is the operating system iOS or Android?
- * @property {boolean} OSX - Is the operating system OSX (including MacOS)?
+ * @property {boolean} osx - Is the operating system Mac OS X?
  * @property {boolean} iPad - Is the device an iPad?
  * @property {boolean} iPhone - Is the device an iPhone?
  * @property {boolean} windows - Is the operating system Windows?
@@ -72,7 +72,7 @@ Object.defineProperties(Browser, {
         get: memoize(BrowserUtils.isIE),
         enumerable: true
     },
-    MSIE: {
+    msie: {
         get: memoize(BrowserUtils.isMSIE),
         enumerable: true
     },
@@ -103,7 +103,7 @@ Object.defineProperties(OS, {
         get: memoize(BrowserUtils.isMobile),
         enumerable: true
     },
-    OSX: {
+    mac: {
         get: memoize(BrowserUtils.isOSX),
         enumerable: true
     },

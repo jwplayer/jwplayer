@@ -9,7 +9,7 @@ define([
     var _supportsPointerEvents = ('PointerEvent' in window);
     var _supportsTouchEvents = ('ontouchstart' in window);
     var _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
-    var _isOSXFirefox = Browser.firefox && OS.OSX;
+    var _isOSXFirefox = Browser.firefox && OS.mac;
 
     function getCoord(e, c) {
         return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
