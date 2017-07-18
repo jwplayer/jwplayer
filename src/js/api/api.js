@@ -239,7 +239,7 @@ define([
                 const qoeItem = core.getItemQoe();
 
                 const setupTime = this._qoe.between('setup', 'ready');
-                const firstFrame = qoeItem.getFirstFrame ? qoeItem.getFirstFrame(): null;
+                const firstFrame = qoeItem.getFirstFrame ? qoeItem.getFirstFrame() : null;
 
                 /** Player QoE returned from {@link Api#qoe jwplayer().qoe()}
                  * @typedef {object} PlayerQoE

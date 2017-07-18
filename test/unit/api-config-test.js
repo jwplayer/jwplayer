@@ -129,18 +129,6 @@ describe('API Config', function() {
             expect(x.skinColorInactive).to.equal(skinObject.inactive);
             expect(x.skinColorActive).to.equal(skinObject.active);
             expect(x.skinColorBackground, skinObject.background);
-            expect(x.skin).to.equal(skinObject.name);
-
-            x = new Config({ skin: {} });
-            expect(x.skin).to.equal('seven');
-        });
-
-        it('should remove ".xml" from skin param', function() {
-            let x = new Config({ skin: 'six.xml' });
-            expect(x.skin).to.equal('six');
-
-            x = new Config({});
-            expect(x.skin).to.equal('seven');
         });
     });
 });
