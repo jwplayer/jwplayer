@@ -1,22 +1,13 @@
-define([
+let controlsPromise = null;
 
-], function() {
-    let controlsPromise = null;
-
-    function load() {
-        if (!controlsPromise) {
-            controlsPromise = new Promise(function (resolve) {
-                require.ensure(['view/controls/controls'], function (require) {
-                    const controls = require('view/controls/controls');
-                    resolve(controls);
-                }, 'jwplayer.controls');
-            });
-        }
-        return controlsPromise;
+export function load() {
+    if (!controlsPromise) {
+        controlsPromise = new Promise(function (resolve) {
+            require.ensure(['view/controls/controls'], function (require) {
+                const controls = require('view/controls/controls');
+                resolve(controls);
+            }, 'jwplayer.controls');
+        });
     }
-
-    return {
-        load: load
-    };
-});
-
+    return controlsPromise;
+}

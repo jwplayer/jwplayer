@@ -1,10 +1,10 @@
 import rightclickTemplate from 'view/controls/templates/rightclick';
+import { version } from 'version';
 
 define([
     'utils/helpers',
-    'utils/ui',
-    'version'
-], function(utils, UI, version) {
+    'utils/ui'
+], function(utils, UI) {
 
     return class RightClick {
 

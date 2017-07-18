@@ -84,8 +84,8 @@ define([
     }
 
     function parseCuesFromText(text, track, successHandler, errorHandler) {
-        require.ensure(['../parsers/captions/vttparser'], function (require) {
-            var VTTParser = require('../parsers/captions/vttparser');
+        require.ensure(['parsers/captions/vttparser'], function (require) {
+            var VTTParser = require('parsers/captions/vttparser');
             var parser = new VTTParser(window);
             var vttCues = [];
             parser.oncue = function(cue) {

@@ -118,12 +118,18 @@ const multiConfig = [
                     loader: 'file-loader?name=[name].[ext]'
                 },
                 {
-                    test: /\.js/,
+                    test: /\.js$/,
+                    loader: 'babel-loader',
                     exclude: /node_modules/,
-                    query: {
-                        presets: ['es2015']
-                    },
-                    loader: 'babel-loader'
+                    options: {
+                        babelrc: false,
+                        presets: [
+                            ['es2015']
+                        ],
+                        plugins: [
+                            'transform-object-assign'
+                        ]
+                    }
                 }
             ]
         }

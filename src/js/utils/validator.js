@@ -1,6 +1,4 @@
-define([
-    'utils/underscore'
-], function(_) {
+define([], function() {
     var validator = {};
 
     // Returns true if the value of the object is null, undefined or the empty string
@@ -67,7 +65,7 @@ define([
         }
         var typeofString = typeof value;
         if (typeofString === 'object') {
-            if (_.isArray(value)) {
+            if (Array.isArray(value)) {
                 return 'array';
             }
         }

@@ -1,21 +1,18 @@
-define([
-    'utils/underscore',
-    'events/events',
-], function (_, Events) {
+define([], function () {
     return function middleware(model, type, currentState) {
-        var newState = currentState;
+        let newState = currentState;
 
         switch (type) {
-            case Events.JWPLAYER_MEDIA_TIME:
+            case 'time':
             case 'beforePlay':
             case 'pause':
             case 'play':
             case 'ready': {
-                var viewable = model.get('viewable');
+                const viewable = model.get('viewable');
                 // Don't add viewable to events if we don't know we're viewable
-                if (!_.isUndefined(viewable)) {
+                if (viewable !== undefined) {
                     // Emit viewable as 0 or 1
-                    newState = _.extend({}, currentState, { viewable: viewable });
+                    newState = Object.assign({}, currentState, { viewable: viewable });
                 }
                 break;
             }

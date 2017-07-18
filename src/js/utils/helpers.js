@@ -1,3 +1,5 @@
+import * as playerutils from 'utils/playerutils';
+
 define([
     'utils/strings',
     'utils/underscore',
@@ -8,12 +10,11 @@ define([
     'utils/id3Parser',
     'utils/ajax',
     'utils/validator',
-    'utils/playerutils',
     'api/timer',
     'utils/trycatch',
     'utils/stream-type',
     'utils/quality-labels'
-], function(strings, _, browser, dom, css, parser, id3Parser, ajax, validator, playerutils, Timer, trycatch, streamType, qualityLabels) {
+], function(strings, _, browser, dom, css, parser, id3Parser, ajax, validator, Timer, trycatch, streamType, qualityLabels) {
     var utils = {};
 
     utils.log = function () {

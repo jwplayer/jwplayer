@@ -1,10 +1,11 @@
+import SimpleModel from 'model/simplemodel';
+
 define([
     'test/underscore',
     'controller/model',
-    'utils/simplemodel',
     'events/events',
     'events/states'
-], function (_, Model, SimpleModel, events, states) {
+], function (_, Model, events, states) {
 
 
     describe('Model QoE', function() {

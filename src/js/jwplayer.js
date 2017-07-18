@@ -1,13 +1,14 @@
-import instances from 'api/players';
+import { loadFrom } from './utils/playerutils';
+import instances from './api/players';
+import * as GlobalApi from 'api/global-api';
+import { version } from './version';
 
 define([
     'api/api',
-    'api/global-api',
-    'utils/playerutils'
-], function (Api, GlobalApi, utils) {
+], function (Api) {
     /* global __webpack_public_path__:true*/
     /* eslint camelcase: 0 */
-    __webpack_public_path__ = utils.loadFrom();
+    __webpack_public_path__ = loadFrom();
 
     /**
      * Return an instance of {@link Api the JW Player API} matching an element on the page or an existing player.
@@ -61,7 +62,20 @@ define([
         return null;
     }
 
-    jwplayer.api = GlobalApi;
+    Object.defineProperties(jwplayer, {
+        api: {
+            get() {
+                return GlobalApi;
+            },
+            set() {}
+        },
+        version: {
+            get() {
+                return version;
+            },
+            set() {}
+        },
+    });
 
     return jwplayer;
 });

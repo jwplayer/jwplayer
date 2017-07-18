@@ -1,18 +1,17 @@
-import instances from 'api/players';
 import * as Environment from 'environment/environment';
+import instances from './players';
+import CoreLoader from './core-loader';
+import { version } from '../version';
 
 define([
     'api/timer',
-    'controller/controller',
     'plugins/plugins',
     'events/events',
     'events/states',
     'utils/backbone.events',
     'utils/helpers',
-    'utils/underscore',
-    'version'
-], function(Timer, Controller, plugins,
-            events, states, Events, utils, _, version) {
+    'utils/underscore'
+], function(Timer, plugins, events, states, Events, utils, _) {
 
     let instancesCreated = 0;
 
@@ -21,32 +20,32 @@ define([
      * @param {Api} api
      * @param {HTMLElement} element
      */
-    function setupController(api, element) {
-        const controller = new Controller(element);
+    function coreFactory(api, element) {
+        const core = new CoreLoader(element);
 
         // capture the ready event and add setup time to it
-        controller.on(events.JWPLAYER_READY, (event) => {
+        core.on(events.JWPLAYER_READY, (event) => {
             api._qoe.tick('ready');
             event.setupTime = api._qoe.between('setup', 'ready');
         });
-        controller.on('all', (type, event) => {
+        core.on('all', (type, event) => {
             api.trigger(type, event);
         });
 
-        return controller;
+        return core;
     }
 
     /**
      * Detaches Api event listeners and destroys the controller.
      * @param {Api} api
-     * @param {Controller} controller
+     * @param {CoreLoader} core
      */
-    function resetPlayer(api, controller) {
+    function resetPlayer(api, core) {
         api.off();
-        controller.off();
+        core.off();
         // so players can be removed before loading completes
-        if (controller.playerDestroy) {
-            controller.playerDestroy();
+        if (core.playerDestroy) {
+            core.playerDestroy();
         }
     }
 
@@ -78,7 +77,7 @@ define([
         const qoeTimer = new Timer();
         const pluginsMap = {};
 
-        let _controller = setupController(this, element);
+        let core = coreFactory(this, element);
 
         qoeTimer.tick('init');
 
@@ -90,7 +89,7 @@ define([
              * @readonly
              */
             id: {
-                get: function() {
+                get() {
                     return playerId;
                 }
             },
@@ -100,7 +99,7 @@ define([
              * @readonly
              */
             uniqueId: {
-                get: function() {
+                get() {
                     return uniqueId;
                 }
             },
@@ -110,7 +109,7 @@ define([
              * @readonly
              */
             plugins: {
-                get: function() {
+                get() {
                     return pluginsMap;
                 }
             },
@@ -120,7 +119,7 @@ define([
              * @readonly
              */
             _qoe: {
-                get: function() {
+                get() {
                     return qoeTimer;
                 }
             },
@@ -131,7 +130,7 @@ define([
              * @readonly
              */
             version: {
-                get: function() {
+                get() {
                     return version;
                 }
             },
@@ -143,7 +142,7 @@ define([
              * @readonly
              */
             Events: {
-                get: function() {
+                get() {
                     return Events;
                 }
             },
@@ -155,7 +154,7 @@ define([
              * @readonly
              */
             utils: {
-                get: function() {
+                get() {
                     return utils;
                 }
             },
@@ -167,14 +166,14 @@ define([
              * @readonly
              */
             _: {
-                get: function() {
+                get() {
                     return _;
                 }
             },
 
         });
 
-        _.extend(this, /** @lends Api.prototype */ {
+        Object.assign(this, /** @lends Api.prototype */ {
             /**
              * A map of event listeners.
              * @type object
@@ -193,12 +192,12 @@ define([
                 qoeTimer.clear('ready');
                 qoeTimer.tick('setup');
 
-                resetPlayer(this, _controller);
-                _controller = setupController(this, element);
+                resetPlayer(this, core);
+                core = coreFactory(this, element);
 
                 // bind event listeners passed in to the config
                 utils.foreach(options.events, (evt, val) => {
-                    // TODO: if 'evt' starts with 'on' convert to event name and register event with `on` method
+                    // TODO: JW8-206 if 'evt' starts with 'on' convert to event name and register event with `on` method
                     const fn = this[evt];
                     if (typeof fn === 'function') {
                         fn.call(this, val);
@@ -206,7 +205,8 @@ define([
                 });
 
                 options.id = playerId;
-                _controller.setup(options, this);
+
+                core.init(options, this);
 
                 return this;
             },
@@ -226,7 +226,7 @@ define([
                 this.trigger('remove');
 
                 // Unbind listeners and destroy controller/model/...
-                resetPlayer(this, _controller);
+                resetPlayer(this, core);
 
                 return this;
             },
@@ -236,10 +236,10 @@ define([
              * @returns {PlayerQoE}
              */
             qoe() {
-                const qoeItem = _controller.getItemQoe();
+                const qoeItem = core.getItemQoe();
 
                 const setupTime = this._qoe.between('setup', 'ready');
-                const firstFrame = qoeItem.getFirstFrame();
+                const firstFrame = qoeItem.getFirstFrame ? qoeItem.getFirstFrame(): null;
 
                 /** Player QoE returned from {@link Api#qoe jwplayer().qoe()}
                  * @typedef {object} PlayerQoE
@@ -262,7 +262,7 @@ define([
              * @returns {Array.<AudioTrackOption>}
              */
             getAudioTracks() {
-                return _controller.getAudioTracks();
+                return core.getAudioTracks();
             },
 
             /**
@@ -270,7 +270,7 @@ define([
              * @returns {number} A number from 0-100 indicating the percentage of media buffered.
              */
             getBuffer() {
-                return _controller.get('buffer');
+                return core.get('buffer');
             },
 
             /**
@@ -278,7 +278,7 @@ define([
              * @returns {object}
              */
             getCaptions() {
-                return _controller.get('captions');
+                return core.get('captions');
             },
 
             // defined in controller/captions
@@ -295,7 +295,7 @@ define([
              * @returns {Array.<CaptionsTrackOption>}
              */
             getCaptionsList() {
-                return _controller.getCaptionsList();
+                return core.getCaptionsList();
             },
 
             /**
@@ -303,7 +303,7 @@ define([
              * @returns {object}
              */
             getConfig() {
-                return _controller.getConfig();
+                return core.getConfig();
             },
 
             /**
@@ -311,7 +311,7 @@ define([
              * @returns {HTMLElement}
              */
             getContainer() {
-                return _controller.getContainer();
+                return core.getContainer();
             },
 
             /**
@@ -319,7 +319,7 @@ define([
              * @returns {boolean}
              */
             getControls() {
-                return _controller.get('controls');
+                return core.get('controls');
             },
 
             /**
@@ -327,7 +327,7 @@ define([
              * @returns {number} The index of the active audio track, or -1 if there are no alternative audio tracks.
              */
             getCurrentAudioTrack() {
-                return _controller.getCurrentAudioTrack();
+                return core.getCurrentAudioTrack();
             },
 
             /**
@@ -335,7 +335,7 @@ define([
              * @returns {number} The index of the active selection option, or 0 if captions are off.
              */
             getCurrentCaptions() {
-                return _controller.getCurrentCaptions();
+                return core.getCurrentCaptions();
             },
 
             /**
@@ -343,7 +343,7 @@ define([
              * @returns {number}
              */
             getCurrentQuality() {
-                return _controller.getCurrentQuality();
+                return core.getCurrentQuality();
             },
 
             /**
@@ -353,7 +353,7 @@ define([
              * DVR streams return a negative value, indicating how far back playback is from the live edge.
              */
             getDuration() {
-                return _controller.get('duration');
+                return core.get('duration');
             },
 
             /**
@@ -377,7 +377,7 @@ define([
              * @returns {boolean} Whether or not the player is in fullscreen mode.
              */
             getFullscreen() {
-                return _controller.get('fullscreen');
+                return core.get('fullscreen');
             },
 
             /**
@@ -385,7 +385,7 @@ define([
              * @returns {number} The height of the player in pixels.
              */
             getHeight() {
-                return _controller.getHeight();
+                return core.getHeight();
             },
 
             /**
@@ -393,7 +393,7 @@ define([
              * @returns {object}
              */
             getItemMeta() {
-                return _controller.get('itemMeta') || {};
+                return core.get('itemMeta') || {};
             },
 
             /**
@@ -401,7 +401,7 @@ define([
              * @returns {boolean} Whether or not the player is muted.
              */
             getMute() {
-                return _controller.getMute();
+                return core.getMute();
             },
 
             /**
@@ -411,7 +411,7 @@ define([
              * @since v7.12.0
              */
             getPlaybackRate() {
-                return _controller.get('playbackRate');
+                return core.get('playbackRate');
             },
 
             /**
@@ -419,7 +419,7 @@ define([
              * @returns {Array.<PlaylistItem>}
              */
             getPlaylist() {
-                return _controller.get('playlist');
+                return core.get('playlist');
             },
 
             /**
@@ -427,7 +427,7 @@ define([
              * @returns {number}
              */
             getPlaylistIndex() {
-                return _controller.get('item');
+                return core.get('item');
             },
 
             /**
@@ -437,7 +437,7 @@ define([
              */
             getPlaylistItem(index) {
                 if (!utils.exists(index)) {
-                    return _controller.get('playlistItem');
+                    return core.get('playlistItem');
                 }
                 const playlist = this.getPlaylist();
                 if (playlist) {
@@ -453,7 +453,7 @@ define([
              * DVR streams return a negative value, indicating how far playback is from the live edge.
              */
             getPosition() {
-                return _controller.get('position');
+                return core.get('position');
             },
 
             /**
@@ -466,7 +466,7 @@ define([
              * @returns {ProviderInfo}
              */
             getProvider() {
-                return _controller.getProvider();
+                return core.getProvider();
             },
 
             /**
@@ -474,7 +474,7 @@ define([
              * @returns {Array.<QualityOption>}
              */
             getQualityLevels() {
-                return _controller.getQualityLevels();
+                return core.getQualityLevels();
             },
 
             /**
@@ -492,7 +492,7 @@ define([
              * @returns {SafeRegion}
              */
             getSafeRegion(excludeControlbar = true) {
-                return _controller.getSafeRegion(excludeControlbar);
+                return core.getSafeRegion(excludeControlbar);
             },
 
             /**
@@ -500,14 +500,14 @@ define([
              * @returns {'idle'|'buffering'|'playing'|'paused'|'complete'} The current state of the player.
              */
             getState() {
-                return _controller.getState();
+                return core.getState();
             },
 
             /** Gets the mode of stretching used to fit media in the player.
              * @returns {'uniform'|'exactfit'|'fill'|'none'}
              */
             getStretching() {
-                return _controller.get('stretching');
+                return core.get('stretching');
             },
 
             /**
@@ -517,7 +517,7 @@ define([
              * @since v7.10.0
              */
             getViewable() {
-                return _controller.get('viewable');
+                return core.get('viewable');
             },
 
             /**
@@ -533,7 +533,7 @@ define([
              * @returns {VisualQuality}
              */
             getVisualQuality() {
-                return _controller.getVisualQuality();
+                return core.getVisualQuality();
             },
 
             /**
@@ -541,7 +541,7 @@ define([
              * @returns {number} A number from 0-100.
              */
             getVolume() {
-                return _controller.get('volume');
+                return core.get('volume');
             },
 
             /**
@@ -549,7 +549,7 @@ define([
              * @returns {number} The width of the player in pixels.
              */
             getWidth() {
-                return _controller.getWidth();
+                return core.getWidth();
             },
 
             /**
@@ -559,7 +559,7 @@ define([
              * @since v7.5.0
              */
             setCaptions(captionsStyles) {
-                _controller.setCaptions(captionsStyles);
+                core.setCaptions(captionsStyles);
                 return this;
             },
 
@@ -570,7 +570,7 @@ define([
              * @since v7.12.0
              */
             setConfig(options) {
-                _controller.setConfig(options);
+                core.setConfig(options);
                 return this;
             },
 
@@ -580,7 +580,7 @@ define([
              * @returns {Api}
              */
             setControls(toggle) {
-                _controller.setControls(toggle);
+                core.setControls(toggle);
                 return this;
             },
 
@@ -589,7 +589,7 @@ define([
              * @param {number} index
              */
             setCurrentAudioTrack(index) {
-                _controller.setCurrentAudioTrack(index);
+                core.setCurrentAudioTrack(index);
                 // TODO: return this;
             },
 
@@ -598,7 +598,7 @@ define([
              * @param {number} index
              */
             setCurrentCaptions(index) {
-                _controller.setCurrentCaptions(index);
+                core.setCurrentCaptions(index);
                 // TODO: return this;
             },
 
@@ -607,7 +607,7 @@ define([
              * @param {number} index
              */
             setCurrentQuality(index) {
-                _controller.setCurrentQuality(index);
+                core.setCurrentQuality(index);
                 // TODO: return this;
             },
 
@@ -617,7 +617,7 @@ define([
              * @returns {Api}
              */
             setFullscreen(toggle) {
-                _controller.setFullscreen(toggle);
+                core.setFullscreen(toggle);
                 return this;
             },
 
@@ -627,7 +627,7 @@ define([
              * @returns {Api}
              */
             setMute(toggle) {
-                _controller.setMute(toggle);
+                core.setMute(toggle);
                 return this;
             },
 
@@ -638,7 +638,7 @@ define([
              * @since v7.12.0
              */
             setPlaybackRate(playbackRate) {
-                _controller.setPlaybackRate(playbackRate);
+                core.setPlaybackRate(playbackRate);
                 return this;
             },
 
@@ -654,7 +654,7 @@ define([
              * @returns {Api}
              */
             setCues(sliderCues) {
-                _controller.setCues(sliderCues);
+                core.setCues(sliderCues);
                 return this;
             },
 
@@ -664,7 +664,7 @@ define([
              * @returns {Api}
              */
             setVolume(level) {
-                _controller.setVolume(level);
+                core.setVolume(level);
                 return this;
             },
 
@@ -678,7 +678,7 @@ define([
              * @returns {Api}
              */
             load(toLoad, feedData) {
-                _controller.load(toLoad, feedData);
+                core.load(toLoad, feedData);
                 return this;
             },
 
@@ -696,10 +696,10 @@ define([
                     meta = { reason: 'external' };
                 }
                 if (state === true) {
-                    _controller.play(meta);
+                    core.play(meta);
                     return this;
                 } else if (state === false) {
-                    _controller.pause(meta);
+                    core.pause(meta);
                     return this;
                 }
 
@@ -707,10 +707,10 @@ define([
                 switch (state) {
                     case states.PLAYING:
                     case states.BUFFERING:
-                        _controller.pause(meta);
+                        core.pause(meta);
                         break;
                     default:
-                        _controller.play(meta);
+                        core.play(meta);
                 }
 
                 return this;
@@ -738,7 +738,7 @@ define([
              * @returns {Api}
              */
             seek(position, meta = { reason: 'external' }) {
-                _controller.seek(position, meta);
+                core.seek(position, meta);
                 return this;
             },
 
@@ -750,7 +750,7 @@ define([
              * @returns {Api}
              */
             playlistItem(index, meta = { reason: 'external' }) {
-                _controller.playlistItem(index, meta);
+                core.playlistItem(index, meta);
                 return this;
             },
 
@@ -761,7 +761,7 @@ define([
              * @returns {Api}
              */
             playlistNext(meta = { reason: 'external' }) {
-                _controller.playlistNext(meta);
+                core.playlistNext(meta);
                 return this;
             },
 
@@ -772,7 +772,7 @@ define([
              * @returns {Api}
              */
             playlistPrev(meta = { reason: 'external' }) {
-                _controller.playlistPrev(meta);
+                core.playlistPrev(meta);
                 return this;
             },
 
@@ -783,7 +783,7 @@ define([
              * @since v7.7.0
              */
             next() {
-                _controller.next();
+                core.next();
                 return this;
             },
 
@@ -793,7 +793,7 @@ define([
              * @returns {Api}
              */
             castToggle() {
-                _controller.castToggle();
+                core.castToggle();
                 return this;
             },
 
@@ -802,7 +802,7 @@ define([
              * @returns {InstreamAdapter}
              */
             createInstream() {
-                return _controller.createInstream();
+                return core.createInstream();
             },
 
             /**
@@ -810,7 +810,7 @@ define([
              * @returns {Api}
              */
             skipAd() {
-                _controller.skipAd();
+                core.skipAd();
                 return this;
             },
 
@@ -819,7 +819,7 @@ define([
              * @returns {Api}
              */
             stop() {
-                _controller.stop();
+                core.stop();
                 return this;
             },
 
@@ -831,7 +831,7 @@ define([
              * @returns {Api}
              */
             resize(width, height) {
-                _controller.resize(width, height);
+                core.resize(width, height);
                 return this;
             },
 
@@ -844,7 +844,7 @@ define([
              * @returns {Api}
              */
             addButton(img, tooltip, callback, id, btnClass) {
-                _controller.addButton(img, tooltip, callback, id, btnClass);
+                core.addButton(img, tooltip, callback, id, btnClass);
                 return this;
             },
 
@@ -854,7 +854,7 @@ define([
              * @returns {Api}
              */
             removeButton(id) {
-                _controller.removeButton(id);
+                core.removeButton(id);
                 return this;
             },
 
@@ -864,7 +864,7 @@ define([
              * @deprecated TODO: in version 8.0.0-0
              */
             attachMedia() {
-                _controller.attachMedia();
+                core.attachMedia();
                 return this;
             },
 
@@ -874,7 +874,7 @@ define([
              * @deprecated TODO: in version 8.0.0-0
              */
             detachMedia() {
-                _controller.detachMedia();
+                core.detachMedia();
                 return this;
             },
 
@@ -885,7 +885,7 @@ define([
              * @returns {boolean}
              */
             isBeforeComplete() {
-                _controller.isBeforeComplete();
+                return core.isBeforeComplete();
             },
 
             /**
@@ -894,12 +894,12 @@ define([
              * @returns {boolean}
              */
             isBeforePlay() {
-                _controller.isBeforePlay();
+                return core.isBeforePlay();
             }
         });
     };
 
-    _.extend(Api.prototype, /** @lends Api.prototype */ {
+    Object.assign(Api.prototype, /** @lends Api.prototype */ {
 
         /**
          * Adds an event listener.
@@ -945,7 +945,7 @@ define([
          */
         trigger(name, args) {
             if (_.isObject(args)) {
-                args = _.extend({}, args);
+                args = Object.assign({}, args);
             } else {
                 args = {};
             }

@@ -1,10 +1,11 @@
+import registerProvider from 'providers/providers-register';
+
 define([
     'providers/default',
     'providers/providers-supported',
     'providers/providers-loaded',
-    'utils/underscore',
-    'utils/defaults'
-], function(Default, ProvidersSupported, ProvidersLoaded, _, defaults) {
+    'utils/underscore'
+], function(Default, ProvidersSupported, ProvidersLoaded, _) {
 
     function Providers(config) {
         this.config = config || {};
@@ -35,33 +36,7 @@ define([
         }
     };
 
-    var registerProvider = Providers.registerProvider = function(provider) {
-        var name = provider.getName().name;
-
-        // Only register the provider if it isn't registered already.  This is an issue on pages with multiple embeds.
-        if (ProvidersLoaded[name]) {
-            return;
-        }
-
-        // If there isn't a "supports" val for this guy
-        if (!_.find(ProvidersSupported, _.matches({ name: name }))) {
-            if (!_.isFunction(provider.supports)) {
-                throw new Error('Tried to register a provider with an invalid object');
-            }
-
-            // The most recent provider will be in the front of the array, and chosen first
-            ProvidersSupported.unshift({
-                name: name,
-                supports: provider.supports
-            });
-        }
-
-        // Fill in any missing properties with the defaults - looks at the prototype chain
-        defaults(provider.prototype, Default);
-
-        // After registration, it is loaded
-        ProvidersLoaded[name] = provider;
-    };
+    Providers.registerProvider = registerProvider;
 
     _.extend(Providers.prototype, {
 

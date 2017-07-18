@@ -1,16 +1,18 @@
+import * as ControlsLoader from 'controller/controls-loader';
+
+export const SkinsIncluded = ['seven'];
+export const SkinsLoadable = ['beelden', 'bekle', 'five', 'glow', 'roundster', 'six', 'stormtrooper', 'vapor'];
+
 define([
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
     'utils/embedswf',
-    'utils/constants',
     'utils/underscore',
-    'utils/helpers',
     'events/events',
-    'controller/controls-loader',
     'polyfills/promise',
     'polyfills/base64'
-], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events, ControlsLoader) {
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _, events) {
 
     var _pluginLoader;
     var _playlistLoader;
@@ -156,7 +158,7 @@ define([
     function skinToLoad(skin, base) {
         var skinPath;
 
-        if (_.contains(Constants.SkinsLoadable, skin)) {
+        if (_.contains(SkinsLoadable, skin)) {
             skinPath = base + 'skins/' + skin + '.css';
         }
 
@@ -178,7 +180,7 @@ define([
         var skinUrl = _model.get('skinUrl');
 
         // If skin is built into player, there is nothing to load
-        if (_.contains(Constants.SkinsIncluded, skinName)) {
+        if (_.contains(SkinsIncluded, skinName)) {
             resolve();
             return;
         }

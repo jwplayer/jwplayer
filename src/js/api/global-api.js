@@ -1,12 +1,9 @@
-define([
-    'providers/providers',
-    'providers/providers-supported',
-    'plugins/plugins'
-], function(Providers, ProvidersSupported, plugins) {
+import ProviderRegister from 'providers/providers-register';
+import ProvidersSupported from 'providers/providers-supported';
+import plugins from 'plugins/plugins';
 
-    return {
-        registerProvider: Providers.registerProvider,
-        availableProviders: ProvidersSupported,
-        registerPlugin: plugins.registerPlugin
-    };
-});
+export const registerProvider = ProviderRegister;
+
+export const availableProviders = ProvidersSupported;
+
+export const registerPlugin = plugins.registerPlugin;

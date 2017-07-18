@@ -1,8 +1,9 @@
+import SimpleModel from 'model/simplemodel';
+
 define([
-    'utils/simplemodel',
     'utils/backbone.events',
     'test/underscore'
-], function(SimpleModel, Events, _) {
+], function(Events, _) {
     var MockModel = function() {};
 
     _.extend(MockModel.prototype, SimpleModel, {
