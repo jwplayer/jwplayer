@@ -160,7 +160,7 @@ Object.assign(CoreLoader.prototype, {
     },
 
     // These methods require the view
-    getSafeRegion(excludeControlbar) {
+    getSafeRegion(/* excludeControlbar */) {
         return {
             x: 0,
             y: 0,

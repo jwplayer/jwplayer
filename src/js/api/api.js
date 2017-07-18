@@ -197,7 +197,7 @@ define([
 
                 // bind event listeners passed in to the config
                 utils.foreach(options.events, (evt, val) => {
-                    // TODO: if 'evt' starts with 'on' convert to event name and register event with `on` method
+                    // TODO: JW8-206 if 'evt' starts with 'on' convert to event name and register event with `on` method
                     const fn = this[evt];
                     if (typeof fn === 'function') {
                         fn.call(this, val);
@@ -239,7 +239,7 @@ define([
                 const qoeItem = core.getItemQoe();
 
                 const setupTime = this._qoe.between('setup', 'ready');
-                const firstFrame = qoeItem.getFirstFrame();
+                const firstFrame = qoeItem.getFirstFrame ? qoeItem.getFirstFrame(): null;
 
                 /** Player QoE returned from {@link Api#qoe jwplayer().qoe()}
                  * @typedef {object} PlayerQoE
@@ -885,7 +885,7 @@ define([
              * @returns {boolean}
              */
             isBeforeComplete() {
-                core.isBeforeComplete();
+                return core.isBeforeComplete();
             },
 
             /**
@@ -894,7 +894,7 @@ define([
              * @returns {boolean}
              */
             isBeforePlay() {
-                core.isBeforePlay();
+                return core.isBeforePlay();
             }
         });
     };
