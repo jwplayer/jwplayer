@@ -107,3 +107,26 @@
         }
     }
 }
+
+.jw-tooltip-time {
+    bottom: 0;
+    height: auto;
+    line-height: normal;
+    padding: 0;
+    pointer-events: none;
+    transform: translateX(-50%);
+
+    .jw-overlay {
+        // Place the overlay above the time slider and aligned with the volume overlay
+        bottom: @mobile-touch-target * 0.5;
+
+        &:after {
+            content: none;
+        }
+    }
+
+    .jw-time-tip {
+        bottom: 0;
+        border-radius: @ui-corner-round;
+    }
+}

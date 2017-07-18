@@ -1,3 +1,5 @@
+@import "../../shared-imports/vars";
+
 .jwplayer {
     width: 100%;
     font-size: @default-em-size;
@@ -40,6 +42,12 @@
     &.jw-ie:focus {
         outline: #585858 dotted 1px;
     }
+
+    .jw-captions,
+        /* captions styles code specific to native text track rendering */
+    video::-webkit-media-text-track-container {
+        max-height: ~"calc(100% - 64px)";
+    }
 }
 
 .jw-media,
@@ -60,7 +68,7 @@
 
 .jw-plugin {
     position: absolute;
-    bottom: 2.5em;
+    bottom: (@mobile-touch-target * 1.5);
 
     .jw-banner {
         max-width: 100%;

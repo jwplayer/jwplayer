@@ -49,7 +49,7 @@
 
     &.jw-slider-volume {
         width: @volume-rail-length;
-        margin: 0 0.5em;
+        margin: 0 0.5em 2px;
     }
 
     .jw-rail {
@@ -69,7 +69,7 @@
 }
 
 .jw-slider-vertical {
-    padding: (@volume-padding / 1.5) @volume-padding;
+    padding: 0.5em;
     position: absolute;
 
     .jw-rail,
@@ -101,6 +101,57 @@
 
 .jw-slider-time {
     width: 100%;
+    background: transparent none;
+    height: @slider-fixed-height;
+
+    .jw-slider-container {
+        display: flex;
+        flex-direction: column;
+        height: @slider-fixed-height;
+        justify-content: center;
+    }
+
+    .jw-cue {
+        top: auto;
+    }
+
+    .jw-rail,
+    .jw-progress,
+    .jw-buffer,
+    .jw-knob {
+        border: none;
+        box-shadow: none;
+    }
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
+        height: @slider-fixed-rail-height;
+        // center in ie
+        margin: auto;
+        top: 0;
+        bottom: 0;
+    }
+
+    .jw-rail {
+        background-color: fade(#fff, 25%);
+    }
+
+    .jw-buffer {
+        background-color: fade(#fff, 50%);
+    }
+
+    .jw-knob {
+        background: #fff none;
+        border-radius: @slider-fixed-knob-border-radius;
+        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+        opacity: 1;
+        height: @slider-fixed-knob-height;
+        margin-left: @slider-fixed-knob-width / -2;
+        margin-top: @slider-fixed-knob-height / -2;
+        top: 50%;
+        width: @slider-fixed-knob-width;
+    }
 }
 
 .jw-tooltip-time {
