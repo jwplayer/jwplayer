@@ -115,10 +115,6 @@
     .jw-slider-horizontal {
         pointer-events: all;
     }
-
-    .jw-controlbar-left-group {
-        display: table-cell;
-    }
 }
 
 .jwplayer.jw-flag-ads-googleima {
@@ -133,8 +129,24 @@
         }
     }
 
-    &.jw-skin-seven .jw-controlbar {
-        font-size: 0.9em;
+    &.jw-flag-small-player {
+        // Fit controls under Google IMA skip button in small players
+        .jw-controlbar {
+            height: 36px;
+            padding-top: 8px;
+
+            .jw-icon,
+            .jw-text {
+                height: 36px;
+                line-height: 36px;
+            }
+        }
+    }
+
+    &.jw-skin-seven {
+        .jw-controlbar {
+            font-size: 0.9em;
+        }
     }
 }
 
