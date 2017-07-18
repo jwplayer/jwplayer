@@ -470,7 +470,7 @@ define([
         };
 
         function _autoStartSupportedIOS() {
-            if (OS.iOS) {
+            if (!OS.iOS) {
                 return false;
             }
             // Autostart only supported in iOS 10 or higher - check if the version is 9 or less
