@@ -1,4 +1,4 @@
-import { PLAYLIST_LOADED, ERROR } from 'events/events';
+import { PLAYLIST_LOADED, ERROR_EVENT } from 'events/events';
 
 define([
     'test/underscore',
@@ -20,7 +20,7 @@ define([
                 assert.equal(data.playlist[1].file, expectedJSON[1].file, 'JSON successfully loaded as a playlist');
             });
 
-            loader.on(ERROR, function (e) {
+            loader.on(ERROR_EVENT, function (e) {
                 assert.isOk(false, e.message);
             });
             done();
@@ -37,7 +37,7 @@ define([
                 assert.isOk(data.playlist[0].sources.length > 0, 'Playlist item has at least one video source.');
             });
 
-            loader.on(ERROR, function (e) {
+            loader.on(ERROR_EVENT, function (e) {
                 assert.isOk(false, e.message);
             });
             done();
@@ -50,7 +50,7 @@ define([
                 assert.isOk(false, 'No error was fired with invalid JSON feed ' + data);
             });
 
-            loader.on(ERROR, function() {
+            loader.on(ERROR_EVENT, function() {
                 assert.isOk(true, 'Invalid JSON feed successfully fired error');
             });
             done();

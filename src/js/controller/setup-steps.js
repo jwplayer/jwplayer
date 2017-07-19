@@ -1,5 +1,5 @@
 import * as ControlsLoader from 'controller/controls-loader';
-import { PLAYLIST_LOADED, COMPLETE, ERROR } from 'events/events';
+import { PLAYLIST_LOADED, COMPLETE_EVENT, ERROR_EVENT } from 'events/events';
 
 define([
     'plugins/plugins',
@@ -100,8 +100,8 @@ define([
     function _loadPlugins(resolve, _model) {
         window.jwplayerPluginJsonp = plugins.registerPlugin;
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-        _pluginLoader.on(COMPLETE, resolve);
-        _pluginLoader.on(ERROR, _.partial(_pluginsError, resolve));
+        _pluginLoader.on(COMPLETE_EVENT, resolve);
+        _pluginLoader.on(ERROR_EVENT, _.partial(_pluginsError, resolve));
         _pluginLoader.load();
     }
 
@@ -124,7 +124,7 @@ define([
                 _model.attributes.playlist = data.playlist;
                 resolve();
             });
-            _playlistLoader.on(ERROR, _.partial(_playlistError, resolve));
+            _playlistLoader.on(ERROR_EVENT, _.partial(_playlistError, resolve));
             _playlistLoader.load(playlist);
         } else {
             resolve();
@@ -169,10 +169,10 @@ define([
             var isStylesheet = true;
             var loader = new ScriptLoader(skinUrl, isStylesheet);
 
-            loader.addEventListener(COMPLETE, function() {
+            loader.addEventListener(COMPLETE_EVENT, function() {
                 _model.set('skin-loading', false);
             });
-            loader.addEventListener(ERROR, function() {
+            loader.addEventListener(ERROR_EVENT, function() {
                 _model.set('skin-loading', false);
             });
 
