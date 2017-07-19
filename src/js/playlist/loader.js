@@ -1,4 +1,4 @@
-import { PLAYLIST_LOADED, ERROR } from 'events/events';
+import { PLAYLIST_LOADED, ERROR_EVENT } from 'events/events';
 
 define([
     'parsers/parsers',
@@ -59,7 +59,7 @@ define([
                     }
                 }
 
-                _this.trigger(events.PLAYLIST_LOADED, jsonObj);
+                _this.trigger(PLAYLIST_LOADED, jsonObj);
             });
 
             if (status instanceof utils.Error) {
@@ -72,7 +72,7 @@ define([
         }
 
         function _playlistError(msg) {
-            _this.trigger(events.ERROR, {
+            _this.trigger(ERROR_EVENT, {
                 message: msg ? msg : 'Error loading file'
             });
         }

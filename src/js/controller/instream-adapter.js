@@ -1,6 +1,7 @@
 import { OS } from 'environment/environment';
 import { BUFFERING, COMPLETE, PAUSED, PLAYING } from 'events/states';
-import { ERROR, MEDIA_TIME, MEDIA_COMPLETE, PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, MEDIA_META, AD_SKIPPED } from 'events/events';
+import { ERROR, MEDIA_TIME, MEDIA_COMPLETE, PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, MEDIA_META, AD_SKIPPED }
+ from 'events/events';
 
 define([
     'controller/instream-html5',

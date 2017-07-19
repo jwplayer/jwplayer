@@ -28,7 +28,7 @@ define([
             mediaModel.set('state', LOADING);
             mediaModel.set('state', PLAYING);
 
-            // FIXME: JWPLAYER_PROVIDER_FIRST_FRAME triggers JWPLAYER_MEDIA_FIRST_FRAME : we only need one event
+            // FIXME: PROVIDER_FIRST_FRAME triggers MEDIA_FIRST_FRAME : we only need one event
             model.mediaController.trigger(PROVIDER_FIRST_FRAME);
 
             validateQoeFirstFrame(assert, model._qoeItem, startTime);
