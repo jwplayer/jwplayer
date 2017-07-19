@@ -49,7 +49,7 @@ define([
         // Load iFrame API
         if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === Scriptloader.loaderstatus.NEW) {
             _scriptLoader.on(COMPLETE_EVENT, _onLoadSuccess);
-            _scriptLoader.on(ERROR, _onLoadError);
+            _scriptLoader.on(ERROR_EVENT, _onLoadError);
             _scriptLoader.load();
         }
 
