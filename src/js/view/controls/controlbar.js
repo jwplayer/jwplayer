@@ -162,32 +162,26 @@ define([
                 fullscreen: button('jw-icon-fullscreen', () => { _api.setFullscreen(); }, this._localization.fullscreen)
             };
 
-            this.layout = {
-                left: [
-                    this.elements.play,
-                    this.elements.rewind,
-                    this.elements.elapsed,
-                    this.elements.durationLeft,
-                    this.elements.countdown
-                ],
-                center: [
-                    this.elements.time,
-                    this.elements.alt
-                ],
-                right: [
-                    this.elements.duration,
-                    this.elements.next,
-                    this.elements.hd,
-                    this.elements.cc,
-                    this.elements.audiotracks,
-                    this.elements.playbackrates,
-                    this.elements.mute,
-                    this.elements.cast,
-                    this.elements.volume,
-                    this.elements.volumetooltip,
-                    this.elements.fullscreen
-                ]
-            };
+            this.layout = [
+                this.elements.time,
+                this.elements.alt,
+                this.elements.play,
+                this.elements.rewind,
+                this.elements.elapsed,
+                // this.elements.durationLeft,
+                this.elements.countdown,
+                this.elements.duration,
+                this.elements.next,
+                this.elements.hd,
+                this.elements.cc,
+                this.elements.audiotracks,
+                this.elements.playbackrates,
+                this.elements.mute,
+                this.elements.cast,
+                this.elements.volume,
+                this.elements.volumetooltip,
+                this.elements.fullscreen
+            ];
 
             this.menus = _.compact([
                 this.elements.hd,
@@ -199,20 +193,17 @@ define([
 
             // Remove undefined layout elements.  They are invalid for the current platform.
             // (e.g. volume and volumetooltip on mobile)
-            this.layout.left = _.compact(this.layout.left);
-            this.layout.center = _.compact(this.layout.center);
-            this.layout.right = _.compact(this.layout.right);
+            this.layout = _.compact(this.layout);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
-            this.elements.left = buildGroup('left', this.layout.left);
-            this.elements.center = buildGroup('center', this.layout.center);
-            this.elements.right = buildGroup('right', this.layout.right);
-
-            this.el.appendChild(this.elements.left);
-            this.el.appendChild(this.elements.center);
-            this.el.appendChild(this.elements.right);
+            this.layout.forEach(e => {
+                if (e.element) {
+                    e = e.element();
+                }
+                this.el.appendChild(e);
+            });
 
             // Initial State
             this.elements.play.show();
