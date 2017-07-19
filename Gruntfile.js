@@ -67,33 +67,9 @@ module.exports = function(grunt) {
                     dumpLineNumbers: 'comments'
                 },
                 files: {
-                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less',
-                    'bin-debug/reference/controls.css': 'src/css/controls.less'
+                    'bin-debug/css/jwplayer.css': 'src/css/jwplayer.less',
+                    'bin-debug/css/controls.css': 'src/css/controls.less'
                 }
-            },
-            debug: {
-                options: {
-                    dumpLineNumbers: 'comments'
-                },
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-debug/skins/',
-                    cwd: 'src/css/skins/',
-                    src: '*.less'
-                }]
-            },
-            release: {
-                options: {
-                    compress: true
-                },
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-release/skins/',
-                    cwd: 'src/css/skins/',
-                    src: '*.less'
-                }]
             }
         },
 
@@ -107,20 +83,12 @@ module.exports = function(grunt) {
             },
             internal: {
                 src: [
-                    'bin-debug/reference/*.css',
-                    'bin-debug/skins/*.css',
+                    'bin-debug/css/*.css',
                 ]
             },
             debug: {
                 src: [
-                    'bin-debug/reference/*.css',
-                    'bin-debug/skins/*.css',
-                    'bin-release/skins/*.css'
-                ]
-            },
-            release: {
-                src: [
-                    'bin-release/skins/*.css'
+                    'bin-debug/css/*.css',
                 ]
             }
         },
@@ -149,7 +117,7 @@ module.exports = function(grunt) {
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
-                tasks: ['stylelint', 'webpack:debug', 'less:debug', 'postcss:debug']
+                tasks: ['stylelint', 'webpack:debug', 'postcss:debug']
             },
             tests: {
                 files: ['test/{,*/}*.js'],

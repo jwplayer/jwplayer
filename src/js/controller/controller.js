@@ -20,8 +20,8 @@ define([
     'view/error',
     'controller/events-middleware',
 ], function(InstreamAdapter, _, Setup, Captions, Model,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
-    
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, viewError, eventsMiddleware) {
+
     // The model stores a different state than the provider
     function normalizeState(newstate) {
         if (newstate === states.LOADING || newstate === states.STALLED) {
@@ -926,7 +926,7 @@ define([
         },
         setupError(evt) {
             const message = evt.message;
-            const errorElement = utils.createElement(error(this._model.get('id'), this._model.get('skin'), message));
+            const errorElement = utils.createElement(viewError(this._model.get('id'), message));
 
             const width = this._model.get('width');
             const height = this._model.get('height');
