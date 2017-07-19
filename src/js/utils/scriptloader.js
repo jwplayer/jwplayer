@@ -1,4 +1,4 @@
-import { ERROR, COMPLETE } from 'events/events';
+import { ERROR_EVENT, COMPLETE_EVENT } from 'events/events';
 
 define([
     'utils/backbone.events',
@@ -24,12 +24,12 @@ define([
 
         function _sendError(evt) {
             _status = STATUS.ERROR;
-            _this.trigger(ERROR, evt);
+            _this.trigger(ERROR_EVENT, evt);
         }
 
         function _sendComplete(evt) {
             _status = STATUS.COMPLETE;
-            _this.trigger(COMPLETE, evt);
+            _this.trigger(COMPLETE_EVENT, evt);
         }
 
         this.makeStyleLink = function(styleUrl) {
@@ -59,8 +59,8 @@ define([
                 _status = sameLoader.getStatus();
                 if (_status < 2) {
                     // dispatch to this instances listeners when the first loader gets updates
-                    sameLoader.on(ERROR, _sendError);
-                    sameLoader.on(COMPLETE, _sendComplete);
+                    sameLoader.on(ERROR_EVENT, _sendError);
+                    sameLoader.on(COMPLETE_EVENT, _sendComplete);
                     return;
                 }
                 // already errored or loaded... keep going?
