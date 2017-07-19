@@ -25,6 +25,12 @@ define([
         return element;
     }
 
+    function spacer() {
+        const element = document.createElement('div');
+        element.className = 'jw-reset jw-spacer';
+        return element;
+    }
+
     function menu(name, ariaText) {
         return new Menu(name, ariaText);
     }
@@ -69,20 +75,6 @@ define([
 
     function reasonInteraction() {
         return { reason: 'interaction' };
-    }
-
-    function buildGroup(group, elements) {
-        const elem = document.createElement('div');
-        elem.className = 'jw-group jw-controlbar-' + group + '-group jw-reset';
-
-        _.each(elements, function(e) {
-            if (e.element) {
-                e = e.element();
-            }
-            elem.appendChild(e);
-        });
-
-        return elem;
     }
 
     return class Controlbar {
@@ -159,7 +151,8 @@ define([
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
                 cast: createCastButton(() => { _api.castToggle(); }, this._localization),
-                fullscreen: button('jw-icon-fullscreen', () => { _api.setFullscreen(); }, this._localization.fullscreen)
+                fullscreen: button('jw-icon-fullscreen', () => { _api.setFullscreen(); }, this._localization.fullscreen),
+                spacer: spacer()
             };
 
             this.layout = [
@@ -171,6 +164,7 @@ define([
                 // this.elements.durationLeft,
                 this.elements.countdown,
                 this.elements.duration,
+                this.elements.spacer,
                 this.elements.next,
                 this.elements.hd,
                 this.elements.cc,

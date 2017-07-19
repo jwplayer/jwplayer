@@ -2,7 +2,11 @@
 @import "../../shared-imports/vars";
 
 .jw-controlbar {
-    display: table;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
     position: absolute;
     left: 0;
     bottom: 0;
@@ -13,7 +17,7 @@
     background-size: auto;
     box-shadow: none;
     height: @mobile-touch-target * 1.5;
-    padding: @slider-fixed-height 0 0;
+    //padding: @slider-fixed-height 0 0;
 
     // adjust overlay bottom padding to match height of touch target
     .jw-overlay {
@@ -24,6 +28,11 @@
             display: block;
             height: @mobile-touch-target * 0.5;
         }
+    }
+
+    .jw-spacer {
+        flex: 1 1 auto;
+        align-self: stretch;
     }
 }
 
@@ -94,11 +103,6 @@
         vertical-align: middle;
         white-space: nowrap;
     }
-}
-
-.jw-controlbar-left-group,
-.jw-controlbar-right-group {
-    white-space: nowrap;
 }
 
 .jw-icon-inline,
@@ -191,7 +195,7 @@
 }
 
 .jw-flag-small-player:not(.jw-flag-audio-player) {
-    .jw-group {
+    .jw-controlbar {
         > .jw-icon-rewind,
         > .jw-icon-next,
         > .jw-icon-playback {
