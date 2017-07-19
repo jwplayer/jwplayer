@@ -1,6 +1,6 @@
 import setConfig from '../api/set-config';
 import instances from '../api/players';
-import { Browser, OS } from 'environment/environment';
+import { OS } from 'environment/environment';
 import ApiQueueDecorator from '../api/api-queue';
 
 define([
@@ -566,7 +566,7 @@ define([
                         _next({ reason: 'repeat' });
                     } else {
                         // Exit fullscreen on IOS so that our overlays show to the user
-                        if (Browser.iOS) {
+                        if (OS.iOS) {
                             _setFullscreen(false);
                         }
                         // Autoplay/pause no longer needed since there's no more media to play
