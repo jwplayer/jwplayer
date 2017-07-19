@@ -55,12 +55,12 @@ export const OUT = 'out';
 /**
  * Event triggered when
 */
-export const COMPLETE = 'complete';
+export const COMPLETE_EVENT = 'complete';
 
 /**
  * Event triggered when an ad is clicked
 */
-export const ERROR = 'error';
+export const ERROR_EVENT = 'error';
 
 // Ad events
 
@@ -353,4 +353,4 @@ export const INSTREAM_CLICK = 'instreamClick';
 /**
  *
 */
-export const BREAKPOINT = 'breakpoint'
+export const BREAKPOINT = 'breakpoint';

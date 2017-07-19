@@ -1,5 +1,5 @@
 import { Browser, OS } from 'environment/environment';
-import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER} from 'events/events';
+import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER } from 'events/events';
 
 define([
     'utils/backbone.events',

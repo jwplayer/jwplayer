@@ -1,6 +1,6 @@
 import { Browser } from 'environment/environment';
 import { PAUSED, PLAYING } from 'events/states';
-import { ERROR, FULLSCREEN, MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE, MEDIA_TIME, MEDIA_ERROR } from 'events/events';
+import { PLAYER_STATE, MEDIA_COMPLETE, MEDIA_TIME, MEDIA_ERROR } from 'events/events';
 
 define([
     'utils/backbone.events',

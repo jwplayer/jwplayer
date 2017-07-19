@@ -63,7 +63,7 @@ define([
                 _error(resolveState.msg, resolveState.reason);
             } else if (resolveState.type === 'complete') {
                 clearTimeout(_setupFailureTimeout);
-                _this.trigger(events.READY);
+                _this.trigger(READY);
             } else {
                 task.complete = true;
                 _nextTask();
@@ -72,7 +72,7 @@ define([
 
         function _error(message, reason) {
             clearTimeout(_setupFailureTimeout);
-            _this.trigger(events.SETUP_ERROR, {
+            _this.trigger(SETUP_ERROR, {
                 message: message + ': ' + reason
             });
             _this.destroy();
