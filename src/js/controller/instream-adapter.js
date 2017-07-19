@@ -1,14 +1,14 @@
 import { OS } from 'environment/environment';
 import { BUFFERING, COMPLETE, PAUSED, PLAYING } from 'events/states';
+import { ERROR, MEDIA_TIME, MEDIA_COMPLETE, PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, MEDIA_META, AD_SKIPPED } from 'events/events';
 
 define([
     'controller/instream-html5',
     'controller/instream-flash',
-    'events/events',
     'utils/helpers',
     'utils/backbone.events',
     'utils/underscore'
-], function(InstreamHtml5, InstreamFlash, events, utils, Events, _) {
+], function(InstreamHtml5, InstreamFlash, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
         var providerName = '';
@@ -45,7 +45,7 @@ define([
             evt = evt || {};
             evt.hasControls = !!_model.get('controls');
 
-            this.trigger(events.JWPLAYER_INSTREAM_CLICK, evt);
+            this.trigger(INSTREAM_CLICK, evt);
 
             // toggle playback after click event
             if (!_instream || !_instream._adModel) {
@@ -83,8 +83,8 @@ define([
             _oldProvider.setPlaybackRate(1);
 
             _instream.on('all', _instreamForward, this);
-            _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
-            _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemComplete, this);
+            _instream.on(MEDIA_TIME, _instreamTime, this);
+            _instream.on(MEDIA_COMPLETE, _instreamItemComplete, this);
             _instream.init();
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
@@ -166,7 +166,7 @@ define([
             if (_options.tag) {
                 data.tag = _options.tag;
             }
-            this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
+            this.trigger(MEDIA_COMPLETE, data);
             _instreamItemNext.call(this, e);
         }
 
@@ -176,9 +176,9 @@ define([
             } else {
                 // notify vast of breakEnd
                 this.trigger('adBreakEnd', {});
-                if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
+                if (e.type === MEDIA_COMPLETE) {
                     // Dispatch playlist complete event for ad pods
-                    this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
+                    this.trigger(PLAYLIST_COMPLETE, {});
                 }
                 this.destroy();
             }
@@ -187,7 +187,7 @@ define([
         this.loadItem = function(item, options) {
             if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
                 this.trigger({
-                    type: events.JWPLAYER_ERROR,
+                    type: ERROR,
                     message: 'Error loading instream: Cannot play instream on Android 2.3'
                 });
                 return;
@@ -216,7 +216,7 @@ define([
                         return;
                     }
                     // Dispatch playlist item event for ad pods
-                    _this.trigger(events.JWPLAYER_PLAYLIST_ITEM, {
+                    _this.trigger(PLAYLIST_ITEM, {
                         index: _arrayIndex,
                         item: item
                     });
@@ -264,18 +264,18 @@ define([
                 _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
             }
 
-            _instream.on(events.JWPLAYER_MEDIA_META, this.metaHandler, this);
+            _instream.on(MEDIA_META, this.metaHandler, this);
         };
 
         this.skipAd = function(evt) {
-            var skipAdType = events.JWPLAYER_AD_SKIPPED;
+            var skipAdType = AD_SKIPPED;
             this.trigger(skipAdType, evt);
             _instreamItemNext.call(this, {
                 type: skipAdType
             });
         };
 
-        /** Handle the JWPLAYER_MEDIA_META event **/
+        /** Handle the MEDIA_META event **/
         this.metaHandler = function (evt) {
             // If we're getting video dimension metadata from the provider, allow the view to resize the media
             if (evt.width && evt.height) {

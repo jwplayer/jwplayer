@@ -203,11 +203,6 @@ export const SETUP_ERROR = 'setupError';
 /**
  *
 */
-export const ERROR = 'error';
-
-/**
- *
-*/
 export const PLAYER_STATE = 'state';
 
 /**

@@ -1,11 +1,12 @@
+import { PLAYLIST_LOADED, ERROR } from 'events/events';
+
 define([
     'parsers/parsers',
     'parsers/rssparser',
     'utils/helpers',
-    'events/events',
     'utils/backbone.events',
     'utils/underscore'
-], function(parsers, rssParser, utils, events, Events, _) {
+], function(parsers, rssParser, utils, Events, _) {
 
     var PlaylistLoader = function() {
         var _this = _.extend(this, Events);
@@ -58,7 +59,7 @@ define([
                     }
                 }
 
-                _this.trigger(events.JWPLAYER_PLAYLIST_LOADED, jsonObj);
+                _this.trigger(events.PLAYLIST_LOADED, jsonObj);
             });
 
             if (status instanceof utils.Error) {
@@ -71,7 +72,7 @@ define([
         }
 
         function _playlistError(msg) {
-            _this.trigger(events.JWPLAYER_ERROR, {
+            _this.trigger(events.ERROR, {
                 message: msg ? msg : 'Error loading file'
             });
         }
