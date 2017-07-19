@@ -1,10 +1,11 @@
 import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
+import { Browser, OS } from 'environment/environment';
+import { dvrSeekLimit } from 'view/constants';
 
 define([
     'utils/helpers',
     'utils/underscore',
     'utils/backbone.events',
-    'utils/constants',
     'utils/ui',
     'utils/aria',
     'view/controls/components/slider',
@@ -13,7 +14,7 @@ define([
     'view/controls/components/selection-display-menu',
     'view/controls/components/volumetooltip',
     'view/controls/components/button',
-], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip,
+], function(utils, _, Events, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip,
             button) {
     function text(name, role) {
         const element = document.createElement('span');
@@ -29,7 +30,7 @@ define([
     }
 
     function createCastButton(castToggle, localization) {
-        if (!utils.isChrome() || utils.isIOS()) {
+        if (Browser.chrome && OS.iOS) {
             return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
         }
 
@@ -89,7 +90,7 @@ define([
             _.extend(this, Events);
             this._api = _api;
             this._model = _model;
-            this._isMobile = utils.isMobile();
+            this._isMobile = OS.mobile;
             this._localization = _model.get('localization');
 
             this.nextUpToolTip = null;
@@ -111,11 +112,11 @@ define([
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
-            if (!_model.get('sdkplatform') && !(utils.isIOS(8) || utils.isIOS(9))) {
-                muteButton = button('jw-icon-volume', _api.setMute, vol);
+            if (!_model.get('sdkplatform') && !(OS.iOS && OS.major.version < 10)) {
+                muteButton = button('jw-icon-volume', () => { _api.setMute(); }, vol);
             }
 
-            const nextButton = button('jw-icon-next', _api.next.bind(this), next);
+            const nextButton = button('jw-icon-next', () => { _api.next(); }, next);
 
             if (_model.get('nextUpDisplay')) {
                 new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -138,8 +139,8 @@ define([
 
             this.elements = {
                 alt: text('jw-text-alt', 'status'),
-                play: button('jw-icon-playback', _api.play.bind(this, reasonInteraction()), play),
-                rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
+                play: button('jw-icon-playback', () => { _api.play(null, reasonInteraction()); }, play),
+                rewind: button('jw-icon-rewind', () => { this.rewind(); }, rewind),
                 next: nextButton,
                 elapsed: text('jw-text-elapsed', 'timer'),
                 countdown: text('jw-text-countdown', 'timer'),
@@ -157,8 +158,8 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: createCastButton(_api.castToggle, this._localization),
-                fullscreen: button('jw-icon-fullscreen', _api.setFullscreen, this._localization.fullscreen)
+                cast: createCastButton(() => { _api.castToggle(); }, this._localization),
+                fullscreen: button('jw-icon-fullscreen', () => { _api.setFullscreen(); }, this._localization.fullscreen)
             };
 
             this.layout = {
@@ -314,7 +315,7 @@ define([
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
                     const currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition), reasonInteraction());
+                    this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
                 }
             }, this);
 
@@ -322,7 +323,7 @@ define([
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
                     const currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
+                    this._api.seek(Math.max(dvrSeekLimit, currentPosition));
                 }
             }, this);
 

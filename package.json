@@ -1,6 +1,6 @@
 {
   "name": "jwplayer",
-  "version": "7.12.0",
+  "version": "7.12.2",
   "description": "The JW Player is free for non-commerical use. To buy a license for commercial use, please visit \r http://www.jwplayer.com/pricing/",
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
@@ -13,6 +13,7 @@
     "babel-core": "6.24.0",
     "babel-loader": "6.4.1",
     "babel-plugin-transform-es2015-modules-commonjs": "6.24.0",
+    "babel-plugin-transform-object-assign": "6.22.0",
     "babel-preset-es2015": "6.24.0",
     "chai": "3.5.0",
     "css-loader": "0.26.4",
@@ -31,9 +32,10 @@
     "grunt-postcss": "0.8.0",
     "grunt-stylelint": "0.8.0",
     "import-loader": "1.0.1",
-    "intersection-observer": "0.2.1",
+    "intersection-observer": "0.3.2",
     "istanbul-instrumenter-loader": "1.2.0",
     "jquery": "3.2.1",
+    "jsdoc": "3.4.3",
     "karma": "1.5.0",
     "karma-browserstack-launcher": "1.2.0",
     "karma-chai": "0.1.0",
@@ -68,11 +70,13 @@
     "webpack": "^2.6.1"
   },
   "scripts": {
-    "test": "karma start",
+    "docs": "jsdoc -c docs/jsdoc.conf.json",
     "lint": "npm run lint:js && npm run lint:styles",
     "lint:js": "eslint './src/js'",
     "lint:styles": "stylelint './src/css/**/*.less'",
-    "lint:tests": "eslint './test/*.js'"
+    "lint:tests": "eslint './test/*.js'",
+    "preversion": "grunt && grunt clean:docs && npm run docs && git add docs",
+    "test": "karma start"
   },
   "engines": {
     "node": ">=4.3.1"

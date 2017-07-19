@@ -1,3 +1,5 @@
+import { OS } from 'environment/environment';
+
 define([
     'utils/helpers',
     'utils/css',
@@ -9,7 +11,6 @@ define([
     'utils/backbone.events'
 ], function(utils, cssUtils, _, events, states, Scriptloader, DefaultProvider, Events) {
     var _scriptLoader = new Scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
-    var _isMobile = utils.isMobile();
 
     function YoutubeProvider(_playerId, _playerConfig) {
         this.state = states.IDLE;
@@ -27,7 +28,7 @@ define([
         var _youtubePlayerReadyCallback = null;
         var _playingInterval = -1;
         var _youtubeState = -1;
-        var _requiresUserInteraction = _isMobile;
+        var _requiresUserInteraction = OS.mobile;
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
@@ -78,7 +79,7 @@ define([
             if (!videoLayer) {
                 // if jwplayer DOM is not ready, do Youtube embed on jwplayer ready
                 if (!_listeningForReady) {
-                    window.jwplayer(_playerId).onReady(_readyCheck);
+                    window.jwplayer(_playerId).on('ready', _readyCheck);
                     _listeningForReady = true;
                 }
                 return false;
@@ -232,7 +233,7 @@ define([
             switch (_youtubeState) {
                 case youtubeStates.UNSTARTED: // -1: //unstarted
                     // play video on android to avoid being stuck in this state
-                    if (utils.isAndroid()) {
+                    if (OS.android) {
                         _youtubePlayer.playVideo();
                     }
                     return;
@@ -277,7 +278,7 @@ define([
                 case youtubeStates.CUED: // 5: //video cued (idle before playback)
                     _this.setState(states.IDLE);
                     // play video on android to avoid being stuck in this state
-                    if (utils.isAndroid()) {
+                    if (OS.android) {
                         _youtubePlayer.playVideo();
                     }
                     return;
@@ -306,7 +307,7 @@ define([
         }
 
         function _readyViewForMobile() {
-            if (_isMobile) {
+            if (OS.mobile) {
                 _this.setVisibility(true);
             }
         }
@@ -506,7 +507,7 @@ define([
                     visibility: 'visible',
                     opacity: 1
                 });
-            } else if (!_isMobile) {
+            } else if (!OS.mobile) {
                 // hide
                 cssUtils.style(_container, {
                     opacity: 0

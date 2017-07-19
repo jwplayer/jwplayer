@@ -1,8 +1,10 @@
+import { Browser, OS } from 'environment/environment';
+import { dvrSeekLimit } from 'view/constants';
+
 define([
     'events/events',
     'events/states',
     'utils/backbone.events',
-    'utils/constants',
     'utils/helpers',
     'utils/underscore',
     'view/controls/components/button',
@@ -14,11 +16,11 @@ define([
     'view/controls/next-display-icon',
     'view/controls/nextuptooltip',
     'view/controls/rightclick',
-], function (events, states, Events, Constants, utils, _, button, Controlbar, Dock,
+], function (events, states, Events, utils, _, button, Controlbar, Dock,
              DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
              NextUpToolTip, RightClick) {
 
-    const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
+    const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
     const reasonInteraction = function() {
         return { reason: 'interaction' };
@@ -79,7 +81,7 @@ define([
                     api.play(reasonInteraction());
                 });
 
-                if (utils.isChrome() && !touchMode) {
+                if (Browser.chrome && !touchMode) {
                     // On Chrome desktop allow media element to capture all play/pause toggle clicks
                     // This allows swfs to capture clicks on start preventing flash-throttling
                     playDisplayIcon.el.style.pointerEvents = 'none';
@@ -155,7 +157,7 @@ define([
                 const position = model.get('position');
                 if (model.get('streamType') === 'DVR') {
                     min = max;
-                    max = Math.max(position, Constants.dvrSeekLimit);
+                    max = Math.max(position, dvrSeekLimit);
                 }
                 const newSeek = utils.between(position + amount, min, max);
                 api.seek(newSeek, reasonInteraction());
@@ -308,7 +310,7 @@ define([
         }
 
         addActiveListeners(element) {
-            if (element && !utils.isMobile()) {
+            if (element && !OS.mobile) {
                 element.addEventListener('mousemove', this.activeListeners.mousemove);
                 element.addEventListener('mouseout', this.activeListeners.mouseout);
             }

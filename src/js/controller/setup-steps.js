@@ -1,16 +1,18 @@
+import * as ControlsLoader from 'controller/controls-loader';
+
+export const SkinsIncluded = ['seven'];
+export const SkinsLoadable = ['beelden', 'bekle', 'five', 'glow', 'roundster', 'six', 'stormtrooper', 'vapor'];
+
 define([
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
     'utils/embedswf',
-    'utils/constants',
     'utils/underscore',
-    'utils/helpers',
     'events/events',
-    'controller/controls-loader',
     'polyfills/promise',
     'polyfills/base64'
-], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events, ControlsLoader) {
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _, events) {
 
     var _pluginLoader;
     var _playlistLoader;
@@ -53,17 +55,10 @@ define([
                     'SETUP_VIEW'
                 ]
             },
-            CHECK_FLASH: {
-                method: _checkFlash,
-                depends: [
-                    'SETUP_VIEW'
-                ]
-            },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
                 depends: [
-                    'LOAD_PLAYLIST',
-                    'CHECK_FLASH'
+                    'LOAD_PLAYLIST'
                 ]
             },
             SET_ITEM: {
@@ -141,47 +136,6 @@ define([
         }
     }
 
-    function _checkFlash(resolve, _model, _api, _view) {
-        var primaryFlash = _model.get('primary') === 'flash';
-        var flashVersion = utils.flashVersion();
-        if (primaryFlash && flashVersion) {
-            var embedTimeout;
-            var done = function() {
-                if (embedTimeout === -1) {
-                    return;
-                }
-                clearTimeout(embedTimeout);
-                embedTimeout = -1;
-                setTimeout(function() {
-                    EmbedSwf.remove(mediaContainer.querySelector('#' + flashHealthCheckId));
-                    resolve();
-                }, 0);
-            };
-            var failed = function() {
-                _model.set('primary', undefined);
-                _model.updateProviders();
-                done();
-            };
-            var viewContainer = _view.element();
-            var mediaContainer = viewContainer.querySelector('.jw-media');
-            if (!viewContainer.parentElement) {
-                // Cannot perform test when player container has no parent
-                failed();
-            }
-            var flashHealthCheckId = '' + _model.get('id') + '-' + Math.random().toString(16).substr(2);
-            var flashHealthCheckSwf = _model.get('flashloader');
-            Object.defineProperty(EmbedSwf.embed(flashHealthCheckSwf, mediaContainer, flashHealthCheckId, null), 'embedCallback', {
-                get: function() {
-                    return done;
-                }
-            });
-            // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
-            embedTimeout = setTimeout(failed, 3000);
-        } else {
-            resolve();
-        }
-    }
-
     function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
         // Performs filtering
         var success = _setPlaylist(_model.get('playlist'), _model.get('feedData'));
@@ -204,7 +158,7 @@ define([
     function skinToLoad(skin, base) {
         var skinPath;
 
-        if (_.contains(Constants.SkinsLoadable, skin)) {
+        if (_.contains(SkinsLoadable, skin)) {
             skinPath = base + 'skins/' + skin + '.css';
         }
 
@@ -226,7 +180,7 @@ define([
         var skinUrl = _model.get('skinUrl');
 
         // If skin is built into player, there is nothing to load
-        if (_.contains(Constants.SkinsIncluded, skinName)) {
+        if (_.contains(SkinsIncluded, skinName)) {
             resolve();
             return;
         }

@@ -1,0 +1,35 @@
+{
+  "source": {
+    "include": [
+      "./src/js/"
+    ],
+    "exclude": [
+      "./src/js/cast/",
+      "./src/js/controller/",
+      "./src/js/events/",
+      "./src/js/parsers/",
+      "./src/js/plugins/",
+      "./src/js/polyfills/",
+      "./src/js/utils/",
+      "./src/js/view/"
+    ]
+  },
+  "opts": {
+    "debug": true,
+    "destination": "docs/api",
+    "recurse": true,
+    "readme": "./docs/README-api.md"
+  },
+  "templates": {
+    "default": {
+      "outputSourceFiles": false,
+      "includeDate": false,
+      "useLongnameInNav": true
+    }
+  },
+  "plugins": ["./plugins/markdown"],
+  "markdown": {
+    "idIdHeadings": true,
+    "tags": ["deprecated"]
+  }
+}

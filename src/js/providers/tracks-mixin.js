@@ -1,3 +1,5 @@
+import { Browser } from 'environment/environment';
+
 define(['utils/underscore',
     'utils/id3Parser',
     'utils/helpers',
@@ -129,7 +131,7 @@ define(['utils/underscore',
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-            if (utils.isEdge() || utils.isFF() || utils.isSafari()) {
+            if (Browser.edge || Browser.firefox || Browser.safari) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
                 this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
@@ -491,7 +493,7 @@ define(['utils/underscore',
     // ////////////////////
 
     function _addCueToTrack(renderNatively, track, vttCue) {
-        if (!(utils.isIE() && renderNatively) || !window.TextTrackCue) {
+        if (!(Browser.ie && renderNatively) || !window.TextTrackCue) {
             track.addCue(vttCue);
             return;
         }
@@ -506,7 +508,7 @@ define(['utils/underscore',
         if (tracks && tracks.length) {
             _.each(tracks, function(track) {
                 // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
-                if (utils.isIE() && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
+                if (Browser.ie && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
                     return;
                 }
 

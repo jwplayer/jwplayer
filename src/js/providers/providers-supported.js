@@ -1,9 +1,11 @@
+import { Features } from 'environment/environment';
+import { isAndroidHls } from 'providers/html5-android-hls';
+
 define([
-    'providers/html5-android-hls',
     'utils/helpers',
     'utils/underscore',
     'utils/video'
-], function(getIsAndroidHLS, utils, _, video) {
+], function(utils, _, video) {
 
     var SupportsMatrix = [
         {
@@ -38,7 +40,7 @@ define([
                 var file = source.file;
                 var type = source.type;
 
-                var isAndroidHLS = getIsAndroidHLS(source);
+                var isAndroidHLS = isAndroidHls(source);
                 if (isAndroidHLS !== null) {
                     return isAndroidHLS;
                 }
@@ -79,7 +81,7 @@ define([
                     smil: 'rtmp'
                 };
                 var PLAYABLE = _.keys(flashExtensions);
-                if (!utils.isFlashSupported()) {
+                if (!Features.flash) {
                     return false;
                 }
 

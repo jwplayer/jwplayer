@@ -1,11 +1,19 @@
 define([
     'utils/helpers',
-    'utils/strings',
-    'utils/underscore'
-], function(utils, strings, _) {
+    'utils/strings'
+], function(utils, strings) {
     var Defaults = {
         'default': false
     };
+
+    /**
+     * A media source variant present in a playlist item
+     * @typedef {object} PlaylistItemSource
+     * @property {string} file - The media URL.
+     * @property {string} type - The type (common file extension) of media.
+     * @property {boolean} default - Default sources are prioritized over others.
+     * @property {string} label - The quality label to be used with multiple mp4/webm sources.
+     */
 
     return function Source(config) {
         // file is the only hard requirement
@@ -13,7 +21,7 @@ define([
             return;
         }
 
-        var _source = _.extend({}, Defaults, config);
+        var _source = Object.assign({}, Defaults, config);
 
         // normalize for odd strings
         _source.file = strings.trim('' + _source.file);
@@ -62,8 +70,8 @@ define([
         }
 
         // remove empty strings
-        _.each(_source, function(val, key) {
-            if (val === '') {
+        Object.keys(_source).forEach(function(key) {
+            if (_source[key] === '') {
                 delete _source[key];
             }
         });

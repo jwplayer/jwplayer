@@ -1,14 +1,15 @@
+import { Browser, OS } from 'environment/environment';
+
 define([
     'utils/backbone.events',
     'events/events',
-    'utils/underscore',
-    'utils/helpers'
-], function(Events, events, _, utils) {
+    'utils/underscore'
+], function(Events, events, _) {
     var JW_TOUCH_EVENTS = events.touchEvents;
     var _supportsPointerEvents = ('PointerEvent' in window);
     var _supportsTouchEvents = ('ontouchstart' in window);
-    var _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && utils.isMobile());
-    var _isOSXFirefox = utils.isFF() && utils.isOSX();
+    var _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
+    var _isOSXFirefox = Browser.firefox && OS.mac;
 
     function getCoord(e, c) {
         return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];

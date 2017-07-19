@@ -6,9 +6,25 @@
     position: absolute;
     left: 0;
     bottom: 0;
-    height: @controlbar-height;
     width: 100%;
-    padding: 0 @ui-padding;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.25) 30%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.5) 100%);
+    border: none;
+    border-radius: 0;
+    background-size: auto;
+    box-shadow: none;
+    height: @mobile-touch-target * 1.5;
+    padding: @slider-fixed-height 0 0;
+
+    // adjust overlay bottom padding to match height of touch target
+    .jw-overlay {
+        bottom: @mobile-touch-target;
+
+        &:after {
+            content: "";
+            display: block;
+            height: @mobile-touch-target * 0.5;
+        }
+    }
 }
 
 .jw-slider-horizontal {
@@ -17,6 +33,39 @@
 
 .jw-group {
     display: table-cell;
+
+    .jw-icon-cast {
+        button {
+            font-size: inherit;
+            height: 36px;
+            margin-bottom: 0.5em;
+            width: @mobile-touch-target;
+        }
+    }
+}
+
+.jw-group > .jw-icon,
+.jw-group > .jw-text {
+    height: @mobile-touch-target;
+    line-height: @mobile-touch-target - 4px;
+}
+
+.jw-group > .jw-icon {
+    font-size: 20px;
+    padding: 0 8px;
+    max-width: @mobile-touch-target;
+
+    &:before {
+        /* This hack is required to make sure that gradients display correctly */
+        /* stylelint-disable-next-line declaration-block-no-shorthand-property-overrides */
+        background: transparent none;
+        background-size: auto;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        height: auto;
+        padding: 0;
+    }
 }
 
 .jw-controlbar-center-group {
@@ -130,18 +179,16 @@
     display: none;
 }
 
-/* Indentation sometimes complains about multiple selections when :not()s are included */
-/* stylelint-disable indentation */
-.jw-breakpoint-0,
-.jw-breakpoint-1:not(.jw-flag-time-slider-above) {
-    .jw-controlbar {
-        .jw-text-duration,
-        .jw-text-elapsed {
-            display: none;
-        }
+&.jw-flag-small-player {
+    .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+        display: none;
+    }
+
+    .jw-display {
+        padding-top: @mobile-touch-target;
+        padding-bottom: @mobile-touch-target * 1.5;
     }
 }
-/* stylelint-enable indentation */
 
 .jw-flag-small-player:not(.jw-flag-audio-player) {
     .jw-group {
@@ -163,5 +210,74 @@
             pointer-events: none;
             opacity: 0;
         }
+    }
+}
+
+.jwplayer&:not(.jw-flag-ads):not(.jw-flag-live) {
+    .jw-controlbar-center-group {
+        height: @slider-fixed-height;
+        left: 0;
+        padding: 0 15px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+
+        .jw-slider-horizontal {
+            .jw-knob {
+                border-radius: @slider-fixed-knob-border-radius;
+                height: @slider-fixed-knob-height;
+                margin-left: @slider-fixed-knob-width / -2;
+                margin-top: @slider-fixed-knob-height / -2;
+                width: @slider-fixed-knob-width;
+            }
+        }
+    }
+
+    .jw-controlbar-left-group {
+        padding-left: 0;
+
+        .jw-text-elapsed,
+        .jw-text-countdown {
+            padding: 0 0.5em;
+        }
+
+        .jw-text-duration {
+            padding: 0 0.5em 0 0;
+        }
+    }
+
+    &.jw-breakpoint-0 {
+        .jw-text-countdown {
+            display: inline-block;
+        }
+    }
+
+    &.jw-flag-small-player {
+        .jw-text-elapsed,
+        .jw-text-countdown {
+            padding-left: 15px;
+        }
+    }
+}
+
+&:not(.jw-breakpoint-0) {
+    .jw-text-duration {
+        display: inline-block;
+
+        &:before {
+            content: "/";
+            display: inline-block;
+            padding-right: 0.5em;
+        }
+    }
+}
+
+.jw-controlbar-right-group {
+    padding-right: 6px;
+    text-align: right;
+
+    .jw-text-duration {
+        display: none;
     }
 }

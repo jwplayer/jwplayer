@@ -1,7 +1,6 @@
-const _ = require('utils/underscore');
-
 define([
-], function () {
+    'utils/underscore'
+], function (_) {
 
     /**
      * A map of 2-letter language codes (ISO 639-1) to language name in English
@@ -31,7 +30,7 @@ define([
             return language;
         }
 
-        return codeToLang[language.slice(0, 2)] || language;
+        return codeToLang[language.substr(0, 2)] || language;
     }
 
     function getCode(language) {

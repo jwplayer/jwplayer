@@ -32,6 +32,9 @@
     }
 
     .jw-controlbar {
+        padding-right: 5px;
+        pointer-events: none;
+
         .jw-icon-inline,
         .jw-icon-tooltip,
         .jw-icon-cast,
@@ -59,6 +62,14 @@
         .jw-icon-tooltip.jw-icon-volume {
             display: none;
         }
+
+        .jw-overlay:after {
+            display: none;
+        }
+    }
+
+    .jw-controlbar-center-group {
+        height: auto;
     }
 
     &.jw-ie {
@@ -67,6 +78,7 @@
 
             .jw-text-alt {
                 display: table;
+                top: -1px;
             }
         }
     }
@@ -84,6 +96,25 @@
             }
         }
     }
+
+    .jw-group > .jw-text-alt {
+        display: inline-block;
+        margin: 0;
+        line-height: @mobile-touch-target;
+    }
+
+    .jw-text-duration {
+        display: none;
+    }
+
+    .jw-nextup-container {
+        bottom: @mobile-touch-target;
+    }
+
+    .jw-icon,
+    .jw-slider-horizontal {
+        pointer-events: all;
+    }
 }
 
 .jwplayer.jw-flag-ads-googleima {
@@ -98,8 +129,24 @@
         }
     }
 
-    &.jw-skin-seven .jw-controlbar {
-        font-size: 0.9em;
+    &.jw-flag-small-player {
+        // Fit controls under Google IMA skip button in small players
+        .jw-controlbar {
+            height: 36px;
+            padding-top: 8px;
+
+            .jw-icon,
+            .jw-text {
+                height: 36px;
+                line-height: 36px;
+            }
+        }
+    }
+
+    &.jw-skin-seven {
+        .jw-controlbar {
+            font-size: 0.9em;
+        }
     }
 }
 

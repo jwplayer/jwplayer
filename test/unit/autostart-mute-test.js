@@ -16,9 +16,9 @@ define([
         return _.extend(config, { autostart: true, mute: mute });
     }
 
-    function createApi(id, globalRemoveCallback) {
+    function createApi(id) {
         var container = createContainer(id);
-        return new Api(container, globalRemoveCallback || _.noop);
+        return new Api(container);
     }
 
     function createContainer(id) {

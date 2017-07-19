@@ -5,6 +5,8 @@ import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
+import { Browser, OS, Features } from 'environment/environment';
+import * as ControlsLoader from 'controller/controls-loader';
 
 let ControlsModule;
 
@@ -21,14 +23,13 @@ define([
     'view/logo',
     'view/preview',
     'view/title',
-    'controller/controls-loader',
 ], function(events, states, Events, utils, _, requestFullscreenHelper, flagNoFocus,
-            ClickHandler, CaptionsRenderer, Logo, Preview, Title, ControlsLoader) {
+            ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     const _styles = utils.style;
     const _bounds = utils.bounds;
-    const _isMobile = utils.isMobile();
-    const _isIE = utils.isIE();
+    const _isMobile = OS.mobile;
+    const _isIE = Browser.ie;
 
     let stylesInjected = false;
 
@@ -185,11 +186,7 @@ define([
                 setBreakpoint(_playerElement, breakpoint);
 
                 const smallPlayer = breakpoint < 2;
-                const timeSliderAboveConfig = _model.get('timeSliderAbove');
-                const timeSliderAbove = !audioMode &&
-                    (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
                 utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
-                utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
                 utils.toggleClass(_playerElement, 'jw-orientation-portrait', (height > width));
             }
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
@@ -288,22 +285,20 @@ define([
                     '.jw-background-color'
                 ], 'background', 'none ' + backgroundColor);
 
-                if (_model.get('timeSliderAbove') !== false) {
-                    const backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
-                        utils.getRgba(backgroundColor, 0) + ' 0%, ' +
-                        utils.getRgba(backgroundColor, 0.25) + ' 30%, ' +
-                        utils.getRgba(backgroundColor, 0.4) + ' 70%, ' +
-                        utils.getRgba(backgroundColor, 0.5) + ') 100%';
+                const backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
+                    utils.getRgba(backgroundColor, 0) + ' 0%, ' +
+                    utils.getRgba(backgroundColor, 0.25) + ' 30%, ' +
+                    utils.getRgba(backgroundColor, 0.4) + ' 70%, ' +
+                    utils.getRgba(backgroundColor, 0.5) + ') 100%';
 
-                    addStyle([
-                        // for small player, set the control bar gradient to the config background color
-                        '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
-                    ], 'background', backgroundColorGradient, true);
-                }
+                addStyle([
+                    // for small player, set the control bar gradient to the config background color
+                    '.jw-background-color.jw-controlbar'
+                ], 'background', backgroundColorGradient, true);
 
                 // remove the config background on time slider
                 addStyle([
-                    '.jw-flag-time-slider-above .jw-background-color.jw-slider-time'
+                    '.jw-background-color.jw-slider-time'
                 ], 'background', 'transparent', true);
             }
 
@@ -342,7 +337,7 @@ define([
             });
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
-            
+
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
                 mediaModel.on('change:visualQuality', () => {
@@ -381,7 +376,7 @@ define([
 
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
-            _model.set('iFrame', utils.isIframe());
+            _model.set('iFrame', Features.iframe);
             _model.set('activeTab', activeTab());
             _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT));
 
@@ -884,7 +879,7 @@ define([
             return null;
         };
 
-        this.getSafeRegion = function (includeCB) {
+        this.getSafeRegion = function (excludeControlbar = true) {
             const bounds = {
                 x: 0,
                 y: 0,
@@ -894,8 +889,7 @@ define([
 
             if (_controls) {
                 // Subtract controlbar from the bottom when using one
-                includeCB = includeCB || !utils.exists(includeCB);
-                if (includeCB) {
+                if (excludeControlbar) {
                     bounds.height -= _controls.controlbarHeight();
                 }
             }

@@ -1,4 +1,5 @@
 import sliderTemplate from 'view/controls/templates/slider';
+import { OS } from 'environment/environment';
 
 define([
     'utils/backbone.events',
@@ -12,7 +13,7 @@ define([
         // Partial workaround of Android 'inert-visual-viewport'
         // https://bugs.chromium.org/p/chromium/issues/detail?id=489206
         const pageXOffset = window.pageXOffset;
-        if (pageXOffset && utils.isAndroid() && document.body.parentElement.getBoundingClientRect().left >= 0) {
+        if (pageXOffset && OS.android && document.body.parentElement.getBoundingClientRect().left >= 0) {
             bounds.left -= pageXOffset;
             bounds.right -= pageXOffset;
         }

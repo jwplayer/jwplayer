@@ -1,7 +1,7 @@
 @import "vars";
 
 .inset-controlbar() {
-    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
+    &:not(.jw-flag-audio-player) {
         &,
         .jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid)&,
         .jw-flag-ads.jw-flag-touch.jw-flag-autostart:not(.jw-flag-ads-vpaid)& {
@@ -11,7 +11,7 @@
         }
     }
 
-    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0) {
+    &:not(.jw-flag-audio-player):not(.jw-breakpoint-0) {
         .jw-controlbar {
             bottom: 0.7em;
             max-width: @min-breakpoint-5-width;
@@ -37,27 +37,25 @@
         }
     }
 
-    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
+    &:not(.jw-flag-audio-player):not(.jw-flag-small-player) {
         &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt {
             top: 1px;
         }
     }
 
-    &:not(.jw-flag-time-slider-above) {
-        .jw-nextup-container {
-            bottom: @controlbar-height + 0.7em;
-            padding-left: 0;
-            padding-right: 0;
-            max-width: @min-breakpoint-5-width;
-        }
+    .jw-nextup-container {
+        bottom: @controlbar-height + 0.7em;
+        padding-left: 0;
+        padding-right: 0;
+        max-width: @min-breakpoint-5-width;
+    }
 
-        &.jw-breakpoint-2,
-        &.jw-breakpoint-3,
-        &.jw-breakpoint-4 {
-            .jw-nextup-container {
-                padding-left: 2%;
-                padding-right: 2%;
-            }
+    &.jw-breakpoint-2,
+    &.jw-breakpoint-3,
+    &.jw-breakpoint-4 {
+        .jw-nextup-container {
+            padding-left: 2%;
+            padding-right: 2%;
         }
     }
 
@@ -312,7 +310,6 @@
             }
         }
 
-        &:not(.jw-flag-time-slider-above),
         &.jw-flag-ads-googleima {
             .jw-controlbar {
                 height: @controlbar-height;
@@ -343,7 +340,7 @@
             margin: 0;
         }
 
-        &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
+        &:not(.jw-flag-small-player) {
             .jw-time-tip {
                 bottom: (@controlbar-height / 2);
             }

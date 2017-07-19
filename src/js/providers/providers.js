@@ -1,14 +1,15 @@
+import registerProvider from 'providers/providers-register';
+
 define([
     'providers/default',
     'providers/providers-supported',
     'providers/providers-loaded',
-    'utils/underscore',
-    'utils/defaults'
-], function(Default, ProvidersSupported, ProvidersLoaded, _, defaults) {
+    'utils/underscore'
+], function(Default, ProvidersSupported, ProvidersLoaded, _) {
 
     function Providers(config) {
         this.config = config || {};
-        this.providers = this.reorderProviders(this.config.primary);
+        this.providers = ProvidersSupported;
     }
 
     Providers.loaders = {
@@ -35,33 +36,7 @@ define([
         }
     };
 
-    var registerProvider = Providers.registerProvider = function(provider) {
-        var name = provider.getName().name;
-
-        // Only register the provider if it isn't registered already.  This is an issue on pages with multiple embeds.
-        if (ProvidersLoaded[name]) {
-            return;
-        }
-
-        // If there isn't a "supports" val for this guy
-        if (!_.find(ProvidersSupported, _.matches({ name: name }))) {
-            if (!_.isFunction(provider.supports)) {
-                throw new Error('Tried to register a provider with an invalid object');
-            }
-
-            // The most recent provider will be in the front of the array, and chosen first
-            ProvidersSupported.unshift({
-                name: name,
-                supports: provider.supports
-            });
-        }
-
-        // Fill in any missing properties with the defaults - looks at the prototype chain
-        defaults(provider.prototype, Default);
-
-        // After registration, it is loaded
-        ProvidersLoaded[name] = provider;
-    };
+    Providers.registerProvider = registerProvider;
 
     _.extend(Providers.prototype, {
 
@@ -78,25 +53,13 @@ define([
             }));
         },
 
-        reorderProviders: function (primary) {
-            var providers = _.clone(ProvidersSupported);
-
-            if (primary === 'flash') {
-                var flashIdx = _.indexOf(providers, _.findWhere(providers, { name: 'flash' }));
-                var flashProvider = providers.splice(flashIdx, 1)[0];
-                var html5Idx = _.indexOf(providers, _.findWhere(providers, { name: 'html5' }));
-                providers.splice(html5Idx, 0, flashProvider);
-            }
-            return providers;
-        },
-
         providerSupports: function(provider, source) {
             return provider.supports(source);
         },
 
-        required: function(playlist, primary) {
+        required: function(playlist) {
             var _this = this;
-            var providers = this.reorderProviders(primary);
+            var providers = ProvidersSupported;
 
             playlist = playlist.slice();
             return _.compact(_.map(providers, function(provider) {

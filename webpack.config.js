@@ -1,4 +1,8 @@
 'use strict';
+
+/* eslint-env node */
+/* eslint no-process-env: 0 */
+
 const webpack = require('webpack');
 const env = process.env;
 const packageInfo = require('./package.json');
@@ -114,12 +118,18 @@ const multiConfig = [
                     loader: 'file-loader?name=[name].[ext]'
                 },
                 {
-                    test: /\.js/,
+                    test: /\.js$/,
+                    loader: 'babel-loader',
                     exclude: /node_modules/,
-                    query: {
-                        presets: ['es2015']
-                    },
-                    loader: 'babel-loader'
+                    options: {
+                        babelrc: false,
+                        presets: [
+                            ['es2015']
+                        ],
+                        plugins: [
+                            'transform-object-assign'
+                        ]
+                    }
                 }
             ]
         }

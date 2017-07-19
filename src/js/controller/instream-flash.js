@@ -1,12 +1,13 @@
+import { Browser } from 'environment/environment';
+
 define([
     'utils/backbone.events',
     'controller/model',
     'events/change-state-event',
     'events/events',
     'events/states',
-    'utils/helpers',
     'utils/underscore'
-], function(Events, Model, changeStateEvent, events, states, utils, _) {
+], function(Events, Model, changeStateEvent, events, states, _) {
 
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
@@ -28,7 +29,7 @@ define([
 
         init: function() {
             // Pause playback when throttled, and only resume is paused here
-            if (utils.isChrome()) {
+            if (Browser.chrome) {
                 var _throttleTimeout = -1;
                 var _throttlePaused = false;
                 this.swf.on('throttle', function(e) {

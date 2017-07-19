@@ -8,6 +8,23 @@ define([
     var noop = utils.noop;
     var returnFalse = _.constant(false);
 
+    /** Audio Track information for tracks returned by {@link Api#getAudioTracks jwplayer().getAudioTracks()}
+     * @typedef {object} AudioTrackOption
+     * @property autoselect
+     * @property defaulttrack
+     * @property groupid
+     * @property {string} language
+     * @property {string} name
+     */
+
+    /**
+     * @typedef {option} QualityOption
+     * @property {string} label
+     * @property {number} [width]
+     * @property {number} [height]
+     * @property {number} [bitrate]
+     */
+
     var DefaultProvider = {
         // This function is required to determine if a provider can work on a given source
         supports: returnFalse,
@@ -36,11 +53,13 @@ define([
         setContainer: returnFalse,
 
         getName: noop,
+
         getQualityLevels: noop,
         getCurrentQuality: noop,
         setCurrentQuality: noop,
 
         getAudioTracks: noop,
+
         getCurrentAudioTrack: noop,
         setCurrentAudioTrack: noop,
 

@@ -1,4 +1,5 @@
 import { qualityLevel } from 'providers/data-normalizer';
+import { Browser } from 'environment/environment';
 
 define([
     'utils/helpers',
@@ -21,7 +22,7 @@ define([
 
         var sameHost = (a.host === window.location.host);
 
-        return utils.isChrome() && !sameHost;
+        return Browser.chrome && !sameHost;
     }
 
     function FlashProvider(_playerId, _playerConfig) {

@@ -3,9 +3,9 @@ import { getPreload } from './preload';
 define([
     'playlist/item',
     'playlist/source',
+    'providers/providers',
     'utils/underscore',
-    'providers/providers'
-], function(PlaylistItem, Source, _, Providers) {
+], function(PlaylistItem, Source, Providers, _) {
 
     var Playlist = function (playlist) {
         // Can be either an array of items or a single item.
@@ -87,9 +87,8 @@ define([
 
     // A playlist item may have multiple different sources, but we want to stick with one.
     var _filterSources = function(sources, providers) {
-        // legacy plugin support
         if (!providers || !providers.choose) {
-            providers = new Providers({ primary: providers ? 'flash' : null });
+            providers = new Providers();
         }
 
         var chosenProviderAndType = _chooseProviderAndType(sources, providers);

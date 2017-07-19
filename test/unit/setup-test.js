@@ -95,7 +95,7 @@ define([
 
         function testSetup(done, model, success, error) {
             var container = createContainer('player-' + Math.random().toFixed(12).substr(2));
-            var api = new Api(container, _.noop);
+            var api = new Api(container);
             api.setup(model);
 
             api.on('ready', function() {
