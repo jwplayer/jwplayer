@@ -1,6 +1,7 @@
 import { Browser, OS } from 'environment/environment';
 import SimpleModel from '../model/simplemodel';
 import { playerDefaults } from '../model/player-model';
+import { IDLE, COMPLETE, PAUSED, PLAYING } from 'events/states';
 
 define([
     'utils/helpers',
@@ -8,9 +9,8 @@ define([
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
-    'events/events',
-    'events/states'
-], function(utils, Providers, QOE, _, Events, events, states) {
+    'events/events'
+], function(utils, Providers, QOE, _, Events, events) {
 
     // Represents the state of the player
     var Model = function() {
@@ -153,8 +153,8 @@ define([
                     break;
                 case 'autoplayFailed':
                     this.set('autostartFailed', true);
-                    if (mediaModel.get('state') === states.PLAYING) {
-                        mediaModel.set('state', states.PAUSED);
+                    if (mediaModel.get('state') === PLAYING) {
+                        mediaModel.set('state', PAUSED);
                     }
                     break;
                 default:
@@ -265,7 +265,7 @@ define([
 
         this.playbackComplete = function() {
             _beforecompleted = false;
-            _provider.setState(states.COMPLETE);
+            _provider.setState(COMPLETE);
             this.mediaController.trigger(events.JWPLAYER_MEDIA_COMPLETE, {});
         };
 
@@ -507,7 +507,7 @@ define([
 
     // Represents the state of the provider/media element
     var MediaModel = Model.MediaModel = function() {
-        this.set('state', states.IDLE);
+        this.set('state', IDLE);
     };
 
     Object.assign(Model.prototype, SimpleModel);

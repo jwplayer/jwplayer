@@ -1,11 +1,12 @@
+import { PAUSED, PLAYING } from 'events/states';
+
 define([
     'utils/underscore',
     'utils/backbone.events',
     'events/change-state-event',
     'events/events',
-    'events/states',
     'controller/model'
-], function(_, Events, changeStateEvent, events, states, Model) {
+], function(_, Events, changeStateEvent, events, Model) {
 
     var InstreamHtml5 = function(_controller, _model) {
         var _adModel;
@@ -163,8 +164,8 @@ define([
 
         function stateHandler(evt) {
             switch (evt.newstate) {
-                case states.PLAYING:
-                case states.PAUSED:
+                case PLAYING:
+                case PAUSED:
                     _adModel.set('state', evt.newstate);
                     break;
                 default:

@@ -1,9 +1,10 @@
+import { IDLE } from 'events/states';
+
 define([
     'utils/helpers',
     'events/events',
-    'events/states',
     'utils/underscore'
-], function(utils, events, states, _) {
+], function(utils, events, _) {
 
     var noop = utils.noop;
     var returnFalse = _.constant(false);
@@ -76,7 +77,7 @@ define([
         init: noop,
 
         setState: function(state) {
-            var oldState = this.state || states.IDLE;
+            var oldState = this.state || IDLE;
             this.state = state;
 
             if (state === oldState) {

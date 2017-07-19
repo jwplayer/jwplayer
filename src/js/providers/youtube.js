@@ -1,19 +1,19 @@
 import { OS } from 'environment/environment';
+import { BUFFERING, IDLE, COMPLETE, PAUSED, PLAYING, LOADING, STALLED } from 'events/states';
 
 define([
     'utils/helpers',
     'utils/css',
     'utils/underscore',
     'events/events',
-    'events/states',
     'utils/scriptloader',
     'providers/default',
     'utils/backbone.events'
-], function(utils, cssUtils, _, events, states, Scriptloader, DefaultProvider, Events) {
+], function(utils, cssUtils, _, events, Scriptloader, DefaultProvider, Events) {
     var _scriptLoader = new Scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
 
     function YoutubeProvider(_playerId, _playerConfig) {
-        this.state = states.IDLE;
+        this.state = IDLE;
 
         _.extend(this, Events);
 
@@ -32,12 +32,12 @@ define([
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
-            if (state !== states.IDLE && state !== states.COMPLETE) {
+            if (state !== IDLE && state !== COMPLETE) {
                 // always run this interval when not idle because we can't trust events from iFrame
                 _playingInterval = setInterval(_checkPlaybackHandler, 250);
-                if (state === states.PLAYING) {
+                if (state === PLAYING) {
                     this.seeking = false;
-                } else if (state === states.LOADING || state === states.STALLED) {
+                } else if (state === LOADING || state === STALLED) {
                     _bufferUpdate();
                 }
             }
@@ -146,7 +146,7 @@ define([
         }
 
         function _ended() {
-            if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
+            if (_this.state !== IDLE && _this.state !== COMPLETE) {
                 _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
             }
         }
@@ -260,23 +260,23 @@ define([
                         currentQuality: _this.getCurrentQuality()
                     });
 
-                    _this.setState(states.PLAYING);
+                    _this.setState(PLAYING);
                     return;
 
                 case youtubeStates.PAUSED: // 2: //paused
-                    _this.setState(states.PAUSED);
+                    _this.setState(PAUSED);
                     return;
 
                 case youtubeStates.BUFFERING: // 3: //buffering
                     if (_this.seeking) {
-                        _this.setState(states.LOADING);
+                        _this.setState(LOADING);
                     } else {
-                        _this.setState(states.STALLED);
+                        _this.setState(STALLED);
                     }
                     return;
 
                 case youtubeStates.CUED: // 5: //video cued (idle before playback)
-                    _this.setState(states.IDLE);
+                    _this.setState(IDLE);
                     // play video on android to avoid being stuck in this state
                     if (OS.android) {
                         _youtubePlayer.playVideo();
@@ -345,7 +345,7 @@ define([
 
         // Video Provider API
         this.load = function(item) {
-            this.setState(states.LOADING);
+            this.setState(LOADING);
 
             _setItem(item);
             // start playback if api is ready
@@ -415,7 +415,7 @@ define([
 
         this.stop = function() {
             _stopVideo();
-            this.setState(states.IDLE);
+            this.setState(IDLE);
         };
 
         this.play = function() {
