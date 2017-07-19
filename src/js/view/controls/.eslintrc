@@ -1,0 +1,24 @@
+{
+  "env": {
+    "browser": true,
+    "mocha": true,
+    "es6": true
+  },
+  "globals": {
+    "define": true
+  },
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-var": 0,
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+    "vars-on-top": "off",
+    "max-len": ["error", 120, { "ignoreComments": true, "ignoreTemplateLiterals": true }],
+    "object-shorthand": 0,
+    "no-use-before-define": 0,
+    "func-names": 0,
+    "no-console": 0
+  }
+}

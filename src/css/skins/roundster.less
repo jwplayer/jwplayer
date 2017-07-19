@@ -1,5 +1,5 @@
-@import "../imports/mixins";
-@import "../imports/vars";
+@import "../shared-imports/mixins";
+@import "../shared-imports/vars";
 
 .jw-skin-roundster {
     @active-color: #f15173;
@@ -9,7 +9,9 @@
     @display-icon-color: rgba(255, 255, 255, 0.5);
     @display-icon-hover-color: rgb(255, 255, 255);
     @display-bkgd-color: @inactive-color;
-    @display-bkgd-hover-color: @hover-color;
+    @display-bkgd-hover-color: @active-color;
+
+    @option-active-bg-color: rgba(255, 255, 255, 0.5);
 
     @progress-color: @active-color;
     @buffer-color: #9c9a9d;
@@ -23,40 +25,37 @@
 
     @volume-background: #5c6373;
 
-    @cue-size: .25em;
-    @thumb-size: .9em;
+    @cue-size: 0.25em;
+    @thumb-size: 1em;
     @def-rail-width: 0.75em;
     @slider-height: @rail-height;
     @rail-height: 0.4em;
 
     @controlbar-height: 2em;
 
-    @nextup-position-bottom: @controlbar-height + 0.7em + 0.5em;
-    @nextup-position-bottom-touch: (@controlbar-height * 1.5em) + 0.7em + 0.8em;
-    @nextup-position-right: 2%;
     @nextup-border-radius: @roundster-corners / 2;
     @nextup-header-background: fade(@controlbar-background, 80%);
     @nextup-body-background: darken(@nextup-header-background, 20%);
     @nextup-body-text-color-overflow: darken(@controlbar-background, 20%);
 
-    #namespace > .controlbar-height();
+    #namespace > .custom-skin-styles();
     #namespace > .basic-skin-styles(); // Using the above local variables
-    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
+
+    .jw-display-icon-container {
+        background-color: @display-bkgd-color;
+    }
 
     .skin-element-padding();
 
     /* Controlbar styles */
     .inset-controlbar();
-    .jw-controlbar {
-        border-radius: @roundster-corners;
-        padding: 0 @roundster-corners;
-    }
 
-    /* Playlist title */
-    .jw-tooltip-title {
-        border-bottom: 1px solid #747D92;
-        background-color: @rail-color;
+    &:not(.jw-breakpoint-0) {
+        .jw-controlbar {
+            border-radius: @roundster-corners;
+            padding: 0 @roundster-corners;
+        }
     }
 
     /* Rail/slider styles */
@@ -75,11 +74,13 @@
         width: @thumb-size;
         height: @thumb-size;
         border-radius: 50%;
-        box-shadow: 0px 1px 5px 1px rgba(134,142,163,1);
+        box-shadow: 0 1px 5px 1px rgba(134, 142, 163, 1);
     }
 
     /* Timeline and horizontal volume slider */
     .jw-slider-horizontal {
+        background: none;
+
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-size);
 
@@ -96,23 +97,25 @@
 
     /* Volume slider */
     .jw-slider-vertical {
-        .jw-rail {
-            background-color: #434853;
-        }
-
         .jw-rail,
         .jw-progress {
-            width: .4em;
+            width: 0.4em;
         }
 
         .jw-knob {
             .horizontally-centered-rail-element(@def-rail-width, @thumb-size);
         }
 
-        .jw-slider-container{
+        .jw-slider-container {
             width: @def-rail-width;
         }
+    }
 
+    // Adjusts the volume slider container width to allow the slider to be centered
+    &.jw-flag-time-slider-above {
+        .jw-slider-vertical .jw-slider-container {
+            width: 0.8em;
+        }
     }
 
     /* For the overlay containers */
@@ -125,7 +128,7 @@
     /* Position of remaining overlay containers */
     .jw-volume-tip,
     .jw-menu {
-        bottom: .3em;
+        bottom: 0.3em;
     }
 
     /* For the dock, in the upper right corner */
@@ -133,6 +136,7 @@
         .jw-dock-button {
             border-radius: 50%;
         }
+
         .jw-overlay {
             border-radius: 2.5em;
         }

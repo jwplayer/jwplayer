@@ -1,0 +1,402 @@
+@import "../../shared-imports/vars";
+
+/* time slider above or small player (both override player into same UI) */
+.jw-flag-time-slider-above:not(.jw-flag-ads-googleima) {
+    .jw-controlbar {
+        display: table;
+    }
+
+    /* ==================================================
+    display
+    */
+
+    /* Consistent padding for display icons so they don't interfere with the time slider touch target */
+    /* and don't get repositioned when the timeslider is not visible */
+    &.jw-flag-small-player {
+        .jw-display {
+            padding-top: @mobile-touch-target;
+            padding-bottom: @mobile-touch-target * 1.5;
+        }
+    }
+
+    &.jw-state-idle:not(.jw-flag-cast-available),
+    &.jw-state-error {
+        .jw-display {
+            padding: 0;
+        }
+    }
+
+    /* ==================================================
+    to avoid overriding audio player on small size
+    */
+
+    &.jwplayer {
+        /* ==================================================
+        control bar
+        */
+
+        .jw-controlbar {
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.25) 30%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.5) 100%);
+            border: none;
+            border-radius: 0;
+            background-size: auto;
+            height: @mobile-touch-target;
+            width: 100%;
+            padding: 0 10px;
+            box-shadow: none;
+
+            // adjust overlay bottom padding to match height of touch target
+            .jw-overlay {
+                bottom: @mobile-touch-target;
+
+                &:after {
+                    content: "";
+                    display: block;
+                    height: @mobile-touch-target * 0.5;
+                }
+            }
+        }
+
+        /* do not show the controls background linear gradient when video is idle
+        state (except when cast available and we show controls on idle state) or
+        playing state when user inactive (the gradient in other scenarios blocks
+        video from clashing with the video colors, making it easy to see/use) */
+
+        &.jw-state-idle:not(.jw-flag-cast-available),
+        &.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) {
+            .jw-controls {
+                background: none;
+            }
+        }
+
+        /* by default, the control bar height is set to the height needed for live
+        broadcast and the override sets it to the height needed for anything that
+        isn't a live broadcast. the delay the player has before it detects a live
+        broadcast and adds causes a flicker. Handling control bar in this way fixes
+        that experience in time slider above mode. */
+
+        &:not(.jw-flag-ads),
+        &:not(.jw-flag-live) {
+            .jw-controlbar {
+                height: @mobile-touch-target * 1.5;
+                padding: @slider-fixed-height 0 0;
+            }
+        }
+
+        /* ==================================================
+        control bar icons and text
+        */
+
+        .jw-group > .jw-icon,
+        .jw-group > .jw-text {
+            height: @mobile-touch-target;
+            line-height: @mobile-touch-target - 4px;
+        }
+
+        .jw-group > .jw-icon {
+            font-size: 20px;
+            padding: 0 8px;
+            max-width: @mobile-touch-target;
+
+            &:before {
+                background-color: transparent;
+                /* This hack is required to make sure that gradients display correctly */
+                /* stylelint-disable-next-line declaration-block-no-shorthand-property-overrides */
+                background: none;
+                background-size: auto;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                height: auto;
+                padding: 0;
+            }
+        }
+
+        .jw-group {
+            .jw-icon-cast {
+                button {
+                    font-size: inherit;
+                    height: 36px;
+                    margin-bottom: 0.5em;
+                    width: @mobile-touch-target;
+                }
+            }
+        }
+
+        /* ==================================================
+        control bar groups
+        */
+
+        // position the time slider group above other control bar elements
+        &:not(.jw-flag-ads):not(.jw-flag-live) {
+            .jw-controlbar-center-group {
+                height: @slider-fixed-height;
+                left: 0;
+                padding: 0 15px;
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 100%;
+
+                .jw-slider-horizontal {
+                    .jw-knob {
+                        border-radius: @slider-fixed-knob-border-radius;
+                        height: @slider-fixed-knob-height;
+                        margin-left: @slider-fixed-knob-width / -2;
+                        margin-top: @slider-fixed-knob-height / -2;
+                        width: @slider-fixed-knob-width;
+                    }
+                }
+            }
+
+            .jw-controlbar-left-group {
+                padding-left: 0;
+
+                .jw-text-elapsed,
+                .jw-text-countdown {
+                    padding: 0 0.5em;
+                }
+
+                .jw-text-duration {
+                    padding: 0 0.5em 0 0;
+                }
+            }
+
+            &.jw-breakpoint-0 {
+                .jw-text-countdown {
+                    display: inline-block;
+                }
+            }
+
+            &.jw-flag-small-player {
+                .jw-text-elapsed,
+                .jw-text-countdown {
+                    padding-left: 15px;
+                }
+            }
+        }
+
+        &:not(.jw-breakpoint-0) {
+            .jw-text-duration {
+                display: inline-block;
+
+                &:before {
+                    content: "/";
+                    display: inline-block;
+                    padding-right: 0.5em;
+                }
+            }
+        }
+
+        .jw-controlbar-right-group {
+            padding-right: 6px;
+            text-align: right;
+
+            .jw-text-duration {
+                display: none;
+            }
+        }
+
+        /* ==================================================
+        vertical volume slider
+        */
+
+        .jw-slider-volume.jw-slider-vertical {
+            padding: 0.5em;
+        }
+
+        /* ==================================================
+        horizontal volume slider
+        */
+
+        .jw-slider-volume.jw-slider-horizontal {
+            margin-bottom: 2px;
+        }
+
+        &.jw-flag-small-player {
+            .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+                display: none;
+            }
+        }
+
+        /* ==================================================
+        slider
+        */
+
+        .jw-slider-time {
+            background: none;
+            background-color: transparent;
+            height: @slider-fixed-height;
+
+            .jw-slider-container {
+                display: flex;
+                flex-direction: column;
+                height: @slider-fixed-height;
+                justify-content: center;
+            }
+
+            .jw-cue {
+                top: auto;
+            }
+
+            .jw-rail,
+            .jw-progress,
+            .jw-buffer,
+            .jw-knob {
+                border: none;
+                box-shadow: none;
+            }
+
+            .jw-rail,
+            .jw-buffer,
+            .jw-progress {
+                height: @slider-fixed-rail-height;
+                // center in ie
+                margin: auto;
+                top: 0;
+                bottom: 0;
+            }
+
+            .jw-rail {
+                background-color: fade(#fff, 25%);
+            }
+
+            .jw-buffer {
+                background-color: fade(#fff, 50%);
+            }
+
+            .jw-knob {
+                background: none;
+                background-color: #fff;
+                border-radius: @slider-fixed-knob-border-radius;
+                box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+                opacity: 1;
+                height: @slider-fixed-knob-height;
+                margin-left: @slider-fixed-knob-width / -2;
+                margin-top: @slider-fixed-knob-height / -2;
+                top: 50%;
+                width: @slider-fixed-knob-width;
+            }
+        }
+
+        .jw-tooltip-time {
+            bottom: 0;
+            height: auto;
+            line-height: normal;
+            padding: 0;
+            pointer-events: none;
+            transform: translateX(-50%);
+
+            .jw-overlay {
+                // Place the overlay above the time slider and aligned with the volume overlay
+                bottom: @mobile-touch-target * 0.5;
+
+                &:after {
+                    content: none;
+                }
+            }
+
+            .jw-time-tip {
+                bottom: 0;
+                border-radius: @ui-corner-round;
+            }
+        }
+
+        /* ==================================================
+        ads/live
+        */
+
+        &.jw-flag-ads,
+        &.jw-flag-live {
+            .jw-controlbar {
+                padding-right: 5px;
+            }
+
+            .jw-controlbar-center-group {
+                height: auto;
+            }
+
+            .jw-group > .jw-text-alt {
+                display: inline-block;
+                margin: 0;
+                line-height: @mobile-touch-target;
+            }
+
+            &.jw-ie .jw-text-alt {
+                top: -1px;
+            }
+
+            .jw-text-duration {
+                display: none;
+            }
+
+            .jw-controlbar .jw-overlay:after {
+                display: none;
+            }
+
+            .jw-nextup-container {
+                bottom: @mobile-touch-target;
+            }
+        }
+
+        &.jw-flag-live {
+            .jw-controlbar {
+                padding-left: 10px;
+            }
+
+            .jw-text-elapsed,
+            .jw-text-duration {
+                display: none;
+            }
+        }
+
+        &.jw-flag-ads {
+            .jw-controlbar {
+                pointer-events: none;
+            }
+
+            .jw-icon,
+            .jw-slider-horizontal {
+                pointer-events: all;
+            }
+
+            .jw-controlbar-left-group {
+                display: table-cell;
+            }
+
+            &.jw-flag-small-player {
+                .jw-group .jw-icon-playback {
+                    display: inline-block;
+                }
+            }
+        }
+
+        /* ==================================================
+        plugin
+        */
+
+        /* Move non-linear ad display above the time slider */
+        .jw-plugin {
+            bottom: (@mobile-touch-target * 1.5);
+        }
+
+        /* ==================================================
+        captions
+        */
+
+        .jw-captions,
+        /* captions styles code specific to native text track rendering */
+        video::-webkit-media-text-track-container {
+            max-height: ~"calc(100% - 64px)";
+        }
+
+        /* ==================================================
+        next up
+        */
+
+        .jw-nextup-container {
+            bottom: (@mobile-touch-target * 1.5);
+            padding: 5px 20px;
+        }
+    }
+}

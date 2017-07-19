@@ -4,37 +4,43 @@ define(['utils/underscore'], function(_) {
 
     // ** THIS POLYFILL BREAKS WEBPACK **
     // Use polyfill for setImmediate for performance gains
-    //var asap = (typeof setImmediate === 'function' && setImmediate) ||
-        //function(fn) { setTimeout(fn, 1); };
+    // var asap = (typeof setImmediate === 'function' && setImmediate) ||
+        // function(fn) { setTimeout(fn, 1); };
     var asap = _.defer;
 
     // Polyfill for Function.prototype.bind
     function bind(fn, thisArg) {
         return function() {
             fn.apply(thisArg, arguments);
-        }
+        };
     }
 
-    var isArray = Array.isArray || function(value) { return Object.prototype.toString.call(value) === "[object Array]" };
+    var isArray = Array.isArray || function(value) {
+        return Object.prototype.toString.call(value) === '[object Array]';
+    };
 
-    function Promise(fn) {
-        if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new');
-        if (typeof fn !== 'function') throw new TypeError('not a function');
+    function PromisePolyfill(fn) {
+        if (typeof this !== 'object') {
+            throw new TypeError('Promises must be constructed via new');
+        }
+        if (typeof fn !== 'function') {
+            throw new TypeError('not a function');
+        }
         this._state = null;
         this._value = null;
-        this._deferreds = []
+        this._deferreds = [];
 
-        doResolve(fn, bind(resolve, this), bind(reject, this))
+        doResolve(fn, bind(resolvePolyfill, this), bind(rejectPolyfill, this));
     }
 
     function handle(deferred) {
         var me = this;
         if (this._state === null) {
             this._deferreds.push(deferred);
-            return
+            return;
         }
         asap(function () {
-            var cb = me._state ? deferred.onFulfilled : deferred.onRejected
+            var cb = me._state ? deferred.onFulfilled : deferred.onRejected;
             if (cb === null) {
                 (me._state ? deferred.resolve : deferred.reject)(me._value);
                 return;
@@ -42,22 +48,23 @@ define(['utils/underscore'], function(_) {
             var ret;
             try {
                 ret = cb(me._value);
-            }
-            catch (e) {
+            } catch (e) {
                 deferred.reject(e);
                 return;
             }
             deferred.resolve(ret);
-        })
+        });
     }
 
-    function resolve(newValue) {
-        try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-            if (newValue === this) throw new TypeError('A promise cannot be resolved with itself.');
+    function resolvePolyfill(newValue) {
+        try { // Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+            if (newValue === this) {
+                throw new TypeError('A promise cannot be resolved with itself.');
+            }
             if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
                 var then = newValue.then;
                 if (typeof then === 'function') {
-                    doResolve(bind(then, newValue), bind(resolve, this), bind(reject, this));
+                    doResolve(bind(then, newValue), bind(resolvePolyfill, this), bind(rejectPolyfill, this));
                     return;
                 }
             }
@@ -65,11 +72,11 @@ define(['utils/underscore'], function(_) {
             this._value = newValue;
             finale.call(this);
         } catch (e) {
-            reject.call(this, e);
+            rejectPolyfill.call(this, e);
         }
     }
 
-    function reject(newValue) {
+    function rejectPolyfill(newValue) {
         this._state = false;
         this._value = newValue;
         finale.call(this);
@@ -93,37 +100,46 @@ define(['utils/underscore'], function(_) {
         var done = false;
         try {
             fn(function (value) {
-                if (done) return;
+                if (done) {
+                    return;
+                }
                 done = true;
                 onFulfilled(value);
             }, function (reason) {
-                if (done) return;
+                if (done) {
+                    return;
+                }
                 done = true;
                 onRejected(reason);
-            })
+            });
         } catch (ex) {
-            if (done) return;
+            if (done) {
+                return;
+            }
             done = true;
             onRejected(ex);
         }
     }
 
-    Promise.prototype['catch'] = function (onRejected) {
+    /* eslint dot-notation: 0 */
+    PromisePolyfill.prototype['catch'] = function (onRejected) {
         return this.then(null, onRejected);
     };
 
-    Promise.prototype.then = function (onFulfilled, onRejected) {
+    PromisePolyfill.prototype.then = function (onFulfilled, onRejected) {
         var me = this;
-        return new Promise(function (resolve, reject) {
+        return new PromisePolyfill(function (resolve, reject) {
             handle.call(me, new Handler(onFulfilled, onRejected, resolve, reject));
-        })
+        });
     };
 
-    Promise.all = function () {
+    PromisePolyfill.all = function () {
         var args = Array.prototype.slice.call(arguments.length === 1 && isArray(arguments[0]) ? arguments[0] : arguments);
 
-        return new Promise(function (resolve, reject) {
-            if (args.length === 0) return resolve([]);
+        return new PromisePolyfill(function (resolve, reject) {
+            if (args.length === 0) {
+                return resolve([]);
+            }
             var remaining = args.length;
 
             function res(i, val) {
@@ -131,8 +147,8 @@ define(['utils/underscore'], function(_) {
                     if (val && (typeof val === 'object' || typeof val === 'function')) {
                         var then = val.then;
                         if (typeof then === 'function') {
-                            then.call(val, function (val) {
-                                res(i, val)
+                            then.call(val, function (val2) {
+                                res(i, val2);
                             }, reject);
                             return;
                         }
@@ -152,34 +168,35 @@ define(['utils/underscore'], function(_) {
         });
     };
 
-    Promise.resolve = function (value) {
-        if (value && typeof value === 'object' && value.constructor === Promise) {
+    PromisePolyfill.resolve = function (value) {
+        if (value && typeof value === 'object' && value.constructor === PromisePolyfill) {
             return value;
         }
 
-        return new Promise(function (resolve) {
+        return new PromisePolyfill(function (resolve) {
             resolve(value);
         });
     };
 
-    Promise.reject = function (value) {
-        return new Promise(function (resolve, reject) {
+    PromisePolyfill.reject = function (value) {
+        return new PromisePolyfill(function (resolve, reject) {
             reject(value);
         });
     };
 
-    Promise.race = function (values) {
-        return new Promise(function (resolve, reject) {
+    PromisePolyfill.race = function (values) {
+        return new PromisePolyfill(function (resolve, reject) {
             for (var i = 0, len = values.length; i < len; i++) {
                 values[i].then(resolve, reject);
             }
         });
     };
 
-    Promise._setImmediateFn = function _setImmediateFn(fn) {
+    PromisePolyfill._setImmediateFn = function _setImmediateFn(fn) {
         asap = fn;
     };
 
-    window.Promise || (window.Promise = Promise);
+    /* eslint no-unused-expressions: 0 */
+    window.Promise || (window.Promise = PromisePolyfill);
 
 });

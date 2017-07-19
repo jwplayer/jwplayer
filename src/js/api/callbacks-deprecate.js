@@ -2,9 +2,7 @@ define([
     'utils/underscore',
     'events/events'
 ], function(_, events) {
-
     return function init(_api) {
-
         var _eventMapping = {
             onBufferChange: events.JWPLAYER_MEDIA_BUFFER,
             onBufferFull: events.JWPLAYER_MEDIA_BUFFER_FULL,

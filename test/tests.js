@@ -9,8 +9,6 @@ define([
     'unit/dom-test',
     'unit/dfxp-test',
     'unit/embed-swf-test',
-    'unit/fetch-test',
-    'unit/extendable-test',
     'unit/helpers-test',
     'unit/jwplayer-selectplayer-test',
     'unit/model-qoe-test',
@@ -33,5 +31,6 @@ define([
     'unit/validator-test',
     'unit/playlist-loader-test',
     'unit/captionsrenderer-test',
-    'unit/tracks-helper-test'
+    'unit/tracks-helper-test',
+    'unit/autostart-mute-test'
 ]);

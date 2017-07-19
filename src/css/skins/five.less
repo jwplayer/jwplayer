@@ -1,4 +1,4 @@
-@import "../imports/mixins";
+@import "../shared-imports/mixins";
 
 .jw-skin-five {
     @active-color: #000;
@@ -14,18 +14,16 @@
     @thumb-color: @progress-color;
     @volume-background: #333;
 
-    @display-icon-color: @controlbar-background;
-    @display-icon-hover-color: #fff;
-    @display-bkgd-color: rgba(51, 51, 51, 0.7);
-    @display-bkgd-hover-color: #333;
+    @display-icon-color: @inactive-color;
+    @display-icon-hover-color: @active-color;
+    @display-bkgd-color: @buffer-color;
+    @display-bkgd-hover-color: @rail-color;
 
-    @cc-inactive: @rail-color;
-    @cc-active: @active-color;
+    @option-active-bg-color: rgba(255, 255, 255, 0.6);
 
-    @rail-height: .2em;
+    @rail-height: 0.2em;
     @thumb-size: 1em;
-    @cue-height: .4em;
-    @rail-vert-gradient: linear-gradient(to bottom, #fff 0, #fff 30%, #333 100%);
+    @cue-height: 0.4em;
 
     @five-border-radius: 0;
 
@@ -36,31 +34,22 @@
     @nextup-body-text-color: @active-color;
     @nextup-body-text-color-overflow: darken(#eee, 10%);
 
-    #namespace > .controlbar-height();
+    @fixed-time-slider-progress-color: #fff;
+
+    @slider-fixed-knob-border-radius: 0;
+    @slider-fixed-knob-height: 16px;
+    @slider-fixed-knob-width: 4px;
+
+    #namespace > .custom-skin-styles();
     #namespace > .basic-skin-styles(); // Using the above local variables
-    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
 
     .skin-element-padding();
+
     /* Styles for play button container on idle */
     .jw-display-icon-container {
+        background-color: @display-bkgd-color;
         border-radius: @five-border-radius;
-    }
-
-    /* Styles for menu list items */
-    .jw-option {
-        color: #bbb;
-
-        &:hover,
-        &.jw-active-option {
-            color: #fff;
-        }
-    }
-
-    /* Playlist title */
-    .jw-tooltip-title {
-        border-bottom: 1px solid #000;
-        background-color : #ECECEC;
     }
 
     /* Slider styles */
@@ -68,7 +57,7 @@
         background: transparent;
 
         .jw-slider-container {
-            height: .9em;
+            height: 0.9em;
         }
 
         .jw-rail,
@@ -85,9 +74,6 @@
         .jw-knob {
             .vertically-centered-rail-element(@rail-height, @thumb-size);
             margin: 0;
-
-            background-color: #000;
-            border-radius: @five-border-radius;
             width: 1px;
             height: @thumb-size;
         }
@@ -95,7 +81,7 @@
         .jw-cue {
             .vertically-centered-rail-element(@rail-height, @cue-height);
 
-            width: .1em;
+            width: 0.1em;
             height: @cue-height;
             background-color: #000;
             border-left: 1px solid #fff;
@@ -109,26 +95,45 @@
             width: @rail-height;
         }
 
-        .jw-progress {
-            background: #fff;
-        }
-
-        .jw-rail {
-            background: #737373;
-        }
-
         .jw-knob {
             margin-bottom: 2px/-2;
-            width: .6em;
-            height: 2px;
-            background: @rail-vert-gradient;
+            width: 0.8em;
+            height: 1px;
             border-radius: @five-border-radius;
-            .horizontally-centered-rail-element(@rail-height, 0.6em);
+            .horizontally-centered-rail-element(@rail-height, 0.8em);
         }
     }
 
     /* Five border-radius for the dock, in the upper right corner */
     .jw-dock-button {
         border-radius: @five-border-radius;
+    }
+
+    // override control bar element colors that don't look good in time slider above mode
+    &.jw-flag-time-slider-above {
+        .jw-progress {
+            background: @fixed-time-slider-progress-color;
+        }
+
+        .jw-controlbar .jw-group {
+            > .jw-text {
+                color: rgba(255, 255, 255, 0.6);
+            }
+
+            > .jw-button-color {
+                color: rgba(255, 255, 255, 0.6);
+                fill: rgba(255, 255, 255, 0.6);
+
+                &:hover {
+                    color: rgba(255, 255, 255, 1);
+                    fill: rgba(255, 255, 255, 1);
+                }
+
+                &:focus {
+                    color: rgba(255, 255, 255, 1);
+                    fill: rgba(255, 255, 255, 1);
+                }
+            }
+        }
     }
 }

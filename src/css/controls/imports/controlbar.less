@@ -1,0 +1,167 @@
+@import "../../shared-imports/mixins";
+@import "../../shared-imports/vars";
+
+.jw-controlbar {
+    display: table;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: @controlbar-height;
+    width: 100%;
+    padding: 0 @ui-padding;
+}
+
+.jw-slider-horizontal {
+    background-color: transparent;
+}
+
+.jw-group {
+    display: table-cell;
+}
+
+.jw-controlbar-center-group {
+    padding: 0 @ui-padding;
+    position: relative;
+    width: 100%;
+
+    .jw-slider-time,
+    .jw-text-alt {
+        padding: 0;
+    }
+
+    .jw-text-alt {
+        display: none;
+        position: absolute;
+        top: -1px;
+        bottom: 0;
+        width: 100%;
+        height: auto;
+        line-height: @controlbar-height;
+        margin: 0.5em 0;
+        padding-right: 0.5em;
+        overflow: hidden;
+        text-align: left;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+}
+
+.jw-controlbar-left-group,
+.jw-controlbar-right-group {
+    white-space: nowrap;
+}
+
+.jw-icon-inline,
+.jw-icon-tooltip,
+.jw-slider-horizontal,
+.jw-text-elapsed,
+.jw-text-duration,
+.jw-text-countdown {
+    display: inline-block;
+    height: @controlbar-height;
+    position: relative;
+    line-height: @controlbar-height;
+    vertical-align: middle;
+    cursor: pointer;
+    padding: 0 @ui-padding;
+}
+
+.jw-selection-menu {
+    padding: 0 @ui-padding / 2;
+}
+
+.jw-icon-inline,
+.jw-icon-tooltip {
+    min-width: @controlbar-height * 5/8;
+    text-align: center;
+}
+
+.jw-knob,
+.jw-icon-inline,
+.jw-icon-tooltip,
+.jw-icon-display,
+.jw-option:before {
+    &:hover {
+        color: @hover-color;
+    }
+}
+
+.jw-controlbar-left-group {
+    .jw-text-duration {
+        display: none;
+    }
+}
+
+.jw-icon-playback {
+    min-width: 2.25em;
+}
+
+.jw-icon-volume {
+    min-width: 1.75em;
+    text-align: left;
+}
+
+.jw-time-tip {
+    line-height: 1em;
+    pointer-events: none;
+}
+
+.jw-icon-cast {
+    display: none;
+    margin: 0;
+    padding: 0;
+
+    button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: inherit;
+        width: 2.25em;
+    }
+}
+
+.jw-slider-volume.jw-slider-horizontal,
+.jw-icon-inline.jw-icon-volume {
+    display: none;
+}
+
+.jwplayer .jw-text-countdown {
+    display: none;
+}
+
+/* Indentation sometimes complains about multiple selections when :not()s are included */
+/* stylelint-disable indentation */
+.jw-breakpoint-0,
+.jw-breakpoint-1:not(.jw-flag-time-slider-above) {
+    .jw-controlbar {
+        .jw-text-duration,
+        .jw-text-elapsed {
+            display: none;
+        }
+    }
+}
+/* stylelint-enable indentation */
+
+.jw-flag-small-player:not(.jw-flag-audio-player) {
+    .jw-group {
+        > .jw-icon-rewind,
+        > .jw-icon-next,
+        > .jw-icon-playback {
+            display: none;
+        }
+    }
+}
+
+.jw-flag-ads-vpaid,
+.jw-flag-autostart,
+.jw-flag-user-inactive.jw-state-playing,
+.jw-flag-user-inactive.jw-state-buffering {
+    &:not(.jw-flag-media-audio):not(.jw-flag-audio-player):not(.jw-flag-ads-vpaid-controls):not(.jw-flag-casting) {
+        .jw-controlbar {
+            visibility: hidden;
+            pointer-events: none;
+            opacity: 0;
+        }
+    }
+}

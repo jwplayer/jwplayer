@@ -5,8 +5,8 @@ define([
     // to keep results consistent across browsers in current tests
     // when running unit tests this file is loaded in place of src/utils/video
     var video = document.createElement('video');
-    video.load  = _.noop;
-    video.play  = _.noop;
+    video.load = _.noop;
+    video.play = _.noop;
     video.pause = _.noop;
     video.canPlayType = function(type) {
         return _.contains([

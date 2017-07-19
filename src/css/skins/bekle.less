@@ -1,4 +1,4 @@
-@import "../imports/mixins";
+@import "../shared-imports/mixins";
 
 .jw-skin-bekle {
     @active-color: #139ed5;
@@ -11,8 +11,8 @@
     @rail-gradient: linear-gradient(to bottom, #323b4c, #2f3847 50%, #323b4c 100%);
     @rail-vert-gradient: linear-gradient(to right, #323b4c, #2f3847 50%, #323b4c 100%);
 
-    @rail-height: .3em;
-    @cue-size: .2em;
+    @rail-height: 0.3em;
+    @cue-size: 0.2em;
 
     @progress-color: @progress-horz-gradient;
     @buffer-color: @buffer-gradient;
@@ -25,40 +25,46 @@
     @display-bkgd-color: @rail-color;
     @display-bkgd-hover-color: @active-color;
 
-    @cc-inactive: #5e6575;
-    @cc-active: @active-color;
-
-    @volume-background: fade(#505863,90%);
+    @volume-background: fade(#505863, 90%);
 
     @controlbar-height: 2em;
 
-    @nextup-position-bottom: @controlbar-height + 0.7em + 0.5em;
-    @nextup-position-bottom-touch: (@controlbar-height * 1.5em) + 0.7em + 0.8em;
-    @nextup-position-right: 2%;
     @nextup-border-radius: 0.3em;
     @nextup-header-background: fade(#182335, 90%);
     @nextup-body-background: darken(@nextup-header-background, 5%);
     @nextup-body-text-color-overflow: darken(#182335, 5%);
 
-    #namespace > .controlbar-height();
+    #namespace > .custom-skin-styles();
     #namespace > .basic-skin-styles(); // Using the above local variables
-    #namespace > .touch-flag-skin-styles(); // Using the above local variables
     #namespace > .set-global-color-classes();
+
+    .jw-display-icon-container {
+        background-color: @display-bkgd-color;
+    }
 
     .skin-element-padding();
     .inset-controlbar();
-    .jw-controlbar {
-        border-radius: .3em;
+
+    &:not(.jw-breakpoint-0) {
+        .jw-controlbar {
+            border-radius: 0.3em;
+        }
     }
 
-    .jw-tooltip-title {
-        border-bottom: 1px solid @controlbar-background;
-        background-color: @controlbar-background;
+    .jw-time-tip,
+    .jw-volume-tip,
+    .jw-menu,
+    .jw-skip {
+        border-radius: 0.3em;
+    }
+
+    .jw-volume-tip,
+    .jw-menu {
+        bottom: 0.2em;
     }
 
     .jw-slider-horizontal,
     .jw-slider-vertical {
-
         .jw-rail,
         .jw-progress,
         .jw-buffer {
@@ -67,8 +73,8 @@
 
         .jw-knob {
             background-color: #fff;
-            width: .7em;
-            height: .7em;
+            width: 0.7em;
+            height: 0.7em;
             border-radius: 50%;
             .horizontally-centered-rail-element(@def-rail-width, 0.7em);
         }
@@ -87,12 +93,11 @@
         }
 
         .jw-knob {
-            .vertically-centered-rail-element(@rail-height, .7em);
+            .vertically-centered-rail-element(@rail-height, 0.7em);
         }
     }
 
     .jw-slider-vertical {
-
         .jw-rail,
         .jw-progress {
             width: @rail-height;
@@ -105,18 +110,5 @@
         .jw-progress {
             background: @progress-vert-gradient;
         }
-
-    }
-
-    .jw-time-tip,
-    .jw-volume-tip,
-    .jw-menu,
-    .jw-skip {
-        border-radius: .3em;
-    }
-
-    .jw-volume-tip,
-    .jw-menu {
-        bottom: .2em;
     }
 }

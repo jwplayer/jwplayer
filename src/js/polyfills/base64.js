@@ -1,3 +1,5 @@
+/* eslint no-unused-expressions: 0 */
+
 define([], function() {
     // https://github.com/davidchambers/Base64.js
     // v0.3.0
@@ -7,7 +9,7 @@ define([], function() {
     function InvalidCharacterError(message) {
         this.message = message;
     }
-    InvalidCharacterError.prototype = new Error;
+    InvalidCharacterError.prototype = new Error();
     InvalidCharacterError.prototype.name = 'InvalidCharacterError';
 
     // encoder
@@ -25,9 +27,9 @@ define([], function() {
                 // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
                 output += map.charAt(63 & block >> 8 - idx % 1 * 8)
                 ) {
-                charCode = str.charCodeAt(idx += 3/4);
+                charCode = str.charCodeAt(idx += 3 / 4);
                 if (charCode > 0xFF) {
-                    throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+                    throw new InvalidCharacterError('\'btoa\' failed: The string to be encoded contains characters outside of the Latin1 range.');
                 }
                 block = block << 8 | charCode;
             }
@@ -38,10 +40,12 @@ define([], function() {
     // [https://gist.github.com/1020396] by [https://github.com/atk]
     window.atob || (
         window.atob = function (input) {
+            /* eslint no-div-regex: 0 */
             var str = String(input).replace(/=+$/, '');
-            if (str.length % 4 == 1) {
-                throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
+            if (str.length % 4 === 1) {
+                throw new InvalidCharacterError('\'atob\' failed: The string to be decoded is not correctly encoded.');
             }
+            /* eslint no-cond-assign: 0 */
             for (
                 // initialize result and counters
                 var bc = 0, bs, buffer, idx = 0, output = '';

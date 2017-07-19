@@ -2,14 +2,13 @@ define([
     'utils/underscore',
     'utils/helpers'
 ], function(_, utils) {
-
     var storage = {
         removeItem: utils.noop
     };
 
     try {
         storage = window.localStorage;
-    } catch(e) {/* ignore */}
+    } catch (e) {/* ignore */}
 
     function jwPrefix(str) {
         return 'jwplayer.' + str;
@@ -28,7 +27,7 @@ define([
     function setItem(name, value) {
         try {
             storage[jwPrefix(name)] = value;
-        } catch(e) {
+        } catch (e) {
             // ignore QuotaExceededError unless debugging
             var jwplayer = window.jwplayer;
             if (jwplayer && jwplayer.debug) {
@@ -54,7 +53,7 @@ define([
 
     function track(model) {
         _.each(this.persistItems, function(item) {
-            model.on('change:' + item, function(model, value) {
+            model.on('change:' + item, function(changeModel, value) {
                 setItem(item, value);
             });
         });
@@ -62,7 +61,7 @@ define([
 
     _.extend(Storage.prototype, {
         getAllItems: getAllItems,
-        track : track,
+        track: track,
         clear: clear
     });
 

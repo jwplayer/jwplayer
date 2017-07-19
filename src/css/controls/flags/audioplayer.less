@@ -1,0 +1,71 @@
+.jw-flag-audio-player {
+    background-color: transparent;
+
+    &:not(.jw-flag-flash-blocked) .jw-media {
+        visibility: hidden;
+    }
+
+    .jw-title {
+        background: none;
+    }
+
+    // min 45px object tag prevents IE11 CORS Flash Blocking
+    object {
+        min-height: 45px;
+    }
+
+    .jw-preview, // overrides 'block' from .jw-state-idle
+    .jw-display, // overrides 'block' from .jw-flag-touch.jw-state-paused
+    .jw-title, // overrides 'block' from .jw-state-idle
+    .jw-nextup-container,
+    .jw-dock {
+        display: none;
+    }
+
+    .jw-controlbar {
+        vertical-align: middle;
+        display: table;
+        height: 100%;
+        left: 0;
+        bottom: 0;
+        margin: 0;
+        width: 100%;
+        min-width: 100%;
+
+        .jw-icon-fullscreen,
+        .jw-icon-tooltip {
+            display: none;
+        }
+
+        .jw-slider-volume.jw-slider-horizontal,
+        .jw-icon-inline.jw-icon-volume {
+            display: inline-block;
+        }
+
+        .jw-icon-tooltip.jw-icon-volume {
+            display: none;
+        }
+    }
+
+    // Setting height/line-height to their defaults allows the controls to responsively resize
+    .jw-icon-inline {
+        height: auto;
+        line-height: normal;
+    }
+
+    .jw-group {
+        vertical-align: middle;
+    }
+
+    // Small hack to keep the seekbar properly centered with the other elemenets when vertical-align: middle'd
+    .jw-controlbar-center-group {
+        padding-bottom: 2px;
+    }
+
+    &.jw-flag-small-player {
+        .jw-text-elapsed,
+        .jw-text-duration {
+            display: none;
+        }
+    }
+}

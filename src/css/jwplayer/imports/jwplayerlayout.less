@@ -1,0 +1,89 @@
+.jwplayer {
+    width: 100%;
+    font-size: @default-em-size;
+    position: relative;
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #000;
+
+    /* disallow text-select highlighting.  Safari specific feature */
+    -webkit-touch-callout: none;
+    user-select: none;
+
+    * {
+        box-sizing: inherit;
+    }
+
+    // Aspect Ratio styles
+    &.jw-flag-aspect-mode {
+        /* Height auto required for displaying aspect ratio correctly */
+        /* stylelint-disable-next-line declaration-no-important */
+        height: auto !important;
+
+        & .jw-aspect {
+            display: block;
+        }
+    }
+
+    .jw-aspect {
+        display: none;
+    }
+
+    &.jw-no-focus:focus,
+    .jw-swf {
+        outline: none;
+    }
+
+    &.jw-ie:focus {
+        outline: #585858 dotted 1px;
+    }
+}
+
+.jw-media,
+.jw-preview {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.jw-media {
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.jw-plugin {
+    position: absolute;
+    bottom: 2.5em;
+
+    .jw-banner {
+        max-width: 100%;
+        opacity: 0;
+        cursor: pointer;
+        position: absolute;
+        margin: auto auto 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: block;
+    }
+}
+
+/* Allow pointer events through to the provider */
+.jw-preview,
+.jw-captions,
+.jw-title {
+    pointer-events: none;
+}
+
+/* These items can intercept pointer-events */
+.jw-media,
+.jw-logo {
+    pointer-events: all;
+}

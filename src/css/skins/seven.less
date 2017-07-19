@@ -1,63 +1,71 @@
-@import "../imports/mixins";
+@import "../shared-imports/vars";
+@import "../controls/imports/transitions";
 
 .jw-skin-seven {
+    @display-bkgd-color: @controlbar-background;
 
-  @accent-color: #FFF;
-  @inactive-color: #cecece;
+    .jw-display-icon-container {
+        border-radius: 3.5em;
 
-  @controlbar-background: rgba(33, 33, 33, 0.8);
-
-  @controlbar-height: 2.5em;
-
-  #namespace > .set-global-color-classes();
-
-  .jw-active-option {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-
-  .jw-display-icon-container {
-    display: table;
-    font-size: 20px;
-    border-radius: 3.5em;
-
-    &:hover {
-      .jw-icon {
-        color: @accent-color;
-      }
-    }
-  }
-
-  .jw-display-icon-container > .jw-icon {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.7em;
-  }
-
-  &.jw-state-idle .jw-display-icon-container > .jw-icon {
-    // improve alignment of play icon (should be done in font)
-    padding-left: 4px;
-  }
-
-  .jw-dock-button {
-    border-radius: 2.5em;
-  }
-
-  .jw-menu {
-      padding: 0;
+        & > .jw-icon {
+            color: rgba(255, 255, 255, 0.9);
+        }
     }
 
-  .jw-dock {
-    .jw-overlay {
-      border-radius: @ui-padding;
+    &.jw-breakpoint-2 {
+        .jw-display .jw-icon {
+            width: @mobile-touch-target * 1.5;
+            height: @mobile-touch-target * 1.5;
+            line-height: @mobile-touch-target * 1.5;
+        }
     }
-  }
-  .jw-skip {
-    border-radius: @ui-padding;
-  }
 
-  .jw-text {
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+    .jw-dock-button {
+        // Seven skin dock buttons do not highlight, they only show the tooltip
+        &:hover {
+            background: @controlbar-background;
+        }
 
+        border-radius: 2.5em;
+    }
+
+    .jw-menu {
+        padding: 0;
+    }
+
+    .jw-dock {
+        .jw-overlay {
+            border-radius: @ui-padding;
+        }
+    }
+
+    .jw-skip {
+        border-radius: @ui-padding;
+    }
+
+    .jw-text {
+        text-rendering: optimizeLegibility;
+        /* font-smoothing is a private setting not transformed by PostCSS */
+        -webkit-font-smoothing: antialiased;
+        /* OSX Firefox specific style for improving legibility */
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .jw-slider-container {
+        .jw-knob {
+            opacity: 0;
+        }
+
+        &:hover {
+            .jw-knob {
+                opacity: 1;
+            }
+        }
+    }
+
+    &.jw-flag-touch {
+        .jw-knob {
+            opacity: 1;
+        }
+    }
 }

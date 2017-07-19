@@ -2,76 +2,87 @@ define([
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
+    'utils/embedswf',
     'utils/constants',
     'utils/underscore',
     'utils/helpers',
-    'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
+    'events/events',
+    'controller/controls-loader',
+    'polyfills/promise',
+    'polyfills/base64'
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, Constants, _, utils, events, ControlsLoader) {
 
-    var _pluginLoader,
-        _playlistLoader;
-
+    var _pluginLoader;
+    var _playlistLoader;
 
     function getQueue() {
-
         var Components = {
-            LOAD_PROMISE_POLYFILL : {
-                method: _loadPromisePolyfill,
+            LOAD_PLUGINS: {
+                method: _loadPlugins,
+                // Plugins require JavaScript Promises
                 depends: []
             },
-            LOAD_BASE64_POLYFILL : {
-                method: _loadBase64Polyfill,
+            LOAD_XO_POLYFILL: {
+                method: _loadIntersectionObserverPolyfill,
                 depends: []
             },
-            LOADED_POLYFILLS : {
-                method: _loadedPolyfills,
+            LOAD_SKIN: {
+                method: _loadSkin,
+                depends: []
+            },
+            LOAD_PLAYLIST: {
+                method: _loadPlaylist,
+                depends: []
+            },
+            LOAD_CONTROLS: {
+                method: _loadControls,
+                depends: []
+            },
+            SETUP_VIEW: {
+                method: _setupView,
                 depends: [
-                    'LOAD_PROMISE_POLYFILL',
-                    'LOAD_BASE64_POLYFILL'
+                    'LOAD_SKIN',
+                    'LOAD_XO_POLYFILL'
                 ]
             },
-            LOAD_PLUGINS : {
-                method: _loadPlugins,
-                depends: ['LOADED_POLYFILLS']
-            },
-            INIT_PLUGINS : {
+            INIT_PLUGINS: {
                 method: _initPlugins,
                 depends: [
                     'LOAD_PLUGINS',
-                    // Init requires jw-overlays to be in the DOM
+                    // Plugins require jw-overlays to setup
                     'SETUP_VIEW'
                 ]
             },
-            LOAD_SKIN : {
-                method: _loadSkin,
-                depends: ['LOADED_POLYFILLS']
-            },
-            LOAD_PLAYLIST : {
-                method: _loadPlaylist,
-                depends: ['LOADED_POLYFILLS']
+            CHECK_FLASH: {
+                method: _checkFlash,
+                depends: [
+                    'SETUP_VIEW'
+                ]
             },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
-                depends : ['LOAD_PLAYLIST']
-            },
-            SETUP_VIEW : {
-                method: _setupView,
                 depends: [
-                    'LOAD_SKIN'
+                    'LOAD_PLAYLIST',
+                    'CHECK_FLASH'
                 ]
             },
-            SET_ITEM : {
+            SET_ITEM: {
                 method: _setPlaylistItem,
                 depends: [
                     'INIT_PLUGINS',
                     'FILTER_PLAYLIST'
                 ]
             },
-            SEND_READY : {
+            DEFERRED: {
+                method: _deferred,
+                depends: []
+            },
+            SEND_READY: {
                 method: _sendReady,
                 depends: [
-                    'SETUP_VIEW',
-                    'SET_ITEM'
+                    'LOAD_CONTROLS',
+                    'SET_ITEM',
+                    'DEFERRED'
                 ]
             }
         };
@@ -79,30 +90,21 @@ define([
         return Components;
     }
 
-    function _loadPromisePolyfill(resolve) {
-        if (!window.Promise) {
-            require.ensure(['polyfills/promise'], function (require) {
-                require('polyfills/promise');
-                resolve();
-            }, 'polyfills.promise');
-        } else {
-            resolve();
-        }
+    function _deferred(resolve) {
+        setTimeout(resolve, 0);
     }
 
-    function _loadBase64Polyfill(resolve) {
-        if (!window.btoa || !window.atob) {
-            require.ensure(['polyfills/base64'], function(require) {
-                require('polyfills/base64');
-                resolve();
-            }, 'polyfills.base64');
-        } else {
+    function _loadIntersectionObserverPolyfill(resolve) {
+        if ('IntersectionObserver' in window &&
+            'IntersectionObserverEntry' in window &&
+            'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
             resolve();
+        } else {
+            require.ensure(['intersection-observer'], function (require) {
+                require('intersection-observer');
+                resolve();
+            }, 'polyfills.intersection-observer');
         }
-    }
-
-    function _loadedPolyfills(resolve){
-        resolve();
     }
 
     function _loadPlugins(resolve, _model) {
@@ -128,8 +130,8 @@ define([
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
-                _model.set('playlist', data.playlist);
-                _model.set('feedid', data.feedid);
+                _model.attributes.feedData = data;
+                _model.attributes.playlist = data.playlist;
                 resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
@@ -139,11 +141,50 @@ define([
         }
     }
 
-    function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
-        var playlist = _model.get('playlist');
+    function _checkFlash(resolve, _model, _api, _view) {
+        var primaryFlash = _model.get('primary') === 'flash';
+        var flashVersion = utils.flashVersion();
+        if (primaryFlash && flashVersion) {
+            var embedTimeout;
+            var done = function() {
+                if (embedTimeout === -1) {
+                    return;
+                }
+                clearTimeout(embedTimeout);
+                embedTimeout = -1;
+                setTimeout(function() {
+                    EmbedSwf.remove(mediaContainer.querySelector('#' + flashHealthCheckId));
+                    resolve();
+                }, 0);
+            };
+            var failed = function() {
+                _model.set('primary', undefined);
+                _model.updateProviders();
+                done();
+            };
+            var viewContainer = _view.element();
+            var mediaContainer = viewContainer.querySelector('.jw-media');
+            if (!viewContainer.parentElement) {
+                // Cannot perform test when player container has no parent
+                failed();
+            }
+            var flashHealthCheckId = '' + _model.get('id') + '-' + Math.random().toString(16).substr(2);
+            var flashHealthCheckSwf = _model.get('flashloader');
+            Object.defineProperty(EmbedSwf.embed(flashHealthCheckSwf, mediaContainer, flashHealthCheckId, null), 'embedCallback', {
+                get: function() {
+                    return done;
+                }
+            });
+            // If "flash.loader.swf" does not fire embedCallback in time, unset primary "flash" config option
+            embedTimeout = setTimeout(failed, 3000);
+        } else {
+            resolve();
+        }
+    }
 
+    function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
         // Performs filtering
-        var success = _setPlaylist(playlist);
+        var success = _setPlaylist(_model.get('playlist'), _model.get('feedData'));
 
         if (success) {
             resolve();
@@ -161,9 +202,13 @@ define([
     }
 
     function skinToLoad(skin, base) {
-        if(_.contains(Constants.SkinsLoadable, skin)) {
-            return base + 'skins/' + skin + '.css';
+        var skinPath;
+
+        if (_.contains(Constants.SkinsLoadable, skin)) {
+            skinPath = base + 'skins/' + skin + '.css';
         }
+
+        return skinPath;
     }
 
     function isSkinLoaded(skinPath) {
@@ -209,13 +254,12 @@ define([
         }
 
         // Control elements are hidden by the loading flag until it is ready
-        _.defer(function() {
-            resolve();
-        });
+        resolve();
     }
 
 
     function _setupView(resolve, _model, _api, _view) {
+        _model.setAutoStart();
         _view.setup();
         resolve();
     }
@@ -227,20 +271,36 @@ define([
 
     function _sendReady(resolve) {
         resolve({
-            type : 'complete'
+            type: 'complete'
         });
+    }
+
+    function _loadControls(resolve, _model, _api, _view) {
+        if (!_model.get('controls')) {
+            resolve();
+            return;
+        }
+
+        ControlsLoader.load()
+            .then(function (Controls) {
+                _view.setControlsModule(Controls);
+                resolve();
+            })
+            .catch(function (reason) {
+                error(resolve, 'Failed to load controls', reason);
+            });
     }
 
     function error(resolve, msg, reason) {
         resolve({
-            type : 'error',
-            msg : msg,
-            reason : reason
+            type: 'error',
+            msg: msg,
+            reason: reason
         });
     }
 
     return {
-        getQueue : getQueue,
+        getQueue: getQueue,
         error: error
     };
 });

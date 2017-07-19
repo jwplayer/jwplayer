@@ -1,54 +1,37 @@
+import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
+
 define([
     'utils/helpers',
-    'view/breakpoint'
-], function (utils, breakpoint) {
-    /* jshint qunit: true */
-    QUnit.module('browser');
-    var test = QUnit.test.bind(QUnit);
-
-    function breakpointClassname(width, height) {
-        var mockPlayer = utils.createElement();
-        breakpoint(mockPlayer, width, height);
-        return mockPlayer.className;
-    }
-
-    test('width >= 1280 sets jw-breakpoint-6', function (assert) {
-        expect(1);
-        assert.equal(breakpointClassname(1280), 'jw-breakpoint-6');
+], function (utils) {
+    it('width >= 1280 returns breakpoint 7', function () {
+        assert.equal(getBreakpoint(1280), 7);
     });
 
-    test('width >= 960 sets jw-breakpoint-5', function (assert) {
-        expect(1);
-        assert.equal(breakpointClassname(960), 'jw-breakpoint-5');
+    it('width >= 960 returns breakpoint 6', function () {
+        assert.equal(getBreakpoint(960), 6);
     });
 
-    test('width >= 800 sets jw-breakpoint-4', function (assert) {
-        expect(1);
-        assert.equal(breakpointClassname(800), 'jw-breakpoint-4');
+    it('width >= 800 returns breakpoint 5', function () {
+        assert.equal(getBreakpoint(800), 5);
     });
 
-    test('width >= 640 sets jw-breakpoint-3', function (assert) {
-        expect(1);
-        assert.equal(breakpointClassname(640), 'jw-breakpoint-3');
+    it('width >= 640 returns breakpoint 4', function () {
+        assert.equal(getBreakpoint(640), 4);
     });
 
-    test('width >= 540 sets jw-breakpoint-2', function (assert) {
-        expect(1);
-        assert.equal(breakpointClassname(540), 'jw-breakpoint-2');
+    it('width >= 540 returns breakpoint 3', function () {
+        assert.equal(getBreakpoint(540), 3);
     });
 
-    test('width >= 420 sets jw-breakpoint-1', function (assert) {
-        expect(1);
-        assert.equal(breakpointClassname(420), 'jw-breakpoint-1');
+    it('width >= 420 returns breakpoint 2', function () {
+        assert.equal(getBreakpoint(420), 2);
     });
 
-    test('width < 420 sets jw-breakpoint-0', function (assert) {
-        expect(1);
-        assert.equal(breakpointClassname(419), 'jw-breakpoint-0');
+    it('width >= 320 returns breakpoint 1', function () {
+        assert.equal(getBreakpoint(320), 1);
     });
 
-    test('if height > width jw-orientation-portrait is set', function (assert) {
-        expect(1);
-        assert.equal(breakpointClassname(419, 420), 'jw-breakpoint-0 jw-orientation-portrait');
-    })
+    it('width < 320 returns breakpoint 0', function () {
+        assert.equal(getBreakpoint(319), 0);
+    });
 });

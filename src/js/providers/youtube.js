@@ -7,39 +7,27 @@ define([
     'utils/scriptloader',
     'providers/default',
     'utils/backbone.events'
-], function(utils, cssUtils, _, events, states, scriptloader, DefaultProvider, Events) {
-    var _scriptLoader = new scriptloader(window.location.protocol + '//www.youtube.com/iframe_api'),
-        _isMobile = utils.isMobile();
+], function(utils, cssUtils, _, events, states, Scriptloader, DefaultProvider, Events) {
+    var _scriptLoader = new Scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
+    var _isMobile = utils.isMobile();
 
     function YoutubeProvider(_playerId, _playerConfig) {
         this.state = states.IDLE;
 
         _.extend(this, Events);
 
-        var _this = this,
-        // Youtube API and Player Instance
-            _youtubeAPI = window.YT,
-            _youtubePlayer = null,
-            // iFrame Container (this element will be replaced by iFrame element)
-            _element = document.createElement('div'),
-            // view container
-            _container,
-            // player state
-            _bufferPercent = -1,
-            // only add player ready listener once
-            _listeningForReady = false,
-            // function to call once api and view are ready
-            _youtubeEmbedReadyCallback = null,
-            // function to call once _ytPlayer api is ready
-            _youtubePlayerReadyCallback = null,
-            // update timer
-            _playingInterval = -1,
-            // current Youtube state, tracked because state events fail to fire
-            _youtubeState = -1,
-            // post roll support
-            _beforecompleted = false,
-            // user must click video to initiate playback, gets set to false once playback starts
-            _requiresUserInteraction = _isMobile;
+        var _this = this;
+        var _youtubeAPI = window.YT;
+        var _youtubePlayer = null;
+        var _element = document.createElement('div');
+        var _container;
+        var _bufferPercent = -1;
+        var _listeningForReady = false;
+        var _youtubeEmbedReadyCallback = null;
+        var _youtubePlayerReadyCallback = null;
+        var _playingInterval = -1;
+        var _youtubeState = -1;
+        var _requiresUserInteraction = _isMobile;
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
@@ -57,7 +45,7 @@ define([
         };
 
         // Load iFrame API
-        if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === scriptloader.loaderstatus.NEW) {
+        if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === Scriptloader.loaderstatus.NEW) {
             _scriptLoader.on(events.COMPLETE, _onLoadSuccess);
             _scriptLoader.on(events.ERROR, _onLoadError);
             _scriptLoader.load();
@@ -132,7 +120,7 @@ define([
 
 
         function _round(number) {
-            return Math.round(number*10)/10;
+            return Math.round(number * 10) / 10;
         }
         function _timeUpdateHandler() {
             _bufferUpdate();
@@ -152,16 +140,12 @@ define([
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
                     bufferPercent: bufferPercent
                 });
-                //if (bufferPercent === 100) this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                // if (bufferPercent === 100) this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
 
         function _ended() {
             if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
-                _beforecompleted = true;
-                _this.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE);
-                _this.setState(states.COMPLETE);
-                _beforecompleted = false;
                 _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
             }
         }
@@ -182,14 +166,16 @@ define([
             return function() {
                 var i = start;
                 var result = args[start].apply(this, arguments);
-                while (i--) { result = args[i].call(this, result); }
+                while (i--) {
+                    result = args[i].call(this, result);
+                }
                 return result;
             };
         }
 
         function _embedYoutubePlayer(videoId, playerVars) {
             if (!videoId) {
-                throw 'invalid Youtube ID';
+                throw new Error('invalid Youtube ID');
             }
 
             var videoLayer = _element.parentNode;
@@ -244,7 +230,6 @@ define([
             _youtubeState = event.data;
 
             switch (_youtubeState) {
-
                 case youtubeStates.UNSTARTED: // -1: //unstarted
                     // play video on android to avoid being stuck in this state
                     if (utils.isAndroid()) {
@@ -257,8 +242,7 @@ define([
                     return;
 
                 case youtubeStates.PLAYING: // 1: playing
-
-                    //prevent duplicate captions when using JW Player captions and YT video has yt:cc=on
+                    // prevent duplicate captions when using JW Player captions and YT video has yt:cc=on
                     if (_.isFunction(_youtubePlayer.unloadModule)) {
                         _youtubePlayer.unloadModule('captions');
                     }
@@ -297,13 +281,14 @@ define([
                         _youtubePlayer.playVideo();
                     }
                     return;
+                default:
+                    break;
             }
         }
 
         function _onYoutubePlaybackQualityChange() {
             // This event is where the Youtube player and media is actually ready and can be played
-
-            // make sure playback starts/resumes
+            // Make sure playback starts/resumes
             if (_youtubeState !== _youtubeAPI.PlayerState.ENDED) {
                 _this.play();
             }
@@ -340,7 +325,7 @@ define([
 
         this.init = function(item) {
             // For now, we want each youtube provider to delete and start from scratch
-            //this.destroy();
+            // this.destroy();
 
             // load item on embed for mobile touch to start
             _setItem(item);
@@ -438,12 +423,11 @@ define([
             }
             if (_youtubePlayer && _youtubePlayer.playVideo) {
                 _youtubePlayer.playVideo();
-            } else {    // If the _youtubePlayer isn't setup, then play when we're ready
-                if (_youtubePlayerReadyCallback) {
-                    _youtubePlayerReadyCallback = _composeCallbacks(this.play, _youtubePlayerReadyCallback);
-                } else {
-                    _youtubePlayerReadyCallback = this.play;
-                }
+            } else if (_youtubePlayerReadyCallback) {
+                // If the _youtubePlayer isn't setup, then play when we're ready
+                _youtubePlayerReadyCallback = _composeCallbacks(this.play, _youtubePlayerReadyCallback);
+            } else {
+                _youtubePlayerReadyCallback = this.play;
             }
         };
 
@@ -479,24 +463,12 @@ define([
 
         this.mute = function(mute) {
             var muted = utils.exists(mute) ? !!mute : !_playerConfig.mute;
-            if (_youtubePlayer  && _youtubePlayer.mute) {
+            if (_youtubePlayer && _youtubePlayer.mute) {
                 if (muted) {
                     _youtubePlayer.mute();
                 } else {
                     _youtubePlayer.unMute();
                 }
-            }
-        };
-
-        this.detachMedia = function() {
-            return null;
-        };
-
-        this.attachMedia = function() {
-            if (_beforecompleted) {
-                this.setState(states.COMPLETE);
-                this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
-                _beforecompleted = false;
             }
         };
 
@@ -534,22 +506,16 @@ define([
                     visibility: 'visible',
                     opacity: 1
                 });
-            } else {
+            } else if (!_isMobile) {
                 // hide
-                if (!_isMobile) {
-                    cssUtils.style(_container, {
-                        opacity: 0
-                    });
-                }
+                cssUtils.style(_container, {
+                    opacity: 0
+                });
             }
         };
 
-        this.resize = function(/* width, height, stretching */) {
+        this.resize = function() {
             return false;
-        };
-
-        this.checkComplete = function() {
-            return _beforecompleted;
         };
 
         this.getCurrentQuality = function() {
@@ -578,13 +544,13 @@ define([
             // If the result is ['auto', 'low'], we prefer to return ['low']
             if (ytLevels.length === 2 && _.contains(ytLevels, 'auto')) {
                 return {
-                    label : _.without(ytLevels, 'auto')
+                    label: _.without(ytLevels, 'auto')
                 };
             }
 
             var qualityArray = _.map(ytLevels, function(val) {
                 return {
-                    label : val
+                    label: val
                 };
             });
 

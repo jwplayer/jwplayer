@@ -1,3 +1,5 @@
+import instances from 'api/players';
+
 define([
     'api/api',
     'utils/underscore',
@@ -5,10 +7,7 @@ define([
     'providers/providers-supported',
     'plugins/plugins'
 ], function(Api, _, Providers, ProvidersSupported, plugins) {
-
-    var _instances = [],
-        _uniqueIndex = 0;
-
+    var _uniqueIndex = 0;
 
     var selectPlayer = function (query) {
         var player;
@@ -16,14 +15,14 @@ define([
 
         // prioritize getting a player over querying an element
         if (!query) {
-            player = _instances[0];
+            player = instances[0];
         } else if (typeof query === 'string') {
             player = _playerById(query);
             if (!player) {
                 domElement = document.getElementById(query);
             }
         } else if (typeof query === 'number') {
-            player = _instances[query];
+            player = instances[query];
         } else if (query.nodeType) {
             domElement = query;
             player = _playerById(domElement.id);
@@ -43,9 +42,9 @@ define([
     };
 
     var _playerById = function (id) {
-        for (var p = 0; p < _instances.length; p++) {
-            if (_instances[p].id === id) {
-                return _instances[p];
+        for (var p = 0; p < instances.length; p++) {
+            if (instances[p].id === id) {
+                return instances[p];
             }
         }
 
@@ -55,24 +54,24 @@ define([
     var _addPlayer = function (api) {
         _uniqueIndex++;
         api.uniqueId = _uniqueIndex;
-        _instances.push(api);
+        instances.push(api);
         return api;
     };
 
     var _removePlayer = function (api) {
-        for (var i=_instances.length; i--;) {
-            if (_instances[i].uniqueId === api.uniqueId) {
-                _instances.splice(i, 1);
+        for (var i = instances.length; i--;) {
+            if (instances[i].uniqueId === api.uniqueId) {
+                instances.splice(i, 1);
                 break;
             }
         }
     };
 
     var api = {
-        selectPlayer : selectPlayer,
+        selectPlayer: selectPlayer,
         registerProvider: Providers.registerProvider,
         availableProviders: ProvidersSupported,
-        registerPlugin : plugins.registerPlugin
+        registerPlugin: plugins.registerPlugin
     };
 
     selectPlayer.api = api;

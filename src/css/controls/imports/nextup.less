@@ -1,0 +1,132 @@
+@import "../../shared-imports/vars";
+@import "icons";
+
+.jw-nextup-container {
+    background-color: transparent;
+    bottom: @controlbar-height;
+    cursor: pointer;
+    left: 0;
+    margin: 0 auto;
+    opacity: 0;
+    padding: 5px @ui-padding;
+    position: absolute;
+    right: 0;
+    text-align: right;
+    transform: translateY(0);
+    transition: all 150ms ease;
+    visibility: hidden;
+    width: 100%;
+    pointer-events: none;
+
+    .jw-flag-small-player & {
+        display: none;
+    }
+}
+
+.jw-nextup-container-visible {
+    opacity: 1;
+    transform: translateY(5px);
+    visibility: visible;
+}
+
+.jw-nextup {
+    border-radius: @nextup-border-radius;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    max-width: 300px;
+    width: 100%;
+    pointer-events: all;
+}
+
+.jw-nextup-header {
+    background: @nextup-header-background;
+    box-sizing: border-box;
+    color: @nextup-header-text-color;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: normal;
+    padding: 8px;
+}
+
+.jw-nextup-body {
+    background: @nextup-body-background;
+    color: @nextup-body-text-color;
+    overflow: hidden;
+}
+
+.jw-nextup-thumbnail {
+    background-position: center;
+    background-size: cover;
+    display: none;
+    float: left;
+    height: 60px;
+    width: 45%;
+}
+
+.jw-nextup-thumbnail-visible {
+    display: block;
+}
+
+.jw-nextup-title {
+    box-sizing: border-box;
+    float: left;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1.3;
+    overflow: hidden;
+    padding: 5px 6px;
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.jw-nextup-thumbnail-visible + .jw-nextup-title {
+    height: 60px;
+    white-space: normal;
+    width: 55%;
+}
+
+.jw-nextup-thumbnail-visible + .jw-nextup-title:after {
+    background: linear-gradient(
+        -180deg,
+        fade(@nextup-body-text-color-overflow, 0%) 0%,
+        @nextup-body-text-color-overflow 100%
+    );
+    bottom: 0;
+    content: "";
+    height: 30px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}
+
+.jw-nextup-close {
+    .jw-icon-display;
+    .jw-icon-close;
+    border: none;
+    color: @nextup-close-button-color-inactive;
+    font-size: 13px;
+    opacity: 0;
+    position: absolute;
+    right: 5px;
+    top: 6px;
+    transition: color 150ms ease, opacity 150ms ease, visibility 150ms ease;
+    visibility: hidden;
+}
+
+.jw-nextup-close:active {
+    color: @nextup-close-button-color-active;
+}
+
+.jw-nextup-close:hover {
+    color: @nextup-close-button-color-hover;
+}
+
+.jw-nextup-sticky {
+    .jw-nextup-close {
+        opacity: 1;
+        visibility: visible;
+    }
+}

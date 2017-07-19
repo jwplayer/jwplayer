@@ -16,11 +16,11 @@ define(['utils/underscore',
         _metaCuesByTextTime: null,
         _currentTextTrackIndex: -1,
         _unknownCount: 0,
-        _renderNatively: false,
         _activeCuePosition: null,
         _initTextTracks: _initTextTracks,
         addTracksListener: addTracksListener,
         clearTracks: clearTracks,
+        clearCueData: clearCueData,
         disableTextTrack: disableTextTrack,
         enableTextTrack: enableTextTrack,
         getSubtitlesTrack: getSubtitlesTrack,
@@ -34,24 +34,22 @@ define(['utils/underscore',
         addCuesToTrack: addCuesToTrack,
         addCaptionsCue: addCaptionsCue,
         addVTTCue: addVTTCue,
-        addVTTCuesToTrack: addVTTCuesToTrack
+        addVTTCuesToTrack: addVTTCuesToTrack,
+        renderNatively: false
     };
 
     function setTextTracks(tracks) {
         this._currentTextTrackIndex = -1;
-
         if (!tracks) {
             return;
         }
-
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
         if (!this._textTracks) {
             this._initTextTracks();
         } else {
             // Remove the 608 captions track that was mutated by the browser
             this._textTracks = _.reject(this._textTracks, function(track) {
-                if ((this._renderNatively && track._id === 'nativecaptions')) {
+                if ((this.renderNatively && track._id === 'nativecaptions')) {
                     delete this._tracksById[track._id];
                     return true;
                 }
@@ -63,7 +61,8 @@ define(['utils/underscore',
 
         // filter for 'subtitles' or 'captions' tracks
         if (tracks.length) {
-            var i = 0, len = tracks.length;
+            var i = 0;
+            var len = tracks.length;
 
             for (i; i < len; i++) {
                 var track = tracks[i];
@@ -80,6 +79,10 @@ define(['utils/underscore',
                     } else {
                         track._id = tracksHelper.createId(track, this._textTracks.length);
                     }
+                    if (this._tracksById[track._id]) {
+                        // tracks without unique ids must not be marked as "inuse"
+                        continue;
+                    }
                     track.inuse = true;
                 }
                 if (!track.inuse || this._tracksById[track._id]) {
@@ -91,10 +94,9 @@ define(['utils/underscore',
                     track.mode = 'hidden';
                     track.oncuechange = _cueChangeHandler.bind(this);
                     this._tracksById[track._id] = track;
-                }
-                else if (_kindSupported(track.kind)) {
-                    var mode = track.mode,
-                        cue;
+                } else if (_kindSupported(track.kind)) {
+                    var mode = track.mode;
+                    var cue;
 
                     // By setting the track mode to 'hidden', we can determine if the track has cues
                     track.mode = 'hidden';
@@ -111,7 +113,7 @@ define(['utils/underscore',
                     if (this._cuesByTrackId[track._id] && !this._cuesByTrackId[track._id].loaded) {
                         var cues = this._cuesByTrackId[track._id].cues;
                         while ((cue = cues.shift())) {
-                            _addCueToTrack(track, cue);
+                            _addCueToTrack(this.renderNatively, track, cue);
                         }
                         track.mode = mode;
                         this._cuesByTrackId[track._id].loaded = true;
@@ -122,28 +124,27 @@ define(['utils/underscore',
             }
         }
 
-        if (this._renderNatively) {
+        if (this.renderNatively) {
             // Only bind and set this.textTrackChangeHandler once so that removeEventListener works
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-            if (utils.isEdge()) {
-                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge
+            if (utils.isEdge() || utils.isFF() || utils.isSafari()) {
+                // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
                 this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
             }
         }
 
         if (this._textTracks.length) {
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
     }
 
     function setupSideloadedTracks(itemTracks) {
         // Add tracks if we're starting playback or resuming after a midroll
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
 
-        if (!this._renderNatively) {
+        if (!this.renderNatively) {
             return;
         }
         // Determine if the tracks are the same and the embedded + sideloaded count = # of tracks in the controlbar
@@ -168,6 +169,13 @@ define(['utils/underscore',
     }
 
     function setSubtitlesTrack(menuIndex) {
+        if (!this.renderNatively) {
+            if (this.setCurrentSubtitleTrack) {
+                this.setCurrentSubtitleTrack(menuIndex - 1);
+            }
+            return;
+        }
+
         if (!this._textTracks) {
             return;
         }
@@ -191,17 +199,15 @@ define(['utils/underscore',
         // Set the provider's index to the model's index, then show the selected track if it exists
         this._currentTextTrackIndex = menuIndex - 1;
 
-        if (this._renderNatively) {
-            if (this._textTracks[this._currentTextTrackIndex]) {
-                this._textTracks[this._currentTextTrackIndex].mode = 'showing';
-            }
-
-            // Update the model index since the track change may have come from a browser event
-            this.trigger('subtitlesTrackChanged', {
-                currentTrack: this._currentTextTrackIndex + 1,
-                tracks: this._textTracks
-            });
+        if (this._textTracks[this._currentTextTrackIndex]) {
+            this._textTracks[this._currentTextTrackIndex].mode = 'showing';
         }
+
+        // Update the model index since the track change may have come from a browser event
+        this.trigger('subtitlesTrackChanged', {
+            currentTrack: this._currentTextTrackIndex + 1,
+            tracks: this._textTracks
+        });
     }
 
     function addCaptionsCue(cueData) {
@@ -217,7 +223,7 @@ define(['utils/underscore',
                 data: []
             };
             this.addTextTracks([track]);
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
 
         var cueId;
@@ -250,10 +256,10 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        var trackId = 'native' + cueData.type,
-            track = this._tracksById[trackId],
-            label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata',
-            vttCue = cueData.cue;
+        var trackId = cueData.track ? cueData.track : 'native' + cueData.type;
+        var track = this._tracksById[trackId];
+        var label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
+        var vttCue = cueData.cue;
 
         if (!track) {
             var itemTrack = {
@@ -265,15 +271,15 @@ define(['utils/underscore',
 
             track = _createTrack.call(this, itemTrack);
 
-            if (this._renderNatively || track.kind === 'metadata') {
+            if (this.renderNatively || track.kind === 'metadata') {
                 this.setTextTracks(this.video.textTracks);
             } else {
                 addTextTracks.call(this, [track]);
             }
         }
-        if(_cacheVTTCue.call(this, track, vttCue)) {
-            if (this._renderNatively || track.kind === 'metadata') {
-                _addCueToTrack(track, vttCue);
+        if (_cacheVTTCue.call(this, track, vttCue)) {
+            if (this.renderNatively || track.kind === 'metadata') {
+                _addCueToTrack(this.renderNatively, track, vttCue);
             } else {
                 track.data.push(vttCue);
             }
@@ -288,12 +294,13 @@ define(['utils/underscore',
         }
 
         track.source = cueData.source;
-        var cues = cueData.captions || [],
-            cuesToConvert = [],
-            sort = false;
-        for (var i=0; i<cues.length; i++) {
+        var cues = cueData.captions || [];
+        var cuesToConvert = [];
+        var sort = false;
+
+        for (var i = 0; i < cues.length; i++) {
             var cue = cues[i];
-            var cueId = cueData.name +'_'+ cue.begin +'_'+ cue.end;
+            var cueId = cueData.name + '_' + cue.begin + '_' + cue.end;
             if (!this._metaCuesByTextTime[cueId]) {
                 this._metaCuesByTextTime[cueId] = cue;
                 cuesToConvert.push(cue);
@@ -341,12 +348,13 @@ define(['utils/underscore',
     function clearTracks() {
         tracksLoader.cancelXhr(this._itemTracks);
         var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
-        if (this._renderNatively || metadataTrack) {
-            _removeCues.call(this, this.video.textTracks);
-            if(metadataTrack) {
-               metadataTrack.oncuechange = null;
+        if (this.renderNatively || metadataTrack) {
+            _removeCues(this.renderNatively, this.video.textTracks);
+            if (metadataTrack) {
+                metadataTrack.oncuechange = null;
             }
         }
+
         this._itemTracks = null;
         this._textTracks = null;
         this._tracksById = null;
@@ -354,10 +362,18 @@ define(['utils/underscore',
         this._metaCuesByTextTime = null;
         this._unknownCount = 0;
         this._activeCuePosition = null;
-        if (this._renderNatively) {
+        if (this.renderNatively) {
             // Removing listener first to ensure that removing cues does not trigger it unnecessarily
             this.removeTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
-            _removeCues.call(this, this.video.textTracks);
+            _removeCues(this.renderNatively, this.video.textTracks);
+        }
+    }
+
+    // Clear track cues to prevent duplicates
+    function clearCueData(trackId) {
+        if (this._cachedVTTCues[trackId]) {
+            this._cachedVTTCues[trackId] = {};
+            this._tracksById[trackId].data = [];
         }
     }
 
@@ -365,7 +381,11 @@ define(['utils/underscore',
         if (this._textTracks) {
             var track = this._textTracks[this._currentTextTrackIndex];
             if (track) {
-                track.mode = (track.embedded || track._id === 'nativecaptions') ? 'hidden' : 'disabled';
+                // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
+                track.mode = 'disabled';
+                if (track.embedded || track._id === 'nativecaptions') {
+                    track.mode = 'hidden';
+                }
             }
         }
     }
@@ -381,7 +401,7 @@ define(['utils/underscore',
 
     function textTrackChangeHandler() {
         var textTracks = this.video.textTracks;
-        var inUseTracks = _.filter(textTracks, function (track)  {
+        var inUseTracks = _.filter(textTracks, function (track) {
             return (track.inuse || !track._id) && _kindSupported(track.kind);
         });
         if (!this._textTracks || _tracksModified.call(this, inUseTracks)) {
@@ -389,13 +409,14 @@ define(['utils/underscore',
             return;
         }
         // If a caption/subtitle track is showing, find its index
-        var selectedTextTrackIndex = -1, i = 0;
-        for (i; i < this._textTracks.length; i++) {
+        var selectedTextTrackIndex = -1;
+        for (var i = 0; i < this._textTracks.length; i++) {
             if (this._textTracks[i].mode === 'showing') {
                 selectedTextTrackIndex = i;
                 break;
             }
         }
+
         // Notifying the model when the index changes keeps the current index in sync in iOS Fullscreen mode
         if (selectedTextTrackIndex !== this._currentTextTrackIndex) {
             this.setSubtitlesTrack(selectedTextTrackIndex + 1);
@@ -416,8 +437,6 @@ define(['utils/underscore',
             this._initTextTracks();
         }
 
-        this._renderNatively = tracksHelper.renderNatively(this.getName().name);
-
         for (var i = 0; i < tracksArray.length; i++) {
             var itemTrack = tracksArray[i];
             // only add valid and supported kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
@@ -434,14 +453,13 @@ define(['utils/underscore',
             }
         }
 
-        // We can setup the captions menu now since we're not rendering textTracks natively
-        if (!this._renderNatively && this._textTracks && this._textTracks.length) {
-            this.trigger('subtitlesTracks', {tracks: this._textTracks});
+        if (this._textTracks && this._textTracks.length) {
+            this.trigger('subtitlesTracks', { tracks: this._textTracks });
         }
     }
 
     function addVTTCuesToTrack(track, vttCues) {
-        if (!this._renderNatively) {
+        if (!this.renderNatively) {
             return;
         }
 
@@ -452,7 +470,7 @@ define(['utils/underscore',
             if (!this._cuesByTrackId) {
                 this._cuesByTrackId = {};
             }
-            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false};
+            this._cuesByTrackId[track._id] = { cues: vttCues, loaded: false };
             return;
         }
         // Cues already added
@@ -463,32 +481,39 @@ define(['utils/underscore',
         var cue;
         this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
 
-        while((cue = vttCues.shift())) {
-            _addCueToTrack(textTrack, cue);
+        while ((cue = vttCues.shift())) {
+            _addCueToTrack(this.renderNatively, textTrack, cue);
         }
     }
 
-    //////////////////////
-    ////// PRIVATE METHODS
-    //////////////////////
+    // ////////////////////
+    // //// PRIVATE METHODS
+    // ////////////////////
 
-    function _addCueToTrack(track, vttCue) {
-        if (!utils.isEdge() || !window.TextTrackCue) {
+    function _addCueToTrack(renderNatively, track, vttCue) {
+        if (!(utils.isIE() && renderNatively) || !window.TextTrackCue) {
             track.addCue(vttCue);
             return;
         }
-        // There's no support for the VTTCue interface in Edge / IE11.
+        // There's no support for the VTTCue interface in IE/Edge.
         // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
         // This unfortunately removes positioning properties from the cues
         var textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
         track.addCue(textTrackCue);
     }
 
-    function _removeCues(tracks) {
-        if (tracks.length) {
+    function _removeCues(renderNatively, tracks) {
+        if (tracks && tracks.length) {
             _.each(tracks, function(track) {
+                // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
+                if (utils.isIE() && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
+                    return;
+                }
+
                 // Cues are inaccessible if the track is disabled. While hidden,
                 // we can remove cues while the track is in a non-visible state
+                // Set to disabled before hidden to ensure active cues disappear
+                track.mode = 'disabled';
                 track.mode = 'hidden';
                 for (var i = track.cues.length; i--;) {
                     track.removeCue(track.cues[i]);
@@ -520,21 +545,18 @@ define(['utils/underscore',
         var label = labelInfo.label;
         this._unknownCount = labelInfo.unknownCount;
 
-        if (this._renderNatively || itemTrack.kind === 'metadata') {
+        if (this.renderNatively || itemTrack.kind === 'metadata') {
             var tracks = this.video.textTracks;
             // TextTrack label is read only, so we'll need to create a new track if we don't
             // already have one with the same label
-            track = _.findWhere(tracks, {'label': label});
+            track = _.findWhere(tracks, { label: label });
 
-            if (track) {
-                track.kind = itemTrack.kind;
-                track.language = itemTrack.language || '';
-            } else {
+            if (!track) {
                 track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
             }
 
             track.default = itemTrack.default;
-            track.mode    = 'disabled';
+            track.mode = 'disabled';
             track.inuse = true;
         } else {
             track = itemTrack;
@@ -576,7 +598,7 @@ define(['utils/underscore',
 
         // Get the most recent start time. Cues are sorted by start time in ascending order by the browser
         var startTime = activeCues[activeCues.length - 1].startTime;
-        //Prevent duplicate meta events for the same list of cues since the cue change handler fires once
+        // Prevent duplicate meta events for the same list of cues since the cue change handler fires once
         // for each activeCue in Safari
         if (this._activeCuePosition === startTime) {
             return;
@@ -609,37 +631,41 @@ define(['utils/underscore',
 
     function _cacheVTTCue(track, vttCue) {
         var trackKind = track.kind;
-        if(!this._cachedVTTCues[track._id]) {
+        if (!this._cachedVTTCues[track._id]) {
             this._cachedVTTCues[track._id] = {};
         }
-        var cachedCues = this._cachedVTTCues[track._id],
-            cacheKey;
+        var cachedCues = this._cachedVTTCues[track._id];
+        var cacheKeyTime;
 
         switch (trackKind) {
             case 'captions':
+            case 'subtitles':
                 // VTTCues should have unique start and end times, even in cases where there are multiple
                 // active cues. This is safer than ensuring text is unique, which may be violated on seek.
                 // Captions within .05s of each other are treated as unique to account for
                 // quality switches where start/end times are slightly different.
-                cacheKey = Math.floor(vttCue.startTime * 20);
+                cacheKeyTime = Math.floor(vttCue.startTime * 20);
+                var cacheLine = '_' + vttCue.line;
                 var cacheValue = Math.floor(vttCue.endTime * 20);
-                var cueExists = cachedCues[cacheKey] || cachedCues[cacheKey + 1] || cachedCues[cacheKey - 1];
+                var cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
 
                 if (cueExists && Math.abs(cueExists - cacheValue) <= 1) {
                     return false;
                 }
 
-                cachedCues[cacheKey] = cacheValue;
+                cachedCues[cacheKeyTime + cacheLine] = cacheValue;
                 return true;
             case 'metadata':
                 var text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
-                cacheKey = vttCue.startTime + text;
-                if (cachedCues[cacheKey]) {
+                cacheKeyTime = vttCue.startTime + text;
+                if (cachedCues[cacheKeyTime]) {
                     return false;
                 }
 
-                cachedCues[cacheKey] = vttCue.endTime;
+                cachedCues[cacheKeyTime] = vttCue.endTime;
                 return true;
+            default:
+                return false;
         }
     }
 

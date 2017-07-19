@@ -50,28 +50,8 @@ define(function() {
         return align ? value.toLowerCase() : false;
     }
 
-    function extend(obj) {
-        var i = 1;
-        for (; i < arguments.length; i++) {
-            var cobj = arguments[i];
-            for (var p in cobj) {
-                obj[p] = cobj[p];
-            }
-        }
-
-        return obj;
-    }
-
     function VTTCue(startTime, endTime, text) {
         var cue = this;
-        var isIE8 = (/MSIE\s8\.0/).test(navigator.userAgent);
-        var baseObj = {};
-
-        if (isIE8) {
-            cue = document.createElement('custom');
-        } else {
-            baseObj.enumerable = true;
-        }
 
         /**
          * Shim implementation specific properties. These properties are not in
@@ -103,175 +83,189 @@ define(function() {
         var _size = 50;
         var _align = 'middle';
 
-        Object.defineProperty(cue, 'id', extend({}, baseObj, {
-                get: function() {
-                    return _id;
-                },
-                set: function(value) {
-                    _id = '' + value;
-                }
-            }));
+        Object.defineProperty(cue, 'id', {
+            enumerable: true,
+            get: function() {
+                return _id;
+            },
+            set: function(value) {
+                _id = '' + value;
+            }
+        });
 
-        Object.defineProperty(cue, 'pauseOnExit', extend({}, baseObj, {
-                get: function() {
-                    return _pauseOnExit;
-                },
-                set: function(value) {
-                    _pauseOnExit = !!value;
-                }
-            }));
+        Object.defineProperty(cue, 'pauseOnExit', {
+            enumerable: true,
+            get: function() {
+                return _pauseOnExit;
+            },
+            set: function(value) {
+                _pauseOnExit = !!value;
+            }
+        });
 
-        Object.defineProperty(cue, 'startTime', extend({}, baseObj, {
-                get: function() {
-                    return _startTime;
-                },
-                set: function(value) {
-                    if (typeof value !== 'number') {
-                        throw new TypeError('Start time must be set to a number.');
-                    }
-                    _startTime = value;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'startTime', {
+            enumerable: true,
+            get: function() {
+                return _startTime;
+            },
+            set: function(value) {
+                if (typeof value !== 'number') {
+                    throw new TypeError('Start time must be set to a number.');
                 }
-            }));
+                _startTime = value;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'endTime', extend({}, baseObj, {
-                get: function() {
-                    return _endTime;
-                },
-                set: function(value) {
-                    if (typeof value !== 'number') {
-                        throw new TypeError('End time must be set to a number.');
-                    }
-                    _endTime = value;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'endTime', {
+            enumerable: true,
+            get: function() {
+                return _endTime;
+            },
+            set: function(value) {
+                if (typeof value !== 'number') {
+                    throw new TypeError('End time must be set to a number.');
                 }
-            }));
+                _endTime = value;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'text', extend({}, baseObj, {
-                get: function() {
-                    return _text;
-                },
-                set: function(value) {
-                    _text = '' + value;
-                    this.hasBeenReset = true;
-                }
-            }));
+        Object.defineProperty(cue, 'text', {
+            enumerable: true,
+            get: function() {
+                return _text;
+            },
+            set: function(value) {
+                _text = '' + value;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'region', extend({}, baseObj, {
-                get: function() {
-                    return _region;
-                },
-                set: function(value) {
-                    _region = value;
-                    this.hasBeenReset = true;
-                }
-            }));
+        Object.defineProperty(cue, 'region', {
+            enumerable: true,
+            get: function() {
+                return _region;
+            },
+            set: function(value) {
+                _region = value;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'vertical', extend({}, baseObj, {
-                get: function() {
-                    return _vertical;
-                },
-                set: function(value) {
-                    var setting = findDirectionSetting(value);
-                    // Have to check for false because the setting an be an empty string.
-                    if (setting === false) {
-                        throw new SyntaxError('An invalid or illegal string was specified.');
-                    }
-                    _vertical = setting;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'vertical', {
+            enumerable: true,
+            get: function() {
+                return _vertical;
+            },
+            set: function(value) {
+                var setting = findDirectionSetting(value);
+                // Have to check for false because the setting an be an empty string.
+                if (setting === false) {
+                    throw new SyntaxError('An invalid or illegal string was specified.');
                 }
-            }));
+                _vertical = setting;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'snapToLines', extend({}, baseObj, {
-                get: function() {
-                    return _snapToLines;
-                },
-                set: function(value) {
-                    _snapToLines = !!value;
-                    this.hasBeenReset = true;
-                }
-            }));
+        Object.defineProperty(cue, 'snapToLines', {
+            enumerable: true,
+            get: function() {
+                return _snapToLines;
+            },
+            set: function(value) {
+                _snapToLines = !!value;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'line', extend({}, baseObj, {
-                get: function() {
-                    return _line;
-                },
-                set: function(value) {
-                    if (typeof value !== 'number' && value !== autoKeyword) {
-                        throw new SyntaxError('An invalid number or illegal string was specified.');
-                    }
-                    _line = value;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'line', {
+            enumerable: true,
+            get: function() {
+                return _line;
+            },
+            set: function(value) {
+                if (typeof value !== 'number' && value !== autoKeyword) {
+                    throw new SyntaxError('An invalid number or illegal string was specified.');
                 }
-            }));
+                _line = value;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'lineAlign', extend({}, baseObj, {
-                get: function() {
-                    return _lineAlign;
-                },
-                set: function(value) {
-                    var setting = findAlignSetting(value);
-                    if (!setting) {
-                        throw new SyntaxError('An invalid or illegal string was specified.');
-                    }
-                    _lineAlign = setting;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'lineAlign', {
+            enumerable: true,
+            get: function() {
+                return _lineAlign;
+            },
+            set: function(value) {
+                var setting = findAlignSetting(value);
+                if (!setting) {
+                    throw new SyntaxError('An invalid or illegal string was specified.');
                 }
-            }));
+                _lineAlign = setting;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'position', extend({}, baseObj, {
-                get: function() {
-                    return _position;
-                },
-                set: function(value) {
-                    if (value < 0 || value > 100) {
-                        throw new Error('Position must be between 0 and 100.');
-                    }
-                    _position = value;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'position', {
+            enumerable: true,
+            get: function() {
+                return _position;
+            },
+            set: function(value) {
+                if (value < 0 || value > 100) {
+                    throw new Error('Position must be between 0 and 100.');
                 }
-            }));
+                _position = value;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'positionAlign', extend({}, baseObj, {
-                get: function() {
-                    return _positionAlign;
-                },
-                set: function(value) {
-                    var setting = findAlignSetting(value);
-                    if (!setting) {
-                        throw new SyntaxError('An invalid or illegal string was specified.');
-                    }
-                    _positionAlign = setting;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'positionAlign', {
+            enumerable: true,
+            get: function() {
+                return _positionAlign;
+            },
+            set: function(value) {
+                var setting = findAlignSetting(value);
+                if (!setting) {
+                    throw new SyntaxError('An invalid or illegal string was specified.');
                 }
-            }));
+                _positionAlign = setting;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'size', extend({}, baseObj, {
-                get: function() {
-                    return _size;
-                },
-                set: function(value) {
-                    if (value < 0 || value > 100) {
-                        throw new Error('Size must be between 0 and 100.');
-                    }
-                    _size = value;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'size', {
+            enumerable: true,
+            get: function() {
+                return _size;
+            },
+            set: function(value) {
+                if (value < 0 || value > 100) {
+                    throw new Error('Size must be between 0 and 100.');
                 }
-            }));
+                _size = value;
+                this.hasBeenReset = true;
+            }
+        });
 
-        Object.defineProperty(cue, 'align', extend({}, baseObj, {
-                get: function() {
-                    return _align;
-                },
-                set: function(value) {
-                    var setting = findAlignSetting(value);
-                    if (!setting) {
-                        throw new SyntaxError('An invalid or illegal string was specified.');
-                    }
-                    _align = setting;
-                    this.hasBeenReset = true;
+        Object.defineProperty(cue, 'align', {
+            enumerable: true,
+            get: function() {
+                return _align;
+            },
+            set: function(value) {
+                var setting = findAlignSetting(value);
+                if (!setting) {
+                    throw new SyntaxError('An invalid or illegal string was specified.');
                 }
-            }));
+                _align = setting;
+                this.hasBeenReset = true;
+            }
+        });
 
         /**
          * Other <track> spec defined properties
@@ -279,10 +273,6 @@ define(function() {
 
         // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#text-track-cue-display-state
         cue.displayState = undefined;
-
-        if (isIE8) {
-            return cue;
-        }
     }
 
     /**

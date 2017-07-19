@@ -1,6 +1,5 @@
 define([
-    'utils/browser'
-], function(browser) {
+], function() {
     return {
         createId: function (track, tracksCount) {
             var trackId;
@@ -8,7 +7,7 @@ define([
             if (track.default || track.defaulttrack) {
                 trackId = 'default';
             } else {
-                trackId = track._id || track.file || track.name || track.label || (prefix + tracksCount);
+                trackId = track._id || track.file || (prefix + tracksCount);
             }
             return trackId;
         },
@@ -22,10 +21,6 @@ define([
                 }
             }
             return { label: label, unknownCount: unknownCount };
-        },
-        renderNatively: function (providerName) {
-            return (providerName === 'html5' || providerName === 'shaka' || providerName === 'caterpillar') &&
-                (browser.isChrome() || browser.isIOS() || browser.isSafari() || browser.isEdge());
         }
     };
 });

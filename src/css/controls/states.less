@@ -1,0 +1,158 @@
+@import "../shared-imports/vars";
+@import "imports/icons";
+
+// controls are displayed but hidden during setup for font icons to load
+.jw-state-setup .jw-controls {
+    visibility: hidden;
+}
+
+// idle
+.jw-state-idle {
+
+    /* hide control bar and clear display container padding on idle state unless cast available flag is set */
+    &:not(.jw-flag-cast-available) {
+        .jw-display {
+            padding: 0;
+        }
+    }
+}
+
+// buffering
+.jwplayer.jw-state-buffering {
+    .jw-display-icon-display .jw-icon {
+        .jw-icon-buffer;
+
+        animation: spin 2s linear infinite;
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    }
+
+    .jw-icon-playback {
+        .jw-icon-pause;
+    }
+}
+
+// playing
+.jwplayer.jw-state-playing {
+    .jw-display .jw-icon-display,
+    .jw-icon-playback {
+        .jw-icon-pause;
+    }
+}
+
+// paused
+.jwplayer.jw-state-paused {
+    // Hide autostart mute button when paused by the browser
+    .jw-autostart-mute {
+        display: none;
+    }
+}
+
+// complete
+.jwplayer.jw-state-complete {
+    .jw-display {
+        .jw-icon-display {
+            .jw-icon-replay;
+        }
+
+        .jw-text {
+            display: none;
+        }
+    }
+}
+
+// Show the play icon
+.jw-state-idle .jw-icon-display,
+.jwplayer.jw-state-paused .jw-icon-playback,
+.jwplayer.jw-state-paused .jw-icon-display,
+.jwplayer.jw-state-complete .jw-icon-playback {
+    .jw-icon-play;
+}
+
+// Only show the play display icon
+.jw-state-idle,
+.jwplayer.jw-state-buffering,
+.jwplayer.jw-state-complete,
+body .jw-error,
+body .jwplayer.jw-state-error {
+    .jw-display-icon-rewind,
+    .jw-display-icon-next {
+        display: none;
+    }
+}
+
+body .jw-error,
+body .jwplayer.jw-state-error {
+    .jw-icon-display {
+        cursor: default;
+        .jw-icon-error;
+    }
+}
+
+body .jw-error .jw-icon-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+body .jwplayer.jw-state-error.jw-flag-audio-player {
+    .jw-preview {
+        display: none;
+    }
+
+    .jw-title {
+        padding-top: 4px;
+    }
+
+    .jw-title-primary {
+        width: auto;
+        display: inline-block;
+        padding-right: 0;
+    }
+
+    .jw-title-secondary {
+        width: auto;
+        display: inline-block;
+        padding-left: 0;
+    }
+}
+
+// Hide control bar
+body .jwplayer.jw-state-error,
+.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available) {
+    .jw-controlbar {
+        display: none;
+    }
+}
+
+/* Indentation sometimes complains about multiple selections when :not()s are included */
+/* stylelint-disable indentation */
+// Hide display
+.jwplayer.jw-state-playing.jw-flag-user-inactive .jw-display {
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.jwplayer.jw-state-playing:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting),
+.jwplayer.jw-state-paused:not(.jw-flag-touch):not(.jw-flag-small-player):not(.jw-flag-casting) {
+    .jw-display {
+        display: none;
+    }
+}
+/* stylelint-enable indentation */
+
+// Hide text
+.jwplayer.jw-state-buffering .jw-display-icon-display,
+.jwplayer.jw-state-complete .jw-display {
+    .jw-text {
+        display: none;
+    }
+}

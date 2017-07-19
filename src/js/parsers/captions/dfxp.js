@@ -1,12 +1,10 @@
 define([
     'utils/strings'
 ], function(strings) {
-
-    /** Component that loads and parses an DFXP file. **/
-
+    // Component that loads and parses an DFXP file
     var _seconds = strings.seconds;
 
-    return function (xmlDoc) {
+    return function Dfxp(xmlDoc) {
         validate(xmlDoc);
         var _captions = [];
         var paragraphs = xmlDoc.getElementsByTagName('p');

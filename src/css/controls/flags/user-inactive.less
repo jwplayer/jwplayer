@@ -1,0 +1,49 @@
+@import "../../shared-imports/vars";
+@import "controls-hidden";
+
+.jwplayer.jw-flag-user-inactive:not(.jw-flag-media-audio) {
+    &.jw-state-playing {
+        .jwplayer.jw-flag-controls-hidden;
+
+        .jw-captions {
+            max-height: none;
+        }
+
+        /* captions styles code specific to native text track rendering */
+        video::-webkit-media-text-track-container {
+            max-height: none;
+        }
+
+        .jw-media {
+            cursor: none;
+            /* cursor hiding on media elements for Safari */
+            -webkit-cursor-visibility: auto-hide;
+        }
+
+        &.jw-flag-casting {
+            .jw-display {
+                display: table;
+            }
+
+            .jw-dock {
+                display: block;
+            }
+        }
+    }
+
+    &.jw-flag-casting {
+        .jw-nextup-container {
+            bottom: @controlbar-height;
+        }
+
+        &.jw-flag-time-slider-above .jw-nextup-container {
+            bottom: @mobile-touch-target * 1.5;
+        }
+
+        &.jw-state-idle {
+            .jw-nextup-container {
+                display: none;
+            }
+        }
+    }
+}

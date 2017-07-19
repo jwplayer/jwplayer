@@ -2,12 +2,10 @@ define([
     'utils/helpers',
     'utils/strings'
 ], function(utils, strings) {
-
-    /** Component that loads and parses an SRT file. **/
-
+    // Component that loads and parses an SRT file
     var _seconds = utils.seconds;
 
-    return function (data) {
+    return function Srt(data) {
         // Trim whitespace and split the list by returns.
         var _captions = [];
         data = strings.trim(data);
@@ -48,7 +46,7 @@ define([
             var index = line.indexOf(' --> ');
             if (index > 0) {
                 entry.begin = _seconds(line.substr(0, index));
-                entry.end   = _seconds(line.substr(index + 5));
+                entry.end = _seconds(line.substr(index + 5));
                 // Remaining lines contain the text
                 entry.text = array.slice(idx + 1).join('\r\n');
             }

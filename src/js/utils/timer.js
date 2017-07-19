@@ -1,45 +1,59 @@
 define([
+    'utils/clock',
     'utils/underscore'
-], function(_) {
-    var Timer = function() {
-        var _startTimes = {};
-        var _sum = {};
-        var _counts = {};
+], function(clock, _) {
 
-        var _ticks = {};
+    const Timer = function() {
+        const startTimes = {};
+        const sum = {};
+        const counts = {};
+
+        const ticks = {};
+
+        const started = Math.max(1, new Date().getTime());
 
         return {
             // Profile methods
-            start : function(methodName) {
-                _startTimes[methodName] = _.now();
-                _counts[methodName] = _counts[methodName]+1 || 1;
+            start: function(methodName) {
+                startTimes[methodName] = started + clock.now();
+                counts[methodName] = counts[methodName] + 1 || 1;
             },
-            end : function(methodName) {
-                if (!_startTimes[methodName]) {
+            end: function(methodName) {
+                if (!startTimes[methodName]) {
                     return;
                 }
-
-                var e = _.now() - _startTimes[methodName];
-                _sum[methodName] = _sum[methodName] + e || e;
+                const now = started + clock.now();
+                const e = now - startTimes[methodName];
+                delete startTimes[methodName];
+                sum[methodName] = sum[methodName] + e || e;
             },
-            dump : function() {
+            dump: function() {
+                // Add running sum of latest method
+                // This lets `jwplayer().qoe().item.sums` return a tally of running playing/paused time
+                const runningSums = _.extend({}, sum);
+                for (const methodName in startTimes) {
+                    if (Object.prototype.hasOwnProperty.call(startTimes, methodName)) {
+                        const now = started + clock.now();
+                        const e = now - startTimes[methodName];
+                        runningSums[methodName] = runningSums[methodName] + e || e;
+                    }
+                }
                 return {
-                    counts : _counts,
-                    sums : _sum,
-                    events : _ticks
+                    counts: _.extend({}, counts),
+                    sums: runningSums,
+                    events: _.extend({}, ticks)
                 };
             },
 
             // Profile events
-            tick : function(event, time) {
-                // If a time is given, use that instead of now()
-                _ticks[event] = time || _.now();
+            tick: function(event) {
+                ticks[event] = started + clock.now();
             },
-            between : function(left, right) {
-                if (_ticks[right] && _ticks[left]) {
-                    return _ticks[right] - _ticks[left];
+            between: function(left, right) {
+                if (ticks[right] && ticks[left]) {
+                    return ticks[right] - ticks[left];
                 }
-                return -1;
+                return null;
             }
         };
     };

@@ -14,10 +14,8 @@ define([
             Events, utils, Timer, _, Controller, actionsInit, mutatorsInit, legacyInit, version) {
 
     var Api = function (container, globalRemovePlayer) {
-        var _this = this,
-            _controller,
-            _playerReady = false,
-            _itemMeta = {};
+        var _this = this;
+        var _controller;
 
         // Set up event handling
         _.extend(this, Events);
@@ -54,16 +52,13 @@ define([
             // Add a bunch of methods
             actionsInit(_this, _controller);
             mutatorsInit(_this, _controller);
-            _controller.on(events.JWPLAYER_PLAYLIST_ITEM, function () {
-                _itemMeta = {};
-            });
             _controller.on(events.JWPLAYER_MEDIA_META, function (data) {
-                _.extend(_itemMeta, data.metadata);
+                var itemMeta = _controller._model.get('itemMeta');
+                _.extend(itemMeta, data.metadata);
             });
 
             // capture the ready event and add setup time to it
             _controller.on(events.JWPLAYER_READY, function(event) {
-                _playerReady = true;
                 _qoe.tick('ready');
                 event.setupTime = _qoe.between('setup', 'ready');
             });
@@ -81,9 +76,6 @@ define([
 
 
         var _reset = function() {
-            _playerReady = false;
-            _itemMeta = {};
-
             _this.off();
 
             if (_controller) {
@@ -137,19 +129,19 @@ define([
             var qoeItem = _controller.getItemQoe();
 
             var setupTime = _qoe.between('setup', 'ready');
-            var firstFrame = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var firstFrame = qoeItem.getFirstFrame();
 
             return {
-                setupTime : setupTime,
-                firstFrame : firstFrame,
-                player : _qoe.dump(),
-                item : qoeItem.dump()
+                setupTime: setupTime,
+                firstFrame: firstFrame,
+                player: _qoe.dump(),
+                item: qoeItem.dump()
             };
         };
 
         // Request this from the view/controller
         this.getContainer = function () {
-            if(_controller.getContainer) {
+            if (_controller.getContainer) {
                 // If the controller has fully set up...
                 return _controller.getContainer();
             }
@@ -158,7 +150,7 @@ define([
         };
 
         this.getMeta = this.getItemMeta = function () {
-            return _itemMeta;
+            return _controller._model.get('itemMeta') || {};
         };
 
         this.getPlaylistItem = function (index) {
@@ -176,28 +168,27 @@ define([
             return 'html5';
         };
 
-        this.load = function (toLoad) {
-            var plugin = this.getPlugin('vast') || this.getPlugin('googima');
-            if (plugin) {
-                _controller._model.set('preInstreamState', 'instream-idle');
-                plugin.destroy();
-            }
-            _controller.load(toLoad);
+        this.getMute = function () {
+            return _controller._model.getMute();
+        };
+
+        this.load = function (toLoad, feedData) {
+            _controller.load(toLoad, feedData);
             return _this;
         };
 
         this.play = function (state, meta) {
-            if (!_.isBoolean(state)) {
+            if (_.isObject(state) && state.reason) {
                 meta = state;
             }
             if (!meta) {
-                meta = {reason: 'external'};
+                meta = { reason: 'external' };
             }
             if (state === true) {
                 _controller.play(meta);
                 return _this;
             } else if (state === false) {
-                _controller.pause();
+                _controller.pause(meta);
                 return _this;
             }
 
@@ -205,7 +196,7 @@ define([
             switch (state) {
                 case states.PLAYING:
                 case states.BUFFERING:
-                    _controller.pause();
+                    _controller.pause(meta);
                     break;
                 default:
                     _controller.play(meta);
@@ -214,12 +205,32 @@ define([
             return _this;
         };
 
-        this.pause = function (state) {
+        this.pause = function (state, meta) {
             if (_.isBoolean(state)) {
-                return this.play(!state);
+                return this.play(!state, meta);
             }
 
-            return this.play();
+            return this.play(meta);
+        };
+
+        this.seek = function(pos, meta = { reason: 'external' }) {
+            _controller.seek(pos, meta);
+            return _this;
+        };
+
+        this.playlistNext = function(meta = { reason: 'external' }) {
+            _controller.playlistNext(meta);
+            return _this;
+        };
+
+        this.playlistPrev = function(meta = { reason: 'external' }) {
+            _controller.playlistPrev(meta);
+            return _this;
+        };
+
+        this.playlistItem = function(index, meta = { reason: 'external' }) {
+            _controller.playlistItem(index, meta);
+            return _this;
         };
 
         this.createInstream = function () {
