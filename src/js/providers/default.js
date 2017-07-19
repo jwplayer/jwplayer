@@ -1,10 +1,10 @@
 import { IDLE } from 'events/states';
+import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
 
 define([
     'utils/helpers',
-    'events/events',
     'utils/underscore'
-], function(utils, events, _) {
+], function(utils, _) {
 
     var noop = utils.noop;
     var returnFalse = _.constant(false);
@@ -84,7 +84,7 @@ define([
                 return;
             }
 
-            this.trigger(events.JWPLAYER_PLAYER_STATE, {
+            this.trigger(PLAYER_STATE, {
                 newstate: state
             });
         },
@@ -94,7 +94,7 @@ define([
             var isAudioFile = (type === 'oga' || type === 'aac' || type === 'mp3' ||
                 type === 'mpeg' || type === 'vorbis');
 
-            this.trigger(events.JWPLAYER_MEDIA_TYPE, {
+            this.trigger(MEDIA_TYPE, {
                 mediaType: isAudioFile ? 'audio' : 'video'
             });
         }

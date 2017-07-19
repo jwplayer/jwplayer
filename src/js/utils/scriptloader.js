@@ -1,8 +1,9 @@
+import { ERROR, COMPLETE } from 'events/events';
+
 define([
-    'events/events',
     'utils/backbone.events',
     'utils/underscore'
-], function(events, Events, _) {
+], function(Events, _) {
     var _loaders = {};
 
     var STATUS = {
@@ -23,12 +24,12 @@ define([
 
         function _sendError(evt) {
             _status = STATUS.ERROR;
-            _this.trigger(events.ERROR, evt);
+            _this.trigger(ERROR, evt);
         }
 
         function _sendComplete(evt) {
             _status = STATUS.COMPLETE;
-            _this.trigger(events.COMPLETE, evt);
+            _this.trigger(COMPLETE, evt);
         }
 
         this.makeStyleLink = function(styleUrl) {
@@ -58,8 +59,8 @@ define([
                 _status = sameLoader.getStatus();
                 if (_status < 2) {
                     // dispatch to this instances listeners when the first loader gets updates
-                    sameLoader.on(events.ERROR, _sendError);
-                    sameLoader.on(events.COMPLETE, _sendComplete);
+                    sameLoader.on(ERROR, _sendError);
+                    sameLoader.on(COMPLETE, _sendComplete);
                     return;
                 }
                 // already errored or loaded... keep going?

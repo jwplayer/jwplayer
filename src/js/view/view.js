@@ -8,11 +8,10 @@ import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
 import { BUFFERING, IDLE, COMPLETE, PAUSED, PLAYING, ERROR } from 'events/states';
-
+import { RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK } from 'events/events';
 let ControlsModule;
 
 define([
-    'events/events',
     'utils/backbone.events',
     'utils/helpers',
     'utils/underscore',
@@ -23,7 +22,7 @@ define([
     'view/logo',
     'view/preview',
     'view/title',
-], function(events, Events, utils, _, requestFullscreenHelper, flagNoFocus,
+], function(Events, utils, _, requestFullscreenHelper, flagNoFocus,
             ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     const _styles = utils.style;
@@ -150,14 +149,14 @@ define([
             if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
                 _lastWidth = containerWidth;
                 _lastHeight = containerHeight;
-                _this.trigger(events.JWPLAYER_RESIZE, {
+                _this.trigger(RESIZE, {
                     width: containerWidth,
                     height: containerHeight
                 });
                 const breakpoint = getBreakpoint(containerWidth);
                 if (_breakpoint !== breakpoint) {
                     _breakpoint = breakpoint;
-                    _this.trigger(events.JWPLAYER_BREAKPOINT, {
+                    _this.trigger(BREAKPOINT, {
                         breakpoint: _breakpoint
                     });
                 }
@@ -312,7 +311,7 @@ define([
             _logo = new Logo(_model);
             _logo.setup();
             _logo.setContainer(_playerElement);
-            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
+            _logo.on(LOGO_CLICK, _logoClickHandler);
 
             // captions rendering
             _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
@@ -471,13 +470,13 @@ define([
             const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });
             clickHandler.on({
                 click: () => {
-                    _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    _this.trigger(DISPLAY_CLICK);
                     if (_model.get('controls')) {
                         api.play(reasonInteraction());
                     }
                 },
                 tap: () => {
-                    _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    _this.trigger(DISPLAY_CLICK);
                     const state = model.get('state');
                     const controls = _model.get('controls');
 

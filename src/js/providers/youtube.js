@@ -1,15 +1,16 @@
 import { OS } from 'environment/environment';
 import { BUFFERING, IDLE, COMPLETE, PAUSED, PLAYING, LOADING, STALLED } from 'events/states';
+import { ERROR, COMPLETE, MEDIA_TIME, MEDIA_BUFFER, MEDIA_COMPLETE, MEDIA_META, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
+    MEDIA_ERROR } from 'events/events';
 
 define([
     'utils/helpers',
     'utils/css',
     'utils/underscore',
-    'events/events',
     'utils/scriptloader',
     'providers/default',
     'utils/backbone.events'
-], function(utils, cssUtils, _, events, Scriptloader, DefaultProvider, Events) {
+], function(utils, cssUtils, _, Scriptloader, DefaultProvider, Events) {
     var _scriptLoader = new Scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
 
     function YoutubeProvider(_playerId, _playerConfig) {
@@ -47,8 +48,8 @@ define([
 
         // Load iFrame API
         if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === Scriptloader.loaderstatus.NEW) {
-            _scriptLoader.on(events.COMPLETE, _onLoadSuccess);
-            _scriptLoader.on(events.ERROR, _onLoadError);
+            _scriptLoader.on(COMPLETE, _onLoadSuccess);
+            _scriptLoader.on(ERROR, _onLoadError);
             _scriptLoader.load();
         }
 
@@ -125,7 +126,7 @@ define([
         }
         function _timeUpdateHandler() {
             _bufferUpdate();
-            _this.trigger(events.JWPLAYER_MEDIA_TIME, {
+            _this.trigger(MEDIA_TIME, {
                 position: _round(_youtubePlayer.getCurrentTime()),
                 duration: _youtubePlayer.getDuration()
             });
@@ -138,21 +139,21 @@ define([
             }
             if (_bufferPercent !== bufferPercent) {
                 _bufferPercent = bufferPercent;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
+                _this.trigger(MEDIA_BUFFER, {
                     bufferPercent: bufferPercent
                 });
-                // if (bufferPercent === 100) this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                // if (bufferPercent === 100) this.trigger(MEDIA_BUFFER_FULL);
             }
         }
 
         function _ended() {
             if (_this.state !== IDLE && _this.state !== COMPLETE) {
-                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
             }
         }
 
         function _sendMetaEvent() {
-            _this.trigger(events.JWPLAYER_MEDIA_META, {
+            _this.trigger(MEDIA_META, {
                 duration: _youtubePlayer.getDuration(),
                 width: _element.clientWidth,
                 height: _element.clientHeight
@@ -255,7 +256,7 @@ define([
                     _sendMetaEvent();
 
                     // send levels when playback starts
-                    _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
+                    _this.trigger(MEDIA_LEVELS, {
                         levels: _this.getQualityLevels(),
                         currentQuality: _this.getCurrentQuality()
                     });
@@ -294,14 +295,14 @@ define([
                 _this.play();
             }
 
-            _this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+            _this.trigger(MEDIA_LEVEL_CHANGED, {
                 currentQuality: _this.getCurrentQuality(),
                 levels: _this.getQualityLevels()
             });
         }
 
         function _onYoutubePlayerError() {
-            _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+            _this.trigger(MEDIA_ERROR, {
                 message: 'Error loading YouTube: Video could not be played'
             });
         }
