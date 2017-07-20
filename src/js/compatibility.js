@@ -85,7 +85,7 @@
 
             Object.keys(callbackMap).forEach(function(key) {
                 playerInstance[key] = function (callback) {
-                    playerInstance.on(callbackMap[key], callback);
+                    return playerInstance.on(callbackMap[key], callback);
                 };
             });
 
