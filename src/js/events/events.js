@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // Touch Events
 
 /**
@@ -337,11 +336,3 @@ export const INSTREAM_CLICK = 'instreamClick';
  * Triggered when the player is resized to a width in a different breakpoint category.
 */
 export const BREAKPOINT = 'breakpoint';
-=======
-define([], function() {
-
-
-
-
-});
->>>>>>> e7d6c04a... moved events to compatibility script JW8-120
