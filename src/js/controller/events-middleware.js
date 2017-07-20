@@ -1,13 +1,9 @@
-import { MEDIA_TIME } from 'events/events';
-
-define([
-    'utils/underscore'
-], function (_) {
+define([], function () {
     return function middleware(model, type, currentState) {
         let newState = currentState;
 
         switch (type) {
-            case MEDIA_TIME:
+            case 'time':
             case 'beforePlay':
             case 'pause':
             case 'play':
