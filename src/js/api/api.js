@@ -11,7 +11,7 @@ define([
     'utils/backbone.events',
     'utils/helpers',
     'utils/underscore'
-], function(Timer, plugins, states, Events, utils, _) {
+], function(Timer, plugins, Events, utils, _) {
 
 
     let instancesCreated = 0;
