@@ -6,9 +6,7 @@ define([
     'utils/scriptloader',
     'utils/embedswf',
     'utils/underscore',
-    'events/events',
-    'polyfills/promise',
-    'polyfills/base64'
+    'events/events'
 ], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _, events) {
 
     var _pluginLoader;
