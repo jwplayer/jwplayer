@@ -1,10 +1,16 @@
+function execResult(array, index) {
+    if (array && array.length > index) {
+        return array[index];
+    }
+}
+
 export function osVersion(osEnvironment, agent) {
     let version;
     let major;
     let minor;
 
     if (osEnvironment.windows) {
-        version = /Windows(?: NT|)? ([._\d]+)/.exec(agent)[1];
+        version = execResult(/Windows(?: NT|)? ([._\d]+)/.exec(agent), 1);
         // Map the Windows NT version to the canonical Windows version
         switch (version) {
             case '6.1':
@@ -19,12 +25,12 @@ export function osVersion(osEnvironment, agent) {
             default:
                 break;
         }
-    } else if (osEnvironment.mac) {
-        version = /Mac OS X (10[._\d]+)/.exec(agent)[1];
     } else if (osEnvironment.android) {
-        version = /Android ([._\d]+)/.exec(agent)[1];
+        version = execResult(/Android ([._\d]+)/.exec(agent), 1);
     } else if (osEnvironment.iOS) {
-        version = /OS ([._\d]+)/.exec(agent)[1];
+        version = execResult(/OS ([._\d]+)/.exec(agent), 1);
+    } else if (osEnvironment.mac) {
+        version = execResult(/Mac OS X (10[._\d]+)/.exec(agent), 1);
     }
 
     if (version) {

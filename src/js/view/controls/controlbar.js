@@ -112,7 +112,7 @@ define([
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
-            if (!_model.get('sdkplatform') && !(OS.iOS && OS.major.version < 10)) {
+            if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
                 muteButton = button('jw-icon-volume', () => { _api.setMute(); }, vol);
             }
 
