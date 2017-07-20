@@ -36,6 +36,7 @@ export const ERROR = 'error';
 */
 export const LOADING = 'loading';
 
+// TODO: What is stalled ?
 /**
  * The user pressed play, but data is not being loaded.
 */
