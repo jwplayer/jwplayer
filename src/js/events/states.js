@@ -1,40 +1,43 @@
-// import { BUFFERING, IDLE, COMPLETE, PAUSED, PLAYING, ERROR, LOADING, STALLED } from
 /**
- * Buffering State
+ * The user pressed play, but sufficient data to start playback has not yet loaded.
+   The buffering icon is visible in the display.
 */
 export const BUFFERING = 'buffering';
 
 /**
- * Idle State
+ * Either playback has not started or playback was stopped due to a stop() call or an error.
+   In this state, either the play or the error icon is visible in the display.
 */
 export const IDLE = 'idle';
 
 /**
- * Complete State
+ * Playback has ended. The replay icon is visible in the display.
 */
 export const COMPLETE = 'complete';
 
 /**
- * Paused State
+ * The video is currently paused. The play icon is visible in the display.
 */
 export const PAUSED = 'paused';
 
 /**
- * Playing State
+ * The video is currently playing. No icon is visible in the display.
 */
 export const PLAYING = 'playing';
 
 /**
- * Error State
+ * Playback was stopped due to an error.
+   In this state the error icon and a message are visible in the display.
 */
 export const ERROR = 'error';
 
 /**
- * Loading State
+ * The user pressed play, but media has not yet loaded.
 */
 export const LOADING = 'loading';
 
+// TODO: What is stalled ?
 /**
- * Stalled State
+ * The user pressed play, but data is not being loaded.
 */
 export const STALLED = 'stalled';
