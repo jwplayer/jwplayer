@@ -196,7 +196,5 @@ define(['utils/underscore'], function(_) {
         asap = fn;
     };
 
-    /* eslint no-unused-expressions: 0 */
-    window.Promise || (window.Promise = PromisePolyfill);
-
+    return window.Promise || (window.Promise = PromisePolyfill);
 });

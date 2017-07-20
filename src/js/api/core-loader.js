@@ -5,6 +5,7 @@ import SimpleModel from '../model/simplemodel';
 import { playerDefaults } from '../model/player-model';
 import Timer from 'api/timer';
 import Events from 'utils/backbone.events';
+import Promise from 'polyfills/promise';
 
 let controllerPromise = null;
 
