@@ -145,6 +145,10 @@
             OUT: 'out'
         };
 
+        /*
+            In JW8 we've removed the jwplayer.events.JWPLAYER_* events, as well as the jwplayer.states.* states.
+            They've been replaced by ES6 constants. The state names are unchanged, and the event names lose the JWPLAYER_ prefix.
+        */
         var events = {
             // Script Loaders
             COMPLETE: 'complete',
