@@ -1,4 +1,4 @@
-import { COMPLETE, ERROR } from 'events/events';
+import { MEDIA_COMPLETE, ERROR_EVENT } from 'events/events';
 
 define([
     'utils/helpers',
@@ -36,13 +36,13 @@ define([
         function completeHandler() {
             _.defer(function() {
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
             });
         }
 
         function errorHandler() {
             _status = Scriptloader.loaderstatus.ERROR;
-            _this.trigger(ERROR, { url: url });
+            _this.trigger(ERROR_EVENT, { url: url });
         }
 
         this.load = function() {
@@ -52,19 +52,19 @@ define([
             if (url.lastIndexOf('.swf') > 0) {
                 _flashPath = url;
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
                 return;
             }
             if (pluginsUtils.getPluginPathType(url) === pluginsUtils.pluginPathType.CDN) {
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
                 return;
             }
             _status = Scriptloader.loaderstatus.LOADING;
             var _loader = new Scriptloader(getJSPath());
             // Complete doesn't matter - we're waiting for registerPlugin
-            _loader.on(COMPLETE, completeHandler);
-            _loader.on(ERROR, errorHandler);
+            _loader.on(MEDIA_COMPLETE, completeHandler);
+            _loader.on(ERROR_EVENT, errorHandler);
             _loader.load();
         };
 
@@ -85,7 +85,7 @@ define([
                 _flashPath = name;
             }
             _status = Scriptloader.loaderstatus.COMPLETE;
-            _this.trigger(COMPLETE);
+            _this.trigger(MEDIA_COMPLETE);
         };
 
         this.getStatus = function() {
