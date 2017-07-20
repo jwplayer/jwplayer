@@ -1,7 +1,8 @@
-import setConfig from '../api/set-config';
-import instances from '../api/players';
+import setConfig from 'api/set-config';
+import instances from 'api/players';
 import { OS } from 'environment/environment';
-import ApiQueueDecorator from '../api/api-queue';
+import ApiQueueDecorator from 'api/api-queue';
+import { streamType } from 'providers/utils/stream-type';
 
 define([
     'controller/instream-adapter',
@@ -49,7 +50,6 @@ define([
             _this.originalContainer = _this.currentContainer = originalContainer;
             _this._events = eventListeners;
 
-
             const _eventQueuedUntilReady = [];
 
             _model.setup(config);
@@ -89,8 +89,8 @@ define([
 
             _model.on('change:duration', function(model, duration) {
                 const minDvrWindow = model.get('minDvrWindow');
-                const streamType = utils.streamType(duration, minDvrWindow);
-                model.setStreamType(streamType);
+                const type = streamType(duration, minDvrWindow);
+                model.setStreamType(type);
             });
 
             _model.on('change:castState', function(model, evt) {

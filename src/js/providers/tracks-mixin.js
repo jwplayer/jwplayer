@@ -1,11 +1,10 @@
 import { Browser } from 'environment/environment';
+import { parseID3 } from 'providers/utils/id3Parser';
 
 define(['utils/underscore',
-    'utils/id3Parser',
-    'utils/helpers',
     'controller/tracks-loader',
     'controller/tracks-helper'
-], function(_, ID3Parser, utils, tracksLoader, tracksHelper) {
+], function(_, tracksLoader, tracksHelper) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -622,7 +621,7 @@ define(['utils/underscore',
         }, this);
 
         if (dataCues.length) {
-            var id3Data = ID3Parser.parseID3(dataCues);
+            var id3Data = parseID3(dataCues);
             this.trigger('meta', {
                 metadataTime: startTime,
                 metadata: id3Data
@@ -690,7 +689,9 @@ define(['utils/underscore',
 
 
     function _errorHandler(error) {
-        utils.log('CAPTIONS(' + error + ')');
+        if (__DEBUG__) {
+            console.error('CAPTIONS(' + error + ')');
+        }
     }
 
     return Tracks;
