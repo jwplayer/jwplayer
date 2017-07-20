@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * The user pressed play, but sufficient data to start playback has not yet loaded.
    The buffering icon is visible in the display.
@@ -41,3 +42,10 @@ export const LOADING = 'loading';
  * The user pressed play, but data is not being loaded.
 */
 export const STALLED = 'stalled';
+=======
+define([], function() {
+    return {
+
+    };
+});
+>>>>>>> e7d6c04a... moved events to compatibility script JW8-120
