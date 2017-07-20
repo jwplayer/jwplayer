@@ -1,11 +1,12 @@
+import { MEDIA_COMPLETE, ERROR_EVENT } from 'events/events';
+
 define([
     'plugins/utils',
     'utils/helpers',
-    'events/events',
     'utils/backbone.events',
     'utils/underscore',
     'utils/scriptloader'
-], function(pluginsUtils, utils, events, Events, _, scriptloader) {
+], function(pluginsUtils, utils, Events, _, scriptloader) {
 
     function _addToPlayerGenerator(_api, pluginInstance, div) {
         return function() {
@@ -63,7 +64,7 @@ define([
             if (!_iscomplete) {
                 _iscomplete = true;
                 _status = scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(events.COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
             }
         }
 
@@ -89,7 +90,7 @@ define([
                     if (status === scriptloader.loaderstatus.LOADING || status === scriptloader.loaderstatus.NEW) {
                         return;
                     } else if (js && !utils.versionCheck(target)) {
-                        _this.trigger(events.ERROR, {
+                        _this.trigger(ERROR_EVENT, {
                             message: 'Incompatible player version'
                         });
                     }
@@ -109,7 +110,7 @@ define([
                 utils.log(message, e.url);
             }
             this.off();
-            this.trigger(events.ERROR, {
+            this.trigger(ERROR_EVENT, {
                 message: message
             });
             _checkComplete();
@@ -181,8 +182,8 @@ define([
             _.each(_config, function(value, pluginUrl) {
                 if (utils.exists(pluginUrl)) {
                     var pluginObj = model.addPlugin(pluginUrl);
-                    pluginObj.on(events.COMPLETE, _checkComplete);
-                    pluginObj.on(events.ERROR, _pluginError);
+                    pluginObj.on(MEDIA_COMPLETE, _checkComplete);
+                    pluginObj.on(ERROR_EVENT, _pluginError);
                 }
             });
 

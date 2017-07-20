@@ -1,11 +1,11 @@
-define([
-    'events/states'
-], function(states) {
+import { IDLE, COMPLETE, ERROR } from 'events/states';
+
+define([], function() {
     // The api should dispatch an idle event when the model's state changes to complete
     // This is to avoid conflicts with the complete event and to maintain legacy event flow
     function normalizeApiState(newstate) {
-        if (newstate === states.COMPLETE || newstate === states.ERROR) {
-            return states.IDLE;
+        if (newstate === COMPLETE || newstate === ERROR) {
+            return IDLE;
         }
         return newstate;
     }

@@ -1,19 +1,20 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
+import { IDLE, COMPLETE, PAUSED, PLAYING, ERROR, LOADING, STALLED } from 'events/states';
+import { MEDIA_TIME, MEDIA_BUFFER, MEDIA_META, MEDIA_BUFFER_FULL, PROVIDER_FIRST_FRAME, MEDIA_ERROR, MEDIA_LEVELS,
+    MEDIA_LEVEL_CHANGED, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_COMPLETE } from 'events/events';
 
 define([
     'utils/css',
     'utils/helpers',
     'utils/dom',
     'utils/underscore',
-    'events/events',
-    'events/states',
     'providers/default',
     'utils/backbone.events',
     'providers/tracks-mixin',
     'utils/time-ranges',
-], function(cssUtils, utils, dom, _, events, states, DefaultProvider, Events, Tracks, timeRangesUtil) {
+], function(cssUtils, utils, dom, _, DefaultProvider, Events, Tracks, timeRangesUtil) {
 
     var clearTimeout = window.clearTimeout;
     var STALL_DELAY = 256;
@@ -34,7 +35,7 @@ define([
 
     function VideoProvider(_playerId, _playerConfig) {
         // Current media state
-        this.state = states.IDLE;
+        this.state = IDLE;
 
         // Are we buffering due to seek, or due to playback?
         this.seeking = false;
@@ -157,9 +158,9 @@ define([
             clearTimeout(_playbackTimeout);
 
             _canSeek = true;
-            if (_this.state === states.STALLED) {
-                _this.setState(states.PLAYING);
-            } else if (_this.state === states.PLAYING) {
+            if (_this.state === STALLED) {
+                _this.setState(PLAYING);
+            } else if (_this.state === PLAYING) {
                 _playbackTimeout = setTimeout(_checkPlaybackStalled, STALL_DELAY);
             }
             // When video has not yet started playing for androidHLS, we cannot get the correct duration
@@ -172,8 +173,8 @@ define([
             _setBuffered(_getBuffer(), _position, _duration);
 
             // send time events when playing
-            if (_this.state === states.PLAYING) {
-                _this.trigger(events.JWPLAYER_MEDIA_TIME, {
+            if (_this.state === PLAYING) {
+                _this.trigger(MEDIA_TIME, {
                     position: _position,
                     duration: _duration
                 });
@@ -209,7 +210,7 @@ define([
         function _setBuffered(buffered, currentTime, duration) {
             if (duration !== 0 && (buffered !== _buffered || duration !== _duration)) {
                 _buffered = buffered;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
+                _this.trigger(MEDIA_BUFFER, {
                     bufferPercent: buffered * 100,
                     position: currentTime,
                     duration: duration
@@ -251,7 +252,7 @@ define([
             if (_isAndroidHLS && duration === Infinity) {
                 duration = 0;
             }
-            _this.trigger(events.JWPLAYER_MEDIA_META, {
+            _this.trigger(MEDIA_META, {
                 duration: duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
@@ -282,24 +283,24 @@ define([
             if (!_bufferFull && (OS.iOS || _canPlay)) {
                 _bufferFull = true;
                 _canPlay = false;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                _this.trigger(MEDIA_BUFFER_FULL);
             }
         }
 
         function _playingHandler() {
-            _this.setState(states.PLAYING);
+            _this.setState(PLAYING);
             if (!_videotag.hasAttribute('jw-played')) {
                 _setAttribute('jw-played', '');
             }
             if (_videotag.hasAttribute('jw-gesture-required')) {
                 _videotag.removeAttribute('jw-gesture-required');
             }
-            _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+            _this.trigger(PROVIDER_FIRST_FRAME, {});
         }
 
         function _pauseHandler() {
             // Sometimes the browser will fire "complete" and then a "pause" event
-            if (_this.state === states.COMPLETE) {
+            if (_this.state === COMPLETE) {
                 return;
             }
 
@@ -308,7 +309,7 @@ define([
                 return;
             }
 
-            _this.setState(states.PAUSED);
+            _this.setState(PAUSED);
         }
 
         function _stalledHandler() {
@@ -322,7 +323,7 @@ define([
             }
 
             // A stall after loading/error, should just stay loading/error
-            if (_this.state === states.LOADING || _this.state === states.ERROR) {
+            if (_this.state === LOADING || _this.state === ERROR) {
                 return;
             }
 
@@ -344,11 +345,11 @@ define([
                 }
             }
 
-            _this.setState(states.STALLED);
+            _this.setState(STALLED);
         }
 
         function _errorHandler() {
-            _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+            _this.trigger(MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
         }
@@ -371,7 +372,7 @@ define([
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
                 // _trigger?
-                _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
+                _this.trigger(MEDIA_LEVELS, {
                     levels: publicLevels,
                     currentQuality: _currentQuality
                 });
@@ -446,8 +447,8 @@ define([
                 // results in html5.controller calling video.play()
                 _sendBufferFull();
                 // If we're still paused, then the tag isn't loading yet due to mobile interaction restrictions.
-                if (!_videotag.paused && _this.state !== states.PLAYING) {
-                    _this.setState(states.LOADING);
+                if (!_videotag.paused && _this.state !== PLAYING) {
+                    _this.setState(LOADING);
                 }
             }
 
@@ -535,7 +536,7 @@ define([
             if (Browser.ie) {
                 _videotag.pause();
             }
-            this.setState(states.IDLE);
+            this.setState(IDLE);
         };
 
 
@@ -576,15 +577,15 @@ define([
             }
             if (!OS.mobile || _videotag.hasAttribute('jw-played')) {
                 // don't change state on mobile before user initiates playback
-                _this.setState(states.LOADING);
+                _this.setState(LOADING);
             }
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
         this.play = function() {
             if (_this.seeking) {
-                _this.setState(states.LOADING);
-                _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
+                _this.setState(LOADING);
+                _this.once(MEDIA_SEEKED, _this.play);
                 return;
             }
             _beforeResumeHandler();
@@ -608,7 +609,7 @@ define([
 
                 }
             };
-            this.setState(states.PAUSED);
+            this.setState(PAUSED);
         };
 
         this.seek = function(seekPos) {
@@ -617,7 +618,7 @@ define([
             }
 
             if (_delayedSeek === 0) {
-                this.trigger(events.JWPLAYER_MEDIA_SEEK, {
+                this.trigger(MEDIA_SEEK, {
                     position: _videotag.currentTime,
                     offset: seekPos
                 });
@@ -647,7 +648,7 @@ define([
 
         function _seekedHandler() {
             _this.seeking = false;
-            _this.trigger(events.JWPLAYER_MEDIA_SEEKED);
+            _this.trigger(MEDIA_SEEKED);
         }
 
         this.volume = function(vol) {
@@ -689,11 +690,11 @@ define([
         }
 
         function _endedHandler() {
-            if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
+            if (_this.state !== IDLE && _this.state !== COMPLETE) {
                 clearTimeouts();
                 _currentQuality = -1;
 
-                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
             }
         }
 
@@ -895,7 +896,7 @@ define([
                     _currentQuality = quality;
                     _visualQuality.reason = 'api';
                     _visualQuality.level = {};
-                    this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+                    this.trigger(MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
                     });
@@ -909,7 +910,7 @@ define([
                     if (duration <= 0) {
                         duration = _duration;
                     }
-                    _this.setState(states.LOADING);
+                    _this.setState(LOADING);
                     _completeLoad(time, duration);
                 }
             }
@@ -1024,7 +1025,7 @@ define([
 
         function checkStreamEnded() {
             if (_stale && _edgeOfLiveStream) {
-                _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+                _this.trigger(MEDIA_ERROR, {
                     message: 'The live stream is either down or has ended'
                 });
                 return true;

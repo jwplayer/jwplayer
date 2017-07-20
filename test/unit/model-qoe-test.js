@@ -1,19 +1,18 @@
 import SimpleModel from 'model/simplemodel';
+import { IDLE, PLAYING, LOADING, STALLED } from 'events/states';
+import { MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME, MEDIA_FIRST_FRAME } from 'events/events';
 
 define([
     'test/underscore',
     'controller/model',
-    'events/events',
-    'events/states'
-], function (_, Model, events, states) {
-
+], function (_, Model) {
 
     describe('Model QoE', function() {
 
 
         // mock MediaModel
         var MediaModel = function() {
-            this.set('state', states.IDLE);
+            this.set('state', IDLE);
         };
         _.extend(MediaModel.prototype, SimpleModel);
 
@@ -25,12 +24,12 @@ define([
             model.set('mediaModel', new MediaModel());
             var mediaModel = model.get('mediaModel');
 
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-            mediaModel.set('state', states.LOADING);
-            mediaModel.set('state', states.PLAYING);
+            model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
+            mediaModel.set('state', LOADING);
+            mediaModel.set('state', PLAYING);
 
-            // FIXME: JWPLAYER_PROVIDER_FIRST_FRAME triggers JWPLAYER_MEDIA_FIRST_FRAME : we only need one event
-            model.mediaController.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME);
+            // FIXME: PROVIDER_FIRST_FRAME triggers MEDIA_FIRST_FRAME : we only need one event
+            model.mediaController.trigger(PROVIDER_FIRST_FRAME);
 
             validateQoeFirstFrame(assert, model._qoeItem, startTime);
         });
@@ -42,13 +41,13 @@ define([
             model.set('mediaModel', new MediaModel());
             var mediaModel = model.get('mediaModel');
 
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-            mediaModel.set('state', states.LOADING);
-            mediaModel.set('state', states.PLAYING);
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_TIME, {
+            model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
+            mediaModel.set('state', LOADING);
+            mediaModel.set('state', PLAYING);
+            model.mediaController.trigger(MEDIA_TIME, {
                 position: 0
             });
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_TIME, {
+            model.mediaController.trigger(MEDIA_TIME, {
                 position: 1
             });
 
@@ -60,8 +59,8 @@ define([
             var model = new Model().setup({});
 
             model.set('mediaModel', new MediaModel());
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-            model.mediaController.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME);
+            model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
+            model.mediaController.trigger(PROVIDER_FIRST_FRAME);
             var qoeItem = model._qoeItem;
 
             var qoeDump = qoeItem.dump();
@@ -75,11 +74,11 @@ define([
             var playAttemptTick = qoeDump.events.playAttempt;
             var firstFrameTick = qoeDump.events.firstFrame;
 
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_TIME, {
+            model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
+            model.mediaController.trigger(MEDIA_TIME, {
                 position: 2
             });
-            model.mediaController.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME);
+            model.mediaController.trigger(PROVIDER_FIRST_FRAME);
 
             qoeDump = qoeItem.dump();
             assert.equal(qoeDump.events.playAttempt, playAttemptTick, 'play attempt is unchanged after further media events');
@@ -92,10 +91,10 @@ define([
             model.set('mediaModel', new MediaModel());
             var mediaModel = model.get('mediaModel');
 
-            mediaModel.set('state', states.LOADING);
-            mediaModel.set('state', states.PLAYING);
-            mediaModel.set('state', states.STALLED);
-            mediaModel.set('state', states.PLAYING);
+            mediaModel.set('state', LOADING);
+            mediaModel.set('state', PLAYING);
+            mediaModel.set('state', STALLED);
+            mediaModel.set('state', PLAYING);
 
             var qoeDump = model._qoeItem.dump();
             assert.isOk(validateMeasurement(qoeDump.sums.stalled), 'stalled sum is a valid number');
@@ -114,8 +113,8 @@ define([
             var mediaModel = model.get('mediaModel');
             var secondQoeItem = model._qoeItem;
 
-            model.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT);
-            mediaModel.set('state', states.LOADING);
+            model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
+            mediaModel.set('state', LOADING);
 
             assert.isOk(firstQoeItem !== secondQoeItem, 'qoe items are unique between playlistItem changes');
 
@@ -136,7 +135,7 @@ define([
         function validateQoeFirstFrame(assert, qoeItem, startTime) {
             assert.isOk(!!qoeItem, 'qoeItem is defined');
 
-            var loadTime = qoeItem.between(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, events.JWPLAYER_MEDIA_FIRST_FRAME);
+            var loadTime = qoeItem.between(MEDIA_PLAY_ATTEMPT, MEDIA_FIRST_FRAME);
             assert.isOk(validateMeasurement(loadTime), 'time to first frame is a valid number');
 
             var qoeDump = qoeItem.dump();

@@ -1,13 +1,13 @@
 import { Browser } from 'environment/environment';
+import { PAUSED, PLAYING } from 'events/states';
+import { PLAYER_STATE, MEDIA_COMPLETE, MEDIA_TIME, MEDIA_ERROR } from 'events/events';
 
 define([
     'utils/backbone.events',
     'controller/model',
     'events/change-state-event',
-    'events/events',
-    'events/states',
     'utils/underscore'
-], function(Events, Model, changeStateEvent, events, states, _) {
+], function(Events, Model, changeStateEvent, _) {
 
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
@@ -43,7 +43,7 @@ define([
                     } else {
                         var _this = this;
                         _throttleTimeout = setTimeout(function () {
-                            if (_this._adModel.get('state') === states.PLAYING) {
+                            if (_this._adModel.get('state') === PLAYING) {
                                 _throttlePaused = true;
                                 _this.instreamPause();
                             }
@@ -56,13 +56,13 @@ define([
             .on('instream:time', function(evt) {
                 this._adModel.set('position', evt.position);
                 this._adModel.set('duration', evt.duration);
-                this.trigger(events.JWPLAYER_MEDIA_TIME, evt);
+                this.trigger(MEDIA_TIME, evt);
             }, this)
             .on('instream:complete', function(evt) {
-                this.trigger(events.JWPLAYER_MEDIA_COMPLETE, evt);
+                this.trigger(MEDIA_COMPLETE, evt);
             }, this)
             .on('instream:error', function(evt) {
-                this.trigger(events.JWPLAYER_MEDIA_ERROR, evt);
+                this.trigger(MEDIA_ERROR, evt);
             }, this);
 
             this.swf.triggerFlash('instream:init');
@@ -83,19 +83,19 @@ define([
 
                 // update admodel state when set from googima
                 provider.off();
-                provider.on(events.JWPLAYER_PLAYER_STATE, this.stateHandler, this);
+                provider.on(PLAYER_STATE, this.stateHandler, this);
 
                 // trigger time evemt when sent from freewheel
-                provider.on(events.JWPLAYER_MEDIA_TIME, function(data) {
-                    this.trigger(events.JWPLAYER_MEDIA_TIME, data);
+                provider.on(MEDIA_TIME, function(data) {
+                    this.trigger(MEDIA_TIME, data);
                 }, this);
             };
         },
 
         stateHandler: function(evt) {
             switch (evt.newstate) {
-                case states.PLAYING:
-                case states.PAUSED:
+                case PLAYING:
+                case PAUSED:
                     this._adModel.set('state', evt.newstate);
                     break;
                 default:

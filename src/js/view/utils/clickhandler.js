@@ -1,9 +1,10 @@
+import { CLICK } from 'events/events';
+
 define([
     'utils/ui',
-    'events/events',
     'utils/backbone.events',
     'utils/underscore'
-], function(UI, events, Events, _) {
+], function(UI, Events, _) {
 
     return class ClickHandler {
         constructor(model, element) {
@@ -51,7 +52,7 @@ define([
                 this.alternateClickHandler(evt);
                 return;
             }
-            this.trigger((evt.type === events.touchEvents.CLICK) ? 'click' : 'tap');
+            this.trigger((evt.type === CLICK) ? 'click' : 'tap');
         }
 
         element() {
