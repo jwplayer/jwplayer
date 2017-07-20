@@ -1,13 +1,13 @@
 import { Browser } from 'environment/environment';
+import { PAUSED, PLAYING } from 'events/states';
 
 define([
     'utils/backbone.events',
     'controller/model',
     'events/change-state-event',
     'events/events',
-    'events/states',
     'utils/underscore'
-], function(Events, Model, changeStateEvent, events, states, _) {
+], function(Events, Model, changeStateEvent, events, _) {
 
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
@@ -43,7 +43,7 @@ define([
                     } else {
                         var _this = this;
                         _throttleTimeout = setTimeout(function () {
-                            if (_this._adModel.get('state') === states.PLAYING) {
+                            if (_this._adModel.get('state') === PLAYING) {
                                 _throttlePaused = true;
                                 _this.instreamPause();
                             }
@@ -94,8 +94,8 @@ define([
 
         stateHandler: function(evt) {
             switch (evt.newstate) {
-                case states.PLAYING:
-                case states.PAUSED:
+                case PLAYING:
+                case PAUSED:
                     this._adModel.set('state', evt.newstate);
                     break;
                 default:

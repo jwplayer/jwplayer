@@ -3,7 +3,6 @@ import { dvrSeekLimit } from 'view/constants';
 
 define([
     'events/events',
-    'events/states',
     'utils/backbone.events',
     'utils/helpers',
     'utils/underscore',
@@ -16,7 +15,7 @@ define([
     'view/controls/next-display-icon',
     'view/controls/nextuptooltip',
     'view/controls/rightclick',
-], function (events, states, Events, utils, _, button, Controlbar, Dock,
+], function (events, Events, utils, _, button, Controlbar, Dock,
              DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
              NextUpToolTip, RightClick) {
 

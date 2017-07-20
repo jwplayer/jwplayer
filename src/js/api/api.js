@@ -2,16 +2,15 @@ import * as Environment from 'environment/environment';
 import instances from './players';
 import CoreLoader from './core-loader';
 import { version } from '../version';
+import { PLAYING, BUFFERING } from 'events/states';
 
 define([
     'api/timer',
     'plugins/plugins',
-    'events/events',
-    'events/states',
     'utils/backbone.events',
     'utils/helpers',
     'utils/underscore'
-], function(Timer, plugins, events, states, Events, utils, _) {
+], function(Timer, plugins, states, Events, utils, _) {
 
     let instancesCreated = 0;
 
@@ -705,8 +704,8 @@ define([
 
                 state = this.getState();
                 switch (state) {
-                    case states.PLAYING:
-                    case states.BUFFERING:
+                    case PLAYING:
+                    case BUFFERING:
                         core.pause(meta);
                         break;
                     default:

@@ -1,14 +1,14 @@
 import { OS } from 'environment/environment';
+import { BUFFERING, COMPLETE, PAUSED, PLAYING } from 'events/states';
 
 define([
     'controller/instream-html5',
     'controller/instream-flash',
     'events/events',
-    'events/states',
     'utils/helpers',
     'utils/backbone.events',
     'utils/underscore'
-], function(InstreamHtml5, InstreamFlash, events, states, utils, Events, _) {
+], function(InstreamHtml5, InstreamFlash, events, utils, Events, _) {
 
     function chooseInstreamMethod(_model) {
         var providerName = '';
@@ -51,7 +51,7 @@ define([
             if (!_instream || !_instream._adModel) {
                 return;
             }
-            if (_instream._adModel.get('state') === states.PAUSED) {
+            if (_instream._adModel.get('state') === PAUSED) {
                 if (evt.hasControls) {
                     _instream.instreamPlay();
                 }
@@ -64,7 +64,7 @@ define([
             if (!_instream || !_instream._adModel) {
                 return;
             }
-            if (_instream._adModel.get('state') === states.PAUSED) {
+            if (_instream._adModel.get('state') === PAUSED) {
                 if (_model.get('controls')) {
                     _controller.setFullscreen();
                     _controller.play();
@@ -90,13 +90,13 @@ define([
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
             _controller.detachMedia();
 
-            _model.mediaModel.set('state', states.BUFFERING);
+            _model.mediaModel.set('state', BUFFERING);
 
             if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _model.set('preInstreamState', 'instream-preroll');
-            } else if (_oldProvider && _model.checkComplete() || _model.get('state') === states.COMPLETE) {
+            } else if (_oldProvider && _model.checkComplete() || _model.get('state') === COMPLETE) {
                 _model.set('preInstreamState', 'instream-postroll');
             } else {
                 _model.set('preInstreamState', 'instream-midroll');
@@ -104,13 +104,13 @@ define([
 
             // If the player's currently playing, pause the video tag
             var currState = _model.get('state');
-            if (!sharedVideoTag && (currState === states.PLAYING || currState === states.BUFFERING)) {
+            if (!sharedVideoTag && (currState === PLAYING || currState === BUFFERING)) {
                 _oldProvider.pause();
             }
 
             // Show instream state instead of normal player state
             _view.setupInstream(_instream._adModel);
-            _instream._adModel.set('state', states.BUFFERING);
+            _instream._adModel.set('state', BUFFERING);
 
             // don't trigger api play/pause on display click
             if (_view.clickHandler()) {
@@ -209,7 +209,7 @@ define([
             var providersNeeded = providersManager.required(playlist);
 
             _model.set('hideAdsControls', false);
-            _instream._adModel.set('state', states.BUFFERING);
+            _instream._adModel.set('state', BUFFERING);
             providersManager.load(providersNeeded)
                 .then(function() {
                     if (_instream === null) {
@@ -315,8 +315,8 @@ define([
 
                         // On error, mediaModel has buffering states in mobile, but oldProvider's state is playing.
                         // So, changing mediaModel's state to playing does not change provider state unless we do this
-                        if (OS.mobile && (_model.mediaModel.get('state') === states.BUFFERING)) {
-                            _oldProvider.setState(states.BUFFERING);
+                        if (OS.mobile && (_model.mediaModel.get('state') === BUFFERING)) {
+                            _oldProvider.setState(BUFFERING);
                         }
                         _oldProvider.play();
                         break;
