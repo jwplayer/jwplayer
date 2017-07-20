@@ -1,4 +1,4 @@
-import { COMPLETE_EVENT, ERROR_EVENT } from 'events/events';
+import { MEDIA_COMPLETE, ERROR_EVENT } from 'events/events';
 
 define([
     'plugins/utils',
@@ -64,7 +64,7 @@ define([
             if (!_iscomplete) {
                 _iscomplete = true;
                 _status = scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(COMPLETE_EVENT);
+                _this.trigger(MEDIA_COMPLETE);
             }
         }
 
@@ -182,7 +182,7 @@ define([
             _.each(_config, function(value, pluginUrl) {
                 if (utils.exists(pluginUrl)) {
                     var pluginObj = model.addPlugin(pluginUrl);
-                    pluginObj.on(COMPLETE_EVENT, _checkComplete);
+                    pluginObj.on(MEDIA_COMPLETE, _checkComplete);
                     pluginObj.on(ERROR_EVENT, _pluginError);
                 }
             });

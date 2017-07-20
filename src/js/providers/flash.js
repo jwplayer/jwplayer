@@ -1,7 +1,7 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser } from 'environment/environment';
 import { IDLE, PAUSED, LOADING } from 'events/states';
-import { ERROR, MEDIA_ERROR, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_BUFFER, MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS,
+import { ERROR_EVENT, MEDIA_ERROR, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_BUFFER, MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS,
     MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE, MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE,
     PROVIDER_CHANGED, MEDIA_META } from 'events/events';
 
@@ -289,7 +289,7 @@ define([
                     this.trigger(PROVIDER_CHANGED, e);
                 }, this);
 
-                _swf.on(ERROR, function(event) {
+                _swf.on(ERROR_EVENT, function(event) {
                     this.trigger(MEDIA_ERROR, event);
                 }, this);
 

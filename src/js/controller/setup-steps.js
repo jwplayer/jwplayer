@@ -1,5 +1,5 @@
 import * as ControlsLoader from 'controller/controls-loader';
-import { PLAYLIST_LOADED, COMPLETE_EVENT, ERROR_EVENT } from 'events/events';
+import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR_EVENT } from 'events/events';
 
 define([
     'plugins/plugins',
@@ -102,7 +102,7 @@ define([
     function _loadPlugins(resolve, _model) {
         window.jwplayerPluginJsonp = plugins.registerPlugin;
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-        _pluginLoader.on(COMPLETE_EVENT, resolve);
+        _pluginLoader.on(MEDIA_COMPLETE, resolve);
         _pluginLoader.on(ERROR_EVENT, _.partial(_pluginsError, resolve));
         _pluginLoader.load();
     }
@@ -171,7 +171,7 @@ define([
             var isStylesheet = true;
             var loader = new ScriptLoader(skinUrl, isStylesheet);
 
-            loader.addEventListener(COMPLETE_EVENT, function() {
+            loader.addEventListener(MEDIA_COMPLETE, function() {
                 _model.set('skin-loading', false);
             });
             loader.addEventListener(ERROR_EVENT, function() {
