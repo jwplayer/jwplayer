@@ -130,8 +130,6 @@
         jwplayerCompatible.version = playerLibrary.version;
         jwplayerCompatible.vid = playerLibrary.vid;
 
-        window.jwplayer = jwplayerCompatible;
-
         /*
             In JW8 we've removed the jwplayer.touchEvents.* touchEvents; they've been replaced by ES6 constants.
             The touchEvents names are unchanged.
@@ -151,7 +149,7 @@
 
         /*
             In JW8 we've removed the jwplayer.events.JWPLAYER_* events, as well as the jwplayer.events.states.* states.
-            They've been replaced by ES6 constants. The state names are unchanged, and the event names lose the JWPLAYER_ prefix.
+            They've been replaced by ES6 constants. The state names are prefixed with STATE_, and the event names lose the JWPLAYER_ prefix.
         */
         var events = {
             // Script Loaders
@@ -249,6 +247,8 @@
         };
 
         events.state = states;
-        window.jwplayer.events = events;
+        jwplayerCompatible.events = events;
+
+        window.jwplayer = jwplayerCompatible;
     }
 }(window.jwplayer));
