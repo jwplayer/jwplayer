@@ -23,23 +23,22 @@ define([
         return flashVersion && flashVersion >= __FLASH_VERSION__;
     };
 
-    browser.isFF = _browserCheck(/firefox/i);
+    browser.isFF = _browserCheck(/gecko\//i);
     browser.isIPod = _browserCheck(/iP(hone|od)/i);
     browser.isIPad = _browserCheck(/iPad/i);
-    browser.isSafari602 = _browserCheck(/Macintosh.*Mac OS X 10_8.*6\.0\.\d* Safari/i);
-    browser.isOSX = _browserCheck(/Mac OS X/i);
-    browser.isEdge = _browserCheck(/\sedge\/\d+/i);
+    browser.isOSX = _browserCheck(/Macintosh/i);
+    // Check for Facebook App Version to see if it's Facebook
+    browser.isFacebook = _browserCheck(/FBAV/i);
 
-    var _isIETrident = browser.isIETrident = function(browserVersion) {
-        if(browser.isEdge()){
-            return true;
-        }
+    var _isEdge = browser.isEdge = function(browserVersion) {
         if (browserVersion) {
-            browserVersion = parseFloat(browserVersion).toFixed(1);
-            return _userAgentMatch(new RegExp('trident/.+rv:\\s*' + browserVersion, 'i'));
+            return _userAgentMatch(new RegExp('\\sedge\\/' + browserVersion, 'i'));
         }
-        return _userAgentMatch(/trident/i);
+        return _userAgentMatch(/\sEdge\/\d+/i);
     };
+
+
+    var _isIETrident = browser.isIETrident = _browserCheck(/trident\/.+rv:\s*11/i);
 
 
     var _isMSIE = browser.isMSIE = function(browserVersion) {
@@ -50,26 +49,25 @@ define([
         return _userAgentMatch(/msie/i);
     };
 
-    var _isChrome = _browserCheck(/chrome/i);
-
-    browser.isChrome = function(){
-        return _isChrome() && !browser.isEdge();
+    browser.isChrome = function() {
+        return _userAgentMatch(/\s(?:Chrome|CriOS)\//i) && !browser.isEdge();
     };
 
     browser.isIE = function(browserVersion) {
         if (browserVersion) {
             browserVersion = parseFloat(browserVersion).toFixed(1);
-            if (browserVersion >= 11) {
-                return _isIETrident(browserVersion);
-            } else {
-                return _isMSIE(browserVersion);
+            if (browserVersion >= 12) {
+                return _isEdge(browserVersion);
+            } else if (browserVersion >= 11) {
+                return _isIETrident();
             }
+            return _isMSIE(browserVersion);
         }
-        return _isMSIE() || _isIETrident();
+        return _isEdge() || _isIETrident() || _isMSIE();
     };
 
     browser.isSafari = function() {
-        return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) &&
+        return (_userAgentMatch(/safari/i) && !_userAgentMatch(/chrome/i) && !_userAgentMatch(/crios/i) &&
         !_userAgentMatch(/chromium/i) && !_userAgentMatch(/android/i));
     };
 
@@ -77,7 +75,7 @@ define([
     var _isIOS = browser.isIOS = function(osVersion) {
         if (osVersion) {
             return _userAgentMatch(
-                new RegExp('iP(hone|ad|od).+\\s(OS\\s'+osVersion+'|.*\\sVersion/'+osVersion+')', 'i')
+                new RegExp('iP(hone|ad|od).+\\s(OS\\s' + osVersion + '|.*\\sVersion/' + osVersion + ')', 'i')
             );
         }
         return _userAgentMatch(/iP(hone|ad|od)/i);
@@ -89,7 +87,7 @@ define([
     };
 
     var _isAndroid = browser.isAndroid = function(osVersion, excludeChrome) {
-        //Android Browser appears to include a user-agent string for Chrome/18
+        // Android Browser appears to include a user-agent string for Chrome/18
         if (excludeChrome && _userAgentMatch(/chrome\/[123456789]/i) && !_userAgentMatch(/chrome\/18/)) {
             return false;
         }
@@ -109,7 +107,11 @@ define([
     };
 
     browser.isIframe = function () {
-        return (window.frameElement && (window.frameElement.nodeName === 'IFRAME'));
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
     };
 
     /**
@@ -120,8 +122,8 @@ define([
             return 0;
         }
 
-        var plugins = navigator.plugins,
-            flash;
+        var plugins = navigator.plugins;
+        var flash;
 
         if (plugins) {
             flash = plugins['Shockwave Flash'];
@@ -136,7 +138,7 @@ define([
                 if (flash) {
                     return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
                 }
-            } catch(e) {
+            } catch (e) {
                 return 0;
             }
 

@@ -1,31 +1,33 @@
 define([
     'utils/helpers',
-    'utils/strings',
-    'utils/underscore'
-], function(utils, strings, _) {
-
+    'utils/strings'
+], function(utils, strings) {
     var Defaults = {
-        //file: undefined,
-        //label: undefined,
-        //type: undefined,
-        //androidhls : undefined,
         'default': false
     };
 
+    /**
+     * A media source variant present in a playlist item
+     * @typedef {object} PlaylistItemSource
+     * @property {string} file - The media URL.
+     * @property {string} type - The type (common file extension) of media.
+     * @property {boolean} default - Default sources are prioritized over others.
+     * @property {string} label - The quality label to be used with multiple mp4/webm sources.
+     */
 
-    var Source = function (config) {
+    return function Source(config) {
         // file is the only hard requirement
         if (!config || !config.file) {
             return;
         }
 
-        var _source = _.extend({}, Defaults, config);
+        var _source = Object.assign({}, Defaults, config);
 
         // normalize for odd strings
         _source.file = strings.trim('' + _source.file);
 
         // regex to check if mimetype is given
-        var mimetypeRegEx = /^[^\/]+\/(?:x-)?([^\/]+)$/;
+        var mimetypeRegEx = /^[^/]+\/(?:x-)?([^/]+)$/;
 
         if (mimetypeRegEx.test(_source.type)) {
             // if type is given as a mimetype
@@ -63,17 +65,17 @@ define([
             case 'm4a':
                 _source.type = 'aac';
                 break;
+            default:
+                break;
         }
 
         // remove empty strings
-        _.each(_source, function(val, key) {
-            if (val === '') {
+        Object.keys(_source).forEach(function(key) {
+            if (_source[key] === '') {
                 delete _source[key];
             }
         });
 
         return _source;
     };
-
-    return Source;
 });

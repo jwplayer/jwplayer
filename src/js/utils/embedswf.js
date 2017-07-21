@@ -1,3 +1,5 @@
+import { Browser } from 'environment/environment';
+
 define([
     'utils/helpers',
     'utils/backbone.events',
@@ -14,13 +16,22 @@ define([
         object.appendChild(param);
     }
 
+    function addGetter(obj, property, value) {
+        Object.defineProperty(obj, property, {
+            get: function() {
+                return value;
+            }
+        });
+    }
+
     function embed(swfUrl, container, id, wmode) {
         var swf;
+        var queueCommands = true;
 
         wmode = wmode || 'opaque';
 
-        if (utils.isMSIE()) {
-            // IE8 works best with outerHTML
+        if (Browser.msie) {
+            // IE9 works best with outerHTML
             var temp = document.createElement('div');
             container.appendChild(temp);
 
@@ -68,39 +79,86 @@ define([
         swf.style.right = 0;
         swf.style.top = 0;
         swf.style.bottom = 0;
+        if (Browser.ie && ('PointerEvent' in window)) {
+            swf.style.pointerEvents = 'none';
+        }
 
         // flash can trigger events
-        _.extend(swf, Events);
+        var processEventsTimeout = -1;
+        addGetter(swf, 'on', Events.on);
+        addGetter(swf, 'once', Events.once);
+        addGetter(swf, '_eventQueue', []);
+        addGetter(swf, 'off', function() {
+            var args = Array.prototype.slice.call(arguments);
+            if (!args.length) {
+                swf._eventQueue.length = 0;
+                clearTimeout(processEventsTimeout);
+            }
+            return Events.off.apply(swf, args);
+        });
+        addGetter(swf, 'trigger', function(type, json) {
+            var eventQueue = swf._eventQueue;
+            eventQueue.push({ type: type, json: json });
+            if (processEventsTimeout > -1) {
+                return;
+            }
+            processEventsTimeout = setTimeout(function() {
+                var length = eventQueue.length;
+                processEventsTimeout = -1;
+                while (length--) {
+                    var event = eventQueue.shift();
+                    if (event.json) {
+                        var data = JSON.parse(decodeURIComponent(event.json));
+                        Events.trigger.call(swf, event.type, data);
+                    } else {
+                        Events.trigger.call(swf, event.type);
+                    }
+                }
+            });
+        });
 
-        swf.queueCommands = true;
+        let events = {};
+        Object.defineProperty(swf, '_events', {
+            get: function () {
+                return events;
+            },
+            set: function (value) {
+                events = value;
+            }
+        });
+
         // javascript can trigger SwfEventRouter callbacks
-        swf.triggerFlash = function(name) {
-            var swfInstance = this;
-            if (name !== 'setup' && swfInstance.queueCommands || !swfInstance.__externalCall) {
-                var commandQueue = swfInstance.__commandQueue;
+        addGetter(swf, 'triggerFlash', function(name) {
+            if (name === 'setupCommandQueue') {
+                queueCommands = false;
+            }
+
+            if (name !== 'setup' && queueCommands || !swf.__externalCall) {
+                var commandQueue = swf.__commandQueue;
                 // remove any earlier commands with the same name
-                for (var i = commandQueue.length; i--;) {
-                    if (commandQueue[i][0] === name) {
-                        commandQueue.splice(i, 1);
+                for (var j = commandQueue.length; j--;) {
+                    if (commandQueue[j][0] === name) {
+                        commandQueue.splice(j, 1);
                     }
                 }
                 commandQueue.push(Array.prototype.slice.call(arguments));
-                return swfInstance;
+                return swf;
             }
+
             var args = Array.prototype.slice.call(arguments, 1);
             var status = utils.tryCatch(function() {
                 if (args.length) {
                     // remove any nodes from arguments
                     // cyclical structures cannot be converted to JSON
-                    for (var i=args.length; i--;) {
-                        if (typeof args[i] === 'object') {
-                            _.each(args[i], deleteHTMLElement);
+                    for (var k = args.length; k--;) {
+                        if (typeof args[k] === 'object') {
+                            _.each(args[k], deleteHTMLElement);
                         }
                     }
                     var json = JSON.stringify(args);
-                    swfInstance.__externalCall(name, json);
+                    swf.__externalCall(name, json);
                 } else {
-                    swfInstance.__externalCall(name);
+                    swf.__externalCall(name);
                 }
             });
 
@@ -111,11 +169,11 @@ define([
                     return status;
                 }
             }
-            return swfInstance;
-        };
+            return swf;
+        });
 
         // commands are queued when __externalCall is not available
-        swf.__commandQueue = [];
+        addGetter(swf, '__commandQueue', []);
 
         return swf;
     }
@@ -124,6 +182,7 @@ define([
         if (swf && swf.parentNode) {
             swf.style.display = 'none';
             swf.parentNode.removeChild(swf);
+            swf = null;
         }
     }
 
@@ -134,7 +193,7 @@ define([
     }
 
     return {
-        embed : embed,
-        remove : remove
+        embed: embed,
+        remove: remove
     };
 });

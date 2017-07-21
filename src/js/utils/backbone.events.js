@@ -18,9 +18,9 @@ define([
 ], function(_) {
 
     var array = [];
-    //var push = array.push;
+    // var push = array.push;
     var slice = array.slice;
-    //var splice = array.splice;
+    // var splice = array.splice;
 
     var Events = {
 
@@ -30,7 +30,7 @@ define([
             if (!eventsApi(this, 'on', name, [callback, context]) || !callback) return this;
             this._events || (this._events = {});
             var events = this._events[name] || (this._events[name] = []);
-            events.push({callback: callback, context: context});
+            events.push({ callback: callback, context: context });
             return this;
         },
 
@@ -101,8 +101,8 @@ define([
             if (!eventsApi(this, 'trigger', name, args)) return this;
             var events = this._events[name];
             var allEvents = this._events.all;
-            if (events) safeTriggerEvents(events, args, this);
-            if (allEvents) safeTriggerEvents(allEvents, arguments, this);
+            if (events) safeTriggerEvents(events, args, this, name);
+            if (allEvents) safeTriggerEvents(allEvents, arguments, this, name);
             return this;
         }
 
@@ -181,12 +181,15 @@ define([
     };
 
     // This is a deconstruction of the above default while loop, with try/catch inserted
-    var safeTriggerEvents = function(events, args, context) {
+    var safeTriggerEvents = function(events, args, context, name) {
         var ev, i = -1, l = events.length;
         while (++i < l) {
             try {
-                (ev = events[i]).callback.apply(ev.context || context, args);
-            } catch(e) {}
+                ev = events[i];
+                ev.callback.apply(ev.context || context, args);
+            } catch(e) {
+                console.log('Error in "' + name + '" event handler:', e);
+            }
         }
     };
 

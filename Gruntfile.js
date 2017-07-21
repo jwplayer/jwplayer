@@ -1,9 +1,13 @@
-/* jshint node: true */
+'use strict';
 
-var path = require('path');
+/* eslint-env node */
+/* eslint no-process-env: 0 */
+
 var webpack = require('webpack');
-var parallelWebpack = require('parallel-webpack');
+var webpackConfigs = require('./webpack.config');
+var webpackCompilers = {};
 var env = process.env;
+var execSync = require('child_process').execSync;
 
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
@@ -39,119 +43,92 @@ module.exports = function(grunt) {
         starttime: new Date(),
         pkg: packageInfo,
 
-        jshint: {
+        stylelint: {
             options: {
-                jshintrc: '.jshintrc'
+                configFile: '.stylelintrc',
+                formatter: 'string',
+                ignoreDisables: false,
+                failOnError: true,
+                reportNeedlessDisables: false,
+                syntax: 'less'
             },
-            player : [
-                'src/js/**/*.js'
-            ],
-            tests : [
-                'test/{,*/}*.js'
-            ],
-            grunt : [
-                'Gruntfile.js'
+            src: [
+                'src/**/*.less'
             ]
         },
 
-        // lints Less
-        recess: {
+        less: {
             options: {
-                // Set compile and compress to false to lint
-                compile: false,
                 compress: false,
-                noIDs: true,
-                noJSPrefix: true,
-                noOverqualifying: false,
-                noUnderscores: true,
-                noUniversalSelectors: false,// true,
-                strictPropertyOrder: false, // true,
-                zeroUnits: false,
-                includePaths: ['src/css', 'src/css/*']
-            },
-            lint: {
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-debug/skins/',
-                    cwd: 'src/css/',
-                    src: '{,*/}*.less'
-                }]
+                paths: ['src/css', 'src/css/*']
             },
             internal: {
                 options: {
-                    compile: true
+                    dumpLineNumbers: 'comments'
                 },
                 files: {
-                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less'
+                    'bin-debug/css/jwplayer.css': 'src/css/jwplayer.less',
+                    'bin-debug/css/controls.css': 'src/css/controls.less'
                 }
+            }
+        },
+
+        postcss: {
+            options: {
+                processors: [
+                    require('autoprefixer')
+                ],
+                failOnError: true,
+                writeDest: true
+            },
+            internal: {
+                src: [
+                    'bin-debug/css/*.css',
+                ]
             },
             debug: {
-                options: {
-                    compile: true
-                },
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-debug/skins/',
-                    cwd: 'src/css/skins/',
-                    src: '*.less'
-                }]
-            },
-            release: {
-                options: {
-                    compile: true,
-                    compress: true
-                },
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-release/skins/',
-                    cwd: 'src/css/skins/',
-                    src: '*.less'
-                }]
+                src: [
+                    'bin-debug/css/*.css',
+                ]
             }
         },
 
         watch : {
             options: {
-                livereload: true
-            },
-            jshint: {
-                files: [
-                    '.jshintrc',
-                    '.jshintignore'
-                ],
-                tasks: ['jshint']
+                interrupt: false,
+                spawn: false,
+                debounceDelay: 3000,
+                livereload: true,
+                event: ['added', 'changed'],
+                dateFormat: function(time) {
+                    grunt.log.writeln('Updated in ' + (time / 1000).toFixed(3) + 's at ' + (new Date()).toISOString());
+                }
             },
             player: {
-                files : ['src/js/**/*.js'],
-                tasks: ['webpack:debug', 'jshint:player', 'karma:local'],
                 options: {
-                    spawn: false
-                }
+                    atBegin: true
+                },
+                files: ['src/js/**/*.js'],
+                tasks: [
+                    'webpack:debug',
+                    'lint:player',
+                    'karma:local'
+                ]
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
-                tasks: ['webpack:debug', 'recess:lint', 'recess:debug'],
-                options: {
-                    spawn: false
-                }
+                tasks: ['stylelint', 'webpack:debug', 'postcss:debug']
             },
             tests: {
-                files : ['test/{,*/}*.js'],
-                tasks: ['jshint:tests', 'karma:local']
+                files: ['test/{,*/}*.js'],
+                tasks: ['lint:tests', 'karma:local']
             },
             flash: {
-                files : [
+                files: [
                     'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
-                tasks: ['build-flash']
-            },
-            grunt: {
-                files: ['Gruntfile.js'],
-                tasks: ['jshint:grunt']
+                tasks: ['flash:debug']
             }
         },
 
@@ -172,31 +149,13 @@ module.exports = function(grunt) {
                 }
             }
         },
-        uglify: {
-            options: {
-                // screwIE8: true,
-                compress: {
-                    warnings: true
-                },
-                mangle: {
-                    except: ['RESERVED_KEYWORDS_TO_PROTECT']
-                }
-            },
-            release: {
-                files: {
-                    'bin-release/jwplayer.js': ['bin-release/jwplayer.js']
-                }
-            }
-        },
-
         flash: {
             options: {
+                flashVersion: '18.0',
+                swfTarget: 29,
                 targetCompilerOptions : [
                     '-define+=JWPLAYER::version,\'' + packageInfo.version + '\''
-                ],
-                // prefer AIR_HOME for faster compilation and JRE 7 64-bit support
-                sdk: env.AIR_HOME || env.FLEX_HOME,
-                ascshdPort: 11123
+                ]
             },
             debug : {
                 options : {
@@ -230,35 +189,37 @@ module.exports = function(grunt) {
                 },
                 concurrency: 1
             },
-            phantomjs : {
+            phantomjs: {
                 browsers: ['PhantomJS']
             },
-            chrome : {
+            chrome: {
                 browsers: ['Chrome']
             },
-            firefox : {
+            firefox: {
                 browsers: ['Firefox']
             },
-            safari : {
+            safari: {
                 browsers: ['Safari']
             },
-            // browserstack_all: { browsers: Object.keys( require( './test/qunit/karma/browserstack-launchers' ) ) },
-            browserstack : {
+            browserstack: {
+                browsers: ['chrome', 'firefox', 'ie11_windows']
+            },
+            browserstack_chrome: {
                 browsers: ['chrome']
             },
-            browserstack_firefox : {
+            browserstack_firefox: {
                 browsers: ['firefox']
             },
-            browserstack_edge : {
+            browserstack_edge: {
                 browsers: ['edge']
             },
-            browserstack_ie11 : {
+            browserstack_ie11: {
                 browsers: ['ie11_windows']
             },
-            browserstack_ie10 : {
+            browserstack_ie10: {
                 browsers: ['ie10_windows']
             },
-            browserstack_ie9 : {
+            browserstack_ie9: {
                 browsers: ['ie9_windows']
             }
         },
@@ -272,33 +233,61 @@ module.exports = function(grunt) {
                     'bin-debug/',
                     'bin-release/'
                 ]
+            },
+            docs: {
+                src: [
+                    'docs/api/'
+                ]
             }
         }
     });
 
-    grunt.registerTask('webpack-watch', 'Spawn a webpack watch task', function() {
-        var done = this.async();
-        parallelWebpack.run(path.resolve('./webpack.config.js'), {
-            watch: true
-        }).then(done).catch(function(err) {
-            grunt.log.error(err.toString());
-            done(false);
+    grunt.registerTask('webpack', 'Run webpack compiler', function() {
+        const done = this.async();
+
+        const targets = {};
+        this.args.forEach(t => {
+            targets[t] = true;
+        });
+        const configs = webpackConfigs(targets);
+
+        // Store compiler for faster "watch" and "server" task running
+        // this works as long as the watch task doesn't spawn a new process
+        const id = this.args.join('_') || 'all';
+        const compiler = webpackCompilers[id] || webpack(configs);
+        webpackCompilers[id] = compiler;
+
+        compiler.run(function(err, stats) {
+            if (err) {
+                throw err;
+            }
+            var jsonStats = stats.toJson();
+            if (jsonStats.errors.length) {
+                throw jsonStats.errors;
+            }
+            if (jsonStats.warnings.length) {
+                console.warn(jsonStats.warnings);
+            }
+            done();
         });
     });
 
-    grunt.registerTask('webpack', 'Run webpack compiler', function() {
-        var done = this.async();
-        parallelWebpack.run(path.resolve('./webpack.config.js'), {}).then(function(err, res) {
-            if (err) {
-                grunt.log.error(err.toString());
-            }
-            if (res) {
-                grunt.log.writeln(res.toString());
-            }
-            done();
-        }).catch(function(err) {
-            grunt.log.error(err.toString());
-            done(false);
+    grunt.registerTask('lint', 'ESLint JavaScript', function(target) {
+        var command = 'npm run lint';
+        if (target === 'test') {
+            command = command + '-tests';
+        }
+        execSync(command, {
+            cwd: '.',
+            stdio: [0, 1, 2]
+        });
+    });
+
+    grunt.registerTask('docs', 'Generate API documentation', function() {
+        var command = 'npm run docs';
+        execSync(command, {
+            cwd: '.',
+            stdio: [0, 1, 2]
         });
     });
 
@@ -318,9 +307,10 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build-js', [
         'webpack',
-        'uglify',
-        'jshint:player',
-        'recess'
+        'lint:player',
+        'stylelint',
+        'less',
+        'postcss'
     ]);
 
     grunt.registerTask('build-flash', [
@@ -329,7 +319,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build', [
-        'clean',
+        'clean:dist',
         'build-js',
         'build-flash',
         'karma:local'

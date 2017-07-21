@@ -1,43 +1,32 @@
-@import "imports/reset.less";
+@import "jwplayer/imports/reset";
 
-@import "imports/jwplayerelement.less";
-@import "imports/video.less";
-@import "imports/display.less";
-@import "imports/controlbar.less";
-@import "imports/dock.less";
-@import "imports/title.less";
-@import "imports/slider.less";
+@import "shared-imports/mixins";
 
-@import "imports/captions.less";
-@import "imports/rightclick.less";
-@import "imports/logo.less";
-@import "imports/tooltip.less";
-@import "imports/playlist.less";
-@import "imports/skipad.less";
-@import "imports/cast.less";
+@accent-color: #fff;
+@inactive-color: #cecece;
+
+@controlbar-background: rgba(33, 33, 33, 0.8);
+@display-bkgd-color: @controlbar-background;
+@display-bkgd-hover-color: rgba(33, 33, 33, 1);
+
+@controlbar-height: 2.5em;
+
+#namespace > .basic-skin-styles();
+#namespace > .set-global-color-classes();
+
+@import "jwplayer/imports/jwplayerlayout";
+@import "jwplayer/imports/video";
+@import "jwplayer/imports/display";
+@import "jwplayer/imports/title";
+
+@import "jwplayer/imports/captions";
+@import "jwplayer/imports/logo";
 
 // State specific
-@import "states/idle.less";
-@import "states/playing.less";
-@import "states/paused.less";
-@import "states/buffering.less";
-@import "states/complete.less";
-@import "states/error.less";
+@import "jwplayer/states";
+@import "jwplayer/flags/skinloading";            // Hides content until styles loaded.  Rename stylesloading.les
+@import "jwplayer/flags/fullscreen";
+@import "jwplayer/flags/flash-blocked";
+@import "jwplayer/flags/controls-hidden";
 
-@import "flags/cast-available.less";
-@import "flags/skinloading.less";
-@import "flags/fullscreen.less";
-@import "flags/live.less";
-@import "flags/user-inactive.less";
-@import "flags/media-audio.less";
-@import "flags/ads.less";
-@import "flags/overlay.less";
-@import "flags/rightclick-open";
-@import "flags/controls-disabled";
-@import "flags/flash-blocked";
-@import "flags/touch";
-@import "flags/compact-player";
-@import "flags/audioplayer.less";
-
-// Skins
-@import "skins/seven";
+@import "jwplayer/flags/audioplayer";

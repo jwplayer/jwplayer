@@ -1,0 +1,66 @@
+@import "../shared-imports/vars";
+
+// setup
+.jw-state-setup {
+    background-color: transparent;
+
+    .jw-logo {
+        visibility: hidden;
+    }
+}
+
+// errors
+body .jw-error,
+body .jwplayer.jw-state-error {
+    .jw-title {
+        display: block;
+
+        .jw-title-primary {
+            white-space: normal;
+        }
+
+        .jw-title-secondary {
+            display: block;
+        }
+    }
+}
+
+body .jw-error {
+    font-size: @default-em-size;
+    background-color: #000;
+    color: @font-color;
+    width: 100%;
+    height: 100%;
+    display: table;
+    opacity: 1;
+    position: relative;
+}
+
+// Show preview
+body .jwplayer.jw-state-error,
+body .jw-error,
+.jw-state-idle,
+.jwplayer.jw-state-complete:not(.jw-flag-casting):not(.jw-flag-audio-player) {
+    // Show the title
+    .jw-title {
+        display: block;
+    }
+
+    .jw-preview {
+        display: block;
+    }
+}
+
+// Hide captions
+.jw-state-idle,
+.jwplayer.jw-state-complete,
+body .jwplayer.jw-state-error {
+    .jw-captions {
+        display: none;
+    }
+
+    /* captions styles code specific to native text track rendering */
+    video::-webkit-media-text-track-container {
+        display: none;
+    }
+}

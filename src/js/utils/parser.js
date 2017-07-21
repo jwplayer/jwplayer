@@ -4,20 +4,24 @@ define([
 ], function(_, validator) {
     var parser = {};
 
-    /** Gets an absolute file path based on a relative filepath * */
+    // Gets an absolute file path based on a relative filepath
     parser.getAbsolutePath = function (path, base) {
         if (!validator.exists(base)) {
             base = document.location.href;
         }
+
         if (!validator.exists(path)) {
             return;
         }
+
         if (isAbsolutePath(path)) {
             return path;
         }
+
         var protocol = base.substring(0, base.indexOf('://') + 3);
         var domain = base.substring(protocol.length, base.indexOf('/', protocol.length + 1));
         var patharray;
+
         if (path.indexOf('/') === 0) {
             patharray = path.split('/');
         } else {
@@ -27,27 +31,30 @@ define([
         }
         var result = [];
         for (var i = 0; i < patharray.length; i++) {
-            if (!patharray[i] || !validator.exists(patharray[i]) || patharray[i] === '.') {
-                continue;
-            } else if (patharray[i] === '..') {
-                result.pop();
-            } else {
-                result.push(patharray[i]);
+            if (patharray[i] && validator.exists(patharray[i]) && patharray[i] !== '.') {
+                if (patharray[i] === '..') {
+                    result.pop();
+                } else {
+                    result.push(patharray[i]);
+                }
             }
         }
         return protocol + domain + '/' + result.join('/');
     };
 
     function isAbsolutePath(path) {
-        return /^(?:(?:https?|file)\:)?\/\//.test(path);
+        return /^(?:(?:https?|file):)?\/\//.test(path);
     }
 
     parser.getScriptPath = _.memoize(function(scriptName) {
         var scripts = document.getElementsByTagName('script');
         for (var i = 0; i < scripts.length; i++) {
             var src = scripts[i].src;
-            if (src && src.indexOf(scriptName) >= 0) {
-                return src.substr(0, src.indexOf(scriptName));
+            if (src) {
+                var index = src.indexOf('/' + scriptName);
+                if (index >= 0) {
+                    return src.substr(0, index + 1);
+                }
             }
         }
         return '';
@@ -77,7 +84,7 @@ define([
                 parsedXML.async = 'false';
                 parsedXML.loadXML(input);
             }
-        } catch(e) {/* Expected when content is not XML */}
+        } catch (e) {/* Expected when content is not XML */}
 
         return parsedXML;
     };
@@ -122,7 +129,7 @@ define([
 
     /** Format the elapsed / remaining text. **/
     parser.timeFormat = function(sec, allowNegative) {
-        if (sec <= 0 && !allowNegative) {
+        if ((sec <= 0 && !allowNegative) || _.isNaN(parseInt(sec))) {
             return '00:00';
         }
 
@@ -130,28 +137,13 @@ define([
         var prefix = (sec < 0) ? '-' : '';
         sec = Math.abs(sec);
 
-        var hrs  = Math.floor(sec / 3600),
-            mins = Math.floor((sec - hrs * 3600) / 60),
-            secs = Math.floor(sec % 60);
+        var hrs = Math.floor(sec / 3600);
+        var mins = Math.floor((sec - hrs * 3600) / 60);
+        var secs = Math.floor(sec % 60);
 
         return prefix + (hrs ? hrs + ':' : '') + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
     };
 
-    /**
-     * Determine the adaptive type
-     */
-    parser.adaptiveType = function(duration) {
-        if (duration !== 0) {
-            var MIN_DVR_DURATION = -120;
-            if (duration <= MIN_DVR_DURATION) {
-                return 'DVR';
-            }
-            if (duration < 0 || duration === Infinity) {
-                return 'LIVE';
-            }
-        }
-        return 'VOD';
-    };
 
     return parser;
 });

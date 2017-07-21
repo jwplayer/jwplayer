@@ -1,0 +1,101 @@
+@default-em-size: 16px;
+
+// mobile touch target size (iOS standard)
+@mobile-touch-target: 44px;
+
+// breakpoint width references
+@min-breakpoint-7-width: 1280px;
+@max-breakpoint-6-width: 1279px;
+@min-breakpoint-6-width: 960px;
+@max-breakpoint-5-width: 959px;
+@min-breakpoint-5-width: 800px;
+@max-breakpoint-4-width: 799px;
+@min-breakpoint-4-width: 640px;
+@max-breakpoint-3-width: 639px;
+@min-breakpoint-3-width: 540px;
+@max-breakpoint-2-width: 539px;
+@min-breakpoint-2-width: 420px;
+@max-breakpoint-1-width: 419px;
+@min-breakpoint-1-width: 320px;
+@max-breakpoint-0-width: 319px;
+@min-breakpoint-0-width: 0;
+
+// (160,160,160)
+// Colors
+@active-color: rgba(255, 255, 255, 1);
+@inactive-color: rgba(255, 255, 255, 0.6);
+@background-color: rgba(33, 33, 33, 0.8);
+@accent-color: rgba(255, 255, 255, 1);
+@option-inactive-color: @inactive-color;
+@option-active-color: @active-color;
+@option-active-bg-color: rgba(255, 255, 255, 0.1);
+
+@rail-color: rgba(255, 255, 255, 0.2);
+@buffer-color: rgba(255, 255, 255, 0.3);
+@progress-color: rgba(255, 255, 255, 1);
+
+@hover-color: @accent-color;
+@controlbar-background: @background-color;
+
+@toggle-inactive: @inactive-color;
+@toggle-active: @accent-color;
+
+// Display icon is the big play button shown before playback
+@display-bkgd-color:  rgba(33, 33, 33, 1);
+@display-bkgd-hover-color:  rgba(0, 0, 0, 0.8);
+@display-icon-color: @inactive-color;
+@display-icon-hover-color: @accent-color;
+@display-icon-container-size: 3.75em;
+
+// Fonts
+@text-transform: normal;
+@font-weight: normal;
+@font-size: 0.75em;
+@font-color: @active-color;
+
+// UI
+@ui-padding: 0.5em;
+@ui-corner-round: @thumb-size / 2;
+@ui-margin: 1.5em;
+
+// Controlbar
+@controlbar-height: 2.5em;
+@controlbar-icon-size: 0.5em;
+
+// Rails and sliders
+@rail-height: 0.3em;
+@slider-height: @rail-height;
+@def-rail-width: @rail-height;
+@def-rail-width-padding: 0.6em;
+@time-rail-width: @def-rail-width;
+@volume-rail-width: @def-rail-width;
+@volume-rail-length: 4em;
+@thumb-size: @rail-height * 2;
+
+// fixed slider
+
+@slider-fixed-height: @mobile-touch-target / 2;
+@slider-fixed-rail-height: 2px;
+@slider-fixed-knob-height: 16px;
+@slider-fixed-knob-width: @slider-fixed-knob-height;
+@slider-fixed-knob-border-radius: 100%;
+
+// Volume tooltip
+@volume-background: @background-color;
+@volume-border: 0;
+@volume-padding: @ui-padding * 2;
+@volume-border-radius: 0;
+
+@dock-corner-radius: 0;
+
+// Next up display
+@nextup-border-radius: 0;
+@nextup-header-background: @controlbar-background;
+@nextup-header-text-color: @active-color;
+@nextup-body-background: darken(@nextup-header-background, 20%);
+@nextup-body-text-color: #fff;
+@nextup-body-text-color-overflow: darken(fade(@controlbar-background, 100%), 20%);
+@nextup-close-button-color-inactive: @inactive-color;
+@nextup-close-button-color-active: @active-color;
+@nextup-close-button-color-hover: @hover-color;
+@fixed-time-slider-progress-color: @progress-color;

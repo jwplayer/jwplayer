@@ -1,19 +1,15 @@
+import { READY, SETUP_ERROR } from 'events/events';
+
 define([
     'controller/setup-steps',
     'utils/backbone.events',
-    'utils/underscore',
-    'events/events'
-], function(SetupSteps, Events, _, events) {
-
-
+    'utils/underscore'
+], function(SetupSteps, Events, _) {
     var Setup = function(_api, _model, _view, _setPlaylist) {
-        var _this = this,
-            _setupFailureTimeout;
-
+        var _this = this;
+        var _setupFailureTimeout;
         var _queue = SetupSteps.getQueue();
-
         var _errorTimeoutSeconds = 30;
-
 
         this.start = function () {
             _setupFailureTimeout = setTimeout(_setupTimeoutHandler, _errorTimeoutSeconds * 1000);
@@ -34,17 +30,15 @@ define([
         }
 
         function _nextTask() {
-            _.each(_queue, function(c) {
-                // If task completed, or destroy was called
-                if (c.complete === true || c.running === true || _api === null) {
-                    return;
+            for (var taskName in _queue) {
+                if (Object.prototype.hasOwnProperty.call(_queue, taskName)) {
+                    var c = _queue[taskName];
+                    if (!c.complete && !c.running && _api && _allComplete(c.depends)) {
+                        c.running = true;
+                        callTask(c);
+                    }
                 }
-
-                if (_allComplete(c.depends)) {
-                    c.running = true;
-                    callTask(c);
-                }
-            });
+            }
         }
 
         function callTask(task) {
@@ -69,7 +63,7 @@ define([
                 _error(resolveState.msg, resolveState.reason);
             } else if (resolveState.type === 'complete') {
                 clearTimeout(_setupFailureTimeout);
-                _this.trigger(events.JWPLAYER_READY);
+                _this.trigger(READY);
             } else {
                 task.complete = true;
                 _nextTask();
@@ -78,7 +72,7 @@ define([
 
         function _error(message, reason) {
             clearTimeout(_setupFailureTimeout);
-            _this.trigger(events.JWPLAYER_SETUP_ERROR, {
+            _this.trigger(SETUP_ERROR, {
                 message: message + ': ' + reason
             });
             _this.destroy();

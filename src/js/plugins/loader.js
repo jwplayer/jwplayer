@@ -1,11 +1,12 @@
+import { MEDIA_COMPLETE, ERROR } from 'events/events';
+
 define([
     'plugins/utils',
     'utils/helpers',
-    'events/events',
     'utils/backbone.events',
     'utils/underscore',
     'utils/scriptloader'
-], function(pluginsUtils, utils, events, Events, _, scriptloader) {
+], function(pluginsUtils, utils, Events, _, scriptloader) {
 
     function _addToPlayerGenerator(_api, pluginInstance, div) {
         return function() {
@@ -16,9 +17,9 @@ define([
                 return;
             }
 
-            overlaysElement.appendChild(div);
             div.left = overlaysElement.style.left;
             div.top = overlaysElement.style.top;
+            overlaysElement.appendChild(div);
 
             pluginInstance.displayArea = overlaysElement;
         };
@@ -39,12 +40,12 @@ define([
     }
 
     var PluginLoader = function (model, _config) {
-        var _this = _.extend(this, Events),
-            _status = scriptloader.loaderstatus.NEW,
-            _iscomplete = false,
-            _pluginCount = _.size(_config),
-            _pluginLoaded,
-            _destroyed = false;
+        var _this = _.extend(this, Events);
+        var _status = scriptloader.loaderstatus.NEW;
+        var _iscomplete = false;
+        var _pluginCount = _.size(_config);
+        var _pluginLoaded;
+        var _destroyed = false;
 
         /*
          * Plugins can be loaded by multiple players on the page, but all of them use
@@ -63,7 +64,7 @@ define([
             if (!_iscomplete) {
                 _iscomplete = true;
                 _status = scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(events.COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
             }
         }
 
@@ -80,16 +81,16 @@ define([
                 var plugins = model.getPlugins();
                 _pluginLoaded = _.after(_pluginCount, _complete);
                 _.each(_config, function (value, plugin) {
-                    var pluginName = pluginsUtils.getPluginName(plugin),
-                        pluginObj = plugins[pluginName],
-                        js = pluginObj.getJS(),
-                        target = pluginObj.getTarget(),
-                        status = pluginObj.getStatus();
+                    var pluginName = pluginsUtils.getPluginName(plugin);
+                    var pluginObj = plugins[pluginName];
+                    var js = pluginObj.getJS();
+                    var target = pluginObj.getTarget();
+                    var status = pluginObj.getStatus();
 
                     if (status === scriptloader.loaderstatus.LOADING || status === scriptloader.loaderstatus.NEW) {
                         return;
                     } else if (js && !utils.versionCheck(target)) {
-                        _this.trigger(events.ERROR, {
+                        _this.trigger(ERROR, {
                             message: 'Incompatible player version'
                         });
                     }
@@ -109,43 +110,50 @@ define([
                 utils.log(message, e.url);
             }
             this.off();
-            this.trigger(events.ERROR, {
+            this.trigger(ERROR, {
                 message: message
             });
             _checkComplete();
         }
 
         this.setupPlugins = function (api, playerModel) {
-            var flashPlugins = [],
-                plugins = model.getPlugins();
+            var flashPlugins = [];
+            var plugins = model.getPlugins();
 
             var pluginsConfig = playerModel.get('plugins');
-            _.each(pluginsConfig, function(pluginConfig, plugin) {
-                var pluginName = pluginsUtils.getPluginName(plugin),
-                    pluginObj = plugins[pluginName],
-                    flashPath = pluginObj.getFlashPath(),
-                    jsPlugin = pluginObj.getJS(),
-                    pluginURL = pluginObj.getURL();
+            _.each(pluginsConfig, function(config, plugin) {
+                var pluginName = pluginsUtils.getPluginName(plugin);
+                var pluginObj = plugins[pluginName];
+                var flashPath = pluginObj.getFlashPath();
+                var jsPlugin = pluginObj.getJS();
+                var pluginURL = pluginObj.getURL();
 
                 if (flashPath) {
                     var flashPluginConfig = _.extend({
                         name: pluginName,
                         swf: flashPath,
                         pluginmode: pluginObj.getPluginmode()
-                    }, pluginConfig);
+                    }, config);
                     flashPlugins.push(flashPluginConfig);
                 }
 
                 var status = utils.tryCatch(function() {
-                    if (jsPlugin && pluginsConfig[pluginURL]) {
+                    if (jsPlugin) {
+                        var pluginConfig = pluginsConfig[pluginURL];
+
+                        if (!pluginConfig) {
+                            utils.log('JW Plugin already loaded', pluginName, pluginURL);
+                            return;
+                        }
+
                         var div = document.createElement('div');
                         div.id = api.id + '_' + pluginName;
                         div.className = 'jw-plugin jw-reset';
 
-                        var pluginOptions = _.extend({}, pluginsConfig[pluginURL]);
+                        var pluginOptions = _.extend({}, pluginConfig);
                         var pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
-                        pluginInstance.addToPlayer   = _addToPlayerGenerator(api, pluginInstance, div);
+                        pluginInstance.addToPlayer = _addToPlayerGenerator(api, pluginInstance, div);
                         pluginInstance.resizeHandler = _pluginResizeGenerator(pluginInstance);
 
                         api.addPlugin(pluginName, pluginInstance, div);
@@ -174,8 +182,8 @@ define([
             _.each(_config, function(value, pluginUrl) {
                 if (utils.exists(pluginUrl)) {
                     var pluginObj = model.addPlugin(pluginUrl);
-                    pluginObj.on(events.COMPLETE, _checkComplete);
-                    pluginObj.on(events.ERROR, _pluginError);
+                    pluginObj.on(MEDIA_COMPLETE, _checkComplete);
+                    pluginObj.on(ERROR, _pluginError);
                 }
             });
 

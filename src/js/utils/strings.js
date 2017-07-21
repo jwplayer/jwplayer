@@ -1,17 +1,10 @@
 define([
     'utils/underscore'
 ], function(_) {
-    /** Removes whitespace from the beginning and end of a string **/
     var trim = function (inputString) {
         return inputString.replace(/^\s+|\s+$/g, '');
     };
 
-    /**
-     * Pads a string
-     * @param {String} string
-     * @param {Number} length
-     * @param {String} padder
-     */
     var pad = function (str, length, padder) {
         str = '' + str;
         padder = padder || '0';
@@ -21,12 +14,7 @@ define([
         return str;
     };
 
-    /**
-     * Get the value of a case-insensitive attribute in an XML node
-     * @param {XML} xml
-     * @param {String} attribute
-     * @return {String} Value
-     */
+    // Get the value of a case-insensitive attribute in an XML node
     var xmlAttribute = function (xml, attribute) {
         for (var attrib = 0; attrib < xml.attributes.length; attrib++) {
             if (xml.attributes[attrib].name && xml.attributes[attrib].name.toLowerCase() === attribute.toLowerCase()) {
@@ -36,15 +24,14 @@ define([
         return '';
     };
 
-    /**
-     * This does not return the file extension, instead it returns a media type extension
-     */
+    // This does not return the file extension, instead it returns a media type extension
     function getAzureFileFormat(path) {
-        if ((/[\(,]format=m3u8-/i).test(path)) {
+        if ((/[(,]format=m3u8-/i).test(path)) {
             return 'm3u8';
-        } else {
-            return false;
+        } else if ((/[(,]format=mpd-/i).test(path)) {
+            return 'mpd';
         }
+        return false;
     }
 
     var extension = function (path) {
@@ -63,12 +50,7 @@ define([
         }
     };
 
-    /**
-     * Convert seconds to HH:MN:SS.sss
-     *
-     * @param seconds  The number of seconds
-     * @return        An HH:MN:SS.sss string
-     **/
+    // Convert seconds to HH:MN:SS.sss
     var hms = function(seconds) {
         var h = parseInt(seconds / 3600);
         var m = parseInt(seconds / 60) % 60;
@@ -76,19 +58,15 @@ define([
         return pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s.toFixed(3), 6);
     };
 
-    /**
-     * Convert a time-representing string to a number.
-     *
-     * @param {String}    The input string. Supported are 00:03:00.1 / 03:00.1 / 180.1s / 3.2m / 3.2h
-     * @return {Number}    The number of seconds.
-     */
-    var seconds = function (str) {
+    // Convert a time-representing string to a number
+    var seconds = function (str, frameRate) {
         if (_.isNumber(str)) {
             return str;
         }
 
         str = str.replace(',', '.');
         var arr = str.split(':');
+        var arrLength = arr.length;
         var sec = 0;
         if (str.slice(-1) === 's') {
             sec = parseFloat(str);
@@ -96,11 +74,19 @@ define([
             sec = parseFloat(str) * 60;
         } else if (str.slice(-1) === 'h') {
             sec = parseFloat(str) * 3600;
-        } else if (arr.length > 1) {
-            sec = parseFloat(arr[arr.length - 1]);
-            sec += parseFloat(arr[arr.length - 2]) * 60;
-            if (arr.length === 3) {
-                sec += parseFloat(arr[arr.length - 3]) * 3600;
+        } else if (arrLength > 1) {
+            var secIndex = arrLength - 1;
+            if (arrLength === 4) {
+                // if frame is included in the string, calculate seconds by dividing by frameRate
+                if (frameRate) {
+                    sec = parseFloat(arr[secIndex]) / frameRate;
+                }
+                secIndex -= 1;
+            }
+            sec += parseFloat(arr[secIndex]);
+            sec += parseFloat(arr[secIndex - 1]) * 60;
+            if (arrLength >= 3) {
+                sec += parseFloat(arr[secIndex - 2]) * 3600;
             }
         } else {
             sec = parseFloat(str);
@@ -122,10 +108,10 @@ define([
     };
 
     return {
-        trim : trim,
-        pad : pad,
-        xmlAttribute : xmlAttribute,
-        extension : extension,
+        trim: trim,
+        pad: pad,
+        xmlAttribute: xmlAttribute,
+        extension: extension,
         hms: hms,
         seconds: seconds,
         suffix: suffix,

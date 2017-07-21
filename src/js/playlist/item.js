@@ -3,18 +3,25 @@ define([
     'playlist/source',
     'playlist/track'
 ], function(_, Source, Track) {
-
     var Defaults = {
-        //description: undefined,
-        //image: undefined,
-        //mediaid: undefined,
-        //title: undefined,
         sources: [],
-        tracks: []
+        tracks: [],
+        minDvrWindow: 120
     };
 
-    var PlaylistItem = function (config) {
+    /**
+     * An item in the playlist
+     * @typedef {object} PlaylistItem
+     * @property {Array.<PlaylistItemSource>} sources - A list of alternative media sources for the player to choose from.
+     * @property {Array.<PlaylistItemTrack>} tracks - A list of tracks associated with this item.
+     * @property {string} file - The selected source URL to be played.
+     * @property {string} [image] - The poster image.
+     * @property {'none'|'metadata'|'auto'} preload - The selected preload setting.
+     * @property {number} minDvrWindow - For live streams, the threshold at which the available media should be seekable,
+     * and treated as a DVR stream.
+     */
 
+    return function Item(config) {
         config = config || {};
         if (!_.isArray(config.tracks)) {
             delete config.tracks;
@@ -37,16 +44,19 @@ define([
         /** Each source should be a named object **/
         for (var i = 0; i < _playlistItem.sources.length; i++) {
             var s = _playlistItem.sources[i];
-            if (!s) { continue; }
-            var def = s['default'];
+            if (!s) {
+                continue;
+            }
+
+            var def = s.default;
             if (def) {
-                s['default'] = (def.toString() === 'true');
+                s.default = (def.toString() === 'true');
             } else {
-                s['default'] = false;
+                s.default = false;
             }
 
             // If the source doesn't have a label, number it
-            if (! _playlistItem.sources[i].label) {
+            if (!_playlistItem.sources[i].label) {
                 _playlistItem.sources[i].label = i.toString();
             }
 
@@ -69,6 +79,4 @@ define([
 
         return _playlistItem;
     };
-
-    return PlaylistItem;
 });

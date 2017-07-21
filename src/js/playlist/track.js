@@ -1,15 +1,20 @@
 define([
     'utils/underscore'
 ], function(_) {
-
     var defaults = {
-        //file: undefined,
-        //label: undefined,
         kind: 'captions',
         'default': false
     };
 
-    var Track = function (config) {
+    /**
+     * A media source variant present in a playlist item
+     * @internal
+     * @typedef {object} PlaylistItemTrack
+     * @property {'captions'|'subtitles'|'chapters'|'thumbnails'} kind - The kind of track.
+     * @property {boolean} default - Enable the track by default.
+     */
+
+    return function Track(config) {
         // File is the only required attr
         if (!config || !config.file) {
             return;
@@ -17,6 +22,4 @@ define([
 
         return _.extend({}, defaults, config);
     };
-
-    return Track;
 });

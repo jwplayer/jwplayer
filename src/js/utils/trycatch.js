@@ -1,26 +1,22 @@
 define([
 ], function() {
+    var tryCatch = function (fn, ctx, args = []) {
 
-    var tryCatch = function (fn, ctx, args) {
-        // IE8 requires these not be undefined
-        ctx = ctx || this;
-        args = args || [];
-
-        // if in debug mode, let 'er blow!
-        if (window.jwplayer && window.jwplayer.debug) {
-            return fn.apply(ctx, args);
+        // In debug mode, allow `fn` to throw exceptions
+        var jwplayer = window.jwplayer;
+        if (jwplayer && jwplayer.debug) {
+            return fn.apply(ctx || this, args);
         }
 
-        // else be careful
+        // else catch exceptions and return a `JWError`
         try {
-            return fn.apply(ctx, args);
-        }
-        catch (e) {
-            return new jwError(fn.name, e);
+            return fn.apply(ctx || this, args);
+        } catch (e) {
+            return new JWError(fn.name, e);
         }
     };
 
-    var jwError = function (name, error) {
+    var JWError = function (name, error) {
         this.name = name;
         this.message = error.message || error.toString();
         this.error = error;
@@ -28,6 +24,6 @@ define([
 
     return {
         tryCatch: tryCatch,
-        Error: jwError
+        Error: JWError
     };
 });

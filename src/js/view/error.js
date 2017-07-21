@@ -1,14 +1,9 @@
-define([
-    'templates/error.html'
-], function(error) {
+import errorTemplate from 'templates/error';
 
-    function make(id, skin, title, body) {
-        return error({
-            id: id,
-            skin: skin,
-            title: title,
-            body: body
-        });
+define([
+], function() {
+    function make(id, title, body) {
+        return errorTemplate(id, title, body);
     }
 
     return make;

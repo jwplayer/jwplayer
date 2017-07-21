@@ -1,135 +1,113 @@
-/* jshint node: true */
-var webpack = require('webpack');
-var env = process.env;
-var _ = require('lodash');
-var argv = require('minimist')(process.argv.slice(2));
+'use strict';
 
-var packageInfo = require('./package.json');
-var flashVersion = 11.2;
+/* eslint-env node */
+/* eslint no-process-env: 0 */
 
-function getBuildVersion(packageInfo) {
+const webpack = require('webpack');
+const env = process.env;
+const packageInfo = require('./package.json');
+const flashVersion = 18;
+
+function getBuildVersion(build) {
     // Build Version: {major.minor.revision}
-    var metadata = '';
+    let metadata = '';
     if (env.BUILD_NUMBER) {
-        var branch = env.GIT_BRANCH;
+        const branch = env.GIT_BRANCH;
         metadata = 'opensource';
         if (branch) {
             metadata += '_' + branch.replace(/^origin\//, '').replace(/[^0-9A-Za-z-]/g, '-');
         }
         metadata += '.' + env.BUILD_NUMBER;
     } else {
-        var now = new Date();
-        now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
-        metadata = 'local.' + now.toISOString().replace(/[\.\-:T]/g, '-').replace(/Z|\.\d/g, '');
+        const now = new Date();
+        now.setTime(now.getTime() - now.getTimezoneOffset() * 60000);
+        metadata = 'local.' + now.toISOString().replace(/[.\-:T]/g, '-').replace(/Z|\.\d/g, '');
     }
-    return packageInfo.version +'+'+ metadata;
+    return `${build.version}+${metadata}`;
 }
 
-var compileConstants =
-{
+const compileConstants = {
     __SELF_HOSTED__: true,
-    __REPO__ : '\'\'',
-    __DEBUG__ : false,
-    __BUILD_VERSION__: '\'' + getBuildVersion(packageInfo) + '\'',
+    __REPO__: '\'\'',
+    __DEBUG__: false,
+    __BUILD_VERSION__: `'${getBuildVersion(packageInfo)}'`,
     __FLASH_VERSION__: flashVersion
 };
 
-var uglifyJsOptions = {
+const uglifyJsOptions = {
     screwIE8: true,
     stats: true,
-    compress: {
-        warnings: false
-    },
     mangle: {
         toplevel: true,
         eval: true,
         except: ['export', 'require']
-    }
+    },
+    sourceMap: true
 };
 
-var multiConfig = _.compact(_.map([
+const multiConfig = [
     {
         name: 'debug',
         output: {
-            path: 'bin-debug/',
+            path: `${__dirname}/bin-debug/`,
             filename: '[name].js',
             chunkFilename:'[name].js',
             sourceMapFilename : '[name].[hash].map',
             library: 'jwplayer',
             libraryTarget: 'umd',
-            pathinfo: true
+            pathinfo: true,
+            umdNamedDefine: true
+            // crossOriginLoading: 'anonymous', // This would allow loading of modules from our CDN
         },
-        debug: true,
         devtool: 'source-map',
         plugins: [
-            new webpack.DefinePlugin(_.defaults({
-                __DEBUG__ : true
-            }, compileConstants))
+            new webpack.DefinePlugin(Object.assign({}, compileConstants, {
+                __DEBUG__: true
+            }))
         ]
     },
     {
         name: 'release',
         output: {
-            path: 'bin-release/',
+            path: `${__dirname}/bin-release/`,
             filename: '[name].js',
             chunkFilename: '[name].js',
-            sourceMapFilename : '[name].[hash].map',
             library: 'jwplayer',
-            libraryTarget: 'umd'
+            libraryTarget: 'umd',
+            umdNamedDefine: true
+            // crossOriginLoading: 'anonymous', // This would allow loading of modules from our CDN
         },
         watch: false,
-        progress: false,
         plugins: [
             new webpack.DefinePlugin(compileConstants),
-            new webpack.optimize.OccurrenceOrderPlugin(),
             new webpack.optimize.UglifyJsPlugin(uglifyJsOptions)
         ]
     }
-], function(configuration) {
-    // Use `webpack --only {CONFIG_NAME}` to filter out multiple configurations
-    //  ex: `webpack --only debug` will only return and build the debug config
-    if (argv.only) {
-        if (configuration.name !== argv.only) {
-            return;
-        }
-    }
-
-    return _.defaultsDeep(configuration, {
+].map(configuration =>
+    Object.assign({}, configuration, {
         entry: {
-            // the array notation is required due to bug in webpack :
-            //    https://github.com/webpack/webpack/issues/300
-            jwplayer: ['./src/js/jwplayer.js']
+            jwplayer: './src/js/jwplayer.js'
         },
-        output: {
-            // This would allow loading of modules from our CDN
-            //crossOriginLoading: 'anonymous'
-        },
-        umdNamedDefine: true,
         stats: {
             timings: true
         },
-        devtool: 'cheap-source-map',
         resolve: {
-            modulesDirectories: [
+            modules: [
                 'src/js/',
                 'src',
                 'node_modules'
             ]
         },
         module: {
-            loaders: [
+            rules: [
                 {
                     test: /\.less$/,
-                    loaders: [
+                    use: [
                         'simple-style-loader',
-                        'css',
-                        'autoprefixer?browsers=' + encodeURIComponent('> 1%'),
-                        'less?compress'
+                        'css-loader',
+                        'postcss-loader',
+                        'less-loader?compress'
                     ]
-                },
-                {
-                    test: /\.html$/,
-                    loader: 'handlebars-loader'
                 },
                 {
                     test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
@@ -138,18 +116,32 @@ var multiConfig = _.compact(_.map([
                 {
                     test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
                     loader: 'file-loader?name=[name].[ext]'
+                },
+                {
+                    test: /\.js$/,
+                    loader: 'babel-loader',
+                    exclude: /node_modules/,
+                    options: {
+                        babelrc: false,
+                        presets: [
+                            ['es2015']
+                        ],
+                        plugins: [
+                            'transform-object-assign'
+                        ]
+                    }
                 }
             ]
         }
-    });
-}));
+    })
+).filter(item => !!item);
 
-// When only returning one config, return the object.
-// This provides flat webpack output can be opened in the analyze tool.
-// Example: `webpack --only debug -j > output.json`
-//  and open output.json at http://webpack.github.io/analyse/
-if (multiConfig.length === 1) {
-    multiConfig = multiConfig[0];
-}
+module.exports = (envArgs) => {
+    if (!envArgs) {
+        return multiConfig;
+    }
 
-module.exports = multiConfig;
+    const enabledConfig = Object.keys(envArgs).find(envName => envArgs[envName]);
+    return multiConfig.find(c => c.name === enabledConfig) || multiConfig;
+};
+

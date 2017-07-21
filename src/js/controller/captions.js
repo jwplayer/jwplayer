@@ -1,8 +1,9 @@
-define([], function() {
-
+define(['utils/helpers',
+    'controller/tracks-loader',
+    'controller/tracks-helper'
+], function(utils, tracksLoader, tracksHelper) {
     /** Displays closed captions or subtitles on top of the video. **/
-    var Captions = function(_api, _model) {
-
+    var Captions = function(_model) {
         // Reset and load external captions on playlist item
         _model.on('change:playlistItem', _itemHandler, this);
 
@@ -17,73 +18,96 @@ define([], function() {
         _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
 
         function _subtitlesTracksHandler(e) {
-            if(! e.tracks.length) {
+            if (!e.tracks.length) {
                 return;
             }
 
-            _tracks = [];
-            _tracksById = {};
-            _metaCuesByTextTime = {};
-            _unknownCount = 0;
             var tracks = e.tracks || [];
             for (var i = 0; i < tracks.length; i++) {
-                var track = tracks[i];
-                track.label = track.label || track.name || track.language;
-                _addTrack(track);
+                _addTrack(tracks[i]);
             }
+
+            // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
+            _tracks = Object.keys(_tracksById).map(id => _tracksById[id]);
+
             var captionsMenu = _captionsMenu();
-            this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
+            this.setCaptionsList(captionsMenu);
         }
 
-        var _item = {},
-            _tracks = [],
-            _tracksById = {},
-            _metaCuesByTextTime = {},
-            _unknownCount = 0;
+        var _tracks = [];
+        var _tracksById = {};
+        var _unknownCount = 0;
 
         /** Listen to playlist item updates. **/
-        function _itemHandler(model, item) {
-            _item = item;
+        function _itemHandler() {
             _tracks = [];
             _tracksById = {};
-            _metaCuesByTextTime = {};
             _unknownCount = 0;
         }
 
         function _itemReadyHandler(item) {
             // Clean up in case we're replaying
-            _itemHandler(_model,item);
+            _itemHandler(_model, item);
 
-            // listen for tracks coming from the provider
-            _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
+            var tracks = item.tracks;
+            var len = tracks && tracks.length;
+
+            // Sideload tracks when not rendering natively
+            if (!_model.get('renderCaptionsNatively') && len) {
+                var i;
+                var track;
+
+                for (i = 0; i < len; i++) {
+                    track = tracks[i];
+                    if (_kindSupported(track.kind) && !_tracksById[track._id]) {
+                        _addTrack(track);
+                        tracksLoader.loadFile(track,
+                            _addVTTCuesToTrack.bind(null, track),
+                            _errorHandler);
+                    }
+                }
+            }
 
             var captionsMenu = _captionsMenu();
-            this.setCaptionsList(captionsMenu);
             _selectDefaultIndex();
+            this.setCaptionsList(captionsMenu);
+        }
+
+        function _kindSupported(kind) {
+            return kind === 'subtitles' || kind === 'captions';
+        }
+
+        function _addVTTCuesToTrack(track, vttCues) {
+            track.data = vttCues;
+        }
+
+        function _errorHandler(error) {
+            utils.log('CAPTIONS(' + error + ')');
         }
 
         function _captionsIndexHandler(model, captionsMenuIndex) {
             var track = null;
             if (captionsMenuIndex !== 0) {
-                track = _tracks[captionsMenuIndex-1];
+                track = _tracks[captionsMenuIndex - 1];
             }
             model.set('captionsTrack', track);
         }
 
         function _addTrack(track) {
-
             track.data = track.data || [];
+            track.name = track.label || track.name || track.language;
+            track._id = tracksHelper.createId(track, _tracks.length);
 
-            if (!track.label) {
-                track.label = 'Unknown CC';
-                _unknownCount++;
-                if (_unknownCount > 1) {
-                    track.label += ' (' + _unknownCount + ')';
-                }
+            if (!track.name) {
+                var labelInfo = tracksHelper.createLabel(track, _unknownCount);
+                track.name = labelInfo.label;
+                _unknownCount = labelInfo.unknownCount;
             }
-            _tracks.push(track);
+
+            // During the same playlist we may reu and readd tracks with the same _id; allow the new track to replace the old
             _tracksById[track._id] = track;
+            _tracks.push(track);
         }
 
         function _captionsMenu() {
@@ -94,7 +118,7 @@ define([], function() {
             for (var i = 0; i < _tracks.length; i++) {
                 list.push({
                     id: _tracks[i]._id,
-                    label: _tracks[i].label || 'Unknown CC'
+                    label: _tracks[i].name || 'Unknown CC'
                 });
             }
             return list;
@@ -113,10 +137,10 @@ define([], function() {
 
             for (var i = 0; i < _tracks.length; i++) {
                 var track = _tracks[i];
-                if (label && label === track.label) {
+                if (label && label === track.name) {
                     captionsMenuIndex = i + 1;
                     break;
-                } else if (track['default'] || track.defaulttrack || track._id === 'default') {
+                } else if (track.default || track.defaulttrack || track._id === 'default') {
                     captionsMenuIndex = i + 1;
                 } else if (track.autoselect) {
                     // TODO: auto select track by comparing track.language to system lang
@@ -127,7 +151,7 @@ define([], function() {
         }
 
         function _setCurrentIndex (index) {
-            if(_tracks.length) {
+            if (_tracks.length) {
                 _model.setVideoSubtitleTrack(index, _tracks);
             } else {
                 _model.set('captionsIndex', index);

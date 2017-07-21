@@ -3,7 +3,7 @@
 
 define([], function() {
     return {
-        hasClass : function (element, searchClass) {
+        hasClass: function (element, searchClass) {
             var className = ' ' + searchClass + ' ';
 
             return (element.nodeType === 1 && (' ' + element.className + ' ')

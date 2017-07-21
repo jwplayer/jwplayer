@@ -13,8 +13,8 @@ define([
         return newElement.firstChild;
     };
 
-    /** Used for styling dimensions in CSS --
-     * return the string unchanged if it's a percentage width; add 'px' otherwise **/
+    // Used for styling dimensions in CSS
+    // Return the string unchanged if it's a percentage width; add 'px' otherwise
     dom.styleDimension = function (dimension) {
         return dimension + (dimension.toString().indexOf('%') > 0 ? '' : 'px');
     };
@@ -119,22 +119,27 @@ define([
             top: 0,
             bottom: 0
         };
+
         if (!element || !document.body.contains(element)) {
             return bounds;
         }
-        var rect = element.getBoundingClientRect(element),
-            scrollOffsetY = window.pageYOffset,
-            scrollOffsetX = window.pageXOffset;
+
+        var rect = element.getBoundingClientRect();
+        var scrollOffsetY = window.pageYOffset;
+        var scrollOffsetX = window.pageXOffset;
+
         if (!rect.width && !rect.height && !rect.left && !rect.top) {
-            //element is not visible / no layout
+            // element is not visible / no layout
             return bounds;
         }
+
         bounds.left = rect.left + scrollOffsetX;
         bounds.right = rect.right + scrollOffsetX;
         bounds.top = rect.top + scrollOffsetY;
         bounds.bottom = rect.bottom + scrollOffsetY;
         bounds.width = rect.right - rect.left;
         bounds.height = rect.bottom - rect.top;
+
         return bounds;
     };
 
