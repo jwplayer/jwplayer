@@ -1,12 +1,12 @@
 import logoTemplate from 'templates/logo';
+import { LOGO_CLICK } from 'events/events';
 
 define([
     'utils/ui',
     'utils/helpers',
-    'events/events',
     'utils/underscore',
     'utils/backbone.events',
-], function(UI, utils, events, _, Events) {
+], function(UI, utils, _, Events) {
     var _styles = utils.style;
 
     var LogoDefaults = {
@@ -70,7 +70,7 @@ define([
                     evt.stopPropagation();
                 }
 
-                this.trigger(events.JWPLAYER_LOGO_CLICK, {
+                this.trigger(LOGO_CLICK, {
                     link: _settings.link,
                     linktarget: _settings.linktarget
                 });

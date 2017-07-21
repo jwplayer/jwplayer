@@ -1,16 +1,18 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser } from 'environment/environment';
 import { IDLE, PAUSED, LOADING } from 'events/states';
+import { ERROR, MEDIA_ERROR, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_BUFFER, MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS,
+    MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE, MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE,
+    PROVIDER_CHANGED, MEDIA_META } from 'events/events';
 
 define([
     'utils/helpers',
     'utils/underscore',
-    'events/events',
     'utils/embedswf',
     'providers/default',
     'utils/backbone.events',
     'providers/tracks-mixin'
-], function(utils, _, events, EmbedSwf, DefaultProvider, Events, Tracks) {
+], function(utils, _, EmbedSwf, DefaultProvider, Events, Tracks) {
     var _providerId = 0;
     function getObjectId(playerId) {
         return playerId + '_swf_' + (_providerId++);
@@ -197,7 +199,7 @@ define([
                     if (result === _swf) {
                         _swf.__ready = true;
                     } else {
-                        this.trigger(events.JWPLAYER_MEDIA_ERROR, result);
+                        this.trigger(MEDIA_ERROR, result);
                     }
 
                         // init if _item is defined
@@ -208,41 +210,41 @@ define([
                 }, this);
 
                 var forwardEventsWithData = [
-                    events.JWPLAYER_MEDIA_ERROR,
-                    events.JWPLAYER_MEDIA_SEEK,
-                    events.JWPLAYER_MEDIA_SEEKED,
+                    MEDIA_ERROR,
+                    MEDIA_SEEK,
+                    MEDIA_SEEKED,
                     'subtitlesTrackChanged',
                     'mediaType'
                 ];
 
                 var forwardEventsWithDataDuration = [
-                    events.JWPLAYER_MEDIA_BUFFER,
-                    events.JWPLAYER_MEDIA_TIME
+                    MEDIA_BUFFER,
+                    MEDIA_TIME
                 ];
 
                 var forwardEvents = [
-                    events.JWPLAYER_MEDIA_BUFFER_FULL
+                    MEDIA_BUFFER_FULL
                 ];
 
                     // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
-                _swf.on([events.JWPLAYER_MEDIA_LEVELS, events.JWPLAYER_MEDIA_LEVEL_CHANGED].join(' '), function(e) {
+                _swf.on([MEDIA_LEVELS, MEDIA_LEVEL_CHANGED].join(' '), function(e) {
                     _updateLevelsEvent(e);
                     this.trigger(e.type, e);
                 }, this);
 
-                _swf.on(events.JWPLAYER_AUDIO_TRACKS, function(e) {
+                _swf.on(AUDIO_TRACKS, function(e) {
                     _currentAudioTrack = e.currentTrack;
                     _audioTracks = e.tracks;
                     this.trigger(e.type, e);
                 }, this);
 
-                _swf.on(events.JWPLAYER_AUDIO_TRACK_CHANGED, function(e) {
+                _swf.on(AUDIO_TRACK_CHANGED, function(e) {
                     _currentAudioTrack = e.currentTrack;
                     _audioTracks = e.tracks;
                     this.trigger(e.type, e);
                 }, this);
 
-                _swf.on(events.JWPLAYER_PLAYER_STATE, function(e) {
+                _swf.on(PLAYER_STATE, function(e) {
                     var state = e.newstate;
                     if (state === IDLE) {
                         return;
@@ -265,8 +267,8 @@ define([
                     this.trigger(e.type);
                 }, this);
 
-                _swf.on(events.JWPLAYER_MEDIA_BEFORECOMPLETE, function() {
-                    this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
+                _swf.on(MEDIA_BEFORECOMPLETE, function() {
+                    this.trigger(MEDIA_COMPLETE);
                 }, this);
 
                 _swf.on('visualQuality', function(e) {
@@ -282,13 +284,13 @@ define([
                     this.trigger('providerFirstFrame', {});
                 }, this);
 
-                _swf.on(events.JWPLAYER_PROVIDER_CHANGED, function(e) {
+                _swf.on(PROVIDER_CHANGED, function(e) {
                     _flashProviderType = e.message;
-                    this.trigger(events.JWPLAYER_PROVIDER_CHANGED, e);
+                    this.trigger(PROVIDER_CHANGED, e);
                 }, this);
 
-                _swf.on(events.JWPLAYER_ERROR, function(event) {
-                    this.trigger(events.JWPLAYER_MEDIA_ERROR, event);
+                _swf.on(ERROR, function(event) {
+                    this.trigger(MEDIA_ERROR, event);
                 }, this);
 
                 _swf.on('subtitlesTracks', function(e) {
@@ -299,7 +301,7 @@ define([
                     this.addCuesToTrack(e);
                 }, this);
 
-                _swf.on(events.JWPLAYER_MEDIA_META, function(e) {
+                _swf.on(MEDIA_META, function(e) {
                     if (!e) {
                         return;
                     }

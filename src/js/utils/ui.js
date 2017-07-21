@@ -1,11 +1,10 @@
 import { Browser, OS } from 'environment/environment';
+import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER} from 'events/events';
 
 define([
     'utils/backbone.events',
-    'events/events',
     'utils/underscore'
-], function(Events, events, _) {
-    var JW_TOUCH_EVENTS = events.touchEvents;
+], function(Events, _) {
     var _supportsPointerEvents = ('PointerEvent' in window);
     var _supportsTouchEvents = ('ontouchstart' in window);
     var _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
@@ -112,13 +111,13 @@ define([
         // overHandler and outHandler not assigned in touch situations
         function overHandler(evt) {
             if (evt.pointerType !== 'touch') {
-                triggerEvent(JW_TOUCH_EVENTS.OVER, evt);
+                triggerEvent(OVER, evt);
             }
         }
 
         function moveHandler(evt) {
             if (evt.pointerType !== 'touch') {
-                triggerEvent(JW_TOUCH_EVENTS.MOVE, evt);
+                triggerEvent(MOVE, evt);
             }
         }
 
@@ -126,7 +125,7 @@ define([
             // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
             if (_useMouseEvents || (_supportsPointerEvents && evt.pointerType !== 'touch' &&
                 !elem.contains(document.elementFromPoint(evt.x, evt.y)))) {
-                triggerEvent(JW_TOUCH_EVENTS.OUT, evt);
+                triggerEvent(OUT, evt);
             }
         }
 
@@ -182,16 +181,16 @@ define([
             var movementThreshhold = 6;
 
             if (_hasMoved) {
-                triggerEvent(JW_TOUCH_EVENTS.DRAG, evt);
+                triggerEvent(DRAG, evt);
             } else {
                 var endX = getCoord(evt, 'X');
                 var endY = getCoord(evt, 'Y');
                 var moveX = endX - _startX;
                 var moveY = endY - _startY;
                 if (moveX * moveX + moveY * moveY > movementThreshhold * movementThreshhold) {
-                    triggerEvent(JW_TOUCH_EVENTS.DRAG_START, evt);
+                    triggerEvent(DRAG_START, evt);
                     _hasMoved = true;
-                    triggerEvent(JW_TOUCH_EVENTS.DRAG, evt);
+                    triggerEvent(DRAG, evt);
                 }
             }
 
@@ -218,12 +217,12 @@ define([
             }
 
             if (_hasMoved) {
-                triggerEvent(JW_TOUCH_EVENTS.DRAG_END, evt);
+                triggerEvent(DRAG_END, evt);
             } else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
                 if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
-                    triggerEvent(JW_TOUCH_EVENTS.CLICK, evt);
+                    triggerEvent(CLICK, evt);
                 } else {
-                    triggerEvent(JW_TOUCH_EVENTS.TAP, evt);
+                    triggerEvent(TAP, evt);
                     if (evt.type === 'touchend') {
                         // preventDefault to not dispatch the 300ms delayed click after a tap
                         preventDefault(evt);
@@ -238,10 +237,10 @@ define([
         var self = this;
         function triggerEvent(type, srcEvent) {
             var evt;
-            if (options.enableDoubleTap && (type === JW_TOUCH_EVENTS.CLICK || type === JW_TOUCH_EVENTS.TAP)) {
+            if (options.enableDoubleTap && (type === CLICK || type === TAP)) {
                 if (_.now() - _lastClickTime < _doubleClickDelay) {
-                    var doubleType = (type === JW_TOUCH_EVENTS.CLICK) ?
-                        JW_TOUCH_EVENTS.DOUBLE_CLICK : JW_TOUCH_EVENTS.DOUBLE_TAP;
+                    var doubleType = (type === CLICK) ?
+                        DOUBLE_CLICK : DOUBLE_TAP;
                     evt = normalizeUIEvent(doubleType, srcEvent, _elem);
                     self.trigger(doubleType, evt);
                     _lastClickTime = 0;

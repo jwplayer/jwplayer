@@ -2,18 +2,19 @@ import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import { IDLE, COMPLETE, PAUSED, PLAYING, ERROR, LOADING, STALLED } from 'events/states';
+import { MEDIA_TIME, MEDIA_BUFFER, MEDIA_META, MEDIA_BUFFER_FULL, PROVIDER_FIRST_FRAME, MEDIA_ERROR, MEDIA_LEVELS,
+    MEDIA_LEVEL_CHANGED, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_COMPLETE } from 'events/events';
 
 define([
     'utils/css',
     'utils/helpers',
     'utils/dom',
     'utils/underscore',
-    'events/events',
     'providers/default',
     'utils/backbone.events',
     'providers/tracks-mixin',
     'utils/time-ranges',
-], function(cssUtils, utils, dom, _, events, DefaultProvider, Events, Tracks, timeRangesUtil) {
+], function(cssUtils, utils, dom, _, DefaultProvider, Events, Tracks, timeRangesUtil) {
 
     var clearTimeout = window.clearTimeout;
     var STALL_DELAY = 256;
@@ -173,7 +174,7 @@ define([
 
             // send time events when playing
             if (_this.state === PLAYING) {
-                _this.trigger(events.JWPLAYER_MEDIA_TIME, {
+                _this.trigger(MEDIA_TIME, {
                     position: _position,
                     duration: _duration
                 });
@@ -209,7 +210,7 @@ define([
         function _setBuffered(buffered, currentTime, duration) {
             if (duration !== 0 && (buffered !== _buffered || duration !== _duration)) {
                 _buffered = buffered;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
+                _this.trigger(MEDIA_BUFFER, {
                     bufferPercent: buffered * 100,
                     position: currentTime,
                     duration: duration
@@ -251,7 +252,7 @@ define([
             if (_isAndroidHLS && duration === Infinity) {
                 duration = 0;
             }
-            _this.trigger(events.JWPLAYER_MEDIA_META, {
+            _this.trigger(MEDIA_META, {
                 duration: duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
@@ -282,7 +283,7 @@ define([
             if (!_bufferFull && (OS.iOS || _canPlay)) {
                 _bufferFull = true;
                 _canPlay = false;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                _this.trigger(MEDIA_BUFFER_FULL);
             }
         }
 
@@ -294,7 +295,7 @@ define([
             if (_videotag.hasAttribute('jw-gesture-required')) {
                 _videotag.removeAttribute('jw-gesture-required');
             }
-            _this.trigger(events.JWPLAYER_PROVIDER_FIRST_FRAME, {});
+            _this.trigger(PROVIDER_FIRST_FRAME, {});
         }
 
         function _pauseHandler() {
@@ -348,7 +349,7 @@ define([
         }
 
         function _errorHandler() {
-            _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+            _this.trigger(MEDIA_ERROR, {
                 message: 'Error loading media: File could not be played'
             });
         }
@@ -371,7 +372,7 @@ define([
             var publicLevels = _getPublicLevels(levels);
             if (publicLevels) {
                 // _trigger?
-                _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
+                _this.trigger(MEDIA_LEVELS, {
                     levels: publicLevels,
                     currentQuality: _currentQuality
                 });
@@ -584,7 +585,7 @@ define([
         this.play = function() {
             if (_this.seeking) {
                 _this.setState(LOADING);
-                _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
+                _this.once(MEDIA_SEEKED, _this.play);
                 return;
             }
             _beforeResumeHandler();
@@ -617,7 +618,7 @@ define([
             }
 
             if (_delayedSeek === 0) {
-                this.trigger(events.JWPLAYER_MEDIA_SEEK, {
+                this.trigger(MEDIA_SEEK, {
                     position: _videotag.currentTime,
                     offset: seekPos
                 });
@@ -647,7 +648,7 @@ define([
 
         function _seekedHandler() {
             _this.seeking = false;
-            _this.trigger(events.JWPLAYER_MEDIA_SEEKED);
+            _this.trigger(MEDIA_SEEKED);
         }
 
         this.volume = function(vol) {
@@ -693,7 +694,7 @@ define([
                 clearTimeouts();
                 _currentQuality = -1;
 
-                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
             }
         }
 
@@ -895,7 +896,7 @@ define([
                     _currentQuality = quality;
                     _visualQuality.reason = 'api';
                     _visualQuality.level = {};
-                    this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+                    this.trigger(MEDIA_LEVEL_CHANGED, {
                         currentQuality: quality,
                         levels: _getPublicLevels(_levels)
                     });
@@ -1024,7 +1025,7 @@ define([
 
         function checkStreamEnded() {
             if (_stale && _edgeOfLiveStream) {
-                _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+                _this.trigger(MEDIA_ERROR, {
                     message: 'The live stream is either down or has ended'
                 });
                 return true;
