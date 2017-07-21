@@ -6,26 +6,17 @@ define([
     'utils/strings',
     'utils/helpers'
 ], function(parsers, strings, utils) {
-
+    // Parse a feed entry for JWPlayer content
     var PREFIX = 'jwplayer';
-
-    /**
-     * Parse a feed entry for JWPlayer content.
-     *
-     * @param {XML}
-     *            obj The XML object to parse.
-     * @param {Object}
-     *            itm The playlistentry to amend the object to.
-     * @return {Object} The playlistentry, amended with the JWPlayer info.
-     */
     var parseEntry = function (obj, itm) {
-        var sources = [],
-            tracks = [],
-            _xmlAttribute = strings.xmlAttribute,
-            def = 'default',
-            label = 'label',
-            file = 'file',
-            type = 'type';
+        var sources = [];
+        var tracks = [];
+        var _xmlAttribute = strings.xmlAttribute;
+        var def = 'default';
+        var label = 'label';
+        var file = 'file';
+        var type = 'type';
+
         for (var i = 0; i < obj.childNodes.length; i++) {
             var node = obj.childNodes[i];
             if (node.prefix === PREFIX) {

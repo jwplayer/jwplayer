@@ -1,23 +1,26 @@
+import { Browser, OS } from 'environment/environment';
+import SimpleModel from '../model/simplemodel';
+import { playerDefaults } from '../model/player-model';
+
 define([
     'utils/helpers',
     'providers/providers',
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
-    'utils/simplemodel',
     'events/events',
     'events/states'
-], function(utils, Providers, QOE, _, Events, SimpleModel, events, states) {
+], function(utils, Providers, QOE, _, Events, events, states) {
 
     // Represents the state of the player
     var Model = function() {
-        var _this = this,
-            // Video provider
-            _providers,
-            _provider,
-            _currentProvider = utils.noop;
+        var _this = this;
+        var _providers;
+        var _provider;
+        var _beforecompleted = false;
+        var _attached = true;
 
-        this.mediaController = _.extend({}, Events);
+        this.mediaController = Object.assign({}, Events);
         this.mediaModel = new MediaModel();
 
         QOE.model(this);
@@ -26,26 +29,7 @@ define([
 
         this.setup = function(config) {
 
-            _.extend(this.attributes, config, {
-                // always start on first playlist item
-                item : 0,
-                // Initial state, upon setup
-                state: states.IDLE,
-                // Initially we don't assume Flash is needed
-                flashBlocked : false,
-                fullscreen: false,
-                scrubbing : false,
-                duration: 0,
-                position: 0,
-                buffer: 0
-            });
-
-            // Mobile doesn't support autostart
-            // This check should be replaced with something that detects whether the current system
-            // requires a user interaction to start playback
-            if (utils.isMobile() && !config.mobileSdk) {
-                this.set('autostart', false);
-            }
+            Object.assign(this.attributes, config, playerDefaults);
 
             this.updateProviders();
 
@@ -61,87 +45,101 @@ define([
         };
 
         function _videoEventHandler(type, data) {
-            var evt = _.extend({}, data, {type: type});
+            var evt = Object.assign({}, data, { type: type });
+            var mediaModel = this.mediaModel;
             switch (type) {
                 case 'flashThrottle':
                     var throttled = (data.state !== 'resume');
                     this.set('flashThrottle', throttled);
                     this.set('flashBlocked', throttled);
                     break;
-
                 case 'flashBlocked':
                     this.set('flashBlocked', true);
                     return;
                 case 'flashUnblocked':
                     this.set('flashBlocked', false);
                     return;
-
                 case 'volume':
-                case 'mute':
                     this.set(type, data[type]);
                     return;
-
+                case 'mute':
+                    if (!this.get('autostartMuted')) {
+                        // Don't persist mute state with muted autostart
+                        this.set(type, data[type]);
+                    }
+                    return;
+                case 'ratechange':
+                    var rate = data.playbackRate;
+                    // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
+                    if (rate > 0) {
+                        this.set('playbackRate', rate);
+                    }
+                    return;
                 case events.JWPLAYER_MEDIA_TYPE:
-                    if (this.mediaModel.get('mediaType') !== data.mediaType) {
-                        this.mediaModel.set('mediaType', data.mediaType);
+                    if (mediaModel.get('mediaType') !== data.mediaType) {
+                        mediaModel.set('mediaType', data.mediaType);
                         this.mediaController.trigger(type, evt);
                     }
                     return;
-
                 case events.JWPLAYER_PLAYER_STATE:
-                    this.mediaModel.set('state', data.newstate);
+                    mediaModel.set('state', data.newstate);
 
                     // This "return" is important because
                     //  we are choosing to not propagate this event.
                     //  Instead letting the master controller do so
                     return;
-
                 case events.JWPLAYER_MEDIA_BUFFER:
                     this.set('buffer', data.bufferPercent);
-
                 /* falls through */
                 case events.JWPLAYER_MEDIA_META:
                     var duration = data.duration;
                     if (_.isNumber(duration) && !_.isNaN(duration)) {
-                        this.mediaModel.set('duration', duration);
+                        mediaModel.set('duration', duration);
                         this.set('duration', duration);
                     }
+                    var itemMeta = this.get('itemMeta');
+                    Object.assign(itemMeta, data.metadata);
                     break;
-
                 case events.JWPLAYER_MEDIA_BUFFER_FULL:
                     // media controller
-                    if (this.mediaModel.get('playAttempt')) {
+                    if (mediaModel.get('playAttempt')) {
                         this.playVideo();
                     } else {
-                        this.mediaModel.on('change:playAttempt', function() {
+                        mediaModel.on('change:playAttempt', function() {
                             this.playVideo();
                         }, this);
                     }
+                    this.setPlaybackRate(this.get('defaultPlaybackRate'));
                     break;
-
                 case events.JWPLAYER_MEDIA_TIME:
-                    this.mediaModel.set('position', data.position);
+                    mediaModel.set('position', data.position);
                     this.set('position', data.position);
                     if (_.isNumber(data.duration)) {
-                        this.mediaModel.set('duration', data.duration);
+                        mediaModel.set('duration', data.duration);
                         this.set('duration', data.duration);
                     }
                     break;
                 case events.JWPLAYER_PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
                     break;
-
                 case events.JWPLAYER_MEDIA_LEVELS:
                     this.setQualityLevel(data.currentQuality, data.levels);
-                    this.mediaModel.set('levels', data.levels);
+                    mediaModel.set('levels', data.levels);
                     break;
                 case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
                     this.setQualityLevel(data.currentQuality, data.levels);
                     this.persistQualityLevel(data.currentQuality, data.levels);
                     break;
+                case events.JWPLAYER_MEDIA_COMPLETE:
+                    _beforecompleted = true;
+                    this.mediaController.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE, evt);
+                    if (_attached) {
+                        this.playbackComplete();
+                    }
+                    return;
                 case events.JWPLAYER_AUDIO_TRACKS:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
-                    this.mediaModel.set('audioTracks', data.tracks);
+                    mediaModel.set('audioTracks', data.tracks);
                     break;
                 case events.JWPLAYER_AUDIO_TRACK_CHANGED:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
@@ -149,17 +147,24 @@ define([
                 case 'subtitlesTrackChanged':
                     this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
                     break;
-
                 case 'visualQuality':
-                    var visualQuality = _.extend({}, data);
-                    this.mediaModel.set('visualQuality', visualQuality);
+                    var visualQuality = Object.assign({}, data);
+                    mediaModel.set('visualQuality', visualQuality);
+                    break;
+                case 'autoplayFailed':
+                    this.set('autostartFailed', true);
+                    if (mediaModel.get('state') === states.PLAYING) {
+                        mediaModel.set('state', states.PAUSED);
+                    }
+                    break;
+                default:
                     break;
             }
 
             this.mediaController.trigger(type, evt);
         }
 
-        this.setQualityLevel = function(quality, levels){
+        this.setQualityLevel = function(quality, levels) {
             if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
                 this.mediaModel.set('currentLevel', parseInt(quality));
 
@@ -180,7 +185,7 @@ define([
 
         this.onMediaContainer = function() {
             var container = this.get('mediaContainer');
-            _currentProvider.setContainer(container);
+            _provider.setContainer(container);
         };
 
         this.changeVideoProvider = function(Provider) {
@@ -195,35 +200,73 @@ define([
             }
 
             if (!Provider) {
-                _provider = _currentProvider = Provider;
+                this.resetProvider();
                 this.set('provider', undefined);
                 return;
             }
 
-            _currentProvider = new Provider(_this.get('id'), _this.getConfiguration());
+            _provider = new Provider(_this.get('id'), _this.getConfiguration());
 
             var container = this.get('mediaContainer');
             if (container) {
-                _currentProvider.setContainer(container);
+                _provider.setContainer(container);
             } else {
                 this.once('change:mediaContainer', this.onMediaContainer);
             }
 
-            this.set('provider', _currentProvider.getName());
-
-            if (_currentProvider.getName().name.indexOf('flash') === -1) {
+            if (_provider.getName().name.indexOf('flash') === -1) {
                 this.set('flashThrottle', undefined);
                 this.set('flashBlocked', false);
             }
 
-            _provider = _currentProvider;
             _provider.volume(_this.get('volume'));
-            _provider.mute(_this.get('mute'));
+
+            // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
+            _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
+
             _provider.on('all', _videoEventHandler, this);
+
+            // Attempt setting the playback rate to be the user selected value
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
+
+            // Set playbackRate because provider support for playbackRate may have changed and not sent an update
+            this.set('playbackRate', _provider.getPlaybackRate());
 
             if (this.get('instreamMode') === true) {
                 _provider.instreamMode = true;
             }
+
+            this.set('renderCaptionsNatively', _provider.renderNatively);
+        };
+
+        this.checkComplete = function() {
+            return _beforecompleted;
+        };
+
+        this.detachMedia = function() {
+            _attached = false;
+            _provider.off('all', _videoEventHandler, this);
+            return _provider.detachMedia();
+        };
+
+        this.attachMedia = function() {
+            _attached = true;
+            _provider.off('all', _videoEventHandler, this);
+            _provider.on('all', _videoEventHandler, this);
+            if (_beforecompleted) {
+                this.playbackComplete();
+            }
+
+            _provider.attachMedia();
+
+            // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
+            this.setPlaybackRate(this.get('defaultPlaybackRate'));
+        };
+
+        this.playbackComplete = function() {
+            _beforecompleted = false;
+            _provider.setState(states.COMPLETE);
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_COMPLETE, {});
         };
 
         this.destroy = function() {
@@ -237,7 +280,6 @@ define([
         this.getVideo = function() {
             return _provider;
         };
-
 
         this.setFullscreen = function(state) {
             state = !!state;
@@ -268,6 +310,7 @@ define([
             // Item is actually changing
             this.mediaModel.off();
             this.mediaModel = new MediaModel();
+            this.set('itemMeta', {});
             this.set('mediaModel', this.mediaModel);
             this.set('position', item.starttime || 0);
             this.set('minDvrWindow', item.minDvrWindow);
@@ -284,18 +327,21 @@ define([
 
             var provider = this.chooseProvider(source);
             // If we are changing video providers
-            if (!provider || !(_currentProvider instanceof provider)) {
+            if (!provider || !(_provider instanceof provider)) {
                 _this.changeVideoProvider(provider);
             }
 
-            if (!_currentProvider) {
+            if (!_provider) {
                 return;
             }
 
             // this allows the providers to preload
-            if (_currentProvider.init) {
-                _currentProvider.init(item);
+            if (_provider.init) {
+                _provider.init(item);
             }
+
+            // Set the Provider after calling init because some Provider properties are only set afterwards
+            this.set('provider', _provider.getName());
 
             // Listening for change:item won't suffice when loading the same index or file
             // We also can't listen for change:mediaModel because it triggers whether or not
@@ -308,7 +354,7 @@ define([
         };
 
         this.resetProvider = function() {
-            _currentProvider = null;
+            _provider = null;
         };
 
         this.setVolume = function(volume) {
@@ -318,14 +364,18 @@ define([
                 _provider.volume(volume);
             }
             var mute = (volume === 0);
-            if (mute !== this.get('mute')) {
+            if (mute !== (this.getMute())) {
                 this.setMute(mute);
             }
         };
 
+        this.getMute = function() {
+            return this.get('autostartMuted') || this.get('mute');
+        };
+
         this.setMute = function(mute) {
             if (!utils.exists(mute)) {
-                mute = !this.get('mute');
+                mute = !(this.getMute());
             }
             this.set('mute', mute);
             if (_provider) {
@@ -333,20 +383,46 @@ define([
             }
             if (!mute) {
                 var volume = Math.max(10, this.get('volume'));
+                this.set('autostartMuted', false);
                 this.setVolume(volume);
+            }
+        };
+
+        this.setStreamType = function(streamType) {
+            this.set('streamType', streamType);
+            if (streamType === 'LIVE') {
+                this.setPlaybackRate(1);
+            }
+        };
+
+        this.setPlaybackRate = function(playbackRate) {
+            if (!_attached || !_.isNumber(playbackRate)) {
+                return;
+            }
+
+            // Clamp the rate between 0.25x and 4x
+            playbackRate = utils.between(playbackRate, 0.25, 4);
+
+            if (this.get('streamType') === 'LIVE') {
+                playbackRate = 1;
+            }
+
+            this.set('defaultPlaybackRate', playbackRate);
+
+            if (_provider && _provider.setPlaybackRate) {
+                _provider.setPlaybackRate(playbackRate);
             }
         };
 
         // The model is also the mediaController for now
         this.loadVideo = function(item) {
             if (!item) {
-                var idx = this.get('item');
-                item = this.get('playlist')[idx];
+                item = this.get('playlist')[this.get('item')];
             }
             this.set('position', item.starttime || 0);
             this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
             this.mediaModel.set('playAttempt', true);
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, {'playReason': this.get('playReason')});
+            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, { playReason: this.get('playReason') });
 
             _provider.load(item);
         };
@@ -379,14 +455,13 @@ define([
              * Tracks could have changed even if the index hasn't.
              * Need to ensure track has data for captionsrenderer.
              */
-            if(trackIndex && tracks && trackIndex <= tracks.length && tracks[trackIndex-1].data) {
-                this.set('captionsTrack', tracks[trackIndex-1]);
+            if (trackIndex && tracks && trackIndex <= tracks.length && tracks[trackIndex - 1].data) {
+                this.set('captionsTrack', tracks[trackIndex - 1]);
             }
 
             if (_provider && _provider.setSubtitlesTrack) {
                 _provider.setSubtitlesTrack(trackIndex);
             }
-
         };
 
         this.persistVideoSubtitleTrack = function(trackIndex, tracks) {
@@ -394,8 +469,39 @@ define([
             this.persistCaptionsTrack();
         };
 
-        this.setNextUp = function (nextUp) {
-            this.set('nextUp', nextUp);
+        function _autoStartSupportedIOS() {
+            if (!OS.iOS) {
+                return false;
+            }
+            // Autostart only supported in iOS 10 or higher - check if the version is 9 or less
+            return OS.version.major >= 10;
+        }
+
+        function platformCanAutostart() {
+            var autostartAdsIsEnabled = (!_this.get('advertising') || _this.get('advertising').autoplayadsmuted);
+            var iosBrowserIsSupported = _autoStartSupportedIOS() && (Browser.safari || Browser.chrome || Browser.facebook);
+            var androidBrowserIsSupported = OS.android && Browser.chrome;
+            var mobileBrowserIsSupported = (iosBrowserIsSupported || androidBrowserIsSupported);
+            var isAndroidSdk = _this.get('sdkplatform') === 1;
+            return (!_this.get('sdkplatform') && autostartAdsIsEnabled && mobileBrowserIsSupported) || isAndroidSdk;
+        }
+
+        this.autoStartOnMobile = function() {
+            return this.get('autostart') && platformCanAutostart();
+        };
+
+        // Mobile players always wait to become viewable.
+        // Desktop players must have autostart set to viewable
+        this.setAutoStart = function(autoStart) {
+            if (!_.isUndefined(autoStart)) {
+                this.set('autostart', autoStart);
+            }
+
+            const autoStartOnMobile = this.autoStartOnMobile();
+            if (autoStartOnMobile) {
+                this.set('autostartMuted', true);
+            }
+            this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
         };
     };
 
@@ -404,10 +510,8 @@ define([
         this.set('state', states.IDLE);
     };
 
-
-
-    _.extend(Model.prototype, SimpleModel);
-    _.extend(MediaModel.prototype, SimpleModel);
+    Object.assign(Model.prototype, SimpleModel);
+    Object.assign(MediaModel.prototype, SimpleModel);
 
     return Model;
 });

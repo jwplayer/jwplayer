@@ -40,7 +40,8 @@ define([
 
     function xhrSuccess(xhr, track, successHandler, errorHandler) {
         var xmlRoot = xhr.responseXML ? xhr.responseXML.firstChild : null;
-        var cues, vttCues;
+        var cues;
+        var vttCues;
 
         // IE9 sets the firstChild element to the root <xml> tag
         if (xmlRoot) {
@@ -83,8 +84,8 @@ define([
     }
 
     function parseCuesFromText(text, track, successHandler, errorHandler) {
-        require.ensure(['../parsers/captions/vttparser'], function (require) {
-            var VTTParser = require('../parsers/captions/vttparser');
+        require.ensure(['parsers/captions/vttparser'], function (require) {
+            var VTTParser = require('parsers/captions/vttparser');
             var parser = new VTTParser(window);
             var vttCues = [];
             parser.oncue = function(cue) {
@@ -97,8 +98,9 @@ define([
             };
 
             try {
-                parser.parse(text).flush();
-            } catch(error) {
+                // Parse calls onflush internally
+                parser.parse(text);
+            } catch (error) {
                 delete track.xhr;
                 errorHandler(error);
             }

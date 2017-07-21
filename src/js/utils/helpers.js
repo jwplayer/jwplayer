@@ -1,3 +1,5 @@
+import * as playerutils from 'utils/playerutils';
+
 define([
     'utils/strings',
     'utils/underscore',
@@ -5,16 +7,15 @@ define([
     'utils/dom',
     'utils/css',
     'utils/parser',
-    'utils/id3Parser',
     'utils/ajax',
     'utils/validator',
-    'utils/playerutils',
+    'api/timer',
     'utils/trycatch'
-], function(strings, _, browser, dom, css, parser, id3Parser, ajax, validator, playerutils, trycatch) {
-
+], function(strings, _, browser, dom, css, parser, ajax, validator, Timer, trycatch) {
     var utils = {};
 
     utils.log = function () {
+        /* eslint no-console: 0 */
         if (!window.console) {
             return;
         }
@@ -34,7 +35,9 @@ define([
      * This is a safe way to iterate over objects if another script has modified the object prototype
      */
     utils.foreach = function (aData, fnEach) {
-        var key, val;
+        var key;
+        var val;
+
         for (key in aData) {
             if (utils.typeOf(aData.hasOwnProperty) === 'function') {
                 if (aData.hasOwnProperty(key)) {
@@ -57,7 +60,9 @@ define([
     utils.prefix = strings.prefix;
     utils.suffix = strings.suffix;
 
-    _.extend(utils, parser, id3Parser, validator, browser, ajax, dom, css, playerutils, trycatch);
+    utils.Timer = Timer;
+
+    _.extend(utils, parser, validator, browser, ajax, dom, css, playerutils, trycatch);
 
     return utils;
 });

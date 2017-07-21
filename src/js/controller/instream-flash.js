@@ -1,12 +1,13 @@
+import { Browser } from 'environment/environment';
+
 define([
     'utils/backbone.events',
     'controller/model',
     'events/change-state-event',
     'events/events',
     'events/states',
-    'utils/helpers',
     'utils/underscore'
-], function(Events, Model, changeStateEvent, events, states, utils, _) {
+], function(Events, Model, changeStateEvent, events, states, _) {
 
     var InstreamFlash = function(_controller, _model) {
         this.model = _model;
@@ -28,7 +29,7 @@ define([
 
         init: function() {
             // Pause playback when throttled, and only resume is paused here
-            if (utils.isChrome()) {
+            if (Browser.chrome) {
                 var _throttleTimeout = -1;
                 var _throttlePaused = false;
                 this.swf.on('throttle', function(e) {
@@ -66,7 +67,10 @@ define([
 
             this.swf.triggerFlash('instream:init');
 
-            this.applyProviderListeners = function(provider){
+            this.applyProviderListeners = function(provider) {
+                if (!provider) {
+                    return;
+                }
                 this.model.on('change:volume', function(data, value) {
                     provider.volume(value);
                 }, this);
@@ -77,18 +81,25 @@ define([
                 provider.volume(this.model.get('volume'));
                 provider.mute(this.model.get('mute'));
 
-                // update admodel state when set from from googima
+                // update admodel state when set from googima
                 provider.off();
                 provider.on(events.JWPLAYER_PLAYER_STATE, this.stateHandler, this);
+
+                // trigger time evemt when sent from freewheel
+                provider.on(events.JWPLAYER_MEDIA_TIME, function(data) {
+                    this.trigger(events.JWPLAYER_MEDIA_TIME, data);
+                }, this);
             };
         },
 
         stateHandler: function(evt) {
             switch (evt.newstate) {
-            case states.PLAYING:
-            case states.PAUSED:
-                this._adModel.set('state', evt.newstate);
-                break;
+                case states.PLAYING:
+                case states.PAUSED:
+                    this._adModel.set('state', evt.newstate);
+                    break;
+                default:
+                    break;
             }
         },
 

@@ -1,9 +1,11 @@
+import { getPreload } from './preload';
+
 define([
     'playlist/item',
     'playlist/source',
+    'providers/providers',
     'utils/underscore',
-    'providers/providers'
-], function(PlaylistItem, Source, _, Providers) {
+], function(PlaylistItem, Source, Providers, _) {
 
     var Playlist = function (playlist) {
         // Can be either an array of items or a single item.
@@ -13,17 +15,19 @@ define([
     };
 
     /** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
-    Playlist.filterPlaylist = function(playlist, providers, androidhls, configDrm, preload, feedid, withCredentials) {
+    Playlist.filterPlaylist = function(playlist, model, feedData) {
         var list = [];
+        var providers = model.getProviders();
+        var preload = model.get('preload');
+        var itemFeedData = _.extend({}, feedData);
+        delete itemFeedData.playlist;
 
         _.each(playlist, function(item) {
             item = _.extend({}, item);
 
-            item.allSources = _formatSources(item.sources,
-                androidhls,
-                item.drm || configDrm,
-                item.preload || preload,
-                _fallbackIfUndefined(item.withCredentials, withCredentials));
+            item.preload = getPreload(item.preload, preload);
+
+            item.allSources = _formatSources(item, model);
 
             item.sources = _filterSources(item.allSources, providers);
 
@@ -34,14 +38,8 @@ define([
             // include selected file in item for backwards compatibility
             item.file = item.sources[0].file;
 
-            // set preload for the item, if it is defined
-            if (item.preload || preload) {
-                item.preload = item.preload || preload;
-            }
-
-            // set feedid for the item, if it is defined
-            if (item.feedid || feedid) {
-                item.feedid = item.feedid || feedid;
+            if (feedData) {
+                item.feedData = itemFeedData;
             }
 
             list.push(item);
@@ -50,22 +48,26 @@ define([
         return list;
     };
 
-    var _formatSources = function(sources, androidhls, itemDrm, preload, withCredentials) {
+    var _formatSources = function(item, model) {
+        var sources = item.sources;
+        var androidhls = model.get('androidhls');
+        var itemDrm = item.drm || model.get('drm');
+        var withCredentials = _fallbackIfUndefined(item.withCredentials, model.get('withCredentials'));
+        var hlsjsdefault = model.get('hlsjsdefault');
+
         return _.compact(_.map(sources, function(originalSource) {
-            if (! _.isObject(originalSource)) {
-                return;
+            if (!_.isObject(originalSource)) {
+                return null;
             }
             if (androidhls !== undefined && androidhls !== null) {
-                originalSource.androidhls =  androidhls;
+                originalSource.androidhls = androidhls;
             }
 
             if (originalSource.drm || itemDrm) {
                 originalSource.drm = originalSource.drm || itemDrm;
             }
 
-            if (originalSource.preload || preload) {
-                originalSource.preload = originalSource.preload || preload;
-            }
+            originalSource.preload = getPreload(originalSource.preload, item.preload);
 
             // withCredentials is assigned in ascending priority order, source > playlist > model
             // a false value that is a higher priority than true must result in a false withCredentials value
@@ -75,15 +77,18 @@ define([
                 originalSource.withCredentials = cascadedWithCredentials;
             }
 
+            if (hlsjsdefault) {
+                originalSource.hlsjsdefault = hlsjsdefault;
+            }
+
             return Source(originalSource);
         }));
     };
 
     // A playlist item may have multiple different sources, but we want to stick with one.
     var _filterSources = function(sources, providers) {
-        // legacy plugin support
         if (!providers || !providers.choose) {
-            providers = new Providers({primary : providers ? 'flash' : null});
+            providers = new Providers();
         }
 
         var chosenProviderAndType = _chooseProviderAndType(sources, providers);
@@ -103,7 +108,7 @@ define([
             var source = sources[i];
             var chosenProvider = providers.choose(source);
             if (chosenProvider) {
-                return {type: source.type, provider: chosenProvider.providerToCheck};
+                return { type: source.type, provider: chosenProvider.providerToCheck };
             }
         }
 

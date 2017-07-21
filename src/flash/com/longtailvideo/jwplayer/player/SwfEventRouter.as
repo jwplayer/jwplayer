@@ -21,7 +21,7 @@ public class SwfEventRouter {
                     _initialized = true;
                 } catch(err:Error) {
                     // ExternalInterface calls can fail when swf is removed during ActionScript execution
-                    trace(err.getStackTrace());
+                    trace(err);
                 }
 
             }
@@ -74,26 +74,17 @@ public class SwfEventRouter {
 
     static private var _sendScript:XML = <script><![CDATA[
 function(id, name, json) {
-    return setTimeout(function() {
-        var swf = document.getElementById(id);
-        if (swf && typeof swf.trigger === 'function') {
-            if (json) {
-                var data = JSON.parse(decodeURIComponent(json));
-                return swf.trigger(name, data);
-            } else {
-                return swf.trigger(name);
-            }
-        }
-        // console.log('Unhandled event from "' + id +'":', name, json);
-    }, 0);
+    var swf = document.getElementById(id);
+    if (swf && typeof swf.trigger === 'function') {
+        return swf.trigger(name, json);
+    }
 }]]></script>;
 
     static public function triggerJsEvent(name:String, data:Object = null):void {
         var id:String = ExternalInterface.objectID;
         if (ExternalInterface.available) {
-            var jsTimeout:Number = -1;
+            var json:String;
             if (data !== null) {
-                var json:String;
                 try {
                     if (data is String || data is Number) {
                         // do nothing
@@ -107,19 +98,13 @@ function(id, name, json) {
                     }
                     json = encodeURIComponent(JSON.stringify(data));
                 } catch(err:Error) {
-                    trace(err.getStackTrace());
+                    trace(err);
                 }
-                try {
-                    jsTimeout = ExternalInterface.call(_sendScript, id, name, json);
-                } catch(err:Error) {
-                    trace(err.getStackTrace());
-                }
-            } else {
-                try {
-                    jsTimeout = ExternalInterface.call(_sendScript, id, name);
-                } catch(err:Error) {
-                    trace(err.getStackTrace());
-                }
+            }
+            try {
+                ExternalInterface.call(_sendScript, id, name, json);
+            } catch(err:Error) {
+                trace(err);
             }
             return;
         }
@@ -148,7 +133,7 @@ function() {
             try {
                 ExternalInterface.call.apply(null, [_consoleLog].concat(args));
             } catch(err:Error) {
-                trace(err.getStackTrace());
+                trace(err);
             }
         }
     }

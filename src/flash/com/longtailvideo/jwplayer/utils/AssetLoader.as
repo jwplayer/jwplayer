@@ -135,10 +135,10 @@ public class AssetLoader extends EventDispatcher {
                 loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "Bad request."));
                 break;
             case 401:
-                loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "Request not authorize."));
+                loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "Request not authorized."));
                 break;
             case 403:
-                loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "File could not be loaded due to server permissions."));
+                loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "You do not have permission to access this content"));
                 break;
             case 404:
                 loadError(new ErrorEvent(ErrorEvent.ERROR, false, false, "File not found."));

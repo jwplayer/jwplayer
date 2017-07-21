@@ -1,4 +1,3 @@
-// jshint ignore: start
 define([
     'test/underscore',
     'utils/helpers',
@@ -9,158 +8,175 @@ define([
     'playlist/playlist',
     'providers/providers'
 ], function (_, helpers, aac, flv, mp4, playlists, playlist, Providers) {
-    /* jshint qunit: true */
 
-    // Verify that for each playlist item, they only have a single type of source
-    function sourcesMatch(playlist) {
-        var type;
+    function sourcesMatch(playlistItems) {
+        let type;
 
-        var match = _.all(playlist, function(playlistItem) {
+        return _.all(playlistItems, function (playlistItem) {
             // Each item can have it's own type
             type = null;
 
-            return _.all(playlistItem.sources, function(a) {
+            return _.all(playlistItem.sources, function (a) {
                 type = type || a.type;
                 return type === a.type;
             });
         });
-
-        return match;
     }
 
+    function testSource(sourceName, desiredType, isAndroidHls) {
+        const model = {
+            getProviders: function() {
+                return new Providers();
+            },
+            get: function (attribute) {
+                switch (attribute) {
+                    case 'androidhls':
+                        return !!isAndroidHls;
+                    default:
+                        break;
+                }
+            }
+        };
+        const pl = playlist(playlists[sourceName]);
+        const filtered = playlist.filterPlaylist(pl, model);
 
-    function testSource(assert, sourceName, desiredType, isFlash, isAndroidHls) {
-
-        var primary = isFlash ? 'flash' : undefined;
-
-        if (primary === 'flash' && !helpers.flashVersion()) {
-            assert.ok(true, 'Ignore flash test when plugin is unavailable');
-            return;
-        }
-
-        var pl = playlist(playlists[sourceName]);
-        var filtered = playlist.filterPlaylist(pl, new Providers({primary:primary}), !!isAndroidHls);
-
-        var title = isFlash ? 'Flash only with ' : 'Html5 only with ';
-        assert.ok(sourcesMatch(filtered), title + sourceName + ' has only matching sources');
+        expect(sourcesMatch(filtered)).to.be.true;
     }
 
-    QUnit.module('playlist.filterSources');
-    var test = QUnit.test.bind(QUnit);
+    describe('playlist.filterSources', function() {
 
-    test('flash primary', function(assert) {
-        testSource(assert, 'flv_mp4', 'flv', true);
-        testSource(assert, 'mp4_flv', 'mp4', true);
-        testSource(assert, 'aac_mp4', 'aac', true);
-        testSource(assert, 'mp4_aac', 'mp4', true);
-        testSource(assert, 'invalid', undefined, true);
-        testSource(assert, 'empty', undefined, true);
-        testSource(assert, 'mixed', 'mp4', true);
-    });
+        it('should filter sources when androidhls is enabled', function() {
+            testSource('flv_mp4', 'flv', true);
+            testSource('mp4_flv', 'mp4', true);
+            testSource('aac_mp4', 'aac', true);
+            testSource('mp4_aac', 'mp4', true);
+            testSource('invalid', undefined, true);
+            testSource('empty', undefined, true);
+            testSource('mixed', 'mp4', true);
+        });
 
-    test('html5 primary', function(assert) {
-        testSource(assert, 'flv_mp4', 'flv', false);
-        testSource(assert, 'mp4_flv', 'mp4', false);
-        testSource(assert, 'aac_mp4', 'aac', false);
-        testSource(assert, 'mp4_aac', 'mp4', false);
-        testSource(assert, 'invalid', undefined, false);
-        testSource(assert, 'empty', undefined, false);
-        testSource(assert, 'mixed', 'mp4', false);
-    });
+        it('should filter sources when androidhls is disabled', function() {
+            testSource('flv_mp4', 'flv', false);
+            testSource('mp4_flv', 'mp4', false);
+            testSource('aac_mp4', 'aac', false);
+            testSource('mp4_aac', 'mp4', false);
+            testSource('invalid', undefined, false);
+            testSource('empty', undefined, false);
+            testSource('mixed', 'mp4', false);
+        });
+
+        describe('playlist.filterPlaylist', function() {
+
+            it('filterPlaylist', function() {
+                let pl;
+                const androidhls = true;
+                const model = {
+                    getProviders: function() {
+                        return new Providers();
+                    },
+                    get: function (attribute) {
+                        switch (attribute) {
+                            case 'androidhls':
+                                return androidhls;
+                            default:
+                                break;
+                        }
+                    }
+                };
+                pl = playlist.filterPlaylist(playlists.webm_mp4, model);
+                expect(pl[0].sources[0].type).to.equal('webm');
+                expect(pl[1].sources[0].type).to.equal('mp4');
+
+                pl = playlist.filterPlaylist(playlists.mp4_webm, model);
+                expect(pl[0].sources[0].type).to.equal('mp4');
+                expect(pl[1].sources[0].type).to.equal('webm');
+
+                pl = playlist.filterPlaylist(playlists.mp4_webm, model);
+                expect(pl[0].sources[0].androidhls).to.equal(androidhls);
+
+                const empty = [];
+                pl = playlist.filterPlaylist(empty, model);
+                expect(pl.length).to.equal(0);
+
+                pl = playlist.filterPlaylist([{ sources: [] }], model);
+                expect(pl.length).to.equal(0);
+
+                model.getProviders = function() {
+                    return null;
+                };
+                pl = playlist.filterPlaylist(playlists.mp4_webm, model);
+                expect(pl.length).to.equal(2);
+
+                model.getProviders = function() {
+                    return { no: 'choose' };
+                };
+                pl = playlist.filterPlaylist(playlists.mp4_webm, model);
+                expect(pl.length).to.equal(2);
+            });
 
 
-    QUnit.module('playlist.filterPlaylist');
-
-    test('filterPlaylist', function(assert) {
-        var pl;
-        pl = playlist.filterPlaylist(playlists['webm_mp4'], new Providers());
-        assert.equal(pl[0].sources[0].type, 'webm', 'Webm mp4 first source is webm');
-        assert.equal(pl[1].sources[0].type, 'mp4', 'Webm mp4 second source is mp4');
-
-        pl = playlist.filterPlaylist(playlists['mp4_webm'], new Providers());
-        assert.equal(pl[0].sources[0].type, 'mp4', 'Mp4 webm, first source is mp4');
-        assert.equal(pl[1].sources[0].type, 'webm', 'mp4 webm, second source is webm');
-
-        var androidhls = true;
-        pl = playlist.filterPlaylist(playlists['mp4_webm'], new Providers(), androidhls);
-        assert.equal(pl[0].sources[0].androidhls, androidhls, 'androidhls is copied to sources');
-
-        var empty = [];
-        pl = playlist.filterPlaylist(empty, new Providers());
-        assert.equal(pl.length, 0, 'returns an empty array when playlist is empty');
-
-        pl = playlist.filterPlaylist([{sources:[]}], new Providers());
-        assert.equal(pl.length, 0, 'filters items with empty sources');
-
-        pl = playlist.filterPlaylist(playlists['mp4_webm']);
-        assert.equal(pl.length, 2, 'supports legacy plugins with providers not set');
-
-        pl = playlist.filterPlaylist(playlists['mp4_webm'], {no: 'choose'});
-        assert.equal(pl.length, 2, 'supports legacy plugins with providers.choose not available');
-    });
-
-
-    test('it prioritizes withCredentials in the order of source, playlist, then global', function (assert) {
-        assert.expect(4);
-        var withCredentialsPlaylist = [
-            {
-                // Uses source
-                sources: [
-                    {
+            it('it prioritizes withCredentials in the order of source, playlist, then global', function() {
+                const withCredentialsPlaylist = [{
+                    // Uses source
+                    sources: [{
                         file: 'foo.mp4',
                         withCredentials: false
-                    }
-                ]
-            },
-            {
-                // Uses playlist
-                withCredentials: false,
-                sources: [
-                    {
+                    }]
+                }, {
+                    // Uses playlist
+                    withCredentials: false,
+                    sources: [{
                         file: 'foo.mp4'
-                    }
-                ]
-            },
-            {
-                // Uses model
-                sources: [
-                    {
+                    }]
+                }, {
+                    // Uses model
+                    sources: [{
                         file: 'foo.mp4'
+                    }]
+                }];
+
+                const withCredentialsOnModel = true;
+
+                const model = {
+                    getProviders: function() {
+                        return new Providers();
+                    },
+                    get: function (attribute) {
+                        switch (attribute) {
+                            case 'withCredentials':
+                                return withCredentialsOnModel;
+                            default:
+                                break;
+                        }
                     }
-                ]
-            }
-        ];
+                };
 
-        var providersConfig = {
-            primary: 'html5'
-        };
+                const pl = playlist.filterPlaylist(withCredentialsPlaylist, model);
 
-        var withCredentialsOnModel = true;
-        
-        var pl = playlist.filterPlaylist(withCredentialsPlaylist, new Providers(providersConfig), undefined, undefined, undefined, undefined, withCredentialsOnModel);
-
-        assert.equal(pl.length, 3);
-        assert.equal(pl[0].allSources[0].withCredentials, false);
-        assert.equal(pl[1].allSources[0].withCredentials, false);
-        assert.equal(pl[2].allSources[0].withCredentials, true);
-    });
+                assert.equal(pl.length, 3);
+                assert.equal(pl[0].allSources[0].withCredentials, false);
+                assert.equal(pl[1].allSources[0].withCredentials, false);
+                assert.equal(pl[2].allSources[0].withCredentials, true);
+            });
 
 
-    test('it does not put withCredentials on the playlist if undefined', function (assert) {
-        assert.expect(2);
-
-        var undefinedCredentialsPlaylist = [
-            {
-                sources: [
-                    {
+            it('it does not put withCredentials on the playlist if undefined', function() {
+                const undefinedCredentialsPlaylist = [{
+                    sources: [{
                         file: 'foo.mp4'
-                    }
-                ]
-            }
-        ];
+                    }]
+                }];
+                const model = {
+                    getProviders: function() {
+                        return new Providers();
+                    },
+                    get: function () {}
+                };
 
-        var pl = playlist.filterPlaylist(undefinedCredentialsPlaylist, new Providers(), undefined, undefined, undefined, undefined, undefined);
-        assert.equal(pl.length, 1);
-        assert.equal(pl[0].allSources[0].withCredentials, undefined);
+                const pl = playlist.filterPlaylist(undefinedCredentialsPlaylist, model);
+                assert.equal(pl.length, 1);
+                assert.equal(pl[0].allSources[0].withCredentials, undefined);
+            });
+        });
     });
 });

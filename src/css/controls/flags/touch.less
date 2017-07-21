@@ -1,0 +1,50 @@
+.jw-flag-touch {
+    &.jw-breakpoint-7,
+    &.jw-breakpoint-6,
+    &.jw-breakpoint-5,
+    &.jw-breakpoint-4 {
+        .jw-controlbar,
+        .jw-skip,
+        .jw-plugin {
+            font-size: 1.5em;
+        }
+
+        .jw-captions,
+        .jw-nextup-container {
+            /* control bar is (1.5*2.5 = 3.75)em for mobile, so bottom should be 0.5 above that */
+            bottom: 4.25em;
+        }
+
+        /* captions styles code specific to native text track rendering */
+        video::-webkit-media-text-track-container {
+            /* need to compensate for the control bar being 3.75em on mobile */
+            max-height: ~"calc(100% - 60px)";
+        }
+    }
+
+    .jw-controlbar .jw-icon-volume {
+        display: inline-block;
+    }
+
+    .jw-display,
+    .jw-display-container,
+    .jw-display-controls {
+        pointer-events: none;
+    }
+
+    &.jw-state-paused,
+    &.jw-state-playing {
+        &:not(.jw-breakpoint-1) {
+            .jw-display-icon-next,
+            .jw-display-icon-rewind {
+                display: none;
+            }
+        }
+    }
+
+    &.jw-state-paused.jw-flag-dragging {
+        .jw-display {
+            display: none;
+        }
+    }
+}

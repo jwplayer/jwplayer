@@ -1,0 +1,169 @@
+@import "../../shared-imports/vars";
+
+.jwplayer.jw-flag-ads {
+    .jw-preview,
+    .jw-dock,
+    .jw-logo,
+    .jw-captions.jw-captions-enabled,
+    .jw-nextup-container,
+    .jw-autostart-mute {
+        display: none;
+    }
+
+    /* captions styles code specific to native text track rendering */
+    video::-webkit-media-text-track-container {
+        display: none;
+    }
+
+    &.jw-flag-small-player {
+        .jw-display-icon-rewind,
+        .jw-display-icon-next,
+        .jw-display-icon-display {
+            display: none;
+        }
+
+        &.jw-state-buffering .jw-display-icon-display {
+            display: inline-block;
+        }
+
+        .jw-controlbar-center-group {
+            padding: 0;
+        }
+    }
+
+    .jw-controlbar {
+        padding-right: 5px;
+        pointer-events: none;
+
+        .jw-icon-inline,
+        .jw-icon-tooltip,
+        .jw-icon-cast,
+        .jw-text,
+        .jw-slider-horizontal {
+            display: none;
+        }
+
+        .jw-icon-playback,
+        .jw-icon-volume,
+        .jw-slider-volume,
+        .jw-icon-fullscreen {
+            display: inline-block;
+        }
+
+        .jw-text-alt {
+            display: inline-block;
+        }
+
+        .jw-slider-volume.jw-slider-horizontal,
+        .jw-icon-inline.jw-icon-volume {
+            display: inline-block;
+        }
+
+        .jw-icon-tooltip.jw-icon-volume {
+            display: none;
+        }
+
+        .jw-overlay:after {
+            display: none;
+        }
+    }
+
+    .jw-controlbar-center-group {
+        height: auto;
+    }
+
+    &.jw-ie {
+        .jw-controlbar-center-group {
+            overflow: hidden;
+
+            .jw-text-alt {
+                display: table;
+                top: -1px;
+            }
+        }
+    }
+
+    // Control bar should always be visible during ad playback on touch devices
+    // except when jw-flag-ads-vpaid is set
+    &.jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid) {
+        &,
+        &.jw-flag-autostart {
+            .jw-controls .jw-controlbar {
+                display: table;
+                pointer-events: all;
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+    }
+
+    .jw-group > .jw-text-alt {
+        display: inline-block;
+        margin: 0;
+        line-height: @mobile-touch-target;
+    }
+
+    .jw-text-duration {
+        display: none;
+    }
+
+    .jw-nextup-container {
+        bottom: @mobile-touch-target;
+    }
+
+    .jw-icon,
+    .jw-slider-horizontal {
+        pointer-events: all;
+    }
+}
+
+.jwplayer.jw-flag-ads-googleima {
+    &.jw-flag-touch {
+        .jw-controlbar {
+            font-size: 1em;
+        }
+
+        .jw-display-icon-display,
+        .jw-display-icon-display .jw-icon-display {
+            pointer-events: none;
+        }
+    }
+
+    &.jw-flag-small-player {
+        // Fit controls under Google IMA skip button in small players
+        .jw-controlbar {
+            height: 36px;
+            padding-top: 8px;
+
+            .jw-icon,
+            .jw-text {
+                height: 36px;
+                line-height: 36px;
+            }
+        }
+    }
+}
+
+.jwplayer.jw-flag-ads-vpaid,
+.jwplayer.jw-flag-touch.jw-flag-ads-vpaid {
+    .jw-display-container,
+    .jw-skip {
+        display: none;
+    }
+}
+
+.jwplayer.jw-flag-ads-vpaid {
+    &.jw-flag-small-player {
+        .jw-controls {
+            background: none;
+        }
+    }
+}
+
+.jwplayer.jw-flag-ads-hide-controls {
+    .jw-controls {
+        /* Important is required to controls are never displayed */
+        /* stylelint-disable-next-line declaration-no-important */
+        display: none !important;
+    }
+}

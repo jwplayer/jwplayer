@@ -1,0 +1,57 @@
+@import "../../shared-imports/vars";
+
+.jwplayer.jw-flag-live {
+    .jw-display-icon-rewind {
+        display: none;
+    }
+
+    .jw-controlbar {
+        padding-right: 5px;
+        padding-left: 10px;
+
+        .jw-text-elapsed,
+        .jw-text-duration,
+        .jw-text-countdown,
+        .jw-slider-time {
+            display: none;
+        }
+
+        .jw-text-alt {
+            display: inline-block;
+        }
+
+        .jw-overlay:after {
+            display: none;
+        }
+    }
+
+    &.jw-ie {
+        .jw-controlbar-center-group {
+            overflow: hidden;
+
+            .jw-text-alt {
+                display: table;
+                top: -1px;
+            }
+        }
+    }
+
+    .jw-controlbar-center-group {
+        height: auto;
+    }
+
+    .jw-group > .jw-text-alt {
+        display: inline-block;
+        margin: 0;
+        line-height: @mobile-touch-target;
+    }
+
+    .jw-nextup-container {
+        bottom: @mobile-touch-target;
+    }
+
+    .jw-text-elapsed,
+    .jw-text-duration {
+        display: none;
+    }
+}
