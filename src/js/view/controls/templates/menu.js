@@ -6,9 +6,9 @@ export default (items = []) => {
         .join('');
 
     return (
-      `<ul class="jw-menu jw-background-color jw-reset">` +
-          `${itemsHtml}` +
-      `</ul>`
+        `<ul class="jw-menu jw-background-color jw-reset">` +
+            `${itemsHtml}` +
+        `</ul>`
     );
 };
 

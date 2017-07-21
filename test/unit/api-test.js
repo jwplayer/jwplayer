@@ -1,17 +1,16 @@
 import instances from 'api/players';
-
+import Api from 'api/api';
 define([
     'test/underscore',
     'jquery',
     'sinon',
-    'api/api',
     'data/api-members',
     'data/api-methods',
     'data/api-methods-chainable',
     'data/api-methods-deprecated',
     'data/config-small',
     'utils/backbone.events',
-], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, apiMethodsDeprecated, configSmall, Events) {
+], function (_, $, sinon, apiMembers, apiMethods, apiMethodsChainable, apiMethodsDeprecated, configSmall, Events) {
 
 
     describe('Api', function() {

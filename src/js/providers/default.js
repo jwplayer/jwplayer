@@ -38,7 +38,7 @@ define([
         mute: noop,
         seek: noop,
         resize: noop,
-        remove: noop,  // removes from page
+        remove: noop, // removes from page
         destroy: noop, // frees memory
 
         setVisibility: noop,

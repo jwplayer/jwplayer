@@ -1,9 +1,10 @@
+import Api from 'api/api';
+
 define([
     'test/underscore',
     'jquery',
-    'utils/helpers',
-    'api/api'
-], function (_, $, utils, Api) {
+    'utils/helpers'
+], function (_, $, utils) {
 
     const tru = () => true;
     const fals = () => false;

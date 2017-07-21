@@ -43,7 +43,7 @@ define([
      * Extracts a plugin version from a string
      */
     utils.getPluginVersion = function (pluginName) {
-        return pluginName.replace(/[^-]*-?([^\.]*).*$/, '$1');
+        return pluginName.replace(/[^-]*-?([^.]*).*$/, '$1');
     };
 
     return utils;

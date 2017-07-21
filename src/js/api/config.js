@@ -97,7 +97,7 @@ const Config = function(options, persisted) {
     if (_.isObject(config.skin)) {
         config.skinUrl = config.skin.url;
         config.skinColorInactive = config.skin.inactive; // default icon color
-        config.skinColorActive = config.skin.active;  // icon hover, on, slider color
+        config.skinColorActive = config.skin.active; // icon hover, on, slider color
         config.skinColorBackground = config.skin.background; // control elements background
         config.skin = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
     }
