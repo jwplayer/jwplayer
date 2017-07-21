@@ -3,7 +3,10 @@ import instances from 'api/players';
 import { OS } from 'environment/environment';
 import ApiQueueDecorator from 'api/api-queue';
 import { streamType } from 'providers/utils/stream-type';
-import {BUFFERING, IDLE, COMPLETE, PAUSED, PLAYING, ERROR, LOADING, STALLED} from 'events/states';
+import { BUFFERING, IDLE, COMPLETE, PAUSED, PLAYING, ERROR, LOADING, STALLED } from 'events/states';
+import { MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, SETUP_ERROR, READY, MEDIA_ERROR,
+ MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
+ CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
 define([
     'controller/instream-adapter',
@@ -20,7 +23,7 @@ define([
     'view/error',
     'controller/events-middleware',
 ], function(InstreamAdapter, _, Setup, Captions, Model,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, viewError, eventsMiddleware) {
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, viewError, eventsMiddleware) {
 
     // The model stores a different state than the provider
     function normalizeState(newstate) {
@@ -56,15 +59,15 @@ define([
 
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
-            _setup.on(events.JWPLAYER_READY, _playerReady, this);
-            _setup.on(events.JWPLAYER_SETUP_ERROR, this.setupError, this);
+            _setup.on(READY, _playerReady, this);
+            _setup.on(SETUP_ERROR, this.setupError, this);
 
             _model.mediaController.on('all', _triggerAfterReady, this);
-            _model.mediaController.on(events.JWPLAYER_MEDIA_COMPLETE, function() {
+            _model.mediaController.on(MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 _.defer(_completeHandler);
             });
-            _model.mediaController.on(events.JWPLAYER_MEDIA_ERROR, this.triggerError, this);
+            _model.mediaController.on(MEDIA_ERROR, this.triggerError, this);
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
             _model.on('change:flashBlocked', function(model, isBlocked) {
@@ -79,7 +82,7 @@ define([
                 };
                 // Only dispatch an error for Flash blocked, not throttled events
                 if (!throttled) {
-                    this.trigger(events.JWPLAYER_ERROR, errorEvent);
+                    this.trigger(ERROR, errorEvent);
                 }
                 this._model.set('errorEvent', errorEvent);
             }, this);
@@ -93,10 +96,10 @@ define([
             });
 
             _model.on('change:castState', function(model, evt) {
-                _this.trigger(events.JWPLAYER_CAST_SESSION, evt);
+                _this.trigger(CAST_SESSION, evt);
             });
             _model.on('change:fullscreen', function(model, bool) {
-                _this.trigger(events.JWPLAYER_FULLSCREEN, {
+                _this.trigger(FULLSCREEN, {
                     fullscreen: bool
                 });
                 if (bool) {
@@ -105,7 +108,7 @@ define([
                 }
             });
             _model.on('itemReady', function() {
-                _this.triggerAfterReady(events.JWPLAYER_PLAYLIST_ITEM, {
+                _this.triggerAfterReady(PLAYLIST_ITEM, {
                     index: _model.get('item'),
                     item: _model.get('playlistItem')
                 });
@@ -121,22 +124,22 @@ define([
                         delete eventFeedData.playlist;
                         eventData.feedData = eventFeedData;
                     }
-                    _this.triggerAfterReady(events.JWPLAYER_PLAYLIST_LOADED, eventData);
+                    _this.triggerAfterReady(PLAYLIST_LOADED, eventData);
                 }
             });
             _model.on('change:volume', function(model, vol) {
-                _this.trigger(events.JWPLAYER_MEDIA_VOLUME, {
+                _this.trigger(MEDIA_VOLUME, {
                     volume: vol
                 });
             });
             _model.on('change:mute', function(model, mute) {
-                _this.trigger(events.JWPLAYER_MEDIA_MUTE, {
+                _this.trigger(MEDIA_MUTE, {
                     mute: mute
                 });
             });
 
             _model.on('change:playbackRate', function(model, rate) {
-                _this.trigger(events.JWPLAYER_PLAYBACK_RATE_CHANGED, {
+                _this.trigger(PLAYBACK_RATE_CHANGED, {
                     playbackRate: rate,
                     position: model.get('position')
                 });
@@ -152,7 +155,7 @@ define([
 
             // For onCaptionsList and onCaptionsChange
             _model.on('change:captionsList', function(model, captionsList) {
-                _this.triggerAfterReady(events.JWPLAYER_CAPTIONS_LIST, {
+                _this.triggerAfterReady(CAPTIONS_LIST, {
                     tracks: captionsList,
                     track: _model.get('captionsIndex') || 0
                 });
@@ -176,7 +179,7 @@ define([
             }
 
             function triggerControls(model, enable) {
-                _this.trigger(events.JWPLAYER_CONTROLS, {
+                _this.trigger(CONTROLS, {
                     controls: enable
                 });
             }
@@ -206,7 +209,7 @@ define([
 
                 // Fire 'ready' once the view has resized so that player width and height are available
                 // (requires the container to be in the DOM)
-                _view.once(events.JWPLAYER_RESIZE, _playerReadyNotify);
+                _view.once(RESIZE, _playerReadyNotify);
 
                 _view.init();
             }
@@ -216,7 +219,7 @@ define([
                 _model.on('change:controls', triggerControls);
 
                 // Tell the api that we are loaded
-                _this.trigger(events.JWPLAYER_READY, {
+                _this.trigger(READY, {
                     // this will be updated by Api
                     setupTime: 0
                 });
@@ -227,7 +230,7 @@ define([
                 // Send queued events
                 for (let i = 0; i < _eventQueuedUntilReady.length; i++) {
                     const event = _eventQueuedUntilReady[i];
-                    _preplay = (event.type === events.JWPLAYER_MEDIA_BEFOREPLAY);
+                    _preplay = (event.type === MEDIA_BEFOREPLAY);
                     _this.trigger(event.type, event.args);
                     _preplay = false;
                 }
@@ -342,10 +345,10 @@ define([
 
             function _loadPlaylist(toLoad) {
                 const loader = new PlaylistLoader();
-                loader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
+                loader.on(PLAYLIST_LOADED, function(data) {
                     _load(data.playlist, data);
                 });
-                loader.on(events.JWPLAYER_ERROR, function(evt) {
+                loader.on(ERROR, function(evt) {
                     evt.message = 'Error loading playlist: ' + evt.message;
                     this.triggerError(evt);
                 }, this);
@@ -385,7 +388,7 @@ define([
 
                 if (!_preplay) {
                     _preplay = true;
-                    _this.triggerAfterReady(events.JWPLAYER_MEDIA_BEFOREPLAY, { playReason: _model.get('playReason') });
+                    _this.triggerAfterReady(MEDIA_BEFOREPLAY, { playReason: _model.get('playReason') });
                     _preplay = false;
                     if (_interruptPlay) {
                         _interruptPlay = false;
@@ -572,7 +575,7 @@ define([
                         // This prevents media from replaying when a completed video scrolls into view
                         _model.set('playOnViewable', false);
                         _model.set('state', COMPLETE);
-                        _this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
+                        _this.trigger(PLAYLIST_COMPLETE, {});
                     }
                     return;
                 }
@@ -657,11 +660,10 @@ define([
                 // update provider subtitle track
                 _model.persistVideoSubtitleTrack(index);
 
-                _this.trigger(events.JWPLAYER_CAPTIONS_CHANGED, {
+                _this.trigger(CAPTIONS_CHANGED, {
                     tracks: _getCaptionsList(),
                     track: index
                 });
-
             }
 
             function _getCurrentCaptions() {
@@ -921,7 +923,7 @@ define([
                 this._model.set('errorEvent', undefined);
             }, this);
 
-            this.trigger(events.JWPLAYER_ERROR, evt);
+            this.trigger(ERROR, evt);
         },
         setupError(evt) {
             const message = evt.message;
@@ -939,7 +941,7 @@ define([
 
             const _this = this;
             _.defer(function() {
-                _this.trigger(events.JWPLAYER_SETUP_ERROR, {
+                _this.trigger(SETUP_ERROR, {
                     message: message
                 });
             });

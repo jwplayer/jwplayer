@@ -1,11 +1,12 @@
+import { COMPLETE, ERROR } from 'events/events';
+
 define([
     'utils/helpers',
     'plugins/utils',
-    'events/events',
     'utils/backbone.events',
     'utils/scriptloader',
     'utils/underscore'
-], function(utils, pluginsUtils, events, Events, Scriptloader, _) {
+], function(utils, pluginsUtils, Events, Scriptloader, _) {
 
     var pluginmodes = {
         FLASH: 0,
@@ -35,13 +36,13 @@ define([
         function completeHandler() {
             _.defer(function() {
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(events.COMPLETE);
+                _this.trigger(COMPLETE);
             });
         }
 
         function errorHandler() {
             _status = Scriptloader.loaderstatus.ERROR;
-            _this.trigger(events.ERROR, { url: url });
+            _this.trigger(ERROR, { url: url });
         }
 
         this.load = function() {
@@ -51,19 +52,19 @@ define([
             if (url.lastIndexOf('.swf') > 0) {
                 _flashPath = url;
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(events.COMPLETE);
+                _this.trigger(COMPLETE);
                 return;
             }
             if (pluginsUtils.getPluginPathType(url) === pluginsUtils.pluginPathType.CDN) {
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(events.COMPLETE);
+                _this.trigger(COMPLETE);
                 return;
             }
             _status = Scriptloader.loaderstatus.LOADING;
             var _loader = new Scriptloader(getJSPath());
             // Complete doesn't matter - we're waiting for registerPlugin
-            _loader.on(events.COMPLETE, completeHandler);
-            _loader.on(events.ERROR, errorHandler);
+            _loader.on(COMPLETE, completeHandler);
+            _loader.on(ERROR, errorHandler);
             _loader.load();
         };
 
@@ -84,7 +85,7 @@ define([
                 _flashPath = name;
             }
             _status = Scriptloader.loaderstatus.COMPLETE;
-            _this.trigger(events.COMPLETE);
+            _this.trigger(COMPLETE);
         };
 
         this.getStatus = function() {

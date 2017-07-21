@@ -1,9 +1,10 @@
+import { READY, SETUP_ERROR } from 'events/events';
+
 define([
     'controller/setup-steps',
     'utils/backbone.events',
-    'utils/underscore',
-    'events/events'
-], function(SetupSteps, Events, _, events) {
+    'utils/underscore'
+], function(SetupSteps, Events, _) {
     var Setup = function(_api, _model, _view, _setPlaylist) {
         var _this = this;
         var _setupFailureTimeout;
@@ -62,7 +63,7 @@ define([
                 _error(resolveState.msg, resolveState.reason);
             } else if (resolveState.type === 'complete') {
                 clearTimeout(_setupFailureTimeout);
-                _this.trigger(events.JWPLAYER_READY);
+                _this.trigger(events.READY);
             } else {
                 task.complete = true;
                 _nextTask();
@@ -71,7 +72,7 @@ define([
 
         function _error(message, reason) {
             clearTimeout(_setupFailureTimeout);
-            _this.trigger(events.JWPLAYER_SETUP_ERROR, {
+            _this.trigger(events.SETUP_ERROR, {
                 message: message + ': ' + reason
             });
             _this.destroy();

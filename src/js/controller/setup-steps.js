@@ -1,4 +1,5 @@
 import * as ControlsLoader from 'controller/controls-loader';
+import { PLAYLIST_LOADED, COMPLETE, ERROR } from 'events/events';
 
 define([
     'plugins/plugins',
@@ -6,8 +7,7 @@ define([
     'utils/scriptloader',
     'utils/embedswf',
     'utils/underscore',
-    'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _) {
 
     var _pluginLoader;
     var _playlistLoader;
@@ -100,8 +100,8 @@ define([
     function _loadPlugins(resolve, _model) {
         window.jwplayerPluginJsonp = plugins.registerPlugin;
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-        _pluginLoader.on(events.COMPLETE, resolve);
-        _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
+        _pluginLoader.on(COMPLETE, resolve);
+        _pluginLoader.on(ERROR, _.partial(_pluginsError, resolve));
         _pluginLoader.load();
     }
 
@@ -119,12 +119,12 @@ define([
         var playlist = _model.get('playlist');
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
-            _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
+            _playlistLoader.on(PLAYLIST_LOADED, function(data) {
                 _model.attributes.feedData = data;
                 _model.attributes.playlist = data.playlist;
                 resolve();
             });
-            _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
+            _playlistLoader.on(ERROR, _.partial(_playlistError, resolve));
             _playlistLoader.load(playlist);
         } else {
             resolve();
@@ -169,10 +169,10 @@ define([
             var isStylesheet = true;
             var loader = new ScriptLoader(skinUrl, isStylesheet);
 
-            loader.addEventListener(events.COMPLETE, function() {
+            loader.addEventListener(COMPLETE, function() {
                 _model.set('skin-loading', false);
             });
-            loader.addEventListener(events.ERROR, function() {
+            loader.addEventListener(ERROR, function() {
                 _model.set('skin-loading', false);
             });
 
