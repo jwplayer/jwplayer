@@ -1,3 +1,48 @@
+// States
+
+/**
+ * The user pressed play, but sufficient data to start playback has not yet loaded.
+   The buffering icon is visible in the display.
+*/
+export const STATE_BUFFERING = 'buffering';
+
+/**
+ * Either playback has not started or playback was stopped due to a stop() call or an error.
+   In this state, either the play or the error icon is visible in the display.
+*/
+export const STATE_IDLE = 'idle';
+
+/**
+ * Playback has ended. The replay icon is visible in the display.
+*/
+export const STATE_COMPLETE = 'complete';
+
+/**
+ * The video is currently paused. The play icon is visible in the display.
+*/
+export const STATE_PAUSED = 'paused';
+
+/**
+ * The video is currently playing. No icon is visible in the display.
+*/
+export const STATE_PLAYING = 'playing';
+
+/**
+ * Playback was stopped due to an error.
+   In this state the error icon and a message are visible in the display.
+*/
+export const STATE_ERROR = 'error';
+
+/**
+ * The user pressed play, but media has not yet loaded.
+*/
+export const STATE_LOADING = 'loading';
+
+/**
+ * The user pressed play, but data is not being loaded.
+*/
+export const STATE_STALLED = 'stalled';
+
 // Touch Events
 
 /**
@@ -55,7 +100,7 @@ export const OUT = 'out';
 /**
  * Event stream reproduction is stopped because of an error.
 */
-export const ERROR = 'error';
+export const ERROR = STATE_ERROR;
 
 // Ad events
 
@@ -114,7 +159,7 @@ export const AD_TIME = 'adTime';
 /**
  * Event triggered when media playback ends because the last segment has been played.
 */
-export const MEDIA_COMPLETE = 'complete';
+export const MEDIA_COMPLETE = STATE_COMPLETE;
 
 /**
  * Event triggered when the player's setup is complete and is ready to be used.
@@ -336,48 +381,3 @@ export const INSTREAM_CLICK = 'instreamClick';
  * Triggered when the player is resized to a width in a different breakpoint category.
 */
 export const BREAKPOINT = 'breakpoint';
-
-// States
-
-/**
- * The user pressed play, but sufficient data to start playback has not yet loaded.
-   The buffering icon is visible in the display.
-*/
-export const STATE_BUFFERING = 'buffering';
-
-/**
- * Either playback has not started or playback was stopped due to a stop() call or an error.
-   In this state, either the play or the error icon is visible in the display.
-*/
-export const STATE_IDLE = 'idle';
-
-/**
- * Playback has ended. The replay icon is visible in the display.
-*/
-export const STATE_COMPLETE = 'complete';
-
-/**
- * The video is currently paused. The play icon is visible in the display.
-*/
-export const STATE_PAUSED = 'paused';
-
-/**
- * The video is currently playing. No icon is visible in the display.
-*/
-export const STATE_PLAYING = 'playing';
-
-/**
- * Playback was stopped due to an error.
-   In this state the error icon and a message are visible in the display.
-*/
-export const STATE_ERROR = 'error';
-
-/**
- * The user pressed play, but media has not yet loaded.
-*/
-export const STATE_LOADING = 'loading';
-
-/**
- * The user pressed play, but data is not being loaded.
-*/
-export const STATE_STALLED = 'stalled';
