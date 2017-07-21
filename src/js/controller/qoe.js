@@ -1,14 +1,9 @@
+import { PLAYLIST_ITEM, MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME, MEDIA_FIRST_FRAME } from 'events/events';
+
 define([
     'api/timer',
     'utils/underscore'
 ], function(Timer, _) {
-
-    // Copied from events.js until we can export individual constants with ES6
-    var JWPLAYER_PLAYLIST_ITEM = 'playlistItem';
-    var JWPLAYER_MEDIA_PLAY_ATTEMPT = 'playAttempt';
-    var JWPLAYER_PROVIDER_FIRST_FRAME = 'providerFirstFrame';
-    var JWPLAYER_MEDIA_FIRST_FRAME = 'firstFrame';
-    var JWPLAYER_MEDIA_TIME = 'time';
 
     var TAB_HIDDEN = 'tabHidden';
     var TAB_VISIBLE = 'tabVisible';
@@ -29,9 +24,9 @@ define([
     });
 
     function unbindFirstFrameEvents(model) {
-        model.mediaController.off(JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
-        model.mediaController.off(JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
-        model.mediaController.off(JWPLAYER_MEDIA_TIME, model._onTime);
+        model.mediaController.off(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+        model.mediaController.off(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
+        model.mediaController.off(MEDIA_TIME, model._onTime);
         model.off('change:activeTab', model._onTabVisible);
     }
 
@@ -43,17 +38,17 @@ define([
         // When it occurs, send the event, and unbind all listeners
         model._triggerFirstFrame = _.once(function() {
             var qoeItem = model._qoeItem;
-            qoeItem.tick(JWPLAYER_MEDIA_FIRST_FRAME);
+            qoeItem.tick(MEDIA_FIRST_FRAME);
 
             var time = qoeItem.getFirstFrame();
-            model.mediaController.trigger(JWPLAYER_MEDIA_FIRST_FRAME, { loadTime: time });
+            model.mediaController.trigger(MEDIA_FIRST_FRAME, { loadTime: time });
             unbindFirstFrameEvents(model);
         });
 
         model._onTime = onTimeIncreasesGenerator(model._triggerFirstFrame);
 
         model._onPlayAttempt = function() {
-            model._qoeItem.tick(JWPLAYER_MEDIA_PLAY_ATTEMPT);
+            model._qoeItem.tick(MEDIA_PLAY_ATTEMPT);
         };
 
         // track visibility change
@@ -66,9 +61,9 @@ define([
         };
 
         model.on('change:activeTab', model._onTabVisible);
-        model.mediaController.on(JWPLAYER_MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
-        model.mediaController.once(JWPLAYER_PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
-        model.mediaController.on(JWPLAYER_MEDIA_TIME, model._onTime);
+        model.mediaController.on(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+        model.mediaController.once(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
+        model.mediaController.on(MEDIA_TIME, model._onTime);
     }
 
     function initModel(initialModel) {
@@ -80,16 +75,16 @@ define([
             // reset item level qoe
             model._qoeItem = new Timer();
             model._qoeItem.getFirstFrame = function() {
-                var time = this.between(JWPLAYER_MEDIA_PLAY_ATTEMPT, JWPLAYER_MEDIA_FIRST_FRAME);
+                var time = this.between(MEDIA_PLAY_ATTEMPT, MEDIA_FIRST_FRAME);
                 // If time between the tab becoming visible and first frame is valid
                 // and less than the time since play attempt, play was not attempted until the tab became visible
-                var timeActive = this.between(TAB_VISIBLE, JWPLAYER_MEDIA_FIRST_FRAME);
+                var timeActive = this.between(TAB_VISIBLE, MEDIA_FIRST_FRAME);
                 if (timeActive > 0 && timeActive < time) {
                     return timeActive;
                 }
                 return time;
             };
-            model._qoeItem.tick(JWPLAYER_PLAYLIST_ITEM);
+            model._qoeItem.tick(PLAYLIST_ITEM);
             model._qoeItem.start(mediaModel.get('state'));
 
             trackFirstFrame(model);

@@ -2,16 +2,16 @@ import * as Environment from 'environment/environment';
 import instances from './players';
 import CoreLoader from './core-loader';
 import { version } from '../version';
+import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
 
 define([
     'api/timer',
     'plugins/plugins',
-    'events/events',
-    'events/states',
     'utils/backbone.events',
     'utils/helpers',
     'utils/underscore'
-], function(Timer, plugins, events, states, Events, utils, _) {
+], function(Timer, plugins, Events, utils, _) {
+
 
     let instancesCreated = 0;
 
@@ -24,7 +24,7 @@ define([
         const core = new CoreLoader(element);
 
         // capture the ready event and add setup time to it
-        core.on(events.JWPLAYER_READY, (event) => {
+        core.on(READY, (event) => {
             api._qoe.tick('ready');
             event.setupTime = api._qoe.between('setup', 'ready');
         });
@@ -705,8 +705,8 @@ define([
 
                 state = this.getState();
                 switch (state) {
-                    case states.PLAYING:
-                    case states.BUFFERING:
+                    case STATE_PLAYING:
+                    case STATE_BUFFERING:
                         core.pause(meta);
                         break;
                     default:

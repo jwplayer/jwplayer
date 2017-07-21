@@ -1,6 +1,9 @@
 import { Browser, OS } from 'environment/environment';
 import SimpleModel from '../model/simplemodel';
 import { playerDefaults } from '../model/player-model';
+import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, MEDIA_PLAY_ATTEMPT, MEDIA_TYPE, MEDIA_BUFFER,
+ MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
+ MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
 
 define([
     'utils/helpers',
@@ -8,9 +11,7 @@ define([
     'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
-    'events/events',
-    'events/states'
-], function(utils, Providers, QOE, _, Events, events, states) {
+], function(utils, Providers, QOE, _, Events) {
 
     // Represents the state of the player
     var Model = function() {
@@ -75,23 +76,23 @@ define([
                         this.set('playbackRate', rate);
                     }
                     return;
-                case events.JWPLAYER_MEDIA_TYPE:
+                case MEDIA_TYPE:
                     if (mediaModel.get('mediaType') !== data.mediaType) {
                         mediaModel.set('mediaType', data.mediaType);
                         this.mediaController.trigger(type, evt);
                     }
                     return;
-                case events.JWPLAYER_PLAYER_STATE:
+                case PLAYER_STATE:
                     mediaModel.set('state', data.newstate);
 
                     // This "return" is important because
                     //  we are choosing to not propagate this event.
                     //  Instead letting the master controller do so
                     return;
-                case events.JWPLAYER_MEDIA_BUFFER:
+                case MEDIA_BUFFER:
                     this.set('buffer', data.bufferPercent);
                 /* falls through */
-                case events.JWPLAYER_MEDIA_META:
+                case MEDIA_META:
                     var duration = data.duration;
                     if (_.isNumber(duration) && !_.isNaN(duration)) {
                         mediaModel.set('duration', duration);
@@ -100,7 +101,7 @@ define([
                     var itemMeta = this.get('itemMeta');
                     Object.assign(itemMeta, data.metadata);
                     break;
-                case events.JWPLAYER_MEDIA_BUFFER_FULL:
+                case MEDIA_BUFFER_FULL:
                     // media controller
                     if (mediaModel.get('playAttempt')) {
                         this.playVideo();
@@ -111,7 +112,7 @@ define([
                     }
                     this.setPlaybackRate(this.get('defaultPlaybackRate'));
                     break;
-                case events.JWPLAYER_MEDIA_TIME:
+                case MEDIA_TIME:
                     mediaModel.set('position', data.position);
                     this.set('position', data.position);
                     if (_.isNumber(data.duration)) {
@@ -119,29 +120,29 @@ define([
                         this.set('duration', data.duration);
                     }
                     break;
-                case events.JWPLAYER_PROVIDER_CHANGED:
+                case PROVIDER_CHANGED:
                     this.set('provider', _provider.getName());
                     break;
-                case events.JWPLAYER_MEDIA_LEVELS:
+                case MEDIA_LEVELS:
                     this.setQualityLevel(data.currentQuality, data.levels);
                     mediaModel.set('levels', data.levels);
                     break;
-                case events.JWPLAYER_MEDIA_LEVEL_CHANGED:
+                case MEDIA_LEVEL_CHANGED:
                     this.setQualityLevel(data.currentQuality, data.levels);
                     this.persistQualityLevel(data.currentQuality, data.levels);
                     break;
-                case events.JWPLAYER_MEDIA_COMPLETE:
+                case MEDIA_COMPLETE:
                     _beforecompleted = true;
-                    this.mediaController.trigger(events.JWPLAYER_MEDIA_BEFORECOMPLETE, evt);
+                    this.mediaController.trigger(MEDIA_BEFORECOMPLETE, evt);
                     if (_attached) {
                         this.playbackComplete();
                     }
                     return;
-                case events.JWPLAYER_AUDIO_TRACKS:
+                case AUDIO_TRACKS:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     mediaModel.set('audioTracks', data.tracks);
                     break;
-                case events.JWPLAYER_AUDIO_TRACK_CHANGED:
+                case AUDIO_TRACK_CHANGED:
                     this.setCurrentAudioTrack(data.currentTrack, data.tracks);
                     break;
                 case 'subtitlesTrackChanged':
@@ -153,8 +154,8 @@ define([
                     break;
                 case 'autoplayFailed':
                     this.set('autostartFailed', true);
-                    if (mediaModel.get('state') === states.PLAYING) {
-                        mediaModel.set('state', states.PAUSED);
+                    if (mediaModel.get('state') === STATE_PLAYING) {
+                        mediaModel.set('state', STATE_PAUSED);
                     }
                     break;
                 default:
@@ -265,8 +266,8 @@ define([
 
         this.playbackComplete = function() {
             _beforecompleted = false;
-            _provider.setState(states.COMPLETE);
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_COMPLETE, {});
+            _provider.setState(STATE_COMPLETE);
+            this.mediaController.trigger(MEDIA_COMPLETE, {});
         };
 
         this.destroy = function() {
@@ -422,7 +423,7 @@ define([
             this.set('position', item.starttime || 0);
             this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
             this.mediaModel.set('playAttempt', true);
-            this.mediaController.trigger(events.JWPLAYER_MEDIA_PLAY_ATTEMPT, { playReason: this.get('playReason') });
+            this.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: this.get('playReason') });
 
             _provider.load(item);
         };
@@ -507,7 +508,7 @@ define([
 
     // Represents the state of the provider/media element
     var MediaModel = Model.MediaModel = function() {
-        this.set('state', states.IDLE);
+        this.set('state', STATE_IDLE);
     };
 
     Object.assign(Model.prototype, SimpleModel);

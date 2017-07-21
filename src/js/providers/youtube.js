@@ -1,19 +1,19 @@
 import { OS } from 'environment/environment';
+import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_LOADING, STATE_STALLED, ERROR, MEDIA_TIME,
+ MEDIA_BUFFER, MEDIA_COMPLETE, MEDIA_META, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR } from 'events/events';
 
 define([
     'utils/helpers',
     'utils/css',
     'utils/underscore',
-    'events/events',
-    'events/states',
     'utils/scriptloader',
     'providers/default',
     'utils/backbone.events'
-], function(utils, cssUtils, _, events, states, Scriptloader, DefaultProvider, Events) {
+], function(utils, cssUtils, _, Scriptloader, DefaultProvider, Events) {
     var _scriptLoader = new Scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
 
     function YoutubeProvider(_playerId, _playerConfig) {
-        this.state = states.IDLE;
+        this.state = STATE_IDLE;
 
         _.extend(this, Events);
 
@@ -32,12 +32,12 @@ define([
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
-            if (state !== states.IDLE && state !== states.COMPLETE) {
+            if (state !== STATE_IDLE && state !== STATE_COMPLETE) {
                 // always run this interval when not idle because we can't trust events from iFrame
                 _playingInterval = setInterval(_checkPlaybackHandler, 250);
-                if (state === states.PLAYING) {
+                if (state === STATE_PLAYING) {
                     this.seeking = false;
-                } else if (state === states.LOADING || state === states.STALLED) {
+                } else if (state === STATE_LOADING || state === STATE_STALLED) {
                     _bufferUpdate();
                 }
             }
@@ -47,8 +47,8 @@ define([
 
         // Load iFrame API
         if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === Scriptloader.loaderstatus.NEW) {
-            _scriptLoader.on(events.COMPLETE, _onLoadSuccess);
-            _scriptLoader.on(events.ERROR, _onLoadError);
+            _scriptLoader.on(MEDIA_COMPLETE, _onLoadSuccess);
+            _scriptLoader.on(ERROR, _onLoadError);
             _scriptLoader.load();
         }
 
@@ -125,7 +125,7 @@ define([
         }
         function _timeUpdateHandler() {
             _bufferUpdate();
-            _this.trigger(events.JWPLAYER_MEDIA_TIME, {
+            _this.trigger(MEDIA_TIME, {
                 position: _round(_youtubePlayer.getCurrentTime()),
                 duration: _youtubePlayer.getDuration()
             });
@@ -138,21 +138,21 @@ define([
             }
             if (_bufferPercent !== bufferPercent) {
                 _bufferPercent = bufferPercent;
-                _this.trigger(events.JWPLAYER_MEDIA_BUFFER, {
+                _this.trigger(MEDIA_BUFFER, {
                     bufferPercent: bufferPercent
                 });
-                // if (bufferPercent === 100) this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
+                // if (bufferPercent === 100) this.trigger(MEDIA_BUFFER_FULL);
             }
         }
 
         function _ended() {
-            if (_this.state !== states.IDLE && _this.state !== states.COMPLETE) {
-                _this.trigger(events.JWPLAYER_MEDIA_COMPLETE);
+            if (_this.state !== STATE_IDLE && _this.state !== STATE_COMPLETE) {
+                _this.trigger(MEDIA_COMPLETE);
             }
         }
 
         function _sendMetaEvent() {
-            _this.trigger(events.JWPLAYER_MEDIA_META, {
+            _this.trigger(MEDIA_META, {
                 duration: _youtubePlayer.getDuration(),
                 width: _element.clientWidth,
                 height: _element.clientHeight
@@ -255,28 +255,28 @@ define([
                     _sendMetaEvent();
 
                     // send levels when playback starts
-                    _this.trigger(events.JWPLAYER_MEDIA_LEVELS, {
+                    _this.trigger(MEDIA_LEVELS, {
                         levels: _this.getQualityLevels(),
                         currentQuality: _this.getCurrentQuality()
                     });
 
-                    _this.setState(states.PLAYING);
+                    _this.setState(STATE_PLAYING);
                     return;
 
                 case youtubeStates.PAUSED: // 2: //paused
-                    _this.setState(states.PAUSED);
+                    _this.setState(STATE_PAUSED);
                     return;
 
                 case youtubeStates.BUFFERING: // 3: //buffering
                     if (_this.seeking) {
-                        _this.setState(states.LOADING);
+                        _this.setState(STATE_LOADING);
                     } else {
-                        _this.setState(states.STALLED);
+                        _this.setState(STATE_STALLED);
                     }
                     return;
 
                 case youtubeStates.CUED: // 5: //video cued (idle before playback)
-                    _this.setState(states.IDLE);
+                    _this.setState(STATE_IDLE);
                     // play video on android to avoid being stuck in this state
                     if (OS.android) {
                         _youtubePlayer.playVideo();
@@ -294,14 +294,14 @@ define([
                 _this.play();
             }
 
-            _this.trigger(events.JWPLAYER_MEDIA_LEVEL_CHANGED, {
+            _this.trigger(MEDIA_LEVEL_CHANGED, {
                 currentQuality: _this.getCurrentQuality(),
                 levels: _this.getQualityLevels()
             });
         }
 
         function _onYoutubePlayerError() {
-            _this.trigger(events.JWPLAYER_MEDIA_ERROR, {
+            _this.trigger(MEDIA_ERROR, {
                 message: 'Error loading YouTube: Video could not be played'
             });
         }
@@ -345,7 +345,7 @@ define([
 
         // Video Provider API
         this.load = function(item) {
-            this.setState(states.LOADING);
+            this.setState(STATE_LOADING);
 
             _setItem(item);
             // start playback if api is ready
@@ -415,7 +415,7 @@ define([
 
         this.stop = function() {
             _stopVideo();
-            this.setState(states.IDLE);
+            this.setState(STATE_IDLE);
         };
 
         this.play = function() {
