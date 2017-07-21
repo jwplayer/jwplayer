@@ -2,7 +2,7 @@ define([
     'utils/underscore',
     'utils/parser'
 ], function(_, parser) {
-    var noop = function(){};
+    var noop = function() {};
     var useDomParser = false;
 
     var crossdomain = function(uri) {
@@ -13,7 +13,7 @@ define([
             b.href = uri;
             b.href = b.href; /* IE fix for relative urls */
             return a.protocol + '//' + a.host !== b.protocol + '//' + b.host;
-        } catch(e) {}
+        } catch (e) {/* swallow */}
         return true;
     };
 
@@ -23,7 +23,7 @@ define([
             url = args.url;
         }
         var xhr;
-        var options =_.extend({
+        var options = _.extend({
             xhr: null,
             url: url,
             withCredentials: false,
@@ -67,7 +67,7 @@ define([
             // remove anchors from the URL since they can't be loaded in IE
             url = url.replace(/#.*$/, '');
             xhr.open('GET', url, true);
-        } catch(e) {
+        } catch (e) {
             requestError(e);
             return xhr;
         }
@@ -75,7 +75,7 @@ define([
         if (options.responseType) {
             try {
                 xhr.responseType = options.responseType;
-            } catch(e) {/* ignore */}
+            } catch (e) {/* ignore */}
         }
 
         if (options.timeout) {
@@ -95,7 +95,7 @@ define([
                 xhr.withCredentials = true;
             }
             xhr.send();
-        } catch(e) {
+        } catch (e) {
             requestError(e);
         }
         return xhr;
@@ -161,8 +161,8 @@ define([
                 }
             } else {
                 // Handle the case where an XML document was returned with an incorrect MIME type.
-                var xml = xhr.responseXML,
-                    firstChild;
+                var xml = xhr.responseXML;
+                var firstChild;
                 if (xml) {
                     try {
                         // This will throw an error on Windows Mobile 7.5.
@@ -193,8 +193,8 @@ define([
 
     function _jsonResponse(xhr, options) {
         // insure that xhr.response is parsed JSON
-        if ( !xhr.response ||
-            (_.isString(xhr.response) && xhr.responseText.substr(1) !== '"') ) {
+        if (!xhr.response ||
+            (_.isString(xhr.response) && xhr.responseText.substr(1) !== '"')) {
             try {
                 xhr = _.extend({}, xhr, {
                     response: JSON.parse(xhr.responseText)

@@ -1,3 +1,5 @@
+import { OS } from 'environment/environment';
+
 define([
     'controller/instream-html5',
     'controller/instream-flash',
@@ -27,18 +29,17 @@ define([
     };
 
     var InstreamAdapter = function(_controller, _model, _view) {
-
         var InstreamMethod = chooseInstreamMethod(_model);
         var _instream = new InstreamMethod(_controller, _model);
 
-        var _array, // the copied in playlist
-            _arrayOptions,
-            _arrayIndex = 0,
-            _options = {},
-            _oldProvider,
-            _oldpos,
-            _olditem,
-            _this = this;
+        var _array;
+        var _arrayOptions;
+        var _arrayIndex = 0;
+        var _options = {};
+        var _oldProvider;
+        var _oldpos;
+        var _olditem;
+        var _this = this;
 
         var _clickHandler = _.bind(function(evt) {
             evt = evt || {};
@@ -73,28 +74,29 @@ define([
 
         this.type = 'instream';
 
-        this.init = function() {
-
+        this.init = function(sharedVideoTag) {
             // Keep track of the original player state
             _oldProvider = _model.getVideo();
             _oldpos = _model.get('position');
             _olditem = _model.get('playlist')[_model.get('item')];
+            // Reset playback rate to 1 in case we reuse the video tag used to play back ad content
+            _oldProvider.setPlaybackRate(1);
 
             _instream.on('all', _instreamForward, this);
             _instream.on(events.JWPLAYER_MEDIA_TIME, _instreamTime, this);
-            _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemNext, this);
+            _instream.on(events.JWPLAYER_MEDIA_COMPLETE, _instreamItemComplete, this);
             _instream.init();
 
             // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
-            _oldProvider.detachMedia();
+            _controller.detachMedia();
 
             _model.mediaModel.set('state', states.BUFFERING);
 
-            if (_controller.checkBeforePlay() || (_oldpos === 0 && !_oldProvider.checkComplete())) {
+            if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {
                 // make sure video restarts after preroll
                 _oldpos = 0;
                 _model.set('preInstreamState', 'instream-preroll');
-            } else if (_oldProvider && _oldProvider.checkComplete() || _model.get('state') === states.COMPLETE) {
+            } else if (_oldProvider && _model.checkComplete() || _model.get('state') === states.COMPLETE) {
                 _model.set('preInstreamState', 'instream-postroll');
             } else {
                 _model.set('preInstreamState', 'instream-midroll');
@@ -102,7 +104,7 @@ define([
 
             // If the player's currently playing, pause the video tag
             var currState = _model.get('state');
-            if (currState === states.PLAYING || currState === states.BUFFERING) {
+            if (!sharedVideoTag && (currState === states.PLAYING || currState === states.BUFFERING)) {
                 _oldProvider.pause();
             }
 
@@ -111,7 +113,9 @@ define([
             _instream._adModel.set('state', states.BUFFERING);
 
             // don't trigger api play/pause on display click
-            _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
+            if (_view.clickHandler()) {
+                _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
+            }
 
             this.setText(_model.get('localization').loadingAd);
             return this;
@@ -157,19 +161,22 @@ define([
             _instream._adModel.set('position', evt.position);
         }
 
-        var _instreamItemNext = function(e) {
+        function _instreamItemComplete(e) {
             var data = {};
             if (_options.tag) {
                 data.tag = _options.tag;
             }
+            this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
+            _instreamItemNext.call(this, e);
+        }
 
+        var _instreamItemNext = function(e) {
             if (_array && _arrayIndex + 1 < _array.length) {
-                // fire complete event
-                this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
                 _loadNextItem();
             } else {
+                // notify vast of breakEnd
+                this.trigger('adBreakEnd', {});
                 if (e.type === events.JWPLAYER_MEDIA_COMPLETE) {
-                    this.trigger(events.JWPLAYER_MEDIA_COMPLETE, data);
                     // Dispatch playlist complete event for ad pods
                     this.trigger(events.JWPLAYER_PLAYLIST_COMPLETE, {});
                 }
@@ -178,7 +185,7 @@ define([
         };
 
         this.loadItem = function(item, options) {
-            if (utils.isAndroid(2.3)) {
+            if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
                 this.trigger({
                     type: events.JWPLAYER_ERROR,
                     message: 'Error loading instream: Cannot play instream on Android 2.3'
@@ -198,12 +205,11 @@ define([
                 playlist = [item];
             }
 
-            var _this = this;
             var providersManager = _model.getProviders();
-            var primary = (InstreamMethod === InstreamFlash)? 'flash' : undefined;
-            var providersNeeded = providersManager.required(playlist, primary);
+            var providersNeeded = providersManager.required(playlist);
 
             _model.set('hideAdsControls', false);
+            _instream._adModel.set('state', states.BUFFERING);
             providersManager.load(providersNeeded)
                 .then(function() {
                     if (_instream === null) {
@@ -238,7 +244,7 @@ define([
             _model.set('skipButton', true);
         };
 
-        this.applyProviderListeners = function(provider){
+        this.applyProviderListeners = function(provider) {
             _instream.applyProviderListeners(provider);
 
             this.addClickHandler();
@@ -254,7 +260,9 @@ define([
 
         this.addClickHandler = function() {
             // start listening for ad click
-            _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
+            if (_view.clickHandler()) {
+                _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
+            }
 
             _instream.on(events.JWPLAYER_MEDIA_META, this.metaHandler, this);
         };
@@ -286,6 +294,7 @@ define([
                 }
 
                 _model.off(null, null, _instream);
+                _instream.off(null, null, _this);
                 _instream.instreamDestroy();
 
                 // Must happen after instream.instreamDestroy()
@@ -306,7 +315,7 @@ define([
 
                         // On error, mediaModel has buffering states in mobile, but oldProvider's state is playing.
                         // So, changing mediaModel's state to playing does not change provider state unless we do this
-                        if (utils.isMobile() && (_model.mediaModel.get('state') === states.BUFFERING)) {
+                        if (OS.mobile && (_model.mediaModel.get('state') === states.BUFFERING)) {
                             _oldProvider.setState(states.BUFFERING);
                         }
                         _oldProvider.play();
@@ -314,6 +323,8 @@ define([
                     case 'instream-postroll':
                     case 'instream-idle':
                         _oldProvider.stop();
+                        break;
+                    default:
                         break;
                 }
             }

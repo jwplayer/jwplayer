@@ -1,0 +1,39 @@
+@import "../../shared-imports/vars";
+
+.jwplayer.jw-flag-casting {
+    .jw-cast {
+        display: block;
+    }
+
+    &.jw-flag-airplay-casting .jw-display-icon-container {
+        display: none;
+    }
+
+    .jw-icon-hd,
+    .jw-captions,
+    .jw-icon-fullscreen,
+    .jw-icon-audio-tracks {
+        display: none;
+    }
+
+    &.jw-flag-airplay-casting {
+        .jw-icon-volume {
+            display: none;
+        }
+
+        .jw-icon-airplay {
+            color: @active-color;
+        }
+    }
+
+    .jw-sharing-dock-btn {
+        display: none;
+    }
+}
+
+.jwplayer.jw-state-playing.jw-flag-casting,
+.jwplayer.jw-state-paused.jw-flag-casting {
+    .jw-display {
+        display: table;
+    }
+}

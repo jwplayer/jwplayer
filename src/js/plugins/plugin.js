@@ -5,7 +5,7 @@ define([
     'utils/backbone.events',
     'utils/scriptloader',
     'utils/underscore'
-], function(utils, pluginsUtils, events, Events, scriptloader, _) {
+], function(utils, pluginsUtils, events, Events, Scriptloader, _) {
 
     var pluginmodes = {
         FLASH: 0,
@@ -14,12 +14,12 @@ define([
     };
 
     var Plugin = function(url) {
-        var _this = _.extend(this, Events),
-            _status = scriptloader.loaderstatus.NEW,
-            _flashPath,
-            _js,
-            _target,
-            _completeTimeout;
+        var _this = _.extend(this, Events);
+        var _status = Scriptloader.loaderstatus.NEW;
+        var _flashPath;
+        var _js;
+        var _target;
+        var _completeTimeout;
 
         function getJSPath() {
             switch (pluginsUtils.getPluginPathType(url)) {
@@ -27,61 +27,63 @@ define([
                     return url;
                 case pluginsUtils.pluginPathType.RELATIVE:
                     return utils.getAbsolutePath(url, window.location.href);
+                default:
+                    break;
             }
         }
 
         function completeHandler() {
             _.defer(function() {
-                _status = scriptloader.loaderstatus.COMPLETE;
+                _status = Scriptloader.loaderstatus.COMPLETE;
                 _this.trigger(events.COMPLETE);
             });
         }
 
         function errorHandler() {
-            _status = scriptloader.loaderstatus.ERROR;
-            _this.trigger(events.ERROR, {url: url});
+            _status = Scriptloader.loaderstatus.ERROR;
+            _this.trigger(events.ERROR, { url: url });
         }
 
         this.load = function() {
-            if (_status !== scriptloader.loaderstatus.NEW) {
+            if (_status !== Scriptloader.loaderstatus.NEW) {
                 return;
             }
             if (url.lastIndexOf('.swf') > 0) {
                 _flashPath = url;
-                _status = scriptloader.loaderstatus.COMPLETE;
+                _status = Scriptloader.loaderstatus.COMPLETE;
                 _this.trigger(events.COMPLETE);
                 return;
             }
             if (pluginsUtils.getPluginPathType(url) === pluginsUtils.pluginPathType.CDN) {
-                _status = scriptloader.loaderstatus.COMPLETE;
+                _status = Scriptloader.loaderstatus.COMPLETE;
                 _this.trigger(events.COMPLETE);
                 return;
             }
-            _status = scriptloader.loaderstatus.LOADING;
-            var _loader = new scriptloader(getJSPath());
+            _status = Scriptloader.loaderstatus.LOADING;
+            var _loader = new Scriptloader(getJSPath());
             // Complete doesn't matter - we're waiting for registerPlugin
             _loader.on(events.COMPLETE, completeHandler);
             _loader.on(events.ERROR, errorHandler);
             _loader.load();
         };
 
-        this.registerPlugin = function(id, target, arg1, arg2) {
+        this.registerPlugin = function(name, minimumVersion, pluginClass, pluginClass2) {
             if (_completeTimeout) {
                 clearTimeout(_completeTimeout);
                 _completeTimeout = undefined;
             }
-            _target = target;
-            if (arg1 && arg2) {
-                _flashPath = arg2;
-                _js = arg1;
-            } else if (typeof arg1 === 'string') {
-                _flashPath = arg1;
-            } else if (typeof arg1 === 'function') {
-                _js = arg1;
-            } else if (!arg1 && !arg2) {
-                _flashPath = id;
+            _target = minimumVersion;
+            if (pluginClass && pluginClass2) {
+                _flashPath = pluginClass2;
+                _js = pluginClass;
+            } else if (typeof pluginClass === 'string') {
+                _flashPath = pluginClass;
+            } else if (typeof pluginClass === 'function') {
+                _js = pluginClass;
+            } else if (!pluginClass && !pluginClass2) {
+                _flashPath = name;
             }
-            _status = scriptloader.loaderstatus.COMPLETE;
+            _status = Scriptloader.loaderstatus.COMPLETE;
             _this.trigger(events.COMPLETE);
         };
 
@@ -103,6 +105,8 @@ define([
                             return utils.getAbsolutePath(_flashPath, window.location.href);
                         }
                         return utils.getAbsolutePath(_flashPath, getJSPath());
+                    default:
+                        break;
                 }
             }
             return null;

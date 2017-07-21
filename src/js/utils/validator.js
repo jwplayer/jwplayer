@@ -1,24 +1,18 @@
-define([
-    'utils/underscore'
-], function(_) {
+define([], function() {
     var validator = {};
 
-    /**
-     * Returns true if the value of the object is null, undefined or the empty
-     * string
-     *
-     * @param a The variable to inspect
-     */
+    // Returns true if the value of the object is null, undefined or the empty string
     validator.exists = function (item) {
-        switch (typeof(item)) {
+        switch (typeof (item)) {
             case 'string':
                 return (item.length > 0);
             case 'object':
                 return (item !== null);
             case 'undefined':
                 return false;
+            default:
+                return true;
         }
-        return true;
     };
 
     /** Determines if the current page is HTTPS **/
@@ -71,7 +65,7 @@ define([
         }
         var typeofString = typeof value;
         if (typeofString === 'object') {
-            if (_.isArray(value)) {
+            if (Array.isArray(value)) {
                 return 'array';
             }
         }

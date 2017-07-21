@@ -1,77 +1,78 @@
+import * as ControlsLoader from 'controller/controls-loader';
+
 define([
     'plugins/plugins',
     'playlist/loader',
     'utils/scriptloader',
-    'utils/constants',
+    'utils/embedswf',
     'utils/underscore',
-    'utils/helpers',
     'events/events'
-], function(plugins, PlaylistLoader, ScriptLoader, Constants, _, utils, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _, events) {
 
-    var _pluginLoader,
-        _playlistLoader;
-
+    var _pluginLoader;
+    var _playlistLoader;
 
     function getQueue() {
-
         var Components = {
-            LOAD_PROMISE_POLYFILL : {
-                method: _loadPromisePolyfill,
+            LOAD_PLUGINS: {
+                method: _loadPlugins,
+                // Plugins require JavaScript Promises
                 depends: []
             },
-            LOAD_BASE64_POLYFILL : {
-                method: _loadBase64Polyfill,
+            LOAD_XO_POLYFILL: {
+                method: _loadIntersectionObserverPolyfill,
                 depends: []
             },
-            LOADED_POLYFILLS : {
-                method: _loadedPolyfills,
+            LOAD_SKIN: {
+                method: _loadSkin,
+                depends: []
+            },
+            LOAD_PLAYLIST: {
+                method: _loadPlaylist,
+                depends: []
+            },
+            LOAD_CONTROLS: {
+                method: _loadControls,
+                depends: []
+            },
+            SETUP_VIEW: {
+                method: _setupView,
                 depends: [
-                    'LOAD_PROMISE_POLYFILL',
-                    'LOAD_BASE64_POLYFILL'
+                    'LOAD_SKIN',
+                    'LOAD_XO_POLYFILL'
                 ]
             },
-            LOAD_PLUGINS : {
-                method: _loadPlugins,
-                depends: ['LOADED_POLYFILLS']
-            },
-            INIT_PLUGINS : {
+            INIT_PLUGINS: {
                 method: _initPlugins,
                 depends: [
                     'LOAD_PLUGINS',
-                    // Init requires jw-overlays to be in the DOM
+                    // Plugins require jw-overlays to setup
                     'SETUP_VIEW'
                 ]
             },
-            LOAD_SKIN : {
-                method: _loadSkin,
-                depends: ['LOADED_POLYFILLS']
-            },
-            LOAD_PLAYLIST : {
-                method: _loadPlaylist,
-                depends: ['LOADED_POLYFILLS']
-            },
             FILTER_PLAYLIST: {
                 method: _filterPlaylist,
-                depends : ['LOAD_PLAYLIST']
-            },
-            SETUP_VIEW : {
-                method: _setupView,
                 depends: [
-                    'LOAD_SKIN'
+                    'LOAD_PLAYLIST'
                 ]
             },
-            SET_ITEM : {
+            SET_ITEM: {
                 method: _setPlaylistItem,
                 depends: [
                     'INIT_PLUGINS',
                     'FILTER_PLAYLIST'
                 ]
             },
-            SEND_READY : {
+            DEFERRED: {
+                method: _deferred,
+                depends: []
+            },
+            SEND_READY: {
                 method: _sendReady,
                 depends: [
-                    'SETUP_VIEW',
-                    'SET_ITEM'
+                    'LOAD_CONTROLS',
+                    'SET_ITEM',
+                    'DEFERRED'
                 ]
             }
         };
@@ -79,30 +80,21 @@ define([
         return Components;
     }
 
-    function _loadPromisePolyfill(resolve) {
-        if (!window.Promise) {
-            require.ensure(['polyfills/promise'], function (require) {
-                require('polyfills/promise');
-                resolve();
-            }, 'polyfills.promise');
-        } else {
-            resolve();
-        }
+    function _deferred(resolve) {
+        setTimeout(resolve, 0);
     }
 
-    function _loadBase64Polyfill(resolve) {
-        if (!window.btoa || !window.atob) {
-            require.ensure(['polyfills/base64'], function(require) {
-                require('polyfills/base64');
-                resolve();
-            }, 'polyfills.base64');
-        } else {
+    function _loadIntersectionObserverPolyfill(resolve) {
+        if ('IntersectionObserver' in window &&
+            'IntersectionObserverEntry' in window &&
+            'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
             resolve();
+        } else {
+            require.ensure(['intersection-observer'], function (require) {
+                require('intersection-observer');
+                resolve();
+            }, 'polyfills.intersection-observer');
         }
-    }
-
-    function _loadedPolyfills(resolve){
-        resolve();
     }
 
     function _loadPlugins(resolve, _model) {
@@ -128,8 +120,8 @@ define([
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
             _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
-                _model.set('playlist', data.playlist);
-                _model.set('feedid', data.feedid);
+                _model.attributes.feedData = data;
+                _model.attributes.playlist = data.playlist;
                 resolve();
             });
             _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
@@ -140,10 +132,8 @@ define([
     }
 
     function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
-        var playlist = _model.get('playlist');
-
         // Performs filtering
-        var success = _setPlaylist(playlist);
+        var success = _setPlaylist(_model.get('playlist'), _model.get('feedData'));
 
         if (success) {
             resolve();
@@ -160,12 +150,6 @@ define([
         }
     }
 
-    function skinToLoad(skin, base) {
-        if(_.contains(Constants.SkinsLoadable, skin)) {
-            return base + 'skins/' + skin + '.css';
-        }
-    }
-
     function isSkinLoaded(skinPath) {
         var ss = document.styleSheets;
         for (var i = 0, max = ss.length; i < max; i++) {
@@ -177,19 +161,7 @@ define([
     }
 
     function _loadSkin(resolve, _model) {
-        var skinName = _model.get('skin');
         var skinUrl = _model.get('skinUrl');
-
-        // If skin is built into player, there is nothing to load
-        if (_.contains(Constants.SkinsIncluded, skinName)) {
-            resolve();
-            return;
-        }
-
-        if (!skinUrl) {
-            // if a user doesn't specify a url, we assume it comes from our CDN or config.base
-            skinUrl = skinToLoad(skinName, _model.get('base'));
-        }
 
         if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
             _model.set('skin-loading', true);
@@ -201,7 +173,6 @@ define([
                 _model.set('skin-loading', false);
             });
             loader.addEventListener(events.ERROR, function() {
-                _model.set('skin', 'seven'); // fall back to seven skin
                 _model.set('skin-loading', false);
             });
 
@@ -209,13 +180,11 @@ define([
         }
 
         // Control elements are hidden by the loading flag until it is ready
-        _.defer(function() {
-            resolve();
-        });
+        resolve();
     }
 
-
     function _setupView(resolve, _model, _api, _view) {
+        _model.setAutoStart();
         _view.setup();
         resolve();
     }
@@ -227,20 +196,36 @@ define([
 
     function _sendReady(resolve) {
         resolve({
-            type : 'complete'
+            type: 'complete'
         });
+    }
+
+    function _loadControls(resolve, _model, _api, _view) {
+        if (!_model.get('controls')) {
+            resolve();
+            return;
+        }
+
+        ControlsLoader.load()
+            .then(function (Controls) {
+                _view.setControlsModule(Controls);
+                resolve();
+            })
+            .catch(function (reason) {
+                error(resolve, 'Failed to load controls', reason);
+            });
     }
 
     function error(resolve, msg, reason) {
         resolve({
-            type : 'error',
-            msg : msg,
-            reason : reason
+            type: 'error',
+            msg: msg,
+            reason: reason
         });
     }
 
     return {
-        getQueue : getQueue,
+        getQueue: getQueue,
         error: error
     };
 });

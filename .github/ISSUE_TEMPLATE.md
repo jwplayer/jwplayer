@@ -16,6 +16,7 @@
 
 - *hardware | device*
 - *operating system | version*
+- *browser | version*
 - *JW Player version | url*
 
 ----------------------------------------------------------------------------------------

@@ -1,0 +1,14 @@
+.jw-flag-audio-player {
+    &:not(.jw-flag-flash-blocked) .jw-media {
+        visibility: hidden;
+    }
+
+    .jw-title {
+        background: none;
+    }
+
+    // min 45px object tag prevents IE11 CORS Flash Blocking
+    object {
+        min-height: 45px;
+    }
+}

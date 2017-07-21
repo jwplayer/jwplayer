@@ -1,0 +1,30 @@
+.jwplayer.jw-flag-controls-hidden { // Toggle mobile controls. Also used for user inactivity
+    .jw-dock,
+    .jw-logo.jw-hide {
+        visibility: hidden;
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    &:not(.jw-flag-casting) .jw-logo-top-right {
+        top: 0;
+    }
+
+    .jw-plugin,
+    .jw-nextup-container {
+        bottom: 0.5em;
+    }
+}
+
+.jw-flag-controls-hidden {
+    .jw-controlbar,
+    .jw-display {
+        visibility: hidden;
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    .jw-logo {
+        visibility: visible;
+    }
+}

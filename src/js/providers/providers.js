@@ -1,13 +1,15 @@
+import registerProvider from 'providers/providers-register';
+
 define([
     'providers/default',
     'providers/providers-supported',
     'providers/providers-loaded',
     'utils/underscore'
-    ], function(Default, ProvidersSupported, ProvidersLoaded, _) {
+], function(Default, ProvidersSupported, ProvidersLoaded, _) {
 
     function Providers(config) {
         this.config = config || {};
-        this.providers = this.reorderProviders(this.config.primary);
+        this.providers = ProvidersSupported;
     }
 
     Providers.loaders = {
@@ -34,37 +36,7 @@ define([
         }
     };
 
-    var registerProvider =
-    Providers.registerProvider = function(provider) {
-        var name = provider.getName().name;
-
-        // Only register the provider if it isn't registered already.  This is an issue on pages with multiple embeds.
-        if (ProvidersLoaded[name]) {
-            return;
-        }
-
-        // If there isn't a "supports" val for this guy
-        if (! _.find(ProvidersSupported, _.matches({name : name}))) {
-            if (!_.isFunction(provider.supports)) {
-                throw {
-                    message: 'Tried to register a provider with an invalid object'
-                };
-            }
-
-            // The most recent provider will be in the front of the array, and chosen first
-            ProvidersSupported.unshift({
-                name : name,
-                supports : provider.supports
-            });
-        }
-
-        var F = function(){};
-        F.prototype = Default;
-        provider.prototype = new F();
-
-        // After registration, it is loaded
-        ProvidersLoaded[name] = provider;
-    };
+    Providers.registerProvider = registerProvider;
 
     _.extend(Providers.prototype, {
 
@@ -81,25 +53,13 @@ define([
             }));
         },
 
-        reorderProviders: function (primary) {
-            var providers = _.clone(ProvidersSupported);
-
-            if (primary === 'flash') {
-                var flashIdx = _.indexOf(providers, _.findWhere(providers, {name: 'flash'}));
-                var flashProvider = providers.splice(flashIdx, 1)[0];
-                var html5Idx = _.indexOf(providers, _.findWhere(providers, {name: 'html5'}));
-                providers.splice(html5Idx, 0, flashProvider);
-            }
-            return providers;
-        },
-
         providerSupports: function(provider, source) {
             return provider.supports(source);
         },
 
-        required: function(playlist, primary) {
+        required: function(playlist) {
             var _this = this;
-            var providers = this.reorderProviders(primary);
+            var providers = ProvidersSupported;
 
             playlist = playlist.slice();
             return _.compact(_.map(providers, function(provider) {
@@ -122,7 +82,7 @@ define([
         },
 
         // Find the name of the first provider which can support the media source-type
-        choose : function(source) {
+        choose: function(source) {
             // prevent throw on missing source
             source = _.isObject(source) ? source : {};
 
@@ -135,11 +95,11 @@ define([
 
                     return {
                         priority: priority,
-                        name : provider.name,
+                        name: provider.name,
                         type: source.type,
                         providerToCheck: provider,
                         // If provider isn't loaded, this will be undefined
-                        provider : ProvidersLoaded[provider.name]
+                        provider: ProvidersLoaded[provider.name]
                     };
                 }
             }

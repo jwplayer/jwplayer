@@ -7,42 +7,35 @@ define([
     'utils/helpers'
 ], function(parsers, strings, utils) {
 
-    var _xmlAttribute = strings.xmlAttribute,
-        _localName = parsers.localName,
-        _textContent = parsers.textContent,
-        _numChildren = parsers.numChildren;
+    var _xmlAttribute = strings.xmlAttribute;
+    var _localName = parsers.localName;
+    var _textContent = parsers.textContent;
+    var _numChildren = parsers.numChildren;
 
-
-    /** Prefix for the MRSS namespace. **/
+    // Prefix for the MRSS namespace
     var PREFIX = 'media';
 
-    /**
-     * Parse a feeditem for Yahoo MediaRSS extensions.
-     * The 'content' and 'group' elements can nest other MediaRSS elements.
-     * @param    {XML}        obj        The entire MRSS XML object.
-     * @param    {Object}    itm        The playlistentry to amend the object to.
-     * @return    {Object}            The playlistentry, amended with the MRSS info.
-     **/
-    // formally known as parseGroup
+    // Parse a feeditem for Yahoo MediaRSS extensions
+    // The 'content' and 'group' elements can nest other MediaRSS elements.
     var mediaparser = function (obj, itm) {
 
-        var node,
-            i,
-            tracks = 'tracks',
-            captions = [];
+        var node;
+        var i;
+        var tracks = 'tracks';
+        var captions = [];
 
         function getLabel(code) {
             var LANGS = {
-                'zh': 'Chinese',
-                'nl': 'Dutch',
-                'en': 'English',
-                'fr': 'French',
-                'de': 'German',
-                'it': 'Italian',
-                'ja': 'Japanese',
-                'pt': 'Portuguese',
-                'ru': 'Russian',
-                'es': 'Spanish'
+                zh: 'Chinese',
+                nl: 'Dutch',
+                en: 'English',
+                fr: 'French',
+                de: 'German',
+                it: 'Italian',
+                ja: 'Japanese',
+                pt: 'Portuguese',
+                ru: 'Russian',
+                es: 'Spanish'
             };
 
             if (LANGS[code]) {
@@ -97,9 +90,6 @@ define([
                             itm.image = _xmlAttribute(node, 'url');
                         }
                         break;
-                    case 'player':
-                        // var url = node.url;
-                        break;
                     case 'group':
                         mediaparser(node, itm);
                         break;
@@ -111,6 +101,9 @@ define([
                             entry.label = getLabel(_xmlAttribute(node, 'lang'));
                         }
                         captions.push(entry);
+                        break;
+                    default:
+                        break;
                 }
             }
         }

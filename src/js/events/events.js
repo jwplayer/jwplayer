@@ -70,6 +70,7 @@ define([], function() {
         JWPLAYER_PLAYLIST_LOADED: 'playlist',
         JWPLAYER_AUDIO_TRACKS: 'audioTracks',
         JWPLAYER_AUDIO_TRACK_CHANGED: 'audioTrackChanged',
+        JWPLAYER_PLAYBACK_RATE_CHANGED: 'playbackRateChanged',
 
         // View Component Actions
         JWPLAYER_LOGO_CLICK: 'logoClick',
@@ -87,7 +88,8 @@ define([], function() {
         JWPLAYER_PROVIDER_CLICK: 'providerClick',
         JWPLAYER_VIEW_TAB_FOCUS: 'tabFocus',
         JWPLAYER_CONTROLBAR_DRAGGING: 'scrubbing',
-        JWPLAYER_INSTREAM_CLICK: 'instreamClick'
+        JWPLAYER_INSTREAM_CLICK: 'instreamClick',
+        JWPLAYER_BREAKPOINT: 'breakpoint'
     };
 
     events.touchEvents = touchEvents;

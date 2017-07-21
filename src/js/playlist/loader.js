@@ -35,7 +35,8 @@ define([
                         rss = rss.nextSibling;
                     }
                     if (parsers.localName(rss) === 'rss') {
-                        jsonObj = { playlist: rssParser.parse(rss) };
+                        var rssPlaylist = rssParser.parse(rss);
+                        jsonObj = _.extend({ playlist: rssPlaylist }, rssPlaylist.feedData);
                     }
                 }
 
@@ -49,7 +50,7 @@ define([
                         } else if (_.isArray(pl.playlist)) {
                             jsonObj = pl;
                         } else {
-                            throw null;
+                            throw Error;
                         }
                     } catch (e) {
                         _playlistError('Not a valid RSS/JSON feed');
