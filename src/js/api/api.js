@@ -2,8 +2,7 @@ import * as Environment from 'environment/environment';
 import instances from './players';
 import CoreLoader from './core-loader';
 import { version } from '../version';
-import { PLAYING, BUFFERING } from 'events/states';
-import { READY } from 'events/events';
+import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
 
 define([
     'api/timer',
@@ -706,8 +705,8 @@ define([
 
                 state = this.getState();
                 switch (state) {
-                    case PLAYING:
-                    case BUFFERING:
+                    case STATE_PLAYING:
+                    case STATE_BUFFERING:
                         core.pause(meta);
                         break;
                     default:

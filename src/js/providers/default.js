@@ -1,5 +1,4 @@
-import { IDLE } from 'events/states';
-import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
+import { STATE_IDLE, PLAYER_STATE, MEDIA_TYPE } from 'events/events';
 
 define([
     'utils/helpers',
@@ -77,7 +76,7 @@ define([
         init: noop,
 
         setState: function(state) {
-            var oldState = this.state || IDLE;
+            var oldState = this.state || STATE_IDLE;
             this.state = state;
 
             if (state === oldState) {

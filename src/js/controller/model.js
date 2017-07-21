@@ -1,10 +1,9 @@
 import { Browser, OS } from 'environment/environment';
 import SimpleModel from '../model/simplemodel';
 import { playerDefaults } from '../model/player-model';
-import { IDLE, COMPLETE, PAUSED, PLAYING } from 'events/states';
-import { MEDIA_PLAY_ATTEMPT, MEDIA_TYPE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS,
-    MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE, MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE,
-    PROVIDER_CHANGED, MEDIA_META } from 'events/events';
+import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, MEDIA_PLAY_ATTEMPT, MEDIA_TYPE, MEDIA_BUFFER,
+ MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
+ MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
 
 define([
     'utils/helpers',
@@ -155,8 +154,8 @@ define([
                     break;
                 case 'autoplayFailed':
                     this.set('autostartFailed', true);
-                    if (mediaModel.get('state') === PLAYING) {
-                        mediaModel.set('state', PAUSED);
+                    if (mediaModel.get('state') === STATE_PLAYING) {
+                        mediaModel.set('state', STATE_PAUSED);
                     }
                     break;
                 default:
@@ -267,7 +266,7 @@ define([
 
         this.playbackComplete = function() {
             _beforecompleted = false;
-            _provider.setState(COMPLETE);
+            _provider.setState(STATE_COMPLETE);
             this.mediaController.trigger(MEDIA_COMPLETE, {});
         };
 
@@ -509,7 +508,7 @@ define([
 
     // Represents the state of the provider/media element
     var MediaModel = Model.MediaModel = function() {
-        this.set('state', IDLE);
+        this.set('state', STATE_IDLE);
     };
 
     Object.assign(Model.prototype, SimpleModel);

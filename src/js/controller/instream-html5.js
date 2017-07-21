@@ -1,5 +1,5 @@
-import { PAUSED, PLAYING } from 'events/states';
-import { ERROR_EVENT, FULLSCREEN, MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
+import { STATE_PAUSED, STATE_PLAYING, ERROR_EVENT, FULLSCREEN, MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE }
+ from 'events/events';
 
 define([
     'utils/underscore',
@@ -164,8 +164,8 @@ define([
 
         function stateHandler(evt) {
             switch (evt.newstate) {
-                case PLAYING:
-                case PAUSED:
+                case STATE_PLAYING:
+                case STATE_PAUSED:
                     _adModel.set('state', evt.newstate);
                     break;
                 default:

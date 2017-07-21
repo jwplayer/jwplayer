@@ -1,7 +1,6 @@
 import { OS } from 'environment/environment';
-import { IDLE, COMPLETE, PAUSED, PLAYING, LOADING, STALLED } from 'events/states';
-import { ERROR_EVENT, MEDIA_TIME, MEDIA_BUFFER, MEDIA_COMPLETE, MEDIA_META, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
-    MEDIA_ERROR } from 'events/events';
+import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_LOADING, STATE_STALLED, ERROR_EVENT, MEDIA_TIME,
+ MEDIA_BUFFER, MEDIA_COMPLETE, MEDIA_META, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR } from 'events/events';
 
 define([
     'utils/helpers',
@@ -14,7 +13,7 @@ define([
     var _scriptLoader = new Scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
 
     function YoutubeProvider(_playerId, _playerConfig) {
-        this.state = IDLE;
+        this.state = STATE_IDLE;
 
         _.extend(this, Events);
 
@@ -33,12 +32,12 @@ define([
 
         this.setState = function(state) {
             clearInterval(_playingInterval);
-            if (state !== IDLE && state !== COMPLETE) {
+            if (state !== STATE_IDLE && state !== STATE_COMPLETE) {
                 // always run this interval when not idle because we can't trust events from iFrame
                 _playingInterval = setInterval(_checkPlaybackHandler, 250);
-                if (state === PLAYING) {
+                if (state === STATE_PLAYING) {
                     this.seeking = false;
-                } else if (state === LOADING || state === STALLED) {
+                } else if (state === STATE_LOADING || state === STATE_STALLED) {
                     _bufferUpdate();
                 }
             }
@@ -147,7 +146,7 @@ define([
         }
 
         function _ended() {
-            if (_this.state !== IDLE && _this.state !== COMPLETE) {
+            if (_this.state !== STATE_IDLE && _this.state !== STATE_COMPLETE) {
                 _this.trigger(MEDIA_COMPLETE);
             }
         }
@@ -261,23 +260,23 @@ define([
                         currentQuality: _this.getCurrentQuality()
                     });
 
-                    _this.setState(PLAYING);
+                    _this.setState(STATE_PLAYING);
                     return;
 
                 case youtubeStates.PAUSED: // 2: //paused
-                    _this.setState(PAUSED);
+                    _this.setState(STATE_PAUSED);
                     return;
 
                 case youtubeStates.BUFFERING: // 3: //buffering
                     if (_this.seeking) {
-                        _this.setState(LOADING);
+                        _this.setState(STATE_LOADING);
                     } else {
-                        _this.setState(STALLED);
+                        _this.setState(STATE_STALLED);
                     }
                     return;
 
                 case youtubeStates.CUED: // 5: //video cued (idle before playback)
-                    _this.setState(IDLE);
+                    _this.setState(STATE_IDLE);
                     // play video on android to avoid being stuck in this state
                     if (OS.android) {
                         _youtubePlayer.playVideo();
@@ -346,7 +345,7 @@ define([
 
         // Video Provider API
         this.load = function(item) {
-            this.setState(LOADING);
+            this.setState(STATE_LOADING);
 
             _setItem(item);
             // start playback if api is ready
@@ -416,7 +415,7 @@ define([
 
         this.stop = function() {
             _stopVideo();
-            this.setState(IDLE);
+            this.setState(STATE_IDLE);
         };
 
         this.play = function() {

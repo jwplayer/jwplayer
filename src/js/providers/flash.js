@@ -1,9 +1,8 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser } from 'environment/environment';
-import { IDLE, PAUSED, LOADING } from 'events/states';
-import { ERROR_EVENT, MEDIA_ERROR, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_BUFFER, MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS,
-    MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE, MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE,
-    PROVIDER_CHANGED, MEDIA_META } from 'events/events';
+import { STATE_IDLE, STATE_PAUSED, STATE_LOADING, ERROR_EVENT, MEDIA_ERROR, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_BUFFER,
+ MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
+  MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
 
 define([
     'utils/helpers',
@@ -113,7 +112,7 @@ define([
             },
             load: function(item) {
                 _item = item;
-                this.setState(LOADING);
+                this.setState(STATE_LOADING);
                 _flashCommand('load', item);
                     // HLS mediaType comes from the AdaptiveProvider
                 if (item.sources.length && item.sources[0].type !== 'hls') {
@@ -125,14 +124,14 @@ define([
             },
             pause: function() {
                 _flashCommand('pause');
-                this.setState(PAUSED);
+                this.setState(STATE_PAUSED);
             },
             stop: function() {
                 _flashCommand('stop');
                 _currentQuality = -1;
                 _item = null;
                 this.clearTracks();
-                this.setState(IDLE);
+                this.setState(STATE_IDLE);
             },
             seek: function(seekPos) {
                 _flashCommand('seek', seekPos);
@@ -246,7 +245,7 @@ define([
 
                 _swf.on(PLAYER_STATE, function(e) {
                     var state = e.newstate;
-                    if (state === IDLE) {
+                    if (state === STATE_IDLE) {
                         return;
                     }
                     this.setState(state);

@@ -3,9 +3,9 @@ import instances from 'api/players';
 import { OS } from 'environment/environment';
 import ApiQueueDecorator from 'api/api-queue';
 import { streamType } from 'providers/utils/stream-type';
-import { BUFFERING, IDLE, COMPLETE, PAUSED, PLAYING, ERROR, LOADING, STALLED } from 'events/states';
-import { MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR_EVENT, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, SETUP_ERROR, READY, MEDIA_ERROR,
- MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
+import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
+ STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR_EVENT, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, SETUP_ERROR, READY,
+ MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
  CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
 define([
@@ -27,8 +27,8 @@ define([
 
     // The model stores a different state than the provider
     function normalizeState(newstate) {
-        if (newstate === LOADING || newstate === STALLED) {
-            return BUFFERING;
+        if (newstate === STATE_LOADING || newstate === STATE_STALLED) {
+            return STATE_BUFFERING;
         }
         return newstate;
     }
@@ -314,8 +314,8 @@ define([
             }
 
             function _load(item, feedData) {
-                if (_model.get('state') === ERROR) {
-                    _model.set('state', IDLE);
+                if (_model.get('state') === STATE_ERROR) {
+                    _model.set('state', STATE_IDLE);
                 }
                 _model.set('preInstreamState', 'instream-idle');
 
@@ -370,7 +370,7 @@ define([
             function _play(meta = {}) {
                 _model.set('playReason', meta.reason);
 
-                if (_model.get('state') === ERROR) {
+                if (_model.get('state') === STATE_ERROR) {
                     return;
                 }
 
@@ -381,7 +381,7 @@ define([
                     return;
                 }
 
-                if (_model.get('state') === COMPLETE) {
+                if (_model.get('state') === STATE_COMPLETE) {
                     _stop(true);
                     _setItem(0);
                 }
@@ -407,7 +407,7 @@ define([
                         // FIXME: playAttempt is not triggered until this is called. Should be on play()
                         _model.loadVideo();
                     });
-                } else if (_model.get('state') === PAUSED) {
+                } else if (_model.get('state') === STATE_PAUSED) {
                     status = utils.tryCatch(function() {
                         _model.playVideo();
                     });
@@ -421,7 +421,7 @@ define([
 
             function _autoStart() {
                 const state = _model.get('state');
-                if (state === IDLE || state === PAUSED) {
+                if (state === STATE_IDLE || state === STATE_PAUSED) {
                     _play({ reason: 'autostart' });
                 }
             }
@@ -471,10 +471,10 @@ define([
                 }
 
                 switch (_model.get('state')) {
-                    case ERROR:
+                    case STATE_ERROR:
                         return;
-                    case PLAYING:
-                    case BUFFERING: {
+                    case STATE_PLAYING:
+                    case STATE_BUFFERING: {
 
                         const status = utils.tryCatch(function() {
                             _video().pause();
@@ -495,14 +495,14 @@ define([
 
             function _isIdle() {
                 const state = _model.get('state');
-                return (state === IDLE || state === COMPLETE || state === ERROR);
+                return (state === STATE_IDLE || state === STATE_COMPLETE || state === STATE_ERROR);
             }
 
             function _seek(pos, meta) {
-                if (_model.get('state') === ERROR) {
+                if (_model.get('state') === STATE_ERROR) {
                     return;
                 }
-                if (!_model.get('scrubbing') && _model.get('state') !== PLAYING) {
+                if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
                     _play(meta);
                 }
                 _video().seek(pos);
@@ -510,8 +510,8 @@ define([
 
             function _item(index, meta) {
                 _stop(true);
-                if (_model.get('state') === ERROR) {
-                    _model.set('state', IDLE);
+                if (_model.get('state') === STATE_ERROR) {
+                    _model.set('state', STATE_IDLE);
                 }
                 _setItem(index);
                 _play(meta);
@@ -574,7 +574,7 @@ define([
                         // Autoplay/pause no longer needed since there's no more media to play
                         // This prevents media from replaying when a completed video scrolls into view
                         _model.set('playOnViewable', false);
-                        _model.set('state', COMPLETE);
+                        _model.set('state', STATE_COMPLETE);
                         _this.trigger(PLAYLIST_COMPLETE, {});
                     }
                     return;
@@ -918,7 +918,7 @@ define([
         },
         triggerError(evt) {
             this._model.set('errorEvent', evt);
-            this._model.set('state', ERROR);
+            this._model.set('state', STATE_ERROR);
             this._model.once('change:state', function() {
                 this._model.set('errorEvent', undefined);
             }, this);

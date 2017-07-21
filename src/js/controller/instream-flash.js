@@ -1,6 +1,5 @@
 import { Browser } from 'environment/environment';
-import { PAUSED, PLAYING } from 'events/states';
-import { PLAYER_STATE, MEDIA_COMPLETE, MEDIA_TIME, MEDIA_ERROR } from 'events/events';
+import { STATE_PAUSED, STATE_PLAYING, PLAYER_STATE, MEDIA_COMPLETE, MEDIA_TIME, MEDIA_ERROR } from 'events/events';
 
 define([
     'utils/backbone.events',
@@ -43,7 +42,7 @@ define([
                     } else {
                         var _this = this;
                         _throttleTimeout = setTimeout(function () {
-                            if (_this._adModel.get('state') === PLAYING) {
+                            if (_this._adModel.get('state') === STATE_PLAYING) {
                                 _throttlePaused = true;
                                 _this.instreamPause();
                             }
@@ -94,8 +93,8 @@ define([
 
         stateHandler: function(evt) {
             switch (evt.newstate) {
-                case PLAYING:
-                case PAUSED:
+                case STATE_PLAYING:
+                case STATE_PAUSED:
                     this._adModel.set('state', evt.newstate);
                     break;
                 default:
