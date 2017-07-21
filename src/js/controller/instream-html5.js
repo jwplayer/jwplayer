@@ -1,4 +1,4 @@
-import { STATE_PAUSED, STATE_PLAYING, ERROR_EVENT, FULLSCREEN, MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE }
+import { STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN, MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE }
  from 'events/events';
 
 define([
@@ -48,9 +48,9 @@ define([
             _checkProvider();
 
             // Match the main player's controls state
-            _adModel.off(ERROR_EVENT);
-            _adModel.on(ERROR_EVENT, function(data) {
-                this.trigger(ERROR_EVENT, data);
+            _adModel.off(ERROR);
+            _adModel.on(ERROR, function(data) {
+                this.trigger(ERROR, data);
             }, _this);
 
             // Load the instream item
@@ -66,9 +66,9 @@ define([
             }
 
             // Match the main player's controls state
-            provider.off(ERROR_EVENT);
-            provider.on(ERROR_EVENT, function(data) {
-                this.trigger(ERROR_EVENT, data);
+            provider.off(ERROR);
+            provider.on(ERROR, function(data) {
+                this.trigger(ERROR, data);
             }, _this);
             _model.on('change:volume', function(data, value) {
                 _currentProvider.volume(value);

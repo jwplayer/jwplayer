@@ -4,7 +4,7 @@ import { OS } from 'environment/environment';
 import ApiQueueDecorator from 'api/api-queue';
 import { streamType } from 'providers/utils/stream-type';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
- STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR_EVENT, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, SETUP_ERROR, READY,
+ STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, SETUP_ERROR, READY,
  MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
  CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
@@ -82,7 +82,7 @@ define([
                 };
                 // Only dispatch an error for Flash blocked, not throttled events
                 if (!throttled) {
-                    this.trigger(ERROR_EVENT, errorEvent);
+                    this.trigger(ERROR, errorEvent);
                 }
                 this._model.set('errorEvent', errorEvent);
             }, this);
@@ -348,7 +348,7 @@ define([
                 loader.on(PLAYLIST_LOADED, function(data) {
                     _load(data.playlist, data);
                 });
-                loader.on(ERROR_EVENT, function(evt) {
+                loader.on(ERROR, function(evt) {
                     evt.message = 'Error loading playlist: ' + evt.message;
                     this.triggerError(evt);
                 }, this);
@@ -923,7 +923,7 @@ define([
                 this._model.set('errorEvent', undefined);
             }, this);
 
-            this.trigger(ERROR_EVENT, evt);
+            this.trigger(ERROR, evt);
         },
         setupError(evt) {
             const message = evt.message;

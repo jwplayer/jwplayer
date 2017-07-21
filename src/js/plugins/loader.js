@@ -1,4 +1,4 @@
-import { MEDIA_COMPLETE, ERROR_EVENT } from 'events/events';
+import { MEDIA_COMPLETE, ERROR } from 'events/events';
 
 define([
     'plugins/utils',
@@ -90,7 +90,7 @@ define([
                     if (status === scriptloader.loaderstatus.LOADING || status === scriptloader.loaderstatus.NEW) {
                         return;
                     } else if (js && !utils.versionCheck(target)) {
-                        _this.trigger(ERROR_EVENT, {
+                        _this.trigger(ERROR, {
                             message: 'Incompatible player version'
                         });
                     }
@@ -110,7 +110,7 @@ define([
                 utils.log(message, e.url);
             }
             this.off();
-            this.trigger(ERROR_EVENT, {
+            this.trigger(ERROR, {
                 message: message
             });
             _checkComplete();
@@ -183,7 +183,7 @@ define([
                 if (utils.exists(pluginUrl)) {
                     var pluginObj = model.addPlugin(pluginUrl);
                     pluginObj.on(MEDIA_COMPLETE, _checkComplete);
-                    pluginObj.on(ERROR_EVENT, _pluginError);
+                    pluginObj.on(ERROR, _pluginError);
                 }
             });
 

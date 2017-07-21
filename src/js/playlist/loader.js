@@ -1,4 +1,4 @@
-import { PLAYLIST_LOADED, ERROR_EVENT } from 'events/events';
+import { PLAYLIST_LOADED, ERROR } from 'events/events';
 
 define([
     'parsers/parsers',
@@ -72,7 +72,7 @@ define([
         }
 
         function _playlistError(msg) {
-            _this.trigger(ERROR_EVENT, {
+            _this.trigger(ERROR, {
                 message: msg ? msg : 'Error loading file'
             });
         }

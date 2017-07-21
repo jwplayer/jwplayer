@@ -1,4 +1,4 @@
-import { ERROR_EVENT, MEDIA_COMPLETE } from 'events/events';
+import { ERROR, MEDIA_COMPLETE } from 'events/events';
 
 define([
     'utils/backbone.events'
@@ -19,7 +19,7 @@ define([
 
         function _sendError(evt) {
             _status = STATUS.ERROR;
-            _this.trigger(ERROR_EVENT, evt);
+            _this.trigger(ERROR, evt);
         }
 
         function _sendComplete(evt) {
@@ -54,7 +54,7 @@ define([
                 _status = sameLoader.getStatus();
                 if (_status < 2) {
                     // dispatch to this instances listeners when the first loader gets updates
-                    sameLoader.on(ERROR_EVENT, _sendError);
+                    sameLoader.on(ERROR, _sendError);
                     sameLoader.on(MEDIA_COMPLETE, _sendComplete);
                     return;
                 }

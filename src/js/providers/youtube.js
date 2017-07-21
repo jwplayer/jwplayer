@@ -1,5 +1,5 @@
 import { OS } from 'environment/environment';
-import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_LOADING, STATE_STALLED, ERROR_EVENT, MEDIA_TIME,
+import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_LOADING, STATE_STALLED, ERROR, MEDIA_TIME,
  MEDIA_BUFFER, MEDIA_COMPLETE, MEDIA_META, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR } from 'events/events';
 
 define([
@@ -48,7 +48,7 @@ define([
         // Load iFrame API
         if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === Scriptloader.loaderstatus.NEW) {
             _scriptLoader.on(MEDIA_COMPLETE, _onLoadSuccess);
-            _scriptLoader.on(ERROR_EVENT, _onLoadError);
+            _scriptLoader.on(ERROR, _onLoadError);
             _scriptLoader.load();
         }
 

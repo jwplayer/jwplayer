@@ -55,7 +55,7 @@ export const OUT = 'out';
 /**
  * Event stream reproduction is stopped because of an error.
 */
-export const ERROR_EVENT = 'error';
+export const ERROR = 'error';
 
 // Ad events
 

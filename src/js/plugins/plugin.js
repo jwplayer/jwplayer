@@ -1,4 +1,4 @@
-import { MEDIA_COMPLETE, ERROR_EVENT } from 'events/events';
+import { MEDIA_COMPLETE, ERROR } from 'events/events';
 
 define([
     'utils/helpers',
@@ -42,7 +42,7 @@ define([
 
         function errorHandler() {
             _status = Scriptloader.loaderstatus.ERROR;
-            _this.trigger(ERROR_EVENT, { url: url });
+            _this.trigger(ERROR, { url: url });
         }
 
         this.load = function() {
@@ -64,7 +64,7 @@ define([
             var _loader = new Scriptloader(getJSPath());
             // Complete doesn't matter - we're waiting for registerPlugin
             _loader.on(MEDIA_COMPLETE, completeHandler);
-            _loader.on(ERROR_EVENT, errorHandler);
+            _loader.on(ERROR, errorHandler);
             _loader.load();
         };
 

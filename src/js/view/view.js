@@ -8,7 +8,7 @@ import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
- DISPLAY_CLICK, LOGO_CLICK, ERROR_EVENT } from 'events/events';
+ DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
 let ControlsModule;
 
 define([
@@ -428,7 +428,7 @@ define([
                             addControls();
                         })
                         .catch(function (reason) {
-                            _this.trigger(ERROR_EVENT, {
+                            _this.trigger(ERROR, {
                                 message: 'Controls failed to load',
                                 reason: reason
                             });

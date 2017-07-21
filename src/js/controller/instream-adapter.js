@@ -1,5 +1,5 @@
 import { OS } from 'environment/environment';
-import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, ERROR_EVENT, MEDIA_TIME, MEDIA_COMPLETE,
+import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, ERROR, MEDIA_TIME, MEDIA_COMPLETE,
  PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, MEDIA_META, AD_SKIPPED } from 'events/events';
 
 define([
@@ -187,7 +187,7 @@ define([
         this.loadItem = function(item, options) {
             if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
                 this.trigger({
-                    type: ERROR_EVENT,
+                    type: ERROR,
                     message: 'Error loading instream: Cannot play instream on Android 2.3'
                 });
                 return;
