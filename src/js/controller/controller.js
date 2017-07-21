@@ -1,7 +1,8 @@
-import setConfig from '../api/set-config';
-import instances from '../api/players';
-import { Browser, OS } from 'environment/environment';
-import ApiQueueDecorator from '../api/api-queue';
+import setConfig from 'api/set-config';
+import instances from 'api/players';
+import { OS } from 'environment/environment';
+import ApiQueueDecorator from 'api/api-queue';
+import { streamType } from 'providers/utils/stream-type';
 
 define([
     'controller/instream-adapter',
@@ -20,8 +21,8 @@ define([
     'view/error',
     'controller/events-middleware',
 ], function(InstreamAdapter, _, Setup, Captions, Model,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, error, eventsMiddleware) {
-    
+            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, states, events, viewError, eventsMiddleware) {
+
     // The model stores a different state than the provider
     function normalizeState(newstate) {
         if (newstate === states.LOADING || newstate === states.STALLED) {
@@ -48,7 +49,6 @@ define([
 
             _this.originalContainer = _this.currentContainer = originalContainer;
             _this._events = eventListeners;
-
 
             const _eventQueuedUntilReady = [];
 
@@ -89,8 +89,8 @@ define([
 
             _model.on('change:duration', function(model, duration) {
                 const minDvrWindow = model.get('minDvrWindow');
-                const streamType = utils.streamType(duration, minDvrWindow);
-                model.setStreamType(streamType);
+                const type = streamType(duration, minDvrWindow);
+                model.setStreamType(type);
             });
 
             _model.on('change:castState', function(model, evt) {
@@ -566,7 +566,7 @@ define([
                         _next({ reason: 'repeat' });
                     } else {
                         // Exit fullscreen on IOS so that our overlays show to the user
-                        if (Browser.iOS) {
+                        if (OS.iOS) {
                             _setFullscreen(false);
                         }
                         // Autoplay/pause no longer needed since there's no more media to play
@@ -926,7 +926,7 @@ define([
         },
         setupError(evt) {
             const message = evt.message;
-            const errorElement = utils.createElement(error(this._model.get('id'), this._model.get('skin'), message));
+            const errorElement = utils.createElement(viewError(this._model.get('id'), message));
 
             const width = this._model.get('width');
             const height = this._model.get('height');

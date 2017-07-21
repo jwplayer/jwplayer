@@ -1,3 +1,5 @@
+import Promise from 'polyfills/promise';
+
 let controlsPromise = null;
 
 export function load() {

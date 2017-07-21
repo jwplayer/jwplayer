@@ -1,24 +1,19 @@
 define([
     'events/events',
-    'utils/backbone.events',
-    'utils/underscore'
-], function(events, Events, _) {
-    var _loaders = {};
+    'utils/backbone.events'
+], function(events, Events) {
+    const _loaders = {};
 
-    var STATUS = {
+    const STATUS = {
         NEW: 0,
         LOADING: 1,
         ERROR: 2,
         COMPLETE: 3
     };
 
-    var scriptloader = function (url, isStyle) {
-        var _this = _.extend(this, Events);
-        var _status = STATUS.NEW;
-
-        // legacy support
-        this.addEventListener = this.on;
-        this.removeEventListener = this.off;
+    const scriptloader = function (url, isStyle) {
+        const _this = this;
+        let _status = STATUS.NEW;
 
 
         function _sendError(evt) {
@@ -32,14 +27,14 @@ define([
         }
 
         this.makeStyleLink = function(styleUrl) {
-            var link = document.createElement('link');
+            const link = document.createElement('link');
             link.type = 'text/css';
             link.rel = 'stylesheet';
             link.href = styleUrl;
             return link;
         };
         this.makeScriptTag = function(scriptUrl) {
-            var scriptTag = document.createElement('script');
+            const scriptTag = document.createElement('script');
             scriptTag.src = scriptUrl;
             return scriptTag;
         };
@@ -53,7 +48,7 @@ define([
             }
 
             // If we already have a scriptloader loading the same script, don't create a new one;
-            var sameLoader = _loaders[url];
+            const sameLoader = _loaders[url];
             if (sameLoader) {
                 _status = sameLoader.getStatus();
                 if (_status < 2) {
@@ -65,10 +60,10 @@ define([
                 // already errored or loaded... keep going?
             }
 
-            var head = document.getElementsByTagName('head')[0] || document.documentElement;
-            var scriptTag = this.makeTag(url);
+            const head = document.getElementsByTagName('head')[0] || document.documentElement;
+            const scriptTag = this.makeTag(url);
 
-            var done = false;
+            let done = false;
             scriptTag.onload = scriptTag.onreadystatechange = function (evt) {
                 if (!done &&
                     (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete')) {
@@ -96,6 +91,12 @@ define([
     };
 
     scriptloader.loaderstatus = STATUS;
+
+    Object.assign(scriptloader.prototype, Events, {
+        addEventListener: Events.on,
+        removeEventListener: Events.off
+    });
+
 
     return scriptloader;
 });

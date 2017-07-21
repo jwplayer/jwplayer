@@ -1,7 +1,8 @@
+
 const _ = require('utils/underscore');
 
 // Try and find a corresponding custom label. If there are no custom labels, create one using height, bandwidth, or both
-function generateLabel(level, qualityLabels, redundant) {
+export function generateLabel(level, qualityLabels, redundant) {
     if (!level) {
         return '';
     }
@@ -14,7 +15,7 @@ function generateLabel(level, qualityLabels, redundant) {
 }
 
 // Prefer creating a label with height with a fallback to bandwidth. Make a label using both if redundant
-function createLabel(height, bandwidth, redundant) {
+export function createLabel(height, bandwidth, redundant) {
     if (!height && !bandwidth) {
         return '';
     }
@@ -34,7 +35,7 @@ function createLabel(height, bandwidth, redundant) {
 
 // Ensures that we're able to find a custom label. As long as there is at least 1 quality label and a defined
 // bandwidth, a quality label will always be found. Return null otherwise
-function getCustomLabel(qualityLabels, bandwidth) {
+export function getCustomLabel(qualityLabels, bandwidth) {
     let label = null;
     const bandwidths = _.keys(qualityLabels);
 
@@ -49,7 +50,7 @@ function getCustomLabel(qualityLabels, bandwidth) {
 }
 
 // Finds the bandwidth with the smallest difference from the target bandwidth
-function findClosestBandwidth(bandwidths, targetBandwidth) {
+export function findClosestBandwidth(bandwidths, targetBandwidth) {
     let closest = null;
     let smallestDiff = Infinity;
     let curDiff;
@@ -67,12 +68,12 @@ function findClosestBandwidth(bandwidths, targetBandwidth) {
     return closest;
 }
 
-function toKbps(bandwidth) {
+export function toKbps(bandwidth) {
     return Math.floor(bandwidth / 1000);
 }
 
 // Use an empty object as the context and populate it like a hash map
-function hasRedundantLevels(levels) {
+export function hasRedundantLevels(levels) {
     if (!_.isArray(levels)) {
         return false;
     }
@@ -83,12 +84,3 @@ function hasRedundantLevels(levels) {
         return foundDuplicate;
     }, {});
 }
-
-export {
-    generateLabel,
-    createLabel,
-    getCustomLabel,
-    findClosestBandwidth,
-    toKbps,
-    hasRedundantLevels
-};
