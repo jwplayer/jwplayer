@@ -60,7 +60,7 @@ define([
             var hashIndex = url.indexOf('#xywh');
             if (hashIndex > 0) {
                 try {
-                    var matched = (/(.+)\#xywh=(\d+),(\d+),(\d+),(\d+)/).exec(url);
+                    var matched = (/(.+)#xywh=(\d+),(\d+),(\d+),(\d+)/).exec(url);
                     url = matched[1];
                     style.backgroundPosition = (matched[2] * -1) + 'px ' + (matched[3] * -1) + 'px';
                     style.width = matched[4];

@@ -1,8 +1,9 @@
+import { PLAYLIST_LOADED, ERROR } from 'events/events';
+
 define([
     'test/underscore',
-    'playlist/loader',
-    'events/events'
-], function (_, PlaylistLoader, events) {
+    'playlist/loader'
+], function (_, PlaylistLoader) {
 
     describe.skip('loader', function() {
 
@@ -14,12 +15,12 @@ define([
                 file: 'http://content.bitsontherun.com/videos/nfSyO85Q-27m5HpIu.webm'
             }];
 
-            loader.on(events.JWPLAYER_PLAYLIST_LOADED, function (data) {
+            loader.on(PLAYLIST_LOADED, function (data) {
                 assert.equal(data.playlist[0].file, expectedJSON[0].file, 'JSON successfully loaded as a playlist');
                 assert.equal(data.playlist[1].file, expectedJSON[1].file, 'JSON successfully loaded as a playlist');
             });
 
-            loader.on(events.JWPLAYER_ERROR, function (e) {
+            loader.on(ERROR, function (e) {
                 assert.isOk(false, e.message);
             });
             done();
@@ -30,13 +31,13 @@ define([
         it('Test XML feed', function (done) {
             var loader = new PlaylistLoader();
             var mediaid = 'TQjoCPTk';
-            loader.on(events.JWPLAYER_PLAYLIST_LOADED, function (data) {
+            loader.on(PLAYLIST_LOADED, function (data) {
                 assert.isOk(data.playlist.length > 0, 'Playlist has at least 1 item.');
                 assert.equal(data.playlist[0].mediaid, mediaid, 'Playlist item contains a mediaid.');
                 assert.isOk(data.playlist[0].sources.length > 0, 'Playlist item has at least one video source.');
             });
 
-            loader.on(events.JWPLAYER_ERROR, function (e) {
+            loader.on(ERROR, function (e) {
                 assert.isOk(false, e.message);
             });
             done();
@@ -45,11 +46,11 @@ define([
         it('Test invalid feed', function (done) {
             var loader = new PlaylistLoader();
 
-            loader.on(events.JWPLAYER_PLAYLIST_LOADED, function (data) {
+            loader.on(PLAYLIST_LOADED, function (data) {
                 assert.isOk(false, 'No error was fired with invalid JSON feed ' + data);
             });
 
-            loader.on(events.JWPLAYER_ERROR, function() {
+            loader.on(ERROR, function() {
                 assert.isOk(true, 'Invalid JSON feed successfully fired error');
             });
             done();

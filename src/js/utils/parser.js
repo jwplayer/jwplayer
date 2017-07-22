@@ -43,7 +43,7 @@ define([
     };
 
     function isAbsolutePath(path) {
-        return /^(?:(?:https?|file)\:)?\/\//.test(path);
+        return /^(?:(?:https?|file):)?\/\//.test(path);
     }
 
     parser.getScriptPath = _.memoize(function(scriptName) {

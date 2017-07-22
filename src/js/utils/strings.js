@@ -26,9 +26,9 @@ define([
 
     // This does not return the file extension, instead it returns a media type extension
     function getAzureFileFormat(path) {
-        if ((/[\(,]format=m3u8-/i).test(path)) {
+        if ((/[(,]format=m3u8-/i).test(path)) {
             return 'm3u8';
-        } else if ((/[\(,]format=mpd-/i).test(path)) {
+        } else if ((/[(,]format=mpd-/i).test(path)) {
             return 'mpd';
         }
         return false;

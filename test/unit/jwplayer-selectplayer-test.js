@@ -1,8 +1,9 @@
+import jwplayer from 'jwplayer';
+
 define([
     'test/underscore',
-    'jquery',
-    'jwplayer'
-], function (_, $, jwplayer) {
+    'jquery'
+], function (_, $) {
 
     function testInstanceOfApi(assert, api) {
         assert.isOk(_.isObject(api), 'jwplayer({dom id}) returned an object');

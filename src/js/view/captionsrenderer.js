@@ -4,9 +4,8 @@ define([
     'utils/helpers',
     'utils/css',
     'utils/dom',
-    'events/states',
     'utils/underscore'
-], function (utils, cssUtils, dom, states, _) {
+], function (utils, cssUtils, dom, _) {
     /** Component that renders the actual captions on screen. **/
     var CaptionsRenderer;
     var _style = cssUtils.style;

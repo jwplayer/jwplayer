@@ -50,7 +50,7 @@ define([], function() {
      **/
     validator.youTubeID = function (path) {
         // Left as a dense regular expression for brevity.
-        var matches = (/v[=\/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path);
+        var matches = (/v[=/]([^?&]*)|youtu\.be\/([^?]*)|^([\w-]*)$/i).exec(path);
         if (!matches) {
             return '';
         }
