@@ -16,7 +16,7 @@ __webpack_public_path__ = loadFrom();
  * @returns {Api|object} - Returns a player instance if one matches the provided query.
  * Otherwise, returns an object containing the `registerPlugin` method.
  */
-export default function jwplayer(query) {
+const jwplayer = function(query) {
     let player;
     let domElement;
 
@@ -48,7 +48,7 @@ export default function jwplayer(query) {
     return {
         registerPlugin: GlobalApi.registerPlugin
     };
-}
+};
 
 function playerById(id) {
     for (let p = 0; p < instances.length; p++) {
@@ -74,3 +74,6 @@ Object.defineProperties(jwplayer, {
         set() {}
     },
 });
+
+/* global module */
+module.exports = jwplayer;
