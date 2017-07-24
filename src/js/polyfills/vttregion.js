@@ -33,7 +33,7 @@
         return typeof value === 'number' && (value >= 0 && value <= 100);
     }
 
-  // VTTRegion shim http://dev.w3.org/html5/webvtt/#vttregion-interface
+    // VTTRegion shim http://dev.w3.org/html5/webvtt/#vttregion-interface
     function VTTRegion() {
         var _width = 100;
         var _lines = 3;

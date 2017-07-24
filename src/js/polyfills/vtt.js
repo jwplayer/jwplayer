@@ -724,11 +724,11 @@ define([
             }
 
             var step = boxPosition.lineHeight;
-                // maxLines added on 8/03/2016 by Evol Greaves: evol@jwplayer.com.
-                // This ensures that cues are positioned according to the maximum number of lines
-                // that can be displayed based on the container size.
-                // The position also needs to account for the number of lines of text to ensure
-                // text isn't cut off at the bottom of the container
+            // maxLines added on 8/03/2016 by Evol Greaves: evol@jwplayer.com.
+            // This ensures that cues are positioned according to the maximum number of lines
+            // that can be displayed based on the container size.
+            // The position also needs to account for the number of lines of text to ensure
+            // text isn't cut off at the bottom of the container
             var maxLines = Math.floor(containerBox[size] / step);
             linePos = Math.min(linePos, maxLines - numLinesOfText);
             var position = step * Math.round(linePos);
