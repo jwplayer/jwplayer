@@ -2,8 +2,8 @@ import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING, STATE_STALLED, MEDIA_TIME,
- MEDIA_BUFFER, MEDIA_META, MEDIA_BUFFER_FULL, PROVIDER_FIRST_FRAME, MEDIA_ERROR, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
-  MEDIA_SEEK, MEDIA_SEEKED, MEDIA_COMPLETE } from 'events/events';
+    MEDIA_BUFFER, MEDIA_META, MEDIA_BUFFER_FULL, PROVIDER_FIRST_FRAME, MEDIA_ERROR, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
+    MEDIA_SEEK, MEDIA_SEEKED, MEDIA_COMPLETE } from 'events/events';
 
 define([
     'utils/css',

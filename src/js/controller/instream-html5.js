@@ -1,5 +1,5 @@
-import { STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN, MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE }
- from 'events/events';
+import { STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN,
+    MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
 
 define([
     'utils/underscore',

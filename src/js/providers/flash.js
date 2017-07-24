@@ -2,8 +2,8 @@ import { qualityLevel } from 'providers/data-normalizer';
 import { generateLabel } from 'providers/utils/quality-labels';
 import { Browser } from 'environment/environment';
 import { STATE_IDLE, STATE_PAUSED, STATE_LOADING, ERROR, MEDIA_ERROR, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_BUFFER,
- MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
-  MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
+    MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
+    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
 
 define([
     'utils/helpers',
@@ -115,7 +115,7 @@ define([
                 _item = item;
                 this.setState(STATE_LOADING);
                 _flashCommand('load', item);
-                    // HLS mediaType comes from the AdaptiveProvider
+                // HLS mediaType comes from the AdaptiveProvider
                 if (item.sources.length && item.sources[0].type !== 'hls') {
                     this.sendMediaType(item.sources);
                 }
@@ -160,8 +160,7 @@ define([
                     found.off(null, null, this);
                     return found;
                 }
-                return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId),
-                        _playerConfig.wmode);
+                return EmbedSwf.embed(_playerConfig.flashplayer, parent, getObjectId(_playerId), _playerConfig.wmode);
             },
 
             getContainer: function() {
@@ -170,30 +169,30 @@ define([
 
             setContainer: function(parent) {
                 if (_container === parent) {
-                        // ignore instream's attempt to put provider back in it's place
+                    // ignore instream's attempt to put provider back in it's place
                     return;
                 }
                 _container = parent;
 
                 _swf = this.getSwfObject(parent);
 
-                    // Wait until the window gets focus to see check flash is blocked
+                // Wait until the window gets focus to see check flash is blocked
                 if (document.hasFocus()) {
                     checkFlashBlocked();
                 } else {
                     window.addEventListener('focus', onFocus);
                 }
 
-                    // listen to events sendEvented from flash
+                // listen to events sendEvented from flash
                 _swf.once('ready', function() {
                     removeBlockedCheck();
-                        // After plugins load, then execute commandqueue
+                    // After plugins load, then execute commandqueue
                     _swf.once('pluginsLoaded', function() {
                         _flashCommand('setupCommandQueue', _swf.__commandQueue);
                         _swf.__commandQueue.length = 0;
                     });
 
-                        // setup flash player
+                    // setup flash player
                     var config = _.extend({}, _playerConfig);
                     var result = _swf.triggerFlash('setup', config);
                     if (result === _swf) {
@@ -202,7 +201,7 @@ define([
                         this.trigger(MEDIA_ERROR, result);
                     }
 
-                        // init if _item is defined
+                    // init if _item is defined
                     if (_item) {
                         _flashCommand('init', _item);
                     }
@@ -226,7 +225,7 @@ define([
                     MEDIA_BUFFER_FULL
                 ];
 
-                    // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
+                // jwplayer 6 flash player events (forwarded from AS3 Player, Controller, Model)
                 _swf.on([MEDIA_LEVELS, MEDIA_LEVEL_CHANGED].join(' '), function(e) {
                     _updateLevelsEvent(e);
                     this.trigger(e.type, e);
@@ -272,12 +271,12 @@ define([
                 }, this);
 
                 _swf.on('visualQuality', function(e) {
-                        // Get index from sorted levels from the level's index + 1 to take Auto into account
+                    // Get index from sorted levels from the level's index + 1 to take Auto into account
                     var sortedIndex = 0;
                     if (_qualityLevels.length > 1) {
                         sortedIndex = _getSortedIndex(_qualityLevels, e.level.index + 1);
                     }
-                        // Use extend so that the actual level's index is not modified
+                    // Use extend so that the actual level's index is not modified
                     e.level = _.extend(e.level, { index: sortedIndex });
                     e.reason = e.reason || 'api'; // or 'user selected';
                     this.trigger('visualQuality', e);
