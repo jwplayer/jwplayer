@@ -52,17 +52,17 @@ define([
             }
 
             this.swf.on('instream:state', this.stateHandler, this)
-            .on('instream:time', function(evt) {
-                this._adModel.set('position', evt.position);
-                this._adModel.set('duration', evt.duration);
-                this.trigger(MEDIA_TIME, evt);
-            }, this)
-            .on('instream:complete', function(evt) {
-                this.trigger(MEDIA_COMPLETE, evt);
-            }, this)
-            .on('instream:error', function(evt) {
-                this.trigger(MEDIA_ERROR, evt);
-            }, this);
+                .on('instream:time', function(evt) {
+                    this._adModel.set('position', evt.position);
+                    this._adModel.set('duration', evt.duration);
+                    this.trigger(MEDIA_TIME, evt);
+                }, this)
+                .on('instream:complete', function(evt) {
+                    this.trigger(MEDIA_COMPLETE, evt);
+                }, this)
+                .on('instream:error', function(evt) {
+                    this.trigger(MEDIA_ERROR, evt);
+                }, this);
 
             this.swf.triggerFlash('instream:init');
 
