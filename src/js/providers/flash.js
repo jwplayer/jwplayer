@@ -1,4 +1,5 @@
 import { qualityLevel } from 'providers/data-normalizer';
+import { generateLabel } from 'providers/utils/quality-labels';
 import { Browser } from 'environment/environment';
 import { STATE_IDLE, STATE_PAUSED, STATE_LOADING, ERROR, MEDIA_ERROR, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_BUFFER,
  MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
@@ -77,7 +78,7 @@ define([
                 // Set original index
                 level.index = i;
                 if (level.label !== 'Auto') {
-                    level.label = utils.generateLabel(level, _playerConfig.qualityLabels);
+                    level.label = generateLabel(level, _playerConfig.qualityLabels);
                 }
             }
             e.levels =
