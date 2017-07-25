@@ -798,7 +798,6 @@ define([
                     }
                 }
 
-                console.log('Adding Buttons:', _.pluck(customButtons, 'id'));
                 _model.set('customButtons', customButtons);
             };
             this.removeButton = function(id) {
@@ -812,9 +811,7 @@ define([
                     (button) => button.id !== id
                 );
 
-                console.log('Removing Buttons:', _.pluck(customButtons, 'id'));
                 _model.set('customButtons', customButtons);
-
             };
             // Delegate trigger so we can run a middleware function before any event is bubbled through the API
             this.trigger = function (type, args) {
