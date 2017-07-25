@@ -770,6 +770,8 @@ define([
                 return _model.checkComplete();
             };
             this.addButton = function(img, tooltip, callback, id, btnClass) {
+                let customButtons = _model.get('customButtons') || [];
+                let added = false;
                 const newButton = {
                     img: img,
                     tooltip: tooltip,
@@ -777,32 +779,39 @@ define([
                     id: id,
                     btnClass: btnClass
                 };
-                let replaced = false;
-                const dock = _.map(_model.get('dock'), function(dockButton) {
-                    const replaceButton =
-                        dockButton !== newButton &&
-                        dockButton.id === newButton.id;
 
-                    // replace button if its of the same id/type,
-                    // but has different values
-                    if (replaceButton) {
-                        replaced = true;
-                        return newButton;
+                customButtons = _.reduce(customButtons, function(buttons, button) {
+                    if (button.id === newButton.id) {
+                        added = true;
+                        buttons.push(newButton);
+                    } else {
+                        buttons.push(button);
                     }
-                    return dockButton;
-                });
+                    return buttons;
+                }, []);
 
-                // add button if it has not been replaced
-                if (!replaced) {
-                    dock.push(newButton);
+                if (!added) {
+                    if (newButton.id === 'related') {
+                        customButtons.push(newButton);
+                    } else {
+                        customButtons.unshift(newButton);
+                    }
                 }
 
-                _model.set('dock', dock);
+                _model.set('customButtons', customButtons);
             };
             this.removeButton = function(id) {
-                let dock = _model.get('dock') || [];
-                dock = _.reject(dock, _.matches({ id: id }));
-                _model.set('dock', dock);
+                const pluginIds = ['cardboard', 'share', 'related'];
+                if (_.contains(pluginIds, id)) {
+                    return;
+                }
+
+                const customButtons = _.filter(
+                    _model.get('customButtons'),
+                    (button) => button.id !== id
+                );
+
+                _model.set('customButtons', customButtons);
             };
             // Delegate trigger so we can run a middleware function before any event is bubbled through the API
             this.trigger = function (type, args) {
