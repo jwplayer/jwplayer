@@ -364,13 +364,7 @@ define([
             if (_isIE) {
                 utils.addClass(_playerElement, 'jw-ie');
             }
-            // Hide control elements until skin is loaded
-            if (_model.get('skin-loading') === true) {
-                utils.addClass(_playerElement, 'jw-flag-skin-loading');
-                _model.once('change:skin-loading', function () {
-                    utils.removeClass(_playerElement, 'jw-flag-skin-loading');
-                });
-            }
+
             this.handleColorOverrides();
 
             // adds video tag to video layer

@@ -8,10 +8,11 @@ import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYIN
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
+import Setup from 'controller/Setup';
+
 define([
     'controller/instream-adapter',
     'utils/underscore',
-    'controller/Setup',
     'controller/captions',
     'controller/model',
     'playlist/playlist',
@@ -22,8 +23,8 @@ define([
     'events/change-state-event',
     'view/error',
     'controller/events-middleware',
-], function(InstreamAdapter, _, Setup, Captions, Model,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, viewError, eventsMiddleware) {
+], function(InstreamAdapter, _, Captions, Model, Playlist, PlaylistLoader, utils, View, Events, changeStateEvent,
+    viewError, eventsMiddleware) {
 
     // The model stores a different state than the provider
     function normalizeState(newstate) {
@@ -58,9 +59,6 @@ define([
             _view = this._view = new View(_api, _model);
 
             _setup = new Setup(_api, _model, _view, _setPlaylist);
-
-            _setup.on(READY, _playerReady, this);
-            _setup.on(SETUP_ERROR, this.setupError, this);
 
             _model.mediaController.on('all', _triggerAfterReady, this);
             _model.mediaController.on(MEDIA_COMPLETE, function() {
@@ -899,7 +897,9 @@ define([
             // Add commands from CoreLoader to queue
             apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
-            _setup.start();
+            _setup.start().then(_playerReady).catch((err) => {
+                _this.setupError(err);
+            });
         },
         get(property) {
             return this._model.get(property);

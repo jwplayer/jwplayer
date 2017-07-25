@@ -1,44 +1,44 @@
-define([], function() {
 
-    const performance = window.performance;
+const performance = window.performance;
 
-    const supportsPerformance = !!(performance && performance.now);
-    
-    const MAX_INTERVAL = 10000;
+const supportsPerformance = !!(performance && performance.now);
 
-    const getTime = function() {
-        if (supportsPerformance) {
-            return performance.now();
+const MAX_INTERVAL = 10000;
+
+const getTime = function() {
+    if (supportsPerformance) {
+        return performance.now();
+    }
+    return new Date().getTime();
+};
+
+const Clock = function() {
+    const started = getTime();
+    let updated = started;
+
+    const updateClock = function() {
+        let delta = getTime() - updated;
+        if (delta > MAX_INTERVAL) {
+            delta = MAX_INTERVAL;
+        } else if (delta < 0) {
+            delta = 0;
         }
-        return new Date().getTime();
+        updated += delta;
     };
+    setInterval(updateClock, 1000);
 
-    const Clock = function() {
-        const started = getTime();
-        let updated = started;
+    Object.defineProperty(this, 'currentTime', {
+        get: function() {
+            updateClock();
+            return updated - started;
+        }
+    });
+};
 
-        const updateClock = function() {
-            let delta = getTime() - updated;
-            if (delta > MAX_INTERVAL) {
-                delta = MAX_INTERVAL;
-            } else if (delta < 0) {
-                delta = 0;
-            }
-            updated += delta;
-        };
-        setInterval(updateClock, 1000);
+Clock.prototype.now = function() {
+    return this.currentTime;
+};
 
-        Object.defineProperty(this, 'currentTime', {
-            get: function() {
-                updateClock();
-                return updated - started;
-            }
-        });
-    };
+const clock = new Clock();
 
-    Clock.prototype.now = function() {
-        return this.currentTime;
-    };
-
-    return new Clock();
-});
+export default clock;

@@ -5,18 +5,14 @@ import SimpleModel from '../model/simplemodel';
 import { playerDefaults } from '../model/player-model';
 import Timer from 'api/timer';
 import Events from 'utils/backbone.events';
-import Promise from 'polyfills/promise';
 
 let controllerPromise = null;
 
 function loadController() {
     if (!controllerPromise) {
-        controllerPromise = new Promise(function (resolve) {
-            require.ensure(['controller/controller'], function (require) {
-                const CoreMixin = require('controller/controller');
-                resolve(CoreMixin);
-            }, 'jwplayer.core');
-        });
+        controllerPromise = require.ensure(['controller/controller'], function (require) {
+            return require('controller/controller');
+        }, 'jwplayer.core');
     }
     return controllerPromise;
 }
@@ -95,6 +91,7 @@ Object.assign(CoreLoader.prototype, {
             this.setup(config, api, this.originalContainer, this._events, commandQueue);
             storage.track(this._model);
         });
+        // TODO: catch loadController() error
     },
     playerDestroy() {
         // TODO: cancel async setup

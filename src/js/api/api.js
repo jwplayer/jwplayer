@@ -3,8 +3,9 @@ import instances from './players';
 import CoreLoader from './core-loader';
 import { version } from '../version';
 import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
-// These are AMD modules
 import Timer from 'api/timer';
+
+// These are AMD modules
 import plugins from 'plugins/plugins';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';

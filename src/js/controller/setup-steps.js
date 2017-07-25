@@ -1,231 +1,164 @@
 import * as ControlsLoader from 'controller/controls-loader';
 import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR } from 'events/events';
+import Promise from 'polyfills/promise';
 
-define([
-    'plugins/plugins',
-    'playlist/loader',
-    'utils/scriptloader',
-    'utils/embedswf',
-    'utils/underscore',
-], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _) {
+// These are AMD modules
+import plugins from 'plugins/plugins';
+import PlaylistLoader from 'playlist/loader';
+import ScriptLoader from 'utils/scriptloader';
+import _ from 'utils/underscore';
 
-    var _pluginLoader;
-    var _playlistLoader;
+const resolved = Promise.resolve();
 
-    function getQueue() {
-        var Components = {
-            LOAD_PLUGINS: {
-                method: _loadPlugins,
-                // Plugins require JavaScript Promises
-                depends: []
-            },
-            LOAD_XO_POLYFILL: {
-                method: _loadIntersectionObserverPolyfill,
-                depends: []
-            },
-            LOAD_SKIN: {
-                method: _loadSkin,
-                depends: []
-            },
-            LOAD_PLAYLIST: {
-                method: _loadPlaylist,
-                depends: []
-            },
-            LOAD_CONTROLS: {
-                method: _loadControls,
-                depends: []
-            },
-            SETUP_VIEW: {
-                method: _setupView,
-                depends: [
-                    'LOAD_SKIN',
-                    'LOAD_XO_POLYFILL'
-                ]
-            },
-            INIT_PLUGINS: {
-                method: _initPlugins,
-                depends: [
-                    'LOAD_PLUGINS',
-                    // Plugins require jw-overlays to setup
-                    'SETUP_VIEW'
-                ]
-            },
-            FILTER_PLAYLIST: {
-                method: _filterPlaylist,
-                depends: [
-                    'LOAD_PLAYLIST'
-                ]
-            },
-            SET_ITEM: {
-                method: _setPlaylistItem,
-                depends: [
-                    'INIT_PLUGINS',
-                    'FILTER_PLAYLIST'
-                ]
-            },
-            DEFERRED: {
-                method: _deferred,
-                depends: []
-            },
-            SEND_READY: {
-                method: _sendReady,
-                depends: [
-                    'LOAD_CONTROLS',
-                    'SET_ITEM',
-                    'DEFERRED'
-                ]
-            }
-        };
+let pluginLoader;
 
-        return Components;
+function loadIntersectionObserverPolyfill() {
+    if ('IntersectionObserver' in window &&
+        'IntersectionObserverEntry' in window &&
+        'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
+        return resolved;
     }
+    return require.ensure(['intersection-observer'], function (require) {
+        require('intersection-observer');
+    }, 'polyfills.intersection-observer');
+}
 
-    function _deferred(resolve) {
-        setTimeout(resolve, 0);
-    }
+function loadPlugins(_model) {
+    window.jwplayerPluginJsonp = plugins.registerPlugin;
+    pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
+    return new Promise((resolve, reject) => {
+        pluginLoader.on(MEDIA_COMPLETE, resolve);
+        pluginLoader.on(ERROR, (err) => {
+            reject({
+                message: 'Could not load plugin',
+                error: err
+            });
+        });
+        pluginLoader.load();
+    });
+}
 
-    function _loadIntersectionObserverPolyfill(resolve) {
-        if ('IntersectionObserver' in window &&
-            'IntersectionObserverEntry' in window &&
-            'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-            resolve();
-        } else {
-            require.ensure(['intersection-observer'], function (require) {
-                require('intersection-observer');
-                resolve();
-            }, 'polyfills.intersection-observer');
-        }
-    }
-
-    function _loadPlugins(resolve, _model) {
-        window.jwplayerPluginJsonp = plugins.registerPlugin;
-        _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-        _pluginLoader.on(MEDIA_COMPLETE, resolve);
-        _pluginLoader.on(ERROR, _.partial(_pluginsError, resolve));
-        _pluginLoader.load();
-    }
-
-    function _initPlugins(resolve, _model, _api) {
+function initPlugins(_model, _api, _view) {
+    return Promise.all([
+        setupView(_model, _view),
+        loadPlugins(_model)
+    ]).then(() => {
+        // TODO: check destroyed
         delete window.jwplayerPluginJsonp;
-        _pluginLoader.setupPlugins(_api, _model);
-        resolve();
-    }
+        pluginLoader.setupPlugins(_api, _model);
+    });
+}
 
-    function _pluginsError(resolve, evt) {
-        error(resolve, 'Could not load plugin', evt.message);
-    }
-
-    function _loadPlaylist(resolve, _model) {
-        var playlist = _model.get('playlist');
-        if (_.isString(playlist)) {
-            _playlistLoader = new PlaylistLoader();
-            _playlistLoader.on(PLAYLIST_LOADED, function(data) {
+function loadPlaylist(_model) {
+    const playlist = _model.get('playlist');
+    if (_.isString(playlist)) {
+        return new Promise((resolve, reject) => {
+            const playlistLoader = new PlaylistLoader();
+            playlistLoader.on(PLAYLIST_LOADED, function(data) {
                 _model.attributes.feedData = data;
                 _model.attributes.playlist = data.playlist;
                 resolve();
             });
-            _playlistLoader.on(ERROR, _.partial(_playlistError, resolve));
-            _playlistLoader.load(playlist);
-        } else {
-            resolve();
-        }
-    }
-
-    function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
-        // Performs filtering
-        var success = _setPlaylist(_model.get('playlist'), _model.get('feedData'));
-
-        if (success) {
-            resolve();
-        } else {
-            _playlistError(resolve);
-        }
-    }
-
-    function _playlistError(resolve, evt) {
-        if (evt && evt.message) {
-            error(resolve, 'Error loading playlist', evt.message);
-        } else {
-            error(resolve, 'Error loading player', 'No playable sources found');
-        }
-    }
-
-    function isSkinLoaded(skinPath) {
-        var ss = document.styleSheets;
-        for (var i = 0, max = ss.length; i < max; i++) {
-            if (ss[i].href === skinPath) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function _loadSkin(resolve, _model) {
-        var skinUrl = _model.get('skinUrl');
-
-        if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
-            _model.set('skin-loading', true);
-
-            var isStylesheet = true;
-            var loader = new ScriptLoader(skinUrl, isStylesheet);
-
-            loader.addEventListener(MEDIA_COMPLETE, function() {
-                _model.set('skin-loading', false);
+            playlistLoader.on(ERROR, err => {
+                reject(playlistError(err));
             });
-            loader.addEventListener(ERROR, function() {
-                _model.set('skin-loading', false);
-            });
+            playlistLoader.load(playlist);
+        });
 
+    }
+    return resolved;
+}
+
+function filterPlaylist(_model, _setPlaylist) {
+    return loadPlaylist(_model).then(() => {
+        // TODO: check destroyed
+        // `_setPlaylist` performs filtering
+        const success = _setPlaylist(_model.get('playlist'), _model.get('feedData'));
+        if (!success) {
+            throw playlistError();
+        }
+    });
+}
+
+function playlistError(err) {
+    if (err && err.message) {
+        return new Error(`Error loading playlist: ${err.message}`);
+    }
+    return new Error('Error loading player: No playable sources found');
+}
+
+function isSkinLoaded(skinPath) {
+    const ss = document.styleSheets;
+    for (let i = 0, max = ss.length; i < max; i++) {
+        if (ss[i].href === skinPath) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function loadSkin(_model) {
+    const skinUrl = _model.get('skinUrl');
+    if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
+        return new Promise(resolve => {
+            const isStylesheet = true;
+            const loader = new ScriptLoader(skinUrl, isStylesheet);
+            loader.addEventListener(MEDIA_COMPLETE, resolve);
+            loader.addEventListener(ERROR, resolve);
             loader.load();
-        }
-
-        // Control elements are hidden by the loading flag until it is ready
-        resolve();
+        });
     }
+    return resolved;
+}
 
-    function _setupView(resolve, _model, _api, _view) {
+function setupView(_model, _view) {
+    return Promise.all([
+        loadSkin(_model),
+        loadIntersectionObserverPolyfill()
+    ]).then(() => {
+        // TODO: check destroyed
         _model.setAutoStart();
         _view.setup();
-        resolve();
-    }
+    });
 
-    function _setPlaylistItem(resolve, _model) {
-        _model.once('itemReady', resolve);
-        _model.setItemIndex(_model.get('item'));
-    }
+}
 
-    function _sendReady(resolve) {
-        resolve({
-            type: 'complete'
+function setPlaylistItem(_model, _api, _view, _setPlaylist) {
+    return filterPlaylist(_model, _setPlaylist).then(() => {
+        // TODO: check destroyed
+        return new Promise(resolve => {
+            _model.once('itemReady', resolve);
+            _model.setItemIndex(_model.get('item'));
         });
-    }
+    });
+}
 
-    function _loadControls(resolve, _model, _api, _view) {
-        if (!_model.get('controls')) {
-            resolve();
-            return;
-        }
-
-        ControlsLoader.load()
+function loadControls(_model, _view) {
+    if (_model.get('controls')) {
+        return ControlsLoader.load()
             .then(function (Controls) {
+                // TODO: check destroyed
                 _view.setControlsModule(Controls);
-                resolve();
             })
-            .catch(function (reason) {
-                error(resolve, 'Failed to load controls', reason);
+            .catch(function (err) {
+                throw new Error(`Failed to load controls: ${err.message}`);
             });
     }
+    return resolved;
+}
 
-    function error(resolve, msg, reason) {
-        resolve({
-            type: 'error',
-            msg: msg,
-            reason: reason
-        });
-    }
+const startSetup = function(_api, _model, _view, _setPlaylist) {
+    return Promise.all([
+        setPlaylistItem(_model, _api, _view, _setPlaylist),
+        // filterPlaylist -->
+        // -- loadPlaylist,
+        initPlugins(_model, _api, _view),
+        // loadPlugins,
+        // setupView -->
+        // -- loadSkin,
+        // -- loadIntersectionObserverPolyfill
+        loadControls(_model, _view)
+    ]);
+};
 
-    return {
-        getQueue: getQueue,
-        error: error
-    };
-});
+export default startSetup;

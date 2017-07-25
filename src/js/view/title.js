@@ -5,8 +5,6 @@ define([
 
     var Title = function(_model) {
         this.model = _model;
-
-        this.model.on('change:playlistItem', this.playlistItem, this);
     };
 
     _.extend(Title.prototype, {
@@ -32,6 +30,7 @@ define([
             }
 
             this.model.on('change:logoWidth', this.update, this);
+            this.model.change('playlistItem', this.playlistItem, this);
         },
 
         update: function(model) {

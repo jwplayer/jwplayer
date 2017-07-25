@@ -1,7 +1,8 @@
+import { getScriptPath } from 'utils/parser';
+
 define([
-    'utils/scriptloader',
-    'utils/parser'
-], function (ScriptLoader, parser) {
+    'utils/scriptloader'
+], function (ScriptLoader) {
     describe.skip('ScriptLoader', function() {
 
         var STATUS = {
@@ -56,7 +57,7 @@ define([
         });
 
         it('ScriptLoader with actual path', function() {
-            var scriptPath = parser.getScriptPath('scriptloader-test.js') + 'scriptloader-test.js';
+            var scriptPath = getScriptPath('scriptloader-test.js') + 'scriptloader-test.js';
             var script = new ScriptLoader(scriptPath, false);
             script.load();
 
