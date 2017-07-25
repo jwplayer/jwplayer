@@ -7,7 +7,7 @@ define([], function() {
             var className = ' ' + searchClass + ' ';
 
             return (element.nodeType === 1 && (' ' + element.className + ' ')
-                    .replace(/[\t\r\n\f]/g, ' ').indexOf(className) >= 0);
+                .replace(/[\t\r\n\f]/g, ' ').indexOf(className) >= 0);
         }
     };
 });

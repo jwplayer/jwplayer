@@ -1,9 +1,8 @@
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
+import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
 
 define([
-    'events/events',
-    'events/states',
     'utils/backbone.events',
     'utils/helpers',
     'utils/underscore',
@@ -16,9 +15,9 @@ define([
     'view/controls/next-display-icon',
     'view/controls/nextuptooltip',
     'view/controls/rightclick',
-], function (events, states, Events, utils, _, button, Controlbar, Dock,
-             DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
-             NextUpToolTip, RightClick) {
+], function (Events, utils, _, button, Controlbar, Dock,
+    DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
+    NextUpToolTip, RightClick) {
 
     const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
@@ -76,7 +75,7 @@ define([
                 const nextDisplayIcon = new NextDisplayIcon(model, api);
 
                 playDisplayIcon.on('click tap', () => {
-                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    this.trigger(DISPLAY_CLICK);
                     this.userActive(1000);
                     api.play(reasonInteraction());
                 });
@@ -121,7 +120,7 @@ define([
 
             // Controlbar
             const controlbar = this.controlbar = new Controlbar(api, model);
-            controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
+            controlbar.on(USER_ACTION, () => this.userActive());
             // Next Up Tooltip
             if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
                 const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);

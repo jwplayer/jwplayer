@@ -1,11 +1,12 @@
+import { STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN,
+    MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
+
 define([
     'utils/underscore',
     'utils/backbone.events',
     'events/change-state-event',
-    'events/events',
-    'events/states',
     'controller/model'
-], function(_, Events, changeStateEvent, events, states, Model) {
+], function(_, Events, changeStateEvent, Model) {
 
     var InstreamHtml5 = function(_controller, _model) {
         var _adModel;
@@ -13,8 +14,8 @@ define([
         var _this = _.extend(this, Events);
 
         // Listen for player resize events
-        _controller.on(events.JWPLAYER_FULLSCREEN, function(data) {
-            this.trigger(events.JWPLAYER_FULLSCREEN, data);
+        _controller.on(FULLSCREEN, function(data) {
+            this.trigger(FULLSCREEN, data);
         }, _this);
 
         /** ***************************************
@@ -47,9 +48,9 @@ define([
             _checkProvider();
 
             // Match the main player's controls state
-            _adModel.off(events.JWPLAYER_ERROR);
-            _adModel.on(events.JWPLAYER_ERROR, function(data) {
-                this.trigger(events.JWPLAYER_ERROR, data);
+            _adModel.off(ERROR);
+            _adModel.on(ERROR, function(data) {
+                this.trigger(ERROR, data);
             }, _this);
 
             // Load the instream item
@@ -65,9 +66,9 @@ define([
             }
 
             // Match the main player's controls state
-            provider.off(events.JWPLAYER_ERROR);
-            provider.on(events.JWPLAYER_ERROR, function(data) {
-                this.trigger(events.JWPLAYER_ERROR, data);
+            provider.off(ERROR);
+            provider.on(ERROR, function(data) {
+                this.trigger(ERROR, data);
             }, _this);
             _model.on('change:volume', function(data, value) {
                 _currentProvider.volume(value);
@@ -144,15 +145,15 @@ define([
                 provider.off();
 
                 provider.on('all', function(type, data) {
-                    if (isVpaidProvider && (type === events.JWPLAYER_MEDIA_COMPLETE)) {
+                    if (isVpaidProvider && (type === MEDIA_COMPLETE)) {
                         return;
                     }
                     this.trigger(type, _.extend({}, data, { type: type }));
                 }, _this);
 
-                provider.on(events.JWPLAYER_MEDIA_BUFFER_FULL, _bufferFullHandler);
+                provider.on(MEDIA_BUFFER_FULL, _bufferFullHandler);
 
-                provider.on(events.JWPLAYER_PLAYER_STATE, stateHandler);
+                provider.on(PLAYER_STATE, stateHandler);
                 provider.attachMedia();
                 provider.volume(_model.get('volume'));
                 provider.mute(_model.get('mute') || _model.get('autostartMuted'));
@@ -163,8 +164,8 @@ define([
 
         function stateHandler(evt) {
             switch (evt.newstate) {
-                case states.PLAYING:
-                case states.PAUSED:
+                case STATE_PLAYING:
+                case STATE_PAUSED:
                     _adModel.set('state', evt.newstate);
                     break;
                 default:
@@ -175,12 +176,12 @@ define([
 
         function _nativeFullscreenHandler(evt) {
             _model.trigger(evt.type, evt);
-            _this.trigger(events.JWPLAYER_FULLSCREEN, {
+            _this.trigger(FULLSCREEN, {
                 fullscreen: evt.jwstate
             });
         }
 
-        /** Handle the JWPLAYER_MEDIA_BUFFER_FULL event **/
+        /** Handle the MEDIA_BUFFER_FULL event **/
         function _bufferFullHandler() {
             _adModel.getVideo().play();
         }

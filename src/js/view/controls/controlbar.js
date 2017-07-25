@@ -14,8 +14,7 @@ define([
     'view/controls/components/selection-display-menu',
     'view/controls/components/volumetooltip',
     'view/controls/components/button',
-], function(utils, _, Events, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip,
-            button) {
+], function(utils, _, Events, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip, button) {
     function text(name, role) {
         const element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
@@ -104,7 +103,7 @@ define([
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
-            if (!_model.get('sdkplatform') && !(OS.iOS && OS.major.version < 10)) {
+            if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
                 muteButton = button('jw-icon-volume', () => { _api.setMute(); }, vol);
             }
 

@@ -26,7 +26,7 @@ define([
     browser.isFF = _browserCheck(/gecko\//i);
     browser.isIPod = _browserCheck(/iP(hone|od)/i);
     browser.isIPad = _browserCheck(/iPad/i);
-    browser.isOSX = _browserCheck(/Mac OS X/i);
+    browser.isOSX = _browserCheck(/Macintosh/i);
     // Check for Facebook App Version to see if it's Facebook
     browser.isFacebook = _browserCheck(/FBAV/i);
 

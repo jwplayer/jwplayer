@@ -1,7 +1,5 @@
 import * as ControlsLoader from 'controller/controls-loader';
-
-export const SkinsIncluded = ['seven'];
-export const SkinsLoadable = ['beelden', 'bekle', 'five', 'glow', 'roundster', 'six', 'stormtrooper', 'vapor'];
+import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR } from 'events/events';
 
 define([
     'plugins/plugins',
@@ -9,10 +7,7 @@ define([
     'utils/scriptloader',
     'utils/embedswf',
     'utils/underscore',
-    'events/events',
-    'polyfills/promise',
-    'polyfills/base64'
-], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _, events) {
+], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _) {
 
     var _pluginLoader;
     var _playlistLoader;
@@ -105,8 +100,8 @@ define([
     function _loadPlugins(resolve, _model) {
         window.jwplayerPluginJsonp = plugins.registerPlugin;
         _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-        _pluginLoader.on(events.COMPLETE, resolve);
-        _pluginLoader.on(events.ERROR, _.partial(_pluginsError, resolve));
+        _pluginLoader.on(MEDIA_COMPLETE, resolve);
+        _pluginLoader.on(ERROR, _.partial(_pluginsError, resolve));
         _pluginLoader.load();
     }
 
@@ -124,12 +119,12 @@ define([
         var playlist = _model.get('playlist');
         if (_.isString(playlist)) {
             _playlistLoader = new PlaylistLoader();
-            _playlistLoader.on(events.JWPLAYER_PLAYLIST_LOADED, function(data) {
+            _playlistLoader.on(PLAYLIST_LOADED, function(data) {
                 _model.attributes.feedData = data;
                 _model.attributes.playlist = data.playlist;
                 resolve();
             });
-            _playlistLoader.on(events.JWPLAYER_ERROR, _.partial(_playlistError, resolve));
+            _playlistLoader.on(ERROR, _.partial(_playlistError, resolve));
             _playlistLoader.load(playlist);
         } else {
             resolve();
@@ -155,16 +150,6 @@ define([
         }
     }
 
-    function skinToLoad(skin, base) {
-        var skinPath;
-
-        if (_.contains(SkinsLoadable, skin)) {
-            skinPath = base + 'skins/' + skin + '.css';
-        }
-
-        return skinPath;
-    }
-
     function isSkinLoaded(skinPath) {
         var ss = document.styleSheets;
         for (var i = 0, max = ss.length; i < max; i++) {
@@ -176,19 +161,7 @@ define([
     }
 
     function _loadSkin(resolve, _model) {
-        var skinName = _model.get('skin');
         var skinUrl = _model.get('skinUrl');
-
-        // If skin is built into player, there is nothing to load
-        if (_.contains(SkinsIncluded, skinName)) {
-            resolve();
-            return;
-        }
-
-        if (!skinUrl) {
-            // if a user doesn't specify a url, we assume it comes from our CDN or config.base
-            skinUrl = skinToLoad(skinName, _model.get('base'));
-        }
 
         if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
             _model.set('skin-loading', true);
@@ -196,11 +169,10 @@ define([
             var isStylesheet = true;
             var loader = new ScriptLoader(skinUrl, isStylesheet);
 
-            loader.addEventListener(events.COMPLETE, function() {
+            loader.addEventListener(MEDIA_COMPLETE, function() {
                 _model.set('skin-loading', false);
             });
-            loader.addEventListener(events.ERROR, function() {
-                _model.set('skin', 'seven'); // fall back to seven skin
+            loader.addEventListener(ERROR, function() {
                 _model.set('skin-loading', false);
             });
 
@@ -210,7 +182,6 @@ define([
         // Control elements are hidden by the loading flag until it is ready
         resolve();
     }
-
 
     function _setupView(resolve, _model, _api, _view) {
         _model.setAutoStart();

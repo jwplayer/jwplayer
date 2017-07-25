@@ -1,20 +1,21 @@
+import { CLICK } from 'events/events';
+
 define([
     'utils/ui',
-    'events/events',
     'utils/backbone.events',
     'utils/underscore'
-], function(UI, events, Events, _) {
+], function(UI, Events, _) {
 
     return class ClickHandler {
-        constructor(model, element) {
+        constructor(model, element, options) {
             _.extend(this, Events);
 
             this.revertAlternateClickHandlers();
             this.domElement = element;
             this.model = model;
 
-            const options = { enableDoubleTap: true, useMove: true };
-            this.ui = new UI(element, _.extend(options, options)).on({
+            const defaultOptions = { enableDoubleTap: true, useMove: true };
+            this.ui = new UI(element, _.extend(defaultOptions, options)).on({
                 'click tap': this.clickHandler,
                 'doubleClick doubleTap': function() {
                     if (this.alternateDoubleClickHandler) {
@@ -51,7 +52,7 @@ define([
                 this.alternateClickHandler(evt);
                 return;
             }
-            this.trigger((evt.type === events.touchEvents.CLICK) ? 'click' : 'tap');
+            this.trigger((evt.type === CLICK) ? 'click' : 'tap');
         }
 
         element() {

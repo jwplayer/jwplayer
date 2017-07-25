@@ -15,7 +15,7 @@ const Defaults = {
     playbackRateControls: false,
     repeat: false,
     castAvailable: false,
-    skin: 'seven',
+    skin: '',
     stretching: 'uniform',
     mute: false,
     volume: 90,
@@ -97,14 +97,9 @@ const Config = function(options, persisted) {
     if (_.isObject(config.skin)) {
         config.skinUrl = config.skin.url;
         config.skinColorInactive = config.skin.inactive; // default icon color
-        config.skinColorActive = config.skin.active;  // icon hover, on, slider color
+        config.skinColorActive = config.skin.active; // icon hover, on, slider color
         config.skinColorBackground = config.skin.background; // control elements background
         config.skin = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
-    }
-
-    if (_.isString(config.skin) && config.skin.indexOf('.xml') > 0) {
-        console.warn('JW Player does not support XML skins, please update your config');
-        config.skin = config.skin.replace('.xml', '');
     }
 
     let rateControls = config.playbackRateControls;

@@ -7,12 +7,11 @@ import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-anima
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
-
+import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
+ DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
 let ControlsModule;
 
 define([
-    'events/events',
-    'events/states',
     'utils/backbone.events',
     'utils/helpers',
     'utils/underscore',
@@ -23,7 +22,7 @@ define([
     'view/logo',
     'view/preview',
     'view/title',
-], function(events, states, Events, utils, _, requestFullscreenHelper, flagNoFocus,
+], function(Events, utils, _, requestFullscreenHelper, flagNoFocus,
             ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
 
     const _styles = utils.style;
@@ -150,14 +149,14 @@ define([
             if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
                 _lastWidth = containerWidth;
                 _lastHeight = containerHeight;
-                _this.trigger(events.JWPLAYER_RESIZE, {
+                _this.trigger(RESIZE, {
                     width: containerWidth,
                     height: containerHeight
                 });
                 const breakpoint = getBreakpoint(containerWidth);
                 if (_breakpoint !== breakpoint) {
                     _breakpoint = breakpoint;
-                    _this.trigger(events.JWPLAYER_BREAKPOINT, {
+                    _this.trigger(BREAKPOINT, {
                         breakpoint: _breakpoint
                     });
                 }
@@ -312,7 +311,7 @@ define([
             _logo = new Logo(_model);
             _logo.setup();
             _logo.setContainer(_playerElement);
-            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
+            _logo.on(LOGO_CLICK, _logoClickHandler);
 
             // captions rendering
             _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
@@ -429,7 +428,7 @@ define([
                             addControls();
                         })
                         .catch(function (reason) {
-                            _this.trigger('error', {
+                            _this.trigger(ERROR, {
                                 message: 'Controls failed to load',
                                 reason: reason
                             });
@@ -471,22 +470,22 @@ define([
             const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });
             clickHandler.on({
                 click: () => {
-                    _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    _this.trigger(DISPLAY_CLICK);
                     if (_model.get('controls')) {
                         api.play(reasonInteraction());
                     }
                 },
                 tap: () => {
-                    _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    _this.trigger(DISPLAY_CLICK);
                     const state = model.get('state');
                     const controls = _model.get('controls');
 
                     if (controls &&
-                        ((state === states.IDLE || state === states.COMPLETE) ||
-                        (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
+                        ((state === STATE_IDLE || state === STATE_COMPLETE) ||
+                        (_instreamModel && _instreamModel.get('state') === STATE_PAUSED))) {
                         api.play(reasonInteraction());
                     }
-                    if (controls && state === states.PAUSED) {
+                    if (controls && state === STATE_PAUSED) {
                         // Toggle visibility of the controls when tapping the media
                         // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
                         if (_instreamModel ||
@@ -574,7 +573,7 @@ define([
             }
 
             controls.on('userActive userInactive', function() {
-                if (_playerState === states.PLAYING || _playerState === states.BUFFERING) {
+                if (_playerState === STATE_PLAYING || _playerState === STATE_BUFFERING) {
                     _captionsRenderer.renderCues(true);
                 }
             });
@@ -798,21 +797,21 @@ define([
         }
 
         function _stateUpdate(state) {
-            if (_model.get('controls') && state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
+            if (_model.get('controls') && state !== STATE_PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
             }
             utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
             // Update captions renderer
             switch (state) {
-                case states.IDLE:
-                case states.ERROR:
-                case states.COMPLETE:
+                case STATE_IDLE:
+                case STATE_ERROR:
+                case STATE_COMPLETE:
                     _captionsRenderer.hide();
                     break;
                 default:
                     _captionsRenderer.show();
-                    if (state === states.PAUSED && _controls && !_controls.showing) {
+                    if (state === STATE_PAUSED && _controls && !_controls.showing) {
                         _captionsRenderer.renderCues(true);
                     }
                     break;

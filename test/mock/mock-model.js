@@ -50,7 +50,6 @@ define([
                 mobilecontrols: false,
                 repeat: false,
                 castAvailable: false,
-                skin: 'seven',
                 stretching: 'uniform',
                 mute: false,
                 volume: 90,

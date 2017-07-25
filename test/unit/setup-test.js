@@ -1,8 +1,10 @@
+import Api from 'api/api';
+
 define([
     'test/underscore',
     'jquery',
     'api/api',
-], function (_, $, Api) {
+], function (_, $) {
 
     describe('Setup', function() {
 

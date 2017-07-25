@@ -27,7 +27,7 @@ define([
         _source.file = strings.trim('' + _source.file);
 
         // regex to check if mimetype is given
-        var mimetypeRegEx = /^[^\/]+\/(?:x-)?([^\/]+)$/;
+        var mimetypeRegEx = /^[^/]+\/(?:x-)?([^/]+)$/;
 
         if (mimetypeRegEx.test(_source.type)) {
             // if type is given as a mimetype
