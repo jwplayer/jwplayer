@@ -32,7 +32,6 @@ define([
             }
 
             this.model.on('change:logoWidth', this.update, this);
-            this.model.on('change:dock', this.update, this);
         },
 
         update: function(model) {
@@ -40,8 +39,6 @@ define([
                 paddingLeft: 0,
                 paddingRight: 0
             };
-            var controls = model.get('controls');
-            var dockButtons = model.get('dock');
             var logo = model.get('logo');
             if (logo) {
                 // Only use Numeric or pixel ("Npx") margin values
@@ -52,10 +49,6 @@ define([
                 } else if (logo.position === 'top-right') {
                     titleStyle.paddingRight = padding;
                 }
-            }
-            if (controls && dockButtons && dockButtons.length) {
-                var dockWidthGuess = 56 * dockButtons.length;
-                titleStyle.paddingRight = Math.max(titleStyle.paddingRight, dockWidthGuess);
             }
             utils.style(this.el, titleStyle);
         },

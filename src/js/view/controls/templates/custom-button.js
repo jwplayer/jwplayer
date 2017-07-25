@@ -1,8 +1,7 @@
 export default (buttonClass = '', buttonId = '', image, ariaText) => {
 
-    // TODO: Deprecate jw-dock-image
     const style = image ? `style="background-image: url(${image})"` : '';
-    const imageClass = image ? 'jw-button-image' : 'jw-dock-image';
+    const imageClass = image ? 'jw-button-image' : 'jw-button-image';
 
     const aria = ariaText ? `aria-label="${ariaText}" role="button" tabindex="0"` : '';
 

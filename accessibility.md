@@ -103,7 +103,7 @@ It is due to this CSS rule:
 
 ```
 .jwplayer.jw-flag-user-inactive.jw-state-playing .jw-controlbar, 
-.jwplayer.jw-flag-user-inactive.jw-state-playing .jw-dock {
+.jwplayer.jw-flag-user-inactive.jw-state-playing {
     display: none;
 }
 ```
