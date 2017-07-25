@@ -791,14 +791,25 @@ define([
                 }, []);
 
                 if (!added) {
-                    customButtons.unshift(newButton);
+                    if (newButton.id === 'related') {
+                        customButtons.push(newButton);
+                    } else {
+                        customButtons.unshift(newButton);
+                    }
                 }
 
                 _model.set('customButtons', customButtons);
             };
             this.removeButton = function(id) {
-                let customButtons = _model.get('customButtons');
-                customButtons = _.filter(customButtons, (button) => button.id !== id);
+                const pluginIds = ['cardboard', 'share', 'related'];
+                if (_.contains(pluginIds, id)) {
+                    return;
+                }
+
+                const customButtons = _.filter(
+                    _model.get('customButtons'),
+                    (button) => button.id !== id
+                );
 
                 _model.set('customButtons', customButtons);
             };
