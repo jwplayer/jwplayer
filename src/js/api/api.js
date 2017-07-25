@@ -832,7 +832,7 @@ export default function Api(element) {
             return this;
         },
 
-        /** Adds or updates a button in the player's dock. The button is only displayed when controls are active.
+        /** Adds or updates a button in the player's control bar. The button is only displayed when controls are active.
          * @param {string} img - An image URL to use as the button icon.
          * @param {string} tooltip - A tooltip label to display when the button is hovered.
          * @param {function} callback - A callback to invoke when the button is clicked.
@@ -846,7 +846,7 @@ export default function Api(element) {
         },
 
         /**
-         * Removes a button from the player's dock.
+         * Removes a button from the player's control bar.
          * @param {string} id - The id of the button to remove.
          * @returns {Api}
          */
