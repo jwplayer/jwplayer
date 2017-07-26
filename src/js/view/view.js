@@ -33,14 +33,14 @@ define([
     let stylesInjected = false;
 
     function View(_api, _model) {
-        const _this = _.extend(this, Events, {
+        const _this = Object.assign(this, Events, {
             isSetup: false,
             api: _api,
             model: _model
         });
 
         // init/reset view model properties
-        _.extend(_model.attributes, {
+        Object.assign(_model.attributes, {
             containerWidth: undefined,
             containerHeight: undefined,
             mediaContainer: undefined,
@@ -86,6 +86,13 @@ define([
 
         let _breakpoint = null;
         let _controls;
+
+        // Fetch the ControlsModule now so we can  call `addControls()` synchronously on `init`
+        if (_model.get('controls')) {
+            ControlsLoader.load().then(Controls => {
+                ControlsModule = Controls;
+            });
+        }
 
         function reasonInteraction() {
             return { reason: 'interaction' };
@@ -841,6 +848,10 @@ define([
                 _instreamModel.off(null, null, this);
                 _instreamModel = null;
             }
+            if (!displayClickHandler) {
+                // view was destroyed
+                return;
+            }
             this.setAltText('');
             utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
             _model.set('hideAdsControls', false);
@@ -933,10 +944,6 @@ define([
             utils.clearCss(_model.get('id'));
         };
     }
-
-    View.prototype.setControlsModule = function(Controls) {
-        ControlsModule = Controls;
-    };
 
     return View;
 });

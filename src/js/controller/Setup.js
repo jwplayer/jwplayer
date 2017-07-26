@@ -9,7 +9,7 @@ const Setup = function(_api, _model, _view) {
     this.start = function () {
         return new Promise((resolve, reject) => {
             _setupFailureTimeout = setTimeout(() => {
-                reject('Setup Timeout Error: Setup took longer than ' + SETUP_TIMEOUT_SECONDS + ' seconds to complete.');
+                reject(`Setup Timeout Error: Setup took longer than ${SETUP_TIMEOUT_SECONDS} seconds to complete.`);
             }, SETUP_TIMEOUT_SECONDS * 1000);
             return startSetup(_api, _model, _view).then(resolve).catch(reject);
         });

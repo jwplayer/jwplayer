@@ -40,11 +40,7 @@ function coreFactory(api, element) {
  */
 function resetPlayer(api, core) {
     api.off();
-    core.off();
-    // so players can be removed before loading completes
-    if (core.playerDestroy) {
-        core.playerDestroy();
-    }
+    core.playerDestroy();
 }
 
 /**
@@ -1011,11 +1007,11 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * Plays an ad. Implemented by ad plugins.
      * @param {string|Array} adBreak - The ad tag or waterfall array.
      */
-    playAd(/* eslint-disable no-unused-vars */adBreak/* eslint-enable no-unused-vars */) {},
+    playAd(adBreak) {}, // eslint-disable-line
 
     /**
      * Pauses or toggles ad playback. Implemented by ad plugins.
      * @param {boolean} toggle - Specifies whether ad playback should be paused or resumed.
      */
-    pauseAd(/* eslint-disable no-unused-vars */toggle/* eslint-enable no-unused-vars */) {},
+    pauseAd(toggle) {}, // eslint-disable-line
 });

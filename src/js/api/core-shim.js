@@ -15,9 +15,8 @@ Object.assign(CoreModel.prototype, SimpleModel);
 
 const CoreShim = function(originalContainer) {
     this._events = {};
-    this.controller = null;
-    this.model = new CoreModel();
-    this.model._qoeItem = new Timer();
+    this._model = new CoreModel();
+    this._model._qoeItem = new Timer();
     this.originalContainer = originalContainer;
     this.apiQueue = new ApiQueueDecorator(this, [
         // These commands require a provider instance to be available
@@ -58,7 +57,7 @@ Object.assign(CoreShim.prototype, {
     off: Events.off,
     trigger: Events.trigger,
     init(options, api) {
-        const model = this.model;
+        const model = this._model;
         const storage = new Storage('jwplayer', [
             'volume',
             'mute',
@@ -86,14 +85,13 @@ Object.assign(CoreShim.prototype, {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
             }
-            const config = this.model.clone();
+            const config = this._model.clone();
             // copy queued commands
             const commandQueue = this.apiQueue.queue.slice(0);
             this.apiQueue.destroy();
             // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
             Object.assign(this, CoreMixin.prototype);
             this.setup(config, api, this.originalContainer, this._events, commandQueue);
-            // TODO: _view.setControlsModule(Controls);
             storage.track(this._model);
         }).catch((error) => {
             this.trigger(SETUP_ERROR, {
@@ -105,11 +103,11 @@ Object.assign(CoreShim.prototype, {
         if (this.apiQueue) {
             this.apiQueue.destroy();
         }
+        this.off();
         this._events =
-            this.apiQueue =
+            this._model =
             this.originalContainer =
-            this.model =
-            this.controller = null;
+            this.apiQueue = null;
     },
     getContainer() {
         return this.originalContainer;
@@ -117,13 +115,13 @@ Object.assign(CoreShim.prototype, {
 
     // These methods read from the model
     get(property) {
-        return this.model.get(property);
+        return this._model.get(property);
     },
     getItemQoe() {
-        return this.model._qoeItem;
+        return this._model._qoeItem;
     },
     getConfig() {
-        return Object.assign({}, this.model.attributes);
+        return Object.assign({}, this._model.attributes);
     },
     getCurrentCaptions() {
         return this.get('captionsIndex');

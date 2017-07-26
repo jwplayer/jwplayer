@@ -12,11 +12,11 @@ export function selectBundle(model) {
     const polyfills = requiresPolyfills();
     const html5Provider = requiresProvider(model, 'html5');
 
-    if (controls && html5Provider) {
-        return loadControlsHtml5Bundle();
-    }
     if (controls && polyfills && html5Provider) {
         return loadControlsPolyfillHtml5Bundle();
+    }
+    if (controls && html5Provider) {
+        return loadControlsHtml5Bundle();
     }
     if (controls && polyfills) {
         return loadControlsPolyfillBundle();

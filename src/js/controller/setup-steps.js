@@ -1,8 +1,6 @@
 import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR } from 'events/events';
 import Promise from 'polyfills/promise';
-
-// These are AMD modules
 import plugins from 'plugins/plugins';
 import PlaylistLoader from 'playlist/loader';
 import ScriptLoader from 'utils/scriptloader';
@@ -32,8 +30,10 @@ function initPlugins(_model, _api, _view) {
         setupView(_model, _view),
         loadPlugins(_model)
     ]).then(() => {
-        // TODO: check destroyed
         delete window.jwplayerPluginJsonp;
+        if (destroyed(_model)) {
+            return;
+        }
         pluginLoader.setupPlugins(_api, _model);
     });
 }
@@ -58,7 +58,9 @@ function loadPlaylist(_model) {
 
 function filterPlaylist(_model) {
     return loadPlaylist(_model).then((playlist, feedData) => {
-        // TODO: check destroyed
+        if (destroyed(_model)) {
+            return;
+        }
         // `setPlaylist` performs filtering
         setPlaylist(_model, playlist, feedData);
         loadProvidersForPlaylist(_model);
@@ -91,7 +93,9 @@ function loadSkin(_model) {
 
 function setupView(_model, _view) {
     return loadSkin(_model).then(() => {
-        // TODO: check destroyed
+        if (destroyed(_model)) {
+            return;
+        }
         _model.setAutoStart();
         _view.setup();
     });
@@ -100,7 +104,9 @@ function setupView(_model, _view) {
 
 function setPlaylistItem(_model) {
     return filterPlaylist(_model).then(() => {
-        // TODO: check destroyed
+        if (destroyed(_model)) {
+            return;
+        }
         return new Promise(resolve => {
             _model.once('itemReady', resolve);
             _model.setItemIndex(_model.get('item'));
@@ -108,7 +114,14 @@ function setPlaylistItem(_model) {
     });
 }
 
+function destroyed(_model) {
+    return _model.attributes._destroyed;
+}
+
 const startSetup = function(_api, _model, _view) {
+    if (destroyed(_model)) {
+        return Promise.reject();
+    }
     return Promise.all([
         setPlaylistItem(_model, _api, _view),
         // filterPlaylist -->

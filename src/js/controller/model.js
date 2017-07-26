@@ -271,6 +271,7 @@ define([
         };
 
         this.destroy = function() {
+            this.attributes._destroyed = true;
             this.off();
             if (_provider) {
                 _provider.off(null, null, this);

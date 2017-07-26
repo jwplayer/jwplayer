@@ -194,6 +194,10 @@ define([
             }, this);
 
             function _playerReady() {
+                if (_setup === null) {
+                    // Player was destroyed during setup
+                    return;
+                }
                 _setup = null;
 
                 _view.on('all', _triggerAfterReady, _this);
@@ -814,6 +818,7 @@ define([
             };
 
             this.playerDestroy = function () {
+                this.off();
                 this.stop();
                 this.showView(this.originalContainer);
 
@@ -871,8 +876,12 @@ define([
             // Add commands from CoreLoader to queue
             apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
-            _setup.start().then(_playerReady).catch((err) => {
-                _this.setupError(err);
+            _setup.start().then(_playerReady).catch((error) => {
+                // Ignore errors caused by player being destroyed
+                if (_model.attributes._destroyed) {
+                    return;
+                }
+                _this.setupError(error);
             });
         },
         get(property) {
@@ -922,9 +931,8 @@ define([
 
             this.showView(errorElement);
 
-            const _this = this;
-            _.defer(function() {
-                _this.trigger(SETUP_ERROR, {
+            setTimeout(() => {
+                this.trigger(SETUP_ERROR, {
                     message: message
                 });
             });
