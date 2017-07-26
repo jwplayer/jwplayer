@@ -1,6 +1,7 @@
 import { Browser, OS } from 'environment/environment';
-import SimpleModel from '../model/simplemodel';
-import { playerDefaults } from '../model/player-model';
+import SimpleModel from 'model/simplemodel';
+import { INITIAL_PLAYER_STATE } from 'model/player-model';
+import Providers from 'providers/providers';
 import initQoe from 'controller/qoe';
 import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, MEDIA_PLAY_ATTEMPT, MEDIA_TYPE, MEDIA_BUFFER,
     MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
@@ -8,10 +9,9 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, MEDIA_PLAY_ATT
 
 define([
     'utils/helpers',
-    'providers/providers',
     'utils/underscore',
     'utils/backbone.events',
-], function(utils, Providers, _, Events) {
+], function(utils, _, Events) {
 
     // Represents the state of the player
     var Model = function() {
@@ -30,7 +30,7 @@ define([
 
         this.setup = function(config) {
 
-            Object.assign(this.attributes, config, playerDefaults);
+            Object.assign(this.attributes, config, INITIAL_PLAYER_STATE);
 
             this.updateProviders();
 

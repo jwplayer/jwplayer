@@ -1,5 +1,6 @@
 import setConfig from 'api/set-config';
 import instances from 'api/players';
+import Playlist, { filterPlaylist } from 'playlist/playlist';
 import { OS } from 'environment/environment';
 import ApiQueueDecorator from 'api/api-queue';
 import { streamType } from 'providers/utils/stream-type';
@@ -15,7 +16,6 @@ define([
     'utils/underscore',
     'controller/captions',
     'controller/model',
-    'playlist/playlist',
     'playlist/loader',
     'utils/helpers',
     'view/view',
@@ -23,7 +23,7 @@ define([
     'events/change-state-event',
     'view/error',
     'controller/events-middleware',
-], function(InstreamAdapter, _, Captions, Model, Playlist, PlaylistLoader, utils, View, Events, changeStateEvent,
+], function(InstreamAdapter, _, Captions, Model, PlaylistLoader, utils, View, Events, changeStateEvent,
     viewError, eventsMiddleware) {
 
     // The model stores a different state than the provider
@@ -299,18 +299,6 @@ define([
                 });
             };
 
-            function _loadProvidersForPlaylist(playlist) {
-                const providersManager = _model.getProviders();
-                const providersNeeded = providersManager.required(playlist);
-                return providersManager.load(providersNeeded)
-                    .then(function() {
-                        if (!_this.getProvider()) {
-                            _model.setProvider(_model.get('playlistItem'));
-                            // provider is not available under "itemReady" event
-                        }
-                    });
-            }
-
             function _load(item, feedData) {
                 if (_model.get('state') === STATE_ERROR) {
                     _model.set('state', STATE_IDLE);
@@ -519,11 +507,11 @@ define([
                 _model.set('feedData', feedData);
 
                 let playlist = Playlist(array);
-                playlist = Playlist.filterPlaylist(playlist, _model, feedData);
+                playlist = filterPlaylist(playlist, _model, feedData);
 
                 _model.set('playlist', playlist);
 
-                if (!_.isArray(playlist) || playlist.length === 0) {
+                if (!Array.isArray(playlist) || playlist.length === 0) {
                     _this.triggerError({
                         message: 'Error loading playlist: No playable sources found'
                     });
@@ -533,6 +521,18 @@ define([
                 _loadProvidersForPlaylist(playlist);
 
                 return true;
+            }
+
+            function _loadProvidersForPlaylist(playlist) {
+                const providersManager = _model.getProviders();
+                const providersNeeded = providersManager.required(playlist);
+                return providersManager.load(providersNeeded)
+                    .then(function() {
+                        if (!_this.getProvider()) {
+                            _model.setProvider(_model.get('playlistItem'));
+                            // provider is not available under "itemReady" event
+                        }
+                    });
             }
 
             function _setItem(index) {

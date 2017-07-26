@@ -1,7 +1,8 @@
+import item from 'playlist/item';
+
 define([
-    'test/underscore',
-    'playlist/item'
-], function (_, item) {
+    'test/underscore'
+], function (_) {
 
     describe('playlist item', function() {
 

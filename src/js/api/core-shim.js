@@ -1,28 +1,17 @@
-import ApiQueueDecorator from './api-queue';
-import Config from './config';
-import Storage from '../model/storage';
-import SimpleModel from '../model/simplemodel';
-import { playerDefaults } from '../model/player-model';
+import ApiQueueDecorator from 'api/api-queue';
+import Config from 'api/config';
 import Timer from 'api/timer';
-import Events from 'utils/backbone.events';
+import Storage from 'model/storage';
+import SimpleModel from 'model/simplemodel';
+import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import { SETUP_ERROR } from 'events/events';
-
-let controllerPromise = null;
-
-function loadController() {
-    if (!controllerPromise) {
-        controllerPromise = require.ensure(['controller/controller'], function (require) {
-            return require('controller/controller');
-        }, 'jwplayer.core');
-    }
-    return controllerPromise;
-}
+import Events from 'utils/backbone.events';
+import loadCoreBundle from 'api/core-loader';
 
 const CoreModel = function() {};
 Object.assign(CoreModel.prototype, SimpleModel);
 
 const CoreShim = function(originalContainer) {
-    loadController();
     this._events = {};
     this.controller = null;
     this.model = new CoreModel();
@@ -67,7 +56,7 @@ Object.assign(CoreShim.prototype, {
     off: Events.off,
     trigger: Events.trigger,
     init(options, api) {
-
+        const model = this.model;
         const storage = new Storage('jwplayer', [
             'volume',
             'mute',
@@ -75,10 +64,10 @@ Object.assign(CoreShim.prototype, {
             'qualityLabel'
         ]);
         const persisted = storage && storage.getAllItems();
-        this.model.attributes = this.model.attributes || {};
-        Object.assign(this.model.attributes, new Config(options, persisted), playerDefaults);
+        model.attributes = model.attributes || {};
+        Object.assign(model.attributes, new Config(options, persisted), INITIAL_PLAYER_STATE);
 
-        loadController().then(CoreMixin => {
+        loadCoreBundle(model.clone()).then(CoreMixin => {
             if (!this.apiQueue) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
@@ -90,6 +79,7 @@ Object.assign(CoreShim.prototype, {
             // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
             Object.assign(this, CoreMixin.prototype);
             this.setup(config, api, this.originalContainer, this._events, commandQueue);
+            // TODO: _view.setControlsModule(Controls);
             storage.track(this._model);
         }).catch((error) => {
             this.trigger(SETUP_ERROR, {

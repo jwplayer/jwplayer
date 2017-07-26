@@ -1,7 +1,7 @@
 define([
     'utils/underscore',
-    'utils/helpers',
-], function(_, utils) {
+    'utils/css',
+], function(_, cssUtils) {
 
     var Title = function(_model) {
         this.model = _model;
@@ -11,10 +11,10 @@ define([
         // This is normally shown/hidden by states
         //   these are only used for when no title exists
         hide: function() {
-            this.el.style.display = 'none';
+            cssUtils.style(this.el, { display: 'none' });
         },
         show: function() {
-            this.el.style.display = '';
+            cssUtils.style(this.el, { display: '' });
         },
 
         setup: function(titleEl) {
@@ -24,10 +24,6 @@ define([
             var arr = this.el.getElementsByTagName('div');
             this.title = arr[0];
             this.description = arr[1];
-
-            if (this.model.get('playlistItem')) {
-                this.playlistItem(this.model, this.model.get('playlistItem'));
-            }
 
             this.model.on('change:logoWidth', this.update, this);
             this.model.change('playlistItem', this.playlistItem, this);
@@ -49,10 +45,13 @@ define([
                     titleStyle.paddingRight = padding;
                 }
             }
-            utils.style(this.el, titleStyle);
+            cssUtils.style(this.el, titleStyle);
         },
 
         playlistItem: function(model, item) {
+            if (!item) {
+                return;
+            }
             if (model.get('displaytitle') || model.get('displaydescription')) {
                 var title = '';
                 var description = '';

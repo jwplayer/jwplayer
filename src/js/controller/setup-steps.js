@@ -1,4 +1,3 @@
-import * as ControlsLoader from 'controller/controls-loader';
 import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR } from 'events/events';
 import Promise from 'polyfills/promise';
 
@@ -11,17 +10,6 @@ import _ from 'utils/underscore';
 const resolved = Promise.resolve();
 
 let pluginLoader;
-
-function loadIntersectionObserverPolyfill() {
-    if ('IntersectionObserver' in window &&
-        'IntersectionObserverEntry' in window &&
-        'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-        return resolved;
-    }
-    return require.ensure(['intersection-observer'], function (require) {
-        require('intersection-observer');
-    }, 'polyfills.intersection-observer');
-}
 
 function loadPlugins(_model) {
     window.jwplayerPluginJsonp = plugins.registerPlugin;
@@ -112,10 +100,7 @@ function loadSkin(_model) {
 }
 
 function setupView(_model, _view) {
-    return Promise.all([
-        loadSkin(_model),
-        loadIntersectionObserverPolyfill()
-    ]).then(() => {
+    return loadSkin(_model).then(() => {
         // TODO: check destroyed
         _model.setAutoStart();
         _view.setup();
@@ -133,20 +118,6 @@ function setPlaylistItem(_model, _api, _view, _setPlaylist) {
     });
 }
 
-function loadControls(_model, _view) {
-    if (_model.get('controls')) {
-        return ControlsLoader.load()
-            .then(function (Controls) {
-                // TODO: check destroyed
-                _view.setControlsModule(Controls);
-            })
-            .catch(function (err) {
-                throw new Error(`Failed to load controls: ${err.message}`);
-            });
-    }
-    return resolved;
-}
-
 const startSetup = function(_api, _model, _view, _setPlaylist) {
     return Promise.all([
         setPlaylistItem(_model, _api, _view, _setPlaylist),
@@ -155,9 +126,7 @@ const startSetup = function(_api, _model, _view, _setPlaylist) {
         initPlugins(_model, _api, _view),
         // loadPlugins,
         // setupView -->
-        // -- loadSkin,
-        // -- loadIntersectionObserverPolyfill
-        loadControls(_model, _view)
+        // -- loadSkin
     ]);
 };
 
