@@ -12,6 +12,4 @@ describe('CoreShim', function() {
         expect(core).to.have.property('on').which.is.a('function');
         expect(core).to.have.property('off').which.is.a('function');
     });
-
-
 });
