@@ -1,6 +1,6 @@
 import * as Environment from 'environment/environment';
 import instances from './players';
-import CoreLoader from './core-loader';
+import Core from './core-shim';
 import { version } from '../version';
 import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
 import Timer from 'api/timer';
@@ -19,7 +19,7 @@ let instancesCreated = 0;
  * @param {HTMLElement} element
  */
 function coreFactory(api, element) {
-    const core = new CoreLoader(element);
+    const core = new Core(element);
 
     // capture the ready event and add setup time to it
     core.on(READY, (event) => {
@@ -36,7 +36,7 @@ function coreFactory(api, element) {
 /**
  * Detaches Api event listeners and destroys the controller.
  * @param {Api} api
- * @param {CoreLoader} core
+ * @param {Core} core
  */
 function resetPlayer(api, core) {
     api.off();

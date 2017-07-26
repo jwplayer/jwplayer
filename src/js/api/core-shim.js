@@ -5,6 +5,7 @@ import SimpleModel from '../model/simplemodel';
 import { playerDefaults } from '../model/player-model';
 import Timer from 'api/timer';
 import Events from 'utils/backbone.events';
+import { SETUP_ERROR } from 'events/events';
 
 let controllerPromise = null;
 
@@ -20,7 +21,7 @@ function loadController() {
 const CoreModel = function() {};
 Object.assign(CoreModel.prototype, SimpleModel);
 
-const CoreLoader = function CoreSetup(originalContainer) {
+const CoreShim = function(originalContainer) {
     loadController();
     this._events = {};
     this.controller = null;
@@ -60,7 +61,7 @@ const CoreLoader = function CoreSetup(originalContainer) {
     ], () => true);
 };
 
-Object.assign(CoreLoader.prototype, {
+Object.assign(CoreShim.prototype, {
     on: Events.on,
     once: Events.once,
     off: Events.off,
@@ -90,11 +91,13 @@ Object.assign(CoreLoader.prototype, {
             Object.assign(this, CoreMixin.prototype);
             this.setup(config, api, this.originalContainer, this._events, commandQueue);
             storage.track(this._model);
+        }).catch((error) => {
+            this.trigger(SETUP_ERROR, {
+                message: error.message
+            });
         });
-        // TODO: catch loadController() error
     },
     playerDestroy() {
-        // TODO: cancel async setup
         if (this.apiQueue) {
             this.apiQueue.destroy();
         }
@@ -184,4 +187,4 @@ Object.assign(CoreLoader.prototype, {
     }
 });
 
-export default CoreLoader;
+export default CoreShim;
