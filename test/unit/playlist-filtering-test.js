@@ -37,9 +37,9 @@ function testSource(sourceName, desiredType, isAndroidHls) {
     expect(sourcesMatch(filtered)).to.be.true;
 }
 
-describe('playlist.filterSources', () => {
+describe('playlist.filterSources', function() {
 
-    it('should filter sources when androidhls is enabled', () => {
+    it('should filter sources when androidhls is enabled', function() {
         testSource('flv_mp4', 'flv', true);
         testSource('mp4_flv', 'mp4', true);
         testSource('aac_mp4', 'aac', true);
@@ -49,7 +49,7 @@ describe('playlist.filterSources', () => {
         testSource('mixed', 'mp4', true);
     });
 
-    it('should filter sources when androidhls is disabled', () => {
+    it('should filter sources when androidhls is disabled', function() {
         testSource('flv_mp4', 'flv', false);
         testSource('mp4_flv', 'mp4', false);
         testSource('aac_mp4', 'aac', false);
@@ -60,9 +60,9 @@ describe('playlist.filterSources', () => {
     });
 });
 
-describe('playlist.filterPlaylist', () => {
+describe('playlist.filterPlaylist', function() {
 
-    it('filters playlist items', () => {
+    it('filters playlist items', function() {
         let pl;
         const androidhls = true;
         const model = {
@@ -110,7 +110,7 @@ describe('playlist.filterPlaylist', () => {
     });
 
 
-    it('it prioritizes withCredentials in the order of source, playlist, then global', () => {
+    it('it prioritizes withCredentials in the order of source, playlist, then global', function() {
         const withCredentialsPlaylist = [{
             // Uses source
             sources: [{
@@ -155,7 +155,7 @@ describe('playlist.filterPlaylist', () => {
     });
 
 
-    it('it does not put withCredentials on the playlist if undefined', () => {
+    it('it does not put withCredentials on the playlist if undefined', function() {
         const undefinedCredentialsPlaylist = [{
             sources: [{
                 file: 'foo.mp4'

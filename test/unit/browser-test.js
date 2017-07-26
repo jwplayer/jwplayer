@@ -1,8 +1,8 @@
 import browser from 'utils/browser';
 
-describe('browser', () => {
+describe('browser', function() {
 
-    it('browser checks', () => {
+    it('browser checks', function() {
         assert.equal(typeof browser.isFF(), 'boolean');
         assert.equal(typeof browser.isIETrident(), 'boolean');
         assert.equal(typeof browser.isMSIE(), 'boolean');
@@ -15,7 +15,7 @@ describe('browser', () => {
         assert.equal(typeof browser.isMobile(), 'boolean');
     });
 
-    it('browser.flashVersion test', () => {
+    it('browser.flashVersion test', function() {
         var flashVersion = browser.flashVersion();
 
         assert.equal(typeof flashVersion, 'number', 'Flash version is ' + flashVersion);

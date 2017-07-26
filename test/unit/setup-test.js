@@ -2,7 +2,7 @@ import Api from 'api/api';
 import _ from 'test/underscore';
 import $ from 'jquery';
 
-describe('Setup', () => {
+describe('Setup', function() {
 
     it('fails when playlist is not an array', function (done) {
 
@@ -33,7 +33,7 @@ describe('Setup', () => {
             playlist: []
         };
 
-        testSetup(done, model, () => {
+        testSetup(done, model, function() {
             assert.isOk(false, 'setup should not succeed');
         }, function (message) {
             assert.isOk(message, 'setup failed with message: ' + message);
@@ -47,7 +47,7 @@ describe('Setup', () => {
         };
 
         var playlist;
-        testSetup(done, model, () => {
+        testSetup(done, model, function() {
             // 'this' is the api instance
             playlist = this.getPlaylist();
             assert.deepEqual(playlist, [], 'playlist is an empty array');
@@ -65,7 +65,7 @@ describe('Setup', () => {
             playlist: [{ sources: [{ file: 'http://playertest.longtailvideo.com/mp4.mp4' }] }]
         };
 
-        testSetup(done, model, () => {
+        testSetup(done, model, function() {
             assert.isOk(true, 'setup ok');
         }, function (message) {
             assert.isOk(false, 'setup failed with message: ' + message);
@@ -81,7 +81,7 @@ describe('Setup', () => {
         };
         var optionsOrig = _.extend({}, options);
 
-        testSetup(done, options, () => {
+        testSetup(done, options, function() {
             assert.isOk(true, 'setup ok');
             assert.notEqual(options, optionsOrig, 'config was modified');
         }, function (message) {
@@ -96,7 +96,7 @@ describe('Setup', () => {
         var api = new Api(container);
         api.setup(model);
 
-        api.on('ready', () => {
+        api.on('ready', function() {
             clearTimeout(timeout);
             success.call(api);
             try {

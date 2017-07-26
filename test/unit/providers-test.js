@@ -18,9 +18,9 @@ const getName = function getName(provider) {
     return provider.toString().match(/^function\s*([^\s(]+)/)[1];
 };
 
-describe('Providers', () => {
+describe('Providers', function() {
 
-    it('should be prioritized', () => {
+    it('should be prioritized', function() {
         const providerMap = ProvidersSupported.reduce(function(providers, provider, index) {
             providers[getName(provider)] = index;
             return providers;
@@ -29,7 +29,7 @@ describe('Providers', () => {
         expect(providerMap.html5).to.be.below(providerMap.flash);
     });
 
-    it('should choose html5 by default', () => {
+    it('should choose html5 by default', function() {
         const htmlSources = {
             mov: { file: 'http://playertest.longtailvideo.com/bunny.mov' },
             mp4: { file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4' },
@@ -52,7 +52,7 @@ describe('Providers', () => {
         });
     });
 
-    it('should choose flash for flv, rtmp and smil', () => {
+    it('should choose flash for flv, rtmp and smil', function() {
         const flashSources = {
             flv: { file: 'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv' },
             rtmp: { file: 'rtmp://dev.wowza.longtailvideo.com/vod/_definst_/sintel/640.mp4' },
@@ -67,7 +67,7 @@ describe('Providers', () => {
         });
     });
 
-    it('should not choose a provider for hls and dash streams', () => {
+    it('should not choose a provider for hls and dash streams', function() {
         const unsupportedSources = {
             hls: {
                 file: 'http://playertest.longtailvideo.com/adaptive/bipbop/bipbopall.hls',
@@ -94,7 +94,7 @@ describe('Providers', () => {
         });
     });
 
-    it('should choose youtube for youtube sources', () => {
+    it('should choose youtube for youtube sources', function() {
         const youtubeSource = { file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4' };
         const providers = new Providers();
         let provider = providers.choose(Source(youtubeSource));

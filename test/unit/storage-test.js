@@ -2,12 +2,12 @@ import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
 import _ from 'test/underscore';
 
-describe('Storage', () => {
+describe('Storage', function() {
 
     function MockModel() {}
     _.extend(MockModel.prototype, SimpleModel);
 
-    it('provides persistent storage', () => {
+    it('provides persistent storage', function() {
         const model = new MockModel();
         const storage = new Storage('namespace', [
             'volume',

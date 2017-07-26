@@ -5,9 +5,9 @@ import VTTCue from 'parsers/captions/vttcue';
 var captionsRenderer = new CaptionsRenderer(new Model());
 captionsRenderer.setup();
 
-describe('CaptionsRenderer.getCurrentCues', () => {
+describe('CaptionsRenderer.getCurrentCues', function() {
 
-    it('should show the correct number of cues at any given position in time', () => {
+    it('should show the correct number of cues at any given position in time', function() {
         var allCues = [
             new VTTCue(0, 3, 'HG: Morning, Rob.'),
             new VTTCue(4, 5, 'How are you?'),
@@ -25,9 +25,9 @@ describe('CaptionsRenderer.getCurrentCues', () => {
         }
     });
 
-    describe('CaptionsRenderer.updateCurrentCues', () => {
+    describe('CaptionsRenderer.updateCurrentCues', function() {
 
-        it('should set current cues ', () => {
+        it('should set current cues ', function() {
             var cues = [
                 new VTTCue(0, 3, 'HG: Morning, Rob.')
             ];

@@ -1,9 +1,9 @@
 import { version } from 'version';
 import * as playerutils from 'utils/playerutils';
 
-describe('playerutils', () => {
+describe('playerutils', function() {
 
-    it('playerutils.versionCheck', () => {
+    it('playerutils.versionCheck', function() {
         var versionCheck = playerutils.versionCheck('0.5');
         assert.isOk(versionCheck, 'playerutils.versionCheck with valid version');
 

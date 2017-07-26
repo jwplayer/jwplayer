@@ -1,8 +1,8 @@
 import strings from 'utils/strings';
 
-describe('strings', () => {
+describe('strings', function() {
 
-    it('strings.pad', () => {
+    it('strings.pad', function() {
         var str = strings.pad('test', 7, '1');
         assert.equal(str, '111test', 'strings padding correctly done');
 
@@ -10,7 +10,7 @@ describe('strings', () => {
         assert.equal(str, 'test', 'strings padding with smaller length than str should not pad anything');
     });
 
-    it('strings.extension', () => {
+    it('strings.extension', function() {
         var ext = strings.extension('invalid');
         assert.strictEqual(ext, undefined, 'invalid path extension returns undefined');
 
@@ -37,7 +37,7 @@ describe('strings', () => {
         assert.equal(ext, 'm3u8', 'Dot in the search and hash portions of the url');
     });
 
-    it('strings.seconds', () => {
+    it('strings.seconds', function() {
         var sec = strings.seconds(5);
         assert.equal(sec, 5, 'number input returns input');
 
@@ -66,7 +66,7 @@ describe('strings', () => {
         assert.equal(sec, 61.5, 'hours minute seconds frames input with frameRate returns seconds');
     });
 
-    it('strings.hms', () => {
+    it('strings.hms', function() {
         var str = strings.hms(3661);
         assert.equal(str, '01:01:01.000', 'hms gives correct time string format');
 
@@ -74,7 +74,7 @@ describe('strings', () => {
         assert.equal(str, '00:00:01.111', 'hms gives milliseconds rounded to 3dp');
     });
 
-    it('strings.prefix', () => {
+    it('strings.prefix', function() {
         var prefix = strings.prefix(['1', '2'], '0');
         assert.equal(prefix[0], '01', 'prefix with 0 index correct');
         assert.equal(prefix[1], '02', 'prefix with 1 index correct');

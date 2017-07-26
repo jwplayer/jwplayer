@@ -24,9 +24,9 @@ var assertProperty = function (assert, propToDelete, expected, msg) {
 
 // Tests for Creating track._id
 
-describe('tracksHelper.createId', () => {
+describe('tracksHelper.createId', function() {
 
-    it('Create track._id from track properties', () => {
+    it('Create track._id from track properties', function() {
         tracks = [];
         itemTrack = {
             _id: '_id',
@@ -59,9 +59,9 @@ describe('tracksHelper.createId', () => {
 
 // Tests for creating track.label
 
-describe('tracksHelper.createLabel', () => {
+describe('tracksHelper.createLabel', function() {
 
-    it('Create track label from track properties', () => {
+    it('Create track label from track properties', function() {
         tracks = [];
         itemTrack = {
             _id: '_id',

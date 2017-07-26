@@ -1,6 +1,6 @@
 import * as parser from 'utils/parser';
 
-describe('parser', () => {
+describe('parser', function() {
 
     var testerGenerator = function (assert, method) {
         return function (left, right, message) {
@@ -8,7 +8,7 @@ describe('parser', () => {
         };
     };
 
-    it('parser.getAbsolutePath', () => {
+    it('parser.getAbsolutePath', function() {
         var path = parser.getAbsolutePath(null, null);
         assert.isNotOk(path, 'passing null as path returns null');
 
@@ -33,7 +33,7 @@ describe('parser', () => {
         test(['../hello.mp4', 'https://example.com/hi.html'], 'https://example.com/hello.mp4');
     });
 
-    it('parser.serialize', () => {
+    it('parser.serialize', function() {
         var array = [];
         var object = {};
 
@@ -55,7 +55,7 @@ describe('parser', () => {
         test(['100%'], '100%', 'percentage values are not changed');
     });
 
-    it.skip('parser.getScriptPath', () => {
+    it.skip('parser.getScriptPath', function() {
         var path = parser.getScriptPath(null);
         assert.equal(path, '', 'returns an empty string when no file name is provided');
 
@@ -64,7 +64,7 @@ describe('parser', () => {
             'returns a directory url ending with a forward slash "' + scriptPath + '"');
     });
 
-    it('parser.parseXML', () => {
+    it('parser.parseXML', function() {
         var xml = parser.parseXML('<input>');
         assert.isNotOk(xml);
         //
@@ -73,7 +73,7 @@ describe('parser', () => {
         assert.isOk(xml, 'xml should be returned');
     });
 
-    it('parser.parseDimension', () => {
+    it('parser.parseDimension', function() {
         var dimension = parser.parseDimension('');
         assert.equal(dimension, 0, 'dimension with empty string should be 0');
 
@@ -87,7 +87,7 @@ describe('parser', () => {
         assert.equal(dimension, 35, 'dimension with int should be itself');
     });
 
-    it('parser.timeFormat', () => {
+    it('parser.timeFormat', function() {
         var time;
 
         time = parser.timeFormat(3661);

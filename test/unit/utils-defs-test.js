@@ -1,8 +1,8 @@
 import utils from 'utils/helpers';
 
-describe('utils definitions', () => {
+describe('utils definitions', function() {
 
-    it('defines util functions ', () => {
+    it('defines util functions ', function() {
         // functions in helpers
         assert.equal(typeof utils.log, 'function', 'log function is defined');
         assert.equal(typeof utils.between, 'function', 'between function is defined');

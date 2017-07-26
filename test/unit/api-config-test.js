@@ -1,13 +1,13 @@
 import Config from 'api/config';
 import _ from 'underscore';
 
-describe('API Config', () => {
+describe('API Config', function() {
 
     const props = ['width', 'height', 'base'];
 
-    describe('init', () => {
+    describe('init', function() {
 
-        it('should use default config for invalid options', () => {
+        it('should use default config for invalid options', function() {
             const defaultConfig = new Config();
 
             expect(new Config(undefined), 'options=undefined').to.deep.equal(defaultConfig);
@@ -17,7 +17,7 @@ describe('API Config', () => {
         });
     });
 
-    describe('aspect ratio/width', () => {
+    describe('aspect ratio/width', function() {
 
         function isNumber(val) {
             if (val.slice && val.slice(-1) === '%') {
@@ -38,14 +38,14 @@ describe('API Config', () => {
             return x;
         }
 
-        it('should have default width of 640 and height of 360', () => {
+        it('should have default width of 640 and height of 360', function() {
             const x = testConfig();
 
             expect(x.width).to.equal(640);
             expect(x.height).to.equal(360);
         });
 
-        it('should accept widths in different formats', () => {
+        it('should accept widths in different formats', function() {
             let x = testConfig({ width: '100px' });
             expect(x.width, 'pixel').to.equal('100');
 
@@ -59,7 +59,7 @@ describe('API Config', () => {
             expect(x.width, 'integer').to.equal(100);
         });
 
-        it('should accept aspectratio in percentage and W:H formats', () => {
+        it('should accept aspectratio in percentage and W:H formats', function() {
             let x = testConfig({ width: '10%', aspectratio: '4:3' });
 
             expect(x.aspectratio).to.equal('75%'); // 4:3 is 75% because of 3/4
@@ -85,9 +85,9 @@ describe('API Config', () => {
         });
     });
 
-    describe('playlist', () => {
+    describe('playlist', function() {
 
-        it('should accept playlist values in different formats', () => {
+        it('should accept playlist values in different formats', function() {
             let x = new Config({ playlist: 'urlToLoad' });
             expect(x.playlist).to.equal('urlToLoad');
 
@@ -96,9 +96,9 @@ describe('API Config', () => {
         });
     });
 
-    describe('base url', () => {
+    describe('base url', function() {
 
-        it('should update base to cdn or script location', () => {
+        it('should update base to cdn or script location', function() {
             const CUSTOM_BASE = 'http://mywebsite.com/jwplayer/';
             let apiConfig;
 
@@ -113,9 +113,9 @@ describe('API Config', () => {
         });
     });
 
-    describe('skin', () => {
+    describe('skin', function() {
 
-        it('should flatten skin object', () => {
+        it('should flatten skin object', function() {
             const skinObject = {
                 name: 'foo',
                 url: 'skin/url',

@@ -1,8 +1,8 @@
 import utils from 'utils/helpers';
 
-describe('helpers', () => {
+describe('helpers', function() {
 
-    it('helpers foreach test', () => {
+    it('helpers foreach test', function() {
         var aData = { hello: 'hi' };
         var tester = [];
 
@@ -17,7 +17,7 @@ describe('helpers', () => {
         assert.equal(tester[1], 'hi');
     });
 
-    it('helpers log with fake console', () => {
+    it('helpers log with fake console', function() {
         var tmpConsole = window.console;
         var m = [];
 

@@ -2,15 +2,15 @@ import _ from 'utils/underscore';
 import sinon from 'sinon';
 import SimpleModel from 'model/simplemodel';
 
-describe('SimpleModel Mixin', () => {
+describe('SimpleModel Mixin', function() {
 
     const model = _.extend({}, SimpleModel);
 
-    it('returns undefined ', () => {
+    it('returns undefined ', function() {
         assert.isNotOk(model.get('noExisting'), 'get with no attributes');
     });
 
-    it('simplemodel', () => {
+    it('simplemodel', function() {
         assert.isNotOk(model.get('noExisting'), 'get with no attributes');
 
         model.set('attr', 'val');
@@ -25,7 +25,7 @@ describe('SimpleModel Mixin', () => {
         assert.equal(spy.lastCall.args[1], 'val', 'change attribute with value');
     });
 
-    it('simplemodel', () => {
+    it('simplemodel', function() {
         assert.isNotOk(model.get('noExisting'), 'get with no attributes');
 
         model.set('attr', 'val');

@@ -1,7 +1,7 @@
 import PlaylistLoader from 'playlist/loader';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 
-describe('loader', () => {
+describe('loader', function() {
 
     it.skip('Test JSON feed', function (done) {
         const loader = new PlaylistLoader();
@@ -50,7 +50,7 @@ describe('loader', () => {
             done();
         });
 
-        loader.on(ERROR, () => {
+        loader.on(ERROR, function() {
             assert.isOk(true, 'Invalid JSON feed successfully fired error');
             done();
         });

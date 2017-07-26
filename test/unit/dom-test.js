@@ -1,8 +1,8 @@
 import dom from 'utils/dom';
 
-describe('dom', () => {
+describe('dom', function() {
 
-    it('dom.addClass', () => {
+    it('dom.addClass', function() {
         var element = document.createElement('div');
         assert.strictEqual(element.className, '', 'Created an element with no classes');
 
@@ -23,7 +23,7 @@ describe('dom', () => {
             'Added space delimited classes to element');
     });
 
-    it('dom.removeClass', () => {
+    it('dom.removeClass', function() {
         var element = document.createElement('div');
         element.className = 'class1 class2 class3';
         assert.equal(element.className, 'class1 class2 class3', 'Created an element with two classes');
@@ -39,7 +39,7 @@ describe('dom', () => {
     });
 
 
-    it('dom.replaceClass', () => {
+    it('dom.replaceClass', function() {
         var element = document.createElement('div');
 
         dom.replaceClass(element, /class0/, 'class1');
@@ -59,13 +59,13 @@ describe('dom', () => {
         assert.equal(element.className, 'classB', 'Replaces classes when pattern matches any class');
     });
 
-    it('dom.createElement', () => {
+    it('dom.createElement', function() {
         var element = dom.createElement('<div id=\'testid\'></div>');
 
         assert.equal(element.id, 'testid', 'element create test');
     });
 
-    it('dom.styleDimension', () => {
+    it('dom.styleDimension', function() {
         var percentage = dom.styleDimension('50%');
         var px = dom.styleDimension('50');
 
@@ -74,7 +74,7 @@ describe('dom', () => {
         assert.equal(px, '50px', 'px dimension test');
     });
 
-    it('dom.classList', () => {
+    it('dom.classList', function() {
         var elementA = document.createElement('div');
         elementA.className = 'class1 class2';
 
@@ -96,7 +96,7 @@ describe('dom', () => {
         assert.isNotOk(dom.hasClass(elementA, 'class3'), 'has class test with non existing class');
     });
 
-    it('dom.toggleClass', () => {
+    it('dom.toggleClass', function() {
         var element = document.createElement('div');
         dom.addClass(element, 'a');
 
@@ -109,7 +109,7 @@ describe('dom', () => {
         assert.isNotOk(dom.hasClass(element, 'a'), 'has class test with removed class');
     });
 
-    it('dom.emptyElement', () => {
+    it('dom.emptyElement', function() {
         var element = document.createElement('div');
         var child = document.createElement('p');
 
@@ -133,7 +133,7 @@ describe('dom', () => {
         dom.empty(null);
     });
 
-    it.skip('addStyleSheet test', () => {
+    it.skip('addStyleSheet test', function() {
         var url = './data/playlist.json';
         dom.addStyleSheet(url);
 
@@ -141,7 +141,7 @@ describe('dom', () => {
         assert.isOk(document.getElementsByTagName('head')[0].lastChild.href.indexOf('playlist') >= 0);
     });
 
-    it.skip('bounds test', () => {
+    it.skip('bounds test', function() {
         var element = document.createElement('div');
         var emptyBound = { left: 0, right: 0, width: 0, height: 0, top: 0, bottom: 0 };
 

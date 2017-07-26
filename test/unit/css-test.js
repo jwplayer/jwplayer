@@ -1,8 +1,8 @@
 import css from 'utils/css';
 
-describe('css', () => {
+describe('css', function() {
 
-    it('css.css and css.clearCss', () => {
+    it('css.css and css.clearCss', function() {
         var playerId = 'css-testplayer';
         var count = document.getElementsByTagName('style').length;
 
@@ -45,7 +45,7 @@ describe('css', () => {
             'css text correctly inserted');
     });
 
-    it('css.style', () => {
+    it('css.style', function() {
         var element = document.createElement('div');
         var element2 = document.createElement('div');
 
@@ -77,7 +77,7 @@ describe('css', () => {
         assert.isOk(element2.getAttribute('style').indexOf('background-image: url(') >= 0, 'camelCase style img');
     });
 
-    it('css.transform', () => {
+    it('css.transform', function() {
         var element = document.createElement('div');
 
         // this should not break
@@ -99,7 +99,7 @@ describe('css', () => {
         assert.equal(element.style.oTransform, '', 'css transform o');
     });
 
-    it('css.hexToRgba', () => {
+    it('css.hexToRgba', function() {
         // this should not break
         css.hexToRgba(null, null);
 

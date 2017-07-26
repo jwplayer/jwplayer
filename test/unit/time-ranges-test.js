@@ -1,6 +1,6 @@
 import timeRangesUtil from 'utils/time-ranges';
 
-describe('time-ranges', () => {
+describe('time-ranges', function() {
 
     function MockTimeRanges(ranges) {
         return {
@@ -14,7 +14,7 @@ describe('time-ranges', () => {
         };
     }
 
-    it('returns the end when there is one range', () => {
+    it('returns the end when there is one range', function() {
         var mockRanges = MockTimeRanges([{ start: 1, end: 2 }]);
         var expected = 2;
         var actual = timeRangesUtil.endOfRange(mockRanges);
@@ -22,7 +22,7 @@ describe('time-ranges', () => {
         assert.deepEqual(actual, expected);
     });
 
-    it('returns the end when there are multiple ranges', () => {
+    it('returns the end when there are multiple ranges', function() {
         var mockRanges = MockTimeRanges([{ start: 1, end: 2 }, { start: 3, end: 4 }]);
         var expected = 4;
         var actual = timeRangesUtil.endOfRange(mockRanges);
@@ -30,7 +30,7 @@ describe('time-ranges', () => {
         assert.deepEqual(actual, expected);
     });
 
-    it('returns 0 when there are no ranges', () => {
+    it('returns 0 when there are no ranges', function() {
         var mockRanges = MockTimeRanges([]);
         var expected = 0;
         var actual = timeRangesUtil.endOfRange(mockRanges);
@@ -38,7 +38,7 @@ describe('time-ranges', () => {
         assert.deepEqual(actual, expected);
     });
 
-    it('returns 0 when ranges are undefined', () => {
+    it('returns 0 when ranges are undefined', function() {
         var mockRanges = MockTimeRanges();
         var expected = 0;
         var actual = timeRangesUtil.endOfRange(mockRanges);

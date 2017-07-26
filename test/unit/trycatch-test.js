@@ -1,13 +1,13 @@
 import trycatch from 'utils/trycatch';
 
-describe('trycatch', () => {
+describe('trycatch', function() {
 
-    it('defines', () => {
+    it('defines', function() {
         assert.equal(typeof trycatch.tryCatch, 'function', 'trycatch function is defined');
         assert.equal(typeof trycatch.Error, 'function', 'Error function is defined');
     });
 
-    it('should not throw Error for valid call', () => {
+    it('should not throw Error for valid call', function() {
         var value = trycatch.tryCatch(function() {
             return 1;
         });
@@ -15,7 +15,7 @@ describe('trycatch', () => {
         assert.strictEqual(value, 1, 'returns value returned by function argument when no exception is thrown');
     });
 
-    it.skip('should throw custom Error on catch', () => {
+    it.skip('should throw custom Error on catch', function() {
         var trycatchThrow = function() {
             trycatch.tryCatch(function() {
                 throw new Error('Danger, Danger, Will Robinson!');
@@ -26,7 +26,7 @@ describe('trycatch', () => {
     });
 
 
-    it.skip('should throw Error in debug mode', () => {
+    it.skip('should throw Error in debug mode', function() {
         var debug = window.jwplayer.debug;
         window.jwplayer.debug = true;
 
@@ -41,7 +41,7 @@ describe('trycatch', () => {
         window.jwplayer.debug = debug;
     });
 
-    it('Error', () => {
+    it('Error', function() {
         var error = new trycatch.Error('error name', 'error message');
 
         assert.equal(error.name, 'error name', 'error.name is set');
