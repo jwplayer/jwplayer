@@ -22,6 +22,7 @@ define([
     var _name = 'html5';
 
     function _setupListeners(eventsHash, videoTag) {
+        _removeListeners(eventsHash, videoTag);
         utils.foreach(eventsHash, function(evt, evtCallback) {
             videoTag.addEventListener(evt, evtCallback, false);
         });

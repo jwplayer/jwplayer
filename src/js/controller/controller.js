@@ -818,10 +818,10 @@ define([
             };
 
             this.playerDestroy = function () {
+                this.trigger('destroyPlugin', {});
                 this.off();
                 this.stop();
                 this.showView(this.originalContainer);
-
                 if (_view) {
                     _view.destroy();
                 }
@@ -835,6 +835,7 @@ define([
                 if (apiQueue) {
                     apiQueue.destroy();
                 }
+                this.instreamDestroy();
             };
 
             this.isBeforePlay = this.checkBeforePlay;
