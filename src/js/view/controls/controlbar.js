@@ -156,8 +156,8 @@ define([
 
             this.layout = [
                 this.elements.time,
-                this.elements.alt,
                 this.elements.play,
+                this.elements.alt,
                 this.elements.rewind,
                 this.elements.elapsed,
                 // this.elements.durationLeft,
