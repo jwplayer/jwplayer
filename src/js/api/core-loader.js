@@ -7,12 +7,10 @@ export default function loadCoreBundle(model) {
     return bundlePromise;
 }
 
-function selectBundle(model) {
+export function selectBundle(model) {
     const controls = model.get('controls');
-    const polyfills = !('IntersectionObserver' in window &&
-        'IntersectionObserverEntry' in window &&
-        'intersectionRatio' in window.IntersectionObserverEntry.prototype);
-    const html5Provider = firstItemHandledByHtml5(model);
+    const polyfills = requiresPolyfills();
+    const html5Provider = requiresProvider(model, 'html5');
 
     if (controls && html5Provider) {
         return loadControlsHtml5Bundle();
@@ -29,10 +27,16 @@ function selectBundle(model) {
     return loadCore();
 }
 
-function firstItemHandledByHtml5(model) {
+export function requiresPolyfills() {
+    return !('IntersectionObserver' in window &&
+        'IntersectionObserverEntry' in window &&
+        'intersectionRatio' in window.IntersectionObserverEntry.prototype);
+}
+
+export function requiresProvider(model, providerName) {
     const providersManager = model.getProviders();
     const providersNeeded = providersManager.required([model.get('playlist')[0]]);
-    return providersNeeded[0].name === 'html5';
+    return providersNeeded[0].name === providerName;
 }
 
 function loadControlsHtml5Bundle() {
