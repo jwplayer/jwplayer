@@ -1,3 +1,4 @@
+import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR } from 'events/events';
 import Promise from 'polyfills/promise';
 
@@ -43,36 +44,25 @@ function loadPlaylist(_model) {
         return new Promise((resolve, reject) => {
             const playlistLoader = new PlaylistLoader();
             playlistLoader.on(PLAYLIST_LOADED, function(data) {
-                _model.attributes.feedData = data;
-                _model.attributes.playlist = data.playlist;
-                resolve();
+                resolve(data.playlist, data);
             });
             playlistLoader.on(ERROR, err => {
-                reject(playlistError(err));
+                reject(new Error(`Error loading playlist: ${err.message}`));
             });
             playlistLoader.load(playlist);
         });
 
     }
-    return resolved;
+    return Promise.resolve(playlist, _model.attributes.feedData);
 }
 
-function filterPlaylist(_model, _setPlaylist) {
-    return loadPlaylist(_model).then(() => {
+function filterPlaylist(_model) {
+    return loadPlaylist(_model).then((playlist, feedData) => {
         // TODO: check destroyed
-        // `_setPlaylist` performs filtering
-        const success = _setPlaylist(_model.get('playlist'), _model.get('feedData'));
-        if (!success) {
-            throw playlistError();
-        }
+        // `setPlaylist` performs filtering
+        setPlaylist(_model, playlist, feedData);
+        loadProvidersForPlaylist(_model);
     });
-}
-
-function playlistError(err) {
-    if (err && err.message) {
-        return new Error(`Error loading playlist: ${err.message}`);
-    }
-    return new Error('Error loading player: No playable sources found');
 }
 
 function isSkinLoaded(skinPath) {
@@ -108,8 +98,8 @@ function setupView(_model, _view) {
 
 }
 
-function setPlaylistItem(_model, _api, _view, _setPlaylist) {
-    return filterPlaylist(_model, _setPlaylist).then(() => {
+function setPlaylistItem(_model) {
+    return filterPlaylist(_model).then(() => {
         // TODO: check destroyed
         return new Promise(resolve => {
             _model.once('itemReady', resolve);
@@ -118,9 +108,9 @@ function setPlaylistItem(_model, _api, _view, _setPlaylist) {
     });
 }
 
-const startSetup = function(_api, _model, _view, _setPlaylist) {
+const startSetup = function(_api, _model, _view) {
     return Promise.all([
-        setPlaylistItem(_model, _api, _view, _setPlaylist),
+        setPlaylistItem(_model, _api, _view),
         // filterPlaylist -->
         // -- loadPlaylist,
         initPlugins(_model, _api, _view),

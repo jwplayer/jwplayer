@@ -1,5 +1,6 @@
 import ApiQueueDecorator from 'api/api-queue';
 import Config from 'api/config';
+import setPlaylist from 'api/set-playlist';
 import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
@@ -7,6 +8,7 @@ import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
+import Providers from 'providers/providers';
 
 const CoreModel = function() {};
 Object.assign(CoreModel.prototype, SimpleModel);
@@ -65,9 +67,21 @@ Object.assign(CoreShim.prototype, {
         ]);
         const persisted = storage && storage.getAllItems();
         model.attributes = model.attributes || {};
-        Object.assign(model.attributes, new Config(options, persisted), INITIAL_PLAYER_STATE);
 
-        loadCoreBundle(model.clone()).then(CoreMixin => {
+        // Assigning config properties to the model needs to be synchronous for chained get API methods
+        const configuration = Config(options, persisted);
+        Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE);
+
+        Promise.resolve().then(() => {
+            if (configuration.error) {
+                throw configuration.error;
+            }
+            model.getProviders = function() {
+                return new Providers(configuration);
+            };
+            setPlaylist(model, model.get('playlist'), model.get('feedData'));
+            return model;
+        }).then(loadCoreBundle).then(CoreMixin => {
             if (!this.apiQueue) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;

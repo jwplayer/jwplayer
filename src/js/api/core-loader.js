@@ -1,19 +1,22 @@
 let bundlePromise = null;
 
-export default function loadCoreBundle(config) {
+export default function loadCoreBundle(model) {
     if (!bundlePromise) {
-        bundlePromise = selectBundle(config);
+        bundlePromise = selectBundle(model);
     }
     return bundlePromise;
 }
 
-function selectBundle(config) {
-    const controls = config.controls;
+function selectBundle(model) {
+    const controls = model.get('controls');
     const polyfills = !('IntersectionObserver' in window &&
         'IntersectionObserverEntry' in window &&
         'intersectionRatio' in window.IntersectionObserverEntry.prototype);
-    const html5Provider = firstItemHandledByHtml5(config.playlist);
+    const html5Provider = firstItemHandledByHtml5(model);
 
+    if (controls && html5Provider) {
+        return loadControlsHtml5Bundle();
+    }
     if (controls && polyfills && html5Provider) {
         return loadControlsPolyfillHtml5Bundle();
     }
@@ -26,12 +29,20 @@ function selectBundle(config) {
     return loadCore();
 }
 
-function firstItemHandledByHtml5(playlist) {
-    if (Array.isArray(playlist) && playlist.length) {
-        // TODO: implement this
-        return !!playlist[0];
-    }
-    return false;
+function firstItemHandledByHtml5(model) {
+    const providersManager = model.getProviders();
+    const providersNeeded = providersManager.required([model.get('playlist')[0]]);
+    return providersNeeded[0].name === 'html5';
+}
+
+function loadControlsHtml5Bundle() {
+    return require.ensure([
+        'controller/controller',
+        'view/controls/controls',
+        'providers/html5'
+    ], function (require) {
+        return require('controller/controller');
+    }, 'jwplayer.core.controls.html5');
 }
 
 function loadControlsPolyfillHtml5Bundle() {

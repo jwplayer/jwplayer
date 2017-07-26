@@ -1,29 +1,30 @@
-import setConfig from 'api/set-config';
 import instances from 'api/players';
-import Playlist, { filterPlaylist } from 'playlist/playlist';
-import { OS } from 'environment/environment';
+import setConfig from 'api/set-config';
+import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
+import Setup from 'controller/Setup';
+import PlaylistLoader from 'playlist/loader';
+import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, SETUP_ERROR, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
-import Setup from 'controller/Setup';
+
 
 define([
     'controller/instream-adapter',
     'utils/underscore',
     'controller/captions',
     'controller/model',
-    'playlist/loader',
     'utils/helpers',
     'view/view',
     'utils/backbone.events',
     'events/change-state-event',
     'view/error',
     'controller/events-middleware',
-], function(InstreamAdapter, _, Captions, Model, PlaylistLoader, utils, View, Events, changeStateEvent,
+], function(InstreamAdapter, _, Captions, Model, utils, View, Events, changeStateEvent,
     viewError, eventsMiddleware) {
 
     // The model stores a different state than the provider
@@ -58,7 +59,7 @@ define([
             _model.setup(config);
             _view = this._view = new View(_api, _model);
 
-            _setup = new Setup(_api, _model, _view, _setPlaylist);
+            _setup = new Setup(_api, _model, _view);
 
             _model.mediaController.on('all', _triggerAfterReady, this);
             _model.mediaController.on(MEDIA_COMPLETE, function() {
@@ -315,10 +316,16 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object': {
-                        const success = _setPlaylist(item, feedData);
-                        if (success) {
-                            _setItem(0);
+                        try {
+                            setPlaylist(_model, item, feedData);
+                        } catch (error) {
+                            _this.triggerError({
+                                message: `Error loading playlist: ${error.message}`
+                            });
+                            return;
                         }
+                        loadProvidersForPlaylist(_model);
+                        _setItem(0);
                         break;
                     }
                     case 'number':
@@ -501,38 +508,6 @@ define([
                 }
                 _setItem(index);
                 _play(meta);
-            }
-
-            function _setPlaylist(array, feedData) {
-                _model.set('feedData', feedData);
-
-                let playlist = Playlist(array);
-                playlist = filterPlaylist(playlist, _model, feedData);
-
-                _model.set('playlist', playlist);
-
-                if (!Array.isArray(playlist) || playlist.length === 0) {
-                    _this.triggerError({
-                        message: 'Error loading playlist: No playable sources found'
-                    });
-                    return false;
-                }
-
-                _loadProvidersForPlaylist(playlist);
-
-                return true;
-            }
-
-            function _loadProvidersForPlaylist(playlist) {
-                const providersManager = _model.getProviders();
-                const providersNeeded = providersManager.required(playlist);
-                return providersManager.load(providersNeeded)
-                    .then(function() {
-                        if (!_this.getProvider()) {
-                            _model.setProvider(_model.get('playlistItem'));
-                            // provider is not available under "itemReady" event
-                        }
-                    });
             }
 
             function _setItem(index) {
