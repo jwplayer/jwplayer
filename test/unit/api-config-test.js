@@ -7,7 +7,7 @@ describe('API Config', function() {
 
     describe('init', function() {
 
-        it('should use default config for invalid options', function () {
+        it('should use default config for invalid options', () => {
             const defaultConfig = new Config();
 
             expect(new Config(undefined), 'options=undefined').to.deep.equal(defaultConfig);
@@ -38,14 +38,14 @@ describe('API Config', function() {
             return x;
         }
 
-        it('should have default width of 640 and height of 360', function () {
+        it('should have default width of 640 and height of 360', () => {
             const x = testConfig();
 
             expect(x.width).to.equal(640);
             expect(x.height).to.equal(360);
         });
 
-        it('should accept widths in different formats', function () {
+        it('should accept widths in different formats', () => {
             let x = testConfig({ width: '100px' });
             expect(x.width, 'pixel').to.equal('100');
 
@@ -59,7 +59,7 @@ describe('API Config', function() {
             expect(x.width, 'integer').to.equal(100);
         });
 
-        it('should accept aspectratio in percentage and W:H formats', function () {
+        it('should accept aspectratio in percentage and W:H formats', () => {
             let x = testConfig({ width: '10%', aspectratio: '4:3' });
 
             expect(x.aspectratio).to.equal('75%'); // 4:3 is 75% because of 3/4
@@ -87,7 +87,7 @@ describe('API Config', function() {
 
     describe('playlist', function() {
 
-        it('should accept playlist values in different formats', function () {
+        it('should accept playlist values in different formats', () => {
             let x = new Config({ playlist: 'urlToLoad' });
             expect(x.playlist).to.equal('urlToLoad');
 

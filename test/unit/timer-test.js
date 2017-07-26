@@ -31,5 +31,4 @@ describe('timer', function() {
         }, 10);
         done();
     });
-
 });

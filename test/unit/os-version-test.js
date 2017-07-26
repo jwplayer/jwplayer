@@ -1,7 +1,7 @@
 import { osVersion } from 'environment/os-version';
 
-describe('os-version', function () {
-    it('returns the OS version from a Mac OS/OS X user agent, underscore separated', function () {
+describe('os-version', () => {
+    it('returns the OS version from a Mac OS/OS X user agent, underscore separated', () => {
         const agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.115 Safari/537.36';
         assert.deepEqual(osVersion({ mac: true }, agent), {
             version: '10_12_4',
@@ -10,7 +10,7 @@ describe('os-version', function () {
         });
     });
 
-    it('returns the OS version from a Mac OS/OS X user agent, period separated', function () {
+    it('returns the OS version from a Mac OS/OS X user agent, period separated', () => {
         const agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:54.0) Gecko/20100101 Firefox/54.0';
         assert.deepEqual(osVersion({ mac: true }, agent), {
             version: '10.12',
@@ -19,7 +19,7 @@ describe('os-version', function () {
         });
     });
 
-    it('returns the OS version from a Windows 10 user agent', function () {
+    it('returns the OS version from a Windows 10 user agent', () => {
         const agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36';
         assert.deepEqual(osVersion({ windows: true }, agent), {
             version: '10.0',
@@ -28,7 +28,7 @@ describe('os-version', function () {
         });
     });
 
-    it('returns the OS version from a Windows 8.1 user agent', function () {
+    it('returns the OS version from a Windows 8.1 user agent', () => {
         const agent = 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36';
         assert.deepEqual(osVersion({ windows: true }, agent), {
             version: '8.1',
@@ -37,7 +37,7 @@ describe('os-version', function () {
         });
     });
 
-    it('returns the OS version from a Windows 8 user agent', function () {
+    it('returns the OS version from a Windows 8 user agent', () => {
         const agent = 'Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/534.57.2 (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2';
         assert.deepEqual(osVersion({ windows: true }, agent), {
             version: '8.0',
@@ -46,7 +46,7 @@ describe('os-version', function () {
         });
     });
 
-    it('returns the OS version from a Windows 7 user agent', function () {
+    it('returns the OS version from a Windows 7 user agent', () => {
         const agent = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36';
         assert.deepEqual(osVersion({ windows: true }, agent), {
             version: '7.0',
@@ -55,7 +55,7 @@ describe('os-version', function () {
         });
     });
 
-    it('returns the OS version from an Android user agent', function () {
+    it('returns the OS version from an Android user agent', () => {
         const agent = 'Mozilla/5.0 (Linux; Android 7.0; SM-G930T Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/57.0.2987.132 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/121.0.0.20.69;]';
         assert.deepEqual(osVersion({ android: true }, agent), {
             version: '7.0',
@@ -64,7 +64,7 @@ describe('os-version', function () {
         });
     });
 
-    it('returns the OS version from an iOS user agent', function () {
+    it('returns the OS version from an iOS user agent', () => {
         const agent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_2_1 like Mac OS X) AppleWebKit/602.4.6 (KHTML, like Gecko) Version/10.0 Mobile/14D27 Safari/602.1';
         assert.deepEqual(osVersion({ iOS: true }, agent), {
             version: '10_2_1',
