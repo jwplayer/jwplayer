@@ -12,7 +12,6 @@ import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYIN
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
 
-
 define([
     'controller/instream-adapter',
     'utils/underscore',
