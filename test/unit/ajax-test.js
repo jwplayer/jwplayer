@@ -1,7 +1,7 @@
 import _ from 'test/underscore';
 import utils from 'utils/ajax';
 
-describe.skip('utils.ajax', function() {
+describe.skip('utils.ajax', () => {
 
     function validXHR(xhr) {
         if ('XDomainRequest' in window && xhr instanceof window.XDomainRequest) {

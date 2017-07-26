@@ -1,7 +1,7 @@
 import _ from 'test/underscore';
 import middleware from 'controller/events-middleware';
 
-describe('events-middleware', function() {
+describe('events-middleware', () => {
 
     var mockModel = function (attributes) {
         var model = {
@@ -13,49 +13,49 @@ describe('events-middleware', function() {
         return _.extend({}, model, attributes);
     };
 
-    it('should add viewable to the play event', function() {
+    it('should add viewable to the play event', () => {
         var model = mockModel({ viewable: 1 });
         var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'play', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
-    it('should add viewable to the paused event', function() {
+    it('should add viewable to the paused event', () => {
         var model = mockModel({ viewable: 1 });
         var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'pause', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
-    it('should add viewable to the time event', function() {
+    it('should add viewable to the time event', () => {
         var model = mockModel({ viewable: 1 });
         var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'time', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
-    it('should add viewable to the beforePlay event', function() {
+    it('should add viewable to the beforePlay event', () => {
         var model = mockModel({ viewable: 1 });
         var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'beforePlay', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
-    it('should add viewable to the ready event', function() {
+    it('should add viewable to the ready event', () => {
         var model = mockModel({ viewable: 1 });
         var expected = { viewable: 1, foo: 'bar' };
         var actual = middleware(model, 'ready', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
-    it('should not add viewable if visibility is undefined', function() {
+    it('should not add viewable if visibility is undefined', () => {
         var model = mockModel({ viewable: undefined });
         var expected = { foo: 'bar' };
         var actual = middleware(model, 'time', { foo: 'bar' });
         assert.deepEqual(actual, expected);
     });
 
-    it('does not modify original data when the type does not have a case', function() {
+    it('does not modify original data when the type does not have a case', () => {
         var expected = { foo: 'bar' };
         var actual = middleware(mockModel({}), 'cat', expected);
         assert.equal(actual, expected);

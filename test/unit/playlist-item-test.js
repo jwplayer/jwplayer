@@ -1,7 +1,7 @@
 import item from 'playlist/item';
 import _ from 'test/underscore';
 
-describe('playlist item', function() {
+describe('playlist item', () => {
 
     function testItem(config) {
         var x = item(config);
@@ -24,7 +24,7 @@ describe('playlist item', function() {
         return playlistItem;
     }
 
-    it('worst case input arguments are handled', function() {
+    it('worst case input arguments are handled', () => {
         testItem();
         testItem(undefined);
         testItem({});
@@ -36,7 +36,7 @@ describe('playlist item', function() {
         testItem({ tracks: 1 });
     });
 
-    it('input with multiple sources, a default and captions track', function() {
+    it('input with multiple sources, a default and captions track', () => {
         var x = testItemComplete({
             image: 'image.png',
             description: 'desc',
@@ -83,7 +83,7 @@ describe('playlist item', function() {
 
     });
 
-    it('input source type normalization', function() {
+    it('input source type normalization', () => {
         var x = testItem({
             sources: [
                 {
@@ -122,7 +122,7 @@ describe('playlist item', function() {
 
     });
 
-    it('input.levels are converted to sources', function() {
+    it('input.levels are converted to sources', () => {
         var x = testItem({
             levels: [{
                 file: 'f1.mp4',
@@ -135,7 +135,7 @@ describe('playlist item', function() {
         assert.equal(x.sources[0].file, 'f1.mp4', 'first source file matches input.levels[0].file');
     });
 
-    it('input.captions are converted to tracks', function() {
+    it('input.captions are converted to tracks', () => {
         var x = testItem({
             file: 'x',
             captions: [
@@ -149,7 +149,7 @@ describe('playlist item', function() {
         assert.equal(x.tracks[0].file, 'fake.vtt', 'First track file matches input.captions[0].file');
     });
 
-    it('property passthrough of unknown values', function() {
+    it('property passthrough of unknown values', () => {
         var x = testItem({
             file: 'x',
             randomStr: 'rrr',
@@ -164,7 +164,7 @@ describe('playlist item', function() {
         assert.equal(x.randomStr, 'rrr', 'Passes through unknown values');
     });
 
-    it('input.sources may contain one source object instead of array', function() {
+    it('input.sources may contain one source object instead of array', () => {
         var x = testItem({
             sources: {
                 file: 'f1.mp4',

@@ -9,16 +9,16 @@ function isValidPlaylistItem(playlistItem) {
     return _.isObject(playlistItem) && _.isArray(playlistItem.sources) && _.isArray(playlistItem.tracks);
 }
 
-describe('playlist', function() {
+describe('playlist', () => {
 
-    it('Test initialized successfully', function() {
+    it('Test initialized successfully', () => {
 
         assert.equal(typeof Item, 'function', 'item is defined');
         assert.equal(typeof Source, 'function', 'source is defined');
         assert.equal(typeof track, 'function', 'track is defined');
     });
 
-    it('Test constructor with single item', function() {
+    it('Test constructor with single item', () => {
         var p;
 
         p = Playlist(mp4.starscape);
@@ -32,7 +32,7 @@ describe('playlist', function() {
         assert.isOk(isValidPlaylistItem(p[0]), 'Initialize with just file name');
     });
 
-    it('Test constructor with array of items', function() {
+    it('Test constructor with array of items', () => {
         var p;
         var arr = [mp4.starscape, mp4.starscape, mp4.starscape];
 

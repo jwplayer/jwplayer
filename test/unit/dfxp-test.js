@@ -1,8 +1,8 @@
 import dfxp from 'parsers/captions/dfxp';
 
-describe('dfxp', function() {
+describe('dfxp', () => {
 
-    it('exceptions', function() {
+    it('exceptions', () => {
         assert.equal(typeof dfxp, 'function', 'dfxp is a function');
 
         assert.throws(function() {

@@ -1,9 +1,9 @@
 import $ from 'jquery';
 import EmbedSwf from 'utils/embedswf';
 
-describe('Embed SWF Util', function() {
+describe('Embed SWF Util', () => {
 
-    it('embeds a swf', function() {
+    it('embeds a swf', () => {
         var parent = $('<div id="container"></div>')[0];
         var id = 'player_swf_0';
         var swf = createEmbedder(parent, id);
@@ -28,7 +28,7 @@ describe('Embed SWF Util', function() {
         EmbedSwf.remove(swf);
     });
 
-    it('remove a swf', function() {
+    it('remove a swf', () => {
         var parent = $('<div id="container"></div>')[0];
         var id = 'player_swf_1';
         var swf = createEmbedder(parent, id);

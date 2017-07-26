@@ -8,7 +8,7 @@ import apiMethodsChainable from 'data/api-methods-chainable';
 import apiMethodsDeprecated from 'data/api-methods-deprecated';
 import Events from 'utils/backbone.events';
 
-describe('Api', function() {
+describe('Api', () => {
 
     afterEach(function() {
         // remove fixture and player instances
@@ -18,7 +18,7 @@ describe('Api', function() {
         }
     });
 
-    it('extends Events', function() {
+    it('extends Events', () => {
         const api = createApi('player');
         _.each(Events, function (value, key) {
             const itExtends = api[key] === value;
@@ -28,7 +28,7 @@ describe('Api', function() {
         });
     });
 
-    it('api.trigger works', function() {
+    it('api.trigger works', () => {
         const api = createApi('player');
         let check = false;
 
@@ -42,7 +42,7 @@ describe('Api', function() {
         assert.isOk(check, 'api.trigger works');
     });
 
-    it('api.off works', function() {
+    it('api.off works', () => {
         const api = createApi('player');
         let check = false;
 
@@ -57,7 +57,7 @@ describe('Api', function() {
         assert.equal(check, false, 'api.off works');
     });
 
-    it('bad events don\'t break player', function() {
+    it('bad events don\'t break player', () => {
         window.jwplayer = window.jwplayer || {};
         delete window.jwplayer.debug;
 
@@ -81,7 +81,7 @@ describe('Api', function() {
         assert.isOk(check, 'When events blow up, handler continues');
     });
 
-    it('throws exceptions when debug is true', function() {
+    it('throws exceptions when debug is true', () => {
         window.jwplayer = window.jwplayer || {};
         window.jwplayer.debug = true;
 
@@ -112,13 +112,13 @@ describe('Api', function() {
 
         api.remove();
 
-        api.setup({}).on('remove', function() {
+        api.setup({}).on('remove', () => {
             assert.equal(++removeCount, 2, 'second remove event callback is triggered second');
             done();
         }).remove();
     });
 
-    it('event dispatching', function() {
+    it('event dispatching', () => {
         const api = createApi('player');
         const originalEvent = {
             type: 'original'
@@ -134,14 +134,14 @@ describe('Api', function() {
         assert.equal(originalEvent.type, 'original', 'original event.type is not modified');
     });
 
-    it('defines expected methods', function() {
+    it('defines expected methods', () => {
         const api = createApi('player');
         _.each(apiMethods, (args, method) => {
             expect(api[method], method).to.be.a('function', 'api.' + method + ' is defined');
         });
     });
 
-    it('does not recognize deprecated methods', function() {
+    it('does not recognize deprecated methods', () => {
         const api = createApi('player');
 
         _.each(apiMethodsDeprecated, (args, method) => {
@@ -149,7 +149,7 @@ describe('Api', function() {
         });
     });
 
-    it('defines expected members', function() {
+    it('defines expected members', () => {
         const api = createApi('player');
         _.each(apiMembers, (value, member) => {
             const actualType = (typeof api[member]);
@@ -159,7 +159,7 @@ describe('Api', function() {
 
     });
 
-    it('does not contain unexpected members or methods', function() {
+    it('does not contain unexpected members or methods', () => {
         const api = createApi('player');
 
         _.each(api, (args, property) => {
@@ -183,7 +183,7 @@ describe('Api', function() {
 
     });
 
-    it('has chainable methods', function() {
+    it('has chainable methods', () => {
         const api = createApi('player');
 
         _.each(apiMethodsChainable, (args, method) => {
@@ -202,7 +202,7 @@ describe('Api', function() {
         });
     });
 
-    it('has methods which can be invoked before setup', function() {
+    it('has methods which can be invoked before setup', () => {
         const api = createApi('player');
         _.each(apiMethods, (args, method) => {
             // do not invoke methods on the prototype (only `core` methods assigned in the constructor)
@@ -215,7 +215,7 @@ describe('Api', function() {
         });
     });
 
-    it('has getters that return values before setup', function() {
+    it('has getters that return values before setup', () => {
         const container = createContainer('player');
         const api = new Api(container);
 
@@ -261,7 +261,7 @@ describe('Api', function() {
         expect(api.registerPlugin('foobar')).to.equal(undefined, 'registerPlugin returns undefined');
     });
 
-    it('has getters that return values after setup, before ready', function() {
+    it('has getters that return values after setup, before ready', () => {
         const container = createContainer('player');
         const api = new Api(container);
 

@@ -1,11 +1,11 @@
 import Config from 'api/config';
 import _ from 'underscore';
 
-describe('API Config', function() {
+describe('API Config', () => {
 
     const props = ['width', 'height', 'base'];
 
-    describe('init', function() {
+    describe('init', () => {
 
         it('should use default config for invalid options', () => {
             const defaultConfig = new Config();
@@ -17,7 +17,7 @@ describe('API Config', function() {
         });
     });
 
-    describe('aspect ratio/width', function() {
+    describe('aspect ratio/width', () => {
 
         function isNumber(val) {
             if (val.slice && val.slice(-1) === '%') {
@@ -85,7 +85,7 @@ describe('API Config', function() {
         });
     });
 
-    describe('playlist', function() {
+    describe('playlist', () => {
 
         it('should accept playlist values in different formats', () => {
             let x = new Config({ playlist: 'urlToLoad' });
@@ -96,9 +96,9 @@ describe('API Config', function() {
         });
     });
 
-    describe('base url', function() {
+    describe('base url', () => {
 
-        it('should update base to cdn or script location', function() {
+        it('should update base to cdn or script location', () => {
             const CUSTOM_BASE = 'http://mywebsite.com/jwplayer/';
             let apiConfig;
 
@@ -113,9 +113,9 @@ describe('API Config', function() {
         });
     });
 
-    describe('skin', function() {
+    describe('skin', () => {
 
-        it('should flatten skin object', function() {
+        it('should flatten skin object', () => {
             const skinObject = {
                 name: 'foo',
                 url: 'skin/url',

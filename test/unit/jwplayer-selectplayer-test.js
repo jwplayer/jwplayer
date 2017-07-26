@@ -8,7 +8,7 @@ function testInstanceOfApi(assert, api) {
     return api;
 }
 
-describe('jwplayer function', function() {
+describe('jwplayer function', () => {
 
     beforeEach(() => {
         // remove fixture
@@ -25,12 +25,12 @@ describe('jwplayer function', function() {
         $('#test-container').remove();
     });
 
-    it('is defined', function() {
+    it('is defined', () => {
         // Test jwplayer module
         assert.isOk(_.isFunction(jwplayer), 'jwplayer is a function');
     });
 
-    it('allows plugins to register when no player is found', function() {
+    it('allows plugins to register when no player is found', () => {
         const x = jwplayer();
 
         // It might be preferable to always return an API instance
@@ -40,7 +40,7 @@ describe('jwplayer function', function() {
         assert.strictEqual(x.setup, undefined, 'object.setup is not defined');
     });
 
-    it('handles invalid queries by returning an object plugins can register', function() {
+    it('handles invalid queries by returning an object plugins can register', () => {
         // test invalid queries after a player is setup
         jwplayer('player');
 
@@ -53,16 +53,16 @@ describe('jwplayer function', function() {
         assert.equal(x.setup, undefined, 'object.setup is not defined');
     });
 
-    it('returns a new api instance when given an element id', function() {
+    it('returns a new api instance when given an element id', () => {
         testInstanceOfApi(assert, jwplayer('player'));
     });
 
-    it('returns a new api instance when given an element with an id', function() {
+    it('returns a new api instance when given an element with an id', () => {
         const element = $('#player')[0];
         testInstanceOfApi(assert, jwplayer(element));
     });
 
-    it('returns a new api instance when given an element with no id not in the DOM', function() {
+    it('returns a new api instance when given an element with no id not in the DOM', () => {
         const element = $('<div></div>')[0];
         const x = testInstanceOfApi(assert, jwplayer(element));
 
@@ -71,7 +71,7 @@ describe('jwplayer function', function() {
         assert.strictEqual(x, jwplayer(element), 'element selection returns the same instance even without an id');
     });
 
-    it('returns the same api instance for matching queries', function() {
+    it('returns the same api instance for matching queries', () => {
         const element = $('#player')[0];
 
         const x = jwplayer('player');

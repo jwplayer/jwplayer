@@ -1,7 +1,7 @@
 import { getScriptPath } from 'utils/parser';
 import ScriptLoader from 'utils/scriptloader';
 
-describe.skip('ScriptLoader', function() {
+describe.skip('ScriptLoader', () => {
 
     var STATUS = {
         NEW: 0,
@@ -10,7 +10,7 @@ describe.skip('ScriptLoader', function() {
         COMPLETE: 3
     };
 
-    it('ScriptLoader.getStatus', function() {
+    it('ScriptLoader.getStatus', () => {
         // check status new
         var script = new ScriptLoader('./data/mp4.js', true);
         assert.equal(script.getStatus(), STATUS.NEW, 'newly created scriptloader has state new');
@@ -23,14 +23,14 @@ describe.skip('ScriptLoader', function() {
         assert.equal(script.getStatus(), STATUS.LOADING, 'loading script causes status to load');
     });
 
-    it('ScriptLoader with style', function() {
+    it('ScriptLoader with style', () => {
         // check style tag true creates stylesheet
         var script = new ScriptLoader('./data/playlists.js', true);
         var tag = script.makeTag('styleTag');
         assert.isOk(tag.href.indexOf('styleTag') >= 0, 'makeTag with isStyle true creates style tag');
     });
 
-    it('ScriptLoader with script', function() {
+    it('ScriptLoader with script', () => {
         var script = new ScriptLoader('./data/mixed.js', false);
         var tag = script.makeTag('scriptTag');
         script.load();
@@ -38,7 +38,7 @@ describe.skip('ScriptLoader', function() {
         assert.isOk(tag.src.indexOf('scriptTag') >= 0, 'makeTag with isStyle false creates script tag');
     });
 
-    it('ScriptLoader load same script', function() {
+    it('ScriptLoader load same script', () => {
         var script = new ScriptLoader('./data/mp4.js', false);
         script.load();
 
@@ -54,7 +54,7 @@ describe.skip('ScriptLoader', function() {
             'adding same tag should not add the tag');
     });
 
-    it('ScriptLoader with actual path', function() {
+    it('ScriptLoader with actual path', () => {
         var scriptPath = getScriptPath('scriptloader-test.js') + 'scriptloader-test.js';
         var script = new ScriptLoader(scriptPath, false);
         script.load();

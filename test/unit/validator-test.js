@@ -1,14 +1,14 @@
 import * as validator from 'utils/validator';
 import _ from 'utils/underscore';
 
-describe('validator', function() {
+describe('validator', () => {
     const testerGenerator = function (assert, method) {
         return function (left, right, message) {
             assert.strictEqual(method.apply(this, left), right, message);
         };
     };
 
-    it('validator.exists test', function() {
+    it('validator.exists test', () => {
         const test = testerGenerator(assert, validator.exists);
         test([true], true);
         test([0], true);
@@ -18,7 +18,7 @@ describe('validator', function() {
         test([undefined], false);
     });
 
-    it('validator.typeOf', function() {
+    it('validator.typeOf', () => {
         const test = testerGenerator(assert, validator.typeOf);
         test([0], 'number');
         test([''], 'string');
@@ -31,7 +31,7 @@ describe('validator', function() {
         test([null], 'null');
     });
 
-    it('validator.youTubeID', function() {
+    it('validator.youTubeID', () => {
         const ytVideoId = 'YE7VzlLtp-4';
 
         const sampleUrls = [
@@ -56,7 +56,7 @@ describe('validator', function() {
         assert.equal(validator.youTubeID('invalid?@?!@$?!$@'), '', 'youTubeID with invalid path');
     });
 
-    it('isYouTube test', function() {
+    it('isYouTube test', () => {
         const sampleUrls = [
             'http://www.youtube.com/watch?v=YE7VzlLtp-4',
             'http://youtu.be/YE7VzlLtp-4',

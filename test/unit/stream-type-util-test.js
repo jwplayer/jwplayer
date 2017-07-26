@@ -1,8 +1,8 @@
 import * as streamTypeUtil from 'providers/utils/stream-type';
 
-describe('stream-type', function() {
+describe('stream-type', () => {
 
-    it('stream-type.streamType', function() {
+    it('stream-type.streamType', () => {
         const minDvrWindow = 120;
         let type = streamTypeUtil.streamType(0, minDvrWindow);
         assert.equal(type, 'VOD', 'streamType with 0 and 120');

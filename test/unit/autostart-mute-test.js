@@ -37,20 +37,20 @@ function assertMuteState(assert, mobile, mute, result, done) {
     var c = createConfig(mute);
 
     api.setup(c)
-        .on('ready', function() {
+        .on('ready', () => {
             var muted = api.getMute();
             assert.equal(muted, result, 'api.getMute() = ' + muted);
             api.setVolume(20);
             muted = api.getMute();
             assert.equal(muted, false, 'after setting volume to 20, api.getMute() = ' + muted);
         })
-        .on('setupError', function() {
+        .on('setupError', () => {
             assert.isOk(false, 'FAIL');
         });
     done();
 }
 
-describe('api.getMute', function() {
+describe('api.getMute', () => {
 
     it('api.getMute() on mobile when autostart: true & mute: false', function (done) {
         assertMuteState(assert, true, false, true, done);

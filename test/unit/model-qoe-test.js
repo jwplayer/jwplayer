@@ -4,7 +4,7 @@ import SimpleModel from 'model/simplemodel';
 import { STATE_IDLE, STATE_PLAYING, STATE_LOADING, STATE_STALLED, MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME,
     MEDIA_FIRST_FRAME } from 'events/events';
 
-describe('Model QoE', function() {
+describe('Model QoE', () => {
 
 
     // mock MediaModel
@@ -14,7 +14,7 @@ describe('Model QoE', function() {
     _.extend(MediaModel.prototype, SimpleModel);
 
 
-    it('tracks first frame with provider first frame event', function() {
+    it('tracks first frame with provider first frame event', () => {
         var startTime = _.now();
         var model = new Model().setup({});
 
@@ -31,7 +31,7 @@ describe('Model QoE', function() {
         validateQoeFirstFrame(assert, model._qoeItem, startTime);
     });
 
-    it('tracks first frame with first increasing time event', function() {
+    it('tracks first frame with first increasing time event', () => {
         var startTime = _.now();
         var model = new Model().setup({});
 
@@ -51,7 +51,7 @@ describe('Model QoE', function() {
         validateQoeFirstFrame(assert, model._qoeItem, startTime);
     });
 
-    it('removes media controller event listeners', function() {
+    it('removes media controller event listeners', () => {
         var startTime = _.now();
         var model = new Model().setup({});
 
@@ -82,7 +82,7 @@ describe('Model QoE', function() {
         assert.equal(qoeDump.events.firstFrame, firstFrameTick, 'first frame is unchanged after further media events');
     });
 
-    it('tracks stalled time', function() {
+    it('tracks stalled time', () => {
         var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
@@ -97,7 +97,7 @@ describe('Model QoE', function() {
         assert.isOk(validateMeasurement(qoeDump.sums.stalled), 'stalled sum is a valid number');
     });
 
-    it('uses one qoe item per playlist item', function() {
+    it('uses one qoe item per playlist item', () => {
         // Test qoe model observation
         var model = new Model().setup({});
 

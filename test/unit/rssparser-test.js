@@ -1,8 +1,8 @@
 import rssParser from 'parsers/rssparser';
 
-describe('rssParser', function() {
+describe('rssParser', () => {
 
-    it('adds mediaTypes array to source object when at least one jwplayer:mediaTypes element is present', function() {
+    it('adds mediaTypes array to source object when at least one jwplayer:mediaTypes element is present', () => {
         var data =
             '<rss xmlns:jwplayer="http://rss.jwpcdn.com/" xmlns:media="http://search.yahoo.com/mrss">' +
             '<media:channel>' +
@@ -28,7 +28,7 @@ describe('rssParser', function() {
         assert.deepEqual(actualMediaTypes, expectedMediaTypes);
     });
 
-    it('does not add a mediaTypes array to source object when no jwplayer:mediaTypes elements are present', function() {
+    it('does not add a mediaTypes array to source object when no jwplayer:mediaTypes elements are present', () => {
         var data =
             '<rss xmlns:jwplayer="http://rss.jwpcdn.com/" xmlns:media="http://search.yahoo.com/mrss">' +
             '<media:channel>' +

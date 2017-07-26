@@ -1,6 +1,6 @@
 import * as parser from 'utils/parser';
 
-describe('parser', function() {
+describe('parser', () => {
 
     var testerGenerator = function (assert, method) {
         return function (left, right, message) {
@@ -8,7 +8,7 @@ describe('parser', function() {
         };
     };
 
-    it('parser.getAbsolutePath', function() {
+    it('parser.getAbsolutePath', () => {
         var path = parser.getAbsolutePath(null, null);
         assert.isNotOk(path, 'passing null as path returns null');
 
@@ -33,7 +33,7 @@ describe('parser', function() {
         test(['../hello.mp4', 'https://example.com/hi.html'], 'https://example.com/hello.mp4');
     });
 
-    it('parser.serialize', function() {
+    it('parser.serialize', () => {
         var array = [];
         var object = {};
 
@@ -55,7 +55,7 @@ describe('parser', function() {
         test(['100%'], '100%', 'percentage values are not changed');
     });
 
-    it.skip('parser.getScriptPath', function() {
+    it.skip('parser.getScriptPath', () => {
         var path = parser.getScriptPath(null);
         assert.equal(path, '', 'returns an empty string when no file name is provided');
 
@@ -64,7 +64,7 @@ describe('parser', function() {
             'returns a directory url ending with a forward slash "' + scriptPath + '"');
     });
 
-    it('parser.parseXML', function() {
+    it('parser.parseXML', () => {
         var xml = parser.parseXML('<input>');
         assert.isNotOk(xml);
         //
@@ -73,7 +73,7 @@ describe('parser', function() {
         assert.isOk(xml, 'xml should be returned');
     });
 
-    it('parser.parseDimension', function() {
+    it('parser.parseDimension', () => {
         var dimension = parser.parseDimension('');
         assert.equal(dimension, 0, 'dimension with empty string should be 0');
 
@@ -87,7 +87,7 @@ describe('parser', function() {
         assert.equal(dimension, 35, 'dimension with int should be itself');
     });
 
-    it('parser.timeFormat', function() {
+    it('parser.timeFormat', () => {
         var time;
 
         time = parser.timeFormat(3661);

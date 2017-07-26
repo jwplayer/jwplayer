@@ -1,8 +1,8 @@
 import Timer from 'api/timer';
 
-describe('timer', function() {
+describe('timer', () => {
 
-    it('timer start/end test', function() {
+    it('timer start/end test', () => {
         var time = new Timer();
         time.start('test');
         time.end('test');
