@@ -303,11 +303,10 @@ define([
 
         function _itemReadyHandler() {
             // don't load the polyfill or do unnecessary work if rendering natively
-            if (!_model.get('renderCaptionsNatively')) {
-                require.ensure(['polyfills/vtt'], function (require) {
-                    require('polyfills/vtt');
-                    _WebVTT = window.WebVTT;
-                }, 'polyfills.vttrenderer');
+            if (!_model.get('renderCaptionsNatively') && !_WebVTT) {
+                require.ensure(['polyfills/webvtt'], function (require) {
+                    _WebVTT = require('polyfills/webvtt');
+                }, 'polyfills.webvtt');
             }
         }
 
