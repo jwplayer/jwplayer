@@ -5,7 +5,9 @@
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
   "license": "CC-BY-NC-SA-3.0",
-  "dependencies": {},
+  "dependencies": {
+    "svg-inline-loader": "^0.8.0"
+  },
   "devDependencies": {
     "async": "2.2.0",
     "autoprefixer": "6.7.7",
