@@ -521,7 +521,10 @@ define([
                     newButtons[i].btnClass
                 );
 
-                buttonContainer.insertBefore(newButton.element(), buttonContainer.querySelector('.jw-spacer').nextSibling);
+                buttonContainer.insertBefore(
+                    newButton.element(),
+                    buttonContainer.querySelector('.jw-spacer').nextSibling
+                );
             }
         }
 
