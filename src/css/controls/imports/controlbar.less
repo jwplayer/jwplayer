@@ -15,7 +15,7 @@
     border-radius: 0;
     background-size: auto;
     box-shadow: none;
-    max-height: 100px;
+    max-height: 72px;
     //padding: @slider-fixed-height 0 0;
 
     // adjust overlay bottom padding to match height of touch target
@@ -34,13 +34,11 @@
         background-repeat: no-repeat;
         opacity: 0.75;
     }
-}
 
     .jw-spacer {
         flex: 1 1 auto;
         align-self: stretch;
     }
-
 
     > .jw-icon {
         font-size: 20px;
@@ -58,22 +56,7 @@
             padding: 0;
         }
     }
-
-    //.jw-text-alt {
-    //    display: none;
-    //    position: absolute;
-    //    top: -1px;
-    //    bottom: 0;
-    //    height: auto;
-    //    line-height: @controlbar-height;
-    //    margin: 0.5em 0;
-    //    padding-right: 0.5em;
-    //    overflow: hidden;
-    //    text-align: left;
-    //    text-overflow: ellipsis;
-    //    vertical-align: middle;
-    //    white-space: nowrap;
-    //}
+}
 
 .jw-slider-horizontal {
     background-color: transparent;
@@ -92,6 +75,8 @@
 .jw-icon-tooltip {
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 44px;
     height: 44px;
 }
 
@@ -102,7 +87,6 @@
 .jw-text-duration,
 .jw-text-countdown {
     cursor: pointer;
-    padding: 0 @ui-padding;
 }
 
 .jw-icon-tooltip {
@@ -133,7 +117,6 @@
 }
 
 .jw-time-tip {
-    //line-height: 1em;
     pointer-events: none;
 }
 

@@ -128,8 +128,6 @@
 
         /* Colors for display icons */
         .jw-display-icon-container {
-            margin: 0 (@ui-padding * 0.5);
-
             .jw-icon {
                 color: @display-icon-color;
             }
@@ -148,32 +146,6 @@
             background: @progress-color;
         }
 
-        .jw-slider-horizontal {
-            height: @rail-height;
-
-            .jw-rail,
-            .jw-buffer,
-            .jw-progress {
-                height: @rail-height;
-            }
-
-            .jw-knob {
-                margin-left: @thumb-size/-2;
-            }
-        }
-
-        .jw-slider-vertical {
-            .jw-knob {
-                margin-bottom: @thumb-size/-2;
-            }
-
-            .jw-slider-container,
-            .jw-rail,
-            .jw-progress {
-                width: @def-rail-width;
-            }
-        }
-
         /* Styles for menu elements, volume, slider thumbnail */
         .jw-menu,
         .jw-time-tip,
@@ -184,10 +156,6 @@
         .jw-menu,
         .jw-time-tip {
             padding: @ui-padding;
-        }
-
-        .jw-volume-tip {
-            padding: @volume-padding;
         }
 
         .jw-skip {
@@ -336,11 +304,6 @@
                 }
             }
 
-            .jw-controls {
-                .jw-controls-right {
-                    bottom: @controlbar-height;
-                }
-            }
 
             &.jw-flag-audio-player {
                 .jw-controlbar {

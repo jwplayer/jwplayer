@@ -500,7 +500,7 @@ define([
 
         updateButtons(model, newButtons = [], oldButtons = []) {
             // TODO: Change to controlbar container
-            const buttonContainer = this.elements.right;
+            const buttonContainer = this.el;
 
             this.removeButtons(buttonContainer, oldButtons);
 

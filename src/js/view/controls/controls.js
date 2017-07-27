@@ -93,11 +93,6 @@ define([
                 this.displayContainer = displayContainer;
             }
 
-            const right = this.context.createElement('div');
-            right.className = 'jw-controls-right jw-reset';
-            element.appendChild(right);
-            this.right = right;
-
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             if (touchMode) {
                 utils.addClass(this.playerContainer, 'jw-flag-touch');
