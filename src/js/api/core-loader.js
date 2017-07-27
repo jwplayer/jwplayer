@@ -28,9 +28,10 @@ export function selectBundle(model) {
 }
 
 export function requiresPolyfills() {
-    return !('IntersectionObserver' in window &&
-        'IntersectionObserverEntry' in window &&
-        'intersectionRatio' in window.IntersectionObserverEntry.prototype);
+    const IntersectionObserverEntry = window.IntersectionObserverEntry;
+    return !IntersectionObserverEntry ||
+        !('IntersectionObserver' in window) ||
+        !('intersectionRatio' in IntersectionObserverEntry.prototype);
 }
 
 export function requiresProvider(model, providerName) {
@@ -56,6 +57,7 @@ function loadControlsPolyfillHtml5Bundle() {
         'intersection-observer',
         'providers/html5'
     ], function (require) {
+        require('intersection-observer');
         return require('controller/controller');
     }, 'jwplayer.core.controls.polyfills.html5');
 }
@@ -66,6 +68,7 @@ function loadControlsPolyfillBundle() {
         'view/controls/controls',
         'intersection-observer'
     ], function (require) {
+        require('intersection-observer');
         return require('controller/controller');
     }, 'jwplayer.core.controls.polyfills');
 }
