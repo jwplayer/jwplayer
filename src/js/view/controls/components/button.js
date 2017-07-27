@@ -2,7 +2,7 @@ define([
     'utils/ui'
 ], function(UI) {
 
-    return function (icon, apiAction, ariaText, svg) {
+    return function (icon, apiAction, ariaText, svgIcons) {
         const element = document.createElement('div');
         element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
         element.setAttribute('role', 'button');
@@ -21,9 +21,11 @@ define([
             });
         }
 
-        if (svg && svg.length > 0) {
-            for (var i = 0; i < svg.length; i++) {
-                element.innerHTML += svg[i];
+        if (svgIcons && svgIcons.length > 0) {
+            var parser = new DOMParser();
+            for (var i = 0; i < svgIcons.length; i++) {
+                var svgDoc = parser.parseFromString(svgIcons[i], "image/svg+xml");
+                element.appendChild(svgDoc.documentElement);
             }
         }
 
