@@ -52,7 +52,7 @@ define([
         const ariaText = localization.cast;
 
         const castButton = document.createElement('button', 'google-cast-button');
-        castButton.className = 'jw-button-color jw-icon-inline';
+        castButton.className = 'jw-button-color';
         ariaLabel(castButton, ariaText);
 
         const element = document.createElement('div');
