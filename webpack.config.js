@@ -130,6 +130,10 @@ const multiConfig = [
                             'transform-object-assign'
                         ]
                     }
+                },
+                {
+                    test: /\.svg$/,
+                    loader: 'svg-inline-loader'
                 }
             ]
         }
