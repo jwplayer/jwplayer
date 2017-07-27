@@ -2,6 +2,7 @@ import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
 import PLAY_ICON from 'assets/SVG/play.svg';
 import PAUSE_ICON from 'assets/SVG/pause.svg';
 import REWIND_ICON from 'assets/SVG/rewind-10.svg';
+import NEXT_ICON from 'assets/SVG/next.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -133,7 +134,7 @@ define([
 
             const nextButton = button('jw-icon-next', () => {
                 _api.next();
-            }, next);
+            }, next, [NEXT_ICON]);
 
             if (_model.get('nextUpDisplay')) {
                 new UI(nextButton.element(), { useHover: true, directSelect: true })
