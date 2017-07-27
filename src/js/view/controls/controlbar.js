@@ -1,4 +1,7 @@
 import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
+import PLAY_ICON from 'assets/SVG/play.svg';
+import PAUSE_ICON from 'assets/SVG/pause.svg';
+import REWIND_ICON from 'assets/SVG/rewind-10.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -145,10 +148,10 @@ define([
                 alt: text('jw-text-alt', 'status'),
                 play: button('jw-icon-playback', () => {
                     _api.play(null, reasonInteraction());
-                }, play),
+                }, play, [PLAY_ICON, PAUSE_ICON]),
                 rewind: button('jw-icon-rewind', () => {
                     this.rewind();
-                }, rewind),
+                }, rewind, [REWIND_ICON]),
                 next: nextButton,
                 elapsed: text('jw-text-elapsed', 'timer'),
                 countdown: text('jw-text-countdown', 'timer'),
