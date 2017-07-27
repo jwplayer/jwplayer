@@ -6,6 +6,7 @@
   "homepage": "https://github.com/jwplayer/jwplayer",
   "license": "CC-BY-NC-SA-3.0",
   "dependencies": {
+    "module": "^1.2.5",
     "svg-inline-loader": "^0.8.0"
   },
   "devDependencies": {
