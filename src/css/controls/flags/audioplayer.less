@@ -22,34 +22,17 @@
     }
 
     .jw-controlbar {
-        vertical-align: middle;
-        display: table;
-        height: 100%;
-        left: 0;
-        bottom: 0;
-        margin: 0;
-        width: 100%;
-        min-width: 100%;
+        position: relative; // prevents children from exploding out of this container when set too small
 
-        .jw-icon-fullscreen,
-        .jw-icon-tooltip {
+        .jw-icon-tooltip,
+        .jw-icon-inline:not(.jw-icon-volume):not(.jw-icon-playback):not(.jw-icon-fullscreen):not(jw-icon-next) {
             display: none;
         }
 
         .jw-slider-volume.jw-slider-horizontal,
         .jw-icon-inline.jw-icon-volume {
-            display: inline-block;
+            display: flex;
         }
-
-        .jw-icon-tooltip.jw-icon-volume {
-            display: none;
-        }
-    }
-
-    // Setting height/line-height to their defaults allows the controls to responsively resize
-    .jw-icon-inline {
-        height: auto;
-        line-height: normal;
     }
 
     &.jw-flag-small-player {
