@@ -155,7 +155,6 @@ define([
                 countdown: textIcon('jw-text-countdown', 'timer'),
                 time: timeSlider,
                 duration: textIcon('jw-text-duration', 'timer'),
-                durationLeft: textIcon('jw-text-duration', 'timer'),
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
@@ -182,7 +181,6 @@ define([
                 this.elements.alt,
                 this.elements.rewind,
                 this.elements.elapsed,
-                // this.elements.durationLeft,
                 this.elements.countdown,
                 this.elements.duration,
                 this.elements.spacer,
@@ -326,14 +324,6 @@ define([
                 }
             }, this);
 
-            new UI(this.elements.durationLeft).on('click tap', function() {
-                if (this._model.get('streamType') === 'DVR') {
-                    // Seek to "Live" position within live buffer, but not before current position
-                    const currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(dvrSeekLimit, currentPosition));
-                }
-            }, this);
-
             // When the control bar is interacted with, trigger a user action event
             new UI(this.el).on('click tap drag', function() {
                 this.trigger('userAction');
@@ -444,7 +434,6 @@ define([
                 totalTime = utils.timeFormat(val);
             }
             this.elements.duration.textContent = totalTime;
-            this.elements.durationLeft.textContent = totalTime;
         }
 
         onFullscreen(model, val) {
@@ -497,7 +486,6 @@ define([
             this.elements.rewind.toggle(streamType !== 'LIVE');
             if (streamType === 'DVR') {
                 this.elements.duration.textContent = 'Live';
-                this.elements.durationLeft.textContent = 'Live';
             }
             const duration = model.get('duration');
             this.onDuration(model, duration);
