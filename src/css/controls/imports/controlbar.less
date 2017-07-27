@@ -164,14 +164,12 @@
 .jwplayer&:not(.jw-flag-ads):not(.jw-flag-live) {
     &.jw-breakpoint-0 {
         .jw-text-countdown {
-            display: inline-block;
+            display: flex;
         }
-    }
 
-    &.jw-flag-small-player {
         .jw-text-elapsed,
-        .jw-text-countdown {
-            padding-left: 15px;
+        .jw-text-duration {
+            display: none;
         }
     }
 }
