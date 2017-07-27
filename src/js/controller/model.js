@@ -1,17 +1,17 @@
 import { Browser, OS } from 'environment/environment';
-import SimpleModel from '../model/simplemodel';
-import { playerDefaults } from '../model/player-model';
+import SimpleModel from 'model/simplemodel';
+import { INITIAL_PLAYER_STATE } from 'model/player-model';
+import Providers from 'providers/providers';
+import initQoe from 'controller/qoe';
 import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, MEDIA_PLAY_ATTEMPT, MEDIA_TYPE, MEDIA_BUFFER,
- MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
- MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
+    MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
+    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
 
 define([
     'utils/helpers',
-    'providers/providers',
-    'controller/qoe',
     'utils/underscore',
     'utils/backbone.events',
-], function(utils, Providers, QOE, _, Events) {
+], function(utils, _, Events) {
 
     // Represents the state of the player
     var Model = function() {
@@ -24,13 +24,13 @@ define([
         this.mediaController = Object.assign({}, Events);
         this.mediaModel = new MediaModel();
 
-        QOE.model(this);
+        initQoe(this);
 
         this.set('mediaModel', this.mediaModel);
 
         this.setup = function(config) {
 
-            Object.assign(this.attributes, config, playerDefaults);
+            Object.assign(this.attributes, config, INITIAL_PLAYER_STATE);
 
             this.updateProviders();
 
@@ -271,6 +271,7 @@ define([
         };
 
         this.destroy = function() {
+            this.attributes._destroyed = true;
             this.off();
             if (_provider) {
                 _provider.off(null, null, this);

@@ -1,7 +1,7 @@
-define([
-    'utils/underscore',
-    'utils/parser'
-], function(_, parser) {
+import { parseXML } from 'utils/parser';
+import _ from 'utils/underscore';
+
+define([], function() {
     var noop = function() {};
     var useDomParser = false;
 
@@ -177,7 +177,7 @@ define([
                 }
                 // IE9
                 if (useDomParser && xhr.responseText && !xml) {
-                    xml = parser.parseXML(xhr.responseText);
+                    xml = parseXML(xhr.responseText);
                     if (xml && xml.firstChild) {
                         return _xmlResponse(xhr, xml, options);
                     }

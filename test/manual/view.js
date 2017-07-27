@@ -32,7 +32,7 @@ window.requireCallback = function(){
         document.body.addEventListener('touchstart', clearInactivity);
 
         // Styles added by related plugin
-        css.css('.jw-related-dock-btn .jw-dock-image', {
+        css.css('.jw-related-btn .jw-button-image', {
             backgroundSize: 20
         });
 

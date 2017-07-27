@@ -1,6 +1,7 @@
 import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
+import CustomButton from 'view/controls/components/custom-button';
 
 define([
     'utils/helpers',
@@ -104,10 +105,14 @@ define([
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
             if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
-                muteButton = button('jw-icon-volume', () => { _api.setMute(); }, vol);
+                muteButton = button('jw-icon-volume', () => {
+                    _api.setMute();
+                }, vol);
             }
 
-            const nextButton = button('jw-icon-next', () => { _api.next(); }, next);
+            const nextButton = button('jw-icon-next', () => {
+                _api.next();
+            }, next);
 
             if (_model.get('nextUpDisplay')) {
                 new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -130,8 +135,12 @@ define([
 
             this.elements = {
                 alt: text('jw-text-alt', 'status'),
-                play: button('jw-icon-playback', () => { _api.play(null, reasonInteraction()); }, play),
-                rewind: button('jw-icon-rewind', () => { this.rewind(); }, rewind),
+                play: button('jw-icon-playback', () => {
+                    _api.play(null, reasonInteraction());
+                }, play),
+                rewind: button('jw-icon-rewind', () => {
+                    this.rewind();
+                }, rewind),
                 next: nextButton,
                 elapsed: text('jw-text-elapsed', 'timer'),
                 countdown: text('jw-text-countdown', 'timer'),
@@ -149,8 +158,12 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: createCastButton(() => { _api.castToggle(); }, this._localization),
-                fullscreen: button('jw-icon-fullscreen', () => { _api.setFullscreen(); }, this._localization.fullscreen),
+                cast: createCastButton(() => {
+                    _api.castToggle();
+                }, this._localization),
+                fullscreen: button('jw-icon-fullscreen', () => {
+                    _api.setFullscreen();
+                }, this._localization.fullscreen),
                 spacer: spacer()
             };
 
@@ -221,6 +234,7 @@ define([
             _model.change('nextUp', this.onNextUp, this);
             _model.change('cues', this.addCues, this);
             _model.change('altText', this.setAltText, this);
+            _model.change('customButtons', this.updateButtons, this);
 
             // Event listeners
 
@@ -482,6 +496,48 @@ define([
 
         onNextUp(model, nextUp) {
             this.elements.next.toggle(!!nextUp);
+        }
+
+        updateButtons(model, newButtons = [], oldButtons = []) {
+            // TODO: Change to controlbar container
+            const buttonContainer = this.elements.right;
+
+            this.removeButtons(buttonContainer, oldButtons);
+
+            for (let i = newButtons.length - 1; i >= 0; i--) {
+                const newButton = new CustomButton(
+                    newButtons[i].img,
+                    newButtons[i].tooltip,
+                    newButtons[i].callback,
+                    newButtons[i].id,
+                    newButtons[i].btnClass
+                );
+
+                buttonContainer.insertBefore(newButton.element(), buttonContainer.firstChild);
+            }
+        }
+
+        removeButtons(buttonContainer, oldButtons) {
+            const toRemove = {};
+            const buttonElements = _.clone(buttonContainer.children);
+
+            for (let i = 0; i < oldButtons.length; i++) {
+                const oldButton = oldButtons[i];
+                toRemove[oldButton.id] = oldButton;
+            }
+
+            for (let i = 0; i < buttonElements.length; i++) {
+                const buttonElement = buttonElements[i];
+                if (!buttonElement) {
+                    return;
+                }
+
+                const id = buttonElement.getAttribute('button');
+
+                if (toRemove[id]) {
+                    buttonContainer.removeChild(buttonElement);
+                }
+            }
         }
     };
 });

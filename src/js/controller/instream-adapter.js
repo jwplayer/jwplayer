@@ -185,6 +185,9 @@ define([
         };
 
         this.loadItem = function(item, options) {
+            if (!_instream) {
+                return;
+            }
             if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
                 this.trigger({
                     type: ERROR,
@@ -212,7 +215,7 @@ define([
             _instream._adModel.set('state', STATE_BUFFERING);
             providersManager.load(providersNeeded)
                 .then(function() {
-                    if (_instream === null) {
+                    if (!_instream) {
                         return;
                     }
                     // Dispatch playlist item event for ad pods
@@ -301,6 +304,11 @@ define([
                 _view.destroyInstream();
 
                 _instream = null;
+
+                // Player was destroyed
+                if (_model.attributes._destroyed) {
+                    return;
+                }
 
                 // Re-attach the controller
                 _controller.attachMedia();

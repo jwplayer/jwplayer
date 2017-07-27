@@ -8,14 +8,13 @@ define([
     'utils/underscore',
     'view/controls/components/button',
     'view/controls/controlbar',
-    'view/controls/dock',
     'view/controls/display-container',
     'view/controls/rewind-display-icon',
     'view/controls/play-display-icon',
     'view/controls/next-display-icon',
     'view/controls/nextuptooltip',
     'view/controls/rightclick',
-], function (Events, utils, _, button, Controlbar, Dock,
+], function (Events, utils, _, button, Controlbar,
     DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
     NextUpToolTip, RightClick) {
 
@@ -37,7 +36,6 @@ define([
             this.context = context;
             this.controlbar = null;
             this.displayContainer = null;
-            this.dock = null;
             this.enabled = true;
             this.instreamState = null;
             this.keydownCallback = null;
@@ -99,10 +97,6 @@ define([
             right.className = 'jw-controls-right jw-reset';
             element.appendChild(right);
             this.right = right;
-
-            // Dock Area and Buttons
-            const dock = this.dock = new Dock(model);
-            this.right.appendChild(dock.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             if (touchMode) {

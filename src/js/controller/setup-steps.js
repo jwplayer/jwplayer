@@ -1,231 +1,136 @@
-import * as ControlsLoader from 'controller/controls-loader';
+import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR } from 'events/events';
+import Promise from 'polyfills/promise';
+import plugins from 'plugins/plugins';
+import PlaylistLoader from 'playlist/loader';
+import ScriptLoader from 'utils/scriptloader';
+import _ from 'utils/underscore';
 
-define([
-    'plugins/plugins',
-    'playlist/loader',
-    'utils/scriptloader',
-    'utils/embedswf',
-    'utils/underscore',
-], function(plugins, PlaylistLoader, ScriptLoader, EmbedSwf, _) {
+const resolved = Promise.resolve();
 
-    var _pluginLoader;
-    var _playlistLoader;
+let pluginLoader;
 
-    function getQueue() {
-        var Components = {
-            LOAD_PLUGINS: {
-                method: _loadPlugins,
-                // Plugins require JavaScript Promises
-                depends: []
-            },
-            LOAD_XO_POLYFILL: {
-                method: _loadIntersectionObserverPolyfill,
-                depends: []
-            },
-            LOAD_SKIN: {
-                method: _loadSkin,
-                depends: []
-            },
-            LOAD_PLAYLIST: {
-                method: _loadPlaylist,
-                depends: []
-            },
-            LOAD_CONTROLS: {
-                method: _loadControls,
-                depends: []
-            },
-            SETUP_VIEW: {
-                method: _setupView,
-                depends: [
-                    'LOAD_SKIN',
-                    'LOAD_XO_POLYFILL'
-                ]
-            },
-            INIT_PLUGINS: {
-                method: _initPlugins,
-                depends: [
-                    'LOAD_PLUGINS',
-                    // Plugins require jw-overlays to setup
-                    'SETUP_VIEW'
-                ]
-            },
-            FILTER_PLAYLIST: {
-                method: _filterPlaylist,
-                depends: [
-                    'LOAD_PLAYLIST'
-                ]
-            },
-            SET_ITEM: {
-                method: _setPlaylistItem,
-                depends: [
-                    'INIT_PLUGINS',
-                    'FILTER_PLAYLIST'
-                ]
-            },
-            DEFERRED: {
-                method: _deferred,
-                depends: []
-            },
-            SEND_READY: {
-                method: _sendReady,
-                depends: [
-                    'LOAD_CONTROLS',
-                    'SET_ITEM',
-                    'DEFERRED'
-                ]
-            }
-        };
-
-        return Components;
-    }
-
-    function _deferred(resolve) {
-        setTimeout(resolve, 0);
-    }
-
-    function _loadIntersectionObserverPolyfill(resolve) {
-        if ('IntersectionObserver' in window &&
-            'IntersectionObserverEntry' in window &&
-            'intersectionRatio' in window.IntersectionObserverEntry.prototype) {
-            resolve();
-        } else {
-            require.ensure(['intersection-observer'], function (require) {
-                require('intersection-observer');
-                resolve();
-            }, 'polyfills.intersection-observer');
-        }
-    }
-
-    function _loadPlugins(resolve, _model) {
-        window.jwplayerPluginJsonp = plugins.registerPlugin;
-        _pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-        _pluginLoader.on(MEDIA_COMPLETE, resolve);
-        _pluginLoader.on(ERROR, _.partial(_pluginsError, resolve));
-        _pluginLoader.load();
-    }
-
-    function _initPlugins(resolve, _model, _api) {
-        delete window.jwplayerPluginJsonp;
-        _pluginLoader.setupPlugins(_api, _model);
-        resolve();
-    }
-
-    function _pluginsError(resolve, evt) {
-        error(resolve, 'Could not load plugin', evt.message);
-    }
-
-    function _loadPlaylist(resolve, _model) {
-        var playlist = _model.get('playlist');
-        if (_.isString(playlist)) {
-            _playlistLoader = new PlaylistLoader();
-            _playlistLoader.on(PLAYLIST_LOADED, function(data) {
-                _model.attributes.feedData = data;
-                _model.attributes.playlist = data.playlist;
-                resolve();
+function loadPlugins(_model) {
+    window.jwplayerPluginJsonp = plugins.registerPlugin;
+    pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
+    return new Promise((resolve, reject) => {
+        pluginLoader.on(MEDIA_COMPLETE, resolve);
+        pluginLoader.on(ERROR, (err) => {
+            reject({
+                message: 'Could not load plugin',
+                error: err
             });
-            _playlistLoader.on(ERROR, _.partial(_playlistError, resolve));
-            _playlistLoader.load(playlist);
-        } else {
-            resolve();
-        }
-    }
-
-    function _filterPlaylist(resolve, _model, _api, _view, _setPlaylist) {
-        // Performs filtering
-        var success = _setPlaylist(_model.get('playlist'), _model.get('feedData'));
-
-        if (success) {
-            resolve();
-        } else {
-            _playlistError(resolve);
-        }
-    }
-
-    function _playlistError(resolve, evt) {
-        if (evt && evt.message) {
-            error(resolve, 'Error loading playlist', evt.message);
-        } else {
-            error(resolve, 'Error loading player', 'No playable sources found');
-        }
-    }
-
-    function isSkinLoaded(skinPath) {
-        var ss = document.styleSheets;
-        for (var i = 0, max = ss.length; i < max; i++) {
-            if (ss[i].href === skinPath) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    function _loadSkin(resolve, _model) {
-        var skinUrl = _model.get('skinUrl');
-
-        if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
-            _model.set('skin-loading', true);
-
-            var isStylesheet = true;
-            var loader = new ScriptLoader(skinUrl, isStylesheet);
-
-            loader.addEventListener(MEDIA_COMPLETE, function() {
-                _model.set('skin-loading', false);
-            });
-            loader.addEventListener(ERROR, function() {
-                _model.set('skin-loading', false);
-            });
-
-            loader.load();
-        }
-
-        // Control elements are hidden by the loading flag until it is ready
-        resolve();
-    }
-
-    function _setupView(resolve, _model, _api, _view) {
-        _model.setAutoStart();
-        _view.setup();
-        resolve();
-    }
-
-    function _setPlaylistItem(resolve, _model) {
-        _model.once('itemReady', resolve);
-        _model.setItemIndex(_model.get('item'));
-    }
-
-    function _sendReady(resolve) {
-        resolve({
-            type: 'complete'
         });
-    }
+        pluginLoader.load();
+    });
+}
 
-    function _loadControls(resolve, _model, _api, _view) {
-        if (!_model.get('controls')) {
-            resolve();
+function initPlugins(_model, _api, _view) {
+    return Promise.all([
+        setupView(_model, _view),
+        loadPlugins(_model)
+    ]).then(() => {
+        delete window.jwplayerPluginJsonp;
+        if (destroyed(_model)) {
             return;
         }
+        pluginLoader.setupPlugins(_api, _model);
+    });
+}
 
-        ControlsLoader.load()
-            .then(function (Controls) {
-                _view.setControlsModule(Controls);
-                resolve();
-            })
-            .catch(function (reason) {
-                error(resolve, 'Failed to load controls', reason);
+function loadPlaylist(_model) {
+    const playlist = _model.get('playlist');
+    if (_.isString(playlist)) {
+        return new Promise((resolve, reject) => {
+            const playlistLoader = new PlaylistLoader();
+            playlistLoader.on(PLAYLIST_LOADED, function(data) {
+                resolve(data.playlist, data);
             });
-    }
+            playlistLoader.on(ERROR, err => {
+                reject(new Error(`Error loading playlist: ${err.message}`));
+            });
+            playlistLoader.load(playlist);
+        });
 
-    function error(resolve, msg, reason) {
-        resolve({
-            type: 'error',
-            msg: msg,
-            reason: reason
+    }
+    return Promise.resolve(playlist, _model.attributes.feedData);
+}
+
+function filterPlaylist(_model) {
+    return loadPlaylist(_model).then((playlist, feedData) => {
+        if (destroyed(_model)) {
+            return;
+        }
+        // `setPlaylist` performs filtering
+        setPlaylist(_model, playlist, feedData);
+        loadProvidersForPlaylist(_model);
+    });
+}
+
+function isSkinLoaded(skinPath) {
+    const ss = document.styleSheets;
+    for (let i = 0, max = ss.length; i < max; i++) {
+        if (ss[i].href === skinPath) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function loadSkin(_model) {
+    const skinUrl = _model.get('skinUrl');
+    if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
+        return new Promise(resolve => {
+            const isStylesheet = true;
+            const loader = new ScriptLoader(skinUrl, isStylesheet);
+            loader.addEventListener(MEDIA_COMPLETE, resolve);
+            loader.addEventListener(ERROR, resolve);
+            loader.load();
         });
     }
+    return resolved;
+}
 
-    return {
-        getQueue: getQueue,
-        error: error
-    };
-});
+function setupView(_model, _view) {
+    return loadSkin(_model).then(() => {
+        if (destroyed(_model)) {
+            return;
+        }
+        _model.setAutoStart();
+        _view.setup();
+    });
+
+}
+
+function setPlaylistItem(_model) {
+    return filterPlaylist(_model).then(() => {
+        if (destroyed(_model)) {
+            return;
+        }
+        return new Promise(resolve => {
+            _model.once('itemReady', resolve);
+            _model.setItemIndex(_model.get('item'));
+        });
+    });
+}
+
+function destroyed(_model) {
+    return _model.attributes._destroyed;
+}
+
+const startSetup = function(_api, _model, _view) {
+    if (destroyed(_model)) {
+        return Promise.reject();
+    }
+    return Promise.all([
+        setPlaylistItem(_model, _api, _view),
+        // filterPlaylist -->
+        // -- loadPlaylist,
+        initPlugins(_model, _api, _view),
+        // loadPlugins,
+        // setupView -->
+        // -- loadSkin
+    ]);
+};
+
+export default startSetup;

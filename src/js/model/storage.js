@@ -1,4 +1,4 @@
-import parser from 'utils/parser';
+import { serialize } from 'utils/parser';
 
 let storage = {
     removeItem: function() {}
@@ -18,7 +18,7 @@ Object.assign(Storage.prototype, {
         return this.items.reduce((memo, key) => {
             const val = storage[`${this.namespace}.${key}`];
             if (val) {
-                memo[key] = parser.serialize(val);
+                memo[key] = serialize(val);
             }
             return memo;
         }, {});

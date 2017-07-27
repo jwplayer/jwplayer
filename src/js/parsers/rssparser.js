@@ -1,13 +1,15 @@
+import PlaylistItem from 'playlist/item';
+
 /**
  * Parse an RSS feed and translate it to a playlist.
  */
+
 define([
     'utils/strings',
     'parsers/parsers',
     'parsers/jwparser',
-    'parsers/mediaparser',
-    'playlist/item'
-], function (strings, parsers, parseEntry, mediaParser, PlaylistItem) {
+    'parsers/mediaparser'
+], function (strings, parsers, parseEntry, mediaParser) {
     var _textContent = parsers.textContent;
     var _getChildNode = parsers.getChildNode;
     var _numChildren = parsers.numChildren;
