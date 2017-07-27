@@ -25,6 +25,15 @@ define([
         return element;
     }
 
+    function textIcon(name, role) {
+        const element = document.createElement('div');
+        element.className = 'jw-icon jw-icon-inline jw-text jw-reset ' + name;
+        if (role) {
+            element.setAttribute('role', role);
+        }
+        return element;
+    }
+
     function spacer() {
         const element = document.createElement('div');
         element.className = 'jw-reset jw-spacer';
@@ -47,7 +56,7 @@ define([
         ariaLabel(castButton, ariaText);
 
         const element = document.createElement('div');
-        element.className = 'jw-reset jw-icon-cast';
+        element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast';
         element.style.display = 'none';
         element.style.cursor = 'pointer';
         element.appendChild(castButton);
@@ -142,11 +151,11 @@ define([
                     this.rewind();
                 }, rewind),
                 next: nextButton,
-                elapsed: text('jw-text-elapsed', 'timer'),
-                countdown: text('jw-text-countdown', 'timer'),
+                elapsed: textIcon('jw-text-elapsed', 'timer'),
+                countdown: textIcon('jw-text-countdown', 'timer'),
                 time: timeSlider,
-                duration: text('jw-text-duration', 'timer'),
-                durationLeft: text('jw-text-duration', 'timer'),
+                duration: textIcon('jw-text-duration', 'timer'),
+                durationLeft: textIcon('jw-text-duration', 'timer'),
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
@@ -499,7 +508,6 @@ define([
         }
 
         updateButtons(model, newButtons = [], oldButtons = []) {
-            // TODO: Change to controlbar container
             const buttonContainer = this.el;
 
             this.removeButtons(buttonContainer, oldButtons);
@@ -513,7 +521,7 @@ define([
                     newButtons[i].btnClass
                 );
 
-                buttonContainer.insertBefore(newButton.element(), buttonContainer.firstChild);
+                buttonContainer.insertBefore(newButton.element(), buttonContainer.querySelector('.jw-spacer').nextSibling);
             }
         }
 

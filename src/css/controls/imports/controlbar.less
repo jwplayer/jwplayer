@@ -40,7 +40,7 @@
         align-self: stretch;
     }
 
-    > .jw-icon {
+    > .jw-icon:not(.jw-text) {
         font-size: 20px;
         max-width: @mobile-touch-target;
 
@@ -79,6 +79,7 @@
     width: 44px;
     height: 44px;
 }
+
 
 .jw-icon-inline,
 .jw-icon-tooltip,
@@ -185,11 +186,8 @@
 
 &:not(.jw-breakpoint-0) {
     .jw-text-duration {
-        display: inline-block;
-
         &:before {
             content: "/";
-            display: inline-block;
             padding-right: 0.5em;
         }
     }
