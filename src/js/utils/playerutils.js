@@ -1,19 +1,19 @@
 import { version } from 'version';
 import _ from 'utils/underscore';
-import validator from 'utils/validator';
-import parser from 'utils/parser';
+import { isHTTPS } from 'utils/validator';
+import { getScriptPath } from 'utils/parser';
 
 const REPO_URL = __REPO__;
 
 /** Gets the repository location **/
 export const repo = _.memoize(function () {
     if (__SELF_HOSTED__) {
-        return parser.getScriptPath('jwplayer.js');
+        return getScriptPath('jwplayer.js');
     }
 
     const semver = version.split('+')[0];
     const playerRepo = REPO_URL + semver + '/';
-    if (validator.isHTTPS()) {
+    if (isHTTPS()) {
         return playerRepo.replace(/^http:/, 'https:');
     }
     return playerRepo;
@@ -37,7 +37,7 @@ export const versionCheck = function (target) {
 
 export const loadFrom = function () {
     if (__DEBUG__ || __SELF_HOSTED__) {
-        return parser.getScriptPath('jwplayer.js');
+        return getScriptPath('jwplayer.js');
     }
     return repo();
 };

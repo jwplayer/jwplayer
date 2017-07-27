@@ -1,4 +1,4 @@
-export const playerDefaults = {
+export const INITIAL_PLAYER_STATE = {
     // always start on first playlist item
     item: 0,
     itemMeta: {},

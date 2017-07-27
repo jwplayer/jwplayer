@@ -1,29 +1,30 @@
-import setConfig from 'api/set-config';
 import instances from 'api/players';
-import { OS } from 'environment/environment';
+import setConfig from 'api/set-config';
+import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
+import Setup from 'controller/Setup';
+import PlaylistLoader from 'playlist/loader';
+import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, SETUP_ERROR, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
+
 define([
     'controller/instream-adapter',
     'utils/underscore',
-    'controller/Setup',
     'controller/captions',
     'controller/model',
-    'playlist/playlist',
-    'playlist/loader',
     'utils/helpers',
     'view/view',
     'utils/backbone.events',
     'events/change-state-event',
     'view/error',
     'controller/events-middleware',
-], function(InstreamAdapter, _, Setup, Captions, Model,
-            Playlist, PlaylistLoader, utils, View, Events, changeStateEvent, viewError, eventsMiddleware) {
+], function(InstreamAdapter, _, Captions, Model, utils, View, Events, changeStateEvent,
+    viewError, eventsMiddleware) {
 
     // The model stores a different state than the provider
     function normalizeState(newstate) {
@@ -57,10 +58,7 @@ define([
             _model.setup(config);
             _view = this._view = new View(_api, _model);
 
-            _setup = new Setup(_api, _model, _view, _setPlaylist);
-
-            _setup.on(READY, _playerReady, this);
-            _setup.on(SETUP_ERROR, this.setupError, this);
+            _setup = new Setup(_api, _model, _view);
 
             _model.mediaController.on('all', _triggerAfterReady, this);
             _model.mediaController.on(MEDIA_COMPLETE, function() {
@@ -196,6 +194,10 @@ define([
             }, this);
 
             function _playerReady() {
+                if (_setup === null) {
+                    // Player was destroyed during setup
+                    return;
+                }
                 _setup = null;
 
                 _view.on('all', _triggerAfterReady, _this);
@@ -301,18 +303,6 @@ define([
                 });
             };
 
-            function _loadProvidersForPlaylist(playlist) {
-                const providersManager = _model.getProviders();
-                const providersNeeded = providersManager.required(playlist);
-                return providersManager.load(providersNeeded)
-                    .then(function() {
-                        if (!_this.getProvider()) {
-                            _model.setProvider(_model.get('playlistItem'));
-                            // provider is not available under "itemReady" event
-                        }
-                    });
-            }
-
             function _load(item, feedData) {
                 if (_model.get('state') === STATE_ERROR) {
                     _model.set('state', STATE_IDLE);
@@ -329,10 +319,16 @@ define([
                         _loadPlaylist(item);
                         break;
                     case 'object': {
-                        const success = _setPlaylist(item, feedData);
-                        if (success) {
-                            _setItem(0);
+                        try {
+                            setPlaylist(_model, item, feedData);
+                        } catch (error) {
+                            _this.triggerError({
+                                message: `Error loading playlist: ${error.message}`
+                            });
+                            return;
                         }
+                        loadProvidersForPlaylist(_model);
+                        _setItem(0);
                         break;
                     }
                     case 'number':
@@ -515,26 +511,6 @@ define([
                 }
                 _setItem(index);
                 _play(meta);
-            }
-
-            function _setPlaylist(array, feedData) {
-                _model.set('feedData', feedData);
-
-                let playlist = Playlist(array);
-                playlist = Playlist.filterPlaylist(playlist, _model, feedData);
-
-                _model.set('playlist', playlist);
-
-                if (!_.isArray(playlist) || playlist.length === 0) {
-                    _this.triggerError({
-                        message: 'Error loading playlist: No playable sources found'
-                    });
-                    return false;
-                }
-
-                _loadProvidersForPlaylist(playlist);
-
-                return true;
             }
 
             function _setItem(index) {
@@ -842,9 +818,10 @@ define([
             };
 
             this.playerDestroy = function () {
+                this.trigger('destroyPlugin', {});
+                this.off();
                 this.stop();
                 this.showView(this.originalContainer);
-
                 if (_view) {
                     _view.destroy();
                 }
@@ -858,6 +835,7 @@ define([
                 if (apiQueue) {
                     apiQueue.destroy();
                 }
+                this.instreamDestroy();
             };
 
             this.isBeforePlay = this.checkBeforePlay;
@@ -899,7 +877,13 @@ define([
             // Add commands from CoreLoader to queue
             apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
-            _setup.start();
+            _setup.start().then(_playerReady).catch((error) => {
+                // Ignore errors caused by player being destroyed
+                if (_model.attributes._destroyed) {
+                    return;
+                }
+                _this.setupError(error);
+            });
         },
         get(property) {
             return this._model.get(property);
@@ -948,9 +932,8 @@ define([
 
             this.showView(errorElement);
 
-            const _this = this;
-            _.defer(function() {
-                _this.trigger(SETUP_ERROR, {
+            setTimeout(() => {
+                this.trigger(SETUP_ERROR, {
                     message: message
                 });
             });

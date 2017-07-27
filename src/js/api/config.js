@@ -1,5 +1,5 @@
 import { loadFrom } from '../utils/playerutils';
-import parser from 'utils/parser';
+import { serialize, getScriptPath } from 'utils/parser';
 import _ from 'utils/underscore';
 
 /* global __webpack_public_path__:true*/
@@ -55,7 +55,7 @@ const Defaults = {
 
 function _deserialize(options) {
     _.each(options, function(val, key) {
-        options[key] = parser.serialize(val);
+        options[key] = serialize(val);
     });
 }
 
@@ -75,13 +75,13 @@ const Config = function(options, persisted) {
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {
-        config.base = parser.getScriptPath('jwplayer.js');
+        config.base = getScriptPath('jwplayer.js');
     }
     config.base = (config.base || loadFrom()).replace(/\/?$/, '/');
     __webpack_public_path__ = config.base;
     config.width = _normalizeSize(config.width);
     config.height = _normalizeSize(config.height);
-    const pathToFlash = (parser.getScriptPath('jwplayer.js') || config.base);
+    const pathToFlash = (getScriptPath('jwplayer.js') || config.base);
     config.flashplayer = config.flashplayer || pathToFlash + 'jwplayer.flash.swf';
     config.flashloader = config.flashloader || pathToFlash + 'jwplayer.loader.swf';
 

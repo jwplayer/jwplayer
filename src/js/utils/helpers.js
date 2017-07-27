@@ -1,17 +1,18 @@
 import * as playerutils from 'utils/playerutils';
+import * as validator from 'utils/validator';
+import * as parser from 'utils/parser';
+import Timer from 'api/timer';
 
-define([
-    'utils/strings',
-    'utils/underscore',
-    'utils/browser',
-    'utils/dom',
-    'utils/css',
-    'utils/parser',
-    'utils/ajax',
-    'utils/validator',
-    'api/timer',
-    'utils/trycatch'
-], function(strings, _, browser, dom, css, parser, ajax, validator, Timer, trycatch) {
+// These are AMD modules
+import strings from 'utils/strings';
+import _ from 'utils/underscore';
+import browser from 'utils/browser';
+import dom from 'utils/dom';
+import css from 'utils/css';
+import ajax from 'utils/ajax';
+import trycatch from 'utils/trycatch';
+
+define([], function() {
     var utils = {};
 
     utils.log = function () {

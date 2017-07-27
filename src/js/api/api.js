@@ -1,10 +1,11 @@
 import * as Environment from 'environment/environment';
 import instances from './players';
-import CoreLoader from './core-loader';
+import Core from './core-shim';
 import { version } from '../version';
 import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
-// These are AMD modules
 import Timer from 'api/timer';
+
+// These are AMD modules
 import plugins from 'plugins/plugins';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -18,7 +19,7 @@ let instancesCreated = 0;
  * @param {HTMLElement} element
  */
 function coreFactory(api, element) {
-    const core = new CoreLoader(element);
+    const core = new Core(element);
 
     // capture the ready event and add setup time to it
     core.on(READY, (event) => {
@@ -35,15 +36,11 @@ function coreFactory(api, element) {
 /**
  * Detaches Api event listeners and destroys the controller.
  * @param {Api} api
- * @param {CoreLoader} core
+ * @param {Core} core
  */
 function resetPlayer(api, core) {
     api.off();
-    core.off();
-    // so players can be removed before loading completes
-    if (core.playerDestroy) {
-        core.playerDestroy();
-    }
+    core.playerDestroy();
 }
 
 /**
@@ -1010,11 +1007,11 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * Plays an ad. Implemented by ad plugins.
      * @param {string|Array} adBreak - The ad tag or waterfall array.
      */
-    playAd(/* eslint-disable no-unused-vars */adBreak/* eslint-enable no-unused-vars */) {},
+    playAd(adBreak) {}, // eslint-disable-line
 
     /**
      * Pauses or toggles ad playback. Implemented by ad plugins.
      * @param {boolean} toggle - Specifies whether ad playback should be paused or resumed.
      */
-    pauseAd(/* eslint-disable no-unused-vars */toggle/* eslint-enable no-unused-vars */) {},
+    pauseAd(toggle) {}, // eslint-disable-line
 });

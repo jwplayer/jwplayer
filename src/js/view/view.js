@@ -33,14 +33,14 @@ define([
     let stylesInjected = false;
 
     function View(_api, _model) {
-        const _this = _.extend(this, Events, {
+        const _this = Object.assign(this, Events, {
             isSetup: false,
             api: _api,
             model: _model
         });
 
         // init/reset view model properties
-        _.extend(_model.attributes, {
+        Object.assign(_model.attributes, {
             containerWidth: undefined,
             containerHeight: undefined,
             mediaContainer: undefined,
@@ -86,6 +86,13 @@ define([
 
         let _breakpoint = null;
         let _controls;
+
+        // Fetch the ControlsModule now so we can  call `addControls()` synchronously on `init`
+        if (_model.get('controls')) {
+            ControlsLoader.load().then(Controls => {
+                ControlsModule = Controls;
+            });
+        }
 
         function reasonInteraction() {
             return { reason: 'interaction' };
@@ -364,13 +371,7 @@ define([
             if (_isIE) {
                 utils.addClass(_playerElement, 'jw-ie');
             }
-            // Hide control elements until skin is loaded
-            if (_model.get('skin-loading') === true) {
-                utils.addClass(_playerElement, 'jw-flag-skin-loading');
-                _model.once('change:skin-loading', function () {
-                    utils.removeClass(_playerElement, 'jw-flag-skin-loading');
-                });
-            }
+
             this.handleColorOverrides();
 
             // adds video tag to video layer
@@ -847,6 +848,10 @@ define([
                 _instreamModel.off(null, null, this);
                 _instreamModel = null;
             }
+            if (!displayClickHandler) {
+                // view was destroyed
+                return;
+            }
             this.setAltText('');
             utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
             _model.set('hideAdsControls', false);
@@ -939,10 +944,6 @@ define([
             utils.clearCss(_model.get('id'));
         };
     }
-
-    View.prototype.setControlsModule = function(Controls) {
-        ControlsModule = Controls;
-    };
 
     return View;
 });
