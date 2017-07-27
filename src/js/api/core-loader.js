@@ -1,6 +1,9 @@
 let bundlePromise = null;
+import Playlist from 'playlist/playlist';
 
 export default function loadCoreBundle(model) {
+    // Normalize playlist as part of setup and for bundle selection
+    model.set('playlist', Playlist(model.get('playlist')));
     if (!bundlePromise) {
         bundlePromise = selectBundle(model);
     }
@@ -28,15 +31,20 @@ export function selectBundle(model) {
 }
 
 export function requiresPolyfills() {
-    return !('IntersectionObserver' in window &&
-        'IntersectionObserverEntry' in window &&
-        'intersectionRatio' in window.IntersectionObserverEntry.prototype);
+    const IntersectionObserverEntry = window.IntersectionObserverEntry;
+    return !IntersectionObserverEntry ||
+        !('IntersectionObserver' in window) ||
+        !('intersectionRatio' in IntersectionObserverEntry.prototype);
 }
 
 export function requiresProvider(model, providerName) {
     const providersManager = model.getProviders();
-    const providersNeeded = providersManager.required([model.get('playlist')[0]]);
-    return providersNeeded[0].name === providerName;
+    const firstItem = model.get('playlist')[0];
+    if (!firstItem) {
+        return false;
+    }
+    const providersNeeded = providersManager.required([firstItem]);
+    return providersNeeded.length && providersNeeded[0].name === providerName;
 }
 
 function loadControlsHtml5Bundle() {
@@ -56,6 +64,7 @@ function loadControlsPolyfillHtml5Bundle() {
         'intersection-observer',
         'providers/html5'
     ], function (require) {
+        require('intersection-observer');
         return require('controller/controller');
     }, 'jwplayer.core.controls.polyfills.html5');
 }
@@ -66,6 +75,7 @@ function loadControlsPolyfillBundle() {
         'view/controls/controls',
         'intersection-observer'
     ], function (require) {
+        require('intersection-observer');
         return require('controller/controller');
     }, 'jwplayer.core.controls.polyfills');
 }
