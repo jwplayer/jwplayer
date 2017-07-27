@@ -1,6 +1,6 @@
 import ApiQueueDecorator from 'api/api-queue';
 import Config from 'api/config';
-import setPlaylist from 'api/set-playlist';
+import Providers from 'providers/providers';
 import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
@@ -8,7 +8,6 @@ import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
-import Providers from 'providers/providers';
 
 const CoreModel = function() {};
 Object.assign(CoreModel.prototype, SimpleModel);
@@ -78,7 +77,6 @@ Object.assign(CoreShim.prototype, {
             model.getProviders = function() {
                 return new Providers(configuration);
             };
-            setPlaylist(model, model.get('playlist'), model.get('feedData'));
             return model;
         }).then(loadCoreBundle).then(CoreMixin => {
             if (!this.apiQueue) {

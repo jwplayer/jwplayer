@@ -1,6 +1,9 @@
 let bundlePromise = null;
+import Playlist from 'playlist/playlist';
 
 export default function loadCoreBundle(model) {
+    // Normalize playlist as part of setup and for bundle selection
+    model.set('playlist', Playlist(model.get('playlist')));
     if (!bundlePromise) {
         bundlePromise = selectBundle(model);
     }
@@ -36,8 +39,12 @@ export function requiresPolyfills() {
 
 export function requiresProvider(model, providerName) {
     const providersManager = model.getProviders();
-    const providersNeeded = providersManager.required([model.get('playlist')[0]]);
-    return providersNeeded[0].name === providerName;
+    const firstItem = model.get('playlist')[0];
+    if (!firstItem) {
+        return false;
+    }
+    const providersNeeded = providersManager.required([firstItem]);
+    return providersNeeded.length && providersNeeded[0].name === providerName;
 }
 
 function loadControlsHtml5Bundle() {
