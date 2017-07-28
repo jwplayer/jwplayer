@@ -45,7 +45,7 @@ define([
     }
 
     function createCastButton(castToggle, localization) {
-        if (Browser.chrome && OS.iOS) {
+        if (!Browser.chrome || OS.iOS) {
             return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
         }
 

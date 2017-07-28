@@ -46,6 +46,8 @@
 }
 
 .jw-slider-horizontal {
+    display: flex;
+
     &.jw-slider-volume {
         width: @volume-rail-length;
     }
@@ -57,6 +59,8 @@
     .jw-rail,
     .jw-buffer,
     .jw-progress {
+        top: 50%;
+        transform: translate(0, -50%);
         height: @rail-height;
     }
 
@@ -87,6 +91,7 @@
     }
 
     .jw-knob {
+        left: -50%;
         margin-bottom: (-@thumb-size / 2);
     }
 }
