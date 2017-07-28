@@ -1,6 +1,6 @@
 // Bundle files chunked by webpack
 import * as xo from 'intersection-observer';
-import * as vtt from 'polyfills/webvtt';
+import vtt from 'polyfills/webvtt';
 import * as vttParser from 'parsers/captions/vttparser';
 import * as html5 from 'providers/html5';
 import * as flash from 'providers/flash';

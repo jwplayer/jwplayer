@@ -38,7 +38,7 @@ function initPlugins(_model, _api, _view) {
     });
 }
 
-function loadPlaylist(_model) {
+export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
     if (_.isString(playlist)) {
         return new Promise((resolve, reject) => {
