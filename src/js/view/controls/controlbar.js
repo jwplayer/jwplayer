@@ -4,6 +4,8 @@ import PAUSE_ICON from 'assets/SVG/pause.svg';
 import REWIND_ICON from 'assets/SVG/rewind-10.svg';
 import NEXT_ICON from 'assets/SVG/next.svg';
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
+import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
+import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -30,8 +32,8 @@ define([
         return element;
     }
 
-    function menu(name, ariaText) {
-        return new Menu(name, ariaText);
+    function menu(name, ariaText, svgIcons) {
+        return new Menu(name, ariaText, null, svgIcons);
     }
 
     function createCastButton(castToggle, localization) {
@@ -161,7 +163,7 @@ define([
                 duration: text('jw-text-duration', 'timer'),
                 durationLeft: text('jw-text-duration', 'timer'),
                 hd: menu('jw-icon-hd', this._localization.hd),
-                cc: menu('jw-icon-cc', this._localization.cc),
+                cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
                 playbackrates: new SelectionDisplayMenu(
                     'jw-icon-playback-rate',

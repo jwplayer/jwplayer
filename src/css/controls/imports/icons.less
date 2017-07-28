@@ -10,6 +10,7 @@
 .jw-svg-icon {
     width: 22px;
     height: 22px;
+    pointer-events: none;
 }
 
 .jw-icon {
@@ -51,9 +52,18 @@
 }
 
 .jw-icon-cc {
-    &:before {
-        content: "\e605";
+    &:not(.jw-off) {
+        #captionsOffIcon {
+            display: none;
+        }
     }
+
+    &.jw-off {
+        #captionsOnIcon {
+            display: none;
+        }
+    }
+
 }
 
 .jw-icon-error {
