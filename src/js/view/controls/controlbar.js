@@ -6,6 +6,7 @@ import NEXT_ICON from 'assets/SVG/next.svg';
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
+import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -173,7 +174,7 @@ define([
                 duration: textIcon('jw-text-duration', 'timer'),
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
-                audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
+                audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks, [AUDIO_TRACKS_ICON]),
                 playbackrates: new SelectionDisplayMenu(
                     'jw-icon-playback-rate',
                     this._localization.playbackRates,
