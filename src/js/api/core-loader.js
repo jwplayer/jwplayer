@@ -1,3 +1,5 @@
+import Item from 'playlist/item';
+
 let bundlePromise = null;
 
 export default function loadCoreBundle(model) {
@@ -36,12 +38,15 @@ export function requiresPolyfills() {
 
 export function requiresProvider(model, providerName) {
     const providersManager = model.getProviders();
-    const firstItem = model.get('playlist')[0];
-    if (!firstItem) {
-        return false;
+    const playlist = model.get('playlist');
+    if (Array.isArray(playlist) && playlist.length) {
+        const firstItem = Item(playlist[0]);
+        if (firstItem) {
+            const providersNeeded = providersManager.required([firstItem]);
+            return providersNeeded.length && providersNeeded[0].name === providerName;
+        }
     }
-    const providersNeeded = providersManager.required([firstItem]);
-    return providersNeeded.length && providersNeeded[0].name === providerName;
+    return false;
 }
 
 function loadControlsHtml5Bundle() {
