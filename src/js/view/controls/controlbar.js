@@ -3,6 +3,7 @@ import PLAY_ICON from 'assets/SVG/play.svg';
 import PAUSE_ICON from 'assets/SVG/pause.svg';
 import REWIND_ICON from 'assets/SVG/rewind-10.svg';
 import NEXT_ICON from 'assets/SVG/next.svg';
+import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -123,7 +124,7 @@ define([
             if (!this._isMobile) {
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');// , vol);
                 volumeSlider.setup();
-                volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
+                volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0]);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
             if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {

@@ -6,7 +6,7 @@ define([
 ], function(Events, ariaLabel, utils, _) {
 
     return class Tooltip {
-        constructor(name, ariaText, elementShown) {
+        constructor(name, ariaText, elementShown, svgIcons) {
             _.extend(this, Events);
             this.el = document.createElement('div');
             let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
@@ -23,6 +23,13 @@ define([
             this.componentType = 'tooltip';
 
             this.el.appendChild(this.container);
+            if (svgIcons && svgIcons.length > 0) {
+                var parser = new DOMParser();
+                for (var i = 0; i < svgIcons.length; i++) {
+                    var svgDoc = parser.parseFromString(svgIcons[i], "image/svg+xml");
+                    this.el.appendChild(svgDoc.documentElement);
+                }
+            }
         }
 
         addContent(elem) {

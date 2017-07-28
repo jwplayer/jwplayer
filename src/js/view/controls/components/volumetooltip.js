@@ -6,8 +6,8 @@ define([
 ], function(Tooltip, Slider, UI) {
 
     return class VolumeTooltip extends Tooltip {
-        constructor(_model, name, ariaText) {
-            super(name, ariaText, true);
+        constructor(_model, name, ariaText, svgIcons) {
+            super(name, ariaText, true, svgIcons);
 
             this._model = _model;
 
