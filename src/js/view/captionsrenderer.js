@@ -305,7 +305,7 @@ define([
             // don't load the polyfill or do unnecessary work if rendering natively
             if (!_model.get('renderCaptionsNatively') && !_WebVTT) {
                 require.ensure(['polyfills/webvtt'], function (require) {
-                    _WebVTT = require('polyfills/webvtt');
+                    _WebVTT = require('polyfills/webvtt').default;
                 }, 'polyfills.webvtt');
             }
         }
