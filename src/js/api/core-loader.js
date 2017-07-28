@@ -1,9 +1,6 @@
 let bundlePromise = null;
-import Playlist from 'playlist/playlist';
 
 export default function loadCoreBundle(model) {
-    // Normalize playlist as part of setup and for bundle selection
-    model.set('playlist', Playlist(model.get('playlist')));
     if (!bundlePromise) {
         bundlePromise = selectBundle(model);
     }
