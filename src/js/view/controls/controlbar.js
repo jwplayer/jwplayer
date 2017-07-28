@@ -163,7 +163,6 @@ define([
                 time: timeSlider,
                 duration: text('jw-text-duration', 'timer'),
                 durationLeft: text('jw-text-duration', 'timer'),
-                hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks, [AUDIO_TRACKS_ICON]),
                 playbackrates: new SelectionDisplayMenu(
@@ -197,7 +196,6 @@ define([
                 right: [
                     this.elements.duration,
                     this.elements.next,
-                    this.elements.hd,
                     this.elements.cc,
                     this.elements.audiotracks,
                     this.elements.playbackrates,
@@ -210,7 +208,6 @@ define([
             };
 
             this.menus = _.compact([
-                this.elements.hd,
                 this.elements.cc,
                 this.elements.audiotracks,
                 this.elements.playbackrates,
@@ -283,13 +280,6 @@ define([
                     this._model.set('castClicked', true);
                 }, this);
             }
-
-            this.elements.hd.on('select', function(value) {
-                this._model.getVideo().setCurrentQuality(value);
-            }, this);
-            this.elements.hd.on('toggleValue', function() {
-                this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
-            }, this);
 
             this.elements.cc.on('select', function(value) {
                 this._api.setCurrentCaptions(value);
@@ -385,12 +375,6 @@ define([
         }
 
         onMediaModel(model, mediaModel) {
-            mediaModel.on('change:levels', function(levelsChangeModel, levels) {
-                this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
-            }, this);
-            mediaModel.on('change:currentLevel', function(currentLevelChangeModel, level) {
-                this.elements.hd.selectItem(level);
-            }, this);
             mediaModel.on('change:audioTracks', function(audioTracksChangeModel, audioTracks) {
                 const list = _.map(audioTracks, function(track) {
                     return { label: track.name };
