@@ -4,7 +4,6 @@ import _ from 'test/underscore';
 import sinon from 'sinon';
 
 const model = _.extend({}, SimpleModel);
-// model.change = sinon.mock(_.extend({}, SimpleModel));
 model.change = sinon.stub();
 model.change.returnsThis();
 model.on = sinon.stub();
