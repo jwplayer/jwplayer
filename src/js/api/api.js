@@ -948,15 +948,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
         if (jwplayer && jwplayer.debug) {
             return Events.trigger.call(this, name, args);
         }
-        return Events.triggerSafe.call(this, name, args);
-    },
-
-    /**
-     * Triggers an event callback inside a try catch block.
-     * @deprecated TODO: in version 8.0.0-0
-     */
-    triggerSafe(type, args) {
-        return Events.triggerSafe.call(this, type, args);
+        return Events.trigger.call(this, name, args, true);
     },
 
     /**
