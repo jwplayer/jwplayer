@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import * as playerutils from 'utils/playerutils';
 import * as validator from 'utils/validator';
 import * as parser from 'utils/parser';
@@ -15,17 +17,7 @@ import trycatch from 'utils/trycatch';
 define([], function() {
     var utils = {};
 
-    utils.log = function () {
-        /* eslint no-console: 0 */
-        if (!window.console) {
-            return;
-        }
-        if (typeof console.log === 'object') {
-            console.log(Array.prototype.slice.call(arguments, 0));
-        } else {
-            console.log.apply(console, arguments);
-        }
-    };
+    utils.log = (console.log === 'object') ? console.log.bind(console) : function() {};
 
     utils.between = function (num, min, max) {
         return Math.max(Math.min(num, max), min);

@@ -25,7 +25,7 @@ define([
     'view/error',
     'controller/events-middleware',
 ], function(InstreamAdapter, _, Captions, Model, utils, View, Events, changeStateEvent,
-    viewError, eventsMiddleware) {
+        viewError, eventsMiddleware) {
 
     // The model stores a different state than the provider
     function normalizeState(newstate) {

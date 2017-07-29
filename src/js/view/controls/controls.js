@@ -14,9 +14,9 @@ define([
     'view/controls/next-display-icon',
     'view/controls/nextuptooltip',
     'view/controls/rightclick',
-], function (Events, utils, _, button, Controlbar,
-    DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
-    NextUpToolTip, RightClick) {
+], function (Events, utils, _, button, Controlbar, DisplayContainer,
+        RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
+        NextUpToolTip, RightClick) {
 
     const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 

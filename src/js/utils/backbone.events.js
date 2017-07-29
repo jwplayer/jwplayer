@@ -35,11 +35,12 @@ export function once(name, callback, context) {
         return this;
     }
     let count = 0;
-    const onceCallback = () => {
+    const self = this;
+    const onceCallback = function() {
         if (count++) {
             return;
         }
-        this.off(name, onceCallback);
+        self.off(name, onceCallback);
         callback.apply(this, arguments);
     };
     onceCallback._callback = callback;
