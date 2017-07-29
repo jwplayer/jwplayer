@@ -62,14 +62,20 @@
 
 }
 
-.jwplayer:not(.jw-state-paused) {
-    .jw-icon-play {
+.jwplayer.jw-state-idle,
+.jwplayer.jw-state-error,
+.jwplayer.jw-state-complete,
+.jwplayer.jw-state-buffering,
+.jwplayer.jw-state-paused {
+    .jw-icon-pause {
         display: none;
     }
 }
 
-.jwplayer:not(.jw-state-playing) {
-    .jw-icon-pause {
+.jwplayer.jw-state-error,
+.jwplayer.jw-state-complete,
+.jwplayer.jw-state-playing {
+    .jw-icon-play {
         display: none;
     }
 }
