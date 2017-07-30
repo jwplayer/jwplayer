@@ -74,8 +74,15 @@
 
 .jwplayer.jw-state-error,
 .jwplayer.jw-state-complete,
+.jwplayer.jw-state-buffering,
 .jwplayer.jw-state-playing {
     .jw-icon-play {
+        display: none;
+    }
+}
+
+.jwplayer:not(.jw-state-buffering) {
+    .jw-icon-buffer {
         display: none;
     }
 }
