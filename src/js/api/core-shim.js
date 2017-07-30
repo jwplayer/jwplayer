@@ -10,12 +10,12 @@ import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
 import Promise from 'polyfills/promise';
 
-const modelShim = function() {};
-Object.assign(modelShim.prototype, SimpleModel);
+const ModelShim = function() {};
+Object.assign(ModelShim.prototype, SimpleModel);
 
 const CoreShim = function(originalContainer) {
     this._events = {};
-    this.modelShim = new modelShim();
+    this.modelShim = new ModelShim();
     this.modelShim._qoeItem = new Timer();
     this.originalContainer = originalContainer;
     this.apiQueue = new ApiQueueDecorator(this, [

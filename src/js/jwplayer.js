@@ -3,6 +3,7 @@ import instances from './api/players';
 import * as GlobalApi from 'api/global-api';
 import { version } from './version';
 import Api from 'api/api';
+import ApiSettings from 'api/api-settings';
 
 /* global __webpack_public_path__:true*/
 /* eslint camelcase: 0 */
@@ -56,7 +57,6 @@ function playerById(id) {
             return instances[p];
         }
     }
-
     return null;
 }
 
@@ -73,6 +73,14 @@ Object.defineProperties(jwplayer, {
         },
         set() {}
     },
+    debug: {
+        get() {
+            return ApiSettings.debug;
+        },
+        set(value) {
+            ApiSettings.debug = !!value;
+        }
+    }
 });
 
 /* global module */

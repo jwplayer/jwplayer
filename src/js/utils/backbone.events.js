@@ -86,7 +86,7 @@ export function off(name, callback, context) {
 // passed the same arguments as `trigger` is, apart from the event name
 // (unless you're listening on `"all"`, which will cause your callback to
 // receive the true name of the event as the first argument).
-export function trigger(name, catchExceptions) {
+export function trigger(name) {
     if (!this._events) {
         return this;
     }
@@ -97,10 +97,29 @@ export function trigger(name, catchExceptions) {
     const events = this._events[name];
     const allEvents = this._events.all;
     if (events) {
-        triggerEvents(events, args, this, catchExceptions ? name : null);
+        triggerEvents(events, args, this);
     }
     if (allEvents) {
-        triggerEvents(allEvents, arguments, this, catchExceptions ? name : null);
+        triggerEvents(allEvents, arguments, this);
+    }
+    return this;
+}
+
+export function triggerSafe(name) {
+    if (!this._events) {
+        return this;
+    }
+    const args = slice.call(arguments, 1);
+    if (!eventsApi(this, 'trigger', name, args)) {
+        return this;
+    }
+    const events = this._events[name];
+    const allEvents = this._events.all;
+    if (events) {
+        triggerEvents(events, args, this, name);
+    }
+    if (allEvents) {
+        triggerEvents(allEvents, arguments, this, name);
     }
     return this;
 }

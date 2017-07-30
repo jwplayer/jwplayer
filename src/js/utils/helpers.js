@@ -12,7 +12,7 @@ import browser from 'utils/browser';
 import dom from 'utils/dom';
 import css from 'utils/css';
 import ajax from 'utils/ajax';
-import trycatch from 'utils/trycatch';
+import { tryCatch, JwError as Error } from 'utils/trycatch';
 
 define([], function() {
     var utils = {};
@@ -55,7 +55,7 @@ define([], function() {
 
     utils.Timer = Timer;
 
-    _.extend(utils, parser, validator, browser, ajax, dom, css, playerutils, trycatch);
+    _.extend(utils, parser, validator, browser, ajax, dom, css, playerutils, { tryCatch, Error });
 
     return utils;
 });
