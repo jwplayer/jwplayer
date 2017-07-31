@@ -1,4 +1,5 @@
 import Item from 'playlist/item';
+import ProvidersSupported from 'providers/providers-supported';
 
 let bundlePromise = null;
 
@@ -37,13 +38,13 @@ export function requiresPolyfills() {
 }
 
 export function requiresProvider(model, providerName) {
+    const providerSupports = ProvidersSupported.find(provider => provider.name === providerName);
     const providersManager = model.getProviders();
     const playlist = model.get('playlist');
     if (Array.isArray(playlist) && playlist.length) {
         const firstItem = Item(playlist[0]);
         if (firstItem) {
-            const providersNeeded = providersManager.required([firstItem]);
-            return providersNeeded.length && providersNeeded[0].name === providerName;
+            return providersManager.providerSupports(providerSupports, firstItem.sources[0]);
         }
     }
     return false;
