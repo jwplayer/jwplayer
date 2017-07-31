@@ -65,18 +65,33 @@
 .jwplayer.jw-state-idle,
 .jwplayer.jw-state-error,
 .jwplayer.jw-state-complete,
-.jwplayer.jw-state-buffering,
 .jwplayer.jw-state-paused {
     .jw-icon-pause {
         display: none;
     }
 }
 
-.jwplayer.jw-state-error,
-.jwplayer.jw-state-complete,
-.jwplayer.jw-state-buffering,
+
+.jwplayer.jw-state-buffering {
+    .jw-icon-display .jw-icon-pause {
+        display: none;
+    }
+
+    .jw-icon-playback .jw-icon-play {
+        display: none;
+    }
+}
+
 .jwplayer.jw-state-playing {
     .jw-icon-play {
+        display: none;
+    }
+}
+
+.jwplayer.jw-state-error,
+.jwplayer.jw-state-complete,
+.jwplayer.jw-state-buffering {
+    .jw-icon-display .jw-icon-play {
         display: none;
     }
 }
