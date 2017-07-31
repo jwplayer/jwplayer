@@ -1,7 +1,11 @@
 import Playlist, { filterPlaylist } from 'playlist/playlist';
 
 const setPlaylist = function(model, array, feedData) {
+
     model.set('feedData', feedData);
+    if (feedData.error instanceof Error) {
+        throw feedData.error;
+    }
 
     let playlist = Playlist(array);
     playlist = filterPlaylist(playlist, model, feedData);
