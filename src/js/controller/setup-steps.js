@@ -60,6 +60,8 @@ export function loadPlaylist(_model) {
             playlistLoader.load(playlist);
         });
     }
+    const normalizedPlaylist = Playlist(playlist);
+    _model.set('playlist', normalizedPlaylist);
     return resolved;
 }
 

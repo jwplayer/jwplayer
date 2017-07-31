@@ -71,9 +71,6 @@ Object.assign(CoreShim.prototype, {
         Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE);
 
         Promise.resolve().then(() => {
-            if (configuration.error) {
-                throw configuration.error;
-            }
             model.getProviders = function() {
                 return new Providers(configuration);
             };
