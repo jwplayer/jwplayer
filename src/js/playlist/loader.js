@@ -8,7 +8,7 @@ const PlaylistLoader = function() {
     var _this = Object.assign(this, Events);
 
     this.load = function(playlistfile) {
-        utils.ajax(playlistfile, playlistLoaded, playlistLoadError);
+        utils.ajax(playlistfile, playlistLoaded, playlistError);
     };
 
     this.destroy = function() {
@@ -58,10 +58,6 @@ const PlaylistLoader = function() {
         } catch (error) {
             playlistError(error);
         }
-    }
-
-    function playlistLoadError(err) {
-        playlistError('Error loading playlist: ' + err);
     }
 
     function playlistError(msg) {

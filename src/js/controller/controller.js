@@ -4,6 +4,7 @@ import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
 import Setup from 'controller/Setup';
 import PlaylistLoader from 'playlist/loader';
+import Playlist from 'playlist/playlist';
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
@@ -60,12 +61,12 @@ define([
 
             _setup = new Setup(_api, _model, _view);
 
-            _model.mediaController.on('all', _triggerAfterReady, this);
+            _model.mediaController.on('all', _triggerAfterReady, _this);
             _model.mediaController.on(MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 _.defer(_completeHandler);
             });
-            _model.mediaController.on(MEDIA_ERROR, this.triggerError, this);
+            _model.mediaController.on(MEDIA_ERROR, _this.triggerError, _this);
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
             _model.on('change:flashBlocked', function(model, isBlocked) {
@@ -200,6 +201,12 @@ define([
                 }
                 _setup = null;
 
+                // Exit if embed config encountered an error
+                if (config.error instanceof Error) {
+                    _this.setupError(config.error);
+                    return;
+                }
+
                 _view.on('all', _triggerAfterReady, _this);
 
                 const related = _api.getPlugin('related');
@@ -320,7 +327,8 @@ define([
                         break;
                     case 'object': {
                         try {
-                            setPlaylist(_model, item, feedData);
+                            const playlist = Playlist(item);
+                            setPlaylist(_model, playlist, feedData);
                         } catch (error) {
                             _this.triggerError({
                                 message: `Error loading playlist: ${error.message}`

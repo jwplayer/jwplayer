@@ -3,6 +3,7 @@ import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR } from 'events/events';
 import Promise from 'polyfills/promise';
 import plugins from 'plugins/plugins';
 import PlaylistLoader from 'playlist/loader';
+import Playlist from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
 import _ from 'utils/underscore';
 
@@ -41,30 +42,36 @@ function initPlugins(_model, _api, _view) {
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
     if (_.isString(playlist)) {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             const playlistLoader = new PlaylistLoader();
             playlistLoader.on(PLAYLIST_LOADED, function(data) {
-                resolve(data);
+                const loadedPlaylist = Playlist(data.playlist);
+                delete data.playlist;
+                _model.set('playlist', loadedPlaylist);
+                _model.set('feedData', data);
+                resolve();
             });
             playlistLoader.on(ERROR, err => {
-                reject(new Error(`Error loading playlist: ${err.message}`));
+                _model.set('feedData', {
+                    error: new Error(`Error loading playlist: ${err.message}`)
+                });
+                resolve();
             });
             playlistLoader.load(playlist);
         });
-
     }
-    const data = _model.get('feedData') || {};
-    data.playlist = playlist;
-    return Promise.resolve(data);
+    const normalizedPlaylist = Playlist(playlist);
+    _model.set('playlist', normalizedPlaylist);
+    return resolved;
 }
 
 function filterPlaylist(_model) {
-    return loadPlaylist(_model).then(data => {
+    return loadPlaylist(_model).then(() => {
         if (destroyed(_model)) {
             return;
         }
         // `setPlaylist` performs filtering
-        setPlaylist(_model, data.playlist, data);
+        setPlaylist(_model, _model.get('playlist'), _model.get('feedData'));
         loadProvidersForPlaylist(_model);
     });
 }
@@ -105,14 +112,10 @@ function setupView(_model, _view) {
 }
 
 function setPlaylistItem(_model) {
-    return filterPlaylist(_model).then(() => {
-        if (destroyed(_model)) {
-            return;
-        }
-        return new Promise(resolve => {
-            _model.once('itemReady', resolve);
-            _model.setItemIndex(_model.get('item'));
-        });
+
+    return new Promise(resolve => {
+        _model.once('itemReady', resolve);
+        _model.setItemIndex(_model.get('item'));
     });
 }
 
@@ -125,14 +128,20 @@ const startSetup = function(_api, _model, _view) {
         return Promise.reject();
     }
     return Promise.all([
-        setPlaylistItem(_model, _api, _view),
+        filterPlaylist(_model),
         // filterPlaylist -->
         // -- loadPlaylist,
         initPlugins(_model, _api, _view),
         // loadPlugins,
         // setupView -->
         // -- loadSkin
-    ]);
+    ]).then(() => {
+        if (destroyed(_model)) {
+            return;
+        }
+        // Set the active playlist item after plugins are loaded and the view is setup
+        return setPlaylistItem(_model);
+    });
 };
 
 export default startSetup;
