@@ -102,10 +102,23 @@
 }
 
 .jw-icon-volume {
-    &:before {
+    &:not(.jw-off) {
+        #volume0Icon {
+            display: none;
+        }
     }
 
-    &.jw-off:before {
+    &:not(.jw-full) {
+        #volume100Icon {
+            display: none;
+        }
+    }
+
+    &.jw-off,
+    &.jw-full {
+        #volume50Icon {
+            display: none;
+        }
     }
 }
 

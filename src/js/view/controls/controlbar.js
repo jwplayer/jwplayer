@@ -4,16 +4,18 @@ import PAUSE_ICON from 'assets/SVG/pause.svg';
 import REWIND_ICON from 'assets/SVG/rewind-10.svg';
 import NEXT_ICON from 'assets/SVG/next.svg';
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
+import VOLUME_ICON_50 from 'assets/SVG/volume-50.svg';
+import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
 import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
+import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
+import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
+import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
+import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
-import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
-import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
-import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
-import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 
 define([
     'utils/helpers',
@@ -132,7 +134,7 @@ define([
             if (!this._isMobile) {
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');// , vol);
                 volumeSlider.setup();
-                volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0]);
+                volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0, VOLUME_ICON_50, VOLUME_ICON_100]);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
             if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
@@ -412,6 +414,7 @@ define([
             if (this.elements.volumetooltip) {
                 this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
                 utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
+                utils.toggleClass(this.elements.volumetooltip.element(), 'jw-full', vol === 100 && !muted);
             }
         }
 
