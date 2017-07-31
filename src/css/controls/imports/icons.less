@@ -67,12 +67,16 @@
 }
 
 .jw-icon-fullscreen {
-    &:before {
-        content: "\e608";
+    &:not(.jw-off) {
+        #fullscreenExitIcon {
+            display: none;
+        }
     }
 
-    &.jw-off:before {
-        content: "\e613";
+    &.jw-off {
+        #fullscreenEnterIcon {
+            display: none;
+        }
     }
 }
 
@@ -118,7 +122,4 @@
 }
 
 .jw-icon-rewind {
-    &:before {
-        font-size: 24px;
-    }
 }

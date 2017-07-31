@@ -12,6 +12,8 @@ import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
 import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
+import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
+import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 
 define([
     'utils/helpers',
@@ -181,7 +183,7 @@ define([
                 }, this._localization),
                 fullscreen: button('jw-icon-fullscreen', () => {
                     _api.setFullscreen();
-                }, this._localization.fullscreen)
+                }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON])
             };
 
             this.layout = {
