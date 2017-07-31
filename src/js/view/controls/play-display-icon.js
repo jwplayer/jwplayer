@@ -2,6 +2,7 @@ import displayIconTemplate from 'view/controls/templates/display-icon';
 import PLAY_ICON from 'assets/SVG/play.svg';
 import PAUSE_ICON from 'assets/SVG/pause.svg';
 import BUFFER_ICON from 'assets/SVG/buffer.svg';
+import ERROR_ICON from 'assets/SVG/playback-error.svg';
 
 define([
     'utils/helpers',
@@ -15,7 +16,7 @@ define([
             _.extend(this, Events);
 
             const localization = _model.get('localization');
-            const playPauseSvgs = PLAY_ICON.concat('', PAUSE_ICON, '', BUFFER_ICON);
+            const playPauseSvgs = PLAY_ICON.concat('', PAUSE_ICON, '', BUFFER_ICON, '', ERROR_ICON);
             const element = utils.createElement(displayIconTemplate('display', localization.playback, playPauseSvgs));
             const iconDisplay = element.getElementsByClassName('jw-icon-display')[0];
             element.style.cursor = 'pointer';
