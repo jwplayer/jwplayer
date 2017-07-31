@@ -112,14 +112,10 @@ function setupView(_model, _view) {
 }
 
 function setPlaylistItem(_model) {
-    return filterPlaylist(_model).then(() => {
-        if (destroyed(_model)) {
-            return;
-        }
-        return new Promise(resolve => {
-            _model.once('itemReady', resolve);
-            _model.setItemIndex(_model.get('item'));
-        });
+
+    return new Promise(resolve => {
+        _model.once('itemReady', resolve);
+        _model.setItemIndex(_model.get('item'));
     });
 }
 
@@ -132,14 +128,20 @@ const startSetup = function(_api, _model, _view) {
         return Promise.reject();
     }
     return Promise.all([
-        setPlaylistItem(_model, _api, _view),
+        filterPlaylist(_model),
         // filterPlaylist -->
         // -- loadPlaylist,
         initPlugins(_model, _api, _view),
         // loadPlugins,
         // setupView -->
         // -- loadSkin
-    ]);
+    ]).then(() => {
+        if (destroyed(_model)) {
+            return;
+        }
+        // Set the active playlist item after plugins are loaded and the view is setup
+        return setPlaylistItem(_model);
+    });
 };
 
 export default startSetup;
