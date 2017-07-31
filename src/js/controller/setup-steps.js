@@ -44,7 +44,7 @@ export function loadPlaylist(_model) {
         return new Promise((resolve, reject) => {
             const playlistLoader = new PlaylistLoader();
             playlistLoader.on(PLAYLIST_LOADED, function(data) {
-                resolve(data.playlist, data);
+                resolve(data);
             });
             playlistLoader.on(ERROR, err => {
                 reject(new Error(`Error loading playlist: ${err.message}`));
@@ -53,16 +53,18 @@ export function loadPlaylist(_model) {
         });
 
     }
-    return Promise.resolve(playlist, _model.attributes.feedData);
+    const data = _model.get('feedData') || {};
+    data.playlist = playlist;
+    return Promise.resolve(data);
 }
 
 function filterPlaylist(_model) {
-    return loadPlaylist(_model).then((playlist, feedData) => {
+    return loadPlaylist(_model).then(data => {
         if (destroyed(_model)) {
             return;
         }
         // `setPlaylist` performs filtering
-        setPlaylist(_model, playlist, feedData);
+        setPlaylist(_model, data.playlist, data);
         loadProvidersForPlaylist(_model);
     });
 }
