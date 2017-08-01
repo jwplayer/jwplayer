@@ -30,7 +30,6 @@
     "grunt-flash-compiler": "0.3.5",
     "grunt-karma": "2.0.0",
     "grunt-postcss": "0.8.0",
-    "grunt-stylelint": "0.8.0",
     "import-loader": "1.0.1",
     "intersection-observer": "0.3.2",
     "istanbul-instrumenter-loader": "1.2.0",
