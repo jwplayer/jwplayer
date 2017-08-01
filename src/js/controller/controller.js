@@ -12,20 +12,18 @@ import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYIN
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
+import InstreamAdapter from 'controller/instream-adapter';
+import _ from 'utils/underscore';
+import Captions from 'controller/captions';
+import Model from 'controller/model';
+import utils from 'utils/helpers';
+import View from 'view/view';
+import Events from 'utils/backbone.events';
+import changeStateEvent from 'events/change-state-event';
+import viewError from 'view/error';
+import eventsMiddleware from 'controller/events-middleware';
 
-define([
-    'controller/instream-adapter',
-    'utils/underscore',
-    'controller/captions',
-    'controller/model',
-    'utils/helpers',
-    'view/view',
-    'utils/backbone.events',
-    'events/change-state-event',
-    'view/error',
-    'controller/events-middleware',
-], function(InstreamAdapter, _, Captions, Model, utils, View, Events, changeStateEvent,
-        viewError, eventsMiddleware) {
+define([], function() {
 
     // The model stores a different state than the provider
     function normalizeState(newstate) {
