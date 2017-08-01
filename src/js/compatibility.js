@@ -99,7 +99,11 @@
          */
         var environment = playerLibrary(document.createElement('div')).getEnvironment();
         var utils = playerLibrary.utils;
-        var valueFn = function (getter) { return function() { return getter; }; };
+        var valueFn = function (getter) {
+            return function() {
+                return getter; 
+            }; 
+        };
 
         utils.isAndroidNative = valueFn(environment.OS.androidNative);
         utils.isAndroid = valueFn(environment.OS.android);
@@ -109,7 +113,9 @@
         utils.isFacebook = valueFn(environment.Browser.facebook);
         utils.isFlashSupported = valueFn(environment.Features.flash);
         utils.isIE = valueFn(environment.Browser.ie);
-        utils.isIETrident = function () { return environment.Browser.ie && environment.Browser.version.major >= 11; };
+        utils.isIETrident = function () {
+            return environment.Browser.ie && environment.Browser.version.major >= 11; 
+        };
         utils.isIOS = valueFn(environment.OS.iOS);
         utils.isIPad = valueFn(environment.OS.iPad);
         utils.isIPod = valueFn(environment.OS.iPhone);

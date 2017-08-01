@@ -8,13 +8,13 @@ define({
     //   setCaptions: [{}],
 
     seek: [0],
-    playlistNext: void 0,
-    playlistPrev: void 0,
+    playlistNext: undefined,
+    playlistPrev: undefined,
     playlistItem: [0],
     setup: [{}],
     load: [{}],
-    play: void 0,
-    pause: void 0,
+    play: undefined,
+    pause: undefined,
     setControls: [true],
     setFullscreen: [false],
     setVolume: [100],
@@ -24,6 +24,6 @@ define({
     on: ['', function() {}],
     once: ['', function() {}],
     trigger: [''],
-    off: void 0,
-    remove: void 0
+    off: undefined,
+    remove: undefined
 });

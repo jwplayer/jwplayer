@@ -1,4 +1,5 @@
 import { serialize } from 'utils/parser';
+import ApiSettings from 'api/api-settings';
 
 let storage = {
     removeItem: function() {}
@@ -30,8 +31,7 @@ Object.assign(Storage.prototype, {
                     storage[`${this.namespace}.${key}`] = value;
                 } catch (e) {
                     // ignore QuotaExceededError unless debugging
-                    const jwplayer = window.jwplayer;
-                    if (jwplayer && jwplayer.debug) {
+                    if (ApiSettings.debug) {
                         console.error(e);
                     }
                 }

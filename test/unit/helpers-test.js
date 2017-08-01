@@ -17,22 +17,12 @@ describe('helpers', function() {
         assert.equal(tester[1], 'hi');
     });
 
-    it('helpers log with fake console', function() {
+    it('log will not thow if console is cleared', function() {
         var tmpConsole = window.console;
-        var m = [];
 
         window.console = null;
         // this should not break
         utils.log('testing');
-
-        // test window console called with utils.log
-        window.console = {
-            log: function (message) {
-                m.push(message);
-            }
-        };
-        utils.log('testing');
-        assert.equal(m[0], 'testing');
 
         // restore actual window console
         window.console = tmpConsole;
