@@ -3,10 +3,9 @@
 
 .jw-controlbar {
     display: flex;
-    flex-direction: row;
+    flex-flow: row wrap;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
     position: absolute;
     left: 0;
     bottom: 0;
@@ -43,11 +42,10 @@
 
 .jw-button-container {
     display: flex;
+    flex-flow: row nowrap;
     flex: 1 1 auto;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
-    flex-wrap: nowrap;
 
     > .jw-icon:not(.jw-text) {
         font-size: 20px;
