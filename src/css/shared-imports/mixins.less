@@ -135,9 +135,12 @@
         /* Colors for display icons */
         .jw-display-icon-container {
             margin: 0 (@ui-padding * 0.5);
-
             .jw-icon {
                 color: @display-icon-color;
+            }
+
+            .jw-svg-icon {
+                fill: @display-icon-color;
             }
         }
 
@@ -388,9 +391,12 @@
                 // Highlight the display icon and the display icon's background
                 .jw-display-icon-container:hover {
                     background-color: @display-bkgd-hover-color;
-
                     .jw-icon {
-                        color: @display-icon-hover-color;
+                        fill: @display-icon-hover-color;
+                    }
+
+                    .jw-svg-icon {
+                        fill: @display-icon-hover-color;
                     }
                 }
             }

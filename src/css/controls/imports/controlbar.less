@@ -76,6 +76,26 @@
     }
 }
 
+.jw-group > .jw-svg-icon {
+    height: @mobile-touch-target;
+    width: @mobile-touch-target;
+
+    padding: 0 8px;
+    max-width: @mobile-touch-target;
+
+    &:before {
+        /* This hack is required to make sure that gradients display correctly */
+        /* stylelint-disable-next-line declaration-block-no-shorthand-property-overrides */
+        background: transparent none;
+        background-size: auto;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        height: auto;
+        padding: 0;
+    }
+}
+
 .jw-controlbar-center-group {
     padding: 0 @ui-padding;
     position: relative;
