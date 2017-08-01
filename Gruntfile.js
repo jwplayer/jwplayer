@@ -272,6 +272,14 @@ module.exports = function(grunt) {
         });
     });
 
+    grunt.registerTask('prehook', 'Install Pre Push Hook', function() {
+        var command = 'cp .github/hooks/pre-push .git/hooks/pre-push';
+        execSync(command, {
+            cwd: '.',
+            stdio: [0, 1, 2]
+        });
+    });
+
     grunt.registerTask('lint', 'ESLint JavaScript', function(target) {
         var command = 'npm run lint';
         if (target === 'test') {

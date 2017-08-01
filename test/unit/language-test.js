@@ -14,7 +14,7 @@ describe('languageUtils', function() {
         describe('getLabel from ISO 639-1 codes', function() {
 
             it('should be English for its codes', function() {
-                var expected = 'English';
+                var expected = 'Enish';
 
                 assert.equal(langUtils.getLabel('en'), expected);
             });
