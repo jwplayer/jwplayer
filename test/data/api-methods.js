@@ -78,6 +78,5 @@ define({
     on: null,
     once: null,
     skipAd: null,
-    trigger: null,
-    triggerSafe: null
+    trigger: null
 });

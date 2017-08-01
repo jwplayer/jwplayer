@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions,new-cap */
 //     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -423,7 +424,7 @@ define([], function() {
             return nativeBind.apply(func, slice.call(arguments, 1));
         }
         if (!_.isFunction(func)) {
-            throw new TypeError;
+            throw new TypeError();
         }
         args = slice.call(arguments, 2);
         bound = function() {
@@ -431,7 +432,7 @@ define([], function() {
                 return func.apply(context, args.concat(slice.call(arguments)));
             }
             ctor.prototype = func.prototype;
-            var self = new ctor;
+            var self = new ctor();
             ctor.prototype = null;
             var result = func.apply(self, args.concat(slice.call(arguments)));
             if (Object(result) === result) {
@@ -730,7 +731,9 @@ define([], function() {
 
 
     // A (possibly faster) way to get the current timestamp as an integer.
-    _.now = Date.now || function() { return new Date().getTime(); };
+    _.now = Date.now || function() {
+        return new Date().getTime(); 
+    };
 
     // If the value of the named `property` is a function then invoke it with the
     // `object` as context; otherwise, return it.
