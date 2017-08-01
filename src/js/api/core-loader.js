@@ -41,13 +41,13 @@ export function requiresPolyfills() {
 export function requiresProvider(model, providerName) {
     const playlist = model.get('playlist');
     if (Array.isArray(playlist) && playlist.length) {
-        const firstItem = Item(playlist[0]);
-        if (firstItem) {
+        const firstSource = Item(playlist[0]).sources[0];
+        if (firstSource) {
             for (let i = ProvidersSupported.length; i--;) {
                 const providerSupports = ProvidersSupported[i];
                 if (providerSupports.name === providerName) {
                     const providersManager = model.getProviders();
-                    return providersManager.providerSupports(providerSupports, firstItem.sources[0]);
+                    return providersManager.providerSupports(providerSupports, firstSource);
                 }
             }
         }
