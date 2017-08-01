@@ -211,12 +211,17 @@ define([
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.className = 'jw-buttons-container';
+
             this.layout.forEach(e => {
                 if (e.element) {
                     e = e.element();
                 }
-                this.el.appendChild(e);
+                buttonsContainer.appendChild(e);
             });
+
+            this.el.appendChild(buttonsContainer);
 
             // Initial State
             this.elements.play.show();
