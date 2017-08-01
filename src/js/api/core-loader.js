@@ -1,5 +1,6 @@
 import Item from 'playlist/item';
 import ProvidersSupported from 'providers/providers-supported';
+import Promise from 'polyfills/promise';
 
 let bundlePromise = null;
 
@@ -38,13 +39,17 @@ export function requiresPolyfills() {
 }
 
 export function requiresProvider(model, providerName) {
-    const providerSupports = ProvidersSupported.find(provider => provider.name === providerName);
-    const providersManager = model.getProviders();
     const playlist = model.get('playlist');
     if (Array.isArray(playlist) && playlist.length) {
         const firstItem = Item(playlist[0]);
         if (firstItem) {
-            return providersManager.providerSupports(providerSupports, firstItem.sources[0]);
+            for (let i = ProvidersSupported.length; i--;) {
+                const providerSupports = ProvidersSupported[i];
+                if (providerSupports.name === providerName) {
+                    const providersManager = model.getProviders();
+                    return providersManager.providerSupports(providerSupports, firstItem.sources[0]);
+                }
+            }
         }
     }
     return false;
@@ -93,9 +98,22 @@ function loadControlsBundle() {
 }
 
 function loadCore() {
-    return require.ensure([
-        'controller/controller'
-    ], function (require) {
-        return require('controller/controller');
-    }, 'jwplayer.core');
+    return loadIntersectionObserverIfNeeded().then(() => {
+        return require.ensure([
+            'controller/controller'
+        ], function (require) {
+            return require('controller/controller');
+        }, 'jwplayer.core');
+    });
+}
+
+function loadIntersectionObserverIfNeeded() {
+    if (requiresPolyfills()) {
+        return require.ensure([
+            'intersection-observer'
+        ], function (require) {
+            return require('intersection-observer');
+        }, 'polyfills.intersection-observer');
+    }
+    return Promise.resolve();
 }

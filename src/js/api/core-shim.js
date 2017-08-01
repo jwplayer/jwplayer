@@ -8,6 +8,7 @@ import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
+import Promise from 'polyfills/promise';
 
 const modelShim = function() {};
 Object.assign(modelShim.prototype, SimpleModel);
