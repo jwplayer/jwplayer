@@ -47,8 +47,8 @@ export function loadPlaylist(_model) {
             playlistLoader.on(PLAYLIST_LOADED, function(data) {
                 const loadedPlaylist = Playlist(data.playlist);
                 delete data.playlist;
-                _model.set('playlist', loadedPlaylist);
-                _model.set('feedData', data);
+                _model.attributes.playlist = loadedPlaylist;
+                _model.attributes.feedData = data;
                 resolve();
             });
             playlistLoader.on(ERROR, err => {
@@ -60,8 +60,7 @@ export function loadPlaylist(_model) {
             playlistLoader.load(playlist);
         });
     }
-    const normalizedPlaylist = Playlist(playlist);
-    _model.set('playlist', normalizedPlaylist);
+    _model.attributes.playlist = Playlist(playlist);
     return resolved;
 }
 
