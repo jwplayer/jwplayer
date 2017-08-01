@@ -927,7 +927,10 @@ define([
             this.trigger(ERROR, evt);
         },
         setupError(evt) {
-            const message = evt.message;
+            let message = evt.message;
+            if (message.indexOf(':') === -1) {
+                message = 'Error loading player: ' + message;
+            }
             const errorElement = utils.createElement(viewError(this._model.get('id'), message));
 
             const width = this._model.get('width');

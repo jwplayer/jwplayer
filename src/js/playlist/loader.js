@@ -56,7 +56,7 @@ const PlaylistLoader = function() {
 
             _this.trigger(PLAYLIST_LOADED, jsonObj);
         } catch (error) {
-            playlistError(error);
+            playlistError(error.message);
         }
     }
 
