@@ -34,9 +34,9 @@ define([
         return element;
     }
 
-    function spacer() {
+    function div(classes) {
         const element = document.createElement('div');
-        element.className = 'jw-reset jw-spacer';
+        element.className = `jw-reset ${classes}`;
         return element;
     }
 
@@ -172,11 +172,11 @@ define([
                 fullscreen: button('jw-icon-fullscreen', () => {
                     _api.setFullscreen();
                 }, this._localization.fullscreen),
-                spacer: spacer()
+                spacer: div('jw-spacer'),
+                buttonContainer: div('jw-button-container')
             };
 
-            this.layout = [
-                this.elements.time,
+            this.buttonLayout = [
                 this.elements.play,
                 this.elements.alt,
                 this.elements.rewind,
@@ -196,6 +196,12 @@ define([
                 this.elements.fullscreen
             ];
 
+
+            this.layout = [
+                this.elements.time,
+                this.elements.buttonContainer
+            ];
+
             this.menus = _.compact([
                 this.elements.hd,
                 this.elements.cc,
@@ -211,17 +217,19 @@ define([
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
-            const buttonsContainer = document.createElement('div');
-            buttonsContainer.className = 'jw-buttons-container';
+            this.buttonLayout.forEach(e => {
+                if (e.element) {
+                    e = e.element();
+                }
+                this.elements.buttonContainer.appendChild(e);
+            });
 
             this.layout.forEach(e => {
                 if (e.element) {
                     e = e.element();
                 }
-                buttonsContainer.appendChild(e);
+                this.el.appendChild(e);
             });
-
-            this.el.appendChild(buttonsContainer);
 
             // Initial State
             this.elements.play.show();

@@ -17,7 +17,6 @@
     background-size: auto;
     box-shadow: none;
     max-height: 72px;
-    //padding: @slider-fixed-height 0 0;
 
     // adjust overlay bottom padding to match height of touch target
     .jw-overlay {
@@ -40,6 +39,15 @@
         flex: 1 1 auto;
         align-self: stretch;
     }
+}
+
+.jw-button-container {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
 
     > .jw-icon:not(.jw-text) {
         font-size: 20px;
@@ -141,10 +149,12 @@
 
 .jw-flag-small-player:not(.jw-flag-audio-player) {
     .jw-controlbar {
-        > .jw-icon-rewind,
-        > .jw-icon-next,
-        > .jw-icon-playback {
-            display: none;
+        .jw-button-container {
+            > .jw-icon-rewind,
+            > .jw-icon-next,
+            > .jw-icon-playback {
+                display: none;
+            }
         }
     }
 }
