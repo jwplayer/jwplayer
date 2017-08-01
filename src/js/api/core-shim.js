@@ -8,14 +8,15 @@ import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
+import Promise from 'polyfills/promise';
 
-const CoreModel = function() {};
-Object.assign(CoreModel.prototype, SimpleModel);
+const modelShim = function() {};
+Object.assign(modelShim.prototype, SimpleModel);
 
 const CoreShim = function(originalContainer) {
     this._events = {};
-    this._model = new CoreModel();
-    this._model._qoeItem = new Timer();
+    this.modelShim = new modelShim();
+    this.modelShim._qoeItem = new Timer();
     this.originalContainer = originalContainer;
     this.apiQueue = new ApiQueueDecorator(this, [
         // These commands require a provider instance to be available
@@ -56,7 +57,7 @@ Object.assign(CoreShim.prototype, {
     off: Events.off,
     trigger: Events.trigger,
     init(options, api) {
-        const model = this._model;
+        const model = this.modelShim;
         const storage = new Storage('jwplayer', [
             'volume',
             'mute',
@@ -71,9 +72,6 @@ Object.assign(CoreShim.prototype, {
         Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE);
 
         Promise.resolve().then(() => {
-            if (configuration.error) {
-                throw configuration.error;
-            }
             model.getProviders = function() {
                 return new Providers(configuration);
             };
@@ -83,7 +81,7 @@ Object.assign(CoreShim.prototype, {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
             }
-            const config = this._model.clone();
+            const config = this.modelShim.clone();
             // copy queued commands
             const commandQueue = this.apiQueue.queue.slice(0);
             this.apiQueue.destroy();
@@ -104,6 +102,7 @@ Object.assign(CoreShim.prototype, {
         this.off();
         this._events =
             this._model =
+            this.modelShim =
             this.originalContainer =
             this.apiQueue = null;
     },
@@ -113,13 +112,13 @@ Object.assign(CoreShim.prototype, {
 
     // These methods read from the model
     get(property) {
-        return this._model.get(property);
+        return this.modelShim.get(property);
     },
     getItemQoe() {
-        return this._model._qoeItem;
+        return this.modelShim._qoeItem;
     },
     getConfig() {
-        return Object.assign({}, this._model.attributes);
+        return Object.assign({}, this.modelShim.attributes);
     },
     getCurrentCaptions() {
         return this.get('captionsIndex');
