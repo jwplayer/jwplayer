@@ -67,7 +67,7 @@
     "stylelint": "7.11.0",
     "underscore": "1.8.3",
     "url-loader": "0.5.8",
-    "webpack": "^2.6.1"
+    "webpack": "2.7.0"
   },
   "scripts": {
     "docs": "jsdoc -c docs/jsdoc.conf.json",
