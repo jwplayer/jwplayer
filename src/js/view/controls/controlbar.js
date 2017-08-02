@@ -151,7 +151,7 @@ define([
                     }, this);
             }
 
-            this.elements = {
+            const elements = this.elements = {
                 alt: text('jw-text-alt', 'status'),
                 play: button('jw-icon-playback', () => {
                     _api.play(null, reasonInteraction());
@@ -186,50 +186,50 @@ define([
             };
 
             // Filter out undefined elements
-            this.buttonLayout = [
-                this.elements.play,
-                this.elements.alt,
-                this.elements.rewind,
-                this.elements.elapsed,
-                this.elements.countdown,
-                this.elements.duration,
-                this.elements.spacer,
-                this.elements.next,
-                this.elements.hd,
-                this.elements.cc,
-                this.elements.audiotracks,
-                this.elements.playbackrates,
-                this.elements.mute,
-                this.elements.cast,
-                this.elements.volume,
-                this.elements.volumetooltip,
-                this.elements.fullscreen
+            const buttonLayout = [
+                elements.play,
+                elements.alt,
+                elements.rewind,
+                elements.elapsed,
+                elements.countdown,
+                elements.duration,
+                elements.spacer,
+                elements.next,
+                elements.hd,
+                elements.cc,
+                elements.audiotracks,
+                elements.playbackrates,
+                elements.mute,
+                elements.cast,
+                elements.volume,
+                elements.volumetooltip,
+                elements.fullscreen
             ].filter(e => e);
 
-            this.layout = [
-                this.elements.time,
-                this.elements.buttonContainer
+            const layout = [
+                elements.time,
+                elements.buttonContainer
             ].filter(e => e);
 
-            this.menus = [
-                this.elements.hd,
-                this.elements.cc,
-                this.elements.audiotracks,
-                this.elements.playbackrates,
-                this.elements.volumetooltip
+            const menus = this.menus = [
+                elements.hd,
+                elements.cc,
+                elements.audiotracks,
+                elements.playbackrates,
+                elements.volumetooltip
             ].filter(e => e);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
-            appendChildren(this.elements.buttonContainer, this.buttonLayout);
-            appendChildren(this.el, this.layout);
+            appendChildren(elements.buttonContainer, buttonLayout);
+            appendChildren(this.el, layout);
 
             // Initial State
-            this.elements.play.show();
-            this.elements.fullscreen.show();
-            if (this.elements.mute) {
-                this.elements.mute.show();
+            elements.play.show();
+            elements.fullscreen.show();
+            if (elements.mute) {
+                elements.mute.show();
             }
 
             // Listen for model changes
@@ -253,44 +253,44 @@ define([
             // Event listeners
 
             // Volume sliders do not exist on mobile so don't assign listeners to them.
-            if (this.elements.volume) {
-                this.elements.volume.on('update', function (pct) {
+            if (elements.volume) {
+                elements.volume.on('update', function (pct) {
                     var val = pct.percentage;
                     this._api.setVolume(val);
                 }, this);
             }
-            if (this.elements.volumetooltip) {
-                this.elements.volumetooltip.on('update', function(pct) {
+            if (elements.volumetooltip) {
+                elements.volumetooltip.on('update', function(pct) {
                     const val = pct.percentage;
                     this._api.setVolume(val);
                 }, this);
-                this.elements.volumetooltip.on('toggleValue', function() {
+                elements.volumetooltip.on('toggleValue', function() {
                     this._api.setMute();
                 }, this);
             }
 
-            if (this.elements.cast.button) {
-                new UI(this.elements.cast.button).on('click tap', function () {
+            if (elements.cast.button) {
+                new UI(elements.cast.button).on('click tap', function () {
                     this._model.set('castClicked', true);
                 }, this);
             }
 
-            this.elements.hd.on('select', function(value) {
+            elements.hd.on('select', function(value) {
                 this._model.getVideo().setCurrentQuality(value);
             }, this);
-            this.elements.hd.on('toggleValue', function() {
+            elements.hd.on('toggleValue', function() {
                 this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
             }, this);
 
-            this.elements.cc.on('select', function(value) {
+            elements.cc.on('select', function(value) {
                 this._api.setCurrentCaptions(value);
             }, this);
-            this.elements.cc.on('toggleValue', function() {
+            elements.cc.on('toggleValue', function() {
                 const index = this._model.get('captionsIndex');
                 this._api.setCurrentCaptions(index ? 0 : 1);
             }, this);
 
-            this.elements.audiotracks.on('select', function(value) {
+            elements.audiotracks.on('select', function(value) {
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
 
@@ -304,7 +304,7 @@ define([
                     };
                 });
 
-                this.elements.playbackrates.setup(
+                elements.playbackrates.setup(
                     playbackRateLabels,
                     selectedIndex,
                     { defaultIndex: playbackRateControls.indexOf(1), isToggle: false }
@@ -313,17 +313,17 @@ define([
                 _model.change('streamType provider', this.togglePlaybackRateControls, this);
                 _model.change('playbackRate', this.onPlaybackRate, this);
 
-                this.elements.playbackrates.on('select', function (index) {
+                elements.playbackrates.on('select', function (index) {
                     this._model.setPlaybackRate(playbackRateControls[index]);
                 }, this);
 
-                this.elements.playbackrates.on('toggleValue', function () {
+                elements.playbackrates.on('toggleValue', function () {
                     const index = playbackRateControls.indexOf(this._model.get('playbackRate'));
                     this._model.setPlaybackRate(playbackRateControls[index ? 0 : 1]);
                 }, this);
             }
 
-            new UI(this.elements.duration).on('click tap', function() {
+            new UI(elements.duration).on('click tap', function() {
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
                     const currentPosition = this._model.get('position');
@@ -336,7 +336,7 @@ define([
                 this.trigger('userAction');
             }, this);
 
-            _.each(this.menus, function(ele) {
+            _.each(menus, function(ele) {
                 ele.on('open-tooltip', this.closeMenus, this);
             }, this);
         }
