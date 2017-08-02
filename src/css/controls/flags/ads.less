@@ -29,8 +29,28 @@
     }
 
     .jw-controlbar {
-        .jw-slider-time,
-        .jw-icon-tooltip,
+        flex-wrap: wrap-reverse;
+
+        .jw-slider-time {
+            padding: 0;
+
+            .jw-slider-container {
+                height: @slider-fixed-rail-height;
+            }
+
+            .jw-rail,
+            .jw-knob,
+            .jw-buffer,
+            .jw-cue {
+                display: none;
+            }
+
+            .jw-progress {
+                background-color: #0B7EF4;
+            }
+        }
+
+        .jw-icon-tooltip
         .jw-icon-inline:not(.jw-icon-volume),
         .jw-icon-inline:not(.jw-icon-playback),
         .jw-icon-inline:not(.jw-icon-fullscreen) {
