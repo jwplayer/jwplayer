@@ -1,13 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="audioTracksIcon" class="jw-svg-icon jw-icon-audio-tracks" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="433.6px" height="433.6px" viewBox="0 0 433.6 433.6" style="enable-background:new 0 0 433.6 433.6;" xml:space="preserve"
-	>
-<style type="text/css">
-	.jw-icon-audio-tracks{fill:#FFFFFF;}
-</style>
-<path d="M0,0h408v51H0V0z M0,153h408v-51H0V153z M0,255h153v-51H0V255z M318.8,204C259,200.6,207.7,246.2,204,306v127.5
-	h51c13.3,0.8,24.7-9.3,25.5-22.6c0.1-1,0.1-1.9,0-2.9v-51c0.8-13.3-9.3-24.7-22.6-25.5c-1-0.1-1.9-0.1-2.9,0h-25.5V306
-	c3.7-45.7,43.5-79.9,89.2-76.5c45.7-3.4,85.6,30.8,89.2,76.5v25.5h-25.3c-13.3-0.8-24.7,9.3-25.5,22.6c-0.1,1-0.1,1.9,0,2.9v51
-	c-0.8,13.3,9.3,24.7,22.6,25.5c1,0.1,1.9,0.1,2.9,0h51V306C429.9,246.3,378.6,200.7,318.8,204z"/>
-</svg>
+<svg class="jw-svg-icon jw-svg-icon-audio-tracks" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><path d="M35,34h160v20H35V34z M35,94h160V74H35V94z M35,134h60v-20H35V134z M160,114c-23.4-1.3-43.6,16.5-45,40v50h20c5.2,0.3,9.7-3.6,10-8.9c0-0.4,0-0.7,0-1.1v-20c0.3-5.2-3.6-9.7-8.9-10c-0.4,0-0.7,0-1.1,0h-10v-10c1.5-17.9,17.1-31.3,35-30c17.9-1.3,33.6,12.1,35,30v10H185c-5.2-0.3-9.7,3.6-10,8.9c0,0.4,0,0.7,0,1.1v20c-0.3,5.2,3.6,9.7,8.9,10c0.4,0,0.7,0,1.1,0h20v-50C203.5,130.6,183.4,112.7,160,114z"/></svg>

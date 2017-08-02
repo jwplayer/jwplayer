@@ -1,14 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="bufferIcon" class="jw-svg-icon jw-icon-buffer" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="612px" height="612px" viewBox="0 0 612 612" style="enable-background:new 0 0 612 612;" xml:space="preserve">
-<style type="text/css">
-	.jw-icon-buffer{fill:#FFFFFF;}
-</style>
-<g transform="translate(950 1130)">
-	<path d="M-644-569c-140.8,0-255-114.2-255-255s114.2-255,255-255v-51c-169,0-306,137-306,306s137,306,306,306
-		s306-137,306-306h-51C-389.4-683.3-503.3-569.4-644-569z"/>
-	<path class="st0" d="M-644-1002.5c-98-0.6-177.9,78.3-178.5,176.3c0,0.7,0,1.5,0,2.2h51c0-70.4,57.1-127.5,127.5-127.5
-		s127.5,57.1,127.5,127.5S-573.6-696.5-644-696.5v51c98.6,0,178.5-79.9,178.5-178.5S-545.4-1002.5-644-1002.5z"/>
-</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg"  class="jw-svg-icon jw-svg-icon-buffer" viewBox="0 0 240 240"><path d="M120,186.667a66.667,66.667,0,0,1,0-133.333V40a80,80,0,1,0,80,80H186.667A66.846,66.846,0,0,1,120,186.667Zm0-113.333a46.372,46.372,0,0,0-46.667,46.092V120H86.667A33.333,33.333,0,1,1,120,153.333v13.333a46.667,46.667,0,1,0,0-93.333Z"/></svg>
