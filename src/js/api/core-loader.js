@@ -11,6 +11,11 @@ export default function loadCoreBundle(model) {
     return bundlePromise;
 }
 
+export function chunkLoadErrorHandler(/* error */) {
+    // Webpack require.ensure error: "Loading chunk 3 failed"
+    throw new Error('Network error');
+}
+
 export function selectBundle(model) {
     const controls = model.get('controls');
     const polyfills = requiresPolyfills();
@@ -62,7 +67,7 @@ function loadControlsHtml5Bundle() {
         'providers/html5'
     ], function (require) {
         return require('controller/controller');
-    }, 'jwplayer.core.controls.html5');
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.html5');
 }
 
 function loadControlsPolyfillHtml5Bundle() {
@@ -74,7 +79,7 @@ function loadControlsPolyfillHtml5Bundle() {
     ], function (require) {
         require('intersection-observer');
         return require('controller/controller');
-    }, 'jwplayer.core.controls.polyfills.html5');
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills.html5');
 }
 
 function loadControlsPolyfillBundle() {
@@ -85,7 +90,7 @@ function loadControlsPolyfillBundle() {
     ], function (require) {
         require('intersection-observer');
         return require('controller/controller');
-    }, 'jwplayer.core.controls.polyfills');
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills');
 }
 
 function loadControlsBundle() {
@@ -94,7 +99,7 @@ function loadControlsBundle() {
         'view/controls/controls'
     ], function (require) {
         return require('controller/controller');
-    }, 'jwplayer.core.controls');
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls');
 }
 
 function loadCore() {
@@ -103,7 +108,7 @@ function loadCore() {
             'controller/controller'
         ], function (require) {
             return require('controller/controller');
-        }, 'jwplayer.core');
+        }, chunkLoadErrorHandler, 'jwplayer.core');
     });
 }
 
@@ -113,7 +118,7 @@ function loadIntersectionObserverIfNeeded() {
             'intersection-observer'
         ], function (require) {
             return require('intersection-observer');
-        }, 'polyfills.intersection-observer');
+        }, chunkLoadErrorHandler, 'polyfills.intersection-observer');
     }
     return Promise.resolve();
 }

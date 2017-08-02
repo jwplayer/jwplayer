@@ -1,4 +1,5 @@
 import instances from 'api/players';
+import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
@@ -8,10 +9,9 @@ import Playlist from 'playlist/playlist';
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
-    STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, SETUP_ERROR, READY,
+    STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
-
 import InstreamAdapter from 'controller/instream-adapter';
 import _ from 'utils/underscore';
 import Captions from 'controller/captions';
@@ -20,7 +20,6 @@ import utils from 'utils/helpers';
 import View from 'view/view';
 import Events from 'utils/backbone.events';
 import changeStateEvent from 'events/change-state-event';
-import viewError from 'view/error';
 import eventsMiddleware from 'controller/events-middleware';
 
 define([], function() {
@@ -184,7 +183,7 @@ define([], function() {
             _model.on('change:viewSetup', function(model, viewSetup) {
                 if (viewSetup) {
                     const mediaElement = this.currentContainer.querySelector('video, audio');
-                    _this.showView(_view.element());
+                    showView(this, _view.element());
                     if (mediaElement) {
                         const mediaContainer = _model.get('mediaContainer');
                         mediaContainer.appendChild(mediaElement);
@@ -192,18 +191,12 @@ define([], function() {
                 }
             }, this);
 
-            function _playerReady() {
+            this.playerReady = function() {
                 if (_setup === null) {
                     // Player was destroyed during setup
                     return;
                 }
                 _setup = null;
-
-                // Exit if embed config encountered an error
-                if (config.error instanceof Error) {
-                    _this.setupError(config.error);
-                    return;
-                }
 
                 _view.on('all', _triggerAfterReady, _this);
 
@@ -219,7 +212,7 @@ define([], function() {
                 _view.once(RESIZE, _playerReadyNotify);
 
                 _view.init();
-            }
+            };
 
             function _playerReadyNotify() {
                 _model.change('visibility', _updateViewable);
@@ -827,7 +820,7 @@ define([], function() {
                 this.trigger('destroyPlugin', {});
                 this.off();
                 this.stop();
-                this.showView(this.originalContainer);
+                showView(this, this.originalContainer);
                 if (_view) {
                     _view.destroy();
                 }
@@ -883,13 +876,7 @@ define([], function() {
             // Add commands from CoreLoader to queue
             apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
-            _setup.start().then(_playerReady).catch((error) => {
-                // Ignore errors caused by player being destroyed
-                if (_model.attributes._destroyed) {
-                    return;
-                }
-                _this.setupError(error);
-            });
+            return _setup.start();
         },
         get(property) {
             return this._model.get(property);
@@ -900,21 +887,6 @@ define([], function() {
         getMute() {
             return this._model.getMute();
         },
-        showView(viewElement) {
-            if (!document.body.contains(this.currentContainer)) {
-                // This implies the player was removed from the DOM before setup completed
-                //   or a player has been "re" setup after being removed from the DOM
-                const newContainer = document.getElementById(this._model.get('id'));
-                if (newContainer) {
-                    this.currentContainer = newContainer;
-                }
-            }
-
-            if (this.currentContainer.parentElement) {
-                this.currentContainer.parentElement.replaceChild(viewElement, this.currentContainer);
-            }
-            this.currentContainer = viewElement;
-        },
         triggerError(evt) {
             this._model.set('errorEvent', evt);
             this._model.set('state', STATE_ERROR);
@@ -923,29 +895,6 @@ define([], function() {
             }, this);
 
             this.trigger(ERROR, evt);
-        },
-        setupError(evt) {
-            let message = evt.message;
-            if (message.indexOf(':') === -1) {
-                message = 'Error loading player: ' + message;
-            }
-            const errorElement = utils.createElement(viewError(this._model.get('id'), message));
-
-            const width = this._model.get('width');
-            const height = this._model.get('height');
-
-            utils.style(errorElement, {
-                width: width.toString().indexOf('%') > 0 ? width : (width + 'px'),
-                height: height.toString().indexOf('%') > 0 ? height : (height + 'px')
-            });
-
-            this.showView(errorElement);
-
-            setTimeout(() => {
-                this.trigger(SETUP_ERROR, {
-                    message: message
-                });
-            });
         }
     });
 

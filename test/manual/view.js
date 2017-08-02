@@ -5,7 +5,7 @@ window.requireCallback = function(){
         'mock/mock-api',
         'mock/mock-model',
         'view/view',
-        'view/error',
+        'templates/error',
         'utils/css',
         'less!css/jwplayer.less',
     ], function(MockApi, MockModel, View, ViewError, css) {

@@ -9,6 +9,9 @@ import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
 import Promise from 'polyfills/promise';
+import viewError from 'templates/error';
+import css from 'utils/css';
+import dom from 'utils/dom';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -17,7 +20,8 @@ const CoreShim = function(originalContainer) {
     this._events = {};
     this.modelShim = new ModelShim();
     this.modelShim._qoeItem = new Timer();
-    this.originalContainer = originalContainer;
+    this.currentContainer =
+        this.originalContainer = originalContainer;
     this.apiQueue = new ApiQueueDecorator(this, [
         // These commands require a provider instance to be available
         'load',
@@ -82,17 +86,21 @@ Object.assign(CoreShim.prototype, {
                 return;
             }
             const config = this.modelShim.clone();
+            // Exit if embed config encountered an error
+            if (config.error instanceof Error) {
+                throw config.error;
+            }
             // copy queued commands
             const commandQueue = this.apiQueue.queue.slice(0);
             this.apiQueue.destroy();
+
             // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
             Object.assign(this, CoreMixin.prototype);
-            this.setup(config, api, this.originalContainer, this._events, commandQueue);
+            const setupPromise = this.setup(config, api, this.originalContainer, this._events, commandQueue).then(this.playerReady);
             storage.track(this._model);
+            return setupPromise;
         }).catch((error) => {
-            this.trigger(SETUP_ERROR, {
-                message: error.message
-            });
+            setupError(this, error);
         });
     },
     playerDestroy() {
@@ -185,5 +193,48 @@ Object.assign(CoreShim.prototype, {
         return null; // video tag;
     }
 });
+
+function setupError(core, error) {
+    let message = error.message;
+    if (message.indexOf(':') === -1) {
+        message = `Error loading player: ${message}`;
+    }
+    const errorElement = dom.createElement(viewError(core.get('id'), message));
+    const width = core.get('width');
+    const height = core.get('height');
+
+    css.style(errorElement, {
+        fontSize: '16px',
+        backgroundColor: '#000',
+        color: '#fff',
+        padding: '.75em 1.5em',
+        width: width.toString().indexOf('%') > 0 ? width : `${width}px`,
+        height: height.toString().indexOf('%') > 0 ? height : `${height}px'`
+    });
+
+    showView(core, errorElement);
+
+    setTimeout(() => {
+        core.trigger(SETUP_ERROR, {
+            message: message
+        });
+    });
+}
+
+export function showView(core, viewElement) {
+    if (!document.body.contains(core.currentContainer)) {
+        // This implies the player was removed from the DOM before setup completed
+        //   or a player has been "re" setup after being removed from the DOM
+        const newContainer = document.getElementById(core._model.get('id'));
+        if (newContainer) {
+            core.currentContainer = newContainer;
+        }
+    }
+
+    if (core.currentContainer.parentElement) {
+        core.currentContainer.parentElement.replaceChild(viewElement, core.currentContainer);
+    }
+    core.currentContainer = viewElement;
+}
 
 export default CoreShim;
