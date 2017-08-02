@@ -86,6 +86,15 @@ define([
         return { reason: 'interaction' };
     }
 
+    const appendChildren = (container, elements) => {
+        elements.forEach(e => {
+            if (e.element) {
+                e = e.element();
+            }
+            container.appendChild(e);
+        });
+    };
+
     return class Controlbar {
         constructor(_api, _model) {
             _.extend(this, Events);
@@ -176,6 +185,7 @@ define([
                 buttonContainer: div('jw-button-container')
             };
 
+            // Filter out undefined elements
             this.buttonLayout = [
                 this.elements.play,
                 this.elements.alt,
@@ -194,42 +204,26 @@ define([
                 this.elements.volume,
                 this.elements.volumetooltip,
                 this.elements.fullscreen
-            ];
-
+            ].filter(e => e);
 
             this.layout = [
                 this.elements.time,
                 this.elements.buttonContainer
-            ];
+            ].filter(e => e);
 
-            this.menus = _.compact([
+            this.menus = [
                 this.elements.hd,
                 this.elements.cc,
                 this.elements.audiotracks,
                 this.elements.playbackrates,
                 this.elements.volumetooltip
-            ]);
-
-            // Remove undefined layout elements.  They are invalid for the current platform.
-            // (e.g. volume and volumetooltip on mobile)
-            this.layout = _.compact(this.layout);
+            ].filter(e => e);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
-            this.buttonLayout.forEach(e => {
-                if (e.element) {
-                    e = e.element();
-                }
-                this.elements.buttonContainer.appendChild(e);
-            });
-
-            this.layout.forEach(e => {
-                if (e.element) {
-                    e = e.element();
-                }
-                this.el.appendChild(e);
-            });
+            appendChildren(this.elements.buttonContainer, this.buttonLayout);
+            appendChildren(this.el, this.layout);
 
             // Initial State
             this.elements.play.show();
