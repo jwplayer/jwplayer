@@ -503,7 +503,7 @@ define([
         }
 
         updateButtons(model, newButtons = [], oldButtons = []) {
-            const buttonContainer = this.el;
+            const buttonContainer = this.elements.buttonContainer;
 
             this.removeButtons(buttonContainer, oldButtons);
 
