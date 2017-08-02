@@ -5,7 +5,9 @@
     .jw-logo,
     .jw-captions.jw-captions-enabled,
     .jw-nextup-container,
-    .jw-autostart-mute {
+    .jw-autostart-mute,
+    .jw-text-duration,
+    .jw-text-elapsed {
         display: none;
     }
 
@@ -24,61 +26,21 @@
         &.jw-state-buffering .jw-display-icon-display {
             display: inline-block;
         }
-
-        .jw-controlbar-center-group {
-            padding: 0;
-        }
     }
 
     .jw-controlbar {
-        padding-right: 5px;
-        pointer-events: none;
-
-        .jw-icon-inline,
+        .jw-slider-time,
         .jw-icon-tooltip,
-        .jw-icon-cast,
-        .jw-text,
-        .jw-slider-horizontal {
+        .jw-icon-inline:not(.jw-icon-volume),
+        .jw-icon-inline:not(.jw-icon-playback),
+        .jw-icon-inline:not(.jw-icon-fullscreen) {
             display: none;
-        }
-
-        .jw-icon-playback,
-        .jw-icon-volume,
-        .jw-slider-volume,
-        .jw-icon-fullscreen {
-            display: inline-block;
-        }
-
-        .jw-text-alt {
-            display: inline-block;
         }
 
         .jw-slider-volume.jw-slider-horizontal,
-        .jw-icon-inline.jw-icon-volume {
-            display: inline-block;
-        }
-
-        .jw-icon-tooltip.jw-icon-volume {
-            display: none;
-        }
-
-        .jw-overlay:after {
-            display: none;
-        }
-    }
-
-    .jw-controlbar-center-group {
-        height: auto;
-    }
-
-    &.jw-ie {
-        .jw-controlbar-center-group {
-            overflow: hidden;
-
-            .jw-text-alt {
-                display: table;
-                top: -1px;
-            }
+        .jw-icon-inline.jw-icon-volume,
+        .jw-text-alt {
+            display: flex;
         }
     }
 
@@ -94,16 +56,6 @@
                 opacity: 1;
             }
         }
-    }
-
-    .jw-group > .jw-text-alt {
-        display: inline-block;
-        margin: 0;
-        line-height: @mobile-touch-target;
-    }
-
-    .jw-text-duration {
-        display: none;
     }
 
     .jw-nextup-container {

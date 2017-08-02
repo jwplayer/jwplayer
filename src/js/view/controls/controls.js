@@ -2,21 +2,19 @@ import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
 
-define([
-    'utils/backbone.events',
-    'utils/helpers',
-    'utils/underscore',
-    'view/controls/components/button',
-    'view/controls/controlbar',
-    'view/controls/display-container',
-    'view/controls/rewind-display-icon',
-    'view/controls/play-display-icon',
-    'view/controls/next-display-icon',
-    'view/controls/nextuptooltip',
-    'view/controls/rightclick',
-], function (Events, utils, _, button, Controlbar,
-    DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
-    NextUpToolTip, RightClick) {
+import Events from 'utils/backbone.events';
+import utils from 'utils/helpers';
+import _ from 'utils/underscore';
+import button from 'view/controls/components/button';
+import Controlbar from 'view/controls/controlbar';
+import DisplayContainer from 'view/controls/display-container';
+import RewindDisplayIcon from 'view/controls/rewind-display-icon';
+import PlayDisplayIcon from 'view/controls/play-display-icon';
+import NextDisplayIcon from 'view/controls/next-display-icon';
+import NextUpToolTip from 'view/controls/nextuptooltip';
+import RightClick from 'view/controls/rightclick';
+
+define([], function () {
 
     const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
@@ -92,11 +90,6 @@ define([
                 this.div.appendChild(displayContainer.element());
                 this.displayContainer = displayContainer;
             }
-
-            const right = this.context.createElement('div');
-            right.className = 'jw-controls-right jw-reset';
-            element.appendChild(right);
-            this.right = right;
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             if (touchMode) {

@@ -8,13 +8,14 @@ import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
+import Promise from 'polyfills/promise';
 
-const modelShim = function() {};
-Object.assign(modelShim.prototype, SimpleModel);
+const ModelShim = function() {};
+Object.assign(ModelShim.prototype, SimpleModel);
 
 const CoreShim = function(originalContainer) {
     this._events = {};
-    this.modelShim = new modelShim();
+    this.modelShim = new ModelShim();
     this.modelShim._qoeItem = new Timer();
     this.originalContainer = originalContainer;
     this.apiQueue = new ApiQueueDecorator(this, [
@@ -71,9 +72,6 @@ Object.assign(CoreShim.prototype, {
         Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE);
 
         Promise.resolve().then(() => {
-            if (configuration.error) {
-                throw configuration.error;
-            }
             model.getProviders = function() {
                 return new Providers(configuration);
             };

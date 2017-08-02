@@ -4,6 +4,7 @@ import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
 import Setup from 'controller/Setup';
 import PlaylistLoader from 'playlist/loader';
+import Playlist from 'playlist/playlist';
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
@@ -11,20 +12,18 @@ import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYIN
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
+import InstreamAdapter from 'controller/instream-adapter';
+import _ from 'utils/underscore';
+import Captions from 'controller/captions';
+import Model from 'controller/model';
+import utils from 'utils/helpers';
+import View from 'view/view';
+import Events from 'utils/backbone.events';
+import changeStateEvent from 'events/change-state-event';
+import viewError from 'view/error';
+import eventsMiddleware from 'controller/events-middleware';
 
-define([
-    'controller/instream-adapter',
-    'utils/underscore',
-    'controller/captions',
-    'controller/model',
-    'utils/helpers',
-    'view/view',
-    'utils/backbone.events',
-    'events/change-state-event',
-    'view/error',
-    'controller/events-middleware',
-], function(InstreamAdapter, _, Captions, Model, utils, View, Events, changeStateEvent,
-    viewError, eventsMiddleware) {
+define([], function() {
 
     // The model stores a different state than the provider
     function normalizeState(newstate) {
@@ -60,12 +59,12 @@ define([
 
             _setup = new Setup(_api, _model, _view);
 
-            _model.mediaController.on('all', _triggerAfterReady, this);
+            _model.mediaController.on('all', _triggerAfterReady, _this);
             _model.mediaController.on(MEDIA_COMPLETE, function() {
                 // Insert a small delay here so that other complete handlers can execute
                 _.defer(_completeHandler);
             });
-            _model.mediaController.on(MEDIA_ERROR, this.triggerError, this);
+            _model.mediaController.on(MEDIA_ERROR, _this.triggerError, _this);
 
             // If we attempt to load flash, assume it is blocked if we don't hear back within a second
             _model.on('change:flashBlocked', function(model, isBlocked) {
@@ -200,6 +199,12 @@ define([
                 }
                 _setup = null;
 
+                // Exit if embed config encountered an error
+                if (config.error instanceof Error) {
+                    _this.setupError(config.error);
+                    return;
+                }
+
                 _view.on('all', _triggerAfterReady, _this);
 
                 const related = _api.getPlugin('related');
@@ -320,7 +325,8 @@ define([
                         break;
                     case 'object': {
                         try {
-                            setPlaylist(_model, item, feedData);
+                            const playlist = Playlist(item);
+                            setPlaylist(_model, playlist, feedData);
                         } catch (error) {
                             _this.triggerError({
                                 message: `Error loading playlist: ${error.message}`
@@ -919,7 +925,10 @@ define([
             this.trigger(ERROR, evt);
         },
         setupError(evt) {
-            const message = evt.message;
+            let message = evt.message;
+            if (message.indexOf(':') === -1) {
+                message = 'Error loading player: ' + message;
+            }
             const errorElement = utils.createElement(viewError(this._model.get('id'), message));
 
             const width = this._model.get('width');

@@ -12,46 +12,43 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 
-define(function() {
+let VTTCue = window.VTTCue;
 
-    if (window.VTTCue) {
-        return window.VTTCue;
+function findDirectionSetting(value) {
+    if (typeof value !== 'string') {
+        return false;
     }
-
-    var autoKeyword = 'auto';
-    var directionSetting = {
+    const directionSetting = {
         '': true,
         lr: true,
         rl: true
     };
-    var alignSetting = {
+    const dir = directionSetting[value.toLowerCase()];
+    return dir ? value.toLowerCase() : false;
+}
+
+function findAlignSetting(value) {
+    if (typeof value !== 'string') {
+        return false;
+    }
+    const alignSetting = {
         start: true,
         middle: true,
         end: true,
         left: true,
         right: true
     };
+    const align = alignSetting[value.toLowerCase()];
+    return align ? value.toLowerCase() : false;
+}
 
-    function findDirectionSetting(value) {
-        if (typeof value !== 'string') {
-            return false;
-        }
-        var dir = directionSetting[value.toLowerCase()];
-        return dir ? value.toLowerCase() : false;
-    }
+if (!VTTCue) {
+    const autoKeyword = 'auto';
 
-    function findAlignSetting(value) {
-        if (typeof value !== 'string') {
-            return false;
-        }
-        var align = alignSetting[value.toLowerCase()];
-        return align ? value.toLowerCase() : false;
-    }
-
-    function VTTCue(startTime, endTime, text) {
-        var cue = this;
+    VTTCue = function(startTime, endTime, text) {
+        const cue = this;
 
         /**
          * Shim implementation specific properties. These properties are not in
@@ -68,47 +65,47 @@ define(function() {
          * http://dev.w3.org/html5/webvtt/#vttcue-interface
          */
 
-        var _id = '';
-        var _pauseOnExit = false;
-        var _startTime = startTime;
-        var _endTime = endTime;
-        var _text = text;
-        var _region = null;
-        var _vertical = '';
-        var _snapToLines = true;
-        var _line = 'auto';
-        var _lineAlign = 'start';
-        var _position = 50;
-        var _positionAlign = 'middle';
-        var _size = 50;
-        var _align = 'middle';
+        let _id = '';
+        let _pauseOnExit = false;
+        let _startTime = startTime;
+        let _endTime = endTime;
+        let _text = text;
+        let _region = null;
+        let _vertical = '';
+        let _snapToLines = true;
+        let _line = 'auto';
+        let _lineAlign = 'start';
+        let _position = 50;
+        let _positionAlign = 'middle';
+        let _size = 50;
+        let _align = 'middle';
 
         Object.defineProperty(cue, 'id', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _id;
             },
-            set: function(value) {
+            set: function (value) {
                 _id = '' + value;
             }
         });
 
         Object.defineProperty(cue, 'pauseOnExit', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _pauseOnExit;
             },
-            set: function(value) {
+            set: function (value) {
                 _pauseOnExit = !!value;
             }
         });
 
         Object.defineProperty(cue, 'startTime', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _startTime;
             },
-            set: function(value) {
+            set: function (value) {
                 if (typeof value !== 'number') {
                     throw new TypeError('Start time must be set to a number.');
                 }
@@ -119,10 +116,10 @@ define(function() {
 
         Object.defineProperty(cue, 'endTime', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _endTime;
             },
-            set: function(value) {
+            set: function (value) {
                 if (typeof value !== 'number') {
                     throw new TypeError('End time must be set to a number.');
                 }
@@ -133,10 +130,10 @@ define(function() {
 
         Object.defineProperty(cue, 'text', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _text;
             },
-            set: function(value) {
+            set: function (value) {
                 _text = '' + value;
                 this.hasBeenReset = true;
             }
@@ -144,10 +141,10 @@ define(function() {
 
         Object.defineProperty(cue, 'region', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _region;
             },
-            set: function(value) {
+            set: function (value) {
                 _region = value;
                 this.hasBeenReset = true;
             }
@@ -155,11 +152,11 @@ define(function() {
 
         Object.defineProperty(cue, 'vertical', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _vertical;
             },
-            set: function(value) {
-                var setting = findDirectionSetting(value);
+            set: function (value) {
+                const setting = findDirectionSetting(value);
                 // Have to check for false because the setting an be an empty string.
                 if (setting === false) {
                     throw new SyntaxError('An invalid or illegal string was specified.');
@@ -171,10 +168,10 @@ define(function() {
 
         Object.defineProperty(cue, 'snapToLines', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _snapToLines;
             },
-            set: function(value) {
+            set: function (value) {
                 _snapToLines = !!value;
                 this.hasBeenReset = true;
             }
@@ -182,10 +179,10 @@ define(function() {
 
         Object.defineProperty(cue, 'line', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _line;
             },
-            set: function(value) {
+            set: function (value) {
                 if (typeof value !== 'number' && value !== autoKeyword) {
                     throw new SyntaxError('An invalid number or illegal string was specified.');
                 }
@@ -196,11 +193,11 @@ define(function() {
 
         Object.defineProperty(cue, 'lineAlign', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _lineAlign;
             },
-            set: function(value) {
-                var setting = findAlignSetting(value);
+            set: function (value) {
+                const setting = findAlignSetting(value);
                 if (!setting) {
                     throw new SyntaxError('An invalid or illegal string was specified.');
                 }
@@ -211,10 +208,10 @@ define(function() {
 
         Object.defineProperty(cue, 'position', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _position;
             },
-            set: function(value) {
+            set: function (value) {
                 if (value < 0 || value > 100) {
                     throw new Error('Position must be between 0 and 100.');
                 }
@@ -225,11 +222,11 @@ define(function() {
 
         Object.defineProperty(cue, 'positionAlign', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _positionAlign;
             },
-            set: function(value) {
-                var setting = findAlignSetting(value);
+            set: function (value) {
+                const setting = findAlignSetting(value);
                 if (!setting) {
                     throw new SyntaxError('An invalid or illegal string was specified.');
                 }
@@ -240,10 +237,10 @@ define(function() {
 
         Object.defineProperty(cue, 'size', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _size;
             },
-            set: function(value) {
+            set: function (value) {
                 if (value < 0 || value > 100) {
                     throw new Error('Size must be between 0 and 100.');
                 }
@@ -254,11 +251,11 @@ define(function() {
 
         Object.defineProperty(cue, 'align', {
             enumerable: true,
-            get: function() {
+            get: function () {
                 return _align;
             },
-            set: function(value) {
-                var setting = findAlignSetting(value);
+            set: function (value) {
+                const setting = findAlignSetting(value);
                 if (!setting) {
                     throw new SyntaxError('An invalid or illegal string was specified.');
                 }
@@ -273,17 +270,17 @@ define(function() {
 
         // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#text-track-cue-display-state
         cue.displayState = undefined;
-    }
+    };
 
     /**
      * VTTCue methods
      */
 
-    VTTCue.prototype.getCueAsHTML = function() {
+    VTTCue.prototype.getCueAsHTML = function () {
         // Assume WebVTT.convertCueToDOMTree is on the global.
-        var WebVTT = window.WebVTT;
+        const WebVTT = window.WebVTT;
         return WebVTT.convertCueToDOMTree(window, this.text);
     };
+}
 
-    return VTTCue;
-});
+export default VTTCue;

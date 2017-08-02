@@ -83,13 +83,11 @@ const Config = function(options, persisted) {
     config.height = _normalizeSize(config.height);
     const pathToFlash = (getScriptPath('jwplayer.js') || config.base);
     config.flashplayer = config.flashplayer || pathToFlash + 'jwplayer.flash.swf';
-    config.flashloader = config.flashloader || pathToFlash + 'jwplayer.loader.swf';
 
     // Non ssl pages can only communicate with flash when it is loaded
     //   from a non ssl location
     if (window.location.protocol === 'http:') {
         config.flashplayer = config.flashplayer.replace('https', 'http');
-        config.flashloader = config.flashloader.replace('https', 'http');
     }
 
     config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);

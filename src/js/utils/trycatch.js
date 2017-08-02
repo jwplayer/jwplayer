@@ -1,29 +1,22 @@
-define([
-], function() {
-    var tryCatch = function (fn, ctx, args = []) {
+import ApiSettings from 'api/api-settings';
 
-        // In debug mode, allow `fn` to throw exceptions
-        var jwplayer = window.jwplayer;
-        if (jwplayer && jwplayer.debug) {
-            return fn.apply(ctx || this, args);
-        }
+export function tryCatch(fn, ctx, args = []) {
 
-        // else catch exceptions and return a `JWError`
-        try {
-            return fn.apply(ctx || this, args);
-        } catch (e) {
-            return new JWError(fn.name, e);
-        }
-    };
+    // In debug mode, allow `fn` to throw exceptions
+    if (ApiSettings.debug) {
+        return fn.apply(ctx || this, args);
+    }
 
-    var JWError = function (name, error) {
-        this.name = name;
-        this.message = error.message || error.toString();
-        this.error = error;
-    };
+    // else catch exceptions and return a `JWError`
+    try {
+        return fn.apply(ctx || this, args);
+    } catch (e) {
+        return new JwError(fn.name, e);
+    }
+}
 
-    return {
-        tryCatch: tryCatch,
-        Error: JWError
-    };
-});
+export function JwError(name, error) {
+    this.name = name;
+    this.message = error.message || error.toString();
+    this.error = error;
+}

@@ -1,3 +1,4 @@
+import jwplayer from 'jwplayer';
 import instances from 'api/players';
 import Api from 'api/api';
 import _ from 'test/underscore';
@@ -58,8 +59,7 @@ describe('Api', function() {
     });
 
     it('bad events don\'t break player', function() {
-        window.jwplayer = window.jwplayer || {};
-        delete window.jwplayer.debug;
+        jwplayer.debug = false;
 
         const api = createApi('player');
         let check = false;
@@ -69,7 +69,7 @@ describe('Api', function() {
         }
 
         function bad() {
-            throw TypeError('blah');
+            throw new TypeError('blah');
         }
 
         api.on('x', bad);
@@ -82,13 +82,12 @@ describe('Api', function() {
     });
 
     it('throws exceptions when debug is true', function() {
-        window.jwplayer = window.jwplayer || {};
-        window.jwplayer.debug = true;
+        jwplayer.debug = true;
 
         const api = createApi('player');
 
         function bad() {
-            throw TypeError('blah');
+            throw new TypeError('blah');
         }
 
         api.on('x', bad);
@@ -97,7 +96,7 @@ describe('Api', function() {
             api.trigger('x');
         }, TypeError, 'blah');
 
-        delete window.jwplayer.debug;
+        jwplayer.debug = false;
     });
 
     it('can be removed and reused', function(done) {

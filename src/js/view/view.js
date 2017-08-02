@@ -8,22 +8,22 @@ import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
- DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
+    DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
+
+import Events from 'utils/backbone.events';
+import utils from 'utils/helpers';
+import _ from 'utils/underscore';
+import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
+import flagNoFocus from 'view/utils/flag-no-focus';
+import ClickHandler from 'view/utils/clickhandler';
+import CaptionsRenderer from 'view/captionsrenderer';
+import Logo from 'view/logo';
+import Preview from 'view/preview';
+import Title from 'view/title';
+
 let ControlsModule;
 
-define([
-    'utils/backbone.events',
-    'utils/helpers',
-    'utils/underscore',
-    'view/utils/request-fullscreen-helper',
-    'view/utils/flag-no-focus',
-    'view/utils/clickhandler',
-    'view/captionsrenderer',
-    'view/logo',
-    'view/preview',
-    'view/title',
-], function(Events, utils, _, requestFullscreenHelper, flagNoFocus,
-            ClickHandler, CaptionsRenderer, Logo, Preview, Title) {
+define([], function() {
 
     const _styles = utils.style;
     const _bounds = utils.bounds;

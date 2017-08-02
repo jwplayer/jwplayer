@@ -1,14 +1,14 @@
-import trycatch from 'utils/trycatch';
+import { tryCatch, JwError } from 'utils/trycatch';
 
 describe('trycatch', function() {
 
     it('defines', function() {
-        assert.equal(typeof trycatch.tryCatch, 'function', 'trycatch function is defined');
-        assert.equal(typeof trycatch.Error, 'function', 'Error function is defined');
+        assert.equal(typeof tryCatch, 'function', 'trycatch function is defined');
+        assert.equal(typeof JwError, 'function', 'Error function is defined');
     });
 
     it('should not throw Error for valid call', function() {
-        var value = trycatch.tryCatch(function() {
+        var value = tryCatch(function() {
             return 1;
         });
 
@@ -17,12 +17,12 @@ describe('trycatch', function() {
 
     it.skip('should throw custom Error on catch', function() {
         var trycatchThrow = function() {
-            trycatch.tryCatch(function() {
+            tryCatch(function() {
                 throw new Error('Danger, Danger, Will Robinson!');
             });
         };
 
-        expect(trycatchThrow).to.throw(trycatch.Error);
+        expect(trycatchThrow).to.throw(JwError);
     });
 
 
@@ -31,7 +31,7 @@ describe('trycatch', function() {
         window.jwplayer.debug = true;
 
         var trycatchThrow = function() {
-            trycatch.tryCatch(function() {
+            tryCatch(function() {
                 throw new Error('Error');
             });
         };
@@ -42,7 +42,7 @@ describe('trycatch', function() {
     });
 
     it('Error', function() {
-        var error = new trycatch.Error('error name', 'error message');
+        var error = new JwError('error name', 'error message');
 
         assert.equal(error.name, 'error name', 'error.name is set');
         assert.equal(error.message, 'error message', 'error.message is set');

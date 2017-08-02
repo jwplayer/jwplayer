@@ -1,13 +1,12 @@
+import ApiSettings from 'api/api-settings';
 import * as Environment from 'environment/environment';
 import instances from './players';
 import Core from './core-shim';
 import { version } from '../version';
 import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
 import Timer from 'api/timer';
-
-// These are AMD modules
+import Events, { on, once, off, trigger, triggerSafe } from 'utils/backbone.events';
 import plugins from 'plugins/plugins';
-import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
 
@@ -903,7 +902,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @return {Api}
      */
     on(name, callback, context) {
-        return Events.on.call(this, name, callback, context);
+        return on.call(this, name, callback, context);
     },
 
     /**
@@ -915,7 +914,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @return {Api}
      */
     once(name, callback, context) {
-        return Events.once.call(this, name, callback, context);
+        return once.call(this, name, callback, context);
     },
 
     /**
@@ -926,7 +925,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @return {Api}
      */
     off(name, callback, context) {
-        return Events.off.call(this, name, callback, context);
+        return off.call(this, name, callback, context);
     },
 
     /**
@@ -944,19 +943,10 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
             args = {};
         }
         args.type = name;
-        const jwplayer = window.jwplayer;
-        if (jwplayer && jwplayer.debug) {
-            return Events.trigger.call(this, name, args);
+        if (ApiSettings.debug) {
+            return trigger.call(this, name, args);
         }
-        return Events.triggerSafe.call(this, name, args);
-    },
-
-    /**
-     * Triggers an event callback inside a try catch block.
-     * @deprecated TODO: in version 8.0.0-0
-     */
-    triggerSafe(type, args) {
-        return Events.triggerSafe.call(this, type, args);
+        return triggerSafe.call(this, name, args);
     },
 
     /**

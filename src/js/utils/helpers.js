@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import * as playerutils from 'utils/playerutils';
 import * as validator from 'utils/validator';
 import * as parser from 'utils/parser';
@@ -10,22 +12,12 @@ import browser from 'utils/browser';
 import dom from 'utils/dom';
 import css from 'utils/css';
 import ajax from 'utils/ajax';
-import trycatch from 'utils/trycatch';
+import { tryCatch, JwError as Error } from 'utils/trycatch';
 
 define([], function() {
     var utils = {};
 
-    utils.log = function () {
-        /* eslint no-console: 0 */
-        if (!window.console) {
-            return;
-        }
-        if (typeof console.log === 'object') {
-            console.log(Array.prototype.slice.call(arguments, 0));
-        } else {
-            console.log.apply(console, arguments);
-        }
-    };
+    utils.log = (console.log === 'object') ? console.log.bind(console) : function() {};
 
     utils.between = function (num, min, max) {
         return Math.max(Math.min(num, max), min);
@@ -63,7 +55,7 @@ define([], function() {
 
     utils.Timer = Timer;
 
-    _.extend(utils, parser, validator, browser, ajax, dom, css, playerutils, trycatch);
+    _.extend(utils, parser, validator, browser, ajax, dom, css, playerutils, { tryCatch, Error });
 
     return utils;
 });

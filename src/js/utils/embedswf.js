@@ -1,10 +1,9 @@
 import { Browser } from 'environment/environment';
 
 define([
-    'utils/helpers',
     'utils/backbone.events',
     'utils/underscore'
-], function(utils, Events, _) {
+], function(Events, _) {
 
     // Defaults
     var BGCOLOR = '#000000';
@@ -146,7 +145,7 @@ define([
             }
 
             var args = Array.prototype.slice.call(arguments, 1);
-            var status = utils.tryCatch(function() {
+            try {
                 if (args.length) {
                     // remove any nodes from arguments
                     // cyclical structures cannot be converted to JSON
@@ -160,13 +159,11 @@ define([
                 } else {
                     swf.__externalCall(name);
                 }
-            });
-
-            if (status instanceof utils.Error) {
-                console.error(name, status);
+            } catch (error) {
+                console.error(name, error);
                 if (name === 'setup') {
-                    status.name = 'Failed to setup flash';
-                    return status;
+                    error.name = 'Failed to setup flash';
+                    return error;
                 }
             }
             return swf;

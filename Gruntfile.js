@@ -42,21 +42,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         starttime: new Date(),
         pkg: packageInfo,
-
-        stylelint: {
-            options: {
-                configFile: '.stylelintrc',
-                formatter: 'string',
-                ignoreDisables: false,
-                failOnError: true,
-                reportNeedlessDisables: false,
-                syntax: 'less'
-            },
-            src: [
-                'src/**/*.less'
-            ]
-        },
-
         less: {
             options: {
                 compress: false,
@@ -272,7 +257,7 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('lint', 'ESLint JavaScript', function(target) {
+    grunt.registerTask('lint', 'ESLints JavaScript & Stylelints LESS', function(target) {
         var command = 'npm run lint';
         if (target === 'test') {
             command = command + '-tests';
@@ -308,7 +293,6 @@ module.exports = function(grunt) {
     grunt.registerTask('build-js', [
         'webpack',
         'lint:player',
-        'stylelint',
         'less',
         'postcss'
     ]);
