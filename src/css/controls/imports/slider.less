@@ -1,7 +1,9 @@
 @import "../../shared-imports/vars";
 
 .jw-slider-container {
-    height: 1em; // For easy grabbability - does not affect positioning of slider itself
+    display: flex;
+    height: 1em;
+    align-items: center;
     width: 100%;
     position: relative;
     touch-action: none;
@@ -30,9 +32,9 @@
     position: absolute;
     cursor: pointer;
     height: @rail-height;
+    width: @ui-padding;
     background-color: rgba(33, 33, 33, 0.9);
     border-radius: 25%;
-    width: @ui-padding;
 }
 
 .jw-knob {
@@ -44,42 +46,42 @@
 }
 
 .jw-slider-horizontal {
-    height: @slider-height;
-    padding: 0;
+    display: flex;
 
     &.jw-slider-volume {
         width: @volume-rail-length;
-        margin: 0 0.5em 2px;
     }
 
     .jw-rail {
         width: 100%;
     }
 
-    .jw-knob {
-        top: (@rail-height - @thumb-size) / 2;
-        margin-left: @thumb-size / -2;
-    }
-
     .jw-rail,
     .jw-buffer,
     .jw-progress {
+        top: 50%;
+        transform: translate(0, -50%);
         height: @rail-height;
+    }
+
+    .jw-knob {
+        margin-left: (-@thumb-size / 2);
     }
 }
 
 .jw-slider-vertical {
     padding: 0.5em;
-    position: absolute;
+
+    .jw-slider-container {
+        height: @volume-rail-length;
+        flex-direction: column;
+    }
 
     .jw-rail,
     .jw-buffer,
     .jw-progress {
         bottom: 0;
         height: 100%;
-        left: 0;
-        right: 0;
-        margin: 0 auto;
     }
 
     .jw-slider-container,
@@ -88,49 +90,21 @@
         width: @def-rail-width;
     }
 
-    .jw-slider-container {
-        height: @volume-rail-length;
-    }
-
     .jw-knob {
-        right: 0;
-        left: (@def-rail-width - @thumb-size) / 2;
-        margin-bottom: @thumb-size/-2;
+        left: -50%;
+        margin-bottom: (-@thumb-size / 2);
     }
 }
 
 .jw-slider-time {
     width: 100%;
     background: transparent none;
-    height: @slider-fixed-height;
-
-    .jw-slider-container {
-        display: flex;
-        flex-direction: column;
-        height: @slider-fixed-height;
-        justify-content: center;
-    }
-
-    .jw-cue {
-        top: auto;
-    }
-
-    .jw-rail,
-    .jw-progress,
-    .jw-buffer,
-    .jw-knob {
-        border: none;
-        box-shadow: none;
-    }
+    padding: 0 12px;
 
     .jw-rail,
     .jw-buffer,
     .jw-progress {
         height: @slider-fixed-rail-height;
-        // center in ie
-        margin: auto;
-        top: 0;
-        bottom: 0;
     }
 
     .jw-rail {
@@ -147,9 +121,6 @@
         box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
         opacity: 1;
         height: @slider-fixed-knob-height;
-        margin-left: @slider-fixed-knob-width / -2;
-        margin-top: @slider-fixed-knob-height / -2;
-        top: 50%;
         width: @slider-fixed-knob-width;
     }
 }
