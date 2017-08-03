@@ -425,6 +425,7 @@ define([], function() {
                 const state = _model.get('state');
                 if (state === STATE_IDLE || state === STATE_PAUSED) {
                     _play({ reason: 'autostart' });
+                    _model.set('autostart', false);
                 }
             }
 
