@@ -1,14 +1,16 @@
 import { Browser } from 'environment/environment';
+import { chunkLoadErrorHandler } from '../api/core-loader';
+import Events from 'utils/backbone.events';
+import { ERROR } from 'events/events';
+import cssUtils from 'utils/css';
+import dom from 'utils/dom';
+import _ from 'utils/underscore';
 
-define([
-    'utils/helpers',
-    'utils/css',
-    'utils/dom',
-    'utils/underscore'
-], function (utils, cssUtils, dom, _) {
+define([], function () {
     /** Component that renders the actual captions on screen. **/
     var CaptionsRenderer;
     var _style = cssUtils.style;
+    var _WebVTT;
 
     var _defaults = {
         back: true,
@@ -30,7 +32,6 @@ define([
         var _display;
         var _captionsWindow;
         var _textContainer;
-        var _WebVTT;
         var _fontScale;
         var _windowStyle;
 
@@ -130,7 +131,7 @@ define([
         };
 
         this.clear = function () {
-            utils.empty(_display);
+            dom.empty(_display);
         };
 
         /** Constructor for the renderer. **/
@@ -178,6 +179,11 @@ define([
             return _display;
         };
 
+        this.destroy = function() {
+            this.off();
+            _model.off(null, null, this);
+        };
+
         function _setFontScale() {
             if (!_.isFinite(_options.fontSize)) {
                 return;
@@ -186,7 +192,7 @@ define([
             var height = _model.get('containerHeight');
 
             if (!height) {
-                _model.once('change:containerHeight', _setFontScale);
+                _model.once('change:containerHeight', _setFontScale, this);
                 return;
             }
 
@@ -304,10 +310,19 @@ define([
         function _itemReadyHandler() {
             // don't load the polyfill or do unnecessary work if rendering natively
             if (!_model.get('renderCaptionsNatively') && !_WebVTT) {
-                require.ensure(['polyfills/webvtt'], function (require) {
-                    _WebVTT = require('polyfills/webvtt').default;
-                }, 'polyfills.webvtt');
+                loadWebVttPolyfill().catch((error) => {
+                    this.trigger(ERROR, {
+                        message: 'Captions renderer failed to load',
+                        reason: error
+                    });
+                });
             }
+        }
+
+        function loadWebVttPolyfill() {
+            return require.ensure(['polyfills/webvtt'], function (require) {
+                _WebVTT = require('polyfills/webvtt').default;
+            }, chunkLoadErrorHandler, 'polyfills.webvtt');
         }
 
         _model.on('change:playlistItem', function () {
@@ -332,6 +347,8 @@ define([
 
         _model.on('itemReady', _itemReadyHandler, this);
     };
+
+    Object.assign(CaptionsRenderer.prototype, Events);
 
     return CaptionsRenderer;
 });

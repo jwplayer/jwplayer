@@ -9,7 +9,6 @@ import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
     DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
-
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
@@ -66,7 +65,9 @@ define([], function() {
 
         const _preview = new Preview(_model);
         const _title = new Title(_model);
-        const _captionsRenderer = new CaptionsRenderer(_model);
+
+        let _captionsRenderer = new CaptionsRenderer(_model);
+        _captionsRenderer.on('all', _this.trigger, _this);
 
         let _logo;
 
@@ -936,6 +937,10 @@ define([], function() {
             if (displayClickHandler) {
                 displayClickHandler.destroy();
                 displayClickHandler = null;
+            }
+            if (_captionsRenderer) {
+                _captionsRenderer.destroy();
+                _captionsRenderer = null;
             }
             if (_logo) {
                 _logo.destroy();

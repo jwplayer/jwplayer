@@ -1,9 +1,12 @@
-define(['utils/helpers',
-    'controller/tracks-loader',
-    'controller/tracks-helper'
-], function(utils, tracksLoader, tracksHelper) {
+import tracksLoader from 'controller/tracks-loader';
+import tracksHelper from 'controller/tracks-helper';
+import Events from 'utils/backbone.events';
+import { ERROR } from 'events/events';
+
+define([], function() {
     /** Displays closed captions or subtitles on top of the video. **/
     var Captions = function(_model) {
+
         // Reset and load external captions on playlist item
         _model.on('change:playlistItem', _itemHandler, this);
 
@@ -59,12 +62,20 @@ define(['utils/helpers',
                 var track;
 
                 for (i = 0; i < len; i++) {
+                    /* eslint-disable no-loop-func */
                     track = tracks[i];
                     if (_kindSupported(track.kind) && !_tracksById[track._id]) {
                         _addTrack(track);
                         tracksLoader.loadFile(track,
-                            _addVTTCuesToTrack.bind(null, track),
-                            _errorHandler);
+                            (vttCues) => {
+                                _addVTTCuesToTrack(track, vttCues);
+                            },
+                            (error) => {
+                                this.trigger(ERROR, {
+                                    message: 'Captions failed to load',
+                                    reason: error
+                                });
+                            });
                     }
                 }
             }
@@ -80,10 +91,6 @@ define(['utils/helpers',
 
         function _addVTTCuesToTrack(track, vttCues) {
             track.data = vttCues;
-        }
-
-        function _errorHandler(error) {
-            utils.log('CAPTIONS(' + error + ')');
         }
 
         function _captionsIndexHandler(model, captionsMenuIndex) {
@@ -169,7 +176,13 @@ define(['utils/helpers',
         this.setCaptionsList = function(captionsMenu) {
             _model.set('captionsList', captionsMenu);
         };
+
+        this.destroy = function() {
+            this.off(null, null, this);
+        };
     };
+
+    Object.assign(Captions.prototype, Events);
 
     return Captions;
 });
