@@ -55,6 +55,7 @@ define([], function() {
 
             _model.setup(config);
             _view = this._view = new View(_api, _model);
+            _view.on('all', _triggerAfterReady, _this);
 
             _setup = new Setup(_api, _model, _view);
 
@@ -165,6 +166,7 @@ define([], function() {
 
             // Ensure captionsList event is raised after playlistItem
             _captions = new Captions(_model);
+            _captions.on('all', _triggerAfterReady);
 
             function _video() {
                 return _model.getVideo();
@@ -197,8 +199,6 @@ define([], function() {
                     return;
                 }
                 _setup = null;
-
-                _view.on('all', _triggerAfterReady, _this);
 
                 const related = _api.getPlugin('related');
                 if (related) {
@@ -833,6 +833,10 @@ define([], function() {
                 }
                 if (apiQueue) {
                     apiQueue.destroy();
+                }
+                if (_captions) {
+                    _captions.destroy();
+                    _captions = null;
                 }
                 this.instreamDestroy();
             };

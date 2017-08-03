@@ -1,4 +1,5 @@
 import VTTCue from 'parsers/captions/vttcue';
+import { chunkLoadErrorHandler } from '../api/core-loader';
 
 define([
     'utils/underscore',
@@ -65,11 +66,26 @@ define([
             } else {
                 // parse VTT/SRT track
                 var responseText = xhr.responseText;
-
-                // TODO: parse SRT with using vttParser and deprecate srt module
                 if (responseText.indexOf('WEBVTT') >= 0) {
                     // make VTTCues from VTT track
-                    parseCuesFromText(responseText, track, successHandler, errorHandler);
+                    loadVttParser().then(VTTParser => {
+                        var parser = new VTTParser(window);
+                        vttCues = [];
+                        parser.oncue = function(cue) {
+                            vttCues.push(cue);
+                        };
+
+                        parser.onflush = function() {
+                            delete track.xhr;
+                            successHandler(vttCues);
+                        };
+
+                        // Parse calls onflush internally
+                        parser.parse(responseText);
+                    }).catch(error => {
+                        delete track.xhr;
+                        errorHandler(error);
+                    });
                 } else {
                     // make VTTCues from SRT track
                     cues = srt(responseText);
@@ -84,29 +100,10 @@ define([
         }
     }
 
-    function parseCuesFromText(text, track, successHandler, errorHandler) {
-        require.ensure(['parsers/captions/vttparser'], function (require) {
-            var VTTParser = require('parsers/captions/vttparser').default;
-            var parser = new VTTParser(window);
-            var vttCues = [];
-            parser.oncue = function(cue) {
-                vttCues.push(cue);
-            };
-
-            parser.onflush = function() {
-                delete track.xhr;
-                successHandler(vttCues);
-            };
-
-            try {
-                // Parse calls onflush internally
-                parser.parse(text);
-            } catch (error) {
-                delete track.xhr;
-                errorHandler(error);
-            }
-
-        }, 'vttparser');
+    function loadVttParser() {
+        return require.ensure(['parsers/captions/vttparser'], function (require) {
+            return require('parsers/captions/vttparser').default;
+        }, chunkLoadErrorHandler, 'vttparser');
     }
 
     return tracksLoader;

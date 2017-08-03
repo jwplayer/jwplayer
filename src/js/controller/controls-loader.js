@@ -1,3 +1,5 @@
+import { chunkLoadErrorHandler } from '../api/core-loader';
+
 let controlsPromise = null;
 
 export function load() {
@@ -6,7 +8,7 @@ export function load() {
             return require('view/controls/controls');
         }, function() {
             controlsPromise = null;
-            throw new Error('Network error');
+            chunkLoadErrorHandler();
         }, 'jwplayer.controls');
     }
     return controlsPromise;

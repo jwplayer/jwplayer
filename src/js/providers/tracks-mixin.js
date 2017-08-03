@@ -1,5 +1,6 @@
 import { Browser } from 'environment/environment';
 import { parseID3 } from 'providers/utils/id3Parser';
+import { ERROR } from 'events/events';
 
 define(['utils/underscore',
     'controller/tracks-loader',
@@ -439,6 +440,7 @@ define(['utils/underscore',
         }
 
         for (var i = 0; i < tracksArray.length; i++) {
+            /* eslint-disable no-loop-func */
             var itemTrack = tracksArray[i];
             // only add valid and supported kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
             if (itemTrack.kind && !_kindSupported(itemTrack.kind)) {
@@ -449,8 +451,15 @@ define(['utils/underscore',
             if (itemTrack.file) {
                 itemTrack.data = [];
                 tracksLoader.loadFile(itemTrack,
-                    this.addVTTCuesToTrack.bind(this, textTrackAny),
-                    _errorHandler);
+                    (vttCues) => {
+                        this.addVTTCuesToTrack(textTrackAny, vttCues);
+                    },
+                    (error) => {
+                        this.trigger(ERROR, {
+                            message: 'Captions failed to load',
+                            reason: error
+                        });
+                    });
             }
         }
 
@@ -685,13 +694,6 @@ define(['utils/underscore',
         }
 
         return false;
-    }
-
-
-    function _errorHandler(error) {
-        if (__DEBUG__) {
-            console.error('CAPTIONS(' + error + ')');
-        }
     }
 
     return Tracks;
