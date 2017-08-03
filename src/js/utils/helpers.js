@@ -32,6 +32,8 @@ define([], function() {
         }
     };
 
+    const flashVersion = browser.flashVersion;
+    const isIframe = browser.isIframe;
     const indexOf = _.indexOf;
     const seconds = strings.seconds;
     const prefix = strings.prefix;
@@ -39,13 +41,15 @@ define([], function() {
 
     const noop = function () {};
 
-    return Object.assign({}, parser, validator, browser, ajax, dom, css, playerutils, {
+    return Object.assign({}, parser, validator, ajax, dom, css, playerutils, {
         tryCatch,
         Error,
         Timer,
         log,
         between,
         foreach,
+        flashVersion,
+        isIframe,
         indexOf,
         seconds,
         prefix,
@@ -53,4 +57,3 @@ define([], function() {
         noop
     });
 });
-
