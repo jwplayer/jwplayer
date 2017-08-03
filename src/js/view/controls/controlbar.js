@@ -10,6 +10,8 @@ import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
+import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
+import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
 
 define([
     'utils/helpers',
@@ -54,8 +56,9 @@ define([
 
     function createCastButton(castToggle, localization) {
         if (!Browser.chrome || OS.iOS) {
-            return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
+            return button('jw-icon-airplay jw-off', castToggle, localization.airplay, [AIRPLAY_OFF_ICON, AIRPLAY_ON_ICON]);
         }
+
 
         const ariaText = localization.cast;
 

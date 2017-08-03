@@ -36,12 +36,16 @@
 }
 
 .jw-icon-airplay {
-    &:before {
-        content: "\e901";
+    &:not(.jw-off) {
+        #airplayOffIcon {
+            display: none;
+        }
     }
 
-    &.jw-off:before {
-        content: "\e901";
+    &.jw-off {
+        #airplayOnIcon {
+            display: none;
+        }
     }
 }
 
@@ -57,7 +61,6 @@
             display: none;
         }
     }
-
 }
 
 .jw-icon-error {
