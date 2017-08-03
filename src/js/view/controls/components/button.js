@@ -24,7 +24,7 @@ define([
         if (svgIcons && svgIcons.length > 0) {
             var parser = new DOMParser();
             for (var i = 0; i < svgIcons.length; i++) {
-                var svgDoc = parser.parseFromString(svgIcons[i], "image/svg+xml");
+                var svgDoc = parser.parseFromString(svgIcons[i], 'image/svg+xml');
                 // or document.createElementNS(svgIcons[i], 'svg');
                 element.appendChild(svgDoc.documentElement);
             }
