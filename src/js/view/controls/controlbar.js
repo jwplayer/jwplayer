@@ -409,6 +409,12 @@ define([
         }
 
         onMediaModel(model, mediaModel) {
+            mediaModel.on('change:levels', function(levelsChangeModel, levels) {
+                this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
+            }, this);
+            mediaModel.on('change:currentLevel', function(currentLevelChangeModel, level) {
+                this.elements.hd.selectItem(level);
+            }, this);
             mediaModel.on('change:audioTracks', function(audioTracksChangeModel, audioTracks) {
                 const list = _.map(audioTracks, function(track) {
                     return { label: track.name };
