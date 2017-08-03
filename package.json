@@ -5,10 +5,7 @@
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
   "license": "CC-BY-NC-SA-3.0",
-  "dependencies": {
-    "module": "^1.2.5",
-    "svg-inline-loader": "^0.8.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "async": "2.2.0",
     "autoprefixer": "6.7.7",
@@ -57,6 +54,7 @@
     "load-grunt-tasks": "3.5.2",
     "loader-utils": "1.1.0",
     "mocha": "3.2.0",
+    "module": "1.2.5",
     "node-libs-browser": "2.0.0",
     "phantomjs-polyfill": "0.0.2",
     "phantomjs-prebuilt": "2.1.14",
@@ -66,6 +64,7 @@
     "simple-style-loader": "0.4.3",
     "sinon": "2.1.0",
     "source-map": "0.5.6",
+    "svg-inline-loader": "0.8.0",
     "stylelint": "~8.0.0",
     "underscore": "1.8.3",
     "url-loader": "0.5.8",
