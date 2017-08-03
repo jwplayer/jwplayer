@@ -75,6 +75,31 @@ display icons
             left: 1px;
         }
     }
+
+    .jw-svg-icon {
+        cursor: pointer;
+
+        // Default to .jw-breakpoint-2 to match pre 7.9 styles
+        width: 75px;
+        height: 75px;
+        line-height: 75px;
+        text-align: center;
+
+        &.jw-icon-rewind:before {
+            padding: 0.2em 0.05em;
+        }
+
+        &:before {
+            width: @mobile-touch-target * 0.75;
+            height: @mobile-touch-target * 0.75;
+            position: relative;
+        }
+
+        .jw-state-idle &.jw-icon-display:before,
+        .jw-state-paused &.jw-icon-display:before {
+            left: 1px;
+        }
+    }
 }
 
 // hide next and rewind buttons on extra small player
@@ -86,11 +111,22 @@ display icons
 
     .jw-display .jw-icon {
         height: @mobile-touch-target;
-        line-height: @mobile-touch-target;
         width: @mobile-touch-target;
+        line-height: @mobile-touch-target;
 
         &:before {
             font-size: @mobile-touch-target * 0.5;
+        }
+    }
+
+    .jw-display .jw-svg-icon {
+        height: @mobile-touch-target;
+        width: @mobile-touch-target;
+        line-height: @mobile-touch-target;
+
+        &:before {
+            height: @mobile-touch-target * 0.5;
+            width: @mobile-touch-target * 0.5;
         }
     }
 }
@@ -109,6 +145,22 @@ display icons
             font-size: @mobile-touch-target * 0.75;
         }
     }
+
+    .jw-display .jw-svg-icon {
+        height: @mobile-touch-target * 1.25;
+        line-height: @mobile-touch-target * 1.25;
+        width: @mobile-touch-target * 1.25;
+
+        &:before {
+            width: @mobile-touch-target * 0.5;
+            height: @mobile-touch-target * 0.5;
+        }
+
+        &.jw-icon-rewind:before {
+            width: @mobile-touch-target * 0.75;
+            height: @mobile-touch-target * 0.75;
+        }
+    }
 }
 
 .jw-breakpoint-3 {
@@ -119,6 +171,17 @@ display icons
 
         &:before {
             font-size: @mobile-touch-target * 0.875;
+        }
+    }
+
+    .jw-display .jw-svg-icon {
+        height: @mobile-touch-target * 1.75;
+        line-height: @mobile-touch-target * 1.75;
+        width: @mobile-touch-target * 1.75;
+
+        &:before {
+            height: @mobile-touch-target * 0.875;
+            width: @mobile-touch-target * 0.875;
         }
     }
 }
@@ -134,6 +197,17 @@ display icons
 
         &:before {
             font-size: @mobile-touch-target;
+        }
+    }
+
+    .jw-display .jw-svg-icon {
+        height: @mobile-touch-target * 2;
+        line-height: @mobile-touch-target * 2;
+        width: @mobile-touch-target * 2;
+
+        &:before {
+            width: @mobile-touch-target;
+            height: @mobile-touch-target;
         }
     }
 }
