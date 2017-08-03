@@ -13,6 +13,8 @@ import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
+import DVR_ICON from 'assets/SVG/dvr.svg';
+import LIVE_ICON from 'assets/SVG/live.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -60,7 +62,8 @@ define([
 
     function createCastButton(castToggle, localization) {
         if (!Browser.chrome || OS.iOS) {
-            return button('jw-icon-airplay jw-off', castToggle, localization.airplay, [AIRPLAY_OFF_ICON, AIRPLAY_ON_ICON]);
+            return button('jw-icon-airplay jw-off', castToggle, localization.airplay, [AIRPLAY_OFF_ICON,
+                AIRPLAY_ON_ICON]);
         }
 
 
@@ -134,7 +137,8 @@ define([
             if (!this._isMobile) {
                 volumeSlider = new Slider('jw-slider-volume', 'horizontal');// , vol);
                 volumeSlider.setup();
-                volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0, VOLUME_ICON_50, VOLUME_ICON_100]);
+                volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0, VOLUME_ICON_50,
+                    VOLUME_ICON_100]);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
             if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
@@ -174,6 +178,9 @@ define([
                 rewind: button('jw-icon-rewind', () => {
                     this.rewind();
                 }, rewind, [REWIND_ICON]),
+                live: button('jw-icon-live', () => {
+                    this.goToLiveEdge();
+                }, this._localization.liveBroadcast, [LIVE_ICON, DVR_ICON]),
                 next: nextButton,
                 elapsed: textIcon('jw-text-elapsed', 'timer'),
                 countdown: textIcon('jw-text-countdown', 'timer'),
@@ -207,6 +214,7 @@ define([
                 elements.rewind,
                 elements.elapsed,
                 elements.countdown,
+                elements.live,
                 elements.duration,
                 elements.spacer,
                 elements.next,
@@ -264,6 +272,11 @@ define([
             _model.change('cues', this.addCues, this);
             _model.change('altText', this.setAltText, this);
             _model.change('customButtons', this.updateButtons, this);
+            _model.change('state', () => {
+                // Check for change of position to counter race condition where state is updated before the current position
+                _model.once('change:position', this.checkDvrLiveEdge, this);
+            }, this);
+
 
             // Event listeners
 
@@ -309,6 +322,10 @@ define([
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
 
+            this._model.mediaController.on('seeked', function () {
+                this.checkDvrLiveEdge();
+            }, this);
+
             let playbackRateControls = _model.get('playbackRateControls');
             if (playbackRateControls) {
                 let selectedIndex = playbackRateControls.indexOf(this._model.get('playbackRate'));
@@ -343,6 +360,15 @@ define([
                     // Seek to "Live" position within live buffer, but not before current position
                     const currentPosition = this._model.get('position');
                     this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
+                }
+            }, this);
+
+            // TODO: Karim - duplicate code
+            new UI(this.elements.durationLeft).on('click tap', function() {
+                if (this._model.get('streamType') === 'DVR') {
+                    // Seek to "Live" position within live buffer, but not before current position
+                    const currentPosition = this._model.get('position');
+                    this._api.seek(Math.max(dvrSeekLimit, currentPosition));
                 }
             }, this);
 
@@ -415,6 +441,14 @@ define([
                 this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
                 utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
                 utils.toggleClass(this.elements.volumetooltip.element(), 'jw-full', vol === 100 && !muted);
+            }
+        }
+
+        checkDvrLiveEdge() {
+            if (this._model.get('streamType') === 'DVR') {
+                const currentPosition = this._model.get('position');
+                const live = currentPosition > dvrSeekLimit;
+                utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition > dvrSeekLimit);
             }
         }
 
@@ -497,15 +531,25 @@ define([
             this._api.seek(Math.max(rewindPosition, startPosition), reasonInteraction());
         }
 
+        goToLiveEdge() {
+            if (this._model.get('streamType') === 'DVR') {
+                // Seek to "Live" position within live buffer, but not before current position
+                const currentPosition = this._model.get('position');
+                this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
+            }
+        }
+
         onStreamTypeChange(model) {
             // Hide rewind button when in LIVE mode
             const streamType = model.get('streamType');
             this.elements.rewind.toggle(streamType !== 'LIVE');
-            if (streamType === 'DVR') {
-                this.elements.duration.textContent = 'Live';
-            }
+            this.elements.live.toggle(streamType === 'LIVE' || streamType === 'DVR');
+            const stateOnDvr = streamType === 'DVR' ? 'none' : '';
+            this.elements.duration.style.display = stateOnDvr;
+            this.elements.durationLeft.style.display = stateOnDvr;
             const duration = model.get('duration');
             this.onDuration(model, duration);
+            // TODO: Karim - duplicate code, see castButton and button.js - set functions to provider ?
         }
 
         onNextUp(model, nextUp) {

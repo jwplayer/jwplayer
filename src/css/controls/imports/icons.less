@@ -69,13 +69,15 @@
 }
 
 .jw-icon-fullscreen {
-    &:not(.jw-off) {
-        #fullscreenExitIcon {
-            display: none;
-        }
+    #fullscreenExitIcon {
+        display: none;
     }
 
     &.jw-off {
+        #fullscreenExitIcon {
+            display: block;
+        }
+
         #fullscreenEnterIcon {
             display: none;
         }
@@ -128,4 +130,13 @@
 }
 
 .jw-icon-rewind {
+}
+
+.jw-icon-live {
+    &.jw-dvr-live {
+        #dvrIcon {
+            display:none;
+        }
+    }
+    width: 44px;
 }

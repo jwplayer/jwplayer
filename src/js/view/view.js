@@ -763,7 +763,6 @@ define([], function() {
             if (!_instreamModel) {
                 const live = (streamType === 'LIVE');
                 utils.toggleClass(_playerElement, 'jw-flag-live', live);
-                _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
             }
         }
 
