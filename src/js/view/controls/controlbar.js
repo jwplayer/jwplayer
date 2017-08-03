@@ -188,8 +188,10 @@ define([
             // Filter out undefined elements
             const buttonLayout = [
                 elements.play,
-                elements.alt,
                 elements.rewind,
+                elements.volumetooltip,
+                elements.mute,
+                elements.alt,
                 elements.elapsed,
                 elements.countdown,
                 elements.duration,
@@ -199,10 +201,7 @@ define([
                 elements.cc,
                 elements.audiotracks,
                 elements.playbackrates,
-                elements.mute,
                 elements.cast,
-                elements.volume,
-                elements.volumetooltip,
                 elements.fullscreen
             ].filter(e => e);
 
@@ -249,7 +248,6 @@ define([
             _model.change('cues', this.addCues, this);
             _model.change('altText', this.setAltText, this);
             _model.change('customButtons', this.updateButtons, this);
-
             // Event listeners
 
             // Volume sliders do not exist on mobile so don't assign listeners to them.
