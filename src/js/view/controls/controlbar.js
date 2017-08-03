@@ -523,7 +523,7 @@ define([
             }
         }
 
-        removeButtons(buttonContainer, oldButtons) {
+        removeButtons(buttonContainer, oldButtons = []) {
             const toRemove = {};
             const buttonElements = _.clone(buttonContainer.children);
 
