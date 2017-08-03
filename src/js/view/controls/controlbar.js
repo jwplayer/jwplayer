@@ -1,4 +1,3 @@
-import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
 import PLAY_ICON from 'assets/SVG/play.svg';
 import PAUSE_ICON from 'assets/SVG/pause.svg';
 import REWIND_ICON from 'assets/SVG/rewind-10.svg';
@@ -8,6 +7,7 @@ import VOLUME_ICON_50 from 'assets/SVG/volume-50.svg';
 import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
 import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
+import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
