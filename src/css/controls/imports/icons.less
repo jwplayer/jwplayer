@@ -1,12 +1,5 @@
 @import "../../shared-imports/mixins";
 
-/*** When not base64 encoded, fallbacks will work so that we won't load both fonts if we don't have to ***/
-/*** TTF is used for support for some older version of Android Stock (4.3 and less) ***/
-@font-face {
-    font-family: "jw-icons";
-    src: url("../../../../assets/fonts/jw-icons.woff") format("woff"), url("../../../../assets/fonts/jw-icons.ttf") format("truetype");
-}
-
 .jw-svg-icon {
     width: 22px;
     height: 22px;
@@ -15,16 +8,7 @@
 }
 
 .jw-icon {
-    font-family: "jw-icons";
-    font-style: normal;
-    font-weight: normal;
-    text-transform: none;
     background-color: transparent;
-    font-variant: normal;
-    /* font-smoothing is a private setting not transformed by PostCSS */
-    -webkit-font-smoothing: antialiased;
-    /* OSX Firefox specific style for improving legibility */
-    -moz-osx-font-smoothing: grayscale;
     width: 24px;
     height: 100%;
 }
