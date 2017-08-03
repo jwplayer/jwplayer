@@ -1,24 +1,22 @@
-define([
-    'events/events',
-    'events/states',
-    'utils/backbone.events',
-    'utils/constants',
-    'utils/helpers',
-    'utils/underscore',
-    'view/controls/components/button',
-    'view/controls/controlbar',
-    'view/controls/dock',
-    'view/controls/display-container',
-    'view/controls/rewind-display-icon',
-    'view/controls/play-display-icon',
-    'view/controls/next-display-icon',
-    'view/controls/nextuptooltip',
-    'view/controls/rightclick',
-], function (events, states, Events, Constants, utils, _, button, Controlbar, Dock,
-             DisplayContainer, RewindDisplayIcon, PlayDisplayIcon, NextDisplayIcon,
-             NextUpToolTip, RightClick) {
+import { Browser, OS } from 'environment/environment';
+import { dvrSeekLimit } from 'view/constants';
+import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
 
-    const ACTIVE_TIMEOUT = utils.isMobile() ? 4000 : 2000;
+import Events from 'utils/backbone.events';
+import utils from 'utils/helpers';
+import _ from 'utils/underscore';
+import button from 'view/controls/components/button';
+import Controlbar from 'view/controls/controlbar';
+import DisplayContainer from 'view/controls/display-container';
+import RewindDisplayIcon from 'view/controls/rewind-display-icon';
+import PlayDisplayIcon from 'view/controls/play-display-icon';
+import NextDisplayIcon from 'view/controls/next-display-icon';
+import NextUpToolTip from 'view/controls/nextuptooltip';
+import RightClick from 'view/controls/rightclick';
+
+define([], function () {
+
+    const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
     const reasonInteraction = function() {
         return { reason: 'interaction' };
@@ -36,7 +34,6 @@ define([
             this.context = context;
             this.controlbar = null;
             this.displayContainer = null;
-            this.dock = null;
             this.enabled = true;
             this.instreamState = null;
             this.keydownCallback = null;
@@ -74,12 +71,12 @@ define([
                 const nextDisplayIcon = new NextDisplayIcon(model, api);
 
                 playDisplayIcon.on('click tap', () => {
-                    this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    this.trigger(DISPLAY_CLICK);
                     this.userActive(1000);
                     api.play(reasonInteraction());
                 });
 
-                if (utils.isChrome() && !touchMode) {
+                if (Browser.chrome && !touchMode) {
                     // On Chrome desktop allow media element to capture all play/pause toggle clicks
                     // This allows swfs to capture clicks on start preventing flash-throttling
                     playDisplayIcon.el.style.pointerEvents = 'none';
@@ -93,15 +90,6 @@ define([
                 this.div.appendChild(displayContainer.element());
                 this.displayContainer = displayContainer;
             }
-
-            const right = this.context.createElement('div');
-            right.className = 'jw-controls-right jw-reset';
-            element.appendChild(right);
-            this.right = right;
-
-            // Dock Area and Buttons
-            const dock = this.dock = new Dock(model);
-            this.right.appendChild(dock.element());
 
             // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
             if (touchMode) {
@@ -119,7 +107,7 @@ define([
 
             // Controlbar
             const controlbar = this.controlbar = new Controlbar(api, model);
-            controlbar.on(events.JWPLAYER_USER_ACTION, () => this.userActive());
+            controlbar.on(USER_ACTION, () => this.userActive());
             // Next Up Tooltip
             if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
                 const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
@@ -155,7 +143,7 @@ define([
                 const position = model.get('position');
                 if (model.get('streamType') === 'DVR') {
                     min = max;
-                    max = Math.max(position, Constants.dvrSeekLimit);
+                    max = Math.max(position, dvrSeekLimit);
                 }
                 const newSeek = utils.between(position + amount, min, max);
                 api.seek(newSeek, reasonInteraction());
@@ -308,7 +296,7 @@ define([
         }
 
         addActiveListeners(element) {
-            if (element && !utils.isMobile()) {
+            if (element && !OS.mobile) {
                 element.addEventListener('mousemove', this.activeListeners.mousemove);
                 element.addEventListener('mouseout', this.activeListeners.mouseout);
             }

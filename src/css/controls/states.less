@@ -14,6 +14,10 @@
         .jw-display {
             padding: 0;
         }
+
+        .jw-controls {
+            background: none;
+        }
     }
 }
 
@@ -40,6 +44,12 @@
     .jw-display .jw-icon-display,
     .jw-icon-playback {
         .jw-icon-pause;
+    }
+
+    &.jw-flag-user-inactive:not(.jw-flag-casting) {
+        .jw-controls {
+            background: none;
+        }
     }
 }
 
@@ -129,6 +139,10 @@ body .jwplayer.jw-state-error,
 .jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available) {
     .jw-controlbar {
         display: none;
+    }
+
+    .jw-display {
+        padding: 0;
     }
 }
 

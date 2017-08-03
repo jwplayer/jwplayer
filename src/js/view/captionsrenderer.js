@@ -1,10 +1,11 @@
+import { Browser } from 'environment/environment';
+
 define([
     'utils/helpers',
     'utils/css',
     'utils/dom',
-    'events/states',
     'utils/underscore'
-], function (utils, cssUtils, dom, states, _) {
+], function (utils, cssUtils, dom, _) {
     /** Component that renders the actual captions on screen. **/
     var CaptionsRenderer;
     var _style = cssUtils.style;
@@ -224,7 +225,7 @@ define([
         }
 
         function _styleNativeCaptions(playerId, textStyle) {
-            if (utils.isSafari()) {
+            if (Browser.safari) {
                 // Only Safari uses a separate element for styling text background
                 cssUtils.css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop', {
                     backgroundColor: textStyle.backgroundColor
@@ -302,11 +303,10 @@ define([
 
         function _itemReadyHandler() {
             // don't load the polyfill or do unnecessary work if rendering natively
-            if (!_model.get('renderCaptionsNatively')) {
-                require.ensure(['polyfills/vtt'], function (require) {
-                    require('polyfills/vtt');
-                    _WebVTT = window.WebVTT;
-                }, 'polyfills.vttrenderer');
+            if (!_model.get('renderCaptionsNatively') && !_WebVTT) {
+                require.ensure(['polyfills/webvtt'], function (require) {
+                    _WebVTT = require('polyfills/webvtt').default;
+                }, 'polyfills.webvtt');
             }
         }
 

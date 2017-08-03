@@ -163,16 +163,6 @@
     border: none;
 }
 
-.jw-skin-seven .jw-dock .jw-dock-button {
-    background: #000;
-    border-radius: 50%;
-}
-
-.jw-skin-seven .jw-dock .jw-overlay {
-    background: #000;
-    border-radius: 2.5em;
-}
-
 .jw-skin-seven .jw-overlay .jw-option.jw-active-option {
     background-color: #ff0046;
     color: #fff;

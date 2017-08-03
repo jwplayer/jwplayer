@@ -5,42 +5,42 @@ import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
+import { Browser, OS, Features } from 'environment/environment';
+import * as ControlsLoader from 'controller/controls-loader';
+import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
+    DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
+
+import Events from 'utils/backbone.events';
+import utils from 'utils/helpers';
+import _ from 'utils/underscore';
+import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
+import flagNoFocus from 'view/utils/flag-no-focus';
+import ClickHandler from 'view/utils/clickhandler';
+import CaptionsRenderer from 'view/captionsrenderer';
+import Logo from 'view/logo';
+import Preview from 'view/preview';
+import Title from 'view/title';
 
 let ControlsModule;
 
-define([
-    'events/events',
-    'events/states',
-    'utils/backbone.events',
-    'utils/helpers',
-    'utils/underscore',
-    'view/utils/request-fullscreen-helper',
-    'view/utils/flag-no-focus',
-    'view/utils/clickhandler',
-    'view/captionsrenderer',
-    'view/logo',
-    'view/preview',
-    'view/title',
-    'controller/controls-loader',
-], function(events, states, Events, utils, _, requestFullscreenHelper, flagNoFocus,
-            ClickHandler, CaptionsRenderer, Logo, Preview, Title, ControlsLoader) {
+define([], function() {
 
     const _styles = utils.style;
     const _bounds = utils.bounds;
-    const _isMobile = utils.isMobile();
-    const _isIE = utils.isIE();
+    const _isMobile = OS.mobile;
+    const _isIE = Browser.ie;
 
     let stylesInjected = false;
 
     function View(_api, _model) {
-        const _this = _.extend(this, Events, {
+        const _this = Object.assign(this, Events, {
             isSetup: false,
             api: _api,
             model: _model
         });
 
         // init/reset view model properties
-        _.extend(_model.attributes, {
+        Object.assign(_model.attributes, {
             containerWidth: undefined,
             containerHeight: undefined,
             mediaContainer: undefined,
@@ -86,6 +86,13 @@ define([
 
         let _breakpoint = null;
         let _controls;
+
+        // Fetch the ControlsModule now so we can  call `addControls()` synchronously on `init`
+        if (_model.get('controls')) {
+            ControlsLoader.load().then(Controls => {
+                ControlsModule = Controls;
+            });
+        }
 
         function reasonInteraction() {
             return { reason: 'interaction' };
@@ -149,14 +156,14 @@ define([
             if (containerWidth !== _lastWidth || containerHeight !== _lastHeight) {
                 _lastWidth = containerWidth;
                 _lastHeight = containerHeight;
-                _this.trigger(events.JWPLAYER_RESIZE, {
+                _this.trigger(RESIZE, {
                     width: containerWidth,
                     height: containerHeight
                 });
                 const breakpoint = getBreakpoint(containerWidth);
                 if (_breakpoint !== breakpoint) {
                     _breakpoint = breakpoint;
-                    _this.trigger(events.JWPLAYER_BREAKPOINT, {
+                    _this.trigger(BREAKPOINT, {
                         breakpoint: _breakpoint
                     });
                 }
@@ -185,11 +192,7 @@ define([
                 setBreakpoint(_playerElement, breakpoint);
 
                 const smallPlayer = breakpoint < 2;
-                const timeSliderAboveConfig = _model.get('timeSliderAbove');
-                const timeSliderAbove = !audioMode &&
-                    (timeSliderAboveConfig !== false) && (timeSliderAboveConfig || smallPlayer);
                 utils.toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
-                utils.toggleClass(_playerElement, 'jw-flag-time-slider-above', timeSliderAbove);
                 utils.toggleClass(_playerElement, 'jw-orientation-portrait', (height > width));
             }
             utils.toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
@@ -288,22 +291,20 @@ define([
                     '.jw-background-color'
                 ], 'background', 'none ' + backgroundColor);
 
-                if (_model.get('timeSliderAbove') !== false) {
-                    const backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
-                        utils.getRgba(backgroundColor, 0) + ' 0%, ' +
-                        utils.getRgba(backgroundColor, 0.25) + ' 30%, ' +
-                        utils.getRgba(backgroundColor, 0.4) + ' 70%, ' +
-                        utils.getRgba(backgroundColor, 0.5) + ') 100%';
+                const backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
+                    utils.getRgba(backgroundColor, 0) + ' 0%, ' +
+                    utils.getRgba(backgroundColor, 0.25) + ' 30%, ' +
+                    utils.getRgba(backgroundColor, 0.4) + ' 70%, ' +
+                    utils.getRgba(backgroundColor, 0.5) + ') 100%';
 
-                    addStyle([
-                        // for small player, set the control bar gradient to the config background color
-                        '.jw-flag-time-slider-above .jw-background-color.jw-controlbar'
-                    ], 'background', backgroundColorGradient, true);
-                }
+                addStyle([
+                    // for small player, set the control bar gradient to the config background color
+                    '.jw-background-color.jw-controlbar'
+                ], 'background', backgroundColorGradient, true);
 
                 // remove the config background on time slider
                 addStyle([
-                    '.jw-flag-time-slider-above .jw-background-color.jw-slider-time'
+                    '.jw-background-color.jw-slider-time'
                 ], 'background', 'transparent', true);
             }
 
@@ -317,7 +318,7 @@ define([
             _logo = new Logo(_model);
             _logo.setup();
             _logo.setContainer(_playerElement);
-            _logo.on(events.JWPLAYER_LOGO_CLICK, _logoClickHandler);
+            _logo.on(LOGO_CLICK, _logoClickHandler);
 
             // captions rendering
             _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
@@ -342,7 +343,7 @@ define([
             });
             // Native fullscreen (coming through from the provider)
             _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
-            
+
             _model.change('mediaModel', (model, mediaModel) => {
                 mediaModel.change('mediaType', _onMediaTypeChange, this);
                 mediaModel.on('change:visualQuality', () => {
@@ -370,18 +371,12 @@ define([
             if (_isIE) {
                 utils.addClass(_playerElement, 'jw-ie');
             }
-            // Hide control elements until skin is loaded
-            if (_model.get('skin-loading') === true) {
-                utils.addClass(_playerElement, 'jw-flag-skin-loading');
-                _model.once('change:skin-loading', function () {
-                    utils.removeClass(_playerElement, 'jw-flag-skin-loading');
-                });
-            }
+
             this.handleColorOverrides();
 
             // adds video tag to video layer
             _model.set('mediaContainer', _videoLayer);
-            _model.set('iFrame', utils.isIframe());
+            _model.set('iFrame', Features.iframe);
             _model.set('activeTab', activeTab());
             _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT));
 
@@ -434,7 +429,7 @@ define([
                             addControls();
                         })
                         .catch(function (reason) {
-                            _this.trigger('error', {
+                            _this.trigger(ERROR, {
                                 message: 'Controls failed to load',
                                 reason: reason
                             });
@@ -476,22 +471,22 @@ define([
             const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });
             clickHandler.on({
                 click: () => {
-                    _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    _this.trigger(DISPLAY_CLICK);
                     if (_model.get('controls')) {
                         api.play(reasonInteraction());
                     }
                 },
                 tap: () => {
-                    _this.trigger(events.JWPLAYER_DISPLAY_CLICK);
+                    _this.trigger(DISPLAY_CLICK);
                     const state = model.get('state');
                     const controls = _model.get('controls');
 
                     if (controls &&
-                        ((state === states.IDLE || state === states.COMPLETE) ||
-                        (_instreamModel && _instreamModel.get('state') === states.PAUSED))) {
+                        ((state === STATE_IDLE || state === STATE_COMPLETE) ||
+                        (_instreamModel && _instreamModel.get('state') === STATE_PAUSED))) {
                         api.play(reasonInteraction());
                     }
-                    if (controls && state === states.PAUSED) {
+                    if (controls && state === STATE_PAUSED) {
                         // Toggle visibility of the controls when tapping the media
                         // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
                         if (_instreamModel ||
@@ -579,7 +574,7 @@ define([
             }
 
             controls.on('userActive userInactive', function() {
-                if (_playerState === states.PLAYING || _playerState === states.BUFFERING) {
+                if (_playerState === STATE_PLAYING || _playerState === STATE_BUFFERING) {
                     _captionsRenderer.renderCues(true);
                 }
             });
@@ -803,21 +798,21 @@ define([
         }
 
         function _stateUpdate(state) {
-            if (_model.get('controls') && state !== states.PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
+            if (_model.get('controls') && state !== STATE_PAUSED && utils.hasClass(_playerElement, 'jw-flag-controls-hidden')) {
                 utils.removeClass(_playerElement, 'jw-flag-controls-hidden');
             }
             utils.replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
             // Update captions renderer
             switch (state) {
-                case states.IDLE:
-                case states.ERROR:
-                case states.COMPLETE:
+                case STATE_IDLE:
+                case STATE_ERROR:
+                case STATE_COMPLETE:
                     _captionsRenderer.hide();
                     break;
                 default:
                     _captionsRenderer.show();
-                    if (state === states.PAUSED && _controls && !_controls.showing) {
+                    if (state === STATE_PAUSED && _controls && !_controls.showing) {
                         _captionsRenderer.renderCues(true);
                     }
                     break;
@@ -853,6 +848,10 @@ define([
                 _instreamModel.off(null, null, this);
                 _instreamModel = null;
             }
+            if (!displayClickHandler) {
+                // view was destroyed
+                return;
+            }
             this.setAltText('');
             utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
             _model.set('hideAdsControls', false);
@@ -884,7 +883,7 @@ define([
             return null;
         };
 
-        this.getSafeRegion = function (includeCB) {
+        this.getSafeRegion = function (excludeControlbar = true) {
             const bounds = {
                 x: 0,
                 y: 0,
@@ -894,8 +893,7 @@ define([
 
             if (_controls) {
                 // Subtract controlbar from the bottom when using one
-                includeCB = includeCB || !utils.exists(includeCB);
-                if (includeCB) {
+                if (excludeControlbar) {
                     bounds.height -= _controls.controlbarHeight();
                 }
             }
@@ -946,10 +944,6 @@ define([
             utils.clearCss(_model.get('id'));
         };
     }
-
-    View.prototype.setControlsModule = function(Controls) {
-        ControlsModule = Controls;
-    };
 
     return View;
 });

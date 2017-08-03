@@ -1,3 +1,2 @@
-define([], function() {
-    return document.createElement('video');
-});
+const video = document.createElement('video');
+export default video;

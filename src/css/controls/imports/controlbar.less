@@ -2,54 +2,80 @@
 @import "../../shared-imports/vars";
 
 .jw-controlbar {
-    display: table;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     left: 0;
     bottom: 0;
-    height: @controlbar-height;
     width: 100%;
-    padding: 0 @ui-padding;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.25) 30%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.5) 100%);
+    border: none;
+    border-radius: 0;
+    background-size: auto;
+    box-shadow: none;
+    max-height: 72px;
+
+    // adjust overlay bottom padding to match height of touch target
+    .jw-overlay {
+        &:after {
+            content: "";
+            display: block;
+            height: @mobile-touch-target * 0.5;
+        }
+    }
+
+    .jw-button-image {
+        width: 100%;
+        height: 100%;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        opacity: 0.75;
+    }
+
+    .jw-spacer {
+        flex: 1 1 auto;
+        align-self: stretch;
+    }
+}
+
+.jw-button-container {
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+
+    > .jw-icon:not(.jw-text) {
+        font-size: 20px;
+        max-width: @mobile-touch-target;
+
+        &:before {
+            /* This hack is required to make sure that gradients display correctly */
+            /* stylelint-disable-next-line declaration-block-no-shorthand-property-overrides */
+            background: transparent none;
+            background-size: auto;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+            height: auto;
+            padding: 0;
+        }
+    }
 }
 
 .jw-slider-horizontal {
     background-color: transparent;
 }
 
-.jw-group {
-    display: table-cell;
-}
-
-.jw-controlbar-center-group {
-    padding: 0 @ui-padding;
-    position: relative;
-    width: 100%;
-
-    .jw-slider-time,
-    .jw-text-alt {
-        padding: 0;
-    }
-
-    .jw-text-alt {
-        display: none;
-        position: absolute;
-        top: -1px;
-        bottom: 0;
-        width: 100%;
-        height: auto;
-        line-height: @controlbar-height;
-        margin: 0.5em 0;
-        padding-right: 0.5em;
-        overflow: hidden;
-        text-align: left;
-        text-overflow: ellipsis;
-        vertical-align: middle;
-        white-space: nowrap;
-    }
-}
-
-.jw-controlbar-left-group,
-.jw-controlbar-right-group {
-    white-space: nowrap;
+.jw-icon-inline,
+.jw-icon-tooltip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: @mobile-touch-target;
+    height: @mobile-touch-target;
 }
 
 .jw-icon-inline,
@@ -58,23 +84,15 @@
 .jw-text-elapsed,
 .jw-text-duration,
 .jw-text-countdown {
-    display: inline-block;
-    height: @controlbar-height;
-    position: relative;
-    line-height: @controlbar-height;
-    vertical-align: middle;
     cursor: pointer;
-    padding: 0 @ui-padding;
+}
+
+.jw-icon-tooltip {
+    position: relative;
 }
 
 .jw-selection-menu {
     padding: 0 @ui-padding / 2;
-}
-
-.jw-icon-inline,
-.jw-icon-tooltip {
-    min-width: @controlbar-height * 5/8;
-    text-align: center;
 }
 
 .jw-knob,
@@ -87,23 +105,7 @@
     }
 }
 
-.jw-controlbar-left-group {
-    .jw-text-duration {
-        display: none;
-    }
-}
-
-.jw-icon-playback {
-    min-width: 2.25em;
-}
-
-.jw-icon-volume {
-    min-width: 1.75em;
-    text-align: left;
-}
-
 .jw-time-tip {
-    line-height: 1em;
     pointer-events: none;
 }
 
@@ -115,9 +117,11 @@
     button {
         background-color: transparent;
         border: none;
-        cursor: pointer;
         font-size: inherit;
-        width: 2.25em;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
     }
 }
 
@@ -130,25 +134,25 @@
     display: none;
 }
 
-/* Indentation sometimes complains about multiple selections when :not()s are included */
-/* stylelint-disable indentation */
-.jw-breakpoint-0,
-.jw-breakpoint-1:not(.jw-flag-time-slider-above) {
-    .jw-controlbar {
-        .jw-text-duration,
-        .jw-text-elapsed {
-            display: none;
-        }
+&.jw-flag-small-player {
+    .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
+        display: none;
+    }
+
+    .jw-display {
+        padding-top: @mobile-touch-target;
+        padding-bottom: @mobile-touch-target * 1.5;
     }
 }
-/* stylelint-enable indentation */
 
 .jw-flag-small-player:not(.jw-flag-audio-player) {
-    .jw-group {
-        > .jw-icon-rewind,
-        > .jw-icon-next,
-        > .jw-icon-playback {
-            display: none;
+    .jw-controlbar {
+        .jw-button-container {
+            > .jw-icon-rewind,
+            > .jw-icon-next,
+            > .jw-icon-playback {
+                display: none;
+            }
         }
     }
 }
@@ -162,6 +166,28 @@
             visibility: hidden;
             pointer-events: none;
             opacity: 0;
+        }
+    }
+}
+
+.jwplayer&:not(.jw-flag-ads):not(.jw-flag-live) {
+    &.jw-breakpoint-0 {
+        .jw-text-countdown {
+            display: flex;
+        }
+
+        .jw-text-elapsed,
+        .jw-text-duration {
+            display: none;
+        }
+    }
+}
+
+&:not(.jw-breakpoint-0) {
+    .jw-text-duration {
+        &:before {
+            content: "/";
+            padding-right: 0.5em;
         }
     }
 }

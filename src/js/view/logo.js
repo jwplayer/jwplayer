@@ -1,12 +1,12 @@
 import logoTemplate from 'templates/logo';
+import { LOGO_CLICK } from 'events/events';
 
 define([
     'utils/ui',
     'utils/helpers',
-    'events/events',
     'utils/underscore',
     'utils/backbone.events',
-], function(UI, utils, events, _, Events) {
+], function(UI, utils, _, Events) {
     var _styles = utils.style;
 
     var LogoDefaults = {
@@ -38,9 +38,6 @@ define([
 
             _model.set('logo', _settings);
 
-            _model.change('dock', accommodateDock);
-            _model.on('change:controls', accommodateDock);
-
             // apply styles onload when image width and height are known
             _img.onload = function () {
                 // update logo style
@@ -70,7 +67,7 @@ define([
                     evt.stopPropagation();
                 }
 
-                this.trigger(events.JWPLAYER_LOGO_CLICK, {
+                this.trigger(LOGO_CLICK, {
                     link: _settings.link,
                     linktarget: _settings.linktarget
                 });
@@ -80,12 +77,7 @@ define([
 
         this.setContainer = function(container) {
             if (_logo) {
-                const dock = container.querySelector('.jw-dock');
-                if (dock) {
-                    container.insertBefore(_logo, dock);
-                } else {
-                    container.appendChild(_logo);
-                }
+                container.appendChild(_logo);
             }
         };
 
@@ -98,17 +90,8 @@ define([
         };
 
         this.destroy = function() {
-            _model.off('change:dock', accommodateDock);
-            _model.off('change:controls', accommodateDock);
             _img.onload = null;
         };
-
-        function accommodateDock() {
-            // When positioned in the top right, the logo needs to be shifted down to accommodate dock buttons
-            var dockButtons = _model.get('dock');
-            var belowDock = !!(dockButtons && dockButtons.length && _settings.position === 'top-right' && _model.get('controls'));
-            utils.toggleClass(_logo, 'jw-below', belowDock);
-        }
 
         return this;
     };

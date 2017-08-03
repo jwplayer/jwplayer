@@ -10,15 +10,6 @@
     overflow: hidden;
     /* Allow pointer events through to the provider */
     pointer-events: none;
-
-    .jw-controls-right {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        /* this should be adjusted in different skins based on controlbar height */
-        bottom: @controlbar-height;
-    }
 }
 
 .jw-overlays,
@@ -53,7 +44,6 @@
 }
 
 /* These items can intercept pointer-events */
-.jw-dock .jw-dock-button,
 .jw-controlbar,
 .jw-skip,
 .jw-display-icon-container,

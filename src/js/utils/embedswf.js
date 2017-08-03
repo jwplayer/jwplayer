@@ -1,8 +1,9 @@
+import { Browser } from 'environment/environment';
+
 define([
-    'utils/helpers',
     'utils/backbone.events',
     'utils/underscore'
-], function(utils, Events, _) {
+], function(Events, _) {
 
     // Defaults
     var BGCOLOR = '#000000';
@@ -28,7 +29,7 @@ define([
 
         wmode = wmode || 'opaque';
 
-        if (utils.isMSIE()) {
+        if (Browser.msie) {
             // IE9 works best with outerHTML
             var temp = document.createElement('div');
             container.appendChild(temp);
@@ -77,7 +78,7 @@ define([
         swf.style.right = 0;
         swf.style.top = 0;
         swf.style.bottom = 0;
-        if (utils.isIE() && ('PointerEvent' in window)) {
+        if (Browser.ie && ('PointerEvent' in window)) {
             swf.style.pointerEvents = 'none';
         }
 
@@ -114,7 +115,16 @@ define([
                 }
             });
         });
-        addGetter(swf, '_events', {});
+
+        let events = {};
+        Object.defineProperty(swf, '_events', {
+            get: function () {
+                return events;
+            },
+            set: function (value) {
+                events = value;
+            }
+        });
 
         // javascript can trigger SwfEventRouter callbacks
         addGetter(swf, 'triggerFlash', function(name) {
@@ -135,7 +145,7 @@ define([
             }
 
             var args = Array.prototype.slice.call(arguments, 1);
-            var status = utils.tryCatch(function() {
+            try {
                 if (args.length) {
                     // remove any nodes from arguments
                     // cyclical structures cannot be converted to JSON
@@ -149,13 +159,11 @@ define([
                 } else {
                     swf.__externalCall(name);
                 }
-            });
-
-            if (status instanceof utils.Error) {
-                console.error(name, status);
+            } catch (error) {
+                console.error(name, error);
                 if (name === 'setup') {
-                    status.name = 'Failed to setup flash';
-                    return status;
+                    error.name = 'Failed to setup flash';
+                    return error;
                 }
             }
             return swf;

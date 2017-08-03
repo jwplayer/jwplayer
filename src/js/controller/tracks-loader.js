@@ -1,11 +1,12 @@
+import VTTCue from 'parsers/captions/vttcue';
+
 define([
     'utils/underscore',
     'utils/helpers',
     'parsers/parsers',
     'parsers/captions/srt',
-    'parsers/captions/dfxp',
-    'parsers/captions/vttcue'
-], function(_, utils, parsers, srt, dfxp, VTTCue) {
+    'parsers/captions/dfxp'
+], function(_, utils, parsers, srt, dfxp) {
     var tracksLoader = {};
 
     tracksLoader.loadFile = function(track, successHandler, errorHandler) {
@@ -84,8 +85,8 @@ define([
     }
 
     function parseCuesFromText(text, track, successHandler, errorHandler) {
-        require.ensure(['../parsers/captions/vttparser'], function (require) {
-            var VTTParser = require('../parsers/captions/vttparser');
+        require.ensure(['parsers/captions/vttparser'], function (require) {
+            var VTTParser = require('parsers/captions/vttparser').default;
             var parser = new VTTParser(window);
             var vttCues = [];
             parser.oncue = function(cue) {

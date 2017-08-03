@@ -1,9 +1,10 @@
+import { Browser } from 'environment/environment';
+import { parseID3 } from 'providers/utils/id3Parser';
+
 define(['utils/underscore',
-    'utils/id3Parser',
-    'utils/helpers',
     'controller/tracks-loader',
     'controller/tracks-helper'
-], function(_, ID3Parser, utils, tracksLoader, tracksHelper) {
+], function(_, tracksLoader, tracksHelper) {
     /**
      * Used across all providers for loading tracks and handling browser track-related events
      */
@@ -129,7 +130,7 @@ define(['utils/underscore',
             this.textTrackChangeHandler = this.textTrackChangeHandler || textTrackChangeHandler.bind(this);
             this.addTracksListener(this.video.textTracks, 'change', this.textTrackChangeHandler);
 
-            if (utils.isEdge() || utils.isFF() || utils.isSafari()) {
+            if (Browser.edge || Browser.firefox || Browser.safari) {
                 // Listen for TextTracks added to the videotag after the onloadeddata event in Edge and Firefox
                 this.addTrackHandler = this.addTrackHandler || addTrackHandler.bind(this);
                 this.addTracksListener(this.video.textTracks, 'addtrack', this.addTrackHandler);
@@ -491,7 +492,7 @@ define(['utils/underscore',
     // ////////////////////
 
     function _addCueToTrack(renderNatively, track, vttCue) {
-        if (!(utils.isIE() && renderNatively) || !window.TextTrackCue) {
+        if (!(Browser.ie && renderNatively) || !window.TextTrackCue) {
             track.addCue(vttCue);
             return;
         }
@@ -506,10 +507,10 @@ define(['utils/underscore',
         if (tracks && tracks.length) {
             _.each(tracks, function(track) {
                 // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
-                if (utils.isIE() && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
+                if (Browser.ie && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
                     return;
                 }
-                
+
                 // Cues are inaccessible if the track is disabled. While hidden,
                 // we can remove cues while the track is in a non-visible state
                 // Set to disabled before hidden to ensure active cues disappear
@@ -551,10 +552,7 @@ define(['utils/underscore',
             // already have one with the same label
             track = _.findWhere(tracks, { label: label });
 
-            if (track) {
-                track.kind = itemTrack.kind;
-                track.language = itemTrack.language || '';
-            } else {
+            if (!track) {
                 track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
             }
 
@@ -623,7 +621,7 @@ define(['utils/underscore',
         }, this);
 
         if (dataCues.length) {
-            var id3Data = ID3Parser.parseID3(dataCues);
+            var id3Data = parseID3(dataCues);
             this.trigger('meta', {
                 metadataTime: startTime,
                 metadata: id3Data
@@ -691,7 +689,9 @@ define(['utils/underscore',
 
 
     function _errorHandler(error) {
-        utils.log('CAPTIONS(' + error + ')');
+        if (__DEBUG__) {
+            console.error('CAPTIONS(' + error + ')');
+        }
     }
 
     return Tracks;

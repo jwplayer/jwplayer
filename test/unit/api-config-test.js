@@ -1,212 +1,134 @@
-define([
-    'test/underscore',
-    'api/config',
-    'sinon',
-], function (_, Config, sinon) {
-    var log = console.log;
+import Config from 'api/config';
+import _ from 'underscore';
 
-    describe.skip('API config', function() {
+describe('API Config', function() {
 
-        beforeEach(function() {
-            console.log = sinon.stub().returns(function (message) {
-                assert.isOk(
-                    message === 'JW Player does not support XML skins, please update your config',
-                    'should output warning'
-                );
-            });
+    const props = ['width', 'height', 'base'];
+
+    describe('init', function() {
+
+        it('should use default config for invalid options', function() {
+            const defaultConfig = new Config();
+
+            expect(new Config(undefined), 'options=undefined').to.deep.equal(defaultConfig);
+            expect(new Config({}), 'options={}').to.deep.equal(defaultConfig);
+            expect(new Config(true), 'options=true').to.deep.equal(defaultConfig);
+            expect(new Config(false), 'options=false').to.deep.equal(defaultConfig);
         });
+    });
 
-        afterEach(function() {
-            console.log = log;
-        });
+    describe('aspect ratio/width', function() {
 
-        function validWidth(val) {
-            // percentages work here
+        function isNumber(val) {
             if (val.slice && val.slice(-1) === '%') {
-                if (val.slice && val.slice(-1) === '%') {
-                    val = val.slice(0, -1);
-                }
-
-                // is it numeric?
-                return !isNaN(val);
+                val = val.slice(0, -1);
             }
+
+            return !_.isNaN(val);
         }
 
-        function testConfig(assert, obj) {
-            var x = new Config(obj);
+        function testConfig(obj) {
+            const x = new Config(obj);
 
-            var attrs = ['width', 'height', 'base'];
-
-            assert.isOk(validWidth(x.width), 'width is a number ' + x.width);
-            assert.isOk(validWidth(x.height), 'height is a number ' + x.height);
-            _.each(attrs, function (a) {
-                assert.isOk(_.has(x, a), 'Config has ' + a + ' attribute');
+            expect(isNumber(x.width), 'width is a number ' + x.width).to.be.true;
+            expect(isNumber(x.height), 'height is a number ' + x.height).to.be.true;
+            _.each(props, function (a) {
+                expect(_.has(x, a), 'Config has ' + a + ' attribute').to.be.true;
             });
             return x;
         }
 
-        it('handles worst case config options', function() {
-            testConfig();
-            testConfig(assert, undefined);
-            testConfig(assert, {});
-            testConfig(assert, true);
-            testConfig(assert, false);
+        it('should have default width of 640 and height of 360', function() {
+            const x = testConfig();
 
-            // These do not pass, should they?
-            // testConfig(assert, {width: 'bad'});
-            // testConfig(assert, {width: true});
+            expect(x.width).to.equal(640);
+            expect(x.height).to.equal(360);
         });
 
-        it('accepts width values in different formats', function() {
-            var x = testConfig(assert, {
-                width: '100px'
-            });
-            assert.equal(x.width, '100', 'px values for width work');
+        it('should accept widths in different formats', function() {
+            let x = testConfig({ width: '100px' });
+            expect(x.width, 'pixel').to.equal('100');
 
-            x = testConfig(assert, {
-                width: '100%'
-            });
-            assert.equal(x.width, '100%', '% values for width work');
+            x = testConfig({ width: '100%' });
+            expect(x.width, 'percent').to.equal('100%');
 
-            x = testConfig(assert, {
-                width: '100'
-            });
-            assert.equal(x.width, '100', 'string numbers work');
+            x = testConfig({ width: '100' });
+            expect(x.width, 'string').to.equal(100);
 
-            x = testConfig(assert, {
-                width: 100
-            });
-            assert.equal(x.width, '100', 'raw numbers work');
+            x = testConfig({ width: 100 });
+            expect(x.width, 'integer').to.equal(100);
         });
 
-        it('accepts playlist values in different formats', function() {
-            var x = testConfig(assert, {
-                playlist: 'urlToLoad'
-            });
-            assert.equal(x.playlist, 'urlToLoad', 'Passing a URL will return it properly');
+        it('should accept aspectratio in percentage and W:H formats', function() {
+            let x = testConfig({ width: '10%', aspectratio: '4:3' });
 
-            x = testConfig(assert, {
-                file: 'abc.mp4'
-            });
-            assert.equal(x.playlist[0].file, 'abc.mp4', 'Passing a file attr works');
+            expect(x.aspectratio).to.equal('75%'); // 4:3 is 75% because of 3/4
+
+            x = testConfig({ width: '100%', aspectratio: '58.25%' });
+            expect(x.aspectratio).to.equal('58.25%');
+
+            x = testConfig({ width: '100%', aspectratio: '75%' });
+            expect(x.aspectratio).to.equal('75%');
+
+            x = testConfig({ width: '200', aspectratio: '4:3' });
+            expect(x.aspectratio).to.be.undefined;
+
+            // aspectratio could be a string too since we "deserialize" numbers and bools < 6 chars in length
+            x = testConfig({ width: '100%', aspectratio: 1.2 });
+            expect(x.aspectratio).to.be.undefined;
+
+            x = testConfig({ width: '100%', aspectratio: 'foo' });
+            expect(x.aspectratio).to.be.undefined;
+
+            x = testConfig({ width: '100%', aspectratio: ':0' });
+            expect(x.aspectratio).to.be.undefined;
         });
+    });
 
-        it('accepts aspectratio in percentage and W:H formats', function() {
-            // http://support.jwplayer.com/customer/portal/articles/1406644-making-jw-player-responsive
-            var x = testConfig(assert, {
-                width: '10%',
-                aspectratio: '4:3'
-            });
-            // 4:3 is 75% because of 3/4
-            assert.equal(x.aspectratio, '75%', 'integer aspect ratio');
+    describe('playlist', function() {
 
-            x = testConfig(assert, {
-                width: '100%',
-                aspectratio: '58.25%'
-            });
-            assert.strictEqual(x.aspectratio, '58.25%', 'percentage aspect ratio is passed through');
+        it('should accept playlist values in different formats', function() {
+            let x = new Config({ playlist: 'urlToLoad' });
+            expect(x.playlist).to.equal('urlToLoad');
 
-            x = testConfig(assert, {
-                width: '100%',
-                aspectratio: '75%'
-            });
-            assert.strictEqual(x.aspectratio, '75%', 'percentage aspect ratio is passed through');
-
-
-            x = testConfig(assert, {
-                width: '200',
-                aspectratio: '4:3'
-            });
-            assert.strictEqual(x.aspectratio, undefined, 'When width isn\'t a percentage, there is no aspect ratio');
-
-            // TODO: Why not support a numeric value of width/height?
-            x = testConfig(assert, {
-                width: '100%',
-                // aspectratio could be a string too since we "deserialize" numbers and bools < 6 chars in length
-                aspectratio: 1.2
-            });
-            assert.strictEqual(x.aspectratio, undefined, 'Numeric aspectratio values are not supported');
-
-            x = testConfig(assert, {
-                width: '100%',
-                aspectratio: 'foo'
-            });
-            assert.strictEqual(x.aspectratio, undefined, 'aspectratio must be in the format "n:n"');
-
-            x = testConfig(assert, {
-                width: '100%',
-                aspectratio: ':0'
-            });
-            assert.strictEqual(x.aspectratio, undefined, 'aspectratio must contain positive numbers');
+            x = new Config({ file: 'abc.mp4' });
+            expect(x.playlist[0].file).to.equal('abc.mp4');
         });
+    });
 
-        it('updates base to cdn or script location', function() {
-            var CUSTOM_BASE = 'http://mywebsite.com/jwplayer/';
-            var apiConfig;
+    describe('base url', function() {
 
+        it('should update base to cdn or script location', function() {
+            const CUSTOM_BASE = 'http://mywebsite.com/jwplayer/';
+            let apiConfig;
 
-            apiConfig = testConfig(assert, {});
-            if (window.__SELF_HOSTED__) {
-                assert.isOk(/.*\//.it(apiConfig.base),
-                    'config.base is set to the jwplayer script location in self-hosted builds: ' + apiConfig.base);
-            } else {
-                assert.isOk(/.*\//.it(apiConfig.base),
-                    'config.base is set to the repo locations: ' + apiConfig.base);
-            }
+            apiConfig = new Config({});
+            expect(/.*\//.test(apiConfig.base)).to.be.true;
 
-            apiConfig = testConfig(assert, {
-                base: '.'
-            });
-            assert.isOk(/.*\//.it(apiConfig.base),
-                'config.base of "." is replaced with the jwplayer script locations: ' + apiConfig.base);
+            apiConfig = new Config({ base: '.' });
+            expect(/.*\//.test(apiConfig.base)).to.be.true;
 
-            apiConfig = testConfig(assert, {
-                base: CUSTOM_BASE
-            });
-            assert.equal(apiConfig.base, CUSTOM_BASE,
-                'config.base is not replaced when a custom value other than "." is specified');
+            apiConfig = new Config({ base: CUSTOM_BASE });
+            expect(apiConfig.base).to.equal(CUSTOM_BASE);
         });
+    });
 
-        it('flattens skin object', function() {
-            var skinObject = {
+    describe('skin', function() {
+
+        it('should flatten skin object', function() {
+            const skinObject = {
                 name: 'foo',
                 url: 'skin/url',
                 inactive: '#888888',
                 active: '#FFFFFF',
                 background: '#000000'
             };
-            var x = testConfig(assert, {
-                skin: skinObject
-            });
 
-            assert.equal(x.skinUrl, skinObject.url,
-                'skin.url is flattened to skinUrl');
-            assert.equal(x.skinColorInactive, skinObject.inactive,
-                'skin.inactive is flattened to skinColorInactive');
-            assert.equal(x.skinColorActive, skinObject.active,
-                'skin.active is flattened to skinColorActive');
-            assert.equal(x.skinColorBackground, skinObject.background,
-                'skin.background is flattened to skinColorBackground');
-            assert.equal(x.skin, skinObject.name,
-                'skin.name is flattened to skin');
-
-            x = testConfig(assert, {
-                skin: {}
-            });
-            assert.equal(x.skin, 'seven',
-                'skin.name defaults to "seven" when a skin object with no name is passed');
-        });
-
-        it('removes ".xml" from skin param', function() {
-            var x = testConfig(assert, {
-                skin: 'six.xml'
-            });
-            assert.equal(x.skin, 'six',
-                'Skin name is updated');
-
-            x = testConfig(assert, {});
-            assert.equal(x.skin, 'seven',
-                'skin.name defaults to "seven" when no skin is specified');
+            let x = new Config({ skin: skinObject });
+            expect(x.skinUrl).to.equal(skinObject.url);
+            expect(x.skinColorInactive).to.equal(skinObject.inactive);
+            expect(x.skinColorActive).to.equal(skinObject.active);
+            expect(x.skinColorBackground, skinObject.background);
         });
     });
 });

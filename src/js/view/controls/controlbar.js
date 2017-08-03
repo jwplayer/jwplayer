@@ -1,10 +1,12 @@
 import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
+import { Browser, OS } from 'environment/environment';
+import { dvrSeekLimit } from 'view/constants';
+import CustomButton from 'view/controls/components/custom-button';
 
 define([
     'utils/helpers',
     'utils/underscore',
     'utils/backbone.events',
-    'utils/constants',
     'utils/ui',
     'utils/aria',
     'view/controls/components/slider',
@@ -13,8 +15,7 @@ define([
     'view/controls/components/selection-display-menu',
     'view/controls/components/volumetooltip',
     'view/controls/components/button',
-], function(utils, _, Events, Constants, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip,
-            button) {
+], function(utils, _, Events, UI, ariaLabel, Slider, TimeSlider, Menu, SelectionDisplayMenu, VolumeTooltip, button) {
     function text(name, role) {
         const element = document.createElement('span');
         element.className = 'jw-text jw-reset ' + name;
@@ -24,23 +25,38 @@ define([
         return element;
     }
 
+    function textIcon(name, role) {
+        const element = document.createElement('div');
+        element.className = 'jw-icon jw-icon-inline jw-text jw-reset ' + name;
+        if (role) {
+            element.setAttribute('role', role);
+        }
+        return element;
+    }
+
+    function div(classes) {
+        const element = document.createElement('div');
+        element.className = `jw-reset ${classes}`;
+        return element;
+    }
+
     function menu(name, ariaText) {
         return new Menu(name, ariaText);
     }
 
     function createCastButton(castToggle, localization) {
-        if (!utils.isChrome() || utils.isIOS()) {
+        if (!Browser.chrome || OS.iOS) {
             return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
         }
 
         const ariaText = localization.cast;
 
         const castButton = document.createElement('button', 'google-cast-button');
-        castButton.className = 'jw-button-color jw-icon-inline';
+        castButton.className = 'jw-button-color';
         ariaLabel(castButton, ariaText);
 
         const element = document.createElement('div');
-        element.className = 'jw-reset jw-icon-cast';
+        element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast';
         element.style.display = 'none';
         element.style.cursor = 'pointer';
         element.appendChild(castButton);
@@ -70,26 +86,21 @@ define([
         return { reason: 'interaction' };
     }
 
-    function buildGroup(group, elements) {
-        const elem = document.createElement('div');
-        elem.className = 'jw-group jw-controlbar-' + group + '-group jw-reset';
-
-        _.each(elements, function(e) {
+    const appendChildren = (container, elements) => {
+        elements.forEach(e => {
             if (e.element) {
                 e = e.element();
             }
-            elem.appendChild(e);
+            container.appendChild(e);
         });
-
-        return elem;
-    }
+    };
 
     return class Controlbar {
         constructor(_api, _model) {
             _.extend(this, Events);
             this._api = _api;
             this._model = _model;
-            this._isMobile = utils.isMobile();
+            this._isMobile = OS.mobile;
             this._localization = _model.get('localization');
 
             this.nextUpToolTip = null;
@@ -111,11 +122,15 @@ define([
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
-            if (!_model.get('sdkplatform') && !(utils.isIOS(8) || utils.isIOS(9))) {
-                muteButton = button('jw-icon-volume', _api.setMute, vol);
+            if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
+                muteButton = button('jw-icon-volume', () => {
+                    _api.setMute();
+                }, vol);
             }
 
-            const nextButton = button('jw-icon-next', _api.next.bind(this), next);
+            const nextButton = button('jw-icon-next', () => {
+                _api.next();
+            }, next);
 
             if (_model.get('nextUpDisplay')) {
                 new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -136,16 +151,19 @@ define([
                     }, this);
             }
 
-            this.elements = {
+            const elements = this.elements = {
                 alt: text('jw-text-alt', 'status'),
-                play: button('jw-icon-playback', _api.play.bind(this, reasonInteraction()), play),
-                rewind: button('jw-icon-rewind', this.rewind.bind(this), rewind),
+                play: button('jw-icon-playback', () => {
+                    _api.play(null, reasonInteraction());
+                }, play),
+                rewind: button('jw-icon-rewind', () => {
+                    this.rewind();
+                }, rewind),
                 next: nextButton,
-                elapsed: text('jw-text-elapsed', 'timer'),
-                countdown: text('jw-text-countdown', 'timer'),
+                elapsed: textIcon('jw-text-elapsed', 'timer'),
+                countdown: textIcon('jw-text-countdown', 'timer'),
                 time: timeSlider,
-                duration: text('jw-text-duration', 'timer'),
-                durationLeft: text('jw-text-duration', 'timer'),
+                duration: textIcon('jw-text-duration', 'timer'),
                 hd: menu('jw-icon-hd', this._localization.hd),
                 cc: menu('jw-icon-cc', this._localization.cc),
                 audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
@@ -157,67 +175,61 @@ define([
                 mute: muteButton,
                 volume: volumeSlider,
                 volumetooltip: volumeTooltip,
-                cast: createCastButton(_api.castToggle, this._localization),
-                fullscreen: button('jw-icon-fullscreen', _api.setFullscreen, this._localization.fullscreen)
+                cast: createCastButton(() => {
+                    _api.castToggle();
+                }, this._localization),
+                fullscreen: button('jw-icon-fullscreen', () => {
+                    _api.setFullscreen();
+                }, this._localization.fullscreen),
+                spacer: div('jw-spacer'),
+                buttonContainer: div('jw-button-container')
             };
 
-            this.layout = {
-                left: [
-                    this.elements.play,
-                    this.elements.rewind,
-                    this.elements.elapsed,
-                    this.elements.durationLeft,
-                    this.elements.countdown
-                ],
-                center: [
-                    this.elements.time,
-                    this.elements.alt
-                ],
-                right: [
-                    this.elements.duration,
-                    this.elements.next,
-                    this.elements.hd,
-                    this.elements.cc,
-                    this.elements.audiotracks,
-                    this.elements.playbackrates,
-                    this.elements.mute,
-                    this.elements.cast,
-                    this.elements.volume,
-                    this.elements.volumetooltip,
-                    this.elements.fullscreen
-                ]
-            };
+            // Filter out undefined elements
+            const buttonLayout = [
+                elements.play,
+                elements.alt,
+                elements.rewind,
+                elements.elapsed,
+                elements.countdown,
+                elements.duration,
+                elements.spacer,
+                elements.next,
+                elements.hd,
+                elements.cc,
+                elements.audiotracks,
+                elements.playbackrates,
+                elements.mute,
+                elements.cast,
+                elements.volume,
+                elements.volumetooltip,
+                elements.fullscreen
+            ].filter(e => e);
 
-            this.menus = _.compact([
-                this.elements.hd,
-                this.elements.cc,
-                this.elements.audiotracks,
-                this.elements.playbackrates,
-                this.elements.volumetooltip
-            ]);
+            const layout = [
+                elements.time,
+                elements.buttonContainer
+            ].filter(e => e);
 
-            // Remove undefined layout elements.  They are invalid for the current platform.
-            // (e.g. volume and volumetooltip on mobile)
-            this.layout.left = _.compact(this.layout.left);
-            this.layout.center = _.compact(this.layout.center);
-            this.layout.right = _.compact(this.layout.right);
+            const menus = this.menus = [
+                elements.hd,
+                elements.cc,
+                elements.audiotracks,
+                elements.playbackrates,
+                elements.volumetooltip
+            ].filter(e => e);
 
             this.el = document.createElement('div');
             this.el.className = 'jw-controlbar jw-background-color jw-reset';
 
-            this.elements.left = buildGroup('left', this.layout.left);
-            this.elements.center = buildGroup('center', this.layout.center);
-            this.elements.right = buildGroup('right', this.layout.right);
-
-            this.el.appendChild(this.elements.left);
-            this.el.appendChild(this.elements.center);
-            this.el.appendChild(this.elements.right);
+            appendChildren(elements.buttonContainer, buttonLayout);
+            appendChildren(this.el, layout);
 
             // Initial State
-            this.elements.play.show();
-            this.elements.fullscreen.show();
-            if (this.elements.mute) {
-                this.elements.mute.show();
+            elements.play.show();
+            elements.fullscreen.show();
+            if (elements.mute) {
+                elements.mute.show();
             }
 
             // Listen for model changes
@@ -236,48 +248,49 @@ define([
             _model.change('nextUp', this.onNextUp, this);
             _model.change('cues', this.addCues, this);
             _model.change('altText', this.setAltText, this);
+            _model.change('customButtons', this.updateButtons, this);
 
             // Event listeners
 
             // Volume sliders do not exist on mobile so don't assign listeners to them.
-            if (this.elements.volume) {
-                this.elements.volume.on('update', function (pct) {
+            if (elements.volume) {
+                elements.volume.on('update', function (pct) {
                     var val = pct.percentage;
                     this._api.setVolume(val);
                 }, this);
             }
-            if (this.elements.volumetooltip) {
-                this.elements.volumetooltip.on('update', function(pct) {
+            if (elements.volumetooltip) {
+                elements.volumetooltip.on('update', function(pct) {
                     const val = pct.percentage;
                     this._api.setVolume(val);
                 }, this);
-                this.elements.volumetooltip.on('toggleValue', function() {
+                elements.volumetooltip.on('toggleValue', function() {
                     this._api.setMute();
                 }, this);
             }
 
-            if (this.elements.cast.button) {
-                new UI(this.elements.cast.button).on('click tap', function () {
+            if (elements.cast.button) {
+                new UI(elements.cast.button).on('click tap', function () {
                     this._model.set('castClicked', true);
                 }, this);
             }
 
-            this.elements.hd.on('select', function(value) {
+            elements.hd.on('select', function(value) {
                 this._model.getVideo().setCurrentQuality(value);
             }, this);
-            this.elements.hd.on('toggleValue', function() {
+            elements.hd.on('toggleValue', function() {
                 this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
             }, this);
 
-            this.elements.cc.on('select', function(value) {
+            elements.cc.on('select', function(value) {
                 this._api.setCurrentCaptions(value);
             }, this);
-            this.elements.cc.on('toggleValue', function() {
+            elements.cc.on('toggleValue', function() {
                 const index = this._model.get('captionsIndex');
                 this._api.setCurrentCaptions(index ? 0 : 1);
             }, this);
 
-            this.elements.audiotracks.on('select', function(value) {
+            elements.audiotracks.on('select', function(value) {
                 this._model.getVideo().setCurrentAudioTrack(value);
             }, this);
 
@@ -291,7 +304,7 @@ define([
                     };
                 });
 
-                this.elements.playbackrates.setup(
+                elements.playbackrates.setup(
                     playbackRateLabels,
                     selectedIndex,
                     { defaultIndex: playbackRateControls.indexOf(1), isToggle: false }
@@ -300,29 +313,21 @@ define([
                 _model.change('streamType provider', this.togglePlaybackRateControls, this);
                 _model.change('playbackRate', this.onPlaybackRate, this);
 
-                this.elements.playbackrates.on('select', function (index) {
+                elements.playbackrates.on('select', function (index) {
                     this._model.setPlaybackRate(playbackRateControls[index]);
                 }, this);
 
-                this.elements.playbackrates.on('toggleValue', function () {
+                elements.playbackrates.on('toggleValue', function () {
                     const index = playbackRateControls.indexOf(this._model.get('playbackRate'));
                     this._model.setPlaybackRate(playbackRateControls[index ? 0 : 1]);
                 }, this);
             }
 
-            new UI(this.elements.duration).on('click tap', function() {
+            new UI(elements.duration).on('click tap', function() {
                 if (this._model.get('streamType') === 'DVR') {
                     // Seek to "Live" position within live buffer, but not before current position
                     const currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition), reasonInteraction());
-                }
-            }, this);
-
-            new UI(this.elements.durationLeft).on('click tap', function() {
-                if (this._model.get('streamType') === 'DVR') {
-                    // Seek to "Live" position within live buffer, but not before current position
-                    const currentPosition = this._model.get('position');
-                    this._api.seek(Math.max(Constants.dvrSeekLimit, currentPosition));
+                    this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
                 }
             }, this);
 
@@ -331,7 +336,7 @@ define([
                 this.trigger('userAction');
             }, this);
 
-            _.each(this.menus, function(ele) {
+            _.each(menus, function(ele) {
                 ele.on('open-tooltip', this.closeMenus, this);
             }, this);
         }
@@ -436,7 +441,6 @@ define([
                 totalTime = utils.timeFormat(val);
             }
             this.elements.duration.textContent = totalTime;
-            this.elements.durationLeft.textContent = totalTime;
         }
 
         onFullscreen(model, val) {
@@ -489,7 +493,6 @@ define([
             this.elements.rewind.toggle(streamType !== 'LIVE');
             if (streamType === 'DVR') {
                 this.elements.duration.textContent = 'Live';
-                this.elements.durationLeft.textContent = 'Live';
             }
             const duration = model.get('duration');
             this.onDuration(model, duration);
@@ -497,6 +500,50 @@ define([
 
         onNextUp(model, nextUp) {
             this.elements.next.toggle(!!nextUp);
+        }
+
+        updateButtons(model, newButtons = [], oldButtons = []) {
+            const buttonContainer = this.elements.buttonContainer;
+
+            this.removeButtons(buttonContainer, oldButtons);
+
+            for (let i = newButtons.length - 1; i >= 0; i--) {
+                const newButton = new CustomButton(
+                    newButtons[i].img,
+                    newButtons[i].tooltip,
+                    newButtons[i].callback,
+                    newButtons[i].id,
+                    newButtons[i].btnClass
+                );
+
+                buttonContainer.insertBefore(
+                    newButton.element(),
+                    buttonContainer.querySelector('.jw-spacer').nextSibling
+                );
+            }
+        }
+
+        removeButtons(buttonContainer, oldButtons = []) {
+            const toRemove = {};
+            const buttonElements = _.clone(buttonContainer.children);
+
+            for (let i = 0; i < oldButtons.length; i++) {
+                const oldButton = oldButtons[i];
+                toRemove[oldButton.id] = oldButton;
+            }
+
+            for (let i = 0; i < buttonElements.length; i++) {
+                const buttonElement = buttonElements[i];
+                if (!buttonElement) {
+                    return;
+                }
+
+                const id = buttonElement.getAttribute('button');
+
+                if (toRemove[id]) {
+                    buttonContainer.removeChild(buttonElement);
+                }
+            }
         }
     };
 });

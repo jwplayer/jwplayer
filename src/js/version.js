@@ -1,5 +1,2 @@
-define([], function() {
-    // This is replaced by compiler
-    return __BUILD_VERSION__;
-});
+export const version = __BUILD_VERSION__;
 

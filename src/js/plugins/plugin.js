@@ -1,11 +1,12 @@
+import { MEDIA_COMPLETE, ERROR } from 'events/events';
+
 define([
     'utils/helpers',
     'plugins/utils',
-    'events/events',
     'utils/backbone.events',
     'utils/scriptloader',
     'utils/underscore'
-], function(utils, pluginsUtils, events, Events, Scriptloader, _) {
+], function(utils, pluginsUtils, Events, Scriptloader, _) {
 
     var pluginmodes = {
         FLASH: 0,
@@ -35,13 +36,13 @@ define([
         function completeHandler() {
             _.defer(function() {
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(events.COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
             });
         }
 
         function errorHandler() {
             _status = Scriptloader.loaderstatus.ERROR;
-            _this.trigger(events.ERROR, { url: url });
+            _this.trigger(ERROR, { url: url });
         }
 
         this.load = function() {
@@ -51,40 +52,40 @@ define([
             if (url.lastIndexOf('.swf') > 0) {
                 _flashPath = url;
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(events.COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
                 return;
             }
             if (pluginsUtils.getPluginPathType(url) === pluginsUtils.pluginPathType.CDN) {
                 _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(events.COMPLETE);
+                _this.trigger(MEDIA_COMPLETE);
                 return;
             }
             _status = Scriptloader.loaderstatus.LOADING;
             var _loader = new Scriptloader(getJSPath());
             // Complete doesn't matter - we're waiting for registerPlugin
-            _loader.on(events.COMPLETE, completeHandler);
-            _loader.on(events.ERROR, errorHandler);
+            _loader.on(MEDIA_COMPLETE, completeHandler);
+            _loader.on(ERROR, errorHandler);
             _loader.load();
         };
 
-        this.registerPlugin = function(id, target, arg1, arg2) {
+        this.registerPlugin = function(name, minimumVersion, pluginClass, pluginClass2) {
             if (_completeTimeout) {
                 clearTimeout(_completeTimeout);
                 _completeTimeout = undefined;
             }
-            _target = target;
-            if (arg1 && arg2) {
-                _flashPath = arg2;
-                _js = arg1;
-            } else if (typeof arg1 === 'string') {
-                _flashPath = arg1;
-            } else if (typeof arg1 === 'function') {
-                _js = arg1;
-            } else if (!arg1 && !arg2) {
-                _flashPath = id;
+            _target = minimumVersion;
+            if (pluginClass && pluginClass2) {
+                _flashPath = pluginClass2;
+                _js = pluginClass;
+            } else if (typeof pluginClass === 'string') {
+                _flashPath = pluginClass;
+            } else if (typeof pluginClass === 'function') {
+                _js = pluginClass;
+            } else if (!pluginClass && !pluginClass2) {
+                _flashPath = name;
             }
             _status = Scriptloader.loaderstatus.COMPLETE;
-            _this.trigger(events.COMPLETE);
+            _this.trigger(MEDIA_COMPLETE);
         };
 
         this.getStatus = function() {

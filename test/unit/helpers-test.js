@@ -1,46 +1,31 @@
-define([
-    'utils/helpers'
-], function (utils) {
+import utils from 'utils/helpers';
 
+describe('helpers', function() {
 
-    describe('helpers', function() {
+    it('helpers foreach test', function() {
+        var aData = { hello: 'hi' };
+        var tester = [];
 
+        function fnEach(key, val) {
+            tester.push(key);
+            tester.push(val);
+        }
 
-        it('helpers foreach test', function() {
-            var aData = { hello: 'hi' };
-            var tester = [];
+        utils.foreach(aData, fnEach);
 
-            function fnEach(key, val) {
-                tester.push(key);
-                tester.push(val);
-            }
+        assert.equal(tester[0], 'hello');
+        assert.equal(tester[1], 'hi');
+    });
 
-            utils.foreach(aData, fnEach);
+    it('log will not thow if console is cleared', function() {
+        var tmpConsole = window.console;
 
-            assert.equal(tester[0], 'hello');
-            assert.equal(tester[1], 'hi');
-        });
+        window.console = null;
+        // this should not break
+        utils.log('testing');
 
-        it('helpers log with fake console', function() {
-            var tmpConsole = window.console;
-            var m = [];
-
-            window.console = null;
-            // this should not break
-            utils.log('testing');
-
-            // test window console called with utils.log
-            window.console = {
-                log: function (message) {
-                    m.push(message);
-                }
-            };
-            utils.log('testing');
-            assert.equal(m[0], 'testing');
-
-            // restore actual window console
-            window.console = tmpConsole;
-        });
+        // restore actual window console
+        window.console = tmpConsole;
     });
 });
 

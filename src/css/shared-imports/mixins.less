@@ -1,7 +1,7 @@
 @import "vars";
 
 .inset-controlbar() {
-    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player) {
+    &:not(.jw-flag-audio-player) {
         &,
         .jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid)&,
         .jw-flag-ads.jw-flag-touch.jw-flag-autostart:not(.jw-flag-ads-vpaid)& {
@@ -11,7 +11,7 @@
         }
     }
 
-    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-breakpoint-0) {
+    &:not(.jw-flag-audio-player):not(.jw-breakpoint-0) {
         .jw-controlbar {
             bottom: 0.7em;
             max-width: @min-breakpoint-5-width;
@@ -37,32 +37,20 @@
         }
     }
 
-    &:not(.jw-flag-time-slider-above):not(.jw-flag-audio-player):not(.jw-flag-small-player) {
-        &.jw-ie.jw-flag-ads .jw-controlbar-center-group .jw-text-alt {
-            top: 1px;
-        }
+    .jw-nextup-container {
+        bottom: @controlbar-height + 0.7em;
+        padding-left: 0;
+        padding-right: 0;
+        max-width: @min-breakpoint-5-width;
     }
 
-    &:not(.jw-flag-time-slider-above) {
+    &.jw-breakpoint-2,
+    &.jw-breakpoint-3,
+    &.jw-breakpoint-4 {
         .jw-nextup-container {
-            bottom: @controlbar-height + 0.7em;
-            padding-left: 0;
-            padding-right: 0;
-            max-width: @min-breakpoint-5-width;
+            padding-left: 2%;
+            padding-right: 2%;
         }
-
-        &.jw-breakpoint-2,
-        &.jw-breakpoint-3,
-        &.jw-breakpoint-4 {
-            .jw-nextup-container {
-                padding-left: 2%;
-                padding-right: 2%;
-            }
-        }
-    }
-
-    &.jw-flag-audio-player .jw-controlbar {
-        bottom: 0; // overwrite the inset-controlbar mixin
     }
 }
 
@@ -87,6 +75,7 @@
 /* Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316 */
 
 /* Mixin for common skin styles with variable colors */
+/* stylelint-disable selector-max-id */
 #namespace() {
     .basic-skin-styles() {
         .jw-background-color {
@@ -136,8 +125,6 @@
 
         /* Colors for display icons */
         .jw-display-icon-container {
-            margin: 0 (@ui-padding * 0.5);
-
             .jw-icon {
                 color: @display-icon-color;
             }
@@ -156,32 +143,6 @@
             background: @progress-color;
         }
 
-        .jw-slider-horizontal {
-            height: @rail-height;
-
-            .jw-rail,
-            .jw-buffer,
-            .jw-progress {
-                height: @rail-height;
-            }
-
-            .jw-knob {
-                margin-left: @thumb-size/-2;
-            }
-        }
-
-        .jw-slider-vertical {
-            .jw-knob {
-                margin-bottom: @thumb-size/-2;
-            }
-
-            .jw-slider-container,
-            .jw-rail,
-            .jw-progress {
-                width: @def-rail-width;
-            }
-        }
-
         /* Styles for menu elements, volume, slider thumbnail */
         .jw-menu,
         .jw-time-tip,
@@ -192,10 +153,6 @@
         .jw-menu,
         .jw-time-tip {
             padding: @ui-padding;
-        }
-
-        .jw-volume-tip {
-            padding: @volume-padding;
         }
 
         .jw-skip {
@@ -212,20 +169,10 @@
             }
         }
 
-        .jw-time-tip,
-        .jw-dock-button {
+        .jw-time-tip {
             .jw-text {
                 color: @inactive-color;
             }
-        }
-
-        /* Dock button styles */
-        .jw-dock-button {
-            background: @display-bkgd-color;
-        }
-
-        &:not(.jw-flag-touch) .jw-dock-button:hover {
-            background: @display-bkgd-hover-color;
         }
 
         /*
@@ -299,12 +246,8 @@
             border-radius: @ui-corner-round;
         }
 
-        .jw-dock-button {
-            border-radius: @ui-corner-round;
-        }
-
         &:not(.jw-ie) {
-            .jw-controlbar .jw-controlbar-center-group .jw-text-alt {
+            .jw-controlbar .jw-text-alt {
                 top: 50%;
                 transform: translateY(-50%);
                 margin: auto;
@@ -312,7 +255,6 @@
             }
         }
 
-        &:not(.jw-flag-time-slider-above),
         &.jw-flag-ads-googleima {
             .jw-controlbar {
                 height: @controlbar-height;
@@ -328,12 +270,10 @@
             .jw-text-duration,
             .jw-text-countdown {
                 height: @controlbar-height;
-                line-height: @controlbar-height;
             }
 
             .jw-selection-menu .jw-menu-selection-text {
                 height: @controlbar-height * 1.334;
-                line-height: @controlbar-height * 1.334;
             }
         }
 
@@ -343,7 +283,7 @@
             margin: 0;
         }
 
-        &:not(.jw-flag-time-slider-above):not(.jw-flag-small-player) {
+        &:not(.jw-flag-small-player) {
             .jw-time-tip {
                 bottom: (@controlbar-height / 2);
             }
@@ -356,27 +296,6 @@
                 /* captions styles code specific to native text track rendering */
                 video::-webkit-media-text-track-container {
                     max-height: ~"calc(100% - 38px)";
-                }
-            }
-
-            .jw-controls {
-                .jw-controls-right {
-                    bottom: @controlbar-height;
-                }
-            }
-
-            &.jw-flag-audio-player {
-                .jw-controlbar {
-                    height: 100%;
-                }
-
-                .jw-icon-inline,
-                .jw-icon-tooltip,
-                .jw-text-elapsed,
-                .jw-text-duration,
-                .jw-text-countdown {
-                    height: auto;
-                    line-height: normal;
                 }
             }
 
@@ -455,3 +374,5 @@
         }
     }
 }
+/* stylelint-enable selector-max-id */
+

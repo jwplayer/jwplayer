@@ -1,13 +1,14 @@
+import { dvrSeekLimit } from 'view/constants';
+
 define([
     'utils/underscore',
     'utils/helpers',
-    'utils/constants',
     'utils/ui',
     'view/controls/components/slider',
     'view/controls/components/tooltip',
     'view/controls/components/chapters.mixin',
     'view/controls/components/thumbnails.mixin'
-], function(_, utils, Constants, UI, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
+], function(_, utils, UI, Slider, Tooltip, ChaptersMixin, ThumbnailsMixin) {
 
     class TimeTip extends Tooltip {
 
@@ -112,7 +113,7 @@ define([
             if (streamType === 'DVR') {
                 var position = (1 - (percent / 100)) * duration;
                 var currentPosition = this._model.get('position');
-                var updatedPosition = Math.min(position, Math.max(Constants.dvrSeekLimit, currentPosition));
+                var updatedPosition = Math.min(position, Math.max(dvrSeekLimit, currentPosition));
                 var updatedPercent = updatedPosition * 100 / duration;
                 return 100 - updatedPercent;
             }
@@ -246,7 +247,7 @@ define([
                 timetipText = utils.timeFormat(time, allowNegativeTime);
 
                 // If DVR and within live buffer
-                if (duration < 0 && time > Constants.dvrSeekLimit) {
+                if (duration < 0 && time > dvrSeekLimit) {
                     timetipText = 'Live';
                 }
             }

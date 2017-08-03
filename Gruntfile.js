@@ -1,3 +1,5 @@
+'use strict';
+
 /* eslint-env node */
 /* eslint no-process-env: 0 */
 
@@ -40,21 +42,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         starttime: new Date(),
         pkg: packageInfo,
-
-        stylelint: {
-            options: {
-                configFile: '.stylelintrc',
-                formatter: 'string',
-                ignoreDisables: false,
-                failOnError: true,
-                reportNeedlessDisables: false,
-                syntax: 'less'
-            },
-            src: [
-                'src/**/*.less'
-            ]
-        },
-
         less: {
             options: {
                 compress: false,
@@ -65,33 +52,9 @@ module.exports = function(grunt) {
                     dumpLineNumbers: 'comments'
                 },
                 files: {
-                    'bin-debug/reference/jwplayer.css': 'src/css/jwplayer.less',
-                    'bin-debug/reference/controls.css': 'src/css/controls.less'
+                    'bin-debug/css/jwplayer.css': 'src/css/jwplayer.less',
+                    'bin-debug/css/controls.css': 'src/css/controls.less'
                 }
-            },
-            debug: {
-                options: {
-                    dumpLineNumbers: 'comments'
-                },
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-debug/skins/',
-                    cwd: 'src/css/skins/',
-                    src: '*.less'
-                }]
-            },
-            release: {
-                options: {
-                    compress: true
-                },
-                files: [{
-                    expand: true,
-                    ext: '.css',
-                    dest: 'bin-release/skins/',
-                    cwd: 'src/css/skins/',
-                    src: '*.less'
-                }]
             }
         },
 
@@ -100,26 +63,17 @@ module.exports = function(grunt) {
                 processors: [
                     require('autoprefixer')
                 ],
-                map: true,
                 failOnError: true,
                 writeDest: true
             },
             internal: {
                 src: [
-                    'bin-debug/reference/*.css',
-                    'bin-debug/skins/*.css',
+                    'bin-debug/css/*.css',
                 ]
             },
             debug: {
                 src: [
-                    'bin-debug/reference/*.css',
-                    'bin-debug/skins/*.css',
-                    'bin-release/skins/*.css'
-                ]
-            },
-            release: {
-                src: [
-                    'bin-release/skins/*.css'
+                    'bin-debug/css/*.css',
                 ]
             }
         },
@@ -139,23 +93,27 @@ module.exports = function(grunt) {
                 options: {
                     atBegin: true
                 },
-                files : ['src/js/**/*.js'],
-                tasks: ['webpack:debug', 'lint:player', 'karma:local']
+                files: ['src/js/**/*.js'],
+                tasks: [
+                    'webpack:debug',
+                    'lint:player',
+                    'karma:local'
+                ]
             },
             css: {
                 files: ['src/css/{,*/}*.less'],
-                tasks: ['stylelint', 'webpack:debug', 'less:debug', 'postcss:debug']
+                tasks: ['stylelint', 'webpack:debug', 'postcss:debug']
             },
             tests: {
-                files : ['test/{,*/}*.js'],
+                files: ['test/{,*/}*.js'],
                 tasks: ['lint:tests', 'karma:local']
             },
             flash: {
-                files : [
+                files: [
                     'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
                     'src/flash/com/wowsa/{,*/}*.as'
                 ],
-                tasks: ['flash:debug', 'flash:debugLoader']
+                tasks: ['flash:debug']
             }
         },
 
@@ -195,16 +153,6 @@ module.exports = function(grunt) {
             release : {
                 files : {
                     'bin-release/jwplayer.flash.swf': 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
-                }
-            },
-            debugLoader : {
-                files : {
-                    'bin-debug/jwplayer.loader.swf' : 'src/flash/com/longtailvideo/jwplayer/FlashHealthCheck.as'
-                }
-            },
-            releaseLoader : {
-                files : {
-                    'bin-release/jwplayer.loader.swf': 'src/flash/com/longtailvideo/jwplayer/FlashHealthCheck.as'
                 }
             },
             library: {
@@ -270,29 +218,28 @@ module.exports = function(grunt) {
                     'bin-debug/',
                     'bin-release/'
                 ]
+            },
+            docs: {
+                src: [
+                    'docs/api/'
+                ]
             }
         }
     });
 
     grunt.registerTask('webpack', 'Run webpack compiler', function() {
-        var done = this.async();
+        const done = this.async();
 
-        var targets = this.args;
-        var configs = [];
-        for (var i in targets) {
-            var target = targets[i];
-            configs.push(webpackConfigs.find(function(obj) {
-                return obj.name === target;
-            }));
-        }
-        if (!configs.length) {
-            configs = webpackConfigs;
-        }
+        const targets = {};
+        this.args.forEach(t => {
+            targets[t] = true;
+        });
+        const configs = webpackConfigs(targets);
 
         // Store compiler for faster "watch" and "server" task running
         // this works as long as the watch task doesn't spawn a new process
-        var id = targets.join('_') || 'all';
-        var compiler = webpackCompilers[id] || webpack(configs);
+        const id = this.args.join('_') || 'all';
+        const compiler = webpackCompilers[id] || webpack(configs);
         webpackCompilers[id] = compiler;
 
         compiler.run(function(err, stats) {
@@ -310,11 +257,19 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerTask('lint', 'ESLint JavaScript', function(target) {
+    grunt.registerTask('lint', 'ESLints JavaScript & Stylelints LESS', function(target) {
         var command = 'npm run lint';
         if (target === 'test') {
             command = command + '-tests';
         }
+        execSync(command, {
+            cwd: '.',
+            stdio: [0, 1, 2]
+        });
+    });
+
+    grunt.registerTask('docs', 'Generate API documentation', function() {
+        var command = 'npm run docs';
         execSync(command, {
             cwd: '.',
             stdio: [0, 1, 2]
@@ -338,20 +293,17 @@ module.exports = function(grunt) {
     grunt.registerTask('build-js', [
         'webpack',
         'lint:player',
-        'stylelint',
         'less',
         'postcss'
     ]);
 
     grunt.registerTask('build-flash', [
         'flash:debug',
-        'flash:release',
-        'flash:debugLoader',
-        'flash:releaseLoader'
+        'flash:release'
     ]);
 
     grunt.registerTask('build', [
-        'clean',
+        'clean:dist',
         'build-js',
         'build-flash',
         'karma:local'

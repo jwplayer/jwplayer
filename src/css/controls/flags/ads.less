@@ -2,11 +2,12 @@
 
 .jwplayer.jw-flag-ads {
     .jw-preview,
-    .jw-dock,
     .jw-logo,
     .jw-captions.jw-captions-enabled,
     .jw-nextup-container,
-    .jw-autostart-mute {
+    .jw-autostart-mute,
+    .jw-text-duration,
+    .jw-text-elapsed {
         display: none;
     }
 
@@ -25,49 +26,19 @@
         &.jw-state-buffering .jw-display-icon-display {
             display: inline-block;
         }
-
-        .jw-controlbar-center-group {
-            padding: 0;
-        }
     }
 
     .jw-controlbar {
-        .jw-icon-inline,
+        .jw-slider-time,
         .jw-icon-tooltip,
-        .jw-icon-cast,
-        .jw-text,
-        .jw-slider-horizontal {
+        .jw-icon-inline:not(.jw-icon-volume):not(.jw-icon-playback):not(.jw-icon-fullscreen) {
             display: none;
-        }
-
-        .jw-icon-playback,
-        .jw-icon-volume,
-        .jw-slider-volume,
-        .jw-icon-fullscreen {
-            display: inline-block;
-        }
-
-        .jw-text-alt {
-            display: inline-block;
         }
 
         .jw-slider-volume.jw-slider-horizontal,
-        .jw-icon-inline.jw-icon-volume {
-            display: inline-block;
-        }
-
-        .jw-icon-tooltip.jw-icon-volume {
-            display: none;
-        }
-    }
-
-    &.jw-ie {
-        .jw-controlbar-center-group {
-            overflow: hidden;
-
-            .jw-text-alt {
-                display: table;
-            }
+        .jw-icon-inline.jw-icon-volume,
+        .jw-text-alt {
+            display: flex;
         }
     }
 
@@ -84,6 +55,15 @@
             }
         }
     }
+
+    .jw-nextup-container {
+        bottom: @mobile-touch-target;
+    }
+
+    .jw-icon,
+    .jw-slider-horizontal {
+        pointer-events: all;
+    }
 }
 
 .jwplayer.jw-flag-ads-googleima {
@@ -98,8 +78,18 @@
         }
     }
 
-    &.jw-skin-seven .jw-controlbar {
-        font-size: 0.9em;
+    &.jw-flag-small-player {
+        // Fit controls under Google IMA skip button in small players
+        .jw-controlbar {
+            height: 36px;
+            padding-top: 8px;
+
+            .jw-icon,
+            .jw-text {
+                height: 36px;
+                line-height: 36px;
+            }
+        }
     }
 }
 

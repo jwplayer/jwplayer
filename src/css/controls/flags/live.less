@@ -14,17 +14,20 @@
         }
 
         .jw-text-alt {
-            display: inline-block;
+            display: flex;
+        }
+
+        .jw-overlay:after {
+            display: none;
         }
     }
 
-    &.jw-ie {
-        .jw-controlbar-center-group {
-            overflow: hidden;
+    .jw-nextup-container {
+        bottom: @mobile-touch-target;
+    }
 
-            .jw-text-alt {
-                display: table;
-            }
-        }
+    .jw-text-elapsed,
+    .jw-text-duration {
+        display: none;
     }
 }
