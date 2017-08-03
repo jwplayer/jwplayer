@@ -26,8 +26,8 @@ describe('Control Bar', function() {
         container.appendChild(spacer);
 
         controlBar = new ControlBar({}, model);
-        controlBar.el = container;
-        children = controlBar.el.children;
+        controlBar.elements.buttonContainer = container;
+        children = container.children;
     });
 
     describe('updateButtons', function() {
