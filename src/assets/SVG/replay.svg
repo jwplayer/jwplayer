@@ -1,13 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 21.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="replayIcon" class="jw-icon-replay" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="408px" height="473.9px" viewBox="0 0 408 473.9" style="enable-background:new 0 0 408 473.9;" xml:space="preserve">
-<style type="text/css">
-	.jw-icon-replay{fill:#FFFFFF;}
-</style>
-<g transform="translate(986 1863)">
-	<path d="M-782-1797.1v-51c0-12.8-10.2-20.4-20.4-10.2l-112.2,71.4c-7.7,3-11.6,11.8-8.5,19.5c1.5,3.9,4.6,7,8.5,8.5
-		l109.6,74c12.8,10.2,23,2.5,23-10.2v-51c84.5,0,153,68.5,153,153s-68.5,153-153,153s-153-68.5-153-153h-51
-		c0,112.7,91.3,204,204,204s204-91.3,204-204C-578-1705.8-669.3-1797.1-782-1797.1z"/>
-</g>
-</svg>
+<svg class="jw-svg-icon jw-svg-icon-replay" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><path d="M120,41.9v-20c0-5-4-8-8-4l-44,28a5.865,5.865,0,0,0-3.3,7.6A5.943,5.943,0,0,0,68,56.8l43,29c5,4,9,1,9-4v-20a60,60,0,1,1-60,60H40a80,80,0,1,0,80-79.9Z"/></svg>

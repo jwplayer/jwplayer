@@ -104,7 +104,6 @@
 
 .jw-nextup-close {
     .jw-icon-display;
-    .jw-icon-close;
     border: none;
     color: @nextup-close-button-color-inactive;
     font-size: 13px;
@@ -114,6 +113,10 @@
     top: 6px;
     transition: color 150ms ease, opacity 150ms ease, visibility 150ms ease;
     visibility: hidden;
+
+    .jw-svg-icon-close {
+        display: block;
+    }
 }
 
 .jw-nextup-close:active {

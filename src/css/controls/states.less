@@ -24,9 +24,12 @@
 // buffering
 .jwplayer.jw-state-buffering {
     .jw-display-icon-display .jw-icon {
-        .jw-icon-buffer;
-
         animation: spin 2s linear infinite;
+
+        .jw-svg-icon-buffer {
+            display: block;
+        }
+
         @keyframes spin {
             100% {
                 transform: rotate(360deg);
@@ -35,7 +38,13 @@
     }
 
     .jw-icon-playback {
-        .jw-icon-pause;
+        .jw-svg-icon-play {
+            display: none;
+        }
+    }
+
+    .jw-icon-display .jw-svg-icon-pause {
+        display: none;
     }
 }
 
@@ -43,7 +52,13 @@
 .jwplayer.jw-state-playing {
     .jw-display .jw-icon-display,
     .jw-icon-playback {
-        .jw-icon-pause;
+        .jw-svg-icon-play {
+            display: none;
+        }
+
+        .jw-svg-icon-pause {
+            display: block;
+        }
     }
 
     &.jw-flag-user-inactive:not(.jw-flag-casting) {
@@ -114,11 +129,48 @@
     }
 }
 
+.jwplayer.jw-state-paused,
+.jwplayer.jw-state-idle,
+.jwplayer.jw-state-error,
+.jwplayer.jw-state-complete {
+    .jw-svg-icon-pause {
+        display: none;
+    }
+}
+
+.jwplayer.jw-state-error,
+.jwplayer.jw-state-complete,
+.jwplayer.jw-state-buffering {
+    .jw-icon-display .jw-svg-icon-play {
+        display: none;
+    }
+}
+
+.jwplayer:not(.jw-state-buffering) {
+    .jw-svg-icon-buffer {
+        display: none;
+    }
+}
+
+.jwplayer:not(.jw-state-complete) {
+    .jw-svg-icon-replay {
+        display: none;
+    }
+}
+
+.jwplayer:not(.jw-state-error) {
+    .jw-svg-icon-error {
+        display: none;
+    }
+}
+
 // complete
 .jwplayer.jw-state-complete {
     .jw-display {
         .jw-icon-display {
-            .jw-icon-replay;
+            .jw-icon-replay {
+                display: block;
+            }
         }
 
         .jw-text {
@@ -132,7 +184,9 @@
 .jwplayer.jw-state-paused .jw-icon-playback,
 .jwplayer.jw-state-paused .jw-icon-display,
 .jwplayer.jw-state-complete .jw-icon-playback {
-    .jw-icon-play;
+    .jw-svg-icon-pause {
+        display: none;
+    }
 }
 
 // Only show the play display icon
@@ -151,7 +205,10 @@ body .jw-error,
 body .jwplayer.jw-state-error {
     .jw-icon-display {
         cursor: default;
-        .jw-icon-error;
+
+        .jw-icon-error {
+            display: block;
+        }
     }
 }
 
