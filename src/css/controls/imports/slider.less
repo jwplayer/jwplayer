@@ -29,7 +29,7 @@
 }
 
 .jw-cue {
-    position: absolute;
+    position: relative;
     cursor: pointer;
     height: @rail-height;
     width: @ui-padding;
@@ -56,11 +56,18 @@
         width: 100%;
     }
 
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress,
+    .jw-knob {
+        top: 50%;
+        transform: translate(0, -50%);
+    }
+
     .jw-rail,
     .jw-buffer,
     .jw-progress {
-        top: 50%;
-        transform: translate(0, -50%);
         height: @rail-height;
     }
 
@@ -75,6 +82,7 @@
     .jw-slider-container {
         height: @volume-rail-length;
         flex-direction: column;
+        align-items: flex-start;
     }
 
     .jw-rail,
