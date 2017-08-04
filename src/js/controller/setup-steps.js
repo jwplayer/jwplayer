@@ -71,7 +71,7 @@ function filterPlaylist(_model) {
         }
         // `setPlaylist` performs filtering
         setPlaylist(_model, _model.get('playlist'), _model.get('feedData'));
-        loadProvidersForPlaylist(_model);
+        return loadProvidersForPlaylist(_model);
     });
 }
 
