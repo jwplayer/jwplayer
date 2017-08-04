@@ -431,7 +431,7 @@ define([
             this.set('state', STATE_BUFFERING);
             const providerNeeded = _providers.required([item]);
             return _providers.load(providerNeeded).then(() => {
-                if (!_provider && this.get('playlist')[this.get('item')] === item) {
+                if (!_provider && _attached && this.get('playlist')[this.get('item')] === item) {
                     this.setProvider(item);
                     _provider.load(item);
                 }
