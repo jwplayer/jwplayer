@@ -52,28 +52,7 @@ display icons
     margin: 0 (@ui-padding * 0.5);
     border-radius: 3.5em;
 
-    .jw-icon {
-        cursor: pointer;
-
-        // Default to .jw-breakpoint-2 to match pre 7.9 styles
-        width: 75px;
-        height: 75px;
-        line-height: 75px;
-
-        &.jw-icon-rewind:before {
-            padding: 0.2em 0.05em;
-        }
-
-        &:before {
-            position: relative;
-        }
-
-        .jw-state-idle &.jw-icon-display:before,
-        .jw-state-paused &.jw-icon-display:before {
-            left: 1px;
-        }
-    }
-
+    .jw-icon,
     .jw-svg-icon {
         cursor: pointer;
 
@@ -81,11 +60,6 @@ display icons
         width: 75px;
         height: 75px;
         line-height: 75px;
-        text-align: center;
-
-        &.jw-icon-rewind:before {
-            padding: 0.2em 0.05em;
-        }
 
         &:before {
             width: @mobile-touch-target * 0.75;
@@ -98,6 +72,12 @@ display icons
             left: 1px;
         }
     }
+
+    .jw-icon {
+        &.jw-icon-rewind:before {
+            padding: 0.2em 0.05em;
+        }
+    }
 }
 
 // hide next and rewind buttons on extra small player
@@ -107,12 +87,7 @@ display icons
         display: none;
     }
 
-    .jw-display .jw-icon {
-        height: @mobile-touch-target;
-        width: @mobile-touch-target;
-        line-height: @mobile-touch-target;
-    }
-
+    .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
         height: @mobile-touch-target;
         width: @mobile-touch-target;
@@ -126,12 +101,7 @@ display icons
 }
 
 .jw-breakpoint-1 {
-    .jw-display .jw-icon {
-        height: @mobile-touch-target * 1.25;
-        line-height: @mobile-touch-target * 1.25;
-        width: @mobile-touch-target * 1.25;
-    }
-
+    .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
         height: @mobile-touch-target * 1.25;
         line-height: @mobile-touch-target * 1.25;
@@ -141,7 +111,9 @@ display icons
             width: @mobile-touch-target * 0.5;
             height: @mobile-touch-target * 0.5;
         }
+    }
 
+    .jw-display .jw-icon {
         &.jw-icon-rewind:before {
             width: @mobile-touch-target * 0.75;
             height: @mobile-touch-target * 0.75;
@@ -150,12 +122,7 @@ display icons
 }
 
 .jw-breakpoint-3 {
-    .jw-display .jw-icon {
-        height: @mobile-touch-target * 1.75;
-        line-height: @mobile-touch-target * 1.75;
-        width: @mobile-touch-target * 1.75;
-    }
-
+    .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
         height: @mobile-touch-target * 1.75;
         line-height: @mobile-touch-target * 1.75;
@@ -172,12 +139,7 @@ display icons
 .jw-breakpoint-5,
 .jw-breakpoint-6,
 .jw-breakpoint-7 {
-    .jw-display .jw-icon {
-        height: @mobile-touch-target * 2;
-        line-height: @mobile-touch-target * 2;
-        width: @mobile-touch-target * 2;
-    }
-
+    .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
         height: @mobile-touch-target * 2;
         line-height: @mobile-touch-target * 2;
