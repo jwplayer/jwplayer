@@ -204,10 +204,7 @@ function setupError(core, error) {
     const height = core.get('height');
 
     css.style(errorElement, {
-        fontSize: '16px',
         backgroundColor: '#000',
-        color: '#fff',
-        padding: '.75em 1.5em',
         width: width.toString().indexOf('%') > 0 ? width : `${width}px`,
         height: height.toString().indexOf('%') > 0 ? height : `${height}px`
     });
