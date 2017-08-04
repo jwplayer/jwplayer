@@ -25,10 +25,11 @@ define([
             this.el.appendChild(this.container);
             if (svgIcons && svgIcons.length > 0) {
                 var parser = new DOMParser();
-                for (var i = 0; i < svgIcons.length; i++) {
-                    var svgDoc = parser.parseFromString(svgIcons[i], 'image/svg+xml');
-                    this.el.appendChild(svgDoc.documentElement);
-                }
+                var self = this;
+                svgIcons.forEach(function(svgIcon) {
+                    var svgDoc = parser.parseFromString(svgIcon, 'image/svg+xml');
+                    self.el.appendChild(svgDoc.documentElement);
+                });
             }
         }
 
