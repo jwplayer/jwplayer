@@ -209,7 +209,7 @@ function setupError(core, error) {
         color: '#fff',
         padding: '.75em 1.5em',
         width: width.toString().indexOf('%') > 0 ? width : `${width}px`,
-        height: height.toString().indexOf('%') > 0 ? height : `${height}px'`
+        height: height.toString().indexOf('%') > 0 ? height : `${height}px`
     });
 
     showView(core, errorElement);
