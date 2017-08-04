@@ -213,7 +213,7 @@ function setupError(core, error) {
 
     setTimeout(() => {
         core.trigger(SETUP_ERROR, {
-            message: message
+            message
         });
     });
 }
