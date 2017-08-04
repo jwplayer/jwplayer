@@ -433,6 +433,8 @@ define([
 
             function _autoStart() {
                 var state = _model.get('state');
+                _model.set('autostart', false);
+
                 if (state === states.IDLE || state === states.PAUSED) {
                     _play({ reason: 'autostart' });
                 }
