@@ -9,6 +9,9 @@ model.change.returnsThis();
 model.on = sinon.stub();
 model.on.returnsThis();
 model.set('localization', {});
+model.mediaController = {};
+model.mediaController.on = sinon.stub();
+model.mediaController.on.returnsThis();
 
 describe('Control Bar', function() {
 
