@@ -20,18 +20,12 @@ export function loadProvidersForPlaylist(model) {
     const playlist = model.get('playlist');
     const providersManager = model.getProviders();
     const firstProviderNeeded = providersManager.required([playlist[0]]);
-    const allProvidersNeeded = providersManager.required(playlist);
 
-    return providersManager.load(firstProviderNeeded)
-        .then(function() {
-            if (!model.get('provider')) {
-                model.setProvider(model.get('playlistItem'));
-                // provider is not available under "itemReady" event
-            }
-            // load remaining providers after first required
-            // TODO: schedule for after play or feedloading
-            return providersManager.load(allProvidersNeeded);
-        });
+    return providersManager.load(firstProviderNeeded).then(() => {
+        if (!model.get('provider')) {
+            model.setProvider(model.get('playlistItem'));
+        }
+    });
 }
 
 export default setPlaylist;

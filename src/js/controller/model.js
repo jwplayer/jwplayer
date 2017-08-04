@@ -3,7 +3,7 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import Providers from 'providers/providers';
 import initQoe from 'controller/qoe';
-import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, MEDIA_PLAY_ATTEMPT, MEDIA_TYPE, MEDIA_BUFFER,
+import { STATE_IDLE, STATE_COMPLETE, STATE_BUFFERING, STATE_PAUSED, STATE_PLAYING, MEDIA_TYPE, MEDIA_BUFFER,
     MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
     MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
 
@@ -423,10 +423,19 @@ define([
             }
             this.set('position', item.starttime || 0);
             this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
-            this.mediaModel.set('playAttempt', true);
-            this.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: this.get('playReason') });
 
-            _provider.load(item);
+            if (_provider) {
+                _provider.load(item);
+                return Promise.resolve();
+            }
+            this.set('state', STATE_BUFFERING);
+            const providerNeeded = _providers.required([item]);
+            return _providers.load(providerNeeded).then(() => {
+                if (!_provider && this.get('playlist')[this.get('item')] === item) {
+                    this.setProvider(item);
+                    _provider.load(item);
+                }
+            });
         };
 
         this.stopVideo = function() {
@@ -436,7 +445,12 @@ define([
         };
 
         this.playVideo = function() {
-            _provider.play();
+            const playPromise = _provider.play();
+            if (!playPromise) {
+                // TODO: return new Promise that resolves when playback starts, or rejects on error/timeout
+                return Promise.resolve();
+            }
+            return playPromise;
         };
 
         this.persistCaptionsTrack = function() {

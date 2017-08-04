@@ -9,14 +9,13 @@ import Playlist from 'playlist/playlist';
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
-    STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
+    STATE_STALLED, MEDIA_PLAY_ATTEMPT, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 import InstreamAdapter from 'controller/instream-adapter';
 import _ from 'utils/underscore';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
-import utils from 'utils/helpers';
 import View from 'view/view';
 import Events from 'utils/backbone.events';
 import changeStateEvent from 'events/change-state-event';
@@ -326,7 +325,11 @@ define([], function() {
                             });
                             return;
                         }
-                        loadProvidersForPlaylist(_model);
+                        loadProvidersForPlaylist(_model).catch(error => {
+                            _this.triggerError({
+                                message: `Could not play video: ${error.message}`
+                            });
+                        });
                         _setItem(0);
                         break;
                     }
@@ -344,7 +347,7 @@ define([], function() {
                     _load(data.playlist, data);
                 });
                 loader.on(ERROR, function(evt) {
-                    evt.message = 'Error loading playlist: ' + evt.message;
+                    evt.message = `Error loading playlist: ${evt.message}`;
                     this.triggerError(evt);
                 }, this);
                 loader.load(toLoad);
@@ -363,7 +366,8 @@ define([], function() {
             }
 
             function _play(meta = {}) {
-                _model.set('playReason', meta.reason);
+                const playReason = meta.reason;
+                _model.set('playReason', playReason);
 
                 if (_model.get('state') === STATE_ERROR) {
                     return;
@@ -381,9 +385,14 @@ define([], function() {
                     _setItem(0);
                 }
 
+                if (_isIdle()) {
+                    _model.mediaModel.set('playAttempt', true);
+                    _model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
+                }
+
                 if (!_preplay) {
                     _preplay = true;
-                    _this.triggerAfterReady(MEDIA_BEFOREPLAY, { playReason: _model.get('playReason') });
+                    _this.triggerAfterReady(MEDIA_BEFOREPLAY, { playReason: playReason });
                     _preplay = false;
                     if (_interruptPlay) {
                         _interruptPlay = false;
@@ -392,25 +401,20 @@ define([], function() {
                     }
                 }
 
-                // TODO: The state is idle while providers load
-                let status;
                 if (_isIdle()) {
-                    if (_model.get('playlist').length === 0) {
-                        return;
-                    }
-                    status = utils.tryCatch(function() {
-                        // FIXME: playAttempt is not triggered until this is called. Should be on play()
-                        _model.loadVideo();
+                    _model.loadVideo().catch(error => {
+                        _this.triggerError({
+                            message: `Could not play video: ${error.message}`
+                        });
+                        _actionOnAttach = null;
                     });
                 } else if (_model.get('state') === STATE_PAUSED) {
-                    status = utils.tryCatch(function() {
-                        _model.playVideo();
+                    _model.playVideo().catch(error => {
+                        _this.triggerError({
+                            message: `Could not resume playback: ${error.message}`
+                        });
+                        _actionOnAttach = null;
                     });
-                }
-
-                if (status instanceof utils.Error) {
-                    _this.triggerError(status);
-                    _actionOnAttach = null;
                 }
             }
 
@@ -430,14 +434,7 @@ define([], function() {
                 _actionOnAttach = null;
                 _preloaded = false;
 
-                const status = utils.tryCatch(function() {
-                    _model.stopVideo();
-                }, _this);
-
-                if (status instanceof utils.Error) {
-                    _this.triggerError(status);
-                    return false;
-                }
+                _model.stopVideo();
 
                 if (fromApi) {
                     _stopPlaylist = true;
@@ -446,8 +443,6 @@ define([], function() {
                 if (_preplay) {
                     _interruptPlay = true;
                 }
-
-                return true;
             }
 
             function _pause(meta = {}) {
@@ -471,14 +466,7 @@ define([], function() {
                     case STATE_PLAYING:
                     case STATE_BUFFERING: {
 
-                        const status = utils.tryCatch(function() {
-                            _video().pause();
-                        }, this);
-
-                        if (status instanceof utils.Error) {
-                            _this.triggerError(status);
-                            return;
-                        }
+                        _video().pause();
                         break;
                     }
                     default:
@@ -656,14 +644,7 @@ define([], function() {
 
             function _attachMedia() {
                 // Called after instream ends
-                const status = utils.tryCatch(function() {
-                    _model.attachMedia();
-                });
-
-                if (status instanceof utils.Error) {
-                    utils.log('Error calling _attachMedia', status);
-                    return;
-                }
+                _model.attachMedia();
 
                 if (typeof _actionOnAttach === 'function') {
                     _actionOnAttach();

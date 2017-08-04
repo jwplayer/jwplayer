@@ -351,7 +351,7 @@ define([
 
         togglePlaybackRateControls(model) {
             const showPlaybackRateControls =
-                model.getVideo().supportsPlaybackRate &&
+                model.getVideo() && model.getVideo().supportsPlaybackRate &&
                 model.get('streamType') !== 'LIVE' &&
                 model.get('playbackRateControls').length > 1;
 
