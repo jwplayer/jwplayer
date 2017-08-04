@@ -363,15 +363,6 @@ define([
                 }
             }, this);
 
-            // TODO: Karim - duplicate code
-//            new UI(this.elements.durationLeft).on('click tap', function() {
-//                if (this._model.get('streamType') === 'DVR') {
-//                    // Seek to "Live" position within live buffer, but not before current position
-//                    const currentPosition = this._model.get('position');
-//                    this._api.seek(Math.max(dvrSeekLimit, currentPosition));
-//                }
-//            }, this);
-
             // When the control bar is interacted with, trigger a user action event
             new UI(this.el).on('click tap drag', function() {
                 this.trigger('userAction');
@@ -549,11 +540,9 @@ define([
             const streamType = model.get('streamType');
             this.elements.rewind.toggle(streamType !== 'LIVE');
             this.elements.live.toggle(streamType === 'LIVE' || streamType === 'DVR');
-            const stateOnDvr = streamType === 'DVR' ? 'none' : '';
-            this.elements.duration.style.display = stateOnDvr;
+            this.elements.duration.style.display = streamType === 'DVR' ? 'none' : '';
             const duration = model.get('duration');
             this.onDuration(model, duration);
-            // TODO: Karim - duplicate code, see castButton and button.js - set functions to provider ?
         }
 
         onNextUp(model, nextUp) {
