@@ -106,7 +106,6 @@ define([
             this.nextUpToolTip = null;
 
             const timeSlider = new TimeSlider(_model, _api);
-            let volumeSlider;
             let volumeTooltip;
             let muteButton;
 
@@ -117,8 +116,6 @@ define([
 
             // Do not initialize volume slider or tooltip on mobile
             if (!this._isMobile) {
-                volumeSlider = new Slider('jw-slider-volume', 'horizontal');// , vol);
-                volumeSlider.setup();
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
@@ -173,7 +170,6 @@ define([
                     PLAYBACK_RATE_ICON
                 ),
                 mute: muteButton,
-                volume: volumeSlider,
                 volumetooltip: volumeTooltip,
                 cast: createCastButton(() => {
                     _api.castToggle();
