@@ -335,13 +335,16 @@ define([
                 _this.trigger('destroyPlugin', {});
                 _stop(true);
 
-                _model.once('itemReady', _checkAutoStart);
+                // Check for autostart only when loading a playlist, so that we don't autostart while progressing or using the API
+                _model.off('itemReady', _checkAutoStart);
 
                 switch (typeof item) {
                     case 'string':
+                        _model.once('itemReady', _checkAutoStart);
                         _loadPlaylist(item);
                         break;
                     case 'object':
+                        _model.once('itemReady', _checkAutoStart);
                         var success = _setPlaylist(item, feedData);
                         if (success) {
                             _setItem(0);
@@ -433,7 +436,6 @@ define([
 
             function _autoStart() {
                 var state = _model.get('state');
-                _model.set('autostart', false);
 
                 if (state === states.IDLE || state === states.PAUSED) {
                     _play({ reason: 'autostart' });
