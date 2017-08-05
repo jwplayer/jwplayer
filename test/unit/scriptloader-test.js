@@ -1,53 +1,29 @@
 import { getScriptPath } from 'utils/parser';
-import ScriptLoader from 'utils/scriptloader';
+import ScriptLoader, {
+    SCRIPT_LOAD_STATUS_NEW
+} from 'utils/scriptloader';
 
-describe.skip('ScriptLoader', function() {
-
-    var STATUS = {
-        NEW: 0,
-        LOADING: 1,
-        ERROR: 2,
-        COMPLETE: 3
-    };
+describe('ScriptLoader', function() {
 
     it('ScriptLoader.getStatus', function() {
         // check status new
-        var script = new ScriptLoader('./data/mp4.js', true);
-        assert.equal(script.getStatus(), STATUS.NEW, 'newly created scriptloader has state new');
+        const script = new ScriptLoader('./data/mp4.js');
+        assert.equal(script.getStatus(), SCRIPT_LOAD_STATUS_NEW, 'newly created scriptloader has state new');
 
         script.load();
-        assert.equal(script.getStatus(), STATUS.LOADING, 'loading script causes status to load');
-
-        // loading again should not do anything
-        script.load();
-        assert.equal(script.getStatus(), STATUS.LOADING, 'loading script causes status to load');
-    });
-
-    it('ScriptLoader with style', function() {
-        // check style tag true creates stylesheet
-        var script = new ScriptLoader('./data/playlists.js', true);
-        var tag = script.makeTag('styleTag');
-        assert.isOk(tag.href.indexOf('styleTag') >= 0, 'makeTag with isStyle true creates style tag');
-    });
-
-    it('ScriptLoader with script', function() {
-        var script = new ScriptLoader('./data/mixed.js', false);
-        var tag = script.makeTag('scriptTag');
-        script.load();
-
-        assert.isOk(tag.src.indexOf('scriptTag') >= 0, 'makeTag with isStyle false creates script tag');
+        assert.notEqual(script.getStatus(), SCRIPT_LOAD_STATUS_NEW, 'loading script causes status to change');
     });
 
     it('ScriptLoader load same script', function() {
-        var script = new ScriptLoader('./data/mp4.js', false);
+        const script = new ScriptLoader('./data/playlists.js');
         script.load();
 
         // try to load a seconds script
-        var script2 = new ScriptLoader('./data/mixed.js', false);
+        const script2 = new ScriptLoader('./data/mixed.js');
         script2.load();
 
         // try to load the same script
-        var sameScript = new ScriptLoader('./data/playlists.js', false);
+        const sameScript = new ScriptLoader('./data/playlists.js');
         sameScript.load();
 
         assert.isOk(document.getElementsByTagName('head')[0].firstChild.src.indexOf('playlists.js') >= 0,
@@ -55,12 +31,12 @@ describe.skip('ScriptLoader', function() {
     });
 
     it('ScriptLoader with actual path', function() {
-        var scriptPath = getScriptPath('scriptloader-test.js') + 'scriptloader-test.js';
-        var script = new ScriptLoader(scriptPath, false);
+        const scriptPath = getScriptPath('scriptloader-test.js') + 'scriptloader-test.js';
+        const script = new ScriptLoader(scriptPath);
         script.load();
 
         // loaded script should be added to head as first child
-        var tag = document.getElementsByTagName('head')[0].firstChild;
+        const tag = document.getElementsByTagName('head')[0].firstChild;
         assert.isOk(tag.src.indexOf('scriptloader-test.js') >= 0, 'script is laded properly');
     });
 });
