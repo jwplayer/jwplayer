@@ -1,50 +1,38 @@
-define([
-    'utils/strings'
-], function(strings) {
+import strings from 'utils/strings';
 
-    var utils = {};
+export const PLUGIN_PATH_TYPE_ABSOLUTE = 0;
+export const PLUGIN_PATH_TYPE_RELATIVE = 1;
+export const PLUGIN_PATH_TYPE_CDN = 2;
 
-    /**
-     * Types of plugin paths
-     */
-    var _pluginPathType = utils.pluginPathType = {
-        ABSOLUTE: 0,
-        RELATIVE: 1,
-        CDN: 2
-    };
-
-    utils.getPluginPathType = function (path) {
-        if (typeof path !== 'string') {
-            return;
-        }
-        path = path.split('?')[0];
-        var protocol = path.indexOf('://');
-        if (protocol > 0) {
-            return _pluginPathType.ABSOLUTE;
-        }
-        var folder = path.indexOf('/');
-        var extension = strings.extension(path);
-        if (protocol < 0 && folder < 0 && (!extension || !isNaN(extension))) {
-            return _pluginPathType.CDN;
-        }
-        return _pluginPathType.RELATIVE;
-    };
+export const getPluginPathType = function (path) {
+    if (typeof path !== 'string') {
+        return;
+    }
+    path = path.split('?')[0];
+    var protocol = path.indexOf('://');
+    if (protocol > 0) {
+        return PLUGIN_PATH_TYPE_ABSOLUTE;
+    }
+    var folder = path.indexOf('/');
+    var extension = strings.extension(path);
+    if (protocol < 0 && folder < 0 && (!extension || !isNaN(extension))) {
+        return PLUGIN_PATH_TYPE_CDN;
+    }
+    return PLUGIN_PATH_TYPE_RELATIVE;
+};
 
 
-    /**
-     * Extracts a plugin name from a string
-     */
-    utils.getPluginName = function (pluginName) {
-        /** Regex locates the characters after the last slash, until it encounters a dash. **/
-        return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, '$2');
-    };
+/**
+ * Extracts a plugin name from a string
+ */
+export const getPluginName = function (pluginName) {
+    /** Regex locates the characters after the last slash, until it encounters a dash. **/
+    return pluginName.replace(/^(.*\/)?([^-]*)-?.*\.(swf|js)$/, '$2');
+};
 
-    /**
-     * Extracts a plugin version from a string
-     */
-    utils.getPluginVersion = function (pluginName) {
-        return pluginName.replace(/[^-]*-?([^.]*).*$/, '$1');
-    };
-
-    return utils;
-});
+/**
+ * Extracts a plugin version from a string
+ */
+export const getPluginVersion = function (pluginName) {
+    return pluginName.replace(/[^-]*-?([^.]*).*$/, '$1');
+};

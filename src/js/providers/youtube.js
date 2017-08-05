@@ -1,15 +1,17 @@
 import { OS } from 'environment/environment';
 import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_LOADING, STATE_STALLED, ERROR, MEDIA_TIME,
     MEDIA_BUFFER, MEDIA_COMPLETE, MEDIA_META, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR } from 'events/events';
+import Scriptloader, {
+    SCRIPT_LOAD_STATUS_NEW
+} from 'utils/scriptloader';
 
 define([
     'utils/helpers',
     'utils/css',
     'utils/underscore',
-    'utils/scriptloader',
     'providers/default',
     'utils/backbone.events'
-], function(utils, cssUtils, _, Scriptloader, DefaultProvider, Events) {
+], function(utils, cssUtils, _, DefaultProvider, Events) {
     var _scriptLoader = new Scriptloader(window.location.protocol + '//www.youtube.com/iframe_api');
 
     function YoutubeProvider(_playerId, _playerConfig) {
@@ -46,7 +48,7 @@ define([
         };
 
         // Load iFrame API
-        if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === Scriptloader.loaderstatus.NEW) {
+        if (!_youtubeAPI && _scriptLoader && _scriptLoader.getStatus() === SCRIPT_LOAD_STATUS_NEW) {
             _scriptLoader.on(MEDIA_COMPLETE, _onLoadSuccess);
             _scriptLoader.on(ERROR, _onLoadError);
             _scriptLoader.load();
