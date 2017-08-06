@@ -541,7 +541,7 @@ define([
                 );
 
                 let firstButton = buttonContainer.querySelector('.jw-spacer').nextSibling;
-                if (firstButton.getAttribute('button') === 'logo') {
+                if (firstButton && firstButton.getAttribute('button') === 'logo') {
                     firstButton = firstButton.nextSibling;
                 }
 
