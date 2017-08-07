@@ -113,7 +113,7 @@ describe('Control Bar', function() {
 
     describe('addLogo', function() {
 
-        it('should add a logo after spacer', function() {
+        it('should add a logo image after spacer', function() {
             controlBar.addLogo({
                 file: 'logo.svg',
                 link: 'http://www.jwplayer.com'
@@ -121,7 +121,7 @@ describe('Control Bar', function() {
 
             expect(children.length).to.equal(3);
             expect(children[2].getAttribute('button')).to.equal('logo');
-            expect(children[2].children[0].style.backgroundImage).to.equal('url(http://localhost:9877/logo.svg)');
+            expect(children[2].children[0].style.backgroundImage.indexOf('logo.svg')).to.not.equal(-1);
         });
     });
 });
