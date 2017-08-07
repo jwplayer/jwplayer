@@ -1,5 +1,4 @@
 import ControlBar from 'view/controls/controlbar';
-import CustomButton from 'view/controls/components/custom-button';
 import SimpleModel from 'model/simplemodel';
 import _ from 'test/underscore';
 import sinon from 'sinon';
