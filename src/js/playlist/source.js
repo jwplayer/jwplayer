@@ -1,5 +1,5 @@
 import { isYouTube, isRtmp } from 'utils/validator';
-import strings from 'utils/strings';
+import { trim, extension } from 'utils/strings';
 
 /**
  * A media source variant present in a playlist item
@@ -21,7 +21,7 @@ const Source = function(config) {
     }, config);
 
     // normalize for odd strings
-    source.file = strings.trim('' + source.file);
+    source.file = trim('' + source.file);
 
     // regex to check if mimetype is given
     const mimetypeRegEx = /^[^/]+\/(?:x-)?([^/]+)$/;
@@ -38,7 +38,7 @@ const Source = function(config) {
     } else if (isRtmp(source.file)) {
         source.type = 'rtmp';
     } else if (!source.type) {
-        source.type = strings.extension(source.file);
+        source.type = extension(source.file);
     }
 
     if (!source.type) {

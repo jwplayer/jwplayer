@@ -29,66 +29,70 @@ function pluginResizeGenerator(pluginInstance) {
     };
 }
 
+function configurePlugins(pluginsConfig, flashPlugins, api, plugins) {
+    Object.keys(pluginsConfig).forEach(pluginKey => {
+        const config = pluginsConfig[pluginKey];
+        const pluginName = getPluginName(pluginKey);
+        const pluginObj = plugins[pluginName];
+        const flashPath = pluginObj.getFlashPath();
+        const jsPlugin = pluginObj.getJS();
+        const pluginURL = pluginObj.getURL();
+
+        if (flashPath) {
+            var flashPluginConfig = Object.assign({
+                name: pluginName,
+                swf: flashPath,
+                pluginmode: pluginObj.getPluginmode()
+            }, config);
+            flashPlugins.push(flashPluginConfig);
+        }
+
+        const status = utils.tryCatch(function() {
+            if (jsPlugin) {
+                const pluginConfig = pluginsConfig[pluginURL];
+
+                if (!pluginConfig) {
+                    utils.log('JW Plugin already loaded', pluginName, pluginURL);
+                    return;
+                }
+
+                const div = document.createElement('div');
+                div.id = api.id + '_' + pluginName;
+                div.className = 'jw-plugin jw-reset';
+
+                const pluginOptions = Object.assign({}, pluginConfig);
+                const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
+
+                pluginInstance.addToPlayer = addToPlayerGenerator(api, pluginInstance, div);
+                pluginInstance.resizeHandler = pluginResizeGenerator(pluginInstance);
+
+                api.addPlugin(pluginName, pluginInstance, div);
+            }
+
+        });
+
+        if (status instanceof utils.Error) {
+            utils.log('ERROR: Failed to load ' + pluginName + '.');
+        }
+    });
+}
+
 const PluginLoader = function (model, _config) {
     const _this = this;
 
     _this.setupPlugins = function (api, playerModel) {
         const flashPlugins = [];
-        const plugins = model.getPlugins();
-
         const pluginsConfig = playerModel.get('plugins');
-        Object.keys(pluginsConfig).forEach(pluginKey => {
-            const config = pluginsConfig[pluginKey];
-            const pluginName = getPluginName(pluginKey);
-            const pluginObj = plugins[pluginName];
-            const flashPath = pluginObj.getFlashPath();
-            const jsPlugin = pluginObj.getJS();
-            const pluginURL = pluginObj.getURL();
-
-            if (flashPath) {
-                var flashPluginConfig = Object.assign({
-                    name: pluginName,
-                    swf: flashPath,
-                    pluginmode: pluginObj.getPluginmode()
-                }, config);
-                flashPlugins.push(flashPluginConfig);
-            }
-
-            const status = utils.tryCatch(function() {
-                if (jsPlugin) {
-                    const pluginConfig = pluginsConfig[pluginURL];
-
-                    if (!pluginConfig) {
-                        utils.log('JW Plugin already loaded', pluginName, pluginURL);
-                        return;
-                    }
-
-                    const div = document.createElement('div');
-                    div.id = api.id + '_' + pluginName;
-                    div.className = 'jw-plugin jw-reset';
-
-                    const pluginOptions = Object.assign({}, pluginConfig);
-                    const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
-
-                    pluginInstance.addToPlayer = addToPlayerGenerator(api, pluginInstance, div);
-                    pluginInstance.resizeHandler = pluginResizeGenerator(pluginInstance);
-
-                    api.addPlugin(pluginName, pluginInstance, div);
-                }
-
-            });
-
-            if (status instanceof utils.Error) {
-                utils.log('ERROR: Failed to load ' + pluginName + '.');
-            }
-        });
-
+        if (pluginsConfig) {
+            const plugins = model.getPlugins();
+            configurePlugins(pluginsConfig, flashPlugins, api, plugins);
+        }
         playerModel.set('flashPlugins', flashPlugins);
     };
 
     _this.load = function () {
         // Must be a hash map
-        if (_config && typeof _config !== 'object') {
+        if (!_config || typeof _config !== 'object') {
             return Promise.resolve();
         }
 

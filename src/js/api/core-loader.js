@@ -66,7 +66,7 @@ function loadControlsHtml5Bundle() {
         'view/controls/controls',
         'providers/html5'
     ], function (require) {
-        return require('controller/controller');
+        return require('controller/controller').default;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.html5');
 }
 
@@ -78,7 +78,7 @@ function loadControlsPolyfillHtml5Bundle() {
         'providers/html5'
     ], function (require) {
         require('intersection-observer');
-        return require('controller/controller');
+        return require('controller/controller').default;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills.html5');
 }
 
@@ -89,7 +89,7 @@ function loadControlsPolyfillBundle() {
         'intersection-observer'
     ], function (require) {
         require('intersection-observer');
-        return require('controller/controller');
+        return require('controller/controller').default;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills');
 }
 
@@ -98,7 +98,7 @@ function loadControlsBundle() {
         'controller/controller',
         'view/controls/controls'
     ], function (require) {
-        return require('controller/controller');
+        return require('controller/controller').default;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls');
 }
 
@@ -107,7 +107,7 @@ function loadCore() {
         return require.ensure([
             'controller/controller'
         ], function (require) {
-            return require('controller/controller');
+            return require('controller/controller').default;
         }, chunkLoadErrorHandler, 'jwplayer.core');
     });
 }

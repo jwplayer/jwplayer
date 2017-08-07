@@ -1,5 +1,5 @@
 /* jshint maxlen: 1000 */
-define({
+export default {
     tagged : {
         file : 'sample',
         type : 'mp4'
@@ -31,4 +31,4 @@ define({
         title: 'Sintel Trailer',
         description: 'Sintel is a fantasy computer generated short movie. It\'s the third release from the Blender Open Movie Project.'
     }
-});
+};
