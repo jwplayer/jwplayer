@@ -37,6 +37,7 @@ define([
 
                 var file = source.file;
                 var type = source.type;
+                var mimeType = source.mimeType;
 
                 var isAndroidHLS = getIsAndroidHLS(source);
                 if (isAndroidHLS !== null) {
@@ -49,14 +50,14 @@ define([
                 }
 
                 // Not OK to use HTML5 with no extension
-                if (!MimeTypes[type]) {
+                if (!MimeTypes[type] && !mimeType) {
                     return false;
                 }
 
                 // Last, but not least, we ask the browser
                 // (But only if it's a video with an extension known to work in HTML5)
                 if (video.canPlayType) {
-                    var result = video.canPlayType(MimeTypes[type]);
+                    var result = video.canPlayType(MimeTypes[type]) || video.canPlayType(mimeType);
                     return !!result;
                 }
                 return false;
