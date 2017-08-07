@@ -1,7 +1,6 @@
 import { Features } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import { isYouTube, isRtmp } from 'utils/validator';
-import _ from 'utils/underscore';
 import video from 'utils/video';
 
 const SupportsMatrix = [
@@ -77,7 +76,7 @@ const SupportsMatrix = [
                 mpeg: 'sound',
                 smil: 'rtmp'
             };
-            var PLAYABLE = _.keys(flashExtensions);
+            var PLAYABLE = Object.keys(flashExtensions);
             if (!Features.flash) {
                 return false;
             }
@@ -89,7 +88,7 @@ const SupportsMatrix = [
                 return true;
             }
 
-            return _.contains(PLAYABLE, type);
+            return PLAYABLE.indexOf(type) > -1;
         }
     }
 ];

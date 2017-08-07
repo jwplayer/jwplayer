@@ -1,12 +1,8 @@
 import Providers from 'providers/providers';
 import ProvidersSupported from 'providers/providers-supported';
 import Source from 'playlist/source';
-import browser from 'utils/browser';
+import { Features } from 'environment/environment';
 import _ from 'underscore/underscore';
-
-browser.flashVersion = function() {
-    return 24.0;
-};
 
 const getName = function getName(provider) {
     if (!provider) {
@@ -53,6 +49,11 @@ describe('Providers', function() {
     });
 
     it('should choose flash for flv, rtmp and smil', function() {
+        // The flash provider supports check requires Features.flash
+        if (!Features.flash) {
+            return;
+        }
+
         const flashSources = {
             flv: { file: 'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv' },
             rtmp: { file: 'rtmp://dev.wowza.longtailvideo.com/vod/_definst_/sintel/640.mp4' },

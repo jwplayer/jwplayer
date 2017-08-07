@@ -5,7 +5,7 @@ import _ from 'test/underscore';
 describe('Storage', function() {
 
     function MockModel() {}
-    _.extend(MockModel.prototype, SimpleModel);
+    Object.assign(MockModel.prototype, SimpleModel);
 
     it('provides persistent storage', function() {
         const model = new MockModel();

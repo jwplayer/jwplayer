@@ -1,28 +1,26 @@
 import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
-import { PLAYLIST_LOADED, MEDIA_COMPLETE, ERROR } from 'events/events';
+import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import Promise from 'polyfills/promise';
-import plugins from 'plugins/plugins';
+import { registerPlugin, loadPlugins as pluginsLoadPlugins } from 'plugins/plugins';
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
-import _ from 'utils/underscore';
+import { log } from 'utils/helpers';
 
 const resolved = Promise.resolve();
 
-let pluginLoader;
-
 function loadPlugins(_model) {
-    window.jwplayerPluginJsonp = plugins.registerPlugin;
-    pluginLoader = plugins.loadPlugins(_model.get('id'), _model.get('plugins'));
-    return new Promise((resolve, reject) => {
-        pluginLoader.on(MEDIA_COMPLETE, resolve);
-        pluginLoader.on(ERROR, (err) => {
-            reject({
-                message: 'Could not load plugin',
-                error: err
+    window.jwplayerPluginJsonp = registerPlugin;
+    const pluginLoader = pluginsLoadPlugins(_model.get('id'), _model.get('plugins'));
+    return pluginLoader.load().then(events => {
+        if (events) {
+            events.forEach(object => {
+                if (object instanceof Error) {
+                    log(object.message);
+                }
             });
-        });
-        pluginLoader.load();
+        }
+        return pluginLoader;
     });
 }
 
@@ -30,7 +28,8 @@ function initPlugins(_model, _api, _view) {
     return Promise.all([
         setupView(_model, _view),
         loadPlugins(_model)
-    ]).then(() => {
+    ]).then(all => {
+        const pluginLoader = all[1];
         delete window.jwplayerPluginJsonp;
         if (destroyed(_model)) {
             return;
@@ -41,7 +40,7 @@ function initPlugins(_model, _api, _view) {
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
-    if (_.isString(playlist)) {
+    if (typeof playlist === 'string') {
         return new Promise(resolve => {
             const playlistLoader = new PlaylistLoader();
             playlistLoader.on(PLAYLIST_LOADED, function(data) {
@@ -87,14 +86,10 @@ function isSkinLoaded(skinPath) {
 
 function loadSkin(_model) {
     const skinUrl = _model.get('skinUrl');
-    if (_.isString(skinUrl) && !isSkinLoaded(skinUrl)) {
-        return new Promise(resolve => {
-            const isStylesheet = true;
-            const loader = new ScriptLoader(skinUrl, isStylesheet);
-            loader.addEventListener(MEDIA_COMPLETE, resolve);
-            loader.addEventListener(ERROR, resolve);
-            loader.load();
-        });
+    if (typeof skinUrl === 'string' && !isSkinLoaded(skinUrl)) {
+        const isStylesheet = true;
+        const loader = new ScriptLoader(skinUrl, isStylesheet);
+        return loader.load();
     }
     return resolved;
 }

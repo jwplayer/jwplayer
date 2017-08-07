@@ -10,8 +10,8 @@ import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
 import Promise from 'polyfills/promise';
 import viewError from 'templates/error';
-import css from 'utils/css';
-import dom from 'utils/dom';
+import { style } from 'utils/css';
+import { createElement } from 'utils/dom';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -199,11 +199,11 @@ function setupError(core, error) {
     if (message.indexOf(':') === -1) {
         message = `Error loading player: ${message}`;
     }
-    const errorElement = dom.createElement(viewError(core.get('id'), message));
+    const errorElement = createElement(viewError(core.get('id'), message));
     const width = core.get('width');
     const height = core.get('height');
 
-    css.style(errorElement, {
+    style(errorElement, {
         backgroundColor: '#000',
         width: width.toString().indexOf('%') > 0 ? width : `${width}px`,
         height: height.toString().indexOf('%') > 0 ? height : `${height}px`
