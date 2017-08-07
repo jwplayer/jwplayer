@@ -1,4 +1,4 @@
-import tracksHelper from 'controller/tracks-helper';
+import { createId, createLabel } from 'controller/tracks-helper';
 import _ from 'utils/underscore';
 
 var tracks;
@@ -15,8 +15,8 @@ var assertProperty = function (assert, propToDelete, expected, msg) {
     if (propToDelete) {
         delete itemTrack[propToDelete];
     }
-    var track = _.extend({}, itemTrack);
-    var val = tracksHelper[func](track, count);
+    var track = Object.assign({}, itemTrack);
+    var val = func(track, count);
     track[prop] = val[prop] || val;
     tracks.push(track);
     assert.equal(track[prop], expected, msg);
@@ -39,7 +39,7 @@ describe('tracksHelper.createId', function() {
             language: 'language'
         };
         prop = '_id';
-        func = 'createId';
+        func = createId;
         count = 0;
 
 
@@ -74,7 +74,7 @@ describe('tracksHelper.createLabel', function() {
             language: 'language'
         };
         prop = 'label';
-        func = 'createLabel';
+        func = createLabel;
         count = 0;
 
 

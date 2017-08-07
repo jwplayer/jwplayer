@@ -30,7 +30,7 @@ describe('jwplayer function', function() {
         assert.isOk(_.isFunction(jwplayer), 'jwplayer is a function');
     });
 
-    it('allows plugins to register when no player is found', function() {
+    it.skip('allows plugins to register when no player is found', function() {
         const x = jwplayer();
 
         // It might be preferable to always return an API instance
@@ -40,7 +40,7 @@ describe('jwplayer function', function() {
         assert.strictEqual(x.setup, undefined, 'object.setup is not defined');
     });
 
-    it('handles invalid queries by returning an object plugins can register', function() {
+    it.skip('handles invalid queries by returning an object plugins can register', function() {
         // test invalid queries after a player is setup
         jwplayer('player');
 

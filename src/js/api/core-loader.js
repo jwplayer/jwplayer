@@ -11,6 +11,11 @@ export default function loadCoreBundle(model) {
     return bundlePromise;
 }
 
+export function chunkLoadErrorHandler(/* error */) {
+    // Webpack require.ensure error: "Loading chunk 3 failed"
+    throw new Error('Network error');
+}
+
 export function selectBundle(model) {
     const controls = model.get('controls');
     const polyfills = requiresPolyfills();
@@ -61,8 +66,8 @@ function loadControlsHtml5Bundle() {
         'view/controls/controls',
         'providers/html5'
     ], function (require) {
-        return require('controller/controller');
-    }, 'jwplayer.core.controls.html5');
+        return require('controller/controller').default;
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.html5');
 }
 
 function loadControlsPolyfillHtml5Bundle() {
@@ -73,8 +78,8 @@ function loadControlsPolyfillHtml5Bundle() {
         'providers/html5'
     ], function (require) {
         require('intersection-observer');
-        return require('controller/controller');
-    }, 'jwplayer.core.controls.polyfills.html5');
+        return require('controller/controller').default;
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills.html5');
 }
 
 function loadControlsPolyfillBundle() {
@@ -84,8 +89,8 @@ function loadControlsPolyfillBundle() {
         'intersection-observer'
     ], function (require) {
         require('intersection-observer');
-        return require('controller/controller');
-    }, 'jwplayer.core.controls.polyfills');
+        return require('controller/controller').default;
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills');
 }
 
 function loadControlsBundle() {
@@ -93,8 +98,8 @@ function loadControlsBundle() {
         'controller/controller',
         'view/controls/controls'
     ], function (require) {
-        return require('controller/controller');
-    }, 'jwplayer.core.controls');
+        return require('controller/controller').default;
+    }, chunkLoadErrorHandler, 'jwplayer.core.controls');
 }
 
 function loadCore() {
@@ -102,8 +107,8 @@ function loadCore() {
         return require.ensure([
             'controller/controller'
         ], function (require) {
-            return require('controller/controller');
-        }, 'jwplayer.core');
+            return require('controller/controller').default;
+        }, chunkLoadErrorHandler, 'jwplayer.core');
     });
 }
 
@@ -113,7 +118,7 @@ function loadIntersectionObserverIfNeeded() {
             'intersection-observer'
         ], function (require) {
             return require('intersection-observer');
-        }, 'polyfills.intersection-observer');
+        }, chunkLoadErrorHandler, 'polyfills.intersection-observer');
     }
     return Promise.resolve();
 }

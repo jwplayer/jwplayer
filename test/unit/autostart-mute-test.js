@@ -11,7 +11,7 @@ var config = {
 };
 
 function createConfig(mute) {
-    return _.extend(config, { autostart: true, mute: mute });
+    return Object.assign(config, { autostart: true, mute: mute });
 }
 
 function createApi(id) {

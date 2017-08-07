@@ -1,9 +1,7 @@
-import ProviderRegister from 'providers/providers-register';
-import ProvidersSupported from 'providers/providers-supported';
-import plugins from 'plugins/plugins';
+import availableProviders from 'providers/providers-supported';
+import registerProvider from 'providers/providers-register';
 
-export const registerProvider = ProviderRegister;
-
-export const availableProviders = ProvidersSupported;
-
-export const registerPlugin = plugins.registerPlugin;
+export default {
+    availableProviders,
+    registerProvider
+};

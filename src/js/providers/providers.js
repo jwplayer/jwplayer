@@ -1,6 +1,7 @@
 import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import ProvidersLoaded from 'providers/providers-loaded';
+import { chunkLoadErrorHandler } from '../api/core-loader';
 
 function Providers(config) {
     this.config = config || {};
@@ -9,24 +10,24 @@ function Providers(config) {
 export const Loaders = {
     html5: function() {
         return require.ensure(['providers/html5'], function(require) {
-            const provider = require('providers/html5');
+            const provider = require('providers/html5').default;
             registerProvider(provider);
             return provider;
-        }, 'provider.html5');
+        }, chunkLoadErrorHandler, 'provider.html5');
     },
     flash: function() {
         return require.ensure(['providers/flash'], function(require) {
-            const provider = require('providers/flash');
+            const provider = require('providers/flash').default;
             registerProvider(provider);
             return provider;
-        }, 'provider.flash');
+        }, chunkLoadErrorHandler, 'provider.flash');
     },
     youtube: function() {
         return require.ensure(['providers/youtube'], function(require) {
-            const provider = require('providers/youtube');
+            const provider = require('providers/youtube').default;
             registerProvider(provider);
             return provider;
-        }, 'provider.youtube');
+        }, chunkLoadErrorHandler, 'provider.youtube');
     }
 };
 

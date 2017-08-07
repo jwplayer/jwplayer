@@ -3,7 +3,7 @@
 * Source: https://github.com/mozilla/vtt.js/blob/master/dist/vtt.js#L1716
 */
 
-import requestFrame from 'utils/request-animation-frame';
+import { requestAnimationFrame } from 'utils/request-animation-frame';
 import VTTCue from 'parsers/captions/vttcue';
 
 const timestampRegex = /^(\d+):(\d{2})(:\d{2})?\.(\d{3})/;
@@ -420,7 +420,7 @@ VTTParser.prototype = {
 
                 currentCueBatch = 0;
                 if (self.buffer) {
-                    requestFrame(processBuffer);
+                    requestAnimationFrame(processBuffer);
                 } else if (!flushing) {
                     self.flush();
                     return this;

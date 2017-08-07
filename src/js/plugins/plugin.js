@@ -1,145 +1,106 @@
-import { MEDIA_COMPLETE, ERROR } from 'events/events';
+import Promise from 'polyfills/promise';
+import ScriptLoader from 'utils/scriptloader';
+import {
+    getPluginPathType,
+    getPluginName,
+    PLUGIN_PATH_TYPE_ABSOLUTE,
+    PLUGIN_PATH_TYPE_RELATIVE,
+    PLUGIN_PATH_TYPE_CDN
+} from 'plugins/utils';
+import { getAbsolutePath } from 'utils/parser';
 
-define([
-    'utils/helpers',
-    'plugins/utils',
-    'utils/backbone.events',
-    'utils/scriptloader',
-    'utils/underscore'
-], function(utils, pluginsUtils, Events, Scriptloader, _) {
+const FLASH = 0;
+const JAVASCRIPT = 1;
+const HYBRID = 2;
 
-    var pluginmodes = {
-        FLASH: 0,
-        JAVASCRIPT: 1,
-        HYBRID: 2
+const Plugin = function(url) {
+    const _this = this;
+    let _flashPath;
+    let _js;
+    let _target;
+
+    function getJSPath() {
+        switch (getPluginPathType(url)) {
+            case PLUGIN_PATH_TYPE_ABSOLUTE:
+                return url;
+            case PLUGIN_PATH_TYPE_RELATIVE:
+                return getAbsolutePath(url, window.location.href);
+            default:
+                break;
+        }
+    }
+
+    _this.load = function() {
+        if (url.lastIndexOf('.swf') > 0) {
+            return Promise.resolve();
+        }
+        if (getPluginPathType(url) === PLUGIN_PATH_TYPE_CDN) {
+            return Promise.resolve();
+        }
+        const loader = new ScriptLoader(getJSPath());
+        return loader.load();
     };
 
-    var Plugin = function(url) {
-        var _this = _.extend(this, Events);
-        var _status = Scriptloader.loaderstatus.NEW;
-        var _flashPath;
-        var _js;
-        var _target;
-        var _completeTimeout;
+    _this.registerPlugin = function(name, minimumVersion, pluginClass, pluginClass2) {
+        _target = minimumVersion;
+        if (pluginClass && pluginClass2) {
+            _flashPath = pluginClass2;
+            _js = pluginClass;
+        } else if (typeof pluginClass === 'string') {
+            _flashPath = pluginClass;
+        } else if (typeof pluginClass === 'function') {
+            _js = pluginClass;
+        } else if (!pluginClass && !pluginClass2) {
+            _flashPath = name;
+        }
+    };
 
-        function getJSPath() {
-            switch (pluginsUtils.getPluginPathType(url)) {
-                case pluginsUtils.pluginPathType.ABSOLUTE:
-                    return url;
-                case pluginsUtils.pluginPathType.RELATIVE:
-                    return utils.getAbsolutePath(url, window.location.href);
+    _this.getPluginName = function() {
+        return getPluginName(url);
+    };
+
+    _this.getFlashPath = function() {
+        if (_flashPath) {
+            switch (getPluginPathType(_flashPath)) {
+                case PLUGIN_PATH_TYPE_ABSOLUTE:
+                    return _flashPath;
+                case PLUGIN_PATH_TYPE_RELATIVE:
+                    if (url.lastIndexOf('.swf') > 0) {
+                        return getAbsolutePath(_flashPath, window.location.href);
+                    }
+                    return getAbsolutePath(_flashPath, getJSPath());
                 default:
                     break;
             }
         }
-
-        function completeHandler() {
-            _.defer(function() {
-                _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(MEDIA_COMPLETE);
-            });
-        }
-
-        function errorHandler() {
-            _status = Scriptloader.loaderstatus.ERROR;
-            _this.trigger(ERROR, { url: url });
-        }
-
-        this.load = function() {
-            if (_status !== Scriptloader.loaderstatus.NEW) {
-                return;
-            }
-            if (url.lastIndexOf('.swf') > 0) {
-                _flashPath = url;
-                _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(MEDIA_COMPLETE);
-                return;
-            }
-            if (pluginsUtils.getPluginPathType(url) === pluginsUtils.pluginPathType.CDN) {
-                _status = Scriptloader.loaderstatus.COMPLETE;
-                _this.trigger(MEDIA_COMPLETE);
-                return;
-            }
-            _status = Scriptloader.loaderstatus.LOADING;
-            var _loader = new Scriptloader(getJSPath());
-            // Complete doesn't matter - we're waiting for registerPlugin
-            _loader.on(MEDIA_COMPLETE, completeHandler);
-            _loader.on(ERROR, errorHandler);
-            _loader.load();
-        };
-
-        this.registerPlugin = function(name, minimumVersion, pluginClass, pluginClass2) {
-            if (_completeTimeout) {
-                clearTimeout(_completeTimeout);
-                _completeTimeout = undefined;
-            }
-            _target = minimumVersion;
-            if (pluginClass && pluginClass2) {
-                _flashPath = pluginClass2;
-                _js = pluginClass;
-            } else if (typeof pluginClass === 'string') {
-                _flashPath = pluginClass;
-            } else if (typeof pluginClass === 'function') {
-                _js = pluginClass;
-            } else if (!pluginClass && !pluginClass2) {
-                _flashPath = name;
-            }
-            _status = Scriptloader.loaderstatus.COMPLETE;
-            _this.trigger(MEDIA_COMPLETE);
-        };
-
-        this.getStatus = function() {
-            return _status;
-        };
-
-        this.getPluginName = function() {
-            return pluginsUtils.getPluginName(url);
-        };
-
-        this.getFlashPath = function() {
-            if (_flashPath) {
-                switch (pluginsUtils.getPluginPathType(_flashPath)) {
-                    case pluginsUtils.pluginPathType.ABSOLUTE:
-                        return _flashPath;
-                    case pluginsUtils.pluginPathType.RELATIVE:
-                        if (url.lastIndexOf('.swf') > 0) {
-                            return utils.getAbsolutePath(_flashPath, window.location.href);
-                        }
-                        return utils.getAbsolutePath(_flashPath, getJSPath());
-                    default:
-                        break;
-                }
-            }
-            return null;
-        };
-
-        this.getJS = function() {
-            return _js;
-        };
-
-        this.getTarget = function() {
-            return _target;
-        };
-
-        this.getPluginmode = function() {
-            if (typeof _flashPath !== undefined && typeof _js !== undefined) {
-                return pluginmodes.HYBRID;
-            } else if (typeof _flashPath !== undefined) {
-                return pluginmodes.FLASH;
-            } else if (typeof _js !== undefined) {
-                return pluginmodes.JAVASCRIPT;
-            }
-        };
-
-        this.getNewInstance = function(api, config, div) {
-            return new _js(api, config, div);
-        };
-
-        this.getURL = function() {
-            return url;
-        };
+        return null;
     };
 
-    return Plugin;
+    _this.getJS = function() {
+        return _js;
+    };
 
-});
+    _this.getTarget = function() {
+        return _target;
+    };
+
+    _this.getPluginmode = function() {
+        if (_flashPath && _js) {
+            return HYBRID;
+        } else if (_js) {
+            return JAVASCRIPT;
+        } else if (_flashPath) {
+            return FLASH;
+        }
+    };
+
+    _this.getNewInstance = function(api, config, div) {
+        return new _js(api, config, div);
+    };
+
+    _this.getURL = function() {
+        return url;
+    };
+};
+
+export default Plugin;

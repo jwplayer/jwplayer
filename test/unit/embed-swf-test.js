@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import EmbedSwf from 'utils/embedswf';
+import { embed, remove } from 'utils/embedswf';
 
 describe('Embed SWF Util', function() {
 
@@ -25,14 +25,14 @@ describe('Embed SWF Util', function() {
         assert.equal(typeof swf.off, 'function', 'object.off is a function');
         assert.equal(typeof swf.once, 'function', 'object.once is a function');
 
-        EmbedSwf.remove(swf);
+        remove(swf);
     });
 
     it('remove a swf', function() {
         var parent = $('<div id="container"></div>')[0];
         var id = 'player_swf_1';
         var swf = createEmbedder(parent, id);
-        EmbedSwf.remove(swf);
+        remove(swf);
 
         assert.equal(swf.parentNode, null, 'object is removed from parent');
     });
@@ -40,6 +40,6 @@ describe('Embed SWF Util', function() {
     function createEmbedder(parent, id) {
         // document.append(parent);
 
-        return EmbedSwf.embed('../bin-debug/jwplayer.flash.swf', parent, id);
+        return embed('../bin-debug/jwplayer.flash.swf', parent, id);
     }
 });

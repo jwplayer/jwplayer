@@ -79,7 +79,7 @@ describe('Setup', function() {
             aspectratio: '4:3',
             width: '100%'
         };
-        var optionsOrig = _.extend({}, options);
+        var optionsOrig = Object.assign({}, options);
 
         testSetup(done, options, function() {
             assert.isOk(true, 'setup ok');
