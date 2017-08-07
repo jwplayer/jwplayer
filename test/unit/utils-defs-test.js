@@ -37,7 +37,6 @@ describe('utils definitions', function() {
         assert.equal(typeof utils.toggleClass, 'function', 'toggleClass function is defined');
         assert.equal(typeof utils.emptyElement, 'function', 'emptyElement function is defined');
         assert.equal(typeof utils.addStyleSheet, 'function', 'addStyleSheet function is defined');
-        assert.equal(typeof utils.empty, 'function', 'empty function is defined');
         assert.equal(typeof utils.bounds, 'function', 'bounds function is defined');
 
         // inherit from css
@@ -45,7 +44,7 @@ describe('utils definitions', function() {
         assert.equal(typeof utils.style, 'function', 'style function is defined');
         assert.equal(typeof utils.clearCss, 'function', 'clearCss function is defined');
         assert.equal(typeof utils.transform, 'function', 'transform function is defined');
-        assert.equal(typeof utils.hexToRgba, 'function', 'hexToRgba function is defined');
+        assert.equal(typeof utils.getRgba, 'function', 'getRgba function is defined');
 
         // inherit from playerutils
         assert.equal(typeof utils.repo, 'function', 'repo function is defined');

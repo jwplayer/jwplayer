@@ -1,86 +1,93 @@
-import strings from 'utils/strings';
+import {
+    pad,
+    extension,
+    seconds,
+    hms,
+    prefix,
+    suffix
+} from 'utils/strings';
 
 describe('strings', function() {
 
-    it('strings.pad', function() {
-        var str = strings.pad('test', 7, '1');
+    it('pad', function() {
+        var str = pad('test', 7, '1');
         assert.equal(str, '111test', 'strings padding correctly done');
 
-        str = strings.pad('test', 3, '1');
+        str = pad('test', 3, '1');
         assert.equal(str, 'test', 'strings padding with smaller length than str should not pad anything');
     });
 
-    it('strings.extension', function() {
-        var ext = strings.extension('invalid');
+    it('extension', function() {
+        var ext = extension('invalid');
         assert.strictEqual(ext, undefined, 'invalid path extension returns undefined');
 
-        ext = strings.extension(null);
+        ext = extension(null);
         assert.strictEqual(ext, '', 'null path extension');
 
-        ext = strings.extension('Manifest(format=m3u8-aapl-v3)"');
+        ext = extension('Manifest(format=m3u8-aapl-v3)"');
         assert.equal(ext, 'm3u8', 'Azure file extension master');
 
-        ext = strings.extension('/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio)');
+        ext = extension('/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio)');
         assert.equal(ext, 'm3u8', 'Azure file extension playlist');
 
-        ext = strings.extension('hello.jpg');
+        ext = extension('hello.jpg');
         assert.equal(ext, 'jpg', 'extension correctly received');
 
         // akamai url's
-        ext = strings.extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345');
+        ext = extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345');
         assert.equal(ext, 'm3u8', 'Akamai Tokenized Url\'s');
 
-        ext = strings.extension('https://domain.net/master.m3u8?dot=.');
+        ext = extension('https://domain.net/master.m3u8?dot=.');
         assert.equal(ext, 'm3u8', 'Dot in the search param');
 
-        ext = strings.extension('https://domain.net/master.file.m3u8?dot=.#id.1');
+        ext = extension('https://domain.net/master.file.m3u8?dot=.#id.1');
         assert.equal(ext, 'm3u8', 'Dot in the search and hash portions of the url');
     });
 
-    it('strings.seconds', function() {
-        var sec = strings.seconds(5);
+    it('seconds', function() {
+        var sec = seconds(5);
         assert.equal(sec, 5, 'number input returns input');
 
-        sec = strings.seconds('5s');
+        sec = seconds('5s');
         assert.equal(sec, 5, 'seconds input returns seconds');
 
-        sec = strings.seconds('5m');
+        sec = seconds('5m');
         assert.equal(sec, 300, 'minutes input returns seconds');
 
-        sec = strings.seconds('1h');
+        sec = seconds('1h');
         assert.equal(sec, 3600, 'hours input returns seconds');
 
-        sec = strings.seconds('5');
+        sec = seconds('5');
         assert.equal(sec, 5, 'string number input returns number');
 
-        sec = strings.seconds('1:01');
+        sec = seconds('1:01');
         assert.equal(sec, 61, 'minute seconds input returns seconds');
 
-        sec = strings.seconds('01:01:01.111');
+        sec = seconds('01:01:01.111');
         assert.equal(sec, 3661.111, 'hours minute seconds milliseconds input returns seconds');
 
-        sec = strings.seconds('00:00:01:15');
+        sec = seconds('00:00:01:15');
         assert.equal(sec, 1, 'hours minute seconds frames input without frameRate returns seconds without frames');
 
-        sec = strings.seconds('00:01:01:25', 50);
+        sec = seconds('00:01:01:25', 50);
         assert.equal(sec, 61.5, 'hours minute seconds frames input with frameRate returns seconds');
     });
 
-    it('strings.hms', function() {
-        var str = strings.hms(3661);
+    it('hms', function() {
+        var str = hms(3661);
         assert.equal(str, '01:01:01.000', 'hms gives correct time string format');
 
-        str = strings.hms(1.11111);
+        str = hms(1.11111);
         assert.equal(str, '00:00:01.111', 'hms gives milliseconds rounded to 3dp');
     });
 
-    it('strings.prefix', function() {
-        var prefix = strings.prefix(['1', '2'], '0');
-        assert.equal(prefix[0], '01', 'prefix with 0 index correct');
-        assert.equal(prefix[1], '02', 'prefix with 1 index correct');
+    it('prefix, suffix', function() {
+        var pre = prefix(['1', '2'], '0');
+        assert.equal(pre[0], '01', 'prefix with 0 index correct');
+        assert.equal(pre[1], '02', 'prefix with 1 index correct');
 
-        var suffix = strings.suffix(['1', '2'], '0');
-        assert.equal(suffix[0], '10', 'prefix suffix 0 index correct');
-        assert.equal(suffix[1], '20', 'prefix suffix 1 index correct');
+        var suf = suffix(['1', '2'], '0');
+        assert.equal(suf[0], '10', 'prefix suffix 0 index correct');
+        assert.equal(suf[1], '20', 'prefix suffix 1 index correct');
     });
 });

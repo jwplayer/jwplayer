@@ -1,24 +1,50 @@
-import browser from 'utils/browser';
+import {
+    isChrome,
+    isFacebook,
+    isEdge,
+    isIETrident,
+    isIE,
+    isFF,
+    isMSIE,
+    isSafari,
+    isAndroid,
+    isAndroidNative,
+    isIOS,
+    isMobile,
+    isOSX,
+    isIPad,
+    isIPod,
+    isIframe,
+    isFlashSupported,
+    flashVersion,
+} from 'utils/browser';
 
 describe('browser', function() {
 
     it('browser checks', function() {
-        assert.equal(typeof browser.isFF(), 'boolean');
-        assert.equal(typeof browser.isIETrident(), 'boolean');
-        assert.equal(typeof browser.isMSIE(), 'boolean');
-        assert.equal(typeof browser.isIE(), 'boolean');
-        assert.equal(typeof browser.isEdge(), 'boolean');
-        assert.equal(typeof browser.isSafari(), 'boolean');
-        assert.equal(typeof browser.isIOS(), 'boolean');
-        assert.equal(typeof browser.isAndroidNative(), 'boolean');
-        assert.equal(typeof browser.isAndroid(), 'boolean');
-        assert.equal(typeof browser.isMobile(), 'boolean');
+        expect(isChrome(), 'isChrome').to.be.a('boolean');
+        expect(isFacebook(), 'isFacebook').to.be.a('boolean');
+        expect(isFF(), 'isFF').to.be.a('boolean');
+        expect(isIETrident(), 'isIETrident').to.be.a('boolean');
+        expect(isMSIE(), 'isMSIE').to.be.a('boolean');
+        expect(isIE(), 'isIE').to.be.a('boolean');
+        expect(isEdge(), 'isEdge').to.be.a('boolean');
+        expect(isSafari(), 'isSafari').to.be.a('boolean');
+        expect(isIOS(), 'isIOS').to.be.a('boolean');
+        expect(isAndroidNative(), 'isAndroidNative').to.be.a('boolean');
+        expect(isAndroid(), 'isAndroid').to.be.a('boolean');
+        expect(isMobile(), 'isMobile').to.be.a('boolean');
+        expect(isOSX(), 'isOSX').to.be.a('boolean');
+        expect(isIPad(), 'isIPad').to.be.a('boolean');
+        expect(isIPod(), 'isIPod').to.be.a('boolean');
+        expect(isIframe(), 'isIframe').to.be.a('boolean');
+        expect(isFlashSupported(), 'isFlashSupported').to.be.a('boolean');
     });
 
     it('browser.flashVersion test', function() {
-        var flashVersion = browser.flashVersion();
+        const version = flashVersion();
 
-        assert.equal(typeof flashVersion, 'number', 'Flash version is ' + flashVersion);
+        assert.equal(typeof version, 'number', 'Flash version is ' + version);
     });
 
 });

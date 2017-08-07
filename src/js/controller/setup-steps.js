@@ -5,21 +5,23 @@ import { registerPlugin, loadPlugins as pluginsLoadPlugins } from 'plugins/plugi
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
+import { log } from 'utils/helpers';
 
 const resolved = Promise.resolve();
 
 function loadPlugins(_model) {
     window.jwplayerPluginJsonp = registerPlugin;
     const pluginLoader = pluginsLoadPlugins(_model.get('id'), _model.get('plugins'));
-    return pluginLoader.load()
-        .then(events => {
+    return pluginLoader.load().then(events => {
+        if (events) {
             events.forEach(object => {
                 if (object instanceof Error) {
-                    console.log(object.message);
+                    log(object.message);
                 }
             });
-            return pluginLoader;
-        });
+        }
+        return pluginLoader;
+    });
 }
 
 function initPlugins(_model, _api, _view) {

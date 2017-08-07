@@ -47,13 +47,9 @@ module.exports = function(config) {
         frameworks: ['mocha', 'chai', 'sinon'],
         reporters: testReporters,
         port: serverPort, // web server port
-        colors: !isJenkins, // colors in the output (reporters and logs)
+        colors: true, // colors in the output (reporters and logs)
         autoWatch: false, // watch file and execute tests whenever any file changes
         singleRun: true, // if true, Karma captures browsers, runs the tests and exits
-
-        client: {
-            useIframe: false // use a new window for each test
-        },
 
         // Possible values:
         // config.LOG_DISABLE
@@ -91,6 +87,7 @@ module.exports = function(config) {
 
         files: [
             { pattern: 'test-context.js' },
+            { pattern: 'test/files/*', included: false },
             { pattern: 'node_modules/jquery/dist/jquery.js' },
             { pattern: 'node_modules/sinon/pkg/sinon.js' }
         ],

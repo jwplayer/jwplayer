@@ -1,4 +1,4 @@
-import rssParser from 'parsers/rssparser';
+import parseRss from 'parsers/rssparser';
 
 describe('rssParser', function() {
 
@@ -22,7 +22,7 @@ describe('rssParser', function() {
             'audio/webm; codecs="vorbis"'
         ];
         // Skip the first node since the parser alone can't handle it
-        var actual = rssParser.parse(parseXML(data).childNodes[0]);
+        var actual = parseRss(parseXML(data).childNodes[0]);
         var actualMediaTypes = actual[0].sources[0].mediaTypes;
         assert.isOk(actualMediaTypes);
         assert.deepEqual(actualMediaTypes, expectedMediaTypes);
@@ -41,7 +41,7 @@ describe('rssParser', function() {
             '</media:channel>' +
             '</rss>';
 
-        var actual = rssParser.parse(parseXML(data).childNodes[0]);
+        var actual = parseRss(parseXML(data).childNodes[0]);
         assert.isNotOk(actual[0].sources[0].mediaTypes);
     });
 

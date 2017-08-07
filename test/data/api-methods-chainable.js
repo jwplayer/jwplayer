@@ -1,4 +1,4 @@
-define({
+export default {
     // values represent the method's expected arguments
 
     // These are commented out because they throw exception before setup
@@ -26,4 +26,4 @@ define({
     trigger: [''],
     off: undefined,
     remove: undefined
-});
+};
