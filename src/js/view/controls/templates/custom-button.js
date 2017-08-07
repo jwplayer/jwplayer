@@ -1,7 +1,7 @@
 export default (buttonClass = '', buttonId = '', image = '', ariaText) => {
 
     let imageDiv = '';
-    if (image.substring(0,4) === '<svg') {
+    if (image.substring(0, 4) === '<svg') {
         imageDiv = image;
     } else {
         const style = image ? `style="background-image: url(${image})"` : '';
