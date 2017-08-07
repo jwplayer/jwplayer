@@ -1,22 +1,17 @@
 import displayContainerTemplate from 'view/controls/templates/display-container';
+import utils from 'utils/helpers';
 
-define([
-    'utils/helpers',
-], function(utils) {
+export default class DisplayContainer {
+    constructor() {
+        this.el = utils.createElement(displayContainerTemplate());
+        this.container = this.el.querySelector('.jw-display-controls');
+    }
 
-    return class DisplayContainer {
-        constructor() {
-            this.el = utils.createElement(displayContainerTemplate());
-            this.container = this.el.querySelector('.jw-display-controls');
-        }
+    addButton(button) {
+        this.container.appendChild(button.el);
+    }
 
-        addButton(button) {
-            this.container.appendChild(button.el);
-        }
-
-        element() {
-            return this.el;
-        }
-    };
-
-});
+    element() {
+        return this.el;
+    }
+}

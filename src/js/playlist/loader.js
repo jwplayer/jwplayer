@@ -1,6 +1,6 @@
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
-import parsers from 'parsers/parsers';
-import rssParser from 'parsers/rssparser';
+import { localName } from 'parsers/parsers';
+import parseRss from 'parsers/rssparser';
 import utils from 'utils/helpers';
 import Events from 'utils/backbone.events';
 
@@ -28,11 +28,11 @@ const PlaylistLoader = function() {
                         break;
                     }
                 }
-                if (parsers.localName(rss) === 'xml') {
+                if (localName(rss) === 'xml') {
                     rss = rss.nextSibling;
                 }
-                if (parsers.localName(rss) === 'rss') {
-                    var rssPlaylist = rssParser.parse(rss);
+                if (localName(rss) === 'rss') {
+                    var rssPlaylist = parseRss(rss);
                     jsonObj = Object.assign({ playlist: rssPlaylist }, rssPlaylist.feedData);
                 }
             }

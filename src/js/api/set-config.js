@@ -1,4 +1,4 @@
-const _ = require('utils/underscore');
+import _ from 'utils/underscore';
 
 const supportedFields = [
     'repeat',

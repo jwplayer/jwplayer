@@ -1,41 +1,39 @@
-define([
-    'test/underscore',
-    'utils/backbone.events',
-    'data/api-members',
-    'data/api-methods',
-    'data/api-methods-chainable'
-], function(_, Events, members, methods, chainable) {
+import _ from 'test/underscore';
+import Events from 'utils/backbone.events';
+import members from 'data/api-members';
+import methods from 'data/api-methods';
+import chainable from 'data/api-methods-chainable';
 
-    var MockApi = function() {
-        _.extend(this, members);
-    };
+const MockApi = function() {
+    Object.assign(this, members);
+};
 
+const mockProto = {};
 
-    var mockProto = {};
-    _.each(methods, function(value, name) {
-        mockProto[name] = noop;
-    });
-    _.each(chainable, function(value, name) {
-        mockProto[name] = noopChained;
-    });
-
-    _.extend(MockApi.prototype, mockProto, Events, {
-        getContainer: function mockGetContainer() {
-            return document.createElement('div');
-        },
-        onPlaylistItem: function mockOnPlaylistItem(callback) {
-            return this.on('playlistItem', callback);
-        },
-        onPlaylistComplete: function mockOnPlaylistComplete(callback) {
-            return this.on('playlistComplete', callback);
-        }
-    });
-
-    function noop() {}
-
-    function noopChained() {
-        return this;
-    }
-
-    return MockApi;
+_.each(methods, function(value, name) {
+    mockProto[name] = noop;
 });
+
+_.each(chainable, function(value, name) {
+    mockProto[name] = noopChained;
+});
+
+Object.assign(MockApi.prototype, mockProto, Events, {
+    getContainer: function mockGetContainer() {
+        return document.createElement('div');
+    },
+    onPlaylistItem: function mockOnPlaylistItem(callback) {
+        return this.on('playlistItem', callback);
+    },
+    onPlaylistComplete: function mockOnPlaylistComplete(callback) {
+        return this.on('playlistComplete', callback);
+    }
+});
+
+function noop() {}
+
+function noopChained() {
+    return this;
+}
+
+export default MockApi;

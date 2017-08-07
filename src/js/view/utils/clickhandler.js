@@ -1,72 +1,67 @@
 import { CLICK } from 'events/events';
+import UI from 'utils/ui';
+import Events from 'utils/backbone.events';
 
-define([
-    'utils/ui',
-    'utils/backbone.events',
-    'utils/underscore'
-], function(UI, Events, _) {
+export default class ClickHandler {
+    constructor(model, element, options) {
+        Object.assign(this, Events);
 
-    return class ClickHandler {
-        constructor(model, element, options) {
-            _.extend(this, Events);
+        this.revertAlternateClickHandlers();
+        this.domElement = element;
+        this.model = model;
 
-            this.revertAlternateClickHandlers();
-            this.domElement = element;
-            this.model = model;
-
-            const defaultOptions = { enableDoubleTap: true, useMove: true };
-            this.ui = new UI(element, _.extend(defaultOptions, options)).on({
-                'click tap': this.clickHandler,
-                'doubleClick doubleTap': function() {
-                    if (this.alternateDoubleClickHandler) {
-                        this.alternateDoubleClickHandler();
-                        return;
-                    }
-                    this.trigger('doubleClick');
-                },
-                move: function() {
-                    this.trigger('move');
-                },
-                over: function() {
-                    this.trigger('over');
-                },
-                out: function() {
-                    this.trigger('out');
+        const defaultOptions = { enableDoubleTap: true, useMove: true };
+        this.ui = new UI(element, Object.assign(defaultOptions, options)).on({
+            'click tap': this.clickHandler,
+            'doubleClick doubleTap': function() {
+                if (this.alternateDoubleClickHandler) {
+                    this.alternateDoubleClickHandler();
+                    return;
                 }
-            }, this);
-        }
-
-        destroy() {
-            if (this.ui) {
-                this.ui.destroy();
-                this.ui = this.domElement = this.model = null;
-                this.revertAlternateClickHandlers();
+                this.trigger('doubleClick');
+            },
+            move: function() {
+                this.trigger('move');
+            },
+            over: function() {
+                this.trigger('over');
+            },
+            out: function() {
+                this.trigger('out');
             }
-        }
+        }, this);
+    }
 
-        clickHandler(evt) {
-            if (this.model.get('flashBlocked')) {
-                return;
-            }
-            if (this.alternateClickHandler) {
-                this.alternateClickHandler(evt);
-                return;
-            }
-            this.trigger((evt.type === CLICK) ? 'click' : 'tap');
+    destroy() {
+        if (this.ui) {
+            this.ui.destroy();
+            this.ui = this.domElement = this.model = null;
+            this.revertAlternateClickHandlers();
         }
+    }
 
-        element() {
-            return this.domElement;
+    clickHandler(evt) {
+        if (this.model.get('flashBlocked')) {
+            return;
         }
+        if (this.alternateClickHandler) {
+            this.alternateClickHandler(evt);
+            return;
+        }
+        this.trigger((evt.type === CLICK) ? 'click' : 'tap');
+    }
 
-        setAlternateClickHandlers(clickHandler, doubleClickHandler) {
-            this.alternateClickHandler = clickHandler;
-            this.alternateDoubleClickHandler = doubleClickHandler || null;
-        }
+    element() {
+        return this.domElement;
+    }
 
-        revertAlternateClickHandlers() {
-            this.alternateClickHandler = null;
-            this.alternateDoubleClickHandler = null;
-        }
-    };
-});
+    setAlternateClickHandlers(clickHandler, doubleClickHandler) {
+        this.alternateClickHandler = clickHandler;
+        this.alternateDoubleClickHandler = doubleClickHandler || null;
+    }
+
+    revertAlternateClickHandlers() {
+        this.alternateClickHandler = null;
+        this.alternateDoubleClickHandler = null;
+    }
+}

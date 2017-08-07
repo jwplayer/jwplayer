@@ -217,6 +217,7 @@ const MediaModel = MockModel.MediaModel = function(parentModel) {
         currentAudioTrack: 0
     }, parentModel.get('playlistItem'));
 };
+
 Object.assign(MediaModel.prototype, SimpleModel);
 
 export default MockModel;

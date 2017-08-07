@@ -4,7 +4,7 @@ import SimpleModel from 'model/simplemodel';
 
 describe('SimpleModel Mixin', function() {
 
-    const model = _.extend({}, SimpleModel);
+    const model = Object.assign({}, SimpleModel);
 
     it('returns undefined ', function() {
         assert.isNotOk(model.get('noExisting'), 'get with no attributes');

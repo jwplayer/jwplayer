@@ -1,6 +1,6 @@
 import { loadFrom } from './utils/playerutils';
 import instances from './api/players';
-import * as GlobalApi from 'api/global-api';
+import GlobalApi from 'api/global-api';
 import { version } from './version';
 import Api from 'api/api';
 import ApiSettings from 'api/api-settings';
@@ -83,5 +83,4 @@ Object.defineProperties(jwplayer, {
     }
 });
 
-/* global module */
-module.exports = jwplayer;
+export default jwplayer;

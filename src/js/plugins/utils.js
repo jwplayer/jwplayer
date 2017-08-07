@@ -1,4 +1,4 @@
-import strings from 'utils/strings';
+import { extension } from 'utils/strings';
 
 export const PLUGIN_PATH_TYPE_ABSOLUTE = 0;
 export const PLUGIN_PATH_TYPE_RELATIVE = 1;
@@ -14,8 +14,8 @@ export const getPluginPathType = function (path) {
         return PLUGIN_PATH_TYPE_ABSOLUTE;
     }
     var folder = path.indexOf('/');
-    var extension = strings.extension(path);
-    if (protocol < 0 && folder < 0 && (!extension || !isNaN(extension))) {
+    var fileExtension = extension(path);
+    if (protocol < 0 && folder < 0 && (!fileExtension || !isNaN(fileExtension))) {
         return PLUGIN_PATH_TYPE_CDN;
     }
     return PLUGIN_PATH_TYPE_RELATIVE;
