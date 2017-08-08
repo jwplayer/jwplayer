@@ -60,7 +60,7 @@ function menu(name, ariaText, svgIcons) {
 function createCastButton(castToggle, localization) {
     if (!Browser.chrome || OS.iOS) {
         return button('jw-icon-airplay jw-off', castToggle, localization.airplay, [AIRPLAY_OFF_ICON,
-                AIRPLAY_ON_ICON]);
+            AIRPLAY_ON_ICON]);
     }
 
     const ariaText = localization.cast;
@@ -131,7 +131,7 @@ export default class Controlbar {
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
             volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0, VOLUME_ICON_50,
-                    VOLUME_ICON_100]);
+                VOLUME_ICON_100]);
         }
         // Do not show the volume toggle in the mobile SDKs or <iOS10
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
@@ -317,7 +317,7 @@ export default class Controlbar {
         }, this);
       
         this._model.mediaController.on('seeked', function () {
-                this.checkDvrLiveEdge();
+            this.checkDvrLiveEdge();
         }, this);
 
         let playbackRateControls = _model.get('playbackRateControls');

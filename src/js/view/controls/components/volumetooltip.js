@@ -4,7 +4,7 @@ import UI from 'utils/ui';
 
 export default class VolumeTooltip extends Tooltip {
     constructor(_model, name, ariaText, svgIcons) {
-        super(name, ariaText, true);
+        super(name, ariaText, true, svgIcons);
 
         this._model = _model;
 

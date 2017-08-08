@@ -26,6 +26,7 @@ import {
     style,
     getRgba
 } from 'utils/css';
+import utils from 'utils/helpers';
 import _ from 'utils/underscore';
 import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
 import flagNoFocus from 'view/utils/flag-no-focus';
@@ -775,14 +776,6 @@ function View(_api, _model) {
         } else {
             // Put the preview element before the captions element to display captions with the captions renderer
             _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
-        }
-    }
-
-    function _setLiveMode(model, streamType) {
-        if (!_instreamModel) {
-            const live = (streamType === 'LIVE');
-            toggleClass(_playerElement, 'jw-flag-live', live);
-            _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
     }
 
