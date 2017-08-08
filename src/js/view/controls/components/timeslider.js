@@ -168,7 +168,7 @@ define([
                 var streamType = this._model.get('streamType');
                 if (streamType === 'DVR') {
                     pct = (duration - position) / duration * 100;
-                } else if (streamType === 'VOD') {
+                } else if (streamType === 'VOD' || !streamType) {
                     pct = position / duration * 100;
                 }
             }

@@ -105,7 +105,7 @@ define([
 
             this.nextUpToolTip = null;
 
-            const timeSlider = new TimeSlider(_model, _api);
+            const timeSlider = this.timeSlider = new TimeSlider(_model, _api);
             let volumeTooltip;
             let muteButton;
 
@@ -567,6 +567,29 @@ define([
                     buttonContainer.removeChild(buttonElement);
                 }
             }
+        }
+
+        useInstreamTime(instreamModel) {
+            // While in instream mode, the time slider needs to move according to instream time
+            const timeSlider = this.elements.time;
+            if (!timeSlider) {
+                return;
+            }
+
+            instreamModel
+                .change('position', timeSlider.onPosition, timeSlider)
+                .change('duration', timeSlider.onDuration, timeSlider);
+        }
+
+        syncPlaybackTime(model) {
+            // When resuming playback mode, trigger a change so that the slider immediately resumes it's original position
+            if (!timeSlider) {
+                return;
+            }
+
+            const timeSlider = this.elements.time;
+            timeSlider.onPosition(model, model.get('position'));
+            timeSlider.onDuration(model, model.get('duration'));
         }
     };
 });

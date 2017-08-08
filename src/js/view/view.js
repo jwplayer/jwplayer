@@ -836,6 +836,7 @@ define([], function() {
             // Call Controls.userActivity to display the UI temporarily for the start of the ad
             if (_controls) {
                 _controls.userActive();
+                _controls.controlbar.useInstreamTime(instreamModel);
             }
         };
 
@@ -847,6 +848,7 @@ define([], function() {
             if (_instreamModel) {
                 _instreamModel.off(null, null, this);
                 _instreamModel = null;
+                _controls.controlbar.syncPlaybackTime(_model);
             }
             if (!displayClickHandler) {
                 // view was destroyed

@@ -159,8 +159,6 @@ define([
         function _instreamTime(evt) {
             _instream._adModel.set('duration', evt.duration);
             _instream._adModel.set('position', evt.position);
-            _model.set('duration', evt.duration);
-            _model.set('position', evt.position);
         }
 
         function _instreamItemComplete(e) {
