@@ -1,4 +1,4 @@
-import { Browser, OS } from 'environment/environment';
+import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
 
