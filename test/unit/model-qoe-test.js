@@ -1,21 +1,19 @@
-import _ from 'test/underscore';
 import Model from 'controller/model';
 import SimpleModel from 'model/simplemodel';
 import { STATE_IDLE, STATE_PLAYING, STATE_LOADING, STATE_STALLED, MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME,
     MEDIA_FIRST_FRAME } from 'events/events';
+import { now } from 'utils/date';
 
 describe('Model QoE', function() {
-
 
     // mock MediaModel
     var MediaModel = function() {
         this.set('state', STATE_IDLE);
     };
-    _.extend(MediaModel.prototype, SimpleModel);
-
+    Object.assign(MediaModel.prototype, SimpleModel);
 
     it('tracks first frame with provider first frame event', function() {
-        var startTime = _.now();
+        var startTime = now();
         var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
@@ -32,7 +30,7 @@ describe('Model QoE', function() {
     });
 
     it('tracks first frame with first increasing time event', function() {
-        var startTime = _.now();
+        var startTime = now();
         var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
@@ -52,7 +50,7 @@ describe('Model QoE', function() {
     });
 
     it('removes media controller event listeners', function() {
-        var startTime = _.now();
+        var startTime = now();
         var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());

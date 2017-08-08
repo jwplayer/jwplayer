@@ -6,7 +6,7 @@ import { version } from '../version';
 import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
 import Timer from 'api/timer';
 import Events, { on, once, off, trigger, triggerSafe } from 'utils/backbone.events';
-import plugins from 'plugins/plugins';
+import { registerPlugin } from 'plugins/plugins';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
 
@@ -982,7 +982,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @param {function} [pluginClass2] - (TODO: remove in 8.0.0) When passed in, the previous argument is a path to the flash plugin and this argument is the JS contructor.
      */
     registerPlugin(name, minimumVersion, pluginClass, pluginClass2) {
-        plugins.registerPlugin(name, minimumVersion, pluginClass, pluginClass2);
+        registerPlugin(name, minimumVersion, pluginClass, pluginClass2);
     },
 
     /**

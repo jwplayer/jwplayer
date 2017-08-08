@@ -1,9 +1,9 @@
 import PlaylistLoader from 'playlist/loader';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 
-describe('loader', function() {
+describe('playlist/loader', function() {
 
-    it.skip('Test JSON feed', function (done) {
+    it('Test JSON feed', function (done) {
         const loader = new PlaylistLoader();
         const expectedJSON = [{
             file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
@@ -22,10 +22,10 @@ describe('loader', function() {
             done();
         });
 
-        loader.load('./data/playlist.json');
+        loader.load('/base/test/files/playlist.json');
     });
 
-    it.skip('Test XML feed', function (done) {
+    it('Test XML feed', function (done) {
         const loader = new PlaylistLoader();
         const mediaid = 'TQjoCPTk';
         loader.on(PLAYLIST_LOADED, function (data) {
@@ -39,10 +39,10 @@ describe('loader', function() {
             assert.isOk(false, e.message);
             done();
         });
-        loader.load('./data/playlist.xml');
+        loader.load('/base/test/files/playlist.xml');
     });
 
-    it.skip('Test invalid feed', function (done) {
+    it('Test invalid feed', function (done) {
         const loader = new PlaylistLoader();
 
         loader.on(PLAYLIST_LOADED, function (data) {
@@ -55,6 +55,6 @@ describe('loader', function() {
             done();
         });
 
-        loader.load('./data/invalid.json');
+        loader.load('/base/test/files/invalid.json');
     });
 });

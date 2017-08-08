@@ -1,21 +1,18 @@
-define([
-    'plugins/utils',
-    'plugins/plugin'
-], function(pluginsUtils, Plugin) {
+import { getPluginName } from 'plugins/utils';
+import Plugin from 'plugins/plugin';
 
-    var PluginModel = function (plugins) {
-        this.addPlugin = function (url) {
-            var pluginName = pluginsUtils.getPluginName(url);
-            if (!plugins[pluginName]) {
-                plugins[pluginName] = new Plugin(url);
-            }
-            return plugins[pluginName];
-        };
-
-        this.getPlugins = function () {
-            return plugins;
-        };
+const PluginModel = function (plugins) {
+    this.addPlugin = function (url) {
+        var pluginName = getPluginName(url);
+        if (!plugins[pluginName]) {
+            plugins[pluginName] = new Plugin(url);
+        }
+        return plugins[pluginName];
     };
 
-    return PluginModel;
-});
+    this.getPlugins = function () {
+        return plugins;
+    };
+};
+
+export default PluginModel;

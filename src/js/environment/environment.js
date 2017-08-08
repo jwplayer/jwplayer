@@ -1,8 +1,27 @@
-import BrowserUtils from 'utils/browser';
+import {
+    isChrome,
+    isEdge,
+    isFacebook,
+    isFF,
+    isIE,
+    isMSIE,
+    isSafari,
+    isAndroid,
+    isAndroidNative,
+    isIOS,
+    isMobile,
+    isOSX,
+    isIPad,
+    isIPod,
+    isFlashSupported,
+    flashVersion,
+    isIframe,
+} from 'utils/browser';
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
-const memoize = require('utils/underscore').memoize;
+import _ from 'utils/underscore';
 
+const memoize = _.memoize;
 const userAgent = navigator.userAgent;
 
 /**
@@ -53,31 +72,31 @@ const isWindows = () => {
 
 Object.defineProperties(Browser, {
     chrome: {
-        get: memoize(BrowserUtils.isChrome),
+        get: memoize(isChrome),
         enumerable: true
     },
     edge: {
-        get: memoize(BrowserUtils.isEdge),
+        get: memoize(isEdge),
         enumerable: true
     },
     facebook: {
-        get: memoize(BrowserUtils.isFacebook),
+        get: memoize(isFacebook),
         enumerable: true
     },
     firefox: {
-        get: memoize(BrowserUtils.isFF),
+        get: memoize(isFF),
         enumerable: true
     },
     ie: {
-        get: memoize(BrowserUtils.isIE),
+        get: memoize(isIE),
         enumerable: true
     },
     msie: {
-        get: memoize(BrowserUtils.isMSIE),
+        get: memoize(isMSIE),
         enumerable: true
     },
     safari: {
-        get: memoize(BrowserUtils.isSafari),
+        get: memoize(isSafari),
         enumerable: true
     },
     version: {
@@ -88,31 +107,31 @@ Object.defineProperties(Browser, {
 
 Object.defineProperties(OS, {
     android: {
-        get: memoize(BrowserUtils.isAndroid),
+        get: memoize(isAndroid),
         enumerable: true
     },
     androidNative: {
-        get: memoize(BrowserUtils.isAndroidNative),
+        get: memoize(isAndroidNative),
         enumerable: true
     },
     iOS: {
-        get: memoize(BrowserUtils.isIOS),
+        get: memoize(isIOS),
         enumerable: true
     },
     mobile: {
-        get: memoize(BrowserUtils.isMobile),
+        get: memoize(isMobile),
         enumerable: true
     },
     mac: {
-        get: memoize(BrowserUtils.isOSX),
+        get: memoize(isOSX),
         enumerable: true
     },
     iPad: {
-        get: memoize(BrowserUtils.isIPad),
+        get: memoize(isIPad),
         enumerable: true
     },
     iPhone: {
-        get: memoize(BrowserUtils.isIPod),
+        get: memoize(isIPod),
         enumerable: true
     },
     windows: {
@@ -127,15 +146,15 @@ Object.defineProperties(OS, {
 
 Object.defineProperties(Features, {
     flash: {
-        get: memoize(BrowserUtils.isFlashSupported),
+        get: memoize(isFlashSupported),
         enumerable: true,
     },
     flashVersion: {
-        get: memoize(BrowserUtils.flashVersion),
+        get: memoize(flashVersion),
         enumerable: true
     },
     iframe: {
-        get: memoize(BrowserUtils.isIframe),
+        get: memoize(isIframe),
         enumerable: true
     }
 });
