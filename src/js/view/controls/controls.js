@@ -76,13 +76,6 @@ define([], function () {
                     api.play(reasonInteraction());
                 });
 
-                if (Browser.chrome && !touchMode) {
-                    // On Chrome desktop allow media element to capture all play/pause toggle clicks
-                    // This allows swfs to capture clicks on start preventing flash-throttling
-                    playDisplayIcon.el.style.pointerEvents = 'none';
-                    playDisplayIcon.icon.style.pointerEvents = 'none';
-                }
-
                 displayContainer.addButton(rewindDisplayIcon);
                 displayContainer.addButton(playDisplayIcon);
                 displayContainer.addButton(nextDisplayIcon);
