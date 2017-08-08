@@ -57,7 +57,7 @@ define([
                 // Last, but not least, we ask the browser
                 // (But only if it's a video with an extension known to work in HTML5)
                 if (video.canPlayType) {
-                    var result = video.canPlayType(MimeTypes[type]) || video.canPlayType(mimeType);
+                    var result = video.canPlayType(MimeTypes[type] || mimeType);
                     return !!result;
                 }
                 return false;
