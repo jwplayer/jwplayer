@@ -848,12 +848,16 @@ define([], function() {
             if (_instreamModel) {
                 _instreamModel.off(null, null, this);
                 _instreamModel = null;
-                _controls.controlbar.syncPlaybackTime(_model);
             }
             if (!displayClickHandler) {
                 // view was destroyed
                 return;
             }
+
+            if (_controls) {
+                _controls.controlbar.syncPlaybackTime(_model);
+            }
+
             this.setAltText('');
             utils.removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
             _model.set('hideAdsControls', false);
