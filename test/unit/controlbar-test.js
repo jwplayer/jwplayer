@@ -47,10 +47,21 @@ describe('Control Bar', function() {
             expect(controlBar.removeButtons.calledBefore(container.insertBefore)).to.be.true;
         });
 
-        it('should add button to the container', function() {
+        it('should add button after spacer if there is no logo', function() {
             controlBar.updateButtons(model, [{ id: '1' }]);
 
             expect(children.length).to.equal(3);
+        });
+
+        it('should add button after logo if there is one', function() {
+            const logo = document.createElement('div');
+            logo.setAttribute('button', 'logo');
+
+            container.appendChild(logo);
+            controlBar.updateButtons(model, [{ id: '1' }]);
+
+            expect(children.length).to.equal(4);
+            expect(children[3].getAttribute('button')).to.equal('1');
         });
 
         it('should add buttons to the container in order', function() {
@@ -97,6 +108,20 @@ describe('Control Bar', function() {
 
             expect(children.length).to.equal(3);
             expect(children[2].getAttribute('button')).to.equal('3');
+        });
+    });
+
+    describe('addLogo', function() {
+
+        it('should add a logo image after spacer', function() {
+            controlBar.addLogo({
+                file: 'logo.svg',
+                link: 'http://www.jwplayer.com'
+            });
+
+            expect(children.length).to.equal(3);
+            expect(children[2].getAttribute('button')).to.equal('logo');
+            expect(children[2].children[0].style.backgroundImage.indexOf('logo.svg')).to.not.equal(-1);
         });
     });
 });

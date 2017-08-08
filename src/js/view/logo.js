@@ -32,7 +32,7 @@ define([
             _settings.position = _settings.position || LogoDefaults.position;
             _settings.hide = (_settings.hide.toString() === 'true');
 
-            if (!_logo) {
+            if (!_logo || _settings.position !== 'control-bar') {
                 _logo = utils.createElement(logoTemplate(_settings.position, _settings.hide));
             }
 

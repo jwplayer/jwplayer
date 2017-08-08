@@ -220,6 +220,11 @@ define([
             appendChildren(elements.buttonContainer, buttonLayout);
             appendChildren(this.el, layout);
 
+            const logo = _model.get('logo');
+            if (logo && logo.position === 'control-bar') {
+                this.addLogo(logo);
+            }
+
             // Initial State
             elements.play.show();
             elements.fullscreen.show();
@@ -496,9 +501,28 @@ define([
             this.elements.next.toggle(!!nextUp);
         }
 
-        updateButtons(model, newButtons = [], oldButtons = []) {
+        addLogo(logo) {
             const buttonContainer = this.elements.buttonContainer;
 
+            const logoButton = new CustomButton(
+                logo.file,
+                'Logo',
+                () => {
+                    if (logo.link) {
+                        window.open(logo.link, '_blank');
+                    }
+                },
+                'logo'
+            );
+
+            buttonContainer.insertBefore(
+                logoButton.element(),
+                buttonContainer.querySelector('.jw-spacer').nextSibling
+            );
+        }
+
+        updateButtons(model, newButtons = [], oldButtons = []) {
+            const buttonContainer = this.elements.buttonContainer;
             this.removeButtons(buttonContainer, oldButtons);
 
             for (let i = newButtons.length - 1; i >= 0; i--) {
@@ -510,9 +534,14 @@ define([
                     newButtons[i].btnClass
                 );
 
+                let firstButton = buttonContainer.querySelector('.jw-spacer').nextSibling;
+                if (firstButton && firstButton.getAttribute('button') === 'logo') {
+                    firstButton = firstButton.nextSibling;
+                }
+
                 buttonContainer.insertBefore(
                     newButton.element(),
-                    buttonContainer.querySelector('.jw-spacer').nextSibling
+                    firstButton
                 );
             }
         }
