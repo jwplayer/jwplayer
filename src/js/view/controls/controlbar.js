@@ -106,7 +106,6 @@ define([
             this.nextUpToolTip = null;
 
             const timeSlider = new TimeSlider(_model, _api);
-            let volumeSlider;
             let volumeTooltip;
             let muteButton;
 
@@ -117,8 +116,6 @@ define([
 
             // Do not initialize volume slider or tooltip on mobile
             if (!this._isMobile) {
-                volumeSlider = new Slider('jw-slider-volume', 'horizontal');// , vol);
-                volumeSlider.setup();
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
             }
             // Do not show the volume toggle in the mobile SDKs or <iOS10
@@ -173,7 +170,6 @@ define([
                     PLAYBACK_RATE_ICON
                 ),
                 mute: muteButton,
-                volume: volumeSlider,
                 volumetooltip: volumeTooltip,
                 cast: createCastButton(() => {
                     _api.castToggle();
@@ -188,8 +184,10 @@ define([
             // Filter out undefined elements
             const buttonLayout = [
                 elements.play,
-                elements.alt,
                 elements.rewind,
+                elements.volumetooltip,
+                elements.mute,
+                elements.alt,
                 elements.elapsed,
                 elements.countdown,
                 elements.duration,
@@ -199,10 +197,7 @@ define([
                 elements.cc,
                 elements.audiotracks,
                 elements.playbackrates,
-                elements.mute,
                 elements.cast,
-                elements.volume,
-                elements.volumetooltip,
                 elements.fullscreen
             ].filter(e => e);
 
@@ -249,7 +244,6 @@ define([
             _model.change('cues', this.addCues, this);
             _model.change('altText', this.setAltText, this);
             _model.change('customButtons', this.updateButtons, this);
-
             // Event listeners
 
             // Volume sliders do not exist on mobile so don't assign listeners to them.

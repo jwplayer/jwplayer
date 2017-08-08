@@ -29,7 +29,7 @@
 }
 
 .jw-cue {
-    position: absolute;
+    position: relative;
     cursor: pointer;
     height: @rail-height;
     width: @ui-padding;
@@ -48,19 +48,21 @@
 .jw-slider-horizontal {
     display: flex;
 
-    &.jw-slider-volume {
-        width: @volume-rail-length;
-    }
-
     .jw-rail {
         width: 100%;
     }
 
     .jw-rail,
     .jw-buffer,
-    .jw-progress {
+    .jw-progress,
+    .jw-knob {
         top: 50%;
         transform: translate(0, -50%);
+    }
+
+    .jw-rail,
+    .jw-buffer,
+    .jw-progress {
         height: @rail-height;
     }
 
@@ -75,6 +77,7 @@
     .jw-slider-container {
         height: @volume-rail-length;
         flex-direction: column;
+        align-items: flex-start;
     }
 
     .jw-rail,
