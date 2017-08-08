@@ -54,7 +54,7 @@ function div(classes) {
 }
 
 function menu(name, ariaText, svgIcons) {
-    return new Menu(name, ariaText, svgIcons);
+    return new Menu(name, ariaText, null, svgIcons);
 }
 
 function createCastButton(castToggle, localization) {
