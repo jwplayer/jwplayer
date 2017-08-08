@@ -105,7 +105,7 @@ define([
 
             this.nextUpToolTip = null;
 
-            const timeSlider = this.timeSlider = new TimeSlider(_model, _api);
+            const timeSlider = new TimeSlider(_model, _api);
             let volumeTooltip;
             let muteButton;
 
