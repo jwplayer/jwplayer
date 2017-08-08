@@ -49,8 +49,6 @@ display icons
 
 .jw-display-icon-container {
     display: inline-block;
-    margin: 0 (@ui-padding * 0.5);
-    border-radius: 3.5em;
 
     .jw-icon,
     .jw-svg-icon {
@@ -65,11 +63,6 @@ display icons
             width: @mobile-touch-target * 0.75;
             height: @mobile-touch-target * 0.75;
             position: relative;
-        }
-
-        .jw-state-idle &.jw-icon-display:before,
-        .jw-state-paused &.jw-icon-display:before {
-            left: 1px;
         }
     }
 

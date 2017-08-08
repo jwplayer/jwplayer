@@ -320,15 +320,8 @@
         &.jwplayer:not(.jw-flag-touch) {
             // When not in an error state or in a buffering state...
             &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
-                // Highlight the display icon's background when hovering the media container
-                .jw-media:hover ~ .jw-controls .jw-display-icon-display {
-                    background-color: @display-bkgd-hover-color;
-                }
-
-                // Highlight the display icon and the display icon's background
+                // Highlight the display icon
                 .jw-display-icon-container:hover {
-                    background-color: @display-bkgd-hover-color;
-
                     .jw-icon {
                         color: @display-icon-hover-color;
                     }
