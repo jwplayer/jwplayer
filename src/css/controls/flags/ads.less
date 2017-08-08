@@ -29,14 +29,33 @@
     }
 
     .jw-controlbar {
-        .jw-slider-time,
-        .jw-icon-tooltip,
-        .jw-icon-inline:not(.jw-icon-volume):not(.jw-icon-playback):not(.jw-icon-fullscreen) {
+        flex-wrap: wrap-reverse;
+
+        .jw-slider-time {
+            padding: 0;
+            pointer-events: none;
+
+            .jw-slider-container {
+                height: @slider-fixed-rail-height;
+            }
+
+            .jw-rail,
+            .jw-knob,
+            .jw-buffer,
+            .jw-cue {
+                display: none;
+            }
+
+            .jw-progress {
+                background-color: #0b7ef4;
+            }
+        }
+
+        .jw-icon-tooltip:not(.jw-icon-volume),
+        .jw-icon-inline:not(.jw-icon-playback):not(.jw-icon-fullscreen):not(.jw-icon-volume) {
             display: none;
         }
 
-        .jw-slider-volume.jw-slider-horizontal,
-        .jw-icon-inline.jw-icon-volume,
         .jw-text-alt {
             display: flex;
         }
@@ -48,7 +67,7 @@
         &,
         &.jw-flag-autostart {
             .jw-controls .jw-controlbar {
-                display: table;
+                display: flex;
                 pointer-events: all;
                 visibility: visible;
                 opacity: 1;
@@ -75,25 +94,6 @@
         .jw-display-icon-display,
         .jw-display-icon-display .jw-icon-display {
             pointer-events: none;
-        }
-    }
-
-    &.jw-flag-small-player {
-        // Fit controls under Google IMA skip button in small players
-        .jw-controlbar {
-            height: 36px;
-            padding-top: 8px;
-
-            .jw-svg-icon {
-                height: 36px;
-                width: 36px;
-            }
-
-            .jw-icon,
-            .jw-text {
-                height: 36px;
-                line-height: 36px;
-            }
         }
     }
 }

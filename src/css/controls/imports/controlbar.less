@@ -31,6 +31,7 @@
         height: 100%;
         background-position: 50% 50%;
         background-repeat: no-repeat;
+        background-size: 20px;
         opacity: 0.75;
     }
 
@@ -124,7 +125,6 @@
     }
 }
 
-.jw-slider-volume.jw-slider-horizontal,
 .jw-icon-inline.jw-icon-volume {
     display: none;
 }
@@ -134,17 +134,13 @@
 }
 
 &.jw-flag-small-player {
-    .jw-controlbar .jw-slider-volume.jw-slider-horizontal {
-        display: none;
-    }
-
     .jw-display {
         padding-top: @mobile-touch-target;
         padding-bottom: @mobile-touch-target * 1.5;
     }
 }
 
-.jw-flag-small-player:not(.jw-flag-audio-player) {
+.jw-flag-small-player:not(.jw-flag-audio-player):not(.jw-flag-ads) {
     .jw-controlbar {
         .jw-button-container {
             > .jw-icon-rewind,

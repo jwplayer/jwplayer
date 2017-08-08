@@ -124,7 +124,6 @@ define([
             this.nextUpToolTip = null;
 
             const timeSlider = new TimeSlider(_model, _api);
-            let volumeSlider;
             let volumeTooltip;
             let muteButton;
 
@@ -135,8 +134,6 @@ define([
 
             // Do not initialize volume slider or tooltip on mobile
             if (!this._isMobile) {
-                volumeSlider = new Slider('jw-slider-volume', 'horizontal');// , vol);
-                volumeSlider.setup();
                 volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0, VOLUME_ICON_50,
                     VOLUME_ICON_100]);
             }
@@ -195,7 +192,6 @@ define([
                     PLAYBACK_RATE_ICON
                 ),
                 mute: muteButton,
-                volume: volumeSlider,
                 volumetooltip: volumeTooltip,
                 cast: createCastButton(() => {
                     _api.castToggle();
@@ -210,8 +206,10 @@ define([
             // Filter out undefined elements
             const buttonLayout = [
                 elements.play,
-                elements.alt,
                 elements.rewind,
+                elements.volumetooltip,
+                elements.mute,
+                elements.alt,
                 elements.elapsed,
                 elements.countdown,
                 elements.live,
@@ -222,10 +220,7 @@ define([
                 elements.cc,
                 elements.audiotracks,
                 elements.playbackrates,
-                elements.mute,
                 elements.cast,
-                elements.volume,
-                elements.volumetooltip,
                 elements.fullscreen
             ].filter(e => e);
 
@@ -247,6 +242,11 @@ define([
 
             appendChildren(elements.buttonContainer, buttonLayout);
             appendChildren(this.el, layout);
+
+            const logo = _model.get('logo');
+            if (logo && logo.position === 'control-bar') {
+                this.addLogo(logo);
+            }
 
             // Initial State
             elements.play.show();
@@ -276,8 +276,7 @@ define([
                 // Check for change of position to counter race condition where state is updated before the current position
                 _model.once('change:position', this.checkDvrLiveEdge, this);
             }, this);
-
-
+          
             // Event listeners
 
             // Volume sliders do not exist on mobile so don't assign listeners to them.
@@ -549,9 +548,28 @@ define([
             this.elements.next.toggle(!!nextUp);
         }
 
-        updateButtons(model, newButtons = [], oldButtons = []) {
+        addLogo(logo) {
             const buttonContainer = this.elements.buttonContainer;
 
+            const logoButton = new CustomButton(
+                logo.file,
+                'Logo',
+                () => {
+                    if (logo.link) {
+                        window.open(logo.link, '_blank');
+                    }
+                },
+                'logo'
+            );
+
+            buttonContainer.insertBefore(
+                logoButton.element(),
+                buttonContainer.querySelector('.jw-spacer').nextSibling
+            );
+        }
+
+        updateButtons(model, newButtons = [], oldButtons = []) {
+            const buttonContainer = this.elements.buttonContainer;
             this.removeButtons(buttonContainer, oldButtons);
 
             for (let i = newButtons.length - 1; i >= 0; i--) {
@@ -563,9 +581,14 @@ define([
                     newButtons[i].btnClass
                 );
 
+                let firstButton = buttonContainer.querySelector('.jw-spacer').nextSibling;
+                if (firstButton && firstButton.getAttribute('button') === 'logo') {
+                    firstButton = firstButton.nextSibling;
+                }
+
                 buttonContainer.insertBefore(
                     newButton.element(),
-                    buttonContainer.querySelector('.jw-spacer').nextSibling
+                    firstButton
                 );
             }
         }
