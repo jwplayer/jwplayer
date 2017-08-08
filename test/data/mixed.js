@@ -1,4 +1,4 @@
-define({
+export default {
     webm_mp4: {
         image: 'http://d3el35u4qe4frz.cloudfront.net/bkaovAYt-480.jpg',
         title: 'WebM and MP4',
@@ -23,4 +23,4 @@ define({
             }
         ]
     }
-});
+};

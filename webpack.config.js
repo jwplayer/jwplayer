@@ -54,10 +54,10 @@ const multiConfig = [
             chunkFilename:'[name].js',
             sourceMapFilename : '[name].[hash].map',
             library: 'jwplayer',
-            libraryTarget: 'umd',
+            libraryExport: 'default',
+            libraryTarget: 'window',
             pathinfo: true,
             umdNamedDefine: true
-            // crossOriginLoading: 'anonymous', // This would allow loading of modules from our CDN
         },
         devtool: 'source-map',
         plugins: [
@@ -73,9 +73,9 @@ const multiConfig = [
             filename: '[name].js',
             chunkFilename: '[name].js',
             library: 'jwplayer',
-            libraryTarget: 'umd',
+            libraryExport: 'default',
+            libraryTarget: 'window',
             umdNamedDefine: true
-            // crossOriginLoading: 'anonymous', // This would allow loading of modules from our CDN
         },
         watch: false,
         plugins: [

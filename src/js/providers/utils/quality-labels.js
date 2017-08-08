@@ -1,5 +1,4 @@
-
-const _ = require('utils/underscore');
+import _ from 'utils/underscore';
 
 // Try and find a corresponding custom label. If there are no custom labels, create one using height, bandwidth, or both
 export function generateLabel(level, qualityLabels, redundant) {

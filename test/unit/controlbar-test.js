@@ -1,9 +1,8 @@
 import ControlBar from 'view/controls/controlbar';
 import SimpleModel from 'model/simplemodel';
-import _ from 'test/underscore';
 import sinon from 'sinon';
 
-const model = _.extend({}, SimpleModel);
+const model = Object.assign({}, SimpleModel);
 model.change = sinon.stub();
 model.change.returnsThis();
 model.on = sinon.stub();
@@ -17,11 +16,10 @@ describe('Control Bar', function() {
 
     let controlBar;
     let container;
-    let spacer;
     let children;
 
-    beforeEach(() => {
-        spacer = document.createElement('div');
+    beforeEach(function() {
+        const spacer = document.createElement('div');
         spacer.className += 'jw-spacer';
 
         container = document.createElement('div');

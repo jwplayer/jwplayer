@@ -1,7 +1,6 @@
 import buttonTemplate from 'view/controls/templates/custom-button';
-
-const utils = require('utils/helpers');
-const UI = require('utils/ui');
+import utils from 'utils/helpers';
+import UI from 'utils/ui';
 
 export default class CustomButton {
 
