@@ -27,7 +27,7 @@ export default function Logo(_model) {
         // We should only create a logo in the display container when
         // it is not supposed to be in the control bar, as it will
         // handle the creation in that case
-        if (!_settings.file || _settings.position !== 'control-bar') {
+        if (!_settings.file || _settings.position === 'control-bar') {
             return;
         }
 
