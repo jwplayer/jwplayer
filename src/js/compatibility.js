@@ -100,7 +100,7 @@
             playerInstance.setup = function(options) {
                 var eventMap = options.events;
                 if (eventMap) {
-                    Object.keys(options.events).forEach(eventKey => {
+                    Object.keys(eventMap).forEach(function(eventKey) {
                         var eventName = callbackMap[eventKey];
                         if (eventName) {
                             eventMap[eventName] = eventMap[eventKey];
