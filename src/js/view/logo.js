@@ -21,14 +21,17 @@ export default function Logo(_model) {
 
     this.setup = function() {
         _settings = Object.assign({}, LogoDefaults, _model.get('logo'));
-        if (!_settings.file) {
-            return;
-        }
-
         _settings.position = _settings.position || LogoDefaults.position;
         _settings.hide = (_settings.hide.toString() === 'true');
 
-        if (!_logo || _settings.position !== 'control-bar') {
+        // We should only create a logo in the display container when
+        // it is not supposed to be in the control bar, as it will
+        // handle the creation in that case
+        if (!_settings.file || _settings.position !== 'control-bar') {
+            return;
+        }
+
+        if (!_logo) {
             _logo = createElement(logoTemplate(_settings.position, _settings.hide));
         }
 
