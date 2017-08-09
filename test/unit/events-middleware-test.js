@@ -10,7 +10,7 @@ describe('events-middleware', function() {
             }
         };
 
-        return _.extend({}, model, attributes);
+        return Object.assign({}, model, attributes);
     };
 
     it('should add viewable to the play event', function() {

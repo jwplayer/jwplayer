@@ -1,4 +1,4 @@
-define({
+export default {
     onAdClick: null,
     onAdCompanions: null,
     onAdComplete: null,
@@ -45,4 +45,4 @@ define({
     removeEventListener: null,
     getMeta: null,
     getItem: null
-});
+};

@@ -1,103 +1,104 @@
-import { ERROR, MEDIA_COMPLETE } from 'events/events';
+import Events from 'utils/backbone.events';
+import { ERROR, STATE_COMPLETE } from 'events/events';
+import Promise from 'polyfills/promise';
 
-define([
-    'utils/backbone.events'
-], function(Events) {
-    const _loaders = {};
+const ScriptPromises = {};
 
-    const STATUS = {
-        NEW: 0,
-        LOADING: 1,
-        ERROR: 2,
-        COMPLETE: 3
+const SCRIPT_LOAD_TIMEOUT = 15000;
+
+export const SCRIPT_LOAD_STATUS_NEW = 0;
+export const SCRIPT_LOAD_STATUS_LOADING = 1;
+export const SCRIPT_LOAD_STATUS_ERROR = 2;
+export const SCRIPT_LOAD_STATUS_COMPLETE = 3;
+
+function makeStyleLink(styleUrl) {
+    const link = document.createElement('link');
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
+    link.href = styleUrl;
+    return link;
+}
+
+function makeScriptTag(scriptUrl) {
+    const scriptTag = document.createElement('script');
+    scriptTag.type = 'text/javascript';
+    scriptTag.charset = 'utf-8';
+    scriptTag.async = true;
+    scriptTag.timeout = SCRIPT_LOAD_TIMEOUT;
+    scriptTag.src = scriptUrl;
+    return scriptTag;
+}
+
+const ScriptLoader = function (url, isStyle) {
+    const _this = this;
+    let status = SCRIPT_LOAD_STATUS_NEW;
+
+
+    function onError(evt) {
+        status = SCRIPT_LOAD_STATUS_ERROR;
+        _this.trigger(ERROR, evt).off();
+    }
+
+    function onComplete(evt) {
+        status = SCRIPT_LOAD_STATUS_COMPLETE;
+        _this.trigger(STATE_COMPLETE, evt).off();
+    }
+
+    this.getStatus = function () {
+        return status;
     };
 
-    const scriptloader = function (url, isStyle) {
-        const _this = this;
-        let _status = STATUS.NEW;
-
-
-        function _sendError(evt) {
-            _status = STATUS.ERROR;
-            _this.trigger(ERROR, evt);
+    this.load = function () {
+        // Only execute on the first run
+        if (status !== SCRIPT_LOAD_STATUS_NEW) {
+            return;
         }
 
-        function _sendComplete(evt) {
-            _status = STATUS.COMPLETE;
-            _this.trigger(MEDIA_COMPLETE, evt);
+        // If we already have a scriptloader loading the same script, don't create a new one;
+        let promise = ScriptPromises[url];
+        if (promise) {
+            promise.then(onComplete).catch(onError);
         }
 
-        this.makeStyleLink = function(styleUrl) {
-            const link = document.createElement('link');
-            link.type = 'text/css';
-            link.rel = 'stylesheet';
-            link.href = styleUrl;
-            return link;
-        };
-        this.makeScriptTag = function(scriptUrl) {
-            const scriptTag = document.createElement('script');
-            scriptTag.src = scriptUrl;
-            return scriptTag;
-        };
+        status = SCRIPT_LOAD_STATUS_LOADING;
 
-        this.makeTag = (isStyle ? this.makeStyleLink : this.makeScriptTag);
+        promise = new Promise((resolve, reject) => {
+            const makeTag = (isStyle ? makeStyleLink : makeScriptTag);
+            const scriptTag = makeTag(url);
+            const doneLoading = function() {
+                // Handle memory leak in IE
+                scriptTag.onerror = scriptTag.onload = null;
+                clearTimeout(timeout);
+            };
+            const onScriptLoadingError = function(error) {
+                doneLoading();
+                onError(error);
+                reject(error);
+            };
+            const timeout = setTimeout(() => {
+                onScriptLoadingError(new Error(`Network timeout ${url}`));
+            }, SCRIPT_LOAD_TIMEOUT);
 
-        this.load = function () {
-            // Only execute on the first run
-            if (_status !== STATUS.NEW) {
-                return;
-            }
+            scriptTag.onerror = function() {
+                onScriptLoadingError(new Error(`Failed to load ${url}`));
+            };
 
-            // If we already have a scriptloader loading the same script, don't create a new one;
-            const sameLoader = _loaders[url];
-            if (sameLoader) {
-                _status = sameLoader.getStatus();
-                if (_status < 2) {
-                    // dispatch to this instances listeners when the first loader gets updates
-                    sameLoader.on(ERROR, _sendError);
-                    sameLoader.on(MEDIA_COMPLETE, _sendComplete);
-                    return;
-                }
-                // already errored or loaded... keep going?
-            }
+            scriptTag.onload = function(evt) {
+                doneLoading();
+                onComplete(evt);
+                resolve(evt);
+            };
 
             const head = document.getElementsByTagName('head')[0] || document.documentElement;
-            const scriptTag = this.makeTag(url);
-
-            let done = false;
-            scriptTag.onload = scriptTag.onreadystatechange = function (evt) {
-                if (!done &&
-                    (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete')) {
-                    done = true;
-                    _sendComplete(evt);
-
-                    // Handle memory leak in IE
-                    scriptTag.onload = scriptTag.onreadystatechange = null;
-                    if (head && scriptTag.parentNode && !isStyle) {
-                        head.removeChild(scriptTag);
-                    }
-                }
-            };
-            scriptTag.onerror = _sendError;
-
             head.insertBefore(scriptTag, head.firstChild);
+        });
 
-            _status = STATUS.LOADING;
-            _loaders[url] = this;
-        };
+        ScriptPromises[url] = promise;
 
-        this.getStatus = function () {
-            return _status;
-        };
+        return promise;
     };
+};
 
-    scriptloader.loaderstatus = STATUS;
+Object.assign(ScriptLoader.prototype, Events);
 
-    Object.assign(scriptloader.prototype, Events, {
-        addEventListener: Events.on,
-        removeEventListener: Events.off
-    });
-
-
-    return scriptloader;
-});
+export default ScriptLoader;

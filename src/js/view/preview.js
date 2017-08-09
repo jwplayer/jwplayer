@@ -1,103 +1,99 @@
 import { OS } from 'environment/environment';
+import utils from 'utils/helpers';
 
-define([
-    'utils/underscore',
-    'utils/helpers'
-], function(_, utils) {
-    var Preview = function(_model) {
-        this.model = _model;
+const Preview = function(_model) {
+    this.model = _model;
 
-        _model.on('change:playlistItem', onPlaylistItem, this);
-        _model.on('change:mediaModel', onMediaModel, this);
-    };
+    _model.on('change:playlistItem', onPlaylistItem, this);
+    _model.on('change:mediaModel', onMediaModel, this);
+};
 
-    function onMediaModel(model, mediaModel) {
-        mediaModel.off('change:mediaType', null, this);
-        mediaModel.on('change:mediaType', function(mediaTypeChangeModel, mediaType) {
-            if (mediaType === 'audio') {
-                this.setImage(model.get('playlistItem').image);
+function onMediaModel(model, mediaModel) {
+    mediaModel.off('change:mediaType', null, this);
+    mediaModel.on('change:mediaType', function(mediaTypeChangeModel, mediaType) {
+        if (mediaType === 'audio') {
+            this.setImage(model.get('playlistItem').image);
+        }
+    }, this);
+}
+
+function onPlaylistItem(model, playlistItem) {
+    var delayPosterLoad = (model.get('autostart') && !OS.mobile) ||
+        (model.get('item') > 0);
+
+    if (delayPosterLoad) {
+        this.setImage(null);
+        model.off('change:state', null, this);
+        model.on('change:state', function(stateChangeModel, state) {
+            if (state === 'complete' || state === 'idle' || state === 'error') {
+                this.setImage(playlistItem.image);
+                this.resize(null, null, stateChangeModel.get('stretching'));
             }
         }, this);
+        return;
     }
 
-    function onPlaylistItem(model, playlistItem) {
-        var delayPosterLoad = (model.get('autostart') && !OS.mobile) ||
-            (model.get('item') > 0);
+    this.setImage(playlistItem.image);
+}
 
-        if (delayPosterLoad) {
-            this.setImage(null);
-            model.off('change:state', null, this);
-            model.on('change:state', function(stateChangeModel, state) {
-                if (state === 'complete' || state === 'idle' || state === 'error') {
-                    this.setImage(playlistItem.image);
-                    this.resize(null, null, stateChangeModel.get('stretching'));
-                }
-            }, this);
-            return;
+Object.assign(Preview.prototype, {
+    setup: function(element) {
+        this.el = element;
+        var playlistItem = this.model.get('playlistItem');
+        if (playlistItem) {
+            this.setImage(playlistItem.image);
         }
-
-        this.setImage(playlistItem.image);
-    }
-
-    _.extend(Preview.prototype, {
-        setup: function(element) {
-            this.el = element;
-            var playlistItem = this.model.get('playlistItem');
-            if (playlistItem) {
-                this.setImage(playlistItem.image);
+    },
+    setImage: function(img) {
+        // Remove onload function from previous image
+        var image = this.image;
+        if (image) {
+            image.onload = null;
+            this.image = null;
+        }
+        this.model.off('change:state', null, this);
+        var backgroundImage = '';
+        if (typeof img === 'string') {
+            backgroundImage = 'url("' + img + '")';
+            image = this.image = new Image();
+            image.src = img;
+        }
+        utils.style(this.el, {
+            backgroundImage: backgroundImage
+        });
+    },
+    resize: function(width, height, stretching) {
+        if (stretching === 'uniform') {
+            if (width) {
+                this.playerAspectRatio = width / height;
             }
-        },
-        setImage: function(img) {
-            // Remove onload function from previous image
+            if (!this.playerAspectRatio) {
+                return;
+            }
+            // snap image to edges when the difference in aspect ratio is less than 9%
             var image = this.image;
+            var backgroundSize = null;
             if (image) {
-                image.onload = null;
-                this.image = null;
-            }
-            this.model.off('change:state', null, this);
-            var backgroundImage = '';
-            if (_.isString(img)) {
-                backgroundImage = 'url("' + img + '")';
-                image = this.image = new Image();
-                image.src = img;
-            }
-            utils.style(this.el, {
-                backgroundImage: backgroundImage
-            });
-        },
-        resize: function(width, height, stretching) {
-            if (stretching === 'uniform') {
-                if (width) {
-                    this.playerAspectRatio = width / height;
-                }
-                if (!this.playerAspectRatio) {
+                if (image.width === 0) {
+                    var _this = this;
+                    image.onload = function() {
+                        _this.resize(width, height, stretching);
+                    };
                     return;
                 }
-                // snap image to edges when the difference in aspect ratio is less than 9%
-                var image = this.image;
-                var backgroundSize = null;
-                if (image) {
-                    if (image.width === 0) {
-                        var _this = this;
-                        image.onload = function() {
-                            _this.resize(width, height, stretching);
-                        };
-                        return;
-                    }
-                    var imageAspectRatio = image.width / image.height;
-                    if (Math.abs(this.playerAspectRatio - imageAspectRatio) < 0.09) {
-                        backgroundSize = 'cover';
-                    }
+                var imageAspectRatio = image.width / image.height;
+                if (Math.abs(this.playerAspectRatio - imageAspectRatio) < 0.09) {
+                    backgroundSize = 'cover';
                 }
-                utils.style(this.el, {
-                    backgroundSize: backgroundSize
-                });
             }
-        },
-        element: function() {
-            return this.el;
+            utils.style(this.el, {
+                backgroundSize: backgroundSize
+            });
         }
-    });
-
-    return Preview;
+    },
+    element: function() {
+        return this.el;
+    }
 });
+
+export default Preview;

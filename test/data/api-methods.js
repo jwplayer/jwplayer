@@ -1,4 +1,4 @@
-define({
+export default {
 
     // These are added by api-deprecate on setup
     // They are not core API methods
@@ -79,4 +79,4 @@ define({
     once: null,
     skipAd: null,
     trigger: null
-});
+};
