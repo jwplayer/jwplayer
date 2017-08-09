@@ -155,11 +155,10 @@ var InstreamAdapter = function(_controller, _model, _view) {
         }
     }
 
-        function _instreamTime(evt) {
-            _instream._adModel.set('duration', evt.duration);
-            _instream._adModel.set('position', evt.position);
-
-        }
+    function _instreamTime(evt) {
+        _instream._adModel.set('duration', evt.duration);
+        _instream._adModel.set('position', evt.position);
+    }
 
     function _instreamItemComplete(e) {
         var data = {};

@@ -845,38 +845,41 @@ function View(_api, _model) {
 
         addClass(_playerElement, 'jw-flag-ads');
 
-            // Call Controls.userActivity to display the UI temporarily for the start of the ad
-            if (_controls) {
-                _controls.userActive();
-            _controls.controlbar.useInstreamTime(instreamModel);}
-        };
+        // Call Controls.userActivity to display the UI temporarily for the start of the ad
+        if (_controls) {
+            _controls.userActive();
+            _controls.controlbar.useInstreamTime(instreamModel);
+        }
+    };
 
     this.setAltText = function (text) {
         _model.set('altText', text);
     };
 
-        this.destroyInstream = function () {
-            if (_instreamModel) {
-                _instreamModel.off(null, null, this);
-                _instreamModel = null;
-            }
-            if (!displayClickHandler) {
-                // view was destroyed
-                return;
-            }
-    if (_controls) {
-                _controls.controlbar.syncPlaybackTime(_model);
-            }        this.setAltText('');
-            removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
-            _model.set('hideAdsControls', false);
-            if (_model.getVideo) {
-                const provider = _model.getVideo();
-                provider.setContainer(_videoLayer);
-            }
-            _setLiveMode(_model, _model.get('streamType'));
-            // reset display click handler
-            displayClickHandler.revertAlternateClickHandlers();
-        };
+    this.destroyInstream = function () {
+        if (_instreamModel) {
+            _instreamModel.off(null, null, this);
+            _instreamModel = null;
+        }
+        if (!displayClickHandler) {
+            // view was destroyed
+            return;
+        }
+        if (_controls) {
+            _controls.controlbar.syncPlaybackTime(_model);
+        }
+
+        this.setAltText('');
+        removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
+        _model.set('hideAdsControls', false);
+        if (_model.getVideo) {
+            const provider = _model.getVideo();
+            provider.setContainer(_videoLayer);
+        }
+        _setLiveMode(_model, _model.get('streamType'));
+        // reset display click handler
+        displayClickHandler.revertAlternateClickHandlers();
+    };
 
     this.addCues = function (cues) {
         _model.set('cues', cues);

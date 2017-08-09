@@ -127,7 +127,7 @@ export default class Controlbar {
         }, next);
 
         if (_model.get('nextUpDisplay')) {
-            new UI(nextButton.element(), {useHover: true, directSelect: true})
+            new UI(nextButton.element(), { useHover: true, directSelect: true })
                 .on('over', function () {
                     const nextUpToolTip = this.nextUpToolTip;
                     if (nextUpToolTip) {
@@ -303,7 +303,7 @@ export default class Controlbar {
             elements.playbackrates.setup(
                 playbackRateLabels,
                 selectedIndex,
-                {defaultIndex: playbackRateControls.indexOf(1), isToggle: false}
+                { defaultIndex: playbackRateControls.indexOf(1), isToggle: false }
             );
 
             _model.change('streamType provider', this.togglePlaybackRateControls, this);
@@ -339,7 +339,7 @@ export default class Controlbar {
 
     onCaptionsList(model, tracks) {
         const index = model.get('captionsIndex');
-        this.elements.cc.setup(tracks, index, {isToggle: true});
+        this.elements.cc.setup(tracks, index, { isToggle: true });
     }
 
     onCaptionsIndex(model, index) {
@@ -372,10 +372,10 @@ export default class Controlbar {
         }, this);
         mediaModel.on('change:audioTracks', function (audioTracksChangeModel, audioTracks) {
             const list = _.map(audioTracks, function (track) {
-                return {label: track.name};
+                return { label: track.name };
             });
             this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'),
-                {isToggle: false});
+                { isToggle: false });
         }, this);
         mediaModel.on('change:currentAudioTrack', function (currentAudioTrackChangeModel, currentAudioTrack) {
             this.elements.audiotracks.selectItem(currentAudioTrack);
@@ -396,7 +396,7 @@ export default class Controlbar {
             utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
         }
         if (this.elements.volume) {
-            this.elements.volume.render(muted ? 0 : vol);
+            this.elements.volume.render(muted ? 30 : vol);
         }
         if (this.elements.volumetooltip) {
             this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
