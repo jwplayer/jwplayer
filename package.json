@@ -5,7 +5,10 @@
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
   "license": "CC-BY-NC-SA-3.0",
-  "dependencies": {},
+  "dependencies": {
+    "jwplayer-flex-sdk": "^4.6.0-2",
+    "webpack": "^3.5.2"
+  },
   "devDependencies": {
     "async": "2.5.0",
     "autoprefixer": "7.1.2",
@@ -64,11 +67,10 @@
     "simple-style-loader": "0.4.3",
     "sinon": "3.0.0",
     "source-map": "0.5.6",
-    "svg-inline-loader": "0.8.0",
     "stylelint": "~8.0.0",
+    "svg-inline-loader": "0.8.0",
     "underscore": "1.8.3",
-    "url-loader": "0.5.9",
-    "webpack": "3.4.1"
+    "url-loader": "0.5.9"
   },
   "scripts": {
     "docs": "jsdoc -c docs/jsdoc.conf.json",

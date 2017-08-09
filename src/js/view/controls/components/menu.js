@@ -5,7 +5,7 @@ import _ from 'utils/underscore';
 import UI from 'utils/ui';
 
 export default class Menu extends Tooltip {
-    setup(list, selectedIndex, options, svgIcons) {
+    setup(list, selectedIndex, options) {
         options = options || {};
 
         if (!this.iconUI) {
