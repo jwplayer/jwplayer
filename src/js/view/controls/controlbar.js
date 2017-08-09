@@ -15,6 +15,7 @@ import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
+import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -179,7 +180,7 @@ export default class Controlbar {
             countdown: textIcon('jw-text-countdown', 'timer'),
             time: timeSlider,
             duration: textIcon('jw-text-duration', 'timer'),
-            hd: menu('jw-icon-hd', this._localization.hd),
+            hd: menu('jw-icon-hd', this._localization.hd, [QUALITY_ICON]),
             cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
             audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks, [AUDIO_TRACKS_ICON]),
             playbackrates: new SelectionDisplayMenu(
