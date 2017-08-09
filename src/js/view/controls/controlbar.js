@@ -583,11 +583,11 @@ define([
 
         syncPlaybackTime(model) {
             // When resuming playback mode, trigger a change so that the slider immediately resumes it's original position
+            const timeSlider = this.elements.time;
             if (!timeSlider) {
                 return;
             }
 
-            const timeSlider = this.elements.time;
             timeSlider.onPosition(model, model.get('position'));
             timeSlider.onDuration(model, model.get('duration'));
         }
