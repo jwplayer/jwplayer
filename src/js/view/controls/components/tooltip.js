@@ -21,11 +21,10 @@ export default class Tooltip {
 
         this.el.appendChild(this.container);
         if (svgIcons && svgIcons.length > 0) {
-            var parser = new DOMParser();
-            var self = this;
-            svgIcons.forEach(function(svgIcon) {
-                var svgDoc = parser.parseFromString(svgIcon, 'image/svg+xml');
-                self.el.appendChild(svgDoc.documentElement);
+            const parser = new DOMParser();
+            svgIcons.forEach((svgIcon) => {
+                const svgDoc = parser.parseFromString(svgIcon, 'image/svg+xml');
+                this.el.appendChild(svgDoc.documentElement);
             });
         }
     }

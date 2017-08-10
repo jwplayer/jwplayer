@@ -20,9 +20,9 @@ export default function (icon, apiAction, ariaText, svgIcons) {
     }
 
     if (svgIcons && svgIcons.length > 0) {
-        var parser = new DOMParser();
-        svgIcons.forEach(function(svgIcon) {
-            var svgDoc = parser.parseFromString(svgIcon, 'image/svg+xml');
+        const parser = new DOMParser();
+        svgIcons.forEach((svgIcon) => {
+            const svgDoc = parser.parseFromString(svgIcon, 'image/svg+xml');
             element.appendChild(svgDoc.documentElement);
         });
     }
