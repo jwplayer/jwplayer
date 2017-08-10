@@ -1,4 +1,5 @@
 import UI from 'utils/ui';
+import svgParse from 'utils/svgParser';
 
 export default function (icon, apiAction, ariaText, svgIcons) {
     const element = document.createElement('div');
@@ -20,10 +21,8 @@ export default function (icon, apiAction, ariaText, svgIcons) {
     }
 
     if (svgIcons && svgIcons.length > 0) {
-        var parser = new DOMParser();
-        svgIcons.forEach(function(svgIcon) {
-            var svgDoc = parser.parseFromString(svgIcon, 'image/svg+xml');
-            element.appendChild(svgDoc.documentElement);
+        svgIcons.forEach((svgIcon) => {
+            element.appendChild(svgParse(svgIcon));
         });
     }
 

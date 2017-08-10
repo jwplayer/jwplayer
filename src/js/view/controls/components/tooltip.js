@@ -1,6 +1,7 @@
 import Events from 'utils/backbone.events';
 import ariaLabel from 'utils/aria';
 import utils from 'utils/helpers';
+import svgParse from 'utils/svgParser';
 
 export default class Tooltip {
     constructor(name, ariaText, elementShown, svgIcons) {
@@ -21,11 +22,8 @@ export default class Tooltip {
 
         this.el.appendChild(this.container);
         if (svgIcons && svgIcons.length > 0) {
-            var parser = new DOMParser();
-            var self = this;
-            svgIcons.forEach(function(svgIcon) {
-                var svgDoc = parser.parseFromString(svgIcon, 'image/svg+xml');
-                self.el.appendChild(svgDoc.documentElement);
+            svgIcons.forEach((svgIcon) => {
+                this.el.appendChild(svgParse(svgIcon));
             });
         }
     }
