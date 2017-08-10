@@ -89,6 +89,28 @@
                 };
             });
 
+            /*
+             Event maps passed to the player on setup should use event names,
+             rather than onEventName. Here "onReady" is converted
+             to "ready" in the setup options events block. Ex:
+             `jwplayer().setup({ events: { onReady: fn } })` becomes
+             `jwplayer().setup({ events: { ready: fn } })`
+             */
+            var setup = playerInstance.setup;
+            playerInstance.setup = function(options) {
+                var eventMap = options.events;
+                if (eventMap) {
+                    Object.keys(eventMap).forEach(function(eventKey) {
+                        var eventName = callbackMap[eventKey];
+                        if (eventName) {
+                            eventMap[eventName] = eventMap[eventKey];
+                            delete eventMap[eventKey];
+                        }
+                    });
+                }
+                return setup.call(this, options);
+            };
+
             return playerInstance;
         };
 
@@ -129,29 +151,9 @@
          */
         jwplayerCompatible._ = playerLibrary._;
         jwplayerCompatible.api = playerLibrary.api;
-        jwplayerCompatible.events = playerLibrary.events;
-        jwplayerCompatible.playlist = playerLibrary.playlist;
-        jwplayerCompatible.plugins = playerLibrary.plugins;
         jwplayerCompatible.utils = utils;
         jwplayerCompatible.version = playerLibrary.version;
         jwplayerCompatible.vid = playerLibrary.vid;
-
-        /*
-            In JW8 we've removed the jwplayer.touchEvents.* touchEvents; they've been replaced by ES6 constants.
-            The touchEvents names are unchanged.
-        */
-        var touchEvents = {
-            DRAG: 'drag',
-            DRAG_START: 'dragStart',
-            DRAG_END: 'dragEnd',
-            CLICK: 'click',
-            DOUBLE_CLICK: 'doubleClick',
-            TAP: 'tap',
-            DOUBLE_TAP: 'doubleTap',
-            OVER: 'over',
-            MOVE: 'move',
-            OUT: 'out'
-        };
 
         /*
             In JW8 we've removed the jwplayer.events.JWPLAYER_* events, as well as the jwplayer.events.states.* states.
@@ -237,9 +239,24 @@
             JWPLAYER_BREAKPOINT: 'breakpoint'
         };
 
-        events.touchEvents = touchEvents;
+        /*
+            In JW8 we've removed the jwplayer.touchEvents.* touchEvents; they've been replaced by ES6 constants.
+            The touchEvents names are unchanged.
+        */
+        events.touchEvents = {
+            DRAG: 'drag',
+            DRAG_START: 'dragStart',
+            DRAG_END: 'dragEnd',
+            CLICK: 'click',
+            DOUBLE_CLICK: 'doubleClick',
+            TAP: 'tap',
+            DOUBLE_TAP: 'doubleTap',
+            OVER: 'over',
+            MOVE: 'move',
+            OUT: 'out'
+        };
 
-        var states = {
+        events.state = {
             BUFFERING: 'buffering',
             IDLE: 'idle',
             COMPLETE: 'complete',
@@ -252,7 +269,6 @@
             STALLED: 'stalled'
         };
 
-        events.state = states;
         jwplayerCompatible.events = events;
 
         window.jwplayer = jwplayerCompatible;

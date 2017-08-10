@@ -188,20 +188,12 @@ export default function Api(element) {
             resetPlayer(this, core);
             core = coreFactory(this, element);
 
-            // bind event listeners passed in to the config
-            utils.foreach(options.events, (evt, val) => {
-                // TODO: JW8-206 if 'evt' starts with 'on' convert to event name and register event with `on` method
-                const fn = this[evt];
-                if (typeof fn === 'function') {
-                    fn.call(this, val);
-                }
-            });
-
             options.id = playerId;
 
             core.init(options, this);
 
-            return this;
+            // bind event listeners passed in to the config
+            return this.on(options.events, null, this);
         },
 
         /** Asynchronously removes the player from the page.
