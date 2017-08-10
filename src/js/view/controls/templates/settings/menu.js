@@ -5,8 +5,6 @@ export default () => {
                 `<div class="jw-reset jw-settings-category">` +
                 `</div>` +
             `</div>` +
-            `<div class="jw-reset jw-settings-content">` +
-            `</div>` +
         `</div>`
     );
 };

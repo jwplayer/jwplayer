@@ -1,6 +1,7 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
+import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -12,9 +13,9 @@ import PlayDisplayIcon from 'view/controls/play-display-icon';
 import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
-import SettingsMenu from 'view/controls/components/settings/settings-menu';
-
-require('css/controls.less');
+import { SettingsMenu } from 'view/controls/components/settings/menu';
+import SettingsSubmenu from 'view/controls/components/settings/submenu';
+import SettingsContentItem from 'view/controls/components/settings/content-item.js';
 
 require('css/controls.less');
 
@@ -117,18 +118,8 @@ export default class Controls {
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive();
         };
-        const settingsMenu = this.settingsMenu = SettingsMenu(visibilityChangeHandler);
-        settingsMenu.setup();
-
-        controlbar.on('settingsInteraction', (e) => {
-            if (e === 'toggle') {
-                settingsMenu.toggle();
-            } else if (e === 'close') {
-                settingsMenu.close();
-            }
-        });
-
-        this.div.appendChild(settingsMenu.element());
+        this.settingsMenu = setupSettingsMenu(controlbar, visibilityChangeHandler);
+        this.div.appendChild(this.settingsMenu.element());
 
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
         if (model.get('autostartMuted')) {
@@ -340,3 +331,25 @@ export default class Controls {
         this.trigger('userInactive');
     }
 }
+
+const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
+    const settingsMenu = SettingsMenu(visibilityChangeHandler);
+
+    controlbar.on('settingsInteraction', (e) => {
+        if (e === 'toggle') {
+            settingsMenu.toggle();
+        } else if (e === 'close') {
+            settingsMenu.close();
+        }
+    });
+
+    const dummyItem = SettingsContentItem('dummyItem', 'dummyItem', () => {
+        settingsMenu.close();
+        console.log('dummy');
+    });
+    const dummySubmenu = SettingsSubmenu('dummy');
+    dummySubmenu.addContent([dummyItem]);
+    settingsMenu.addSubmenu(QUALITY_ICON, dummySubmenu);
+
+    return settingsMenu;
+};
