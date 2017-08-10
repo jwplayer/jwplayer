@@ -478,7 +478,7 @@ export default class Controlbar {
     checkDvrLiveEdge() {
         if (this._model.get('streamType') === 'DVR') {
             const currentPosition = this._model.get('position');
-            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition > dvrSeekLimit);
+            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition >= dvrSeekLimit);
         }
     }
 
@@ -576,7 +576,7 @@ export default class Controlbar {
                 newButtons[i].id,
                 newButtons[i].btnClass
             );
-        
+
             let firstButton = buttonContainer.querySelector('.jw-spacer').nextSibling;
             if (firstButton && firstButton.getAttribute('button') === 'logo') {
                 firstButton = firstButton.nextSibling;

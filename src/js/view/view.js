@@ -26,7 +26,6 @@ import {
     style,
     getRgba
 } from 'utils/css';
-import utils from 'utils/helpers';
 import _ from 'utils/underscore';
 import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
 import flagNoFocus from 'view/utils/flag-no-focus';
@@ -755,7 +754,7 @@ function View(_api, _model) {
     function _setLiveMode(model, streamType) {
         if (!_instreamModel) {
             const live = (streamType === 'LIVE');
-            utils.toggleClass(_playerElement, 'jw-flag-live', live);
+            toggleClass(_playerElement, 'jw-flag-live', live);
         }
     }
 
