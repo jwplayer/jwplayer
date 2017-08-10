@@ -184,11 +184,6 @@ function FlashProvider(_playerId, _playerConfig) {
             // listen to events sendEvented from flash
             _swf.once('ready', function() {
                 removeBlockedCheck();
-                // After plugins load, then execute commandqueue
-                _swf.once('pluginsLoaded', function() {
-                    _flashCommand('setupCommandQueue', _swf.__commandQueue);
-                    _swf.__commandQueue.length = 0;
-                });
 
                 // setup flash player
                 var config = Object.assign({}, _playerConfig);
@@ -203,6 +198,10 @@ function FlashProvider(_playerId, _playerConfig) {
                 if (_item) {
                     _flashCommand('init', _item);
                 }
+
+                // execute commandqueue
+                _flashCommand('setupCommandQueue', _swf.__commandQueue);
+                _swf.__commandQueue.length = 0;
 
             }, this);
 

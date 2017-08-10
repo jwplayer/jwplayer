@@ -90,7 +90,13 @@ export function embed(swfUrl, container, id, wmode) {
             swf._eventQueue.length = 0;
             clearTimeout(processEventsTimeout);
         }
-        return Events.off.apply(swf, args);
+        if (args.length) {
+            return Events.off.apply(swf, args);
+        }
+        // We don't use Events.off here because the this._events cannot be deleted
+        events = {};
+        this._events = events;
+        return this;
     });
     addGetter(swf, 'trigger', function(type, json) {
         const eventQueue = swf._eventQueue;

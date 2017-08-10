@@ -3,9 +3,7 @@ import com.longtailvideo.jwplayer.events.MediaEvent;
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.player.SwfEventRouter;
 import com.longtailvideo.jwplayer.plugins.IPlugin;
-import com.longtailvideo.jwplayer.plugins.IPlugin6;
 import com.longtailvideo.jwplayer.utils.RootReference;
-import com.longtailvideo.jwplayer.utils.Stretcher;
 
 import flash.display.DisplayObject;
 import flash.display.Sprite;
@@ -74,9 +72,6 @@ public class View extends Sprite {
     }
 
     public function addPlugin(id:String, plugin:IPlugin):void {
-        if (!(plugin is IPlugin6)) {
-            throw new Error("Incompatible plugin version");
-        }
         var pluginDisplay:DisplayObject = plugin as DisplayObject;
         if (!_plugins[id] && pluginDisplay) {
             _plugins[id] = pluginDisplay;
@@ -113,8 +108,8 @@ public class View extends Sprite {
         return list;
     }
 
-    public function getPlugin(id:String):IPlugin6 {
-        return _plugins[id] as IPlugin6;
+    public function getPlugin(id:String):IPlugin {
+        return _plugins[id] as IPlugin;
     }
 
     private function resizeMedia(width:Number, height:Number):void {

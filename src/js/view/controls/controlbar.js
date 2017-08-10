@@ -13,6 +13,7 @@ import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
+import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
@@ -145,6 +146,10 @@ export default class Controlbar {
             _api.next();
         }, next, [NEXT_ICON]);
 
+        const settingsButton = button('jw-settings-button', () => {
+            this.trigger('settingsInteraction', 'toggle');
+        }, this._localization.settings, [SETTINGS_ICON]);
+
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
                 .on('over', function () {
@@ -197,7 +202,8 @@ export default class Controlbar {
                 _api.setFullscreen();
             }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
             spacer: div('jw-spacer'),
-            buttonContainer: div('jw-button-container')
+            buttonContainer: div('jw-button-container'),
+            settingsButton
         };
 
         // Filter out undefined elements
@@ -213,6 +219,7 @@ export default class Controlbar {
             elements.duration,
             elements.spacer,
             elements.next,
+            elements.settingsButton,
             elements.hd,
             elements.cc,
             elements.audiotracks,
@@ -227,11 +234,6 @@ export default class Controlbar {
         ].filter(e => e);
 
         const menus = this.menus = [
-            elements.hd,
-            elements.cc,
-            elements.audiotracks,
-            elements.playbackrates,
-            elements.volumetooltip
         ].filter(e => e);
 
         this.el = document.createElement('div');
@@ -251,6 +253,7 @@ export default class Controlbar {
         if (elements.mute) {
             elements.mute.show();
         }
+        elements.settingsButton.show();
 
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
@@ -273,8 +276,8 @@ export default class Controlbar {
             // Check for change of position to counter race condition where state is updated before the current position
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
-        // Event listeners
 
+        // Event listeners
         // Volume sliders do not exist on mobile so don't assign listeners to them.
         if (elements.volume) {
             elements.volume.on('update', function (pct) {
@@ -378,8 +381,9 @@ export default class Controlbar {
     }
 
     togglePlaybackRateControls(model) {
-        const showPlaybackRateControls =
-            model.getVideo().supportsPlaybackRate &&
+        const provider = model.getVideo();
+        const showPlaybackRateControls = provider &&
+            provider.supportsPlaybackRate &&
             model.get('streamType') !== 'LIVE' &&
             model.get('playbackRateControls').length > 1;
 

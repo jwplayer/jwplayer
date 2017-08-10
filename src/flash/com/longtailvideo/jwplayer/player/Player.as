@@ -236,11 +236,6 @@ public class Player extends Sprite implements IPlayer {
         delete config.playlist;
 
         _model.setConfig(config);
-
-        // do it a second time
-        _controller.runSetupPlugins(function():void {
-            SwfEventRouter.triggerJsEvent('pluginsLoaded');
-        });
     }
 
     protected function setupPlayerCommandQueue(commands:Array):void {

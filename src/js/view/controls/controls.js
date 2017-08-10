@@ -12,14 +12,15 @@ import PlayDisplayIcon from 'view/controls/play-display-icon';
 import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
+import SettingsMenu from 'view/controls/components/settings/settings-menu';
+
+require('css/controls.less');
 
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
 const reasonInteraction = function() {
     return { reason: 'interaction' };
 };
-
-let stylesInjected = false;
 
 export default class Controls {
     constructor(context, playerContainer) {
@@ -38,6 +39,7 @@ export default class Controls {
         this.nextUpToolTip = null;
         this.playerContainer = playerContainer;
         this.rightClickMenu = null;
+        this.settingsMenu = null;
         this.showing = false;
         this.unmuteCallback = null;
         this.div = null;
@@ -47,10 +49,6 @@ export default class Controls {
             mouseout: () => this.userActive()
         };
         this.dimensions = {};
-        if (!stylesInjected) {
-            stylesInjected = true;
-            require('css/controls.less');
-        }
     }
 
     enable(api, model) {
@@ -110,6 +108,25 @@ export default class Controls {
         }
         this.addActiveListeners(controlbar.element());
         this.div.appendChild(controlbar.element());
+
+        // Settings Menu
+        const visibilityChangeHandler = (visible) => {
+            utils.toggleClass(this.div, 'jw-settings-open', visible);
+            // Trigger userActive so that a dismissive click outside the player can hide the controlbar
+            this.userActive();
+        };
+        const settingsMenu = this.settingsMenu = SettingsMenu(visibilityChangeHandler);
+        settingsMenu.setup();
+
+        controlbar.on('settingsInteraction', (e) => {
+            if (e === 'toggle') {
+                settingsMenu.toggle();
+            } else if (e === 'close') {
+                settingsMenu.close();
+            }
+        });
+
+        this.div.appendChild(settingsMenu.element());
 
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
         if (model.get('autostartMuted')) {
@@ -312,12 +329,11 @@ export default class Controls {
 
     userInactive() {
         clearTimeout(this.activeTimeout);
-        this.showing = false;
-        if (this.controlbar) {
-            this.controlbar.closeMenus({
-                type: 'userInactive'
-            });
+        if (this.settingsMenu.visible) {
+            return;
         }
+
+        this.showing = false;
         utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
     }

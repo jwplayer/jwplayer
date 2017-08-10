@@ -2,6 +2,7 @@ import PlaylistLoader from 'playlist/loader';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 
 describe('playlist/loader', function() {
+    this.timeout(5000);
 
     it('Test JSON feed', function (done) {
         const loader = new PlaylistLoader();

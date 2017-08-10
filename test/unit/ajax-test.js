@@ -2,6 +2,7 @@ import _ from 'test/underscore';
 import { ajax } from 'utils/ajax';
 
 describe('ajax', function() {
+    this.timeout(5000);
 
     function validXHR(xhr) {
         if ('XDomainRequest' in window && xhr instanceof window.XDomainRequest) {

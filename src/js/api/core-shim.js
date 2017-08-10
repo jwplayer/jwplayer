@@ -1,6 +1,7 @@
 import ApiQueueDecorator from 'api/api-queue';
 import Config from 'api/config';
 import Providers from 'providers/providers';
+import loadPlugins from 'plugins/plugins';
 import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
@@ -79,8 +80,13 @@ Object.assign(CoreShim.prototype, {
             model.getProviders = function() {
                 return new Providers(configuration);
             };
-            return model;
-        }).then(loadCoreBundle).then(CoreMixin => {
+        }).then(() => {
+            return Promise.all([
+                loadCoreBundle(model),
+                loadPlugins(model, api)
+            ]);
+        }).then(allPromises => {
+            const CoreMixin = allPromises[0];
             if (!this.apiQueue) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;

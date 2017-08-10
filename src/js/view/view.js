@@ -35,12 +35,12 @@ import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
 
+require('css/jwplayer.less');
+
 let ControlsModule;
 
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
-
-let stylesInjected = false;
 
 function View(_api, _model) {
     const _this = Object.assign(this, Events, {
@@ -376,10 +376,6 @@ function View(_api, _model) {
             addClass(_playerElement, 'jw-flag-controls-hidden');
         }
 
-        if (!stylesInjected) {
-            stylesInjected = true;
-            require('css/jwplayer.less');
-        }
         if (_isIE) {
             addClass(_playerElement, 'jw-ie');
         }
@@ -396,7 +392,12 @@ function View(_api, _model) {
 
         this.isSetup = true;
         _model.set('viewSetup', true);
-        _model.set('inDom', document.body.contains(_playerElement));
+
+        const inDOM = document.body.contains(_playerElement);
+        if (inDOM) {
+            viewsManager.observe(_playerElement);
+        }
+        _model.set('inDom', inDOM);
     };
 
     function updateVisibility() {
@@ -481,17 +482,22 @@ function View(_api, _model) {
 
     function clickHandlerHelper(api, model, videoLayer) {
         const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });
+        const controls = _model.get('controls');
         clickHandler.on({
             click: () => {
                 _this.trigger(DISPLAY_CLICK);
-                if (_model.get('controls')) {
-                    api.play(reasonInteraction());
+                if (controls) {
+                    const settingsMenu = _controls.settingsMenu;
+                    if (settingsMenu && settingsMenu.visible) {
+                        settingsMenu.close();
+                    } else {
+                        api.play(reasonInteraction());
+                    }
                 }
             },
             tap: () => {
                 _this.trigger(DISPLAY_CLICK);
                 const state = model.get('state');
-                const controls = _model.get('controls');
 
                 if (controls &&
                     ((state === STATE_IDLE || state === STATE_COMPLETE) ||

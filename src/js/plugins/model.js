@@ -1,17 +1,28 @@
-import { getPluginName } from 'plugins/utils';
 import Plugin from 'plugins/plugin';
 
-const PluginModel = function (plugins) {
-    this.addPlugin = function (url) {
-        var pluginName = getPluginName(url);
-        if (!plugins[pluginName]) {
-            plugins[pluginName] = new Plugin(url);
+/**
+ * Extracts a plugin name from a string
+ */
+const getPluginName = function (url) {
+    /** Regex locates the characters after the last slash, until it encounters a dash. **/
+    return url.replace(/^(.*\/)?([^-]*)-?.*\.(js)$/, '$2');
+};
+
+const PluginModel = function (pluginsRegistered) {
+    this.addPlugin = function (url, config) {
+        const pluginName = getPluginName(url);
+        let plugin = pluginsRegistered[pluginName];
+        if (plugin) {
+            plugin.config = config;
+        } else {
+            plugin = new Plugin(url, config);
         }
-        return plugins[pluginName];
+        pluginsRegistered[pluginName] = plugin;
+        return plugin;
     };
 
     this.getPlugins = function () {
-        return plugins;
+        return pluginsRegistered;
     };
 };
 
