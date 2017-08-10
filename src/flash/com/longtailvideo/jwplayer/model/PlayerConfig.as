@@ -1,6 +1,5 @@
 package com.longtailvideo.jwplayer.model {
 import com.longtailvideo.jwplayer.player.PlayerVersion;
-import com.longtailvideo.jwplayer.plugins.PluginConfig;
 import com.longtailvideo.jwplayer.utils.Logger;
 import com.longtailvideo.jwplayer.utils.RootReference;
 import com.longtailvideo.jwplayer.utils.Stretcher;
@@ -9,7 +8,6 @@ import flash.events.EventDispatcher;
 import flash.media.SoundTransform;
 import flash.ui.Mouse;
 import flash.ui.MouseCursor;
-import flash.utils.getQualifiedClassName;
 
 public dynamic class PlayerConfig extends EventDispatcher {
 
@@ -17,8 +15,7 @@ public dynamic class PlayerConfig extends EventDispatcher {
     protected var _id:String = "";
     protected var _stretching:String = Stretcher.UNIFORM;
     protected var _fullscreen:Boolean = false;
-    protected var _plugins:Array = [];
-    protected var _pluginConfig:Object = {};
+    protected var _vast:Boolean = false;
 
     protected var _soundTransform:SoundTransform;
     protected var _volume:Number = 0.9;
@@ -102,12 +99,8 @@ public dynamic class PlayerConfig extends EventDispatcher {
         _stretching = Stretcher.UNIFORM;
     }
 
-    public function get plugins():Array {
-        return _plugins;
-    }
-
-    public function set plugins(value:Array):void {
-        _plugins = value;
+    public function get vast():Boolean {
+        return _vast;
     }
 
     public function get id():String {
@@ -252,33 +245,16 @@ public dynamic class PlayerConfig extends EventDispatcher {
             this.stretching = config.stretching;
         }
 
-        this.plugins = config.flashPlugins;
-
-        this.captionLabel = config.captionLabel;
-        this.qualityLabel = config.qualityLabel;
-    }
-
-    /** Returns a PluginConfig containing plugin configuration information **/
-    public function pluginConfig(pluginId:String):PluginConfig {
-        pluginId = pluginId.toLowerCase();
-        var pluginConfig:PluginConfig = _pluginConfig[pluginId] as PluginConfig;
-        if (pluginConfig) {
-            return pluginConfig;
-        }
-        var plugin:Object;
-        for (var i:uint = _plugins.length; i--;) {
-            if (_plugins[i].name === pluginId) {
-                plugin = _plugins[i];
+        var plugins:Object = config.plugins;
+        for (var pluginKey:String in plugins) {
+            if (/vast\.js$/.test(pluginKey)) {
+                _vast = true;
                 break;
             }
         }
-        if (plugin && getQualifiedClassName(plugin) === 'Object') {
-            pluginConfig = new PluginConfig(pluginId, plugin);
-        } else {
-            pluginConfig = new PluginConfig(pluginId);
-        }
-        _pluginConfig[pluginId] = pluginConfig;
-        return pluginConfig;
+
+        this.captionLabel = config.captionLabel;
+        this.qualityLabel = config.qualityLabel;
     }
 
 }

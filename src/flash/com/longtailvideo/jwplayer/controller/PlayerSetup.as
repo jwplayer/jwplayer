@@ -1,14 +1,9 @@
 package com.longtailvideo.jwplayer.controller {
 import com.longtailvideo.jwplayer.model.Model;
 import com.longtailvideo.jwplayer.player.IPlayer;
-import com.longtailvideo.jwplayer.player.PlayerVersion;
 import com.longtailvideo.jwplayer.player.SwfEventRouter;
-import com.longtailvideo.jwplayer.plugins.IPlugin;
-import com.longtailvideo.jwplayer.plugins.IPlugin6;
-import com.longtailvideo.jwplayer.utils.Logger;
 import com.longtailvideo.jwplayer.view.View;
 
-import flash.display.DisplayObject;
 import flash.events.ErrorEvent;
 import flash.events.Event;
 import flash.events.EventDispatcher;
@@ -57,50 +52,9 @@ public class PlayerSetup extends EventDispatcher {
         tasker.runTasks();
     }
 
-    public function setupPlugins():void {
-        tasker = new TaskQueue(false);
-        tasker.addEventListener(Event.COMPLETE, setupTasksComplete);
-        tasker.addEventListener(ErrorEvent.ERROR, setupTasksFailed);
-
-        tasker.queueTask(loadPlugins, loadPluginsComplete);
-        tasker.queueTask(initPlugins);
-
-        tasker.runTasks();
-    }
-
-    private function loadPlugins():void {
-        if (_model.plugins.length) {
-            var loader:PluginLoader = new PluginLoader();
-            loader.addEventListener(Event.COMPLETE, tasker.success);
-            loader.addEventListener(ErrorEvent.ERROR, tasker.failure);
-            loader.loadPlugins(_model.plugins);
-        } else {
-            tasker.success();
-        }
-    }
-
     ///////////////////////
     // Tasks
     ///////////////////////
-
-    private function initPlugins():void {
-        for each (var pluginId:String in _view.loadedPlugins()) {
-            try {
-                var plugin:IPlugin6 = _view.getPlugin(pluginId);
-                if (!PlayerVersion.versionCheck(plugin.target)) {
-                    tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: Incompatible player version"));
-                    return;
-                }
-                plugin.initPlugin(_player, _model.pluginConfig(pluginId));
-            } catch (e:Error) {
-                Logger.log("Plugin error: " + e.message);
-                if (plugin) {
-                    _view.removePlugin(plugin);
-                }
-            }
-        }
-        tasker.success();
-    }
 
     private function waitForSwfEventsRouter():void {
         // This may take a moment to setup with early versions of IE
@@ -122,21 +76,5 @@ public class PlayerSetup extends EventDispatcher {
         dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, evt.text));
     }
 
-    private function loadPluginsComplete(event:Event = null):void {
-        if (event) {
-            var loader:PluginLoader = event.target as PluginLoader;
-
-            for (var pluginId:String in loader.plugins) {
-                var plugin:DisplayObject = loader.plugins[pluginId] as DisplayObject;
-                if (plugin is IPlugin) {
-                    try {
-                        _view.addPlugin(pluginId, plugin as IPlugin);
-                    } catch (e:Error) {
-                        tasker.failure(new ErrorEvent(ErrorEvent.ERROR, false, false, "Error loading plugin: " + e.message));
-                    }
-                }
-            }
-        }
-    }
 }
 }

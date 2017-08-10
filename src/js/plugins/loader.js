@@ -1,4 +1,3 @@
-import { getPluginName } from 'plugins/utils';
 import Promise from 'polyfills/promise';
 import utils from 'utils/helpers';
 
@@ -29,46 +28,25 @@ function pluginResizeGenerator(pluginInstance) {
     };
 }
 
-function configurePlugins(pluginsConfig, flashPlugins, api, plugins) {
-    Object.keys(pluginsConfig).forEach(pluginKey => {
-        const config = pluginsConfig[pluginKey];
-        const pluginName = getPluginName(pluginKey);
-        const pluginObj = plugins[pluginName];
-        const flashPath = pluginObj.getFlashPath();
-        const jsPlugin = pluginObj.getJS();
-        const pluginURL = pluginObj.getURL();
-
-        if (flashPath) {
-            var flashPluginConfig = Object.assign({
-                name: pluginName,
-                swf: flashPath,
-                pluginmode: pluginObj.getPluginmode()
-            }, config);
-            flashPlugins.push(flashPluginConfig);
-        }
+function configurePlugins(plugins, api) {
+    Object.keys(plugins).forEach(pluginKey => {
+        var pluginObj = plugins[pluginKey];
+        const pluginName = pluginObj.name;
+        const config = pluginObj.config;
 
         const status = utils.tryCatch(function() {
-            if (jsPlugin) {
-                const pluginConfig = pluginsConfig[pluginURL];
 
-                if (!pluginConfig) {
-                    utils.log('JW Plugin already loaded', pluginName, pluginURL);
-                    return;
-                }
+            const div = document.createElement('div');
+            div.id = api.id + '_' + pluginName;
+            div.className = 'jw-plugin jw-reset';
 
-                const div = document.createElement('div');
-                div.id = api.id + '_' + pluginName;
-                div.className = 'jw-plugin jw-reset';
+            const pluginOptions = Object.assign({}, config);
+            const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
-                const pluginOptions = Object.assign({}, pluginConfig);
-                const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
+            pluginInstance.addToPlayer = addToPlayerGenerator(api, pluginInstance, div);
+            pluginInstance.resizeHandler = pluginResizeGenerator(pluginInstance);
 
-                pluginInstance.addToPlayer = addToPlayerGenerator(api, pluginInstance, div);
-                pluginInstance.resizeHandler = pluginResizeGenerator(pluginInstance);
-
-                api.addPlugin(pluginName, pluginInstance, div);
-            }
-
+            api.addPlugin(pluginName, pluginInstance, div);
         });
 
         if (status instanceof utils.Error) {
@@ -77,17 +55,11 @@ function configurePlugins(pluginsConfig, flashPlugins, api, plugins) {
     });
 }
 
-const PluginLoader = function (model, _config) {
+const PluginLoader = function (pluginsModel, _config) {
     const _this = this;
 
-    _this.setupPlugins = function (api, playerModel) {
-        const flashPlugins = [];
-        const pluginsConfig = playerModel.get('plugins');
-        if (pluginsConfig) {
-            const plugins = model.getPlugins();
-            configurePlugins(pluginsConfig, flashPlugins, api, plugins);
-        }
-        playerModel.set('flashPlugins', flashPlugins);
+    _this.setupPlugins = function (api) {
+        configurePlugins(pluginsModel.getPlugins(), api);
     };
 
     _this.load = function () {
@@ -99,11 +71,11 @@ const PluginLoader = function (model, _config) {
         /** First pass to create the plugins and add listeners **/
         Object.keys(_config).forEach(pluginUrl => {
             if (pluginUrl) {
-                model.addPlugin(pluginUrl);
+                pluginsModel.addPlugin(pluginUrl, _config[pluginUrl]);
             }
         });
 
-        const plugins = model.getPlugins();
+        const plugins = pluginsModel.getPlugins();
 
         /** Second pass to actually load the plugins **/
         const pluginPromises = Object.keys(plugins).map(name => {

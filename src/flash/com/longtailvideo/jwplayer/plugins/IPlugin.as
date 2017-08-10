@@ -7,8 +7,10 @@ import com.longtailvideo.jwplayer.player.IPlayer;
 public interface IPlugin {
     function get id():String;
 
-    function initPlugin(player:IPlayer, config:PluginConfig):void;
+    function initPlugin(player:IPlayer):void;
 
     function resize(width:Number, height:Number):void;
+
+    function get target():String;
 }
 }

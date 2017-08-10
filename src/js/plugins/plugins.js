@@ -1,7 +1,7 @@
 import PluginsLoader from 'plugins/loader';
 import PluginsModel from 'plugins/model';
 import Plugin from 'plugins/plugin';
-import { getPluginName } from 'plugins/utils';
+import utils from 'utils/helpers';
 
 const pluginsRegistered = {};
 const pluginLoaders = {};
@@ -11,10 +11,15 @@ export const loadPlugins = function(id, config) {
     return pluginLoaders[id];
 };
 
-export const registerPlugin = function(id, target, arg1, arg2) {
-    var pluginId = getPluginName(id);
-    if (!pluginsRegistered[pluginId]) {
-        pluginsRegistered[pluginId] = new Plugin(id);
+export const registerPlugin = function(name, minimumVersion, pluginClass) {
+    let plugin = pluginsRegistered[name];
+    if (!plugin) {
+        plugin = new Plugin(name);
+        pluginsRegistered[name] = plugin;
     }
-    pluginsRegistered[pluginId].registerPlugin(id, target, arg1, arg2);
+    if (!plugin.js) {
+        plugin.registerPlugin(name, minimumVersion, pluginClass);
+    } else {
+        utils.log('JW Plugin already loaded', name);
+    }
 };
