@@ -848,6 +848,7 @@ function View(_api, _model) {
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         if (_controls) {
             _controls.userActive();
+            _controls.controlbar.useInstreamTime(instreamModel);
         }
     };
 
@@ -864,6 +865,10 @@ function View(_api, _model) {
             // view was destroyed
             return;
         }
+        if (_controls) {
+            _controls.controlbar.syncPlaybackTime(_model);
+        }
+
         this.setAltText('');
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);

@@ -165,7 +165,8 @@ class TimeSlider extends Slider {
             var streamType = this._model.get('streamType');
             if (streamType === 'DVR') {
                 pct = (duration - position) / duration * 100;
-            } else if (streamType === 'VOD') {
+            } else if (streamType === 'VOD' || !streamType) {
+                // Default to VOD behavior if streamType isn't set
                 pct = position / duration * 100;
             }
         }

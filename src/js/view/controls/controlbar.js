@@ -283,11 +283,11 @@ export default class Controlbar {
             }, this);
         }
         if (elements.volumetooltip) {
-            elements.volumetooltip.on('update', function(pct) {
+            elements.volumetooltip.on('update', function (pct) {
                 const val = pct.percentage;
                 this._api.setVolume(val);
             }, this);
-            elements.volumetooltip.on('toggleValue', function() {
+            elements.volumetooltip.on('toggleValue', function () {
                 this._api.setMute();
             }, this);
         }
@@ -298,22 +298,22 @@ export default class Controlbar {
             }, this);
         }
 
-        elements.hd.on('select', function(value) {
+        elements.hd.on('select', function (value) {
             this._model.getVideo().setCurrentQuality(value);
         }, this);
-        elements.hd.on('toggleValue', function() {
+        elements.hd.on('toggleValue', function () {
             this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
         }, this);
 
-        elements.cc.on('select', function(value) {
+        elements.cc.on('select', function (value) {
             this._api.setCurrentCaptions(value);
         }, this);
-        elements.cc.on('toggleValue', function() {
+        elements.cc.on('toggleValue', function () {
             const index = this._model.get('captionsIndex');
             this._api.setCurrentCaptions(index ? 0 : 1);
         }, this);
 
-        elements.audiotracks.on('select', function(value) {
+        elements.audiotracks.on('select', function (value) {
             this._model.getVideo().setCurrentAudioTrack(value);
         }, this);
       
@@ -350,7 +350,7 @@ export default class Controlbar {
             }, this);
         }
 
-        new UI(elements.duration).on('click tap', function() {
+        new UI(elements.duration).on('click tap', function () {
             if (this._model.get('streamType') === 'DVR') {
                 // Seek to "Live" position within live buffer, but not before current position
                 const currentPosition = this._model.get('position');
@@ -359,11 +359,11 @@ export default class Controlbar {
         }, this);
 
         // When the control bar is interacted with, trigger a user action event
-        new UI(this.el).on('click tap drag', function() {
+        new UI(this.el).on('click tap drag', function () {
             this.trigger('userAction');
         }, this);
 
-        _.each(menus, function(ele) {
+        _.each(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);
     }
@@ -395,20 +395,20 @@ export default class Controlbar {
     }
 
     onMediaModel(model, mediaModel) {
-        mediaModel.on('change:levels', function(levelsChangeModel, levels) {
+        mediaModel.on('change:levels', function (levelsChangeModel, levels) {
             this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
         }, this);
-        mediaModel.on('change:currentLevel', function(currentLevelChangeModel, level) {
+        mediaModel.on('change:currentLevel', function (currentLevelChangeModel, level) {
             this.elements.hd.selectItem(level);
         }, this);
-        mediaModel.on('change:audioTracks', function(audioTracksChangeModel, audioTracks) {
-            const list = _.map(audioTracks, function(track) {
+        mediaModel.on('change:audioTracks', function (audioTracksChangeModel, audioTracks) {
+            const list = _.map(audioTracks, function (track) {
                 return { label: track.name };
             });
             this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'),
                 { isToggle: false });
         }, this);
-        mediaModel.on('change:currentAudioTrack', function(currentAudioTrackChangeModel, currentAudioTrack) {
+        mediaModel.on('change:currentAudioTrack', function (currentAudioTrackChangeModel, currentAudioTrack) {
             this.elements.audiotracks.selectItem(currentAudioTrack);
         }, this);
     }
@@ -492,7 +492,7 @@ export default class Controlbar {
 
     addCues(model, cues) {
         if (this.elements.time) {
-            _.each(cues, function(ele) {
+            _.each(cues, function (ele) {
                 this.elements.time.addCue(ele);
             }, this);
             this.elements.time.drawCues();
@@ -501,7 +501,7 @@ export default class Controlbar {
 
     // Close menus if it has no event.  Otherwise close all but the event's target.
     closeMenus(evt) {
-        _.each(this.menus, function(ele) {
+        _.each(this.menus, function (ele) {
             if (!evt || evt.target !== ele.el) {
                 ele.closeTooltip(evt);
             }
@@ -611,4 +611,28 @@ export default class Controlbar {
             }
         }
     }
+
+    useInstreamTime(instreamModel) {
+        // While in instream mode, the time slider needs to move according to instream time
+        const timeSlider = this.elements.time;
+        if (!timeSlider) {
+            return;
+        }
+
+        instreamModel
+            .change('position', timeSlider.onPosition, timeSlider)
+            .change('duration', timeSlider.onDuration, timeSlider);
+    }
+
+    syncPlaybackTime(model) {
+        // When resuming playback mode, trigger a change so that the slider immediately resumes it's original position
+        const timeSlider = this.elements.time;
+        if (!timeSlider) {
+            return;
+        }
+
+        timeSlider.onPosition(model, model.get('position'));
+        timeSlider.onDuration(model, model.get('duration'));
+    }
 }
+
