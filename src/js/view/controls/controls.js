@@ -1,4 +1,4 @@
-import { Browser, OS } from 'environment/environment';
+import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
 
@@ -72,13 +72,6 @@ export default class Controls {
                 this.userActive(1000);
                 api.play(reasonInteraction());
             });
-
-            if (Browser.chrome && !touchMode) {
-                // On Chrome desktop allow media element to capture all play/pause toggle clicks
-                // This allows swfs to capture clicks on start preventing flash-throttling
-                playDisplayIcon.el.style.pointerEvents = 'none';
-                playDisplayIcon.icon.style.pointerEvents = 'none';
-            }
 
             displayContainer.addButton(rewindDisplayIcon);
             displayContainer.addButton(playDisplayIcon);

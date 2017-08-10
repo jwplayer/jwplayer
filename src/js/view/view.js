@@ -750,6 +750,13 @@ function View(_api, _model) {
         _resizeMedia();
         _responsiveListener();
     }
+  
+    function _setLiveMode(model, streamType) {
+        if (!_instreamModel) {
+            const live = (streamType === 'LIVE');
+            toggleClass(_playerElement, 'jw-flag-live', live);
+        }
+    }
 
     function _userActivityCallback(/* event */) {
         _controls.userActive();
@@ -768,14 +775,6 @@ function View(_api, _model) {
         } else {
             // Put the preview element before the captions element to display captions with the captions renderer
             _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
-        }
-    }
-
-    function _setLiveMode(model, streamType) {
-        if (!_instreamModel) {
-            const live = (streamType === 'LIVE');
-            toggleClass(_playerElement, 'jw-flag-live', live);
-            _this.setAltText((live) ? model.get('localization').liveBroadcast : '');
         }
     }
 

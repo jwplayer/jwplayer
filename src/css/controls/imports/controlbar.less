@@ -118,7 +118,6 @@
     button {
         background-color: transparent;
         border: none;
-        font-size: inherit;
         padding: 0;
         width: 20px;
         height: 20px;
@@ -176,6 +175,18 @@
         .jw-text-duration {
             display: none;
         }
+    }
+
+    .jw-icon-live:not(.jw-dvr-live) {
+        .jw-svg-icon-live {
+            display: none;
+        }
+    }
+}
+
+.jwplayer.jw-flag-live .jw-icon-live {
+    .jw-svg-icon-dvr {
+        display: none;
     }
 }
 

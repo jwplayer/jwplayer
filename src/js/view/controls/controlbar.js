@@ -1,4 +1,21 @@
-import { PLAYBACK_RATE_ICON } from 'assets/svg-markup';
+import PLAY_ICON from 'assets/SVG/play.svg';
+import PAUSE_ICON from 'assets/SVG/pause.svg';
+import REWIND_ICON from 'assets/SVG/rewind-10.svg';
+import NEXT_ICON from 'assets/SVG/next.svg';
+import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
+import VOLUME_ICON_50 from 'assets/SVG/volume-50.svg';
+import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
+import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
+import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
+import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
+import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
+import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
+import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
+import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
+import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
+import DVR_ICON from 'assets/SVG/dvr.svg';
+import LIVE_ICON from 'assets/SVG/live.svg';
+import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -37,13 +54,14 @@ function div(classes) {
     return element;
 }
 
-function menu(name, ariaText) {
-    return new Menu(name, ariaText);
+function menu(name, ariaText, svgIcons) {
+    return new Menu(name, ariaText, null, svgIcons);
 }
 
 function createCastButton(castToggle, localization) {
     if (!Browser.chrome || OS.iOS) {
-        return button('jw-icon-airplay jw-off', castToggle, localization.airplay);
+        return button('jw-icon-airplay jw-off', castToggle, localization.airplay, [AIRPLAY_OFF_ICON,
+            AIRPLAY_ON_ICON]);
     }
 
     const ariaText = localization.cast;
@@ -113,7 +131,8 @@ export default class Controlbar {
 
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
-            volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol);
+            volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0, VOLUME_ICON_50,
+                VOLUME_ICON_100]);
         }
         // Do not show the volume toggle in the mobile SDKs or <iOS10
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
@@ -124,7 +143,7 @@ export default class Controlbar {
 
         const nextButton = button('jw-icon-next', () => {
             _api.next();
-        }, next);
+        }, next, [NEXT_ICON]);
 
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -149,18 +168,21 @@ export default class Controlbar {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
                 _api.play(null, reasonInteraction());
-            }, play),
+            }, play, [PLAY_ICON, PAUSE_ICON]),
             rewind: button('jw-icon-rewind', () => {
                 this.rewind();
-            }, rewind),
+            }, rewind, [REWIND_ICON]),
+            live: button('jw-icon-live', () => {
+                this.goToLiveEdge();
+            }, this._localization.liveBroadcast, [LIVE_ICON, DVR_ICON]),
             next: nextButton,
             elapsed: textIcon('jw-text-elapsed', 'timer'),
             countdown: textIcon('jw-text-countdown', 'timer'),
             time: timeSlider,
             duration: textIcon('jw-text-duration', 'timer'),
-            hd: menu('jw-icon-hd', this._localization.hd),
-            cc: menu('jw-icon-cc', this._localization.cc),
-            audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks),
+            hd: menu('jw-icon-hd', this._localization.hd, [QUALITY_ICON]),
+            cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
+            audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks, [AUDIO_TRACKS_ICON]),
             playbackrates: new SelectionDisplayMenu(
                 'jw-icon-playback-rate',
                 this._localization.playbackRates,
@@ -173,7 +195,7 @@ export default class Controlbar {
             }, this._localization),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
-            }, this._localization.fullscreen),
+            }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container')
         };
@@ -187,6 +209,7 @@ export default class Controlbar {
             elements.alt,
             elements.elapsed,
             elements.countdown,
+            elements.live,
             elements.duration,
             elements.spacer,
             elements.next,
@@ -246,6 +269,10 @@ export default class Controlbar {
         _model.change('cues', this.addCues, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
+        _model.change('state', () => {
+            // Check for change of position to counter race condition where state is updated before the current position
+            _model.once('change:position', this.checkDvrLiveEdge, this);
+        }, this);
         // Event listeners
 
         // Volume sliders do not exist on mobile so don't assign listeners to them.
@@ -288,6 +315,10 @@ export default class Controlbar {
 
         elements.audiotracks.on('select', function (value) {
             this._model.getVideo().setCurrentAudioTrack(value);
+        }, this);
+      
+        this._model.mediaController.on('seeked', function () {
+            this.checkDvrLiveEdge();
         }, this);
 
         let playbackRateControls = _model.get('playbackRateControls');
@@ -401,6 +432,7 @@ export default class Controlbar {
         if (this.elements.volumetooltip) {
             this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
             utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
+            utils.toggleClass(this.elements.volumetooltip.element(), 'jw-full', vol === 100 && !muted);
         }
     }
 
@@ -441,6 +473,13 @@ export default class Controlbar {
 
     onFullscreen(model, val) {
         utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
+    }
+              
+    checkDvrLiveEdge() {
+        if (this._model.get('streamType') === 'DVR') {
+            const currentPosition = this._model.get('position');
+            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition >= dvrSeekLimit);
+        }
     }
 
     element() {
@@ -487,9 +526,8 @@ export default class Controlbar {
         // Hide rewind button when in LIVE mode
         const streamType = model.get('streamType');
         this.elements.rewind.toggle(streamType !== 'LIVE');
-        if (streamType === 'DVR') {
-            this.elements.duration.textContent = 'Live';
-        }
+        this.elements.live.toggle(streamType === 'LIVE' || streamType === 'DVR');
+        this.elements.duration.style.display = streamType === 'DVR' ? 'none' : '';
         const duration = model.get('duration');
         this.onDuration(model, duration);
     }
@@ -516,6 +554,14 @@ export default class Controlbar {
             logoButton.element(),
             buttonContainer.querySelector('.jw-spacer').nextSibling
         );
+    }
+
+    goToLiveEdge() {
+        if (this._model.get('streamType') === 'DVR') {
+            // Seek to "Live" position within live buffer, but not before current position
+            const currentPosition = this._model.get('position');
+            this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
+        }
     }
 
     updateButtons(model, newButtons = [], oldButtons = []) {

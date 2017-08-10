@@ -63,9 +63,10 @@
     "sinon": "3.0.0",
     "source-map": "0.5.6",
     "stylelint": "~8.0.0",
+    "svg-inline-loader": "0.8.0",
     "underscore": "1.8.3",
     "url-loader": "0.5.9",
-    "webpack": "3.4.1"
+    "webpack": "3.5.2"
   },
   "scripts": {
     "docs": "jsdoc -c docs/jsdoc.conf.json",

@@ -1,9 +1,10 @@
 import Events from 'utils/backbone.events';
 import ariaLabel from 'utils/aria';
 import utils from 'utils/helpers';
+import svgParse from 'utils/svgParser';
 
 export default class Tooltip {
-    constructor(name, ariaText, elementShown) {
+    constructor(name, ariaText, elementShown, svgIcons) {
         Object.assign(this, Events);
         this.el = document.createElement('div');
         let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
@@ -20,6 +21,11 @@ export default class Tooltip {
         this.componentType = 'tooltip';
 
         this.el.appendChild(this.container);
+        if (svgIcons && svgIcons.length > 0) {
+            svgIcons.forEach((svgIcon) => {
+                this.el.appendChild(svgParse(svgIcon));
+            });
+        }
     }
 
     addContent(elem) {

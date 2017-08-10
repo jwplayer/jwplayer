@@ -821,7 +821,8 @@ export default function Api(element) {
         },
 
         /** Adds or updates a button in the player's control bar. The button is only displayed when controls are active.
-         * @param {string} img - An image URL to use as the button icon.
+         * @param {string} img - The image that will be used as the button icon.
+            Can be the url to an image or the content of an SVG in string.
          * @param {string} tooltip - A tooltip label to display when the button is hovered.
          * @param {function} callback - A callback to invoke when the button is clicked.
          * @param {string} id - The id of the button to add or update.
