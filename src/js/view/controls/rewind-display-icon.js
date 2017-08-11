@@ -5,7 +5,7 @@ import UI from 'utils/ui';
 
 export default class RewindDisplayIcon {
     constructor(model, api) {
-        this.el = utils.createElement(displayIconTemplate('rewind', model.get('localization').playback), REWIND_ICON);
+        this.el = utils.createElement(displayIconTemplate('rewind', model.get('localization').rewind, REWIND_ICON));
 
         this.iconUI = new UI(this.el).on('click tap', function() {
             const currentPosition = model.get('position');
