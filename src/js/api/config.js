@@ -47,7 +47,8 @@ const Defaults = {
         nextUp: 'Next Up',
         nextUpClose: 'Next Up Close',
         related: 'Discover',
-        close: 'Close'
+        close: 'Close',
+        settings: 'Settings'
     },
     renderCaptionsNatively: true,
     nextUpDisplay: true
