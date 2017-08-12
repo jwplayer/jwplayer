@@ -974,8 +974,8 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @param {function} pluginClass - The plugin function or class to instantiate with new player instances.
      * @param {function} [pluginClass2] - (TODO: remove in 8.0.0) When passed in, the previous argument is a path to the flash plugin and this argument is the JS contructor.
      */
-    registerPlugin(name, minimumVersion, pluginClass, pluginClass2) {
-        registerPlugin(name, minimumVersion, pluginClass, pluginClass2);
+    registerPlugin(name, minimumVersion, pluginClass) {
+        registerPlugin(name, minimumVersion, pluginClass);
     },
 
     /**

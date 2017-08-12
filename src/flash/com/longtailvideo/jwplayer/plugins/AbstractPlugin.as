@@ -3,8 +3,8 @@ import com.longtailvideo.jwplayer.player.IPlayer;
 
 import flash.display.Sprite;
 
-public class AbstractPlugin extends Sprite implements IPlugin6 {
-    public function initPlugin(player:IPlayer, config:PluginConfig):void {
+public class AbstractPlugin extends Sprite implements IPlugin {
+    public function initPlugin(player:IPlayer):void {
     }
 
     public function resize(width:Number, height:Number):void {

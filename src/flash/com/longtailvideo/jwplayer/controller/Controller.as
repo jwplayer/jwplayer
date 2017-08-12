@@ -62,15 +62,6 @@ public class Controller extends GlobalEventDispatcher {
         setup.setupInterface();
     }
 
-    public function runSetupPlugins(callback:Function):void {
-        var setup:PlayerSetup = new PlayerSetup(_player, _model, _view);
-
-        setup.addEventListener(Event.COMPLETE, callback);
-        setup.addEventListener(ErrorEvent.ERROR, setupError);
-
-        setup.setupPlugins();
-    }
-
     public function lockPlayback(plugin:IPlugin, callback:Function):void {
         var wasLocked:Boolean = locking;
 

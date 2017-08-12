@@ -9,7 +9,6 @@ import com.longtailvideo.jwplayer.media.SoundMediaProvider;
 import com.longtailvideo.jwplayer.media.VideoMediaProvider;
 import com.longtailvideo.jwplayer.parsers.JWParser;
 import com.longtailvideo.jwplayer.player.PlayerState;
-import com.longtailvideo.jwplayer.plugins.PluginConfig;
 
 import flash.events.Event;
 import flash.media.SoundTransform;
@@ -170,16 +169,8 @@ public class Model extends GlobalEventDispatcher {
         _config.setConfig(config);
     }
 
-    public function get plugins():Array {
-        return _config.plugins;
-    }
-
-    public function set plugins(value:Array):void {
-        _config.plugins = value;
-    }
-
-    public function pluginConfig(id:String):PluginConfig {
-        return _config.pluginConfig(id);
+    public function get vast():Boolean {
+        return _config.vast;
     }
 
     /** Instruct the currently playing media to seek to the specified position. **/
