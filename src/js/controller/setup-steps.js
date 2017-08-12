@@ -9,10 +9,10 @@ import { log } from 'utils/helpers';
 
 const resolved = Promise.resolve();
 
-function loadPlugins(_model) {
+function loadPlugins(_model, _api) {
     window.jwplayerPluginJsonp = registerPlugin;
     const pluginLoader = pluginsLoadPlugins(_model.get('id'), _model.get('plugins'));
-    return pluginLoader.load().then(events => {
+    return pluginLoader.load(_api).then(events => {
         if (events) {
             events.forEach(object => {
                 if (object instanceof Error) {
@@ -20,21 +20,15 @@ function loadPlugins(_model) {
                 }
             });
         }
-        return pluginLoader;
     });
 }
 
 function initPlugins(_model, _api, _view) {
     return Promise.all([
         setupView(_model, _view),
-        loadPlugins(_model)
-    ]).then(all => {
-        const pluginLoader = all[1];
+        loadPlugins(_model, _api)
+    ]).then(() => {
         delete window.jwplayerPluginJsonp;
-        if (destroyed(_model)) {
-            return;
-        }
-        pluginLoader.setupPlugins(_api, _model);
     });
 }
 
