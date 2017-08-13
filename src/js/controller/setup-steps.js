@@ -93,7 +93,6 @@ function setupView(_model, _view) {
         if (destroyed(_model)) {
             return;
         }
-        _model.setAutoStart();
         _view.setup();
     });
 
