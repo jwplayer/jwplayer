@@ -13,13 +13,13 @@ import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 
+require('css/controls.less');
+
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
 const reasonInteraction = function() {
     return { reason: 'interaction' };
 };
-
-let stylesInjected = false;
 
 export default class Controls {
     constructor(context, playerContainer) {
@@ -47,10 +47,6 @@ export default class Controls {
             mouseout: () => this.userActive()
         };
         this.dimensions = {};
-        if (!stylesInjected) {
-            stylesInjected = true;
-            require('css/controls.less');
-        }
     }
 
     enable(api, model) {

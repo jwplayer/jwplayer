@@ -1,42 +1,11 @@
 import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import Promise from 'polyfills/promise';
-import { registerPlugin, loadPlugins as pluginsLoadPlugins } from 'plugins/plugins';
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
-import { log } from 'utils/helpers';
 
 const resolved = Promise.resolve();
-
-function loadPlugins(_model) {
-    window.jwplayerPluginJsonp = registerPlugin;
-    const pluginLoader = pluginsLoadPlugins(_model.get('id'), _model.get('plugins'));
-    return pluginLoader.load().then(events => {
-        if (events) {
-            events.forEach(object => {
-                if (object instanceof Error) {
-                    log(object.message);
-                }
-            });
-        }
-        return pluginLoader;
-    });
-}
-
-function initPlugins(_model, _api, _view) {
-    return Promise.all([
-        setupView(_model, _view),
-        loadPlugins(_model)
-    ]).then(all => {
-        const pluginLoader = all[1];
-        delete window.jwplayerPluginJsonp;
-        if (destroyed(_model)) {
-            return;
-        }
-        pluginLoader.setupPlugins(_api, _model);
-    });
-}
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -94,17 +63,6 @@ function loadSkin(_model) {
     return resolved;
 }
 
-function setupView(_model, _view) {
-    return loadSkin(_model).then(() => {
-        if (destroyed(_model)) {
-            return;
-        }
-        _model.setAutoStart();
-        _view.setup();
-    });
-
-}
-
 function setPlaylistItem(_model) {
 
     return new Promise(resolve => {
@@ -117,7 +75,7 @@ function destroyed(_model) {
     return _model.attributes._destroyed;
 }
 
-const startSetup = function(_api, _model, _view) {
+const startSetup = function(_api, _model) {
     if (destroyed(_model)) {
         return Promise.reject();
     }
@@ -125,10 +83,7 @@ const startSetup = function(_api, _model, _view) {
         filterPlaylist(_model),
         // filterPlaylist -->
         // -- loadPlaylist,
-        initPlugins(_model, _api, _view),
-        // loadPlugins,
-        // setupView -->
-        // -- loadSkin
+        loadSkin(_model)
     ]).then(() => {
         if (destroyed(_model)) {
             return;

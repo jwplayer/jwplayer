@@ -35,12 +35,12 @@ import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
 
+require('css/jwplayer.less');
+
 let ControlsModule;
 
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
-
-let stylesInjected = false;
 
 function View(_api, _model) {
     const _this = Object.assign(this, Events, {
@@ -376,10 +376,6 @@ function View(_api, _model) {
             addClass(_playerElement, 'jw-flag-controls-hidden');
         }
 
-        if (!stylesInjected) {
-            stylesInjected = true;
-            require('css/jwplayer.less');
-        }
         if (_isIE) {
             addClass(_playerElement, 'jw-ie');
         }
@@ -396,7 +392,12 @@ function View(_api, _model) {
 
         this.isSetup = true;
         _model.set('viewSetup', true);
-        _model.set('inDom', document.body.contains(_playerElement));
+
+        const inDOM = document.body.contains(_playerElement);
+        if (inDOM) {
+            viewsManager.observe(_playerElement);
+        }
+        _model.set('inDom', inDOM);
     };
 
     function updateVisibility() {

@@ -30,6 +30,7 @@ const Model = function() {
         Object.assign(this.attributes, config, INITIAL_PLAYER_STATE);
 
         this.updateProviders();
+        this.setAutoStart();
 
         return this;
     };
@@ -506,7 +507,7 @@ const Model = function() {
     // Mobile players always wait to become viewable.
     // Desktop players must have autostart set to viewable
     this.setAutoStart = function(autoStart) {
-        if (!_.isUndefined(autoStart)) {
+        if (autoStart !== undefined) {
             this.set('autostart', autoStart);
         }
 

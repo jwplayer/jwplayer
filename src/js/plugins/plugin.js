@@ -58,7 +58,27 @@ Object.assign(Plugin.prototype, {
 
     getNewInstance(api, config, div) {
         const PluginClass = this.js;
-        return new PluginClass(api, config, div);
+        const pluginInstance = new PluginClass(api, config, div);
+
+        pluginInstance.addToPlayer = function() {
+            const overlaysElement = api.getContainer().querySelector('.jw-overlays');
+            if (!overlaysElement) {
+                return;
+            }
+            div.left = overlaysElement.style.left;
+            div.top = overlaysElement.style.top;
+            overlaysElement.appendChild(div);
+            pluginInstance.displayArea = overlaysElement;
+        };
+
+        pluginInstance.resizeHandler = function() {
+            const displayarea = pluginInstance.displayArea;
+            if (displayarea) {
+                pluginInstance.resize(displayarea.clientWidth, displayarea.clientHeight);
+            }
+        };
+
+        return pluginInstance;
     }
 });
 

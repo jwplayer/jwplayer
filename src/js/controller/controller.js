@@ -54,7 +54,7 @@ Object.assign(Controller.prototype, {
         _view = this._view = new View(_api, _model);
         _view.on('all', _triggerAfterReady, _this);
 
-        _setup = new Setup(_api, _model, _view);
+        _setup = new Setup(_api, _model);
 
         _model.mediaController.on('all', _triggerAfterReady, _this);
         _model.mediaController.on(MEDIA_COMPLETE, function() {
@@ -858,6 +858,8 @@ Object.assign(Controller.prototype, {
         ], () => !_model.getVideo());
         // Add commands from CoreLoader to queue
         apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
+        
+        _view.setup();
 
         return _setup.start();
     },
