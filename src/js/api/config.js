@@ -13,6 +13,7 @@ const Defaults = {
     mobilecontrols: false,
     defaultPlaybackRate: 1,
     playbackRateControls: false,
+    playbackRates: [0.5, 1, 1.25, 1.5, 2],
     repeat: false,
     castAvailable: false,
     skin: '',
@@ -104,7 +105,7 @@ const Config = function(options, persisted) {
     let rateControls = config.playbackRateControls;
 
     if (rateControls) {
-        let rates = [0.5, 1, 1.25, 1.5, 2];
+        let rates = config.playbackRates;
 
         if (_.isArray(rateControls)) {
             rates = rateControls
