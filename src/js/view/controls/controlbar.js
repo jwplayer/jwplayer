@@ -13,6 +13,7 @@ import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
+import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
@@ -193,6 +194,8 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, this._localization),
+            // TODO: instantiate with proper constructor when John Bartos' menu is merged
+            settings: button('jw-icon-settings', () => {}, this._localization.settings, [SETTINGS_ICON]),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
             }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
@@ -218,6 +221,7 @@ export default class Controlbar {
             elements.audiotracks,
             elements.playbackrates,
             elements.cast,
+            elements.settings,
             elements.fullscreen
         ].filter(e => e);
 
@@ -247,6 +251,8 @@ export default class Controlbar {
 
         // Initial State
         elements.play.show();
+        // TODO: update when John Bartos' menu is merged
+        elements.settings.show();
         elements.fullscreen.show();
         if (elements.mute) {
             elements.mute.show();
