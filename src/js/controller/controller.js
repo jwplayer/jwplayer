@@ -72,6 +72,7 @@ define([
             var _stopPlaylist = false;
             var _interruptPlay;
             var _this = this;
+            var checkAutoStartLastContext = {};
 
             var _video = function () {
                 return _model.getVideo();
@@ -281,6 +282,28 @@ define([
                 }
             }
 
+            function autostartFallbackOnItemReady() {
+                cancelAutostartFallbackOnItemReady();
+                checkAutoStartLastContext = { bail: false };
+                _model.once('itemReady', checkAutoStartLast, checkAutoStartLastContext);
+            }
+
+            function cancelAutostartFallbackOnItemReady() {
+                checkAutoStartLastContext.bail = true;
+                _model.off('itemReady', checkAutoStartLast);
+            }
+
+            function checkAutoStartLast() {
+                // Use promise as setImmediate() to allow synchonous calls to load() and play() set the playReason
+                Promise.resolve().then(() => {
+                    const context = this;
+                    if (context.bail) {
+                        return;
+                    }
+                    _checkAutoStart();
+                });
+            }
+
             function viewableChange(model, viewable) {
                 _this.trigger('viewable', {
                     viewable: viewable
@@ -335,16 +358,13 @@ define([
                 _this.trigger('destroyPlugin', {});
                 _stop(true);
 
-                // Check for autostart only when loading a playlist, so that we don't autostart while progressing or using the API
-                _model.off('itemReady', _checkAutoStart);
+                autostartFallbackOnItemReady();
 
                 switch (typeof item) {
                     case 'string':
-                        _model.once('itemReady', _checkAutoStart);
                         _loadPlaylist(item);
                         break;
                     case 'object':
-                        _model.once('itemReady', _checkAutoStart);
                         var success = _setPlaylist(item, feedData);
                         if (success) {
                             _setItem(0);
@@ -383,6 +403,7 @@ define([
             }
 
             function _play(meta = {}) {
+                cancelAutostartFallbackOnItemReady();
                 _model.set('playReason', meta.reason);
 
                 if (_model.get('state') === states.ERROR) {
@@ -443,8 +464,7 @@ define([
             }
 
             function _stop(internal) {
-                // Reset the autostart play
-                _model.off('itemReady', _checkAutoStart);
+                cancelAutostartFallbackOnItemReady();
 
                 var fromApi = !internal;
 
