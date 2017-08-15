@@ -108,22 +108,22 @@ const Config = function(options, persisted) {
         let rates = config.playbackRates;
 
         if (_.isArray(rateControls)) {
-            rates = rateControls
-                .filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
-                .map(rate => Math.round(rate * 4) / 4);
-
-            if (rates.indexOf(1) < 0) {
-                rates.push(1);
-            }
-
-            rates.sort();
+            rates = rateControls;
         }
+        rates = rates.filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
+            .map(rate => Math.round(rate * 4) / 4);
 
-        config.playbackRateControls = rates;
+        if (rates.indexOf(1) < 0) {
+            rates.push(1);
+        }
+        rates.sort();
+
+        config.playbackRateControls = true;
+        config.playbackRates = rates;
     }
 
     // Set defaultPlaybackRate to 1 if the value from storage isn't in the playbackRateControls menu
-    if (!config.playbackRateControls || config.playbackRateControls.indexOf(config.defaultPlaybackRate) < 0) {
+    if (!config.playbackRateControls || config.playbackRates.indexOf(config.defaultPlaybackRate) < 0) {
         config.defaultPlaybackRate = 1;
     }
 

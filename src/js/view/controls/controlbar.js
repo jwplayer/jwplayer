@@ -329,8 +329,9 @@ export default class Controlbar {
 
         let playbackRateControls = _model.get('playbackRateControls');
         if (playbackRateControls) {
-            let selectedIndex = playbackRateControls.indexOf(this._model.get('playbackRate'));
-            let playbackRateLabels = playbackRateControls.map((playbackRate) => {
+            let playbackRates = _model.get('playbackRates');
+            let selectedIndex = playbackRates.indexOf(this._model.get('playbackRate'));
+            let playbackRateLabels = playbackRates.map((playbackRate) => {
                 return {
                     label: playbackRate + 'x',
                     rate: playbackRate
@@ -340,19 +341,19 @@ export default class Controlbar {
             elements.playbackrates.setup(
                 playbackRateLabels,
                 selectedIndex,
-                { defaultIndex: playbackRateControls.indexOf(1), isToggle: false }
+                { defaultIndex: playbackRates.indexOf(1), isToggle: false }
             );
 
             _model.change('streamType provider', this.togglePlaybackRateControls, this);
             _model.change('playbackRate', this.onPlaybackRate, this);
 
             elements.playbackrates.on('select', function (index) {
-                this._model.setPlaybackRate(playbackRateControls[index]);
+                this._model.setPlaybackRate(playbackRates[index]);
             }, this);
 
             elements.playbackrates.on('toggleValue', function () {
-                const index = playbackRateControls.indexOf(this._model.get('playbackRate'));
-                this._model.setPlaybackRate(playbackRateControls[index ? 0 : 1]);
+                const index = playbackRates.indexOf(this._model.get('playbackRate'));
+                this._model.setPlaybackRate(playbackRates[index ? 0 : 1]);
             }, this);
         }
 
@@ -387,13 +388,14 @@ export default class Controlbar {
         const showPlaybackRateControls =
             model.getVideo().supportsPlaybackRate &&
             model.get('streamType') !== 'LIVE' &&
-            model.get('playbackRateControls').length > 1;
+            model.get('playbackRateControls') &&
+            model.get('playbackRates').length > 1;
 
         utils.toggleClass(this.elements.playbackrates.el, 'jw-hidden', !showPlaybackRateControls);
     }
 
     onPlaybackRate(model, value) {
-        this.elements.playbackrates.selectItem(model.get('playbackRateControls').indexOf(value));
+        this.elements.playbackrates.selectItem(model.get('playbackRates').indexOf(value));
     }
 
     onPlaylistItem() {
