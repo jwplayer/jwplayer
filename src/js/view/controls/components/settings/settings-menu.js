@@ -53,15 +53,13 @@ export default function SettingsMenu(visibilityChangeHandler) {
 }
 
 const addDocumentListeners = (handler) => {
-    const addListener = document.addEventListener;
-    addListener('mousedown', handler);
-    addListener('pointerdown', handler);
-    addListener('touchstart', handler);
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('pointerdown', handler);
+    document.addEventListener('touchstart', handler);
 };
 
 const removeDocumentListeners = (handler) => {
-    const removeListener = document.removeEventListener;
-    removeListener('mousedown', handler);
-    removeListener('pointerdown', handler);
-    removeListener('touchstart', handler);
+    document.removeEventListener('mousedown', handler);
+    document.removeEventListener('pointerdown', handler);
+    document.removeEventListener('touchstart', handler);
 };
