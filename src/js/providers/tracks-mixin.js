@@ -438,12 +438,10 @@ function addTextTracks(tracksArray) {
         this._initTextTracks();
     }
 
-    for (var i = 0; i < tracksArray.length; i++) {
-        /* eslint-disable no-loop-func */
-        var itemTrack = tracksArray[i];
+    tracksArray.forEach(itemTrack => {
         // only add valid and supported kinds https://developer.mozilla.org/en-US/docs/Web/HTML/Element/track
         if (itemTrack.kind && !_kindSupported(itemTrack.kind)) {
-            continue;
+            return;
         }
         var textTrackAny = _createTrack.call(this, itemTrack);
         _addTrackToList.call(this, textTrackAny);
@@ -460,7 +458,7 @@ function addTextTracks(tracksArray) {
                     });
                 });
         }
-    }
+    });
 
     if (this._textTracks && this._textTracks.length) {
         this.trigger('subtitlesTracks', { tracks: this._textTracks });

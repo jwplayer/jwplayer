@@ -1,6 +1,5 @@
 import VTTCue from 'parsers/captions/vttcue';
 import { chunkLoadErrorHandler } from '../api/core-loader';
-import _ from 'utils/underscore';
 import utils from 'utils/helpers';
 import { localName } from 'parsers/parsers';
 import srt from 'parsers/captions/srt';
@@ -13,18 +12,20 @@ export function loadFile(track, successHandler, errorHandler) {
 }
 
 export function cancelXhr(tracks) {
-    _.each(tracks, function(track) {
-        var xhr = track.xhr;
-        if (xhr) {
-            xhr.onload = null;
-            xhr.onreadystatechange = null;
-            xhr.onerror = null;
-            if ('abort' in xhr) {
-                xhr.abort();
+    if (tracks) {
+        tracks.forEach(track => {
+            var xhr = track.xhr;
+            if (xhr) {
+                xhr.onload = null;
+                xhr.onreadystatechange = null;
+                xhr.onerror = null;
+                if ('abort' in xhr) {
+                    xhr.abort();
+                }
             }
-        }
-        delete track.xhr;
-    });
+            delete track.xhr;
+        });
+    }
 }
 
 export function convertToVTTCues(cues) {
