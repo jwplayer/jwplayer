@@ -107,7 +107,7 @@ const Config = function(options, persisted) {
     if (rateControls) {
         let rates = config.playbackRates;
 
-        if (_.isArray(rateControls)) {
+        if (Array.isArray(rateControls)) {
             rates = rateControls;
         }
         rates = rates.filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
@@ -149,7 +149,7 @@ const Config = function(options, persisted) {
         ]);
 
         config.playlist = [ obj ];
-    } else if (_.isArray(configPlaylist.playlist)) {
+    } else if (Array.isArray(configPlaylist.playlist)) {
         // The "playlist" in the config is actually a feed that contains a playlist
         config.feedData = configPlaylist;
         config.playlist = configPlaylist.playlist;
