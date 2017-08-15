@@ -115,7 +115,7 @@ export default class Controls {
         const visibilityChangeHandler = (visible) => {
             utils.toggleClass(this.div, 'jw-settings-open', visible);
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
-            this.userActive();
+            // this.userActive();
         };
         const settingsMenu = this.settingsMenu = SettingsMenu(visibilityChangeHandler);
         settingsMenu.setup();

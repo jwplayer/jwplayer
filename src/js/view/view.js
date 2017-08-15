@@ -486,10 +486,10 @@ function View(_api, _model) {
         clickHandler.on({
             click: () => {
                 _this.trigger(DISPLAY_CLICK);
-                if (controls) {
-                    const settingsMenu = _controls.settingsMenu;
-                    if (settingsMenu && settingsMenu.visible) {
-                        settingsMenu.close();
+
+                if (_controls) {
+                    if (settingsMenuVisible()) {
+                        _controls.settingsMenu.close();
                     } else {
                         api.play(reasonInteraction());
                     }
@@ -497,6 +497,9 @@ function View(_api, _model) {
             },
             tap: () => {
                 _this.trigger(DISPLAY_CLICK);
+                if (settingsMenuVisible()) {
+                    _controls.settingsMenu.close();
+                }
                 const state = model.get('state');
 
                 if (controls &&
@@ -504,6 +507,7 @@ function View(_api, _model) {
                     (_instreamModel && _instreamModel.get('state') === STATE_PAUSED))) {
                     api.play(reasonInteraction());
                 }
+
                 if (controls && state === STATE_PAUSED) {
                     // Toggle visibility of the controls when tapping the media
                     // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
@@ -526,6 +530,7 @@ function View(_api, _model) {
             move: () => _controls && _controls.userActive(),
             over: () => _controls && _controls.userActive()
         });
+
         return clickHandler;
     }
 
@@ -842,6 +847,17 @@ function View(_api, _model) {
             _controls.userActive();
         }
     }
+
+    const settingsMenuVisible = () => {
+        let visible = false;
+        if (_controls) {
+            const settingsMenu = _controls.settingsMenu;
+            if (settingsMenu && settingsMenu.visible) {
+                visible = true;
+            }
+        }
+        return visible;
+    };
 
     this.setupInstream = function (instreamModel) {
         this.instreamModel = _instreamModel = instreamModel;
