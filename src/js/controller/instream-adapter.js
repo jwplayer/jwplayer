@@ -33,7 +33,6 @@ var InstreamAdapter = function(_controller, _model, _view) {
     var _arrayOptions;
     var _arrayIndex = 0;
     var _options = {};
-    var _oldProvider;
     var _oldpos;
     var _olditem;
     var _this = this;
@@ -73,13 +72,9 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
     this.init = function(sharedVideoTag) {
         // Keep track of the original player state
-        _oldProvider = _model.getVideo();
+        const provider = _model.getVideo();
         _oldpos = _model.get('position');
         _olditem = _model.get('playlist')[_model.get('item')];
-        // Reset playback rate to 1 in case we reuse the video tag used to play back ad content
-        if (_oldProvider) {
-            _oldProvider.setPlaybackRate(1);
-        }
 
         _instream.on('all', _instreamForward, this);
         _instream.on(MEDIA_TIME, _instreamTime, this);
@@ -89,22 +84,24 @@ var InstreamAdapter = function(_controller, _model, _view) {
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
 
+        // Reset playback rate to 1 in case we reuse the video tag used to play back ad content
+        if (provider) {
+            // FIXME: Playback rate should be reset on the tag playing the ad, not the media provider
+            provider.setPlaybackRate(1);
+            // If the player's currently playing, pause the video tag
+            var currState = _model.get('state');
+            if (!sharedVideoTag && (currState === STATE_PLAYING || currState === STATE_BUFFERING)) {
+                provider.pause();
+            }
+        }
+
         _model.mediaModel.set('state', STATE_BUFFERING);
 
         if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {
             // make sure video restarts after preroll
             _oldpos = 0;
-            _model.set('preInstreamState', 'instream-preroll');
-        } else if (_oldProvider && _model.checkComplete() || _model.get('state') === STATE_COMPLETE) {
-            _model.set('preInstreamState', 'instream-postroll');
-        } else {
-            _model.set('preInstreamState', 'instream-midroll');
-        }
-
-        // If the player's currently playing, pause the video tag
-        var currState = _model.get('state');
-        if (!sharedVideoTag && (currState === STATE_PLAYING || currState === STATE_BUFFERING)) {
-            _oldProvider.pause();
+        } else if (_model.checkComplete() || _model.get('state') === STATE_COMPLETE) {
+            _oldpos = -1;
         }
 
         // Show instream state instead of normal player state
@@ -312,27 +309,12 @@ var InstreamAdapter = function(_controller, _model, _view) {
             // Re-attach the controller
             _controller.attachMedia();
 
-            var oldMode = _model.get('preInstreamState');
-            switch (oldMode) {
-                case 'instream-preroll':
-                case 'instream-midroll':
-                    var item = Object.assign({}, _olditem);
-                    item.starttime = _oldpos;
-                    _model.loadVideo(item);
-
-                    // On error, mediaModel has buffering states in mobile, but oldProvider's state is playing.
-                    // So, changing mediaModel's state to playing does not change provider state unless we do this
-                    if (OS.mobile && (_model.mediaModel.get('state') === STATE_BUFFERING)) {
-                        _oldProvider.setState(STATE_BUFFERING);
-                    }
-                    _oldProvider.play();
-                    break;
-                case 'instream-postroll':
-                case 'instream-idle':
-                    _oldProvider.stop();
-                    break;
-                default:
-                    break;
+            if (_oldpos >= 0) {
+                var item = Object.assign({}, _olditem);
+                item.starttime = _oldpos;
+                _model.loadVideo(item);
+            } else if (_oldpos === -1) {
+                _model.stopVideo();
             }
         }
     };

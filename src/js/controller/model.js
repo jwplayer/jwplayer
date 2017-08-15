@@ -244,19 +244,24 @@ const Model = function() {
 
     this.detachMedia = function() {
         _attached = false;
-        _provider.off('all', _videoEventHandler, this);
-        return _provider.detachMedia();
+        if (_provider) {
+            _provider.off('all', _videoEventHandler, this);
+            _provider.detachMedia();
+        }
     };
 
     this.attachMedia = function() {
         _attached = true;
-        _provider.off('all', _videoEventHandler, this);
-        _provider.on('all', _videoEventHandler, this);
+        if (_provider) {
+            _provider.off('all', _videoEventHandler, this);
+            _provider.on('all', _videoEventHandler, this);
+        }
         if (_beforecompleted) {
             this.playbackComplete();
         }
-
-        _provider.attachMedia();
+        if (_provider) {
+            _provider.attachMedia();
+        }
 
         // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
         this.setPlaybackRate(this.get('defaultPlaybackRate'));
@@ -302,7 +307,6 @@ const Model = function() {
         index = (index + playlist.length) % playlist.length;
 
         this.set('item', index);
-        this.set('playlistItem', playlist[index]);
         this.setActiveItem(playlist[index]);
     };
 
@@ -315,6 +319,7 @@ const Model = function() {
         this.set('position', item.starttime || 0);
         this.set('minDvrWindow', item.minDvrWindow);
         this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
+        this.set('playlistItem', item);
         this.setProvider(item);
     };
 
@@ -429,7 +434,7 @@ const Model = function() {
         this.set('state', STATE_BUFFERING);
         const providerNeeded = _providers.required([item]);
         return _providers.load(providerNeeded).then(() => {
-            if (!_provider && _attached && this.get('playlist')[this.get('item')] === item) {
+            if (!_provider && _attached && this.get('playlist')[this.get('item')].file === item.file) {
                 this.setProvider(item);
                 _provider.load(item);
             }

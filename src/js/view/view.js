@@ -872,8 +872,8 @@ function View(_api, _model) {
         this.setAltText('');
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
-        if (_model.getVideo) {
-            const provider = _model.getVideo();
+        const provider = _model.getVideo();
+        if (provider) {
             provider.setContainer(_videoLayer);
         }
         _setLiveMode(_model, _model.get('streamType'));
