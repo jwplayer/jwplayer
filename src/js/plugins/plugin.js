@@ -35,9 +35,8 @@ function getJSPath(url) {
     }
 }
 
-const Plugin = function(url, config) {
+const Plugin = function(url) {
     this.url = url;
-    this.config = config;
 };
 
 Object.assign(Plugin.prototype, {
