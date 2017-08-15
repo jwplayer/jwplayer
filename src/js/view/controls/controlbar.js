@@ -237,6 +237,11 @@ export default class Controlbar {
         ].filter(e => e);
 
         const menus = this.menus = [
+            elements.hd,
+            elements.cc,
+            elements.audiotracks,
+            elements.playbackrates,
+            elements.volumetooltip
         ].filter(e => e);
 
         this.el = document.createElement('div');
