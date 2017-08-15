@@ -214,9 +214,9 @@ export default class Controlbar {
             elements.volumetooltip,
             elements.mute,
             elements.alt,
+            elements.live,
             elements.elapsed,
             elements.countdown,
-            elements.live,
             elements.duration,
             elements.spacer,
             elements.next,
@@ -414,7 +414,7 @@ export default class Controlbar {
         let countdownTime;
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
-            elapsedTime = countdownTime = '-' + utils.timeFormat(-duration);
+            elapsedTime = countdownTime = '-' + utils.timeFormat(this.dvrIsLive() ? -duration : -val);
         } else {
             elapsedTime = utils.timeFormat(val);
             countdownTime = utils.timeFormat(duration - val);
@@ -424,13 +424,7 @@ export default class Controlbar {
     }
 
     onDuration(model, val) {
-        let totalTime;
-        if (model.get('streamType') === 'DVR') {
-            totalTime = 'Live';
-        } else {
-            totalTime = utils.timeFormat(val);
-        }
-        this.elements.duration.textContent = totalTime;
+        this.elements.duration.textContent = utils.timeFormat(Math.abs(val));
     }
 
     onFullscreen(model, val) {
@@ -439,9 +433,12 @@ export default class Controlbar {
 
     checkDvrLiveEdge() {
         if (this._model.get('streamType') === 'DVR') {
-            const currentPosition = this._model.get('position');
-            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition >= dvrSeekLimit);
+            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', this.dvrIsLive());
         }
+    }
+
+    dvrIsLive() {
+        return this._model.get('position') >= dvrSeekLimit;
     }
 
     element() {
