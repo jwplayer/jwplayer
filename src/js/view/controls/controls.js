@@ -16,6 +16,8 @@ import SettingsMenu from 'view/controls/components/settings/settings-menu';
 
 require('css/controls.less');
 
+require('css/controls.less');
+
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
 const reasonInteraction = function() {

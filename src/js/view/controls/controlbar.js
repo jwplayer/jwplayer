@@ -198,6 +198,8 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, this._localization),
+            // TODO: instantiate with proper constructor when John Bartos' menu is merged
+            settings: button('jw-icon-settings', () => {}, this._localization.settings, [SETTINGS_ICON]),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
             }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
@@ -225,6 +227,7 @@ export default class Controlbar {
             elements.audiotracks,
             elements.playbackrates,
             elements.cast,
+            elements.settings,
             elements.fullscreen
         ].filter(e => e);
 
@@ -249,6 +252,8 @@ export default class Controlbar {
 
         // Initial State
         elements.play.show();
+        // TODO: update when John Bartos' menu is merged
+        elements.settings.show();
         elements.fullscreen.show();
         if (elements.mute) {
             elements.mute.show();

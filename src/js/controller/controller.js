@@ -101,10 +101,10 @@ Object.assign(Controller.prototype, {
                 model.set('playOnViewable', false);
             }
         });
-        _model.on('itemReady', function() {
+        _model.on('change:playlistItem', function(model, playlistItem) {
             _this.triggerAfterReady(PLAYLIST_ITEM, {
                 index: _model.get('item'),
-                item: _model.get('playlistItem')
+                item: playlistItem
             });
         });
         _model.on('change:playlist', function(model, playlist) {
@@ -302,7 +302,6 @@ Object.assign(Controller.prototype, {
             if (_model.get('state') === STATE_ERROR) {
                 _model.set('state', STATE_IDLE);
             }
-            _model.set('preInstreamState', 'instream-idle');
 
             _this.trigger('destroyPlugin', {});
             _stop(true);
@@ -364,6 +363,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _play(meta = {}) {
+            _model.off('itemReady', _checkAutoStart);
             const playReason = meta.reason;
             _model.set('playReason', playReason);
 
@@ -424,7 +424,6 @@ Object.assign(Controller.prototype, {
         }
 
         function _stop(internal) {
-            // Reset the autostart play
             _model.off('itemReady', _checkAutoStart);
 
             const fromApi = !internal;
