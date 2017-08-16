@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "Running ESLint & Karma"
+
+npm run lint
+lint=$?
+if [ $lint -ne 0 ]; then
+    echo "ESLint Failed. Please fix the errors and push again. \n\n\n\n"
+  exit 1
+fi
+
+karma start --browsers=PhantomJS --reporters=mocha
+karma=$?
+if [ $karma -ne 0 ]; then
+    echo "Karma Failed. Please fix the failing unit tests and push again. \n\n\n\n"
+  exit 1
+fi
