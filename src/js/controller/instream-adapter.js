@@ -280,6 +280,10 @@ var InstreamAdapter = function(_controller, _model, _view) {
         if (evt.width && evt.height) {
             _view.resizeMedia();
         }
+        if (evt.duration) {
+            _model.mediaModel.set('duration', evt.duration);
+            _model.set('duration', evt.duration);
+        }
     };
 
     this.destroy = function() {
