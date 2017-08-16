@@ -59,7 +59,8 @@
 @ui-margin: 1.5em;
 
 // Controlbar
-@controlbar-height: 2.5em;
+// The controlbar height flexes to the height of the buttons (defined by the touch height) plus the height of the slider (defined by the knob height)
+@controlbar-height: @mobile-touch-target + @slider-fixed-knob-height;
 @controlbar-icon-size: 0.5em;
 
 // Rails and sliders
@@ -76,7 +77,7 @@
 
 @slider-fixed-height: @mobile-touch-target / 2;
 @slider-fixed-rail-height: 2px;
-@slider-fixed-knob-height: 1em;
+@slider-fixed-knob-height: 16px;
 @slider-fixed-knob-width: @slider-fixed-knob-height;
 @slider-fixed-knob-border-radius: 100%;
 

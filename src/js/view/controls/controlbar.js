@@ -146,6 +146,10 @@ export default class Controlbar {
             _api.next();
         }, next, [NEXT_ICON]);
 
+        const settingsButton = button('jw-settings-button', () => {
+            this.trigger('settingsInteraction', 'toggle');
+        }, this._localization.settings, [SETTINGS_ICON]);
+
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
                 .on('over', function () {
@@ -194,13 +198,12 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, this._localization),
-            // TODO: instantiate with proper constructor when John Bartos' menu is merged
-            settings: button('jw-icon-settings', () => {}, this._localization.settings, [SETTINGS_ICON]),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
             }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
             spacer: div('jw-spacer'),
-            buttonContainer: div('jw-button-container')
+            buttonContainer: div('jw-button-container'),
+            settingsButton
         };
 
         // Filter out undefined elements
@@ -216,12 +219,12 @@ export default class Controlbar {
             elements.duration,
             elements.spacer,
             elements.next,
+            elements.settingsButton,
             elements.hd,
             elements.cc,
             elements.audiotracks,
             elements.playbackrates,
             elements.cast,
-            elements.settings,
             elements.fullscreen
         ].filter(e => e);
 
@@ -251,12 +254,11 @@ export default class Controlbar {
 
         // Initial State
         elements.play.show();
-        // TODO: update when John Bartos' menu is merged
-        elements.settings.show();
         elements.fullscreen.show();
         if (elements.mute) {
             elements.mute.show();
         }
+        elements.settingsButton.show();
 
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
@@ -279,8 +281,8 @@ export default class Controlbar {
             // Check for change of position to counter race condition where state is updated before the current position
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
-        // Event listeners
 
+        // Event listeners
         // Volume sliders do not exist on mobile so don't assign listeners to them.
         if (elements.volume) {
             elements.volume.on('update', function (pct) {

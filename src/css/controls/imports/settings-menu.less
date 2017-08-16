@@ -1,0 +1,61 @@
+@import "../../shared-imports/vars";
+
+.jw-settings-menu {
+    display: none;
+    position: absolute;
+    z-index: -1;
+    flex-flow: column wrap;
+    align-items: flex-start;
+    bottom: @controlbar-height;
+    right: 0;
+    height: ~"calc(100% - @{controlbar-height})";
+    width: ~"calc(100%)";
+    background-color: rgba(0, 0, 0, 0.8);
+    pointer-events: auto;
+
+    .jw-settings-open & {
+        display: flex;
+    }
+
+    .jw-breakpoint-7 &,
+    .jw-breakpoint-6 &,
+    .jw-breakpoint-5 & {
+        height: 284px;
+        width: 240px;
+        right: 12px;
+    }
+
+    .jw-breakpoint-4 &,
+    .jw-breakpoint-3 & {
+        height: 284px;
+        width: 200px;
+        right: 12px;
+    }
+}
+
+.jw-settings-topbar {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 1);
+
+    .jw-settings-close {
+        margin-left: auto;
+    }
+}
+
+.jw-settings-content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    width: 100%;
+}
+
+.jw-settings-open {
+    .jw-breakpoint-2 &,
+    .jw-breakpoint-1 & {
+        .jw-display-container {
+            display: none;
+        }
+    }
+}
