@@ -68,11 +68,10 @@ function createCastButton(castToggle, localization) {
     const ariaText = localization.cast;
 
     const castButton = document.createElement('button', 'google-cast-button');
-    castButton.className = 'jw-button-color';
     ariaLabel(castButton, ariaText);
 
     const element = document.createElement('div');
-    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast';
+    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
     element.style.display = 'none';
     element.style.cursor = 'pointer';
     element.appendChild(castButton);
@@ -322,7 +321,7 @@ export default class Controlbar {
         elements.audiotracks.on('select', function (value) {
             this._model.getVideo().setCurrentAudioTrack(value);
         }, this);
-      
+
         this._model.mediaController.on('seeked', function () {
             this.checkDvrLiveEdge();
         }, this);
@@ -481,7 +480,7 @@ export default class Controlbar {
     onFullscreen(model, val) {
         utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
     }
-              
+
     checkDvrLiveEdge() {
         if (this._model.get('streamType') === 'DVR') {
             const currentPosition = this._model.get('position');
