@@ -13,7 +13,7 @@ import utils from 'utils/helpers';
 
 describe('Api', function() {
 
-    afterEach(function() {
+    beforeEach(function() {
         utils.log = sinon.stub();
     });
 
@@ -65,7 +65,7 @@ describe('Api', function() {
         assert.equal(check, false, 'api.off works');
     });
 
-    it('bad events doesn\'t break player', function() {
+    it('bad events do not break player', function() {
         console.log = sinon.stub();
 
         const api = createApi('player');
