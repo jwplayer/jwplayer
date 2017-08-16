@@ -1,4 +1,7 @@
 import Plugin from 'plugins/plugin';
+import { log } from 'utils/helpers';
+
+const pluginsRegistered = {};
 
 /**
  * Extracts a plugin name from a string
@@ -8,16 +11,16 @@ const getPluginName = function (url) {
     return url.replace(/^(.*\/)?([^-]*)-?.*\.(js)$/, '$2');
 };
 
-const PluginModel = function (pluginsRegistered) {
-    this.addPlugin = function (url, config) {
+const PluginModel = function () {
+    this.addPlugin = function (url, fromLoader) {
         const pluginName = getPluginName(url);
         let plugin = pluginsRegistered[pluginName];
-        if (plugin) {
-            plugin.config = config;
-        } else {
-            plugin = new Plugin(url, config);
+        if (!plugin) {
+            plugin = new Plugin(url);
+            pluginsRegistered[pluginName] = plugin;
+        } else if (fromLoader && plugin.url !== url) {
+            log(`JW Plugin "${pluginName}" already loaded from "${plugin.url}". Ignoring "${url}."`);
         }
-        pluginsRegistered[pluginName] = plugin;
         return plugin;
     };
 
