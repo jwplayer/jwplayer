@@ -106,6 +106,9 @@ Object.assign(CoreShim.prototype, {
             storage.track(this._model);
             return setupPromise;
         }).catch((error) => {
+            if (!this.apiQueue) {
+                return;
+            }
             setupError(this, error);
         });
     },

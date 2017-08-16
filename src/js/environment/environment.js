@@ -60,7 +60,7 @@ export const OS = {};
 
 /**
  * @typedef {object} FeatureEnvironment
- * @property {boolean} flash - Does the session environment support Flash?
+ * @property {boolean} flash - Does the browser environment support Flash?
  * @property {number} flashVersion - The version of Flash.
  * @property {boolean} iframe - Is the session in an iframe?
  */

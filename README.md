@@ -64,11 +64,8 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
 
 #### Requirements:
 
-1. [Node.js](https://nodejs.org/download)
-2. [Java](https://java.com/en/download/)* 
- 
-\* Optional, but required for building Flash. If not installed you must `grunt` with the `--force` flag. 
- 
+1. [Node.js](https://nodejs.org/download) and npm
+
 #### Steps:
 
 1. Fork the project, clone your fork, and set up the remotes:
@@ -92,9 +89,9 @@ npm install -g webpack-dev-server
  
 3. Build the player:
 ````bash
-# Build once, Flash and JS
+# Build once
 grunt
-# Complete Watch - builds FLash and JS, lints, and tests on each change
+# Complete Watch - builds JS, lints, and tests on each change
 grunt serve
 # Quick JS Watch - build only. Requires webpack-dev-server to be installed globally
 webpack-dev-server -w --env.debug --port 8888 --output-public-path /bin-debug/

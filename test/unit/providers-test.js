@@ -22,7 +22,6 @@ describe('Providers', function() {
             return providers;
         }, {});
         expect(providerMap.youtube).to.be.below(providerMap.html5);
-        expect(providerMap.html5).to.be.below(providerMap.flash);
     });
 
     it('should choose html5 by default', function() {
@@ -45,26 +44,6 @@ describe('Providers', function() {
         _.each(htmlSources, (src, type) => {
             provider = providers.choose(Source(src));
             expect(getName(provider), type).to.equal('html5');
-        });
-    });
-
-    it('should choose flash for flv, rtmp and smil', function() {
-        // The flash provider supports check requires Features.flash
-        if (!Features.flash) {
-            return;
-        }
-
-        const flashSources = {
-            flv: { file: 'http://playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv' },
-            rtmp: { file: 'rtmp://dev.wowza.longtailvideo.com/vod/_definst_/sintel/640.mp4' },
-            smil: { file: 'assets/os/edgecast.smil' },
-        };
-        const providers = new Providers();
-        let provider;
-
-        _.each(flashSources, (src, type) => {
-            provider = providers.choose(Source(src));
-            expect(getName(provider), type).to.equal('flash');
         });
     });
 
