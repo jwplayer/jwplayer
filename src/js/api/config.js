@@ -13,6 +13,7 @@ const Defaults = {
     mobilecontrols: false,
     defaultPlaybackRate: 1,
     playbackRateControls: false,
+    playbackRates: [0.5, 1, 1.25, 1.5, 2],
     repeat: false,
     castAvailable: false,
     skin: '',
@@ -104,25 +105,25 @@ const Config = function(options, persisted) {
     let rateControls = config.playbackRateControls;
 
     if (rateControls) {
-        let rates = [0.5, 1, 1.25, 1.5, 2];
+        let rates = config.playbackRates;
 
-        if (_.isArray(rateControls)) {
-            rates = rateControls
-                .filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
-                .map(rate => Math.round(rate * 4) / 4);
-
-            if (rates.indexOf(1) < 0) {
-                rates.push(1);
-            }
-
-            rates.sort();
+        if (Array.isArray(rateControls)) {
+            rates = rateControls;
         }
+        rates = rates.filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
+            .map(rate => Math.round(rate * 4) / 4);
 
-        config.playbackRateControls = rates;
+        if (rates.indexOf(1) < 0) {
+            rates.push(1);
+        }
+        rates.sort();
+
+        config.playbackRateControls = true;
+        config.playbackRates = rates;
     }
 
     // Set defaultPlaybackRate to 1 if the value from storage isn't in the playbackRateControls menu
-    if (!config.playbackRateControls || config.playbackRateControls.indexOf(config.defaultPlaybackRate) < 0) {
+    if (!config.playbackRateControls || config.playbackRates.indexOf(config.defaultPlaybackRate) < 0) {
         config.defaultPlaybackRate = 1;
     }
 
@@ -148,7 +149,7 @@ const Config = function(options, persisted) {
         ]);
 
         config.playlist = [ obj ];
-    } else if (_.isArray(configPlaylist.playlist)) {
+    } else if (Array.isArray(configPlaylist.playlist)) {
         // The "playlist" in the config is actually a feed that contains a playlist
         config.feedData = configPlaylist;
         config.playlist = configPlaylist.playlist;
