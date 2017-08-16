@@ -630,8 +630,8 @@ export default class Controlbar {
 
         instreamModel
             .change('position', timeSlider.onPosition, timeSlider)
-            .change('duration', timeSlider.onDuration, timeSlider);
-        timeSlider.streamType = 'VOD';
+            .change('duration', timeSlider.onDuration, timeSlider)
+            .change('duration', () => {timeSlider.streamType = 'VOD';}, timeSlider);
     }
 
     syncPlaybackTime(model) {
