@@ -2,14 +2,20 @@ import jwplayer from 'jwplayer';
 import instances from 'api/players';
 import Api from 'api/api';
 import _ from 'test/underscore';
+import sinon from 'sinon';
 import $ from 'jquery';
 import apiMembers from 'data/api-members';
 import apiMethods from 'data/api-methods';
 import apiMethodsChainable from 'data/api-methods-chainable';
 import apiMethodsDeprecated from 'data/api-methods-deprecated';
 import Events from 'utils/backbone.events';
+import utils from 'utils/helpers';
 
 describe('Api', function() {
+
+    beforeEach(function() {
+        utils.log = sinon.stub();
+    });
 
     afterEach(function() {
         // remove fixture and player instances
@@ -17,6 +23,7 @@ describe('Api', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
+        utils.log.reset();
     });
 
     it('extends Events', function() {
@@ -58,27 +65,26 @@ describe('Api', function() {
         assert.equal(check, false, 'api.off works');
     });
 
-    it('bad events don\'t break player', function() {
-        jwplayer.debug = false;
+    it('bad events do not break player', function() {
+        console.log = sinon.stub();
 
         const api = createApi('player');
-        let check = false;
+        const validEvent = sinon.stub();
+        const invalidEvent = sinon.stub().throws("TypeError");
 
-        function update() {
-            check = true;
-        }
+        api.on('x', invalidEvent);
+        api.on('x', validEvent);
+        api.on('x', invalidEvent);
 
-        function bad() {
-            throw new TypeError('blah');
-        }
+        expect(() => {
+            api.trigger('x');
+        }).to.not.throw();
 
-        api.on('x', bad);
-        api.on('x', update);
-        api.on('x', bad);
+        expect(invalidEvent.callCount).to.equal(2);
+        expect(validEvent.callCount).to.equal(1);
+        expect(console.log.callCount).to.equal(2);
 
-        api.trigger('x');
-
-        assert.isOk(check, 'When events blow up, handler continues');
+        console.log.reset();
     });
 
     it('throws exceptions when debug is true', function() {
@@ -86,15 +92,15 @@ describe('Api', function() {
 
         const api = createApi('player');
 
-        function bad() {
+        function invalidEvent() {
             throw new TypeError('blah');
         }
 
-        api.on('x', bad);
+        api.on('x', invalidEvent);
 
-        assert.throws(function() {
+        expect(function() {
             api.trigger('x');
-        }, TypeError, 'blah');
+        }).to.throw();
 
         jwplayer.debug = false;
     });
@@ -248,10 +254,10 @@ describe('Api', function() {
         expect(api.getMute(), '.getMute()').to.equal(undefined);
         expect(api.getVolume(), '.getVolume()').to.equal(undefined);
         expect(api.getPlaybackRate(), '.getPlaybackRate()').to.equal(undefined);
-        expect(api.getPlaylist(), '.getPlaylist()').to.eql(undefined);
-        expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.eql(undefined);
-        expect(api.getPlaylistItem(), '.getPlaylistItem()').to.eql(undefined, 'getPlaylistItem() returns undefined');
-        expect(api.getPlaylistItem(0)).to.eql(null, 'getPlaylistItem(0) returns null');
+        expect(api.getPlaylist(), '.getPlaylist()').to.equal(undefined);
+        expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.equal(undefined);
+        expect(api.getPlaylistItem(), '.getPlaylistItem()').to.equal(undefined, 'getPlaylistItem() returns undefined');
+        expect(api.getPlaylistItem(0)).to.equal(null, 'getPlaylistItem(0) returns null');
         expect(api.getPosition(), '.getPosition()').to.equal(undefined);
         expect(api.getProvider(), '.getProvider()').to.equal(undefined);
         expect(api.getState(), '.getState()').to.equal(undefined);
@@ -297,9 +303,9 @@ describe('Api', function() {
         expect(api.getVolume(), '.getVolume()').to.be.a('number');
         expect(api.getPlaybackRate(), '.getPlaybackRate()').to.equal(1);
         expect(api.getPlaylist(), '.getPlaylist()').to.be.an('array');
-        expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.eql(0);
-        expect(api.getPlaylistItem(), '.getPlaylistItem()').to.eql(undefined, 'getPlaylistItem() returns undefined');
-        expect(api.getPlaylistItem(0)).to.eql({}, 'getPlaylistItem(0) returns null');
+        expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.equal(0);
+        expect(api.getPlaylistItem(), '.getPlaylistItem()').to.equal(undefined, 'getPlaylistItem() returns undefined');
+        expect(api.getPlaylistItem(0)).to.eql({}, 'getPlaylistItem(0) returns an empty item');
         expect(api.getPosition(), '.getPosition()').to.equal(0);
         expect(api.getProvider(), '.getProvider()').to.equal(undefined);
         expect(api.getState(), '.getState()').to.equal('idle');

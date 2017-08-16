@@ -25,7 +25,6 @@ describe('Setup', function() {
 
         model = { playlist: true };
         testSetup(done, model, readyHandler, errorHandler);
-        done();
     });
 
     it('fails if playlist is empty', function (done) {
@@ -104,6 +103,7 @@ describe('Setup', function() {
             } catch (e) {
                 assert.isNotOk(e.toString());
             }
+            done();
         });
         api.on('setupError', function (e) {
             clearTimeout(timeout);
@@ -113,6 +113,7 @@ describe('Setup', function() {
             } catch (evt) {
                 assert.isNotOk(evt.toString());
             }
+            done();
         });
         var timeout = setTimeout(function() {
             assert.isNotOk('Setup timed out');
@@ -121,8 +122,8 @@ describe('Setup', function() {
             } catch (e) {
                 assert.isNotOk(e.toString());
             }
+            done();
         }, 8000);
-        done();
         return api;
     }
 

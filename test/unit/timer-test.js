@@ -28,7 +28,7 @@ describe('timer', function() {
 
             between = time.between('no', 'value');
             assert.equal(between, null, 'invalid tick events returns null');
+            done();
         }, 10);
-        done();
     });
 });
