@@ -844,6 +844,7 @@ function View(_api, _model) {
         _instreamModel.on('change:state', _stateHandler, this);
 
         addClass(_playerElement, 'jw-flag-ads');
+        removeClass(_playerElement, 'jw-flag-live');
 
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         if (_controls) {
