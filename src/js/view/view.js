@@ -849,14 +849,8 @@ function View(_api, _model) {
     }
 
     const settingsMenuVisible = () => {
-        let visible = false;
-        if (_controls) {
-            const settingsMenu = _controls.settingsMenu;
-            if (settingsMenu && settingsMenu.visible) {
-                visible = true;
-            }
-        }
-        return visible;
+        const settingsMenu = _controls && _controls.settingsMenu;
+        return !!(settingsMenu && settingsMenu.visible);
     };
 
     this.setupInstream = function (instreamModel) {
