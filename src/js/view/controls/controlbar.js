@@ -8,7 +8,6 @@ import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
 import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
-import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
@@ -186,7 +185,6 @@ export default class Controlbar {
             duration: textIcon('jw-text-duration', 'timer'),
             hd: menu('jw-icon-hd', this._localization.hd, [QUALITY_ICON]),
             cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
-            audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks, [AUDIO_TRACKS_ICON]),
             playbackrates: new SelectionDisplayMenu(
                 'jw-icon-playback-rate',
                 this._localization.playbackRates,
@@ -221,7 +219,6 @@ export default class Controlbar {
             elements.settingsButton,
             elements.hd,
             elements.cc,
-            elements.audiotracks,
             elements.playbackrates,
             elements.cast,
             elements.fullscreen
@@ -235,7 +232,6 @@ export default class Controlbar {
         const menus = this.menus = [
             elements.hd,
             elements.cc,
-            elements.audiotracks,
             elements.playbackrates,
             elements.volumetooltip
         ].filter(e => e);
@@ -262,7 +258,6 @@ export default class Controlbar {
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
         _model.change('mute', this.onMute, this);
-        _model.change('playlistItem', this.onPlaylistItem, this);
         _model.change('castAvailable', this.onCastAvailable, this);
         _model.change('castActive', this.onCastActive, this);
         _model.change('duration', this.onDuration, this);
@@ -317,10 +312,6 @@ export default class Controlbar {
         elements.cc.on('toggleValue', function () {
             const index = this._model.get('captionsIndex');
             this._api.setCurrentCaptions(index ? 0 : 1);
-        }, this);
-
-        elements.audiotracks.on('select', function (value) {
-            this._model.getVideo().setCurrentAudioTrack(value);
         }, this);
 
         this._model.mediaController.on('seeked', function () {
@@ -397,10 +388,6 @@ export default class Controlbar {
 
     onPlaybackRate(model, value) {
         this.elements.playbackrates.selectItem(model.get('playbackRates').indexOf(value));
-    }
-
-    onPlaylistItem() {
-        this.elements.audiotracks.setup();
     }
 
     onVolume(model, pct) {
