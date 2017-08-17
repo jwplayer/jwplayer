@@ -87,6 +87,12 @@
     cursor: pointer;
 }
 
+.jw-text-elapsed,
+.jw-text-duration {
+    justify-content: flex-start;
+    width: fit-content;
+}
+
 .jw-icon-tooltip {
     position: relative;
 }
@@ -198,7 +204,8 @@
     .jw-text-duration {
         &:before {
             content: "/";
-            padding-right: 0.5em;
+            padding-right: 1ch;
+            padding-left: 1ch;
         }
     }
 }
