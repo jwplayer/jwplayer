@@ -16,6 +16,7 @@ import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
+import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -144,9 +145,13 @@ export default class Controlbar {
             _api.next();
         }, next, [NEXT_ICON]);
 
-        const settingsButton = button('jw-settings-button', () => {
-            this.trigger('settingsInteraction');
+        const settingsButton = button('jw-settings-main', () => {
+            this.trigger('settingsInteraction', 'quality');
         }, this._localization.settings, [SETTINGS_ICON]);
+
+        const audioTracksButton = button('jw-settings-audiotracks', () => {
+            this.trigger('settingsInteraction', 'audioTracks');
+        }, this._localization.audioTracks, [AUDIO_TRACKS_ICON]);
 
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -200,7 +205,8 @@ export default class Controlbar {
             }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
-            settingsButton
+            settingsButton,
+            audioTracksButton
         };
 
         // Filter out undefined elements
@@ -217,6 +223,7 @@ export default class Controlbar {
             elements.spacer,
             elements.next,
             elements.settingsButton,
+            elements.audioTracksButton,
             elements.hd,
             elements.cc,
             elements.playbackrates,

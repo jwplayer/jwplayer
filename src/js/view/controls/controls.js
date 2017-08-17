@@ -346,6 +346,11 @@ export default class Controls {
             });
 
             mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
+                if (!audioTracks || (audioTracks && !audioTracks.length)) {
+                    settingsMenu.removeSubmenu('audioTracks');
+                    controlbar.elements.audioTracksButton.hide();
+                    return;
+                }
                 const audioTracksItems = audioTracks.map((track, index) => {
                     return SettingsContentItem(track.name, track.name, () => {
                         model.getVideo().setCurrentAudioTrack(index);
@@ -362,6 +367,7 @@ export default class Controls {
                     settingsMenu.addSubmenu(AUDIO_TRACKS_ICON, audioTracksSubmenu);
                 }
                 audioTracksSubmenu.activateItem(changedModel.get('currentAudioTrack'));
+                controlbar.elements.audioTracksButton.show();
             });
 
             mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
@@ -377,8 +383,18 @@ export default class Controls {
 const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
     const settingsMenu = SettingsMenu(visibilityChangeHandler);
 
-    controlbar.on('settingsInteraction', () => {
-        settingsMenu.toggle();
+    controlbar.on('settingsInteraction', (submenuName) => {
+        const submenu = settingsMenu.getSubmenu(name);
+        if (settingsMenu.visible) {
+            if (!submenu || submenu.active) {
+                settingsMenu.close();
+            } else {
+                settingsMenu.activateSubmenu(submenuName);
+            }
+        } else {
+            settingsMenu.open();
+            settingsMenu.activateSubmenu(submenuName);
+        }
     });
 
     return settingsMenu;
