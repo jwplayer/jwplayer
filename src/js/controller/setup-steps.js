@@ -1,11 +1,9 @@
 import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
-import Promise from 'polyfills/promise';
+import Promise, { resolved } from 'polyfills/promise';
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
-
-const resolved = Promise.resolve();
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');

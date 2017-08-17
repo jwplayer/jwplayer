@@ -1,4 +1,4 @@
-import Promise from 'polyfills/promise';
+import Promise, { resolved } from 'polyfills/promise';
 
 function configurePlugin(pluginObj, pluginConfig, api) {
     const pluginName = pluginObj.name;
@@ -17,7 +17,7 @@ const PluginLoader = function () {
     this.load = function (api, pluginsModel, pluginsConfig) {
         // Must be a hash map
         if (!pluginsConfig || typeof pluginsConfig !== 'object') {
-            return Promise.resolve();
+            return resolved;
         }
 
         return Promise.all(Object.keys(pluginsConfig).filter(pluginUrl => pluginUrl)

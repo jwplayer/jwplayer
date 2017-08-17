@@ -1,4 +1,4 @@
-import Promise from 'polyfills/promise';
+import { resolved } from 'polyfills/promise';
 import ScriptLoader from 'utils/scriptloader';
 import { getAbsolutePath } from 'utils/parser';
 import { extension } from 'utils/strings';
@@ -42,7 +42,7 @@ const Plugin = function(url) {
 Object.assign(Plugin.prototype, {
     load() {
         if (getPluginPathType(this.url) === PLUGIN_PATH_TYPE_CDN) {
-            return Promise.resolve();
+            return resolved;
         }
         const loader = new ScriptLoader(getJSPath(this.url));
         this.loader = loader;
