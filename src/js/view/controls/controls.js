@@ -1,7 +1,6 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
-import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -14,8 +13,6 @@ import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { SettingsMenu } from 'view/controls/components/settings/menu';
-import SettingsSubmenu from 'view/controls/components/settings/submenu';
-import SettingsContentItem from 'view/controls/components/settings/content-item.js';
 
 require('css/controls.less');
 
