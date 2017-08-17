@@ -264,7 +264,6 @@ export default class Controlbar {
         _model.change('volume', this.onVolume, this);
         _model.change('mute', this.onMute, this);
         _model.change('playlistItem', this.onPlaylistItem, this);
-        _model.change('mediaModel', this.onMediaModel, this);
         _model.change('castAvailable', this.onCastAvailable, this);
         _model.change('castActive', this.onCastActive, this);
         _model.change('duration', this.onDuration, this);
@@ -324,7 +323,7 @@ export default class Controlbar {
         elements.audiotracks.on('select', function (value) {
             this._model.getVideo().setCurrentAudioTrack(value);
         }, this);
-      
+
         this._model.mediaController.on('seeked', function () {
             this.checkDvrLiveEdge();
         }, this);
@@ -405,24 +404,7 @@ export default class Controlbar {
         this.elements.audiotracks.setup();
     }
 
-    onMediaModel(model, mediaModel) {
-        mediaModel.on('change:levels', function (levelsChangeModel, levels) {
-            this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
-        }, this);
-        mediaModel.on('change:currentLevel', function (currentLevelChangeModel, level) {
-            this.elements.hd.selectItem(level);
-        }, this);
-        mediaModel.on('change:audioTracks', function (audioTracksChangeModel, audioTracks) {
-            const list = _.map(audioTracks, function (track) {
-                return { label: track.name };
-            });
-            this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'),
-                { isToggle: false });
-        }, this);
-        mediaModel.on('change:currentAudioTrack', function (currentAudioTrackChangeModel, currentAudioTrack) {
-            this.elements.audiotracks.selectItem(currentAudioTrack);
-        }, this);
-    }
+
 
     onVolume(model, pct) {
         this.renderVolume(model.get('mute'), pct);
@@ -485,7 +467,7 @@ export default class Controlbar {
     onFullscreen(model, val) {
         utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
     }
-              
+
     checkDvrLiveEdge() {
         if (this._model.get('streamType') === 'DVR') {
             const currentPosition = this._model.get('position');

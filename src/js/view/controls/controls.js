@@ -12,9 +12,7 @@ import PlayDisplayIcon from 'view/controls/play-display-icon';
 import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
-import SettingsMenu from 'view/controls/components/settings/settings-menu';
-
-require('css/controls.less');
+import { SettingsMenu } from 'view/controls/components/settings/settings-menu';
 
 require('css/controls.less');
 
@@ -98,6 +96,11 @@ export default class Controls {
         // Controlbar
         const controlbar = this.controlbar = new Controlbar(api, model);
         controlbar.on(USER_ACTION, () => this.userActive());
+
+        // Settings Menu
+        this.setupSettingsMenu();
+        this.onMediaModel(model);
+
         // Next Up Tooltip
         if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
             const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
@@ -110,25 +113,6 @@ export default class Controls {
         }
         this.addActiveListeners(controlbar.element());
         this.div.appendChild(controlbar.element());
-
-        // Settings Menu
-        const visibilityChangeHandler = (visible) => {
-            utils.toggleClass(this.div, 'jw-settings-open', visible);
-            // Trigger userActive so that a dismissive click outside the player can hide the controlbar
-            this.userActive();
-        };
-        const settingsMenu = this.settingsMenu = SettingsMenu(visibilityChangeHandler);
-        settingsMenu.setup();
-
-        controlbar.on('settingsInteraction', (e) => {
-            if (e === 'toggle') {
-                settingsMenu.toggle();
-            } else if (e === 'close') {
-                settingsMenu.close();
-            }
-        });
-
-        this.div.appendChild(settingsMenu.element());
 
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
         if (model.get('autostartMuted')) {
@@ -277,6 +261,50 @@ export default class Controls {
 
     resize() {
         this.dimensions = {};
+    }
+
+    setupSettingsMenu() {
+        const visibilityChangeHandler = (visible) => {
+            utils.toggleClass(this.div, 'jw-settings-open', visible);
+            // Trigger userActive so that a dismissive click outside the player can hide the controlbar
+            this.userActive();
+        };
+        const settingsMenu = this.settingsMenu = SettingsMenu(visibilityChangeHandler);
+        settingsMenu.setup();
+
+        this.controlbar.on('settingsInteraction', (e) => {
+            if (e === 'toggle') {
+                settingsMenu.toggle();
+            } else if (e === 'close') {
+                settingsMenu.close();
+            }
+        });
+
+        this.div.appendChild(settingsMenu.element());
+    }
+
+    onMediaModel(model) {
+        const controlbar = this.controlbar;
+
+        model.change('mediaModel', function(newModel, mediaModel) {
+            mediaModel.on('change:levels', function (changedModel, levels) {
+                controlbar.elements.hd.setup(levels, changedModel.get('currentLevel'));
+            });
+
+            mediaModel.on('change:currentLevel', function (changedModel, level) {
+                controlbar.elements.hd.selectItem(level);
+            });
+
+            mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
+                const list = audioTracks.map(track => ({ label: track.name }));
+                controlbar.elements.audiotracks.setup(list, changedModel.get('currentAudioTrack'),
+                    { isToggle: false });
+            });
+
+            mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
+                controlbar.elements.audiotracks.selectItem(currentAudioTrack);
+            });
+        });
     }
 
     unmuteAutoplay(api, model) {
