@@ -120,7 +120,8 @@
     .jw-overlay {
         // Place the overlay above the time slider and aligned with the volume overlay
         bottom: 0.5em;
-        transform-style: preserve-3d; // prevents jitter on arrow when moving
+        /* prevents jitter on arrow when moving */
+        transform-style: preserve-3d;
 
         &:after {
             content: none;

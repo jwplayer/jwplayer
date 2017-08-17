@@ -3,7 +3,7 @@
  *
  */
 .position(@position: absolute) {
-	position: @position;
+    position: @position;
 }
 
 /**
@@ -11,69 +11,109 @@
  *
  */
 .top(@val: 0, @position: absolute) {
-	.position(@position);
-	top: @val;
-} ._top { .top(); }
+    .position(@position);
+    top: @val;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._top {
+    .top();
+}
 
 /**
  * Set the right position of the element.
  *
  */
 .right(@val: 0, @position: absolute) {
-	.position(@position);
-	right: @val;
-} ._right { .right(); }
+    .position(@position);
+    right: @val;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._right {
+    .right();
+}
 
 /**
  * Set the bottom position of the element.
  *
  */
 .bottom(@val: 0, @position: absolute) {
-	.position(@position);
-	bottom: @val;
-} ._bottom { .bottom(); }
+    .position(@position);
+    bottom: @val;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._bottom {
+    .bottom();
+}
 
 /**
  * Set the left position of the element.
  *
  */
 .left(@val: 0, @position: absolute) {
-	.position(@position);
-	left: @val;
-} ._left { .left(); }
+    .position(@position);
+    left: @val;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._left {
+    .left();
+}
 
 /**
  * Simultaneously set the top and left position of the element.
  *
  */
 .topleft(@top: 0, @left: 0, @position: absolute) {
-	.top(@top, @position);
-	.left(@left, @position);
-} ._topleft { .topleft(); }
+    .top(@top, @position);
+    .left(@left, @position);
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._topleft {
+    .topleft();
+}
 
 /**
  * Simultaneously set the bottom and left position of the element.
  *
  */
 .bottomleft(@bottom: 0, @left: 0, @position: absolute) {
-	.bottom(@bottom, @position);
-	left: @left;
-} ._bottomleft { .bottomleft(); }
+    .bottom(@bottom, @position);
+    left: @left;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._bottomleft {
+    .bottomleft();
+}
 
 /**
  * Simultaneously set the top and right position of the element.
  *
  */
 .topright(@top: 0, @right: @top, @position: absolute) {
-	.top(@top, @position);
-	right: @right;
-} ._topright { .topright(); }
+    .top(@top, @position);
+    right: @right;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._topright {
+    .topright();
+}
 
 /**
  * Simultaneously set the top and right position of the element.
  *
  */
 .bottomright(@bottom: 0, @right: @bottom, @position: absolute) {
-	.bottom(@bottom, @position);
-	right: @right;
-} ._bottomright { .bottomright(); }
+    .bottom(@bottom, @position);
+    right: @right;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._bottomright {
+    .bottomright();
+}

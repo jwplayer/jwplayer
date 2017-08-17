@@ -3,6 +3,11 @@
  *
  */
 .pseudo(@display: block) {
-	content: '';
-	display: @display;
-} ._pseudo { .pseudo(); }
+    content: "";
+    display: @display;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._pseudo {
+    .pseudo();
+}

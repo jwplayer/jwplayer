@@ -3,8 +3,8 @@
  *
  */
 .rect(@width: auto, @height: @width) {
-	height: @height;
-	width: @width;
+    height: @height;
+    width: @width;
 }
 
 /**
@@ -12,13 +12,18 @@
  *
  */
 .stretch() {
-	.rect(100%);
-} ._stretch { .stretch(); }
+    .rect(100%);
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._stretch {
+    .stretch();
+}
 
 /**
  * Shortcut for the .rect() mixin
  *
  */
 .square(@length) {
-	.rect(@length);
+    .rect(@length);
 }
