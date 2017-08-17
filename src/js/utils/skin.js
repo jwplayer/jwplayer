@@ -97,7 +97,7 @@ export function handleColorOverrides(playerId, skin = {}) {
     function styleControlbar(config) {
 
         addStyle([
-            // controlbar button colors
+            // controlbar text colors
             '.jw-controlbar .jw-text',
         ], 'color', config.text);
 
