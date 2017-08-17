@@ -343,13 +343,5 @@ const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
         }
     });
 
-    const dummyItem = SettingsContentItem('dummyItem', 'dummyItem', () => {
-        settingsMenu.close();
-        console.log('dummy');
-    });
-    const dummySubmenu = SettingsSubmenu('dummy');
-    dummySubmenu.addContent([dummyItem]);
-    settingsMenu.addSubmenu(QUALITY_ICON, dummySubmenu);
-
     return settingsMenu;
 };
