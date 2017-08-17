@@ -75,6 +75,10 @@ export function SettingsMenu(visibilityChangeHandler) {
             deactivateAllSubmenus(submenus);
             submenu.activate();
         },
+        activateFirstSubmenu() {
+            const firstSubmenuName = Object.keys[submenus];
+            this.activateSubmenu(firstSubmenuName);
+        },
         element() {
             return settingsMenuElement;
         }

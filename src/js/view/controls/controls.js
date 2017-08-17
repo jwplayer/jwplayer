@@ -401,9 +401,18 @@ const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
         }
     });
 
-    controlbar.on('settingsInteraction', () => {
-        settingsMenu.toggle();
-        settingsMenu.activateSubmenu('quality');
+    controlbar.on('settingsInteraction', (defaultSubmenuName) => {
+        if (settingsMenu.visible) {
+            settingsMenu.close();
+        } else {
+            const submenu = settingsMenu.getSubmenu(defaultSubmenuName);
+            if (submenu) {
+                settingsMenu.activateSubmenu(defaultSubmenuName);
+            } else {
+                settingsMenu.activateFirstSubmenu();
+            }
+            settingsMenu.open();
+        }
     });
 
     return settingsMenu;

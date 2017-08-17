@@ -146,7 +146,7 @@ export default class Controlbar {
         }, next, [NEXT_ICON]);
 
         const settingsButton = button('jw-settings-main', () => {
-            this.trigger('settingsInteraction');
+            this.trigger('settingsInteraction', 'quality');
         }, this._localization.settings, [SETTINGS_ICON]);
 
         const audioTracksButton = button('jw-settings-audiotracks', () => {
