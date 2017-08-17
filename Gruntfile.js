@@ -34,9 +34,6 @@ module.exports = function(grunt) {
     var packageInfo = grunt.file.readJSON('package.json');
     var buildVersion = getBuildVersion(packageInfo);
 
-    // For task testing
-    // grunt.loadTasks('../grunt-flash-compiler/tasks');
-
     console.log('%s v%s', packageInfo.name, buildVersion);
 
     grunt.initConfig({
@@ -107,13 +104,6 @@ module.exports = function(grunt) {
             tests: {
                 files: ['test/{,*/}*.js'],
                 tasks: ['lint:tests', 'karma:local']
-            },
-            flash: {
-                files: [
-                    'src/flash/com/longtailvideo/jwplayer/{,*/}*.as',
-                    'src/flash/com/wowsa/{,*/}*.as'
-                ],
-                tasks: ['flash:debug']
             }
         },
 
@@ -131,36 +121,6 @@ module.exports = function(grunt) {
                     base: [
                         '.'
                     ]
-                }
-            }
-        },
-        flash: {
-            options: {
-                flashVersion: '18.0',
-                swfTarget: 29,
-                targetCompilerOptions : [
-                    '-define+=JWPLAYER::version,\'' + packageInfo.version + '\''
-                ]
-            },
-            debug : {
-                options : {
-                    debug : true
-                },
-                files : {
-                    'bin-debug/jwplayer.flash.swf' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
-                }
-            },
-            release : {
-                files : {
-                    'bin-release/jwplayer.flash.swf': 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
-                }
-            },
-            library: {
-                options: {
-                    swc: true
-                },
-                files : {
-                     'libs-external/jwplayer.flash.swc' : 'src/flash/com/longtailvideo/jwplayer/player/Player.as'
                 }
             }
         },
@@ -305,15 +265,9 @@ module.exports = function(grunt) {
         'postcss'
     ]);
 
-    grunt.registerTask('build-flash', [
-        'flash:debug',
-        'flash:release'
-    ]);
-
     grunt.registerTask('build', [
         'clean:dist',
         'build-js',
-        'build-flash',
         'karma:local'
     ]);
 

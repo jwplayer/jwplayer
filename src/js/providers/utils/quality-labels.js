@@ -5,9 +5,9 @@ export function generateLabel(level, qualityLabels, redundant) {
     if (!level) {
         return '';
     }
-    // Flash uses bitrate instead of bandwidth
+    // flash provider uses bitrate instead of bandwidth
     const bandwidth = level.bitrate || level.bandwidth;
-    // Flash, in some cases, will create its own label. Prefer it over creating a new label
+    // flash provider, in some cases, will create its own label. Prefer it over creating a new label
     return getCustomLabel(qualityLabels, bandwidth) ||
         level.label ||
         createLabel(level.height, bandwidth, redundant);

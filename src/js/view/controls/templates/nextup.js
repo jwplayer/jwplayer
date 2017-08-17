@@ -1,3 +1,5 @@
+import CLOSE_ICON from 'assets/SVG/close.svg';
+
 export default (header = '', title = '', closeAriaLabel = '') => {
     return (
         `<div class="jw-nextup jw-reset">` +
@@ -8,7 +10,7 @@ export default (header = '', title = '', closeAriaLabel = '') => {
                     `<div class="jw-nextup-title jw-reset">${title}</div>` +
                 `</div>` +
             `</div>` +
-            `<button class="jw-icon jw-nextup-close jw-reset" aria-label="${closeAriaLabel}"></button>` +
+            `<button class="jw-icon jw-nextup-close jw-reset" aria-label="${closeAriaLabel}">${CLOSE_ICON}</button>` +
         `</div>`
     );
 };

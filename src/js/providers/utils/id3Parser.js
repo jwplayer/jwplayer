@@ -152,7 +152,7 @@ export function parseID3(activeCues = []) {
             }
         }
 
-        // These friendly names mapping provides compatibility with our Flash implementation prior to 7.3
+        // These friendly names mapping provides compatibility with our implementation prior to 7.3
         if (friendlyNames.hasOwnProperty(cue.value.key)) {
             data[friendlyNames[cue.value.key]] = cue.value.data;
         }

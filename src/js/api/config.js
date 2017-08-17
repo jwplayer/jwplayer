@@ -50,7 +50,8 @@ const Defaults = {
         nextUpClose: 'Next Up Close',
         related: 'Discover',
         close: 'Close',
-        settings: 'Settings'
+        settings: 'Settings',
+        unmute: 'unmute'
     },
     renderCaptionsNatively: true,
     nextUpDisplay: true
@@ -84,14 +85,6 @@ const Config = function(options, persisted) {
     __webpack_public_path__ = config.base;
     config.width = _normalizeSize(config.width);
     config.height = _normalizeSize(config.height);
-    const pathToFlash = (getScriptPath('jwplayer.js') || config.base);
-    config.flashplayer = config.flashplayer || pathToFlash + 'jwplayer.flash.swf';
-
-    // Non ssl pages can only communicate with flash when it is loaded
-    //   from a non ssl location
-    if (window.location.protocol === 'http:') {
-        config.flashplayer = config.flashplayer.replace('https', 'http');
-    }
 
     config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 

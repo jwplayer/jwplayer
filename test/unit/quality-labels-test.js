@@ -188,14 +188,14 @@ describe('quality-labels', function() {
         });
 
         describe('generateLabel', function() {
-            // Only Flash does this
+            // flash provider only
             it('should use label property if it exists and there are no custom labels', function() {
                 var level = { label: '360px' };
                 var actual = generateLabel(level, null, false);
                 assert.equal(actual, '360px');
             });
 
-            // Only Flash does this
+            // flash provider only
             it('should not use label property if it exists and there are custom labels', function() {
                 var level = { label: '360px', bitrate: 2000000 };
                 var actual = generateLabel(level, customLabels, false);

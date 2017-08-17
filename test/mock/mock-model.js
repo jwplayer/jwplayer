@@ -135,10 +135,10 @@ Object.assign(MockModel.prototype, SimpleModel, {
         mediaElement.preload = 'none';
 
         this.attributes.provider = {
-            name: 'flash',
+            name: 'html5',
             getName: function() {
                 return {
-                    name: 'flash'
+                    name: 'html5'
                 };
             },
             setContainer: function(/* element */) {
