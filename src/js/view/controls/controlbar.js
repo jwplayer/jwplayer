@@ -403,8 +403,6 @@ export default class Controlbar {
         this.elements.audiotracks.setup();
     }
 
-
-
     onVolume(model, pct) {
         this.renderVolume(model.get('mute'), pct);
     }
