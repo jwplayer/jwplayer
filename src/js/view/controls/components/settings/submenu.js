@@ -31,6 +31,9 @@ export default function SettingsSubmenu(name) {
         },
         activateItem(itemOrdinal) {
             const item = contentItems[itemOrdinal];
+            if (!item) {
+                return;
+            }
             deactivateAllItems(contentItems);
             item.activate();
         },
