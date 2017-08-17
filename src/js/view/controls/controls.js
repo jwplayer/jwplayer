@@ -17,8 +17,7 @@ import { SettingsMenu } from 'view/controls/components/settings/menu';
 import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
-
-require('css/controls.less');
+import CAPTIONS_OFF_ICON from 'assets/SVG/captions-on.svg';
 
 require('css/controls.less');
 
@@ -122,7 +121,7 @@ export default class Controls {
             this.userActive();
         };
         this.settingsMenu = setupSettingsMenu(controlbar, visibilityChangeHandler);
-        this.onMediaModel(model);
+        this.setupSubmenuListeners(model, api);
         this.div.appendChild(this.settingsMenu.element());
 
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
@@ -336,7 +335,7 @@ export default class Controls {
         this.trigger('userInactive');
     }
 
-    onMediaModel(model) {
+    setupSubmenuListeners(model, api) {
         const controlbar = this.controlbar;
         const settingsMenu = this.settingsMenu;
 
@@ -381,6 +380,38 @@ export default class Controls {
                 }
             });
         });
+
+        model.change('captionsList', (changedModel, captionsList) => {
+            if (!captionsList || (captionsList && !captionsList.length)) {
+                settingsMenu.removeSubmenu('captions');
+                controlbar.elements.captionsButton.hide();
+                return;
+            }
+            const captionsItems = captionsList.map((track, index) => {
+                return SettingsContentItem(track.id, track.label, () => {
+                    api.setCurrentCaptions(index);
+                    settingsMenu.close();
+                });
+            });
+
+            let captionsSubmenu = settingsMenu.getSubmenu('captions');
+            if (captionsSubmenu) {
+                captionsSubmenu.replaceContent(captionsItems);
+            } else {
+                captionsSubmenu = SettingsSubmenu('captions');
+                captionsSubmenu.addContent(captionsItems);
+                settingsMenu.addSubmenu(CAPTIONS_OFF_ICON, captionsSubmenu);
+            }
+            captionsSubmenu.activateItem(model.get('captionsIndex'));
+            controlbar.elements.captionsButton.show();
+        });
+
+        model.change('captionsIndex', (changedModel, index) => {
+            const captionsSubmenu = settingsMenu.getSubmenu('captions');
+            if (captionsSubmenu) {
+                captionsSubmenu.activateItem(index);
+            }
+        });
     }
 }
 
@@ -388,7 +419,7 @@ const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
     const settingsMenu = SettingsMenu(visibilityChangeHandler);
 
     controlbar.on('submenuInteraction', (submenuName) => {
-        const submenu = settingsMenu.getSubmenu(name);
+        const submenu = settingsMenu.getSubmenu(submenuName);
         if (settingsMenu.visible) {
             if (!submenu || submenu.active) {
                 settingsMenu.close();

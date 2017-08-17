@@ -153,6 +153,10 @@ export default class Controlbar {
             this.trigger('submenuInteraction', 'audioTracks');
         }, this._localization.audioTracks, [AUDIO_TRACKS_ICON]);
 
+        const captionsButton = button('jw-settings-audiotracks', () => {
+            this.trigger('submenuInteraction', 'captions');
+        }, this._localization.cc, [CAPTIONS_OFF_ICON]);
+
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
                 .on('over', function () {
@@ -189,7 +193,6 @@ export default class Controlbar {
             time: timeSlider,
             duration: textIcon('jw-text-duration', 'timer'),
             hd: menu('jw-icon-hd', this._localization.hd, [QUALITY_ICON]),
-            cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
             playbackrates: new SelectionDisplayMenu(
                 'jw-icon-playback-rate',
                 this._localization.playbackRates,
@@ -206,7 +209,8 @@ export default class Controlbar {
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
-            audioTracksButton
+            audioTracksButton,
+            captionsButton
         };
 
         // Filter out undefined elements
@@ -225,7 +229,7 @@ export default class Controlbar {
             elements.settingsButton,
             elements.audioTracksButton,
             elements.hd,
-            elements.cc,
+            elements.captionsButton,
             elements.playbackrates,
             elements.cast,
             elements.fullscreen
@@ -238,7 +242,6 @@ export default class Controlbar {
 
         const menus = this.menus = [
             elements.hd,
-            elements.cc,
             elements.playbackrates,
             elements.volumetooltip
         ].filter(e => e);
@@ -270,8 +273,6 @@ export default class Controlbar {
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', this.onFullscreen, this);
-        _model.change('captionsList', this.onCaptionsList, this);
-        _model.change('captionsIndex', this.onCaptionsIndex, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('nextUp', this.onNextUp, this);
         _model.change('cues', this.addCues, this);
@@ -311,14 +312,6 @@ export default class Controlbar {
         }, this);
         elements.hd.on('toggleValue', function () {
             this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
-        }, this);
-
-        elements.cc.on('select', function (value) {
-            this._api.setCurrentCaptions(value);
-        }, this);
-        elements.cc.on('toggleValue', function () {
-            const index = this._model.get('captionsIndex');
-            this._api.setCurrentCaptions(index ? 0 : 1);
         }, this);
 
         this._model.mediaController.on('seeked', function () {
@@ -371,15 +364,6 @@ export default class Controlbar {
         _.each(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);
-    }
-
-    onCaptionsList(model, tracks) {
-        const index = model.get('captionsIndex');
-        this.elements.cc.setup(tracks, index, { isToggle: true });
-    }
-
-    onCaptionsIndex(model, index) {
-        this.elements.cc.selectItem(index);
     }
 
     togglePlaybackRateControls(model) {
