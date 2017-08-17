@@ -1,31 +1,39 @@
+@import "../../shared-imports/mixins";
 @import "icons";
+
+.jw-overlays,
+.jw-controls {
+    &:extend(._stretch, ._topleft, ._bottomright);
+    pointer-events: none; // Allow pointer events through to the provider
+}
 
 .jw-overlays {
     cursor: auto;
-    /* Allow pointer events through to the provider */
-    pointer-events: none;
 }
 
 .jw-controls {
     overflow: hidden;
-    /* Allow pointer events through to the provider */
-    pointer-events: none;
     z-index: 0;
-}
 
-.jw-overlays,
-.jw-controls {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-}
+    &::after {
+        &:extend(._pseudo, ._stretch, ._topleft);
+        background: linear-gradient(to top, rgba(47, 53, 66, 0.35) 0, rgba(47, 53, 66, 0.35) 10%, transparent 100%) no-repeat transparent;
+        opacity: 1;
+        pointer-events: none;
+        transform: scale(1, 1);
+        transition: 250ms cubic-bezier(0, 0.25, 0.25, 1);
+        transition-property: opacity, transform;
+        z-index: -1;
 
-.jw-flag-small-player .jw-controls {
-    text-align: center;
+        .jwplayer.jw-state-playing.jw-flag-user-inactive:not(.jw-flag-casting) & {
+            opacity: 0;
+            transform: scale(1, 0);
+        }
+    }
+
+    .jw-flag-small-player & {
+        text-align: center;
+    }
 }
 
 .jw-text {
@@ -34,7 +42,7 @@
     font-size: @font-size;
     font-style: normal;
     font-weight: normal;
-    color: #fff;
+    color: @white;
     text-align: center;
     font-variant: normal;
     font-stretch: normal;
@@ -46,11 +54,7 @@
 .jw-display-icon-container,
 .jw-display-icon-container .jw-icon,
 .jw-nextup-container,
-.jw-autostart-mute {
-    pointer-events: all;
-}
-
-/* These items can intercept pointer-events */
+.jw-autostart-mute,
 .jw-overlays .jw-plugin {
     pointer-events: all;
 }

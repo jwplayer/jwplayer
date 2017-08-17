@@ -242,7 +242,7 @@ export default class Controlbar {
         ].filter(e => e);
 
         this.el = document.createElement('div');
-        this.el.className = 'jw-controlbar jw-background-color jw-reset';
+        this.el.className = 'jw-controlbar jw-reset';
 
         appendChildren(elements.buttonContainer, buttonLayout);
         appendChildren(this.el, layout);
@@ -324,7 +324,7 @@ export default class Controlbar {
         elements.audiotracks.on('select', function (value) {
             this._model.getVideo().setCurrentAudioTrack(value);
         }, this);
-      
+
         this._model.mediaController.on('seeked', function () {
             this.checkDvrLiveEdge();
         }, this);
@@ -485,7 +485,7 @@ export default class Controlbar {
     onFullscreen(model, val) {
         utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
     }
-              
+
     checkDvrLiveEdge() {
         if (this._model.get('streamType') === 'DVR') {
             const currentPosition = this._model.get('position');

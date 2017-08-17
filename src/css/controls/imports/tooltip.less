@@ -5,16 +5,6 @@
     visibility: visible;
 }
 
-.jw-overlay:before {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -50%;
-    width: 100%;
-    background-color: transparent;
-    content: " ";
-}
-
 .jw-slider-time .jw-overlay:before {
     height: 1em;
     top: auto;
@@ -24,20 +14,35 @@
 .jw-volume-tip,
 .jwplayer .jw-menu {
     position: relative;
-    left: -50%;
     margin: 0;
 }
 
 .jw-time-tip {
-    text-align: center;
+    box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.5);
     font-family: inherit;
-    bottom: (@controlbar-height / 2);
-    padding: @ui-padding;
-    border-radius: @ui-corner-round;
+    text-align: center;
 
     .jw-text {
-        color: @accent-color;
-        line-height: 1em;
+        background-color: @tooltip-background-color;
+        border-radius: @ui-corner-round;
+        color: @tooltip-color;
+        display: block;
+        height: auto;
+        line-height: 1;
+        padding: @tooltip-padding;
+        position: relative;
+        backface-visibility: hidden;
+        width: 100%;
+        z-index: 0;
+
+        &::after {
+            &:extend(._pseudo);
+            .square(11px);
+            .topleft(100%, 50%);
+            background-color: inherit;
+            transform: translate(-50%, -50%) rotate(45deg);
+            z-index: -1;
+        }
     }
 }
 
@@ -49,6 +54,7 @@
         left: 50%;
         opacity: 0;
         visibility: hidden;
+        transform: translate(-50%, 0);
 
         .jw-contents {
             position: relative;
@@ -103,16 +109,18 @@
 }
 
 .jw-tooltip-time {
-    bottom: 0;
+    box-shadow: 0 0 10px fade(@black, 50%);
     height: auto;
     line-height: normal;
     padding: 0;
-    pointer-events: none;
-    transform: translateX(-50%);
+    top: 0;
+    user-select: none;
+    width: 0;
 
     .jw-overlay {
         // Place the overlay above the time slider and aligned with the volume overlay
-        bottom: @mobile-touch-target * 0.5;
+        bottom: 0.5em;
+        transform-style: preserve-3d; // prevents jitter on arrow when moving
 
         &:after {
             content: none;
