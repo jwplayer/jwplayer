@@ -146,11 +146,11 @@ export default class Controlbar {
         }, next, [NEXT_ICON]);
 
         const settingsButton = button('jw-settings-main', () => {
-            this.trigger('settingsInteraction', 'quality');
+            this.trigger('settingsInteraction');
         }, this._localization.settings, [SETTINGS_ICON]);
 
         const audioTracksButton = button('jw-settings-audiotracks', () => {
-            this.trigger('settingsInteraction', 'audioTracks');
+            this.trigger('submenuInteraction', 'audioTracks');
         }, this._localization.audioTracks, [AUDIO_TRACKS_ICON]);
 
         if (_model.get('nextUpDisplay')) {

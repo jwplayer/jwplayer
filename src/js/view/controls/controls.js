@@ -383,7 +383,7 @@ export default class Controls {
 const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
     const settingsMenu = SettingsMenu(visibilityChangeHandler);
 
-    controlbar.on('settingsInteraction', (submenuName) => {
+    controlbar.on('submenuInteraction', (submenuName) => {
         const submenu = settingsMenu.getSubmenu(name);
         if (settingsMenu.visible) {
             if (!submenu || submenu.active) {
@@ -395,6 +395,11 @@ const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
             settingsMenu.open();
             settingsMenu.activateSubmenu(submenuName);
         }
+    });
+
+    controlbar.on('settingsInteraction', () => {
+        settingsMenu.toggle();
+        settingsMenu.activateSubmenu('quality');
     });
 
     return settingsMenu;
