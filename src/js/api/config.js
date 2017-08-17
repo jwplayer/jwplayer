@@ -50,7 +50,8 @@ const Defaults = {
         nextUpClose: 'Next Up Close',
         related: 'Discover',
         close: 'Close',
-        settings: 'Settings'
+        settings: 'Settings',
+        unmute: 'unmute'
     },
     renderCaptionsNatively: true,
     nextUpDisplay: true

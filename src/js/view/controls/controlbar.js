@@ -138,7 +138,7 @@ export default class Controlbar {
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
             muteButton = button('jw-icon-volume', () => {
                 _api.setMute();
-            }, vol);
+            }, vol, [VOLUME_ICON_0, VOLUME_ICON_100]);
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -415,6 +415,7 @@ export default class Controlbar {
         // mute, volume, and volumetooltip do not exist on mobile devices.
         if (this.elements.mute) {
             utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
+            utils.toggleClass(this.elements.mute.element(), 'jw-full', !muted);
         }
         if (this.elements.volume) {
             this.elements.volume.render(muted ? 0 : vol);
