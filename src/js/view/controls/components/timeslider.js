@@ -91,7 +91,8 @@ class TimeSlider extends Slider {
             .on('duration', this.onDuration, this)
             .change('playlistItem', this.onPlaylistItem, this)
             .change('position', this.onPosition, this)
-            .change('buffer', this.onBuffer, this);
+            .change('buffer', this.onBuffer, this)
+            .change('streamType', this.onStreamType, this);
 
         this.elementRail.appendChild(this.timeTip.element());
 
@@ -106,8 +107,7 @@ class TimeSlider extends Slider {
             return this.activeCue.pct;
         }
         var duration = this._model.get('duration');
-        var streamType = this._model.get('streamType');
-        if (streamType === 'DVR') {
+        if (this.streamType === 'DVR') {
             var position = (1 - (percent / 100)) * duration;
             var currentPosition = this._model.get('position');
             var updatedPosition = Math.min(position, Math.max(dvrSeekLimit, currentPosition));
@@ -159,13 +159,16 @@ class TimeSlider extends Slider {
         this.updateTime(model.get('position'), duration);
     }
 
+    onStreamType(model, streamType) {
+        this.streamType = streamType;
+    }
+
     updateTime(position, duration) {
         var pct = 0;
         if (duration) {
-            var streamType = this._model.get('streamType');
-            if (streamType === 'DVR') {
+            if (this.streamType === 'DVR') {
                 pct = (duration - position) / duration * 100;
-            } else if (streamType === 'VOD' || !streamType) {
+            } else if (this.streamType === 'VOD' || !this.streamType) {
                 // Default to VOD behavior if streamType isn't set
                 pct = position / duration * 100;
             }
@@ -194,11 +197,10 @@ class TimeSlider extends Slider {
     performSeek() {
         var percent = this.seekTo;
         var duration = this._model.get('duration');
-        var streamType = this._model.get('streamType');
         var position;
         if (duration === 0) {
             this._api.play(reasonInteraction());
-        } else if (streamType === 'DVR') {
+        } else if (this.streamType === 'DVR') {
             position = (100 - percent) / 100 * duration;
             this._api.seek(position, reasonInteraction());
         } else {

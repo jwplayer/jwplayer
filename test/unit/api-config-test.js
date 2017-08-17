@@ -1,5 +1,7 @@
-import Config from 'api/config';
 import _ from 'underscore';
+import sinon from 'sinon';
+import Config from 'api/config';
+import { normalizeSkin } from 'utils/skin';
 
 describe('API Config', function() {
 
@@ -123,12 +125,11 @@ describe('API Config', function() {
                 active: '#FFFFFF',
                 background: '#000000'
             };
+            const config = new Config({ skin: skinObject });
 
-            let x = new Config({ skin: skinObject });
-            expect(x.skinUrl).to.equal(skinObject.url);
-            expect(x.skinColorInactive).to.equal(skinObject.inactive);
-            expect(x.skinColorActive).to.equal(skinObject.active);
-            expect(x.skinColorBackground, skinObject.background);
+            expect(config.skinUrl).to.equal(skinObject.url);
+            expect(config.skin).to.equal(skinObject.name);
+            expect(_.size(config.skinColors)).to.equal(4);
         });
     });
 });

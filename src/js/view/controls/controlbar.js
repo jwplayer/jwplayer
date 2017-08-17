@@ -68,11 +68,10 @@ function createCastButton(castToggle, localization) {
     const ariaText = localization.cast;
 
     const castButton = document.createElement('button', 'google-cast-button');
-    castButton.className = 'jw-button-color';
     ariaLabel(castButton, ariaText);
 
     const element = document.createElement('div');
-    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast';
+    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
     element.style.display = 'none';
     element.style.cursor = 'pointer';
     element.appendChild(castButton);
@@ -139,7 +138,7 @@ export default class Controlbar {
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
             muteButton = button('jw-icon-volume', () => {
                 _api.setMute();
-            }, vol);
+            }, vol, [VOLUME_ICON_0, VOLUME_ICON_100]);
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -264,7 +263,6 @@ export default class Controlbar {
         _model.change('volume', this.onVolume, this);
         _model.change('mute', this.onMute, this);
         _model.change('playlistItem', this.onPlaylistItem, this);
-        _model.change('mediaModel', this.onMediaModel, this);
         _model.change('castAvailable', this.onCastAvailable, this);
         _model.change('castActive', this.onCastActive, this);
         _model.change('duration', this.onDuration, this);
@@ -405,25 +403,6 @@ export default class Controlbar {
         this.elements.audiotracks.setup();
     }
 
-    onMediaModel(model, mediaModel) {
-        mediaModel.on('change:levels', function (levelsChangeModel, levels) {
-            this.elements.hd.setup(levels, levelsChangeModel.get('currentLevel'));
-        }, this);
-        mediaModel.on('change:currentLevel', function (currentLevelChangeModel, level) {
-            this.elements.hd.selectItem(level);
-        }, this);
-        mediaModel.on('change:audioTracks', function (audioTracksChangeModel, audioTracks) {
-            const list = _.map(audioTracks, function (track) {
-                return { label: track.name };
-            });
-            this.elements.audiotracks.setup(list, audioTracksChangeModel.get('currentAudioTrack'),
-                { isToggle: false });
-        }, this);
-        mediaModel.on('change:currentAudioTrack', function (currentAudioTrackChangeModel, currentAudioTrack) {
-            this.elements.audiotracks.selectItem(currentAudioTrack);
-        }, this);
-    }
-
     onVolume(model, pct) {
         this.renderVolume(model.get('mute'), pct);
     }
@@ -436,6 +415,7 @@ export default class Controlbar {
         // mute, volume, and volumetooltip do not exist on mobile devices.
         if (this.elements.mute) {
             utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
+            utils.toggleClass(this.elements.mute.element(), 'jw-full', !muted);
         }
         if (this.elements.volume) {
             this.elements.volume.render(muted ? 0 : vol);
@@ -632,7 +612,8 @@ export default class Controlbar {
 
         instreamModel
             .change('position', timeSlider.onPosition, timeSlider)
-            .change('duration', timeSlider.onDuration, timeSlider);
+            .change('duration', timeSlider.onDuration, timeSlider)
+            .change('duration', () => {timeSlider.streamType = 'VOD';}, timeSlider);
     }
 
     syncPlaybackTime(model) {
@@ -644,6 +625,7 @@ export default class Controlbar {
 
         timeSlider.onPosition(model, model.get('position'));
         timeSlider.onDuration(model, model.get('duration'));
+        timeSlider.onStreamType(model, model.get('streamType'));
     }
 }
 

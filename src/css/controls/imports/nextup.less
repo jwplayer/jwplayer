@@ -89,11 +89,6 @@
 }
 
 .jw-nextup-thumbnail-visible + .jw-nextup-title:after {
-    background: linear-gradient(
-        -180deg,
-        fade(@nextup-body-text-color-overflow, 0%) 0%,
-        @nextup-body-text-color-overflow 100%
-    );
     bottom: 0;
     content: "";
     height: 30px;
@@ -108,14 +103,12 @@
     color: @nextup-close-button-color-inactive;
     opacity: 0;
     position: absolute;
-    right: 5px;
-    top: 6px;
+    right: 0;
+    top: 0;
+    height: 24px;
+    width: 24px;
     transition: color 150ms ease, opacity 150ms ease, visibility 150ms ease;
     visibility: hidden;
-
-    .jw-svg-icon-close {
-        display: block;
-    }
 }
 
 .jw-nextup-close:active {

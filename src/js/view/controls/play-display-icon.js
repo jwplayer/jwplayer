@@ -20,7 +20,7 @@ export default class PlayDisplayIcon {
         this.icon = iconDisplay;
         this.el = element;
 
-        this.iconUI = new UI(this.el).on('click tap', (evt) => {
+        new UI(this.el).on('click tap', (evt) => {
             this.trigger(evt.type);
         });
 

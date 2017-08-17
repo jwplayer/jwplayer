@@ -10,7 +10,7 @@ import * as ControlsLoader from 'controller/controls-loader';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
     DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import { prefix } from 'utils/strings';
+import { handleColorOverrides } from 'utils/skin';
 import {
     addClass,
     hasClass,
@@ -21,10 +21,8 @@ import {
     bounds,
 } from 'utils/dom';
 import {
-    css,
     clearCss,
     style,
-    getRgba
 } from 'utils/css';
 import _ from 'utils/underscore';
 import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
@@ -211,118 +209,6 @@ function View(_api, _model) {
         _model.set('audioMode', audioMode);
     }
 
-    // Set global colors, used by related plugin
-    // If a color is undefined simple-style-loader won't add their styles to the dom
-    function insertGlobalColorClasses(activeColor, inactiveColor, playerId) {
-        if (activeColor) {
-            const activeColorSet = {
-                color: activeColor,
-                borderColor: activeColor,
-                stroke: activeColor
-            };
-            css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
-            css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
-        }
-        if (inactiveColor) {
-            const inactiveColorSet = {
-                color: inactiveColor,
-                borderColor: inactiveColor,
-                stroke: inactiveColor
-            };
-            css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
-            css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
-        }
-    }
-
-    this.handleColorOverrides = function () {
-        const id = _model.get('id');
-
-        function addStyle(elements, attr, value, extendParent) {
-            /* if extendParent is true, bundle the first selector of
-             element string to the player element instead of defining it as a
-             child of the player element (default). i.e. #player.sel-1 .sel-2 vs. #player .sel-1 .sel-2 */
-            elements = prefix(elements, '#' + id + (extendParent ? '' : ' '));
-
-            const o = {};
-            o[attr] = value;
-            css(elements.join(', '), o, id);
-        }
-
-        // We can assume that the user will define both an active and inactive color because otherwise it doesn't look good
-        const activeColor = _model.get('skinColorActive');
-        const inactiveColor = _model.get('skinColorInactive');
-        const backgroundColor = _model.get('skinColorBackground');
-
-        // These will use standard style names for CSS since they are added directly to a style sheet
-        // Using background instead of background-color so we don't have to clear gradients with background-image
-        if (activeColor) {
-            // Apply active color
-            addStyle([
-                // Toggle and menu button active colors
-                '.jw-button-color.jw-toggle',
-                '.jw-button-color:hover',
-                '.jw-button-color.jw-toggle.jw-off:hover',
-                '.jw-option:not(.jw-active-option):hover',
-                '.jw-nextup-header'
-            ], 'color', activeColor);
-            addStyle([
-                // menu active option
-                '.jw-option.jw-active-option',
-                // slider fill color
-                '.jw-progress'
-            ], 'background', 'none ' + activeColor);
-        }
-
-        if (inactiveColor) {
-            // Apply inactive color
-            addStyle([
-                // text color of many ui elements
-                '.jw-text',
-                // menu option text
-                '.jw-option',
-                // controlbar button colors
-                '.jw-button-color',
-                // toggle button
-                '.jw-toggle.jw-off',
-                '.jw-skip .jw-skip-icon',
-                '.jw-nextup-body'
-            ], 'color', inactiveColor);
-            addStyle([
-                // slider children
-                '.jw-cue',
-                '.jw-knob',
-                '.jw-active-option',
-                '.jw-nextup-header'
-            ], 'background', 'none ' + inactiveColor);
-        }
-
-        if (backgroundColor) {
-            // Apply background color
-            addStyle([
-                // general background color
-                '.jw-background-color'
-            ], 'background', 'none ' + backgroundColor);
-
-            const backgroundColorGradient = 'transparent linear-gradient(180deg, ' +
-                getRgba(backgroundColor, 0) + ' 0%, ' +
-                getRgba(backgroundColor, 0.25) + ' 30%, ' +
-                getRgba(backgroundColor, 0.4) + ' 70%, ' +
-                getRgba(backgroundColor, 0.5) + ') 100%';
-
-            addStyle([
-                // for small player, set the control bar gradient to the config background color
-                '.jw-background-color.jw-controlbar'
-            ], 'background', backgroundColorGradient, true);
-
-            // remove the config background on time slider
-            addStyle([
-                '.jw-background-color.jw-slider-time'
-            ], 'background', 'transparent', true);
-        }
-
-        insertGlobalColorClasses(activeColor, inactiveColor, id);
-    };
-
     this.setup = function () {
         _preview.setup(_playerElement.querySelector('.jw-preview'));
         _title.setup(_playerElement.querySelector('.jw-title'));
@@ -380,7 +266,7 @@ function View(_api, _model) {
             addClass(_playerElement, 'jw-ie');
         }
 
-        this.handleColorOverrides();
+        handleColorOverrides(_model.get('id'), _model.get('skinColors'));
 
         // adds video tag to video layer
         _model.set('mediaContainer', _videoLayer);
@@ -761,7 +647,7 @@ function View(_api, _model) {
         _resizeMedia();
         _responsiveListener();
     }
-  
+
     function _setLiveMode(model, streamType) {
         if (!_instreamModel) {
             const live = (streamType === 'LIVE');
@@ -859,6 +745,7 @@ function View(_api, _model) {
         _instreamModel.on('change:state', _stateHandler, this);
 
         addClass(_playerElement, 'jw-flag-ads');
+        removeClass(_playerElement, 'jw-flag-live');
 
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         if (_controls) {

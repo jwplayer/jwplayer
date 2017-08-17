@@ -161,6 +161,10 @@
             padding: @ui-padding;
         }
 
+        .jw-slider-volume.jw-volume-tip.jw-background-color.jw-slider-vertical {
+            background: none;
+        }
+
         .jw-skip {
             padding: @ui-padding;
 
@@ -193,6 +197,7 @@
                 &:focus {
                     --connected-color: @active-color;
                     --disconnected-color: @hover-color;
+                    outline: none;
                 }
 
                 &.jw-off {
@@ -224,14 +229,6 @@
         .jw-nextup-body {
             background: @nextup-body-background;
             color: @nextup-body-text-color;
-        }
-
-        .jw-nextup-thumbnail-visible + .jw-nextup-title:after {
-            background: linear-gradient(
-                -180deg,
-                fade(@nextup-body-text-color-overflow, 0%) 0%,
-                @nextup-body-text-color-overflow 100%
-            );
         }
 
         .jw-nextup-close {

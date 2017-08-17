@@ -220,7 +220,7 @@ function setupError(core, error) {
 
     showView(core, errorElement);
 
-    setTimeout(() => {
+    Promise.resolve().then(() => {
         core.trigger(SETUP_ERROR, {
             message
         });
