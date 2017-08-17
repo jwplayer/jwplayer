@@ -346,27 +346,28 @@ export default class Controls {
             });
 
             mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
-                const audioTrackItems = audioTracks.map((track, index) => {
+                const audioTracksItems = audioTracks.map((track, index) => {
                     return SettingsContentItem(track.name, track.name, () => {
                         model.getVideo().setCurrentAudioTrack(index);
                         settingsMenu.close();
                     });
                 });
 
-                let audioTrackSubmenu = settingsMenu.getSubmenu('audioTracks');
-                if (audioTrackSubmenu) {
-                    audioTrackSubmenu.replaceContent(audioTrackItems);
+                let audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
+                if (audioTracksSubmenu) {
+                    audioTracksSubmenu.replaceContent(audioTracksItems);
                 } else {
-                    audioTrackSubmenu = SettingsSubmenu('audioTracks');
-                    audioTrackSubmenu.addContent(audioTrackItems);
-                    settingsMenu.addSubmenu(AUDIO_TRACKS_ICON, audioTrackSubmenu);
+                    audioTracksSubmenu = SettingsSubmenu('audioTracks');
+                    audioTracksSubmenu.addContent(audioTracksItems);
+                    settingsMenu.addSubmenu(AUDIO_TRACKS_ICON, audioTracksSubmenu);
                 }
+                audioTracksSubmenu.activateItem(changedModel.get('currentAudioTrack'));
             });
 
             mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
-                const audioTrackSubmenu = settingsMenu.getSubmenu('audioTracks');
-                if (audioTrackSubmenu) {
-                    audioTrackSubmenu.activateItem(currentAudioTrack);
+                const audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
+                if (audioTracksSubmenu) {
+                    audioTracksSubmenu.activateItem(currentAudioTrack);
                 }
             });
         });
