@@ -33,7 +33,7 @@ describe('Skin Customization', function() {
             expect(cssUtils.css.callCount).to.equal(0);
         });
 
-        it('should apply control bar color text', function() {
+        it('should override controlbar text color', function() {
             cssStub.reset();
 
             handleColorOverrides('id', {
@@ -49,7 +49,7 @@ describe('Skin Customization', function() {
             ]);
         });
 
-        it('should apply control bar color text', function() {
+        it('should override controlbar text and icon colors', function() {
             cssStub.reset();
 
             handleColorOverrides('id', {
