@@ -146,7 +146,7 @@ export default class Controlbar {
         }, next, [NEXT_ICON]);
 
         const settingsButton = button('jw-settings-button', () => {
-            this.trigger('settingsInteraction', 'toggle');
+            this.trigger('settingsInteraction');
         }, this._localization.settings, [SETTINGS_ICON]);
 
         if (_model.get('nextUpDisplay')) {

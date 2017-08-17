@@ -56,6 +56,9 @@ export function SettingsMenu(visibilityChangeHandler) {
                 .insertBefore(categoryButton.element(), closeButton.element());
             settingsMenuElement.appendChild(submenu.element());
         },
+        getSubmenu(name) {
+            return submenus[name];
+        },
         removeSubmenu(name) {
             submenus[name] = null;
         },

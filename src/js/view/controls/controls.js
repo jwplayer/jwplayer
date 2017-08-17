@@ -1,6 +1,7 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
+import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -13,6 +14,8 @@ import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { SettingsMenu } from 'view/controls/components/settings/menu';
+import SettingsSubmenu from 'view/controls/components/settings/submenu';
+import SettingsContentItem from 'view/controls/components/settings/content-item';
 
 require('css/controls.less');
 
@@ -331,6 +334,7 @@ export default class Controls {
 
     onMediaModel(model) {
         const controlbar = this.controlbar;
+        const settingsMenu = this.settingsMenu;
 
         model.change('mediaModel', function(newModel, mediaModel) {
             mediaModel.on('change:levels', function (changedModel, levels) {
@@ -342,13 +346,28 @@ export default class Controls {
             });
 
             mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
-                const list = audioTracks.map(track => ({ label: track.name }));
-                controlbar.elements.audiotracks.setup(list, changedModel.get('currentAudioTrack'),
-                    { isToggle: false });
+                const audioTrackItems = audioTracks.map((track, index) => {
+                    return SettingsContentItem(track.name, track.name, () => {
+                        model.getVideo().setCurrentAudioTrack(index);
+                        settingsMenu.close();
+                    });
+                });
+
+                let audioTrackSubmenu = settingsMenu.getSubmenu('audioTracks');
+                if (audioTrackSubmenu) {
+                    audioTrackSubmenu.replaceContent(audioTrackItems);
+                } else {
+                    audioTrackSubmenu = SettingsSubmenu('audioTracks');
+                    audioTrackSubmenu.addContent(audioTrackItems);
+                    settingsMenu.addSubmenu(AUDIO_TRACKS_ICON, audioTrackSubmenu);
+                }
             });
 
             mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
-                controlbar.elements.audiotracks.selectItem(currentAudioTrack);
+                const audioTrackSubmenu = settingsMenu.getSubmenu('audioTracks');
+                if (audioTrackSubmenu) {
+                    audioTrackSubmenu.activateItem(currentAudioTrack);
+                }
             });
         });
     }
@@ -357,12 +376,8 @@ export default class Controls {
 const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
     const settingsMenu = SettingsMenu(visibilityChangeHandler);
 
-    controlbar.on('settingsInteraction', (e) => {
-        if (e === 'toggle') {
-            settingsMenu.toggle();
-        } else if (e === 'close') {
-            settingsMenu.close();
-        }
+    controlbar.on('settingsInteraction', () => {
+        settingsMenu.toggle();
     });
 
     return settingsMenu;
