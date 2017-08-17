@@ -116,6 +116,7 @@ export default class Controls {
             this.userActive();
         };
         this.settingsMenu = setupSettingsMenu(controlbar, visibilityChangeHandler);
+        this.onMediaModel(model);
         this.div.appendChild(this.settingsMenu.element());
 
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
@@ -326,6 +327,30 @@ export default class Controls {
         this.showing = false;
         utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
+    }
+
+    onMediaModel(model) {
+        const controlbar = this.controlbar;
+
+        model.change('mediaModel', function(newModel, mediaModel) {
+            mediaModel.on('change:levels', function (changedModel, levels) {
+                controlbar.elements.hd.setup(levels, changedModel.get('currentLevel'));
+            });
+
+            mediaModel.on('change:currentLevel', function (changedModel, level) {
+                controlbar.elements.hd.selectItem(level);
+            });
+
+            mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
+                const list = audioTracks.map(track => ({ label: track.name }));
+                controlbar.elements.audiotracks.setup(list, changedModel.get('currentAudioTrack'),
+                    { isToggle: false });
+            });
+
+            mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
+                controlbar.elements.audiotracks.selectItem(currentAudioTrack);
+            });
+        });
     }
 }
 
