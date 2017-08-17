@@ -68,11 +68,10 @@ function createCastButton(castToggle, localization) {
     const ariaText = localization.cast;
 
     const castButton = document.createElement('button', 'google-cast-button');
-    castButton.className = 'jw-button-color';
     ariaLabel(castButton, ariaText);
 
     const element = document.createElement('div');
-    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast';
+    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
     element.style.display = 'none';
     element.style.cursor = 'pointer';
     element.appendChild(castButton);

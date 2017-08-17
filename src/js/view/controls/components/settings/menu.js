@@ -3,7 +3,7 @@ import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement } from 'utils/dom';
 
-export default function SettingsMenu(visibilityChangeHandler) {
+export function SettingsMenu(visibilityChangeHandler) {
     const documentClickHandler = (e) => {
         // Close if anything other than the settings menu has been clicked
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
