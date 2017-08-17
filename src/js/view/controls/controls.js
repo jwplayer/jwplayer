@@ -1,6 +1,7 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
+import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -13,6 +14,8 @@ import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { SettingsMenu } from 'view/controls/components/settings/menu';
+import SettingsSubmenu from 'view/controls/components/settings/submenu';
+import SettingsContentItem from 'view/controls/components/settings/content-item';
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 
 require('css/controls.less');
@@ -335,6 +338,7 @@ export default class Controls {
 
     onMediaModel(model) {
         const controlbar = this.controlbar;
+        const settingsMenu = this.settingsMenu;
 
         model.change('mediaModel', function(newModel, mediaModel) {
             mediaModel.on('change:levels', function (changedModel, levels) {
@@ -346,13 +350,35 @@ export default class Controls {
             });
 
             mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
-                const list = audioTracks.map(track => ({ label: track.name }));
-                controlbar.elements.audiotracks.setup(list, changedModel.get('currentAudioTrack'),
-                    { isToggle: false });
+                if (!audioTracks || (audioTracks && !audioTracks.length)) {
+                    settingsMenu.removeSubmenu('audioTracks');
+                    controlbar.elements.audioTracksButton.hide();
+                    return;
+                }
+                const audioTracksItems = audioTracks.map((track, index) => {
+                    return SettingsContentItem(track.name, track.name, () => {
+                        model.getVideo().setCurrentAudioTrack(index);
+                        settingsMenu.close();
+                    });
+                });
+
+                let audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
+                if (audioTracksSubmenu) {
+                    audioTracksSubmenu.replaceContent(audioTracksItems);
+                } else {
+                    audioTracksSubmenu = SettingsSubmenu('audioTracks');
+                    audioTracksSubmenu.addContent(audioTracksItems);
+                    settingsMenu.addSubmenu(AUDIO_TRACKS_ICON, audioTracksSubmenu);
+                }
+                audioTracksSubmenu.activateItem(changedModel.get('currentAudioTrack'));
+                controlbar.elements.audioTracksButton.show();
             });
 
             mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
-                controlbar.elements.audiotracks.selectItem(currentAudioTrack);
+                const audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
+                if (audioTracksSubmenu) {
+                    audioTracksSubmenu.activateItem(currentAudioTrack);
+                }
             });
         });
     }
@@ -361,12 +387,23 @@ export default class Controls {
 const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
     const settingsMenu = SettingsMenu(visibilityChangeHandler);
 
-    controlbar.on('settingsInteraction', (e) => {
-        if (e === 'toggle') {
-            settingsMenu.toggle();
-        } else if (e === 'close') {
-            settingsMenu.close();
+    controlbar.on('submenuInteraction', (submenuName) => {
+        const submenu = settingsMenu.getSubmenu(name);
+        if (settingsMenu.visible) {
+            if (!submenu || submenu.active) {
+                settingsMenu.close();
+            } else {
+                settingsMenu.activateSubmenu(submenuName);
+            }
+        } else {
+            settingsMenu.open();
+            settingsMenu.activateSubmenu(submenuName);
         }
+    });
+
+    controlbar.on('settingsInteraction', () => {
+        settingsMenu.toggle();
+        settingsMenu.activateSubmenu('quality');
     });
 
     return settingsMenu;

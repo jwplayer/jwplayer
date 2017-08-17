@@ -46,8 +46,7 @@ export function SettingsMenu(visibilityChangeHandler) {
             const name = submenu.name;
             submenus[name] = submenu;
             const categoryButton = button(`jw-settings-${name}`, () => {
-                deactivateAllSubmenus(submenus);
-                submenu.activate();
+                this.activateSubmenu(name);
             }, name, [icon]);
             categoryButton.show();
 
@@ -56,8 +55,25 @@ export function SettingsMenu(visibilityChangeHandler) {
                 .insertBefore(categoryButton.element(), closeButton.element());
             settingsMenuElement.appendChild(submenu.element());
         },
+        getSubmenu(name) {
+            return submenus[name];
+        },
         removeSubmenu(name) {
+            const submenu = submenus[name];
+            if (!submenu) {
+                return;
+            }
+            settingsMenuElement.removeChild(submenu.element());
+            submenu.destroy();
             submenus[name] = null;
+        },
+        activateSubmenu(name) {
+            const submenu = submenus[name];
+            if (!submenu || submenu.active) {
+                return;
+            }
+            deactivateAllSubmenus(submenus);
+            submenu.activate();
         },
         element() {
             return settingsMenuElement;

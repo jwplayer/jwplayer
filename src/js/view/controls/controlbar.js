@@ -8,7 +8,6 @@ import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
 import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
-import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
@@ -17,6 +16,7 @@ import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
+import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -145,9 +145,13 @@ export default class Controlbar {
             _api.next();
         }, next, [NEXT_ICON]);
 
-        const settingsButton = button('jw-settings-button', () => {
-            this.trigger('settingsInteraction', 'toggle');
+        const settingsButton = button('jw-settings-main', () => {
+            this.trigger('settingsInteraction');
         }, this._localization.settings, [SETTINGS_ICON]);
+
+        const audioTracksButton = button('jw-settings-audiotracks', () => {
+            this.trigger('submenuInteraction', 'audioTracks');
+        }, this._localization.audioTracks, [AUDIO_TRACKS_ICON]);
 
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -186,7 +190,6 @@ export default class Controlbar {
             duration: textIcon('jw-text-duration', 'timer'),
             hd: menu('jw-icon-hd', this._localization.hd, [QUALITY_ICON]),
             cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
-            audiotracks: menu('jw-icon-audio-tracks', this._localization.audioTracks, [AUDIO_TRACKS_ICON]),
             playbackrates: new SelectionDisplayMenu(
                 'jw-icon-playback-rate',
                 this._localization.playbackRates,
@@ -202,7 +205,8 @@ export default class Controlbar {
             }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
-            settingsButton
+            settingsButton,
+            audioTracksButton
         };
 
         // Filter out undefined elements
@@ -219,9 +223,9 @@ export default class Controlbar {
             elements.spacer,
             elements.next,
             elements.settingsButton,
+            elements.audioTracksButton,
             elements.hd,
             elements.cc,
-            elements.audiotracks,
             elements.playbackrates,
             elements.cast,
             elements.fullscreen
@@ -235,7 +239,6 @@ export default class Controlbar {
         const menus = this.menus = [
             elements.hd,
             elements.cc,
-            elements.audiotracks,
             elements.playbackrates,
             elements.volumetooltip
         ].filter(e => e);
@@ -262,7 +265,6 @@ export default class Controlbar {
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
         _model.change('mute', this.onMute, this);
-        _model.change('playlistItem', this.onPlaylistItem, this);
         _model.change('castAvailable', this.onCastAvailable, this);
         _model.change('castActive', this.onCastActive, this);
         _model.change('duration', this.onDuration, this);
@@ -317,10 +319,6 @@ export default class Controlbar {
         elements.cc.on('toggleValue', function () {
             const index = this._model.get('captionsIndex');
             this._api.setCurrentCaptions(index ? 0 : 1);
-        }, this);
-
-        elements.audiotracks.on('select', function (value) {
-            this._model.getVideo().setCurrentAudioTrack(value);
         }, this);
 
         this._model.mediaController.on('seeked', function () {
@@ -397,10 +395,6 @@ export default class Controlbar {
 
     onPlaybackRate(model, value) {
         this.elements.playbackrates.selectItem(model.get('playbackRates').indexOf(value));
-    }
-
-    onPlaylistItem() {
-        this.elements.audiotracks.setup();
     }
 
     onVolume(model, pct) {
