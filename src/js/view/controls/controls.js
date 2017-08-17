@@ -123,7 +123,7 @@ export default class Controls {
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
         if (model.get('autostartMuted')) {
             const unmuteCallback = () => this.unmuteAutoplay(api, model);
-            this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').volume,
+            this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').unmute,
                 [VOLUME_ICON_0]);
             this.mute.show();
             this.div.appendChild(this.mute.element());
