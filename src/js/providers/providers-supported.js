@@ -1,4 +1,3 @@
-import { Features } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import { isYouTube, isRtmp } from 'utils/validator';
 import video from 'utils/video';
@@ -60,35 +59,6 @@ const SupportsMatrix = [
             // Last, but not least, we ask the browser
             // (But only if it's a video with an extension known to work in HTML5)
             return !!video.canPlayType(mimeType);
-        }
-    },
-    {
-        name: 'flash',
-        supports: function (source) {
-            if (!Features.flash) {
-                return false;
-            }
-
-            const file = source.file;
-            const type = source.type;
-
-            if (isRtmp(file, type)) {
-                return true;
-            }
-
-            return ([
-                'flv',
-                'f4v',
-                'mov',
-                'm4a',
-                'm4v',
-                'mp4',
-                'aac',
-                'f4a',
-                'mp3',
-                'mpeg',
-                'smil'
-            ]).indexOf(type) > -1;
         }
     }
 ];

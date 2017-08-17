@@ -15,13 +15,6 @@ export const Loaders = {
             return provider;
         }, chunkLoadErrorHandler, 'provider.html5');
     },
-    flash: function() {
-        return require.ensure(['providers/flash'], function(require) {
-            const provider = require('providers/flash').default;
-            registerProvider(provider);
-            return provider;
-        }, chunkLoadErrorHandler, 'provider.flash');
-    },
     youtube: function() {
         return require.ensure(['providers/youtube'], function(require) {
             const provider = require('providers/youtube').default;
