@@ -55,7 +55,7 @@
 
 // UI
 @ui-padding: 0.5em;
-@ui-corner-round: @thumb-size / 2;
+@ui-corner-round: 0.5px;
 @ui-margin: 1.5em;
 
 // Controlbar
@@ -71,7 +71,7 @@
 @time-rail-width: @def-rail-width;
 @volume-rail-width: @def-rail-width;
 @volume-rail-length: 4em;
-@thumb-size: @rail-height * 2;
+@thumb-size: (@rail-height * 2);
 
 // fixed slider
 
@@ -84,7 +84,7 @@
 // Volume tooltip
 @volume-background: @background-color;
 @volume-border: 0;
-@volume-padding: @ui-padding * 2;
+@volume-padding: (@ui-padding * 2);
 @volume-border-radius: 0;
 
 // Next up display
