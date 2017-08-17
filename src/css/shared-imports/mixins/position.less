@@ -1,0 +1,79 @@
+/**
+ * Apply a position property to the element.
+ *
+ */
+.position(@position: absolute) {
+	position: @position;
+}
+
+/**
+ * Set the top position of the element.
+ *
+ */
+.top(@val: 0, @position: absolute) {
+	.position(@position);
+	top: @val;
+} ._top { .top(); }
+
+/**
+ * Set the right position of the element.
+ *
+ */
+.right(@val: 0, @position: absolute) {
+	.position(@position);
+	right: @val;
+} ._right { .right(); }
+
+/**
+ * Set the bottom position of the element.
+ *
+ */
+.bottom(@val: 0, @position: absolute) {
+	.position(@position);
+	bottom: @val;
+} ._bottom { .bottom(); }
+
+/**
+ * Set the left position of the element.
+ *
+ */
+.left(@val: 0, @position: absolute) {
+	.position(@position);
+	left: @val;
+} ._left { .left(); }
+
+/**
+ * Simultaneously set the top and left position of the element.
+ *
+ */
+.topleft(@top: 0, @left: 0, @position: absolute) {
+	.top(@top, @position);
+	.left(@left, @position);
+} ._topleft { .topleft(); }
+
+/**
+ * Simultaneously set the bottom and left position of the element.
+ *
+ */
+.bottomleft(@bottom: 0, @left: 0, @position: absolute) {
+	.bottom(@bottom, @position);
+	left: @left;
+} ._bottomleft { .bottomleft(); }
+
+/**
+ * Simultaneously set the top and right position of the element.
+ *
+ */
+.topright(@top: 0, @right: @top, @position: absolute) {
+	.top(@top, @position);
+	right: @right;
+} ._topright { .topright(); }
+
+/**
+ * Simultaneously set the top and right position of the element.
+ *
+ */
+.bottomright(@bottom: 0, @right: @bottom, @position: absolute) {
+	.bottom(@bottom, @position);
+	right: @right;
+} ._bottomright { .bottomright(); }
