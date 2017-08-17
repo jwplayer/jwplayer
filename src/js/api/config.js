@@ -1,6 +1,8 @@
-import { loadFrom } from '../utils/playerutils';
-import { serialize, getScriptPath } from 'utils/parser';
 import _ from 'utils/underscore';
+import { loadFrom } from 'utils/playerutils';
+import { serialize, getScriptPath } from 'utils/parser';
+import { normalizeSkin } from 'utils/skin';
+
 
 /* global __webpack_public_path__:true*/
 /* eslint camelcase: 0 */
@@ -16,7 +18,6 @@ const Defaults = {
     playbackRates: [0.5, 1, 1.25, 1.5, 2],
     repeat: false,
     castAvailable: false,
-    skin: '',
     stretching: 'uniform',
     mute: false,
     volume: 90,
@@ -95,11 +96,13 @@ const Config = function(options, persisted) {
     config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
     if (_.isObject(config.skin)) {
-        config.skinUrl = config.skin.url;
-        config.skinColorInactive = config.skin.inactive; // default icon color
-        config.skinColorActive = config.skin.active; // icon hover, on, slider color
-        config.skinColorBackground = config.skin.background; // control elements background
+        config.skinColors = normalizeSkin(config.skin);
+        config.skinUrl = config.skin.url; // get skin name if it exists
         config.skin = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
+
+        // config.skinColorInactive = config.skin.inactive; // default icon color
+        // config.skinColorActive = config.skin.active; // icon hover, on, slider color
+        // config.skinColorBackground = config.skin.background; // control elements background
     }
 
     let rateControls = config.playbackRateControls;
