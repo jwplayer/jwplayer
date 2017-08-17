@@ -26,7 +26,12 @@ const PluginLoader = function () {
                 const pluginConfig = pluginsConfig[pluginUrl];
                 return plugin.load().then(() => {
                     configurePlugin(plugin, pluginConfig, api);
-                }).catch(error => error);
+                }).catch(error => {
+                    if (!(error instanceof Error)) {
+                        return new Error(`Error in ${pluginUrl} "${error}"`);
+                    }
+                    return error;
+                });
             }));
     };
 
