@@ -391,7 +391,6 @@ Object.assign(Controller.prototype, {
 
             if (_isIdle()) {
                 _model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
-                _model.mediaModel.set('playAttempt', true);
             }
 
             if (!_preplay) {
@@ -412,6 +411,7 @@ Object.assign(Controller.prototype, {
                     });
                     _actionOnAttach = null;
                 });
+                _model.mediaModel.set('playAttempt', true);
             } else if (_model.get('state') === STATE_PAUSED) {
                 _model.playVideo().catch(error => {
                     _this.triggerError({
