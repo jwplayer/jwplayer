@@ -420,12 +420,12 @@ const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
                 settingsMenu.activateSubmenu(submenuName);
             }
         } else {
-            if (isDefault) {
+            if (submenu) {
+                // Activate the selected submenu
+                settingsMenu.activateSubmenu(submenuName);
+            } else {
                 // Activate the first submenu if clicking the default button
                 settingsMenu.activateFirstSubmenu();
-            } else {
-                // Otherwise, activate the selected submenu
-                settingsMenu.activateSubmenu(submenuName);
             }
             settingsMenu.open();
         }
