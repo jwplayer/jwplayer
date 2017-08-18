@@ -9,6 +9,7 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_BUFFERING, STATE_PAUSED, STATE_PLAYIN
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
 import Events from 'utils/backbone.events';
+import { resolved } from 'polyfills/promise';
 
 // Represents the state of the player
 const Model = function() {
@@ -101,13 +102,12 @@ const Model = function() {
                 break;
             case MEDIA_BUFFER_FULL:
                 // media controller
-                if (mediaModel.get('playAttempt')) {
-                    this.playVideo();
-                } else {
-                    mediaModel.on('change:playAttempt', function() {
+                mediaModel.change('playAttempt', (mediaModelChanged, playAttempt) => {
+                    if (playAttempt) {
+                        mediaModelChanged.off('playAttempt', null, this);
                         this.playVideo();
-                    }, this);
-                }
+                    }
+                }, this);
                 this.setPlaybackRate(this.get('defaultPlaybackRate'));
                 break;
             case MEDIA_TIME:
@@ -319,6 +319,7 @@ const Model = function() {
         this.set('position', item.starttime || 0);
         this.set('minDvrWindow', item.minDvrWindow);
         this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
+        this.attributes.playlistItem = null;
         this.set('playlistItem', item);
         this.setProvider(item);
     };
@@ -429,7 +430,7 @@ const Model = function() {
 
         if (_provider) {
             _provider.load(item);
-            return Promise.resolve();
+            return resolved;
         }
         this.set('state', STATE_BUFFERING);
         const providerNeeded = _providers.required([item]);
@@ -437,6 +438,7 @@ const Model = function() {
             if (!_provider && _attached && this.get('playlist')[this.get('item')].file === item.file) {
                 this.setProvider(item);
                 _provider.load(item);
+                return resolved;
             }
         });
     };
@@ -450,8 +452,8 @@ const Model = function() {
     this.playVideo = function() {
         const playPromise = _provider.play();
         if (!playPromise) {
-            // TODO: return new Promise that resolves when playback starts, or rejects on error/timeout
-            return Promise.resolve();
+            // TODO: polyfill video tag play promise
+            return resolved;
         }
         return playPromise;
     };

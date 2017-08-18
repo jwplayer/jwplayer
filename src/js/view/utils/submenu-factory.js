@@ -49,8 +49,8 @@ export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, ini
     audioTracksSubmenu.activateItem(initialSelectionIndex);
 }
 
-export function removeQualitiesSubmenu(settingsMenu) {
-    settingsMenu.removeSubmenu(QUALITIES_SUBMENU);
+export function removeAudioTracksSubmenu(settingsMenu) {
+    settingsMenu.removeSubmenu(AUDIO_TRACKS_SUBMENU);
 }
 
 export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex) {
@@ -65,6 +65,6 @@ export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initial
     qualitiesSubmenu.activateItem(initialSelectionIndex);
 }
 
-export function removeQualitySubmenu(settingsMenu) {
-    settingsMenu.removeSubmenu(AUDIO_TRACKS_SUBMENU);
+export function removeQualitiesSubmenu(settingsMenu) {
+    settingsMenu.removeSubmenu(QUALITIES_SUBMENU);
 }

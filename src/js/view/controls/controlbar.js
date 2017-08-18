@@ -15,7 +15,6 @@ import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
-// import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -52,10 +51,6 @@ function div(classes) {
     element.className = `jw-reset ${classes}`;
     return element;
 }
-
-// function menu(name, ariaText, svgIcons) {
-//     return new Menu(name, ariaText, null, svgIcons);
-// }
 
 function createCastButton(castToggle, localization) {
     if (!Browser.chrome || OS.iOS) {
@@ -220,6 +215,8 @@ export default class Controlbar {
             elements.next,
             elements.settingsButton,
             elements.captionsButton,
+            elements.captionsButton,
+            elements.hd,
             elements.playbackrates,
             elements.cast,
             elements.fullscreen
