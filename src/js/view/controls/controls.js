@@ -412,7 +412,7 @@ const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
         }
 
         if (settingsMenu.visible) {
-            if (submenu.active || isDefault) {
+            if (isDefault || submenu.active) {
                 // Close the submenu if clicking the default button (the gear) or if we're already at that submenu
                 settingsMenu.close();
             } else {
