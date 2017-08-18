@@ -18,15 +18,23 @@ export function SettingsMenu(visibilityChangeHandler) {
     const submenus = {};
     const settingsMenuElement = createElement(SettingsMenuTemplate());
 
+    const closeButton = button('jw-settings-close', () => {
+        instance.close();
+    }, 'Close Settings', [CLOSE_ICON]);
+    closeButton.show();
+    settingsMenuElement.querySelector('.jw-settings-topbar').appendChild(closeButton.element());
+
     const instance = {
         open() {
             visible = true;
             visibilityChangeHandler(visible);
+            settingsMenuElement.setAttribute('aria-expanded', 'true');
             addDocumentListeners(documentClickHandler);
         },
         close() {
             visible = false;
             visibilityChangeHandler(visible);
+            settingsMenuElement.setAttribute('aria-expanded', 'false');
             removeDocumentListeners(documentClickHandler);
         },
         toggle() {
@@ -36,21 +44,17 @@ export function SettingsMenu(visibilityChangeHandler) {
                 this.open();
             }
         },
-        addSubmenu(icon, submenu) {
+        addSubmenu(submenu) {
             if (!submenu) {
                 return;
             }
-
             const name = submenu.name;
+            const categoryButtonElement = submenu.categoryButtonElement;
             submenus[name] = submenu;
-            const categoryButton = button(`jw-settings-${name}`, () => {
-                this.activateSubmenu(name);
-            }, name, [icon]);
-            categoryButton.show();
 
             settingsMenuElement
                 .querySelector('.jw-settings-topbar')
-                .insertBefore(categoryButton.element(), closeButton.element());
+                .insertBefore(categoryButtonElement, closeButton.element());
             settingsMenuElement.appendChild(submenu.element());
         },
         getSubmenu(name) {
@@ -87,8 +91,6 @@ export function SettingsMenu(visibilityChangeHandler) {
         get: () => visible
     });
 
-    const closeButton = createCloseButton(instance.close);
-    settingsMenuElement.querySelector('.jw-settings-topbar').appendChild(closeButton.element());
 
     return instance;
 }
@@ -109,13 +111,4 @@ const deactivateAllSubmenus = (submenus) => {
     Object.keys(submenus).forEach(name => {
         submenus[name].deactivate();
     });
-};
-
-const createCloseButton = (action) => {
-    const closeButton = this.closeButton = button('jw-settings-close', () => {
-        action();
-    }, 'Close Settings', [CLOSE_ICON]);
-    closeButton.show();
-
-    return closeButton;
 };

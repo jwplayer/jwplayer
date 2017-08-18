@@ -147,10 +147,12 @@ export default class Controlbar {
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'quality', true);
         }, this._localization.settings, [SETTINGS_ICON]);
+        settingsButton.element().setAttribute('aria-haspopup', 'true');
 
         const captionsButton = button('jw-icon-cc jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'captions', false);
         }, this._localization.cc, [CAPTIONS_OFF_ICON, CAPTIONS_ON_ICON]);
+        captionsButton.element().setAttribute('aria-haspopup', 'true');
 
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })

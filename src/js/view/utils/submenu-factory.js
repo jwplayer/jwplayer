@@ -1,19 +1,27 @@
 import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
+import button from 'view/controls/components/button';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
 
-const makeSubmenu = (settingsMenu, submenuName, contentItems, icon) => {
-    let submenu = settingsMenu.getSubmenu(submenuName);
+const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
+    let submenu = settingsMenu.getSubmenu(name);
     if (submenu) {
         submenu.replaceContent(contentItems);
     } else {
-        submenu = SettingsSubmenu(submenuName);
+        const categoryButton = button(`jw-settings-${name}`, () => {
+            settingsMenu.activateSubmenu(name);
+        }, name, [icon]);
+        const categoryButtonElement = categoryButton.element();
+        categoryButtonElement.setAttribute('role', 'menuitemradio');
+        categoryButtonElement.setAttribute('aria-checked', 'false');
+
+        submenu = SettingsSubmenu(name, categoryButton);
         submenu.addContent(contentItems);
-        settingsMenu.addSubmenu(icon, submenu);
+        settingsMenu.addSubmenu(submenu);
     }
 
     return submenu;
