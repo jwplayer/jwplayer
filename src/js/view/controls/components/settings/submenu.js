@@ -32,7 +32,7 @@ export default function SettingsSubmenu(name) {
             toggleClass(submenuElement, 'jw-settings-submenu-active', false);
             active = false;
         },
-        activateItem(itemOrdinal) {
+        activateItem(itemOrdinal = 0) {
             const item = contentItems[itemOrdinal];
             if (!item || item.active) {
                 return;
