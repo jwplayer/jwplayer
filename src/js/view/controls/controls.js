@@ -1,7 +1,6 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
-import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -14,10 +13,8 @@ import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { SettingsMenu } from 'view/controls/components/settings/menu';
-import SettingsSubmenu from 'view/controls/components/settings/submenu';
-import SettingsContentItem from 'view/controls/components/settings/content-item';
+import { addCaptionsSubmenu, removeCaptionsSubmenu, addAudioTracksSubmenu, removeAudioTracksSubmenu } from 'view/utils/submenu-factory';
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
-import CAPTIONS_OFF_ICON from 'assets/SVG/captions-on.svg';
 
 require('css/controls.less');
 
@@ -349,28 +346,17 @@ export default class Controls {
             });
 
             mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
-                if (!audioTracks || (audioTracks && !audioTracks.length)) {
-                    settingsMenu.removeSubmenu('audioTracks');
-                    controlbar.elements.audioTracksButton.hide();
+                if (!audioTracks) {
+                    removeAudioTracksSubmenu(settingsMenu);
                     return;
                 }
-                const audioTracksItems = audioTracks.map((track, index) => {
-                    return SettingsContentItem(track.name, track.name, () => {
-                        model.getVideo().setCurrentAudioTrack(index);
-                        settingsMenu.close();
-                    });
-                });
 
-                let audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
-                if (audioTracksSubmenu) {
-                    audioTracksSubmenu.replaceContent(audioTracksItems);
-                } else {
-                    audioTracksSubmenu = SettingsSubmenu('audioTracks');
-                    audioTracksSubmenu.addContent(audioTracksItems);
-                    settingsMenu.addSubmenu(AUDIO_TRACKS_ICON, audioTracksSubmenu);
-                }
-                audioTracksSubmenu.activateItem(changedModel.get('currentAudioTrack'));
-                controlbar.elements.audioTracksButton.show();
+                addAudioTracksSubmenu(
+                    settingsMenu,
+                    audioTracks,
+                    model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
+                    model.get('currentAudioTrack')
+                );
             });
 
             mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
@@ -382,34 +368,26 @@ export default class Controls {
         });
 
         model.change('captionsList', (changedModel, captionsList) => {
-            if (!captionsList || (captionsList && !captionsList.length)) {
-                settingsMenu.removeSubmenu('captions');
-                controlbar.elements.captionsButton.hide();
-                return;
+            const controlbarButton = controlbar.elements.captionsButton;
+            if (!captionsList) {
+                removeCaptionsSubmenu(settingsMenu);
+                controlbarButton.hide();
             }
-            const captionsItems = captionsList.map((track, index) => {
-                return SettingsContentItem(track.id, track.label, () => {
-                    api.setCurrentCaptions(index);
-                    settingsMenu.close();
-                });
-            });
 
-            let captionsSubmenu = settingsMenu.getSubmenu('captions');
-            if (captionsSubmenu) {
-                captionsSubmenu.replaceContent(captionsItems);
-            } else {
-                captionsSubmenu = SettingsSubmenu('captions');
-                captionsSubmenu.addContent(captionsItems);
-                settingsMenu.addSubmenu(CAPTIONS_OFF_ICON, captionsSubmenu);
-            }
-            captionsSubmenu.activateItem(model.get('captionsIndex'));
-            controlbar.elements.captionsButton.show();
+            addCaptionsSubmenu(settingsMenu,
+                captionsList,
+                api.setCurrentCaptions.bind(this),
+                model.get('captionsIndex')
+            );
+            controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
+            controlbarButton.show();
         });
 
         model.change('captionsIndex', (changedModel, index) => {
             const captionsSubmenu = settingsMenu.getSubmenu('captions');
             if (captionsSubmenu) {
                 captionsSubmenu.activateItem(index);
+                controlbar.toggleCaptionsButtonState(!!index);
             }
         });
     }

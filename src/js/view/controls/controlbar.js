@@ -16,7 +16,6 @@ import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
-import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -145,17 +144,13 @@ export default class Controlbar {
             _api.next();
         }, next, [NEXT_ICON]);
 
-        const settingsButton = button('jw-settings-main', () => {
+        const settingsButton = button('jw-icon-settings', () => {
             this.trigger('settingsInteraction', 'quality');
         }, this._localization.settings, [SETTINGS_ICON]);
 
-        const audioTracksButton = button('jw-settings-audiotracks', () => {
-            this.trigger('submenuInteraction', 'audioTracks');
-        }, this._localization.audioTracks, [AUDIO_TRACKS_ICON]);
-
-        const captionsButton = button('jw-settings-audiotracks', () => {
+        const captionsButton = button('jw-icon-cc', () => {
             this.trigger('submenuInteraction', 'captions');
-        }, this._localization.cc, [CAPTIONS_OFF_ICON]);
+        }, this._localization.cc, [CAPTIONS_OFF_ICON, CAPTIONS_ON_ICON]);
 
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -209,7 +204,6 @@ export default class Controlbar {
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
-            audioTracksButton,
             captionsButton
         };
 
@@ -227,9 +221,8 @@ export default class Controlbar {
             elements.spacer,
             elements.next,
             elements.settingsButton,
-            elements.audioTracksButton,
-            elements.hd,
             elements.captionsButton,
+            elements.hd,
             elements.playbackrates,
             elements.cast,
             elements.fullscreen
@@ -604,6 +597,15 @@ export default class Controlbar {
         timeSlider.onPosition(model, model.get('position'));
         timeSlider.onDuration(model, model.get('duration'));
         timeSlider.onStreamType(model, model.get('streamType'));
+    }
+
+    toggleCaptionsButtonState(active) {
+        const captionsButton = this.elements.captionsButton;
+        if (!captionsButton) {
+            return;
+        }
+
+        utils.toggleClass(captionsButton.element(), 'jw-off', !active);
     }
 }
 
