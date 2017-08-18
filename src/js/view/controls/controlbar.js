@@ -15,7 +15,6 @@ import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
-import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -25,7 +24,6 @@ import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import ariaLabel from 'utils/aria';
 import TimeSlider from 'view/controls/components/timeslider';
-import Menu from 'view/controls/components/menu';
 import SelectionDisplayMenu from 'view/controls/components/selection-display-menu';
 import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
@@ -52,10 +50,6 @@ function div(classes) {
     const element = document.createElement('div');
     element.className = `jw-reset ${classes}`;
     return element;
-}
-
-function menu(name, ariaText, svgIcons) {
-    return new Menu(name, ariaText, null, svgIcons);
 }
 
 function createCastButton(castToggle, localization) {
@@ -187,7 +181,6 @@ export default class Controlbar {
             countdown: textIcon('jw-text-countdown', 'timer'),
             time: timeSlider,
             duration: textIcon('jw-text-duration', 'timer'),
-            hd: menu('jw-icon-hd', this._localization.hd, [QUALITY_ICON]),
             playbackrates: new SelectionDisplayMenu(
                 'jw-icon-playback-rate',
                 this._localization.playbackRates,
@@ -222,7 +215,6 @@ export default class Controlbar {
             elements.next,
             elements.settingsButton,
             elements.captionsButton,
-            elements.hd,
             elements.playbackrates,
             elements.cast,
             elements.fullscreen
@@ -234,7 +226,6 @@ export default class Controlbar {
         ].filter(e => e);
 
         const menus = this.menus = [
-            elements.hd,
             elements.playbackrates,
             elements.volumetooltip
         ].filter(e => e);
@@ -299,13 +290,6 @@ export default class Controlbar {
                 this._model.set('castClicked', true);
             }, this);
         }
-
-        elements.hd.on('select', function (value) {
-            this._model.getVideo().setCurrentQuality(value);
-        }, this);
-        elements.hd.on('toggleValue', function () {
-            this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
-        }, this);
 
         this._model.mediaController.on('seeked', function () {
             this.checkDvrLiveEdge();
