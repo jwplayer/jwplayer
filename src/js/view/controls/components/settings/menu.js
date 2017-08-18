@@ -49,12 +49,11 @@ export function SettingsMenu(visibilityChangeHandler) {
                 return;
             }
             const name = submenu.name;
-            const categoryButtonElement = submenu.categoryButtonElement;
             submenus[name] = submenu;
 
             settingsMenuElement
                 .querySelector('.jw-settings-topbar')
-                .insertBefore(categoryButtonElement, closeButton.element());
+                .insertBefore(submenu.categoryButtonElement, closeButton.element());
             settingsMenuElement.appendChild(submenu.element());
         },
         getSubmenu(name) {
