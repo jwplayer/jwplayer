@@ -215,8 +215,6 @@ export default class Controlbar {
             elements.next,
             elements.settingsButton,
             elements.captionsButton,
-            elements.captionsButton,
-            elements.hd,
             elements.playbackrates,
             elements.cast,
             elements.fullscreen
