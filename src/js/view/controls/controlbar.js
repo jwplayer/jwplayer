@@ -435,6 +435,7 @@ export default class Controlbar {
     checkDvrLiveEdge() {
         if (this._model.get('streamType') === 'DVR') {
             const currentPosition = this._model.get('position');
+            // update live icon and displayed time when DVR stream enters or exits live edge
             utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition >= dvrSeekLimit);
             this.onElapsed(this._model, currentPosition);
         }
