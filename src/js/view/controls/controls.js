@@ -16,6 +16,8 @@ import { SettingsMenu } from 'view/controls/components/settings/menu';
 import {
     addCaptionsSubmenu,
     removeCaptionsSubmenu,
+    addQualitiesSubmenu,
+    removeQualitiesSubmenu,
     addAudioTracksSubmenu,
     removeAudioTracksSubmenu
 } from 'view/utils/submenu-factory';
@@ -343,14 +345,30 @@ export default class Controls {
         const settingsMenu = this.settingsMenu;
 
         model.change('mediaModel', function(newModel, mediaModel) {
+
+            // Quality Levels
             mediaModel.on('change:levels', function (changedModel, levels) {
-                controlbar.elements.hd.setup(levels, changedModel.get('currentLevel'));
+                if (!levels) {
+                    removeQualitiesSubmenu(settingsMenu);
+                    return;
+                }
+
+                addQualitiesSubmenu(
+                    settingsMenu,
+                    levels,
+                    model.getVideo().setCurrentQuality.bind(model.getVideo()),
+                    model.get('currentQuality')
+                );
             });
 
-            mediaModel.on('change:currentLevel', function (changedModel, level) {
-                controlbar.elements.hd.selectItem(level);
+            mediaModel.on('change:currentLevel', function (changedModel, currentQualities) {
+                const qualitiesSubmenu = settingsMenu.getSubmenu('qualities');
+                if (qualitiesSubmenu) {
+                    qualitiesSubmenu.activateItem(currentQualities);
+                }
             });
 
+            // Audio Tracks
             mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
                 if (!audioTracks) {
                     removeAudioTracksSubmenu(settingsMenu);
@@ -373,6 +391,7 @@ export default class Controls {
             });
         });
 
+        // Captions
         model.change('captionsList', (changedModel, captionsList) => {
             const controlbarButton = controlbar.elements.captionsButton;
             if (!captionsList) {

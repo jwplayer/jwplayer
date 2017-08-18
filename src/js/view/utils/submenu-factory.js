@@ -3,9 +3,11 @@ import SettingsContentItem from 'view/controls/components/settings/content-item'
 import button from 'view/controls/components/button';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
+import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
+const QUALITIES_SUBMENU = 'qualities';
 
 const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
     let submenu = settingsMenu.getSubmenu(name);
@@ -57,4 +59,20 @@ export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, ini
 
 export function removeAudioTracksSubmenu(settingsMenu) {
     settingsMenu.removeSubmenu(AUDIO_TRACKS_SUBMENU);
+}
+
+export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex) {
+    const qualitiesItems = qualitiesList.map((track, index) => {
+        return SettingsContentItem(track.label, track.label, () => {
+            action(index);
+            settingsMenu.close();
+        });
+    });
+
+    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, QUALITY_ICON);
+    qualitiesSubmenu.activateItem(initialSelectionIndex);
+}
+
+export function removeQualitiesSubmenu(settingsMenu) {
+    settingsMenu.removeSubmenu(QUALITIES_SUBMENU);
 }
