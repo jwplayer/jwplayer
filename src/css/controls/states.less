@@ -9,9 +9,23 @@
         .jw-display {
             padding: 0;
         }
+    }
 
-        .jw-controls::after {
-            background: @controlbar-background;
+    .jw-controls::after {
+        background: @controlbar-background;
+    }
+
+    .jw-controlbar {
+        .jw-slider-time,
+        .jw-icon:not(.jw-text-duration),
+        .jw-icon-playback-rate {
+            display: none;
+        }
+
+        .jw-text-duration {
+            &::before {
+                content: none;
+            }
         }
     }
 }
