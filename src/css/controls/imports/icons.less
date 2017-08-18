@@ -1,16 +1,14 @@
 @import "../../shared-imports/mixins";
 
 .jw-svg-icon {
-    width: 24px;
-    height: 24px;
-    pointer-events: none;
+    .square(24px);
     fill: currentColor;
+    pointer-events: none;
 }
 
 .jw-icon {
+    .rect(24px, 100%);
     background-color: transparent;
-    width: 24px;
-    height: 100%;
 }
 
 .jw-icon-airplay {

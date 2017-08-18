@@ -38,6 +38,30 @@
         flex: 1 1 auto;
         align-self: stretch;
     }
+
+    .jw-icon.jw-button-color {
+        &::after {
+            &:extend(._pseudo, ._bottom);
+            .rect(24px, 2px);
+            background: currentColor;
+            opacity: 0;
+            transform: translate(0, 100%);
+            transition: 150ms ease-in-out;
+            transition-property: opacity, transform;
+        }
+
+        &:hover,
+        &:focus {
+            &::after {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+        }
+
+        &:active {
+            color: @hover-color;
+        }
+    }
 }
 
 .jw-button-container {
@@ -69,13 +93,16 @@
     background-color: transparent;
 }
 
+.jw-icon-inline {
+    position: relative;
+}
+
 .jw-icon-inline,
 .jw-icon-tooltip {
-    display: flex;
+    .square(@mobile-touch-target);
     align-items: center;
+    display: flex;
     justify-content: center;
-    width: @mobile-touch-target;
-    height: @mobile-touch-target;
 }
 
 .jw-icon-inline,
