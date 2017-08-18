@@ -4,7 +4,7 @@
     cursor: default;
     position: absolute;
     float: right;
-    display: inline-block;
+    display: flex;
     right: 0.75em;
     bottom: 3em;
     padding: @ui-padding;
@@ -25,10 +25,13 @@
 
     .jw-text,
     .jw-skip-icon {
-        color: @inactive-color;
         vertical-align: middle;
         line-height: 1.5em;
         font-size: 0.7em;
+    }
+
+    .jw-text {
+        color:#0b7ef4;
     }
 
     &.jw-skippable:hover {
@@ -42,6 +45,9 @@
 
     &.jw-skippable .jw-skip-icon {
         display: inline;
+        height: 24px;
+        width: 24px;
         margin: 0;
+        color: @inactive-color;
     }
 }
