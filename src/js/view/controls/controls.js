@@ -362,7 +362,7 @@ export default class Controls {
             });
 
             mediaModel.on('change:currentLevel', function (changedModel, currentQualities) {
-                const qualitiesSubmenu = settingsMenu.getSubmenu('qualities');
+                const qualitiesSubmenu = settingsMenu.getSubmenu('quality');
                 if (qualitiesSubmenu) {
                     qualitiesSubmenu.activateItem(currentQualities);
                 }
