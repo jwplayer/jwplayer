@@ -7,7 +7,7 @@ import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
-const QUALITIES_SUBMENU = 'qualities';
+const QUALITIES_SUBMENU = 'quality';
 
 const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
     let submenu = settingsMenu.getSubmenu(name);
