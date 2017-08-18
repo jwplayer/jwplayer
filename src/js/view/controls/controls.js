@@ -13,7 +13,13 @@ import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { SettingsMenu } from 'view/controls/components/settings/menu';
-import { addCaptionsSubmenu, removeCaptionsSubmenu, addAudioTracksSubmenu, removeAudioTracksSubmenu } from 'view/utils/submenu-factory';
+import {
+    addCaptionsSubmenu,
+    removeCaptionsSubmenu,
+    addAudioTracksSubmenu,
+    removeAudioTracksSubmenu
+} from 'view/utils/submenu-factory';
+
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 
 require('css/controls.less');
