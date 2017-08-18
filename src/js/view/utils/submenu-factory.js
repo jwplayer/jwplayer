@@ -1,6 +1,6 @@
 import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
-import CAPTIONS_OFF_ICON from 'assets/SVG/captions-on.svg';
+import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
