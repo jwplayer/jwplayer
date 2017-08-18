@@ -16,9 +16,7 @@ export function SettingsMenu(visibilityChangeHandler) {
 
     let visible;
     const submenus = {};
-    const closeButton = createCloseButton();
     const settingsMenuElement = createElement(SettingsMenuTemplate());
-    settingsMenuElement.querySelector('.jw-settings-topbar').appendChild(closeButton.element());
 
     const instance = {
         open() {
@@ -75,6 +73,10 @@ export function SettingsMenu(visibilityChangeHandler) {
             deactivateAllSubmenus(submenus);
             submenu.activate();
         },
+        activateFirstSubmenu() {
+            const firstSubmenuName = Object.keys(submenus)[0];
+            this.activateSubmenu(firstSubmenuName);
+        },
         element() {
             return settingsMenuElement;
         }
@@ -84,6 +86,9 @@ export function SettingsMenu(visibilityChangeHandler) {
         enumerable: true,
         get: () => visible
     });
+
+    const closeButton = createCloseButton(instance.close);
+    settingsMenuElement.querySelector('.jw-settings-topbar').appendChild(closeButton.element());
 
     return instance;
 }
@@ -106,9 +111,9 @@ const deactivateAllSubmenus = (submenus) => {
     });
 };
 
-const createCloseButton = () => {
+const createCloseButton = (action) => {
     const closeButton = this.closeButton = button('jw-settings-close', () => {
-        this.close();
+        action();
     }, 'Close Settings', [CLOSE_ICON]);
     closeButton.show();
 
