@@ -15,8 +15,7 @@ import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
-import QUALITY_ICON from 'assets/SVG/quality-100.svg';
-import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
+// import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -26,7 +25,6 @@ import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import ariaLabel from 'utils/aria';
 import TimeSlider from 'view/controls/components/timeslider';
-import Menu from 'view/controls/components/menu';
 import SelectionDisplayMenu from 'view/controls/components/selection-display-menu';
 import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
@@ -55,9 +53,9 @@ function div(classes) {
     return element;
 }
 
-function menu(name, ariaText, svgIcons) {
-    return new Menu(name, ariaText, null, svgIcons);
-}
+// function menu(name, ariaText, svgIcons) {
+//     return new Menu(name, ariaText, null, svgIcons);
+// }
 
 function createCastButton(castToggle, localization) {
     if (!Browser.chrome || OS.iOS) {
@@ -145,13 +143,13 @@ export default class Controlbar {
             _api.next();
         }, next, [NEXT_ICON]);
 
-        const settingsButton = button('jw-settings-main', () => {
-            this.trigger('settingsInteraction');
+        const settingsButton = button('jw-icon-settings jw-settings-submenu-button', () => {
+            this.trigger('settingsInteraction', 'quality', true);
         }, this._localization.settings, [SETTINGS_ICON]);
 
-        const audioTracksButton = button('jw-settings-audiotracks', () => {
-            this.trigger('submenuInteraction', 'audioTracks');
-        }, this._localization.audioTracks, [AUDIO_TRACKS_ICON]);
+        const captionsButton = button('jw-icon-cc jw-settings-submenu-button', () => {
+            this.trigger('settingsInteraction', 'captions', false);
+        }, this._localization.cc, [CAPTIONS_OFF_ICON, CAPTIONS_ON_ICON]);
 
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -188,8 +186,6 @@ export default class Controlbar {
             countdown: textIcon('jw-text-countdown', 'timer'),
             time: timeSlider,
             duration: textIcon('jw-text-duration', 'timer'),
-            hd: menu('jw-icon-hd', this._localization.hd, [QUALITY_ICON]),
-            cc: menu('jw-icon-cc', this._localization.cc, [CAPTIONS_ON_ICON, CAPTIONS_OFF_ICON]),
             playbackrates: new SelectionDisplayMenu(
                 'jw-icon-playback-rate',
                 this._localization.playbackRates,
@@ -206,7 +202,7 @@ export default class Controlbar {
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
-            audioTracksButton
+            captionsButton
         };
 
         // Filter out undefined elements
@@ -223,9 +219,7 @@ export default class Controlbar {
             elements.spacer,
             elements.next,
             elements.settingsButton,
-            elements.audioTracksButton,
-            elements.hd,
-            elements.cc,
+            elements.captionsButton,
             elements.playbackrates,
             elements.cast,
             elements.fullscreen
@@ -237,8 +231,6 @@ export default class Controlbar {
         ].filter(e => e);
 
         const menus = this.menus = [
-            elements.hd,
-            elements.cc,
             elements.playbackrates,
             elements.volumetooltip
         ].filter(e => e);
@@ -270,8 +262,6 @@ export default class Controlbar {
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', this.onFullscreen, this);
-        _model.change('captionsList', this.onCaptionsList, this);
-        _model.change('captionsIndex', this.onCaptionsIndex, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('nextUp', this.onNextUp, this);
         _model.change('cues', this.addCues, this);
@@ -305,21 +295,6 @@ export default class Controlbar {
                 this._model.set('castClicked', true);
             }, this);
         }
-
-        elements.hd.on('select', function (value) {
-            this._model.getVideo().setCurrentQuality(value);
-        }, this);
-        elements.hd.on('toggleValue', function () {
-            this._model.getVideo().setCurrentQuality((this._model.getVideo().getCurrentQuality() === 0) ? 1 : 0);
-        }, this);
-
-        elements.cc.on('select', function (value) {
-            this._api.setCurrentCaptions(value);
-        }, this);
-        elements.cc.on('toggleValue', function () {
-            const index = this._model.get('captionsIndex');
-            this._api.setCurrentCaptions(index ? 0 : 1);
-        }, this);
 
         this._model.mediaController.on('seeked', function () {
             this.checkDvrLiveEdge();
@@ -371,15 +346,6 @@ export default class Controlbar {
         _.each(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);
-    }
-
-    onCaptionsList(model, tracks) {
-        const index = model.get('captionsIndex');
-        this.elements.cc.setup(tracks, index, { isToggle: true });
-    }
-
-    onCaptionsIndex(model, index) {
-        this.elements.cc.selectItem(index);
     }
 
     togglePlaybackRateControls(model) {
@@ -607,7 +573,9 @@ export default class Controlbar {
         instreamModel
             .change('position', timeSlider.onPosition, timeSlider)
             .change('duration', timeSlider.onDuration, timeSlider)
-            .change('duration', () => {timeSlider.streamType = 'VOD';}, timeSlider);
+            .change('duration', () => {
+                timeSlider.streamType = 'VOD';
+            }, timeSlider);
     }
 
     syncPlaybackTime(model) {
@@ -620,6 +588,15 @@ export default class Controlbar {
         timeSlider.onPosition(model, model.get('position'));
         timeSlider.onDuration(model, model.get('duration'));
         timeSlider.onStreamType(model, model.get('streamType'));
+    }
+
+    toggleCaptionsButtonState(active) {
+        const captionsButton = this.elements.captionsButton;
+        if (!captionsButton) {
+            return;
+        }
+
+        utils.toggleClass(captionsButton.element(), 'jw-off', !active);
     }
 }
 
