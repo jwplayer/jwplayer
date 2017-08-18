@@ -436,6 +436,7 @@ export default class Controlbar {
         if (this._model.get('streamType') === 'DVR') {
             const currentPosition = this._model.get('position');
             utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition >= dvrSeekLimit);
+            this.onElapsed(this._model, currentPosition);
         }
     }
 
