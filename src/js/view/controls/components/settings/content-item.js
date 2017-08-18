@@ -24,6 +24,7 @@ export default function SettingsContentItem(name, content, action) {
             return contentItemElement;
         },
         destroy() {
+            this.deactivate();
             contentItemUI.destroy();
         }
     };

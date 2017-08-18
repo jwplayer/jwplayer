@@ -1,7 +1,6 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
-import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -14,11 +13,14 @@ import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { SettingsMenu } from 'view/controls/components/settings/menu';
-import SettingsSubmenu from 'view/controls/components/settings/submenu';
-import SettingsContentItem from 'view/controls/components/settings/content-item';
-import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
+import {
+    addCaptionsSubmenu,
+    removeCaptionsSubmenu,
+    addAudioTracksSubmenu,
+    removeAudioTracksSubmenu
+} from 'view/utils/submenu-factory';
 
-require('css/controls.less');
+import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 
 require('css/controls.less');
 
@@ -122,7 +124,7 @@ export default class Controls {
             this.userActive();
         };
         this.settingsMenu = setupSettingsMenu(controlbar, visibilityChangeHandler);
-        this.onMediaModel(model);
+        this.setupSubmenuListeners(model, api);
         this.div.appendChild(this.settingsMenu.element());
 
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
@@ -336,7 +338,7 @@ export default class Controls {
         this.trigger('userInactive');
     }
 
-    onMediaModel(model) {
+    setupSubmenuListeners(model, api) {
         const controlbar = this.controlbar;
         const settingsMenu = this.settingsMenu;
 
@@ -350,28 +352,17 @@ export default class Controls {
             });
 
             mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
-                if (!audioTracks || (audioTracks && !audioTracks.length)) {
-                    settingsMenu.removeSubmenu('audioTracks');
-                    controlbar.elements.audioTracksButton.hide();
+                if (!audioTracks) {
+                    removeAudioTracksSubmenu(settingsMenu);
                     return;
                 }
-                const audioTracksItems = audioTracks.map((track, index) => {
-                    return SettingsContentItem(track.name, track.name, () => {
-                        model.getVideo().setCurrentAudioTrack(index);
-                        settingsMenu.close();
-                    });
-                });
 
-                let audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
-                if (audioTracksSubmenu) {
-                    audioTracksSubmenu.replaceContent(audioTracksItems);
-                } else {
-                    audioTracksSubmenu = SettingsSubmenu('audioTracks');
-                    audioTracksSubmenu.addContent(audioTracksItems);
-                    settingsMenu.addSubmenu(AUDIO_TRACKS_ICON, audioTracksSubmenu);
-                }
-                audioTracksSubmenu.activateItem(changedModel.get('currentAudioTrack'));
-                controlbar.elements.audioTracksButton.show();
+                addAudioTracksSubmenu(
+                    settingsMenu,
+                    audioTracks,
+                    model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
+                    model.get('currentAudioTrack')
+                );
             });
 
             mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
@@ -381,29 +372,63 @@ export default class Controls {
                 }
             });
         });
+
+        model.change('captionsList', (changedModel, captionsList) => {
+            const controlbarButton = controlbar.elements.captionsButton;
+            if (!captionsList) {
+                removeCaptionsSubmenu(settingsMenu);
+                controlbarButton.hide();
+            }
+
+            addCaptionsSubmenu(settingsMenu,
+                captionsList,
+                api.setCurrentCaptions.bind(this),
+                model.get('captionsIndex')
+            );
+            controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
+            controlbarButton.show();
+        });
+
+        model.change('captionsIndex', (changedModel, index) => {
+            const captionsSubmenu = settingsMenu.getSubmenu('captions');
+            if (captionsSubmenu) {
+                captionsSubmenu.activateItem(index);
+                controlbar.toggleCaptionsButtonState(!!index);
+            }
+        });
     }
 }
 
 const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
     const settingsMenu = SettingsMenu(visibilityChangeHandler);
 
-    controlbar.on('submenuInteraction', (submenuName) => {
-        const submenu = settingsMenu.getSubmenu(name);
+    controlbar.on('settingsInteraction', (submenuName, isDefault) => {
+        const submenu = settingsMenu.getSubmenu(submenuName);
+        if (!submenu && !isDefault) {
+            // Do nothing if activating an invalid submenu
+            // An invalid submenu is one which does not exist
+            // The default submenu may not exist, but this case has defined behavior
+            return;
+        }
+
         if (settingsMenu.visible) {
-            if (!submenu || submenu.active) {
+            if (isDefault || submenu.active) {
+                // Close the submenu if clicking the default button (the gear) or if we're already at that submenu
                 settingsMenu.close();
             } else {
+                // Tab to the newly activated submenu
                 settingsMenu.activateSubmenu(submenuName);
             }
         } else {
+            if (submenu) {
+                // Activate the selected submenu
+                settingsMenu.activateSubmenu(submenuName);
+            } else {
+                // Activate the first submenu if clicking the default button
+                settingsMenu.activateFirstSubmenu();
+            }
             settingsMenu.open();
-            settingsMenu.activateSubmenu(submenuName);
         }
-    });
-
-    controlbar.on('settingsInteraction', () => {
-        settingsMenu.toggle();
-        settingsMenu.activateSubmenu('quality');
     });
 
     return settingsMenu;
