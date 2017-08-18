@@ -412,6 +412,7 @@ Object.assign(Controller.prototype, {
                     _actionOnAttach = null;
                 });
                 _model.mediaModel.set('playAttempt', true);
+
             } else if (_model.get('state') === STATE_PAUSED) {
                 _model.playVideo().catch(error => {
                     _this.triggerError({
@@ -643,6 +644,9 @@ Object.assign(Controller.prototype, {
 
         /** Used for the InStream API **/
         function _detachMedia() {
+            if (_preplay) {
+                _interruptPlay = true;
+            }
             return _model.detachMedia();
         }
 
