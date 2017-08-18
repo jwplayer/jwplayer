@@ -228,4 +228,6 @@ PromisePolyfill._unhandledRejectionFn = function _unhandledRejectionFn(err) {
 
 const Promise = window.Promise || (window.Promise = PromisePolyfill);
 
+export const resolved = Promise.resolve();
+
 export default Promise;

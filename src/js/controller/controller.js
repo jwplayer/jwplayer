@@ -13,6 +13,8 @@ import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYIN
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 import InstreamAdapter from 'controller/instream-adapter';
+import { resolved } from 'polyfills/promise';
+import cancelable from 'utils/cancelable';
 import _ from 'utils/underscore';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -44,6 +46,7 @@ Object.assign(Controller.prototype, {
         let _stopPlaylist = false;
         let _interruptPlay;
         let _preloaded = false;
+        let checkAutoStartCancelable = cancelable(_checkAutoStart);
 
         _this.originalContainer = _this.currentContainer = originalContainer;
         _this._events = eventListeners;
@@ -59,7 +62,7 @@ Object.assign(Controller.prototype, {
         _model.mediaController.on('all', _triggerAfterReady, _this);
         _model.mediaController.on(MEDIA_COMPLETE, function() {
             // Insert a small delay here so that other complete handlers can execute
-            _.defer(_completeHandler);
+            resolved.then(_completeHandler);
         });
         _model.mediaController.on(MEDIA_ERROR, _this.triggerError, _this);
 
@@ -306,7 +309,9 @@ Object.assign(Controller.prototype, {
             _this.trigger('destroyPlugin', {});
             _stop(true);
 
-            _model.once('itemReady', _checkAutoStart);
+            checkAutoStartCancelable.cancel();
+            checkAutoStartCancelable = cancelable(_checkAutoStart);
+            _model.once('itemReady', checkAutoStartCancelable.async);
 
             switch (typeof item) {
                 case 'string':
@@ -363,7 +368,8 @@ Object.assign(Controller.prototype, {
         }
 
         function _play(meta = {}) {
-            _model.off('itemReady', _checkAutoStart);
+            checkAutoStartCancelable.cancel();
+
             const playReason = meta.reason;
             _model.set('playReason', playReason);
 
@@ -384,7 +390,6 @@ Object.assign(Controller.prototype, {
             }
 
             if (_isIdle()) {
-                _model.mediaModel.set('playAttempt', true);
                 _model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
             }
 
@@ -406,6 +411,7 @@ Object.assign(Controller.prototype, {
                     });
                     _actionOnAttach = null;
                 });
+                _model.mediaModel.set('playAttempt', true);
             } else if (_model.get('state') === STATE_PAUSED) {
                 _model.playVideo().catch(error => {
                     _this.triggerError({
@@ -424,7 +430,8 @@ Object.assign(Controller.prototype, {
         }
 
         function _stop(internal) {
-            _model.off('itemReady', _checkAutoStart);
+            checkAutoStartCancelable.cancel();
+            _model.mediaModel.set('playAttempt', false);
 
             const fromApi = !internal;
 

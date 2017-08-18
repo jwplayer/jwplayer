@@ -9,7 +9,7 @@ import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
-import Promise from 'polyfills/promise';
+import Promise, { resolved } from 'polyfills/promise';
 import viewError from 'templates/error';
 import { style } from 'utils/css';
 import { createElement } from 'utils/dom';
@@ -76,7 +76,7 @@ Object.assign(CoreShim.prototype, {
         const configuration = Config(options, persisted);
         Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE);
 
-        Promise.resolve().then(() => {
+        resolved.then(() => {
             model.getProviders = function() {
                 return new Providers(configuration);
             };
@@ -220,7 +220,7 @@ function setupError(core, error) {
 
     showView(core, errorElement);
 
-    Promise.resolve().then(() => {
+    resolved.then(() => {
         core.trigger(SETUP_ERROR, {
             message
         });

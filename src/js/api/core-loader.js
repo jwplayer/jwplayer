@@ -1,6 +1,6 @@
 import Item from 'playlist/item';
 import ProvidersSupported from 'providers/providers-supported';
-import Promise from 'polyfills/promise';
+import { resolved } from 'polyfills/promise';
 
 let bundlePromise = null;
 
@@ -120,5 +120,5 @@ function loadIntersectionObserverIfNeeded() {
             return require('intersection-observer');
         }, chunkLoadErrorHandler, 'polyfills.intersection-observer');
     }
-    return Promise.resolve();
+    return resolved;
 }
