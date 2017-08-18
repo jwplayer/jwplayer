@@ -144,12 +144,12 @@ export default class Controlbar {
             _api.next();
         }, next, [NEXT_ICON]);
 
-        const settingsButton = button('jw-icon-settings', () => {
-            this.trigger('settingsInteraction', 'quality');
+        const settingsButton = button('jw-icon-settings jw-settings-submenu-button', () => {
+            this.trigger('settingsInteraction', 'quality', true);
         }, this._localization.settings, [SETTINGS_ICON]);
 
-        const captionsButton = button('jw-icon-cc', () => {
-            this.trigger('submenuInteraction', 'captions');
+        const captionsButton = button('jw-icon-cc jw-settings-submenu-button', () => {
+            this.trigger('settingsInteraction', 'captions', false);
         }, this._localization.cc, [CAPTIONS_OFF_ICON, CAPTIONS_ON_ICON]);
 
         if (_model.get('nextUpDisplay')) {

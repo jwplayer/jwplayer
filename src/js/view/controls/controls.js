@@ -402,29 +402,30 @@ export default class Controls {
 const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
     const settingsMenu = SettingsMenu(visibilityChangeHandler);
 
-    controlbar.on('submenuInteraction', (submenuName) => {
+    controlbar.on('settingsInteraction', (submenuName, isDefault) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
+        if (!submenu && !isDefault) {
+            // Do nothing if activating an invalid submenu
+            // An invalid submenu is one which does not exist
+            // The default submenu may not exist, but this case has defined behavior
+            return;
+        }
+
         if (settingsMenu.visible) {
-            if (!submenu || submenu.active) {
+            if (submenu || isDefault) {
+                // Close the submenu if clicking the default button (the gear) or if we're already at that submenu
                 settingsMenu.close();
             } else {
+                // Tab to the newly activated submenu
                 settingsMenu.activateSubmenu(submenuName);
             }
         } else {
-            settingsMenu.open();
-            settingsMenu.activateSubmenu(submenuName);
-        }
-    });
-
-    controlbar.on('settingsInteraction', (defaultSubmenuName) => {
-        if (settingsMenu.visible) {
-            settingsMenu.close();
-        } else {
-            const submenu = settingsMenu.getSubmenu(defaultSubmenuName);
-            if (submenu) {
-                settingsMenu.activateSubmenu(defaultSubmenuName);
-            } else {
+            if (isDefault) {
+                // Activate the first submenu if clicking the default button
                 settingsMenu.activateFirstSubmenu();
+            } else {
+                // Otherwise, activate the selected submenu
+                settingsMenu.activateSubmenu(submenuName);
             }
             settingsMenu.open();
         }
