@@ -1,11 +1,6 @@
 @import "../shared-imports/vars";
 @import "imports/icons";
 
-// controls are displayed but hidden during setup for font icons to load
-.jw-state-setup .jw-controls {
-    visibility: hidden;
-}
-
 // idle
 .jw-state-idle {
 
@@ -14,9 +9,23 @@
         .jw-display {
             padding: 0;
         }
+    }
 
-        .jw-controls {
-            background: none;
+    .jw-controls::after {
+        background: @controlbar-background;
+    }
+
+    .jw-controlbar {
+        .jw-slider-time,
+        .jw-icon:not(.jw-text-duration),
+        .jw-icon-playback-rate {
+            display: none;
+        }
+
+        .jw-text-duration {
+            &::before {
+                content: none;
+            }
         }
     }
 }
@@ -62,8 +71,9 @@
     }
 
     &.jw-flag-user-inactive:not(.jw-flag-casting) {
-        .jw-controls {
-            background: none;
+        .jw-controls:after {
+            opacity: 0;
+            transform: translate(0, 100%);
         }
     }
 }
@@ -123,6 +133,10 @@
         .jw-text {
             display: none;
         }
+    }
+
+    .jw-controls::after {
+        background: @controlbar-background;
     }
 }
 

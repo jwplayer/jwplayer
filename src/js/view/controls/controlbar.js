@@ -231,7 +231,7 @@ export default class Controlbar {
         ].filter(e => e);
 
         this.el = document.createElement('div');
-        this.el.className = 'jw-controlbar jw-background-color jw-reset';
+        this.el.className = 'jw-controlbar jw-reset';
 
         appendChildren(elements.buttonContainer, buttonLayout);
         appendChildren(this.el, layout);

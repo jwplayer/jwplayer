@@ -106,7 +106,14 @@ const multiConfig = [
                         'simple-style-loader',
                         'css-loader',
                         'postcss-loader',
-                        'less-loader?compress'
+                        {
+                            loader: 'less-loader',
+                            options: {
+                                compress: true,
+                                strictMath: true,
+                                noIeCompat: true
+                            }
+                        }
                     ]
                 },
                 {

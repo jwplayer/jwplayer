@@ -8,8 +8,8 @@
     align-items: flex-start;
     bottom: @controlbar-height;
     right: 0;
-    height: ~"calc(100% - @{controlbar-height})";
-    width: ~"calc(100%)";
+    height: calc(100% - @controlbar-height);
+    width: calc(100%);
     background-color: rgba(0, 0, 0, 0.8);
     pointer-events: auto;
 
@@ -30,6 +30,10 @@
         height: 284px;
         width: 200px;
         right: 12px;
+    }
+
+    .jw-icon.jw-button-color {
+        &:extend(.jw-controlbar .jw-icon.jw-button-color all);
     }
 }
 

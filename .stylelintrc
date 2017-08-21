@@ -72,7 +72,6 @@
         "selector-pseudo-class-case": "lower",
         "selector-pseudo-class-no-unknown": true,
         "selector-pseudo-element-case": "lower",
-        "selector-pseudo-element-colon-notation": "single",
         "selector-pseudo-element-no-unknown": [
             true,
             { "ignorePseudoElements": ["cue"] }

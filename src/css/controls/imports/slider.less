@@ -28,21 +28,11 @@
     background-color: @buffer-color;
 }
 
-.jw-cue {
-    position: relative;
-    cursor: pointer;
-    height: @rail-height;
-    width: @ui-padding;
-    background-color: rgba(33, 33, 33, 0.9);
-    border-radius: 25%;
-}
-
 .jw-knob {
-    position: absolute;
+    .square(@thumb-size);
+    border-radius: 50%;
     pointer-events: none;
-    width: @thumb-size;
-    height: @thumb-size;
-    border-radius: @ui-corner-round;
+    position: absolute;
 }
 
 .jw-slider-horizontal {
@@ -55,7 +45,8 @@
     .jw-rail,
     .jw-buffer,
     .jw-progress,
-    .jw-knob {
+    .jw-knob,
+    .jw-cue {
         top: 50%;
         transform: translate(0, -50%);
     }
@@ -64,10 +55,6 @@
     .jw-buffer,
     .jw-progress {
         height: @rail-height;
-    }
-
-    .jw-knob {
-        margin-left: (-@thumb-size / 2);
     }
 }
 
@@ -84,7 +71,7 @@
     .jw-buffer,
     .jw-progress {
         bottom: 0;
-        height: 100%;
+        height: calc(100% + @thumb-size);
     }
 
     .jw-slider-container,
@@ -106,25 +93,60 @@
 
     .jw-rail,
     .jw-buffer,
-    .jw-progress {
+    .jw-progress,
+    .jw-cue {
+        backface-visibility: hidden;
         height: @slider-fixed-rail-height;
+        transform-origin: 50% 100%;
+        transform: translate(0, -50%) scale(1, 0.6);
+        transition: transform 150ms ease-in-out;
+    }
+
+    .jw-cue {
+        background-color: @accent-color;
+        cursor: pointer;
+        position: relative;
+        width: 6px;
+    }
+
+    &:hover {
+        .jw-rail,
+        .jw-buffer,
+        .jw-progress,
+        .jw-cue {
+            transform: translate(0, -50%) scale(1, 1);
+        }
     }
 
     .jw-rail {
-        background-color: fade(#fff, 25%);
+        background-color: fade(@white, 20%);
     }
 
     .jw-buffer {
-        background-color: fade(#fff, 50%);
+        background-color: fade(@white, 40%);
     }
 
     .jw-knob {
-        background: #fff none;
+        background: @white;
         border-radius: @slider-fixed-knob-border-radius;
-        box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
-        opacity: 1;
+        box-shadow: 0 0 10px fade(@black, 40%);
         height: @slider-fixed-knob-height;
+        opacity: 1;
+        transition: 150ms cubic-bezier(0, 0.25, 0.25, 1);
+        transition-property: opacity, transform;
+        transform: translate(-50%, -50%) scale(0);
         width: @slider-fixed-knob-width;
+
+        .jw-flag-dragging & {
+            box-shadow: 0 0 26px fade(@black, 20%), 0 0 10px fade(@black, 40%), 0 0 0 6px fade(@white, 20%);
+        }
+    }
+
+    &:hover,
+    .jw-flag-dragging & {
+        .jw-knob {
+            transform: translate(-50%, -50%) scale(1);
+        }
     }
 }
 

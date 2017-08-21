@@ -10,7 +10,6 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.25) 30%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.5) 100%);
     border: none;
     border-radius: 0;
     background-size: auto;
@@ -22,7 +21,7 @@
         &:after {
             content: "";
             display: block;
-            height: @mobile-touch-target * 0.5;
+            height: (@mobile-touch-target * 0.5);
         }
     }
 
@@ -39,6 +38,30 @@
         flex: 1 1 auto;
         align-self: stretch;
     }
+
+    .jw-icon.jw-button-color {
+        &::after {
+            &:extend(._pseudo, ._bottom);
+            .rect(24px, 2px);
+            background: currentColor;
+            opacity: 0;
+            transform: translate(0, 100%);
+            transition: 150ms ease-in-out;
+            transition-property: opacity, transform;
+        }
+
+        &:hover,
+        &:focus {
+            &::after {
+                opacity: 1;
+                transform: translate(0, 0);
+            }
+        }
+
+        &:active {
+            color: @hover-color;
+        }
+    }
 }
 
 .jw-button-container {
@@ -47,6 +70,8 @@
     flex: 1 1 auto;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    padding: 0 12px;
 
     > .jw-icon:not(.jw-text) {
         font-size: 20px;
@@ -70,13 +95,16 @@
     background-color: transparent;
 }
 
+.jw-icon-inline {
+    position: relative;
+}
+
 .jw-icon-inline,
 .jw-icon-tooltip {
-    display: flex;
+    .square(@mobile-touch-target);
     align-items: center;
+    display: flex;
     justify-content: center;
-    width: @mobile-touch-target;
-    height: @mobile-touch-target;
 }
 
 .jw-icon-inline,
@@ -93,7 +121,7 @@
 }
 
 .jw-selection-menu {
-    padding: 0 @ui-padding / 2;
+    padding: 0 (@ui-padding / 2);
 }
 
 .jw-knob,
@@ -136,7 +164,7 @@
 &.jw-flag-small-player {
     .jw-display {
         padding-top: @mobile-touch-target;
-        padding-bottom: @mobile-touch-target * 1.5;
+        padding-bottom: (@mobile-touch-target * 1.5);
     }
 }
 
@@ -190,7 +218,7 @@
     }
 }
 
-&:not(.jw-breakpoint-0) {
+.jwplayer:not(.jw-breakpoint-0) {
     .jw-text-duration {
         &:before {
             content: "/";

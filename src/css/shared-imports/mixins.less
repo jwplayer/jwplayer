@@ -1,4 +1,7 @@
 @import "vars";
+@import (reference) "mixins/rect";
+@import (reference) "mixins/position";
+@import (reference) "mixins/pseudo";
 
 .inset-controlbar() {
     &:not(.jw-flag-audio-player) {
@@ -26,19 +29,19 @@
         }
 
         .jw-captions {
-            max-height: ~"calc(100% - 46px)";
+            max-height: calc(100% - 46px);
         }
 
         .jwplayer& {
             /* captions styles code specific to native text track rendering */
             video::-webkit-media-text-track-container {
-                max-height: ~"calc(100% - 46px)";
+                max-height: calc(100% - 46px);
             }
         }
     }
 
     .jw-nextup-container {
-        bottom: @controlbar-height + 0.7em;
+        bottom: (@controlbar-height + 0.7em);
         padding-left: 0;
         padding-right: 0;
         max-width: @min-breakpoint-5-width;
@@ -55,11 +58,11 @@
 }
 
 .vertically-centered-rail-element(@rail-height, @element-height) {
-    top: (@rail-height - @element-height)/2;
+    top: ((@rail-height - @element-height) / 2);
 }
 
 .horizontally-centered-rail-element(@rail-width, @element-width) {
-    left: (@rail-width - @element-width)/2;
+    left: ((@rail-width - @element-width) / 2);
 }
 
 .skin-element-padding() {
@@ -154,8 +157,7 @@
             border: @volume-border;
         }
 
-        .jw-menu,
-        .jw-time-tip {
+        .jw-menu {
             padding: @ui-padding;
         }
 
@@ -274,7 +276,7 @@
             }
 
             .jw-selection-menu .jw-menu-selection-text {
-                height: @controlbar-height * 1.334;
+                height: (@controlbar-height * 1.334);
             }
         }
 
@@ -290,23 +292,23 @@
             }
 
             .jw-captions {
-                max-height: ~"calc(100% - 38px)";
+                max-height: calc(100% - 38px);
             }
 
             .jwplayer& {
                 /* captions styles code specific to native text track rendering */
                 video::-webkit-media-text-track-container {
-                    max-height: ~"calc(100% - 38px)";
+                    max-height: calc(100% - 38px);
                 }
             }
 
             .jw-icon-inline,
             .jw-icon-tooltip {
-                min-width: @controlbar-height * 5/8;
+                min-width: (@controlbar-height * 5 / 8);
             }
 
             .jw-selection-menu {
-                padding: 0 @ui-padding / 2;
+                padding: 0 (@ui-padding / 2);
             }
         }
     }

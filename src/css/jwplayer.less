@@ -1,11 +1,11 @@
 @import "jwplayer/imports/reset";
 
-@import "shared-imports/mixins";
+@import (reference) "shared-imports/mixins";
 
-@accent-color: #fff;
-@inactive-color: #cecece;
+@accent-color: @white;
+@inactive-color: @white;
 
-@controlbar-background: rgba(33, 33, 33, 0.8);
+@controlbar-background: fade(@black, 40%);
 @display-bkgd-color: @controlbar-background;
 @display-bkgd-hover-color: rgba(33, 33, 33, 1);
 

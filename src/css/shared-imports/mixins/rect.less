@@ -1,0 +1,29 @@
+/**
+ * Set width and height properties for the element.
+ *
+ */
+.rect(@width: auto, @height: @width) {
+    height: @height;
+    width: @width;
+}
+
+/**
+ * Shortcut for width and height set to 100%
+ *
+ */
+.stretch() {
+    .rect(100%);
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+._stretch {
+    .stretch();
+}
+
+/**
+ * Shortcut for the .rect() mixin
+ *
+ */
+.square(@length) {
+    .rect(@length);
+}

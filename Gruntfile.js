@@ -42,7 +42,8 @@ module.exports = function(grunt) {
         less: {
             options: {
                 compress: false,
-                paths: ['src/css', 'src/css/*']
+                paths: ['src/css', 'src/css/*'],
+                strictMath: true
             },
             internal: {
                 options: {
