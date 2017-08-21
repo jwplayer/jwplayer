@@ -398,8 +398,8 @@ export default class Controlbar {
         let countdownTime;
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
-            elapsedTime = countdownTime = this.elements.live.element().className.includes('jw-dvr-live') ?
-                '' : '-' + utils.timeFormat(-val);
+            elapsedTime = countdownTime = this.elements.live.element().className.indexOf('jw-dvr-live') === -1 ?
+                '-' + utils.timeFormat(-val) : '';
         } else {
             elapsedTime = utils.timeFormat(val);
             countdownTime = utils.timeFormat(duration - val);
