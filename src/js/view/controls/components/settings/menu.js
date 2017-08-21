@@ -1,7 +1,7 @@
 import CLOSE_ICON from 'assets/SVG/close.svg';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
-import { createElement } from 'utils/dom';
+import { createElement, emptyElement } from 'utils/dom';
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
@@ -89,6 +89,10 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         },
         element() {
             return settingsMenuElement;
+        },
+        destroy() {
+            this.close();
+            emptyElement(settingsMenuElement);
         }
     };
 

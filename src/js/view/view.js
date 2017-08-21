@@ -751,6 +751,9 @@ function View(_api, _model) {
         if (_controls) {
             _controls.userActive();
             _controls.controlbar.useInstreamTime(instreamModel);
+            if (_controls.settingsMenu) {
+                _controls.settingsMenu.close();
+            }
         }
     };
 
