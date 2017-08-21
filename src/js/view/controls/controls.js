@@ -344,11 +344,10 @@ export default class Controls {
         const controlbar = this.controlbar;
         const settingsMenu = this.settingsMenu;
 
-        model.change('mediaModel', function(newModel, mediaModel) {
-
+        model.change('mediaModel', (newModel, mediaModel) => {
             // Quality Levels
-            mediaModel.on('change:levels', function (changedModel, levels) {
-                if (!levels) {
+            mediaModel.on('change:levels', (changedModel, levels) => {
+                if (!levels || levels && levels.length <= 1) {
                     removeQualitiesSubmenu(settingsMenu);
                     return;
                 }
@@ -361,7 +360,7 @@ export default class Controls {
                 );
             });
 
-            mediaModel.on('change:currentLevel', function (changedModel, currentQualities) {
+            mediaModel.on('change:currentLevel', (changedModel, currentQualities) => {
                 const qualitiesSubmenu = settingsMenu.getSubmenu('quality');
                 if (qualitiesSubmenu) {
                     qualitiesSubmenu.activateItem(currentQualities);
@@ -369,8 +368,8 @@ export default class Controls {
             });
 
             // Audio Tracks
-            mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
-                if (!audioTracks) {
+            const onAudiotracksChange = (changedModel, audioTracks) => {
+                if (!audioTracks || audioTracks && audioTracks.length <= 1) {
                     removeAudioTracksSubmenu(settingsMenu);
                     return;
                 }
@@ -381,22 +380,25 @@ export default class Controls {
                     model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
                     model.get('currentAudioTrack')
                 );
-            });
-
-            mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
+            };
+            mediaModel.on('change:audioTracks', onAudiotracksChange);
+            mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
                 const audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
                 if (audioTracksSubmenu) {
                     audioTracksSubmenu.activateItem(currentAudioTrack);
                 }
             });
+            // change:audioTracks does not get triggered if the next item has no tracks, so trigger it every time the mediaModel changes (i.e. we're on a new item)
+            onAudiotracksChange(newModel, model.get('audioTracks'));
         });
 
         // Captions
         model.change('captionsList', (changedModel, captionsList) => {
             const controlbarButton = controlbar.elements.captionsButton;
-            if (!captionsList) {
+            if (!captionsList || captionsList && captionsList.length <= 1) {
                 removeCaptionsSubmenu(settingsMenu);
                 controlbarButton.hide();
+                return;
             }
 
             addCaptionsSubmenu(settingsMenu,
@@ -418,8 +420,16 @@ export default class Controls {
     }
 }
 
-const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
-    const settingsMenu = SettingsMenu(visibilityChangeHandler);
+const setupSettingsMenu = (controlbar, onVisibility) => {
+    const settingsButton = controlbar.elements.settingsButton;
+    const onSubmenuAdded = () => {
+        settingsButton.show();
+    };
+    const onMenuEmpty = () => {
+        settingsButton.hide();
+    };
+
+    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty);
 
     controlbar.on('settingsInteraction', (submenuName, isDefault) => {
         const submenu = settingsMenu.getSubmenu(submenuName);

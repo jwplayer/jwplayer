@@ -249,7 +249,6 @@ export default class Controlbar {
         if (elements.mute) {
             elements.mute.show();
         }
-        elements.settingsButton.show();
 
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
