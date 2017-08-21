@@ -94,6 +94,3 @@ export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialS
 export function removePlaybackRatesSubmenu(settingsMenu) {
     settingsMenu.removeSubmenu(PLAYBACK_RATE_SUBMENU);
 }
-
-
-
