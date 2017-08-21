@@ -35,6 +35,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         close() {
             visible = false;
             onVisibility(visible);
+            deactivateAllSubmenus(submenus);
             settingsMenuElement.setAttribute('aria-expanded', 'false');
             removeDocumentListeners(documentClickHandler);
         },
