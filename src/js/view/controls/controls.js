@@ -19,7 +19,9 @@ import {
     addQualitiesSubmenu,
     removeQualitiesSubmenu,
     addAudioTracksSubmenu,
-    removeAudioTracksSubmenu
+    removeAudioTracksSubmenu,
+    addPlaybackRatesSubmenu,
+    removePlaybackRatesSubmenu
 } from 'view/utils/submenu-factory';
 
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
@@ -344,11 +346,10 @@ export default class Controls {
         const controlbar = this.controlbar;
         const settingsMenu = this.settingsMenu;
 
-        model.change('mediaModel', function(newModel, mediaModel) {
-
+        model.change('mediaModel', (newModel, mediaModel) => {
             // Quality Levels
-            mediaModel.on('change:levels', function (changedModel, levels) {
-                if (!levels) {
+            mediaModel.on('change:levels', (changedModel, levels) => {
+                if (!levels || levels.length <= 1) {
                     removeQualitiesSubmenu(settingsMenu);
                     return;
                 }
@@ -361,16 +362,16 @@ export default class Controls {
                 );
             });
 
-            mediaModel.on('change:currentLevel', function (changedModel, currentQualities) {
-                const qualitiesSubmenu = settingsMenu.getSubmenu('qualities');
+            mediaModel.on('change:currentLevel', (changedModel, currentQualities) => {
+                const qualitiesSubmenu = settingsMenu.getSubmenu('quality');
                 if (qualitiesSubmenu) {
                     qualitiesSubmenu.activateItem(currentQualities);
                 }
             });
 
             // Audio Tracks
-            mediaModel.on('change:audioTracks', function (changedModel, audioTracks) {
-                if (!audioTracks) {
+            const onAudiotracksChange = (changedModel, audioTracks) => {
+                if (!audioTracks || audioTracks.length <= 1) {
                     removeAudioTracksSubmenu(settingsMenu);
                     return;
                 }
@@ -381,22 +382,25 @@ export default class Controls {
                     model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
                     model.get('currentAudioTrack')
                 );
-            });
-
-            mediaModel.on('change:currentAudioTrack', function (changedModel, currentAudioTrack) {
+            };
+            mediaModel.on('change:audioTracks', onAudiotracksChange);
+            mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
                 const audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
                 if (audioTracksSubmenu) {
                     audioTracksSubmenu.activateItem(currentAudioTrack);
                 }
             });
+            // change:audioTracks does not get triggered if the next item has no tracks, so trigger it every time the mediaModel changes (i.e. we're on a new item)
+            onAudiotracksChange(newModel, model.get('audioTracks'));
         });
 
         // Captions
         model.change('captionsList', (changedModel, captionsList) => {
             const controlbarButton = controlbar.elements.captionsButton;
-            if (!captionsList) {
+            if (!captionsList || captionsList.length <= 1) {
                 removeCaptionsSubmenu(settingsMenu);
                 controlbarButton.hide();
+                return;
             }
 
             addCaptionsSubmenu(settingsMenu,
@@ -415,11 +419,48 @@ export default class Controls {
                 controlbar.toggleCaptionsButtonState(!!index);
             }
         });
+
+        // Playback Rates
+        model.change('playbackRates', function (changedModel, playbackRates) {
+            const provider = model.getVideo();
+            const showPlaybackRateControls = provider &&
+                provider.supportsPlaybackRate &&
+                model.get('streamType') !== 'LIVE' &&
+                model.get('playbackRateControls') &&
+                playbackRates.length > 1;
+
+            if (!showPlaybackRateControls) {
+                removePlaybackRatesSubmenu(settingsMenu);
+                return;
+            }
+
+            addPlaybackRatesSubmenu(
+                settingsMenu,
+                playbackRates,
+                provider.setPlaybackRate.bind(model.getVideo()),
+                model.get('playbackRate')
+            );
+        });
+
+        model.change('playbackRate', function (changedModel, playbackRate) {
+            const playbackRatesSubmenu = settingsMenu.getSubmenu('playbackRates');
+            if (playbackRatesSubmenu) {
+                playbackRatesSubmenu.activateItem(playbackRate);
+            }
+        });
     }
 }
 
-const setupSettingsMenu = (controlbar, visibilityChangeHandler) => {
-    const settingsMenu = SettingsMenu(visibilityChangeHandler);
+const setupSettingsMenu = (controlbar, onVisibility) => {
+    const settingsButton = controlbar.elements.settingsButton;
+    const onSubmenuAdded = () => {
+        settingsButton.show();
+    };
+    const onMenuEmpty = () => {
+        settingsButton.hide();
+    };
+
+    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty);
 
     controlbar.on('settingsInteraction', (submenuName, isDefault) => {
         const submenu = settingsMenu.getSubmenu(submenuName);

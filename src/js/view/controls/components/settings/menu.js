@@ -3,7 +3,7 @@ import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement } from 'utils/dom';
 
-export function SettingsMenu(visibilityChangeHandler) {
+export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
         // Close if anything other than the settings menu has been clicked
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
@@ -17,16 +17,26 @@ export function SettingsMenu(visibilityChangeHandler) {
     let visible;
     const submenus = {};
     const settingsMenuElement = createElement(SettingsMenuTemplate());
+    const topbarElement = settingsMenuElement.querySelector('.jw-settings-topbar');
+
+    const closeButton = button('jw-settings-close', () => {
+        instance.close();
+    }, 'Close Settings', [CLOSE_ICON]);
+    closeButton.show();
+    topbarElement.appendChild(closeButton.element());
 
     const instance = {
         open() {
             visible = true;
-            visibilityChangeHandler(visible);
+            onVisibility(visible);
+            settingsMenuElement.setAttribute('aria-expanded', 'true');
             addDocumentListeners(documentClickHandler);
         },
         close() {
             visible = false;
-            visibilityChangeHandler(visible);
+            onVisibility(visible);
+            deactivateAllSubmenus(submenus);
+            settingsMenuElement.setAttribute('aria-expanded', 'false');
             removeDocumentListeners(documentClickHandler);
         },
         toggle() {
@@ -36,22 +46,16 @@ export function SettingsMenu(visibilityChangeHandler) {
                 this.open();
             }
         },
-        addSubmenu(icon, submenu) {
+        addSubmenu(submenu) {
             if (!submenu) {
                 return;
             }
-
             const name = submenu.name;
             submenus[name] = submenu;
-            const categoryButton = button(`jw-settings-${name}`, () => {
-                this.activateSubmenu(name);
-            }, name, [icon]);
-            categoryButton.show();
 
-            settingsMenuElement
-                .querySelector('.jw-settings-topbar')
-                .insertBefore(categoryButton.element(), closeButton.element());
+            topbarElement.insertBefore(submenu.categoryButtonElement, closeButton.element());
             settingsMenuElement.appendChild(submenu.element());
+            onSubmenuAdded();
         },
         getSubmenu(name) {
             return submenus[name];
@@ -62,8 +66,14 @@ export function SettingsMenu(visibilityChangeHandler) {
                 return;
             }
             settingsMenuElement.removeChild(submenu.element());
+            topbarElement.removeChild(submenu.categoryButtonElement);
             submenu.destroy();
-            submenus[name] = null;
+            delete submenus[name];
+
+            if (!Object.keys(submenus).length) {
+                this.close();
+                onMenuEmpty();
+            }
         },
         activateSubmenu(name) {
             const submenu = submenus[name];
@@ -87,8 +97,6 @@ export function SettingsMenu(visibilityChangeHandler) {
         get: () => visible
     });
 
-    const closeButton = createCloseButton(instance.close);
-    settingsMenuElement.querySelector('.jw-settings-topbar').appendChild(closeButton.element());
 
     return instance;
 }
@@ -109,13 +117,4 @@ const deactivateAllSubmenus = (submenus) => {
     Object.keys(submenus).forEach(name => {
         submenus[name].deactivate();
     });
-};
-
-const createCloseButton = (action) => {
-    const closeButton = this.closeButton = button('jw-settings-close', () => {
-        action();
-    }, 'Close Settings', [CLOSE_ICON]);
-    closeButton.show();
-
-    return closeButton;
 };

@@ -7,7 +7,6 @@ import VOLUME_ICON_50 from 'assets/SVG/volume-50.svg';
 import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
 import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
-import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
 import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
@@ -24,7 +23,6 @@ import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import ariaLabel from 'utils/aria';
 import TimeSlider from 'view/controls/components/timeslider';
-import SelectionDisplayMenu from 'view/controls/components/selection-display-menu';
 import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
 
@@ -141,10 +139,12 @@ export default class Controlbar {
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'quality', true);
         }, this._localization.settings, [SETTINGS_ICON]);
+        settingsButton.element().setAttribute('aria-haspopup', 'true');
 
         const captionsButton = button('jw-icon-cc jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'captions', false);
         }, this._localization.cc, [CAPTIONS_OFF_ICON, CAPTIONS_ON_ICON]);
+        captionsButton.element().setAttribute('aria-haspopup', 'true');
 
         if (_model.get('nextUpDisplay')) {
             new UI(nextButton.element(), { useHover: true, directSelect: true })
@@ -181,11 +181,6 @@ export default class Controlbar {
             countdown: textIcon('jw-text-countdown', 'timer'),
             time: timeSlider,
             duration: textIcon('jw-text-duration', 'timer'),
-            playbackrates: new SelectionDisplayMenu(
-                'jw-icon-playback-rate',
-                this._localization.playbackRates,
-                PLAYBACK_RATE_ICON
-            ),
             mute: muteButton,
             volumetooltip: volumeTooltip,
             cast: createCastButton(() => {
@@ -215,7 +210,6 @@ export default class Controlbar {
             elements.next,
             elements.settingsButton,
             elements.captionsButton,
-            elements.playbackrates,
             elements.cast,
             elements.fullscreen
         ].filter(e => e);
@@ -226,7 +220,6 @@ export default class Controlbar {
         ].filter(e => e);
 
         const menus = this.menus = [
-            elements.playbackrates,
             elements.volumetooltip
         ].filter(e => e);
 
@@ -247,7 +240,6 @@ export default class Controlbar {
         if (elements.mute) {
             elements.mute.show();
         }
-        elements.settingsButton.show();
 
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
@@ -295,36 +287,6 @@ export default class Controlbar {
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
 
-        let playbackRateControls = _model.get('playbackRateControls');
-        if (playbackRateControls) {
-            let playbackRates = _model.get('playbackRates');
-            let selectedIndex = playbackRates.indexOf(this._model.get('playbackRate'));
-            let playbackRateLabels = playbackRates.map((playbackRate) => {
-                return {
-                    label: playbackRate + 'x',
-                    rate: playbackRate
-                };
-            });
-
-            elements.playbackrates.setup(
-                playbackRateLabels,
-                selectedIndex,
-                { defaultIndex: playbackRates.indexOf(1), isToggle: false }
-            );
-
-            _model.change('streamType provider', this.togglePlaybackRateControls, this);
-            _model.change('playbackRate', this.onPlaybackRate, this);
-
-            elements.playbackrates.on('select', function (index) {
-                this._model.setPlaybackRate(playbackRates[index]);
-            }, this);
-
-            elements.playbackrates.on('toggleValue', function () {
-                const index = playbackRates.indexOf(this._model.get('playbackRate'));
-                this._model.setPlaybackRate(playbackRates[index ? 0 : 1]);
-            }, this);
-        }
-
         new UI(elements.duration).on('click tap', function () {
             if (this._model.get('streamType') === 'DVR') {
                 // Seek to "Live" position within live buffer, but not before current position
@@ -341,21 +303,6 @@ export default class Controlbar {
         _.each(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);
-    }
-
-    togglePlaybackRateControls(model) {
-        const provider = model.getVideo();
-        const showPlaybackRateControls = provider &&
-            provider.supportsPlaybackRate &&
-            model.get('streamType') !== 'LIVE' &&
-            model.get('playbackRateControls') &&
-            model.get('playbackRates').length > 1;
-
-        utils.toggleClass(this.elements.playbackrates.el, 'jw-hidden', !showPlaybackRateControls);
-    }
-
-    onPlaybackRate(model, value) {
-        this.elements.playbackrates.selectItem(model.get('playbackRates').indexOf(value));
     }
 
     onVolume(model, pct) {
