@@ -105,6 +105,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
         }
 
         // Show instream state instead of normal player state
+        _model.set('adModel', _instream._adModel);
         _view.setupInstream(_instream._adModel);
         _instream._adModel.set('state', STATE_BUFFERING);
 
@@ -118,11 +119,13 @@ var InstreamAdapter = function(_controller, _model, _view) {
     };
 
     function _loadNextItem() {
+        const adModel = _instream._adModel;
+
         // We want a play event for the next item, so we ensure the state != playing
-        _instream._adModel.set('state', STATE_BUFFERING);
+        adModel.set('state', STATE_BUFFERING);
 
         // destroy skip button
-        _model.set('skipButton', false);
+        adModel.set('skipButton', false);
 
         _arrayIndex++;
         var item = _array[_arrayIndex];
@@ -233,14 +236,15 @@ var InstreamAdapter = function(_controller, _model, _view) {
     };
 
     this.setupSkipButton = function(skipoffset, options, customNext) {
-        _model.set('skipButton', false);
+        const adModel = _instream._adModel;
+        adModel.set('skipButton', false);
         if (customNext) {
             _instreamItemNext = customNext;
         }
-        _instream._adModel.set('skipMessage', options.skipMessage);
-        _instream._adModel.set('skipText', options.skipText);
-        _instream._adModel.set('skipOffset', skipoffset);
-        _model.set('skipButton', true);
+        adModel.set('skipMessage', options.skipMessage);
+        adModel.set('skipText', options.skipText);
+        adModel.set('skipOffset', skipoffset);
+        adModel.set('skipButton', true);
     };
 
     this.applyProviderListeners = function(provider) {
@@ -285,7 +289,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
     this.destroy = function() {
         this.off();
 
-        _model.set('skipButton', false);
+        _model.set('adModel', null);
 
         if (_instream) {
             if (_view.clickHandler()) {
