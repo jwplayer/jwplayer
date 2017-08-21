@@ -347,7 +347,7 @@ export default class Controls {
         model.change('mediaModel', (newModel, mediaModel) => {
             // Quality Levels
             mediaModel.on('change:levels', (changedModel, levels) => {
-                if (!levels || levels && levels.length <= 1) {
+                if (!levels || levels.length <= 1) {
                     removeQualitiesSubmenu(settingsMenu);
                     return;
                 }
@@ -369,7 +369,7 @@ export default class Controls {
 
             // Audio Tracks
             const onAudiotracksChange = (changedModel, audioTracks) => {
-                if (!audioTracks || audioTracks && audioTracks.length <= 1) {
+                if (!audioTracks || audioTracks.length <= 1) {
                     removeAudioTracksSubmenu(settingsMenu);
                     return;
                 }
@@ -395,7 +395,7 @@ export default class Controls {
         // Captions
         model.change('captionsList', (changedModel, captionsList) => {
             const controlbarButton = controlbar.elements.captionsButton;
-            if (!captionsList || captionsList && captionsList.length <= 1) {
+            if (!captionsList || captionsList.length <= 1) {
                 removeCaptionsSubmenu(settingsMenu);
                 controlbarButton.hide();
                 return;
