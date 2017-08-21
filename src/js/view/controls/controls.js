@@ -258,6 +258,12 @@ export default class Controls {
         if (nextUpToolTip) {
             nextUpToolTip.destroy();
         }
+
+        const settingsMenu = this.settingsMenu;
+        if (settingsMenu) {
+            settingsMenu.destroy();
+            this.div.removeChild(settingsMenu.element());
+        }
     }
 
     controlbarHeight() {
