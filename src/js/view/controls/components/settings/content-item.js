@@ -8,16 +8,17 @@ export default function SettingsContentItem(name, content, action) {
     const contentItemUI = new UI(contentItemElement);
     contentItemUI.on('click tap', () => {
         action();
-        instance.activate();
     });
 
     const instance = {
         activate() {
             toggleClass(contentItemElement, 'jw-settings-item-active', true);
+            contentItemElement.setAttribute('aria-checked', 'true');
             active = true;
         },
         deactivate() {
             toggleClass(contentItemElement, 'jw-settings-item-active', false);
+            contentItemElement.setAttribute('aria-checked', 'false');
             active = false;
         },
         element() {

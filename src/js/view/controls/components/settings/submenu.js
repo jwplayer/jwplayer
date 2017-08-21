@@ -1,10 +1,12 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
 import { createElement, emptyElement, toggleClass } from 'utils/dom';
 
-export default function SettingsSubmenu(name) {
+export default function SettingsSubmenu(name, categoryButton) {
     let active;
     let contentItems = [];
     const submenuElement = createElement(SubmenuTemplate(name));
+    const categoryButtonElement = categoryButton.element();
+    categoryButton.show();
 
     const instance = {
         addContent(items) {
@@ -26,10 +28,14 @@ export default function SettingsSubmenu(name) {
         },
         activate() {
             toggleClass(submenuElement, 'jw-settings-submenu-active', true);
+            submenuElement.setAttribute('aria-expanded', 'true');
+            categoryButtonElement.setAttribute('aria-checked', 'true');
             active = true;
         },
         deactivate() {
             toggleClass(submenuElement, 'jw-settings-submenu-active', false);
+            submenuElement.setAttribute('aria-expanded', 'false');
+            categoryButtonElement.setAttribute('aria-checked', 'false');
             active = false;
         },
         activateItem(itemOrdinal = 0) {
@@ -62,6 +68,11 @@ export default function SettingsSubmenu(name) {
     Object.defineProperty(instance, 'active', {
         enumerable: true,
         get: () => active
+    });
+
+    Object.defineProperty(instance, 'categoryButtonElement', {
+        enumerable: true,
+        get: () => categoryButtonElement
     });
 
     return instance;
