@@ -208,9 +208,9 @@ export default class Controlbar {
             elements.duration,
             elements.spacer,
             elements.next,
-            elements.settingsButton,
-            elements.captionsButton,
             elements.cast,
+            elements.captionsButton,
+            elements.settingsButton,
             elements.fullscreen
         ].filter(e => e);
 
