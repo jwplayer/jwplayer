@@ -427,7 +427,7 @@ export default class Controls {
                 provider.supportsPlaybackRate &&
                 model.get('streamType') !== 'LIVE' &&
                 model.get('playbackRateControls') &&
-                model.get('playbackRates').length > 1;
+                playbackRates.length > 1;
 
             if (!showPlaybackRateControls) {
                 removePlaybackRatesSubmenu(settingsMenu);
