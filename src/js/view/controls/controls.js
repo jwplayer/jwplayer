@@ -19,7 +19,9 @@ import {
     addQualitiesSubmenu,
     removeQualitiesSubmenu,
     addAudioTracksSubmenu,
-    removeAudioTracksSubmenu
+    removeAudioTracksSubmenu,
+    addPlaybackRatesSubmenu,
+    removePlaybackRatesSubmenu
 } from 'view/utils/submenu-factory';
 
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
@@ -415,6 +417,35 @@ export default class Controls {
             if (captionsSubmenu) {
                 captionsSubmenu.activateItem(index);
                 controlbar.toggleCaptionsButtonState(!!index);
+            }
+        });
+
+        // Playback Rates
+        model.change('playbackRates', function (changedModel, playbackRates) {
+            const provider = model.getVideo();
+            const showPlaybackRateControls = provider &&
+                provider.supportsPlaybackRate &&
+                model.get('streamType') !== 'LIVE' &&
+                model.get('playbackRateControls') &&
+                model.get('playbackRates').length > 1;
+
+            if (!showPlaybackRateControls) {
+                removePlaybackRatesSubmenu(settingsMenu);
+                return;
+            }
+
+            addPlaybackRatesSubmenu(
+                settingsMenu,
+                playbackRates,
+                provider.setPlaybackRate.bind(model.getVideo()),
+                model.get('playbackRate')
+            );
+        });
+
+        model.change('playbackRate', function (changedModel, playbackRate) {
+            const playbackRatesSubmenu = settingsMenu.getSubmenu('playbackRates');
+            if (playbackRatesSubmenu) {
+                playbackRatesSubmenu.activateItem(playbackRate);
             }
         });
     }

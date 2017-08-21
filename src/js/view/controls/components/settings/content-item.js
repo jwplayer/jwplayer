@@ -8,7 +8,6 @@ export default function SettingsContentItem(name, content, action) {
     const contentItemUI = new UI(contentItemElement);
     contentItemUI.on('click tap', () => {
         action();
-        instance.activate();
     });
 
     const instance = {

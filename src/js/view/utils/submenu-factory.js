@@ -4,10 +4,12 @@ import button from 'view/controls/components/button';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
+import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
 const QUALITIES_SUBMENU = 'quality';
+const PLAYBACK_RATE_SUBMENU = 'playbackRates';
 
 const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
     let submenu = settingsMenu.getSubmenu(name);
@@ -75,4 +77,20 @@ export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initial
 
 export function removeQualitiesSubmenu(settingsMenu) {
     settingsMenu.removeSubmenu(QUALITIES_SUBMENU);
+}
+
+export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialSelectionIndex) {
+    const rateItems = rateList.map((playbackRate, index) => {
+        return SettingsContentItem(playbackRate, playbackRate + 'x', () => {
+            action(index);
+            settingsMenu.close();
+        });
+    });
+
+    const playbackRatesSubmenu = makeSubmenu(settingsMenu, PLAYBACK_RATE_SUBMENU, rateItems, PLAYBACK_RATE_ICON);
+    playbackRatesSubmenu.activateItem(initialSelectionIndex);
+}
+
+export function removePlaybackRatesSubmenu(settingsMenu) {
+    settingsMenu.removeSubmenu(PLAYBACK_RATE_SUBMENU);
 }
