@@ -292,7 +292,7 @@ export default class Controlbar {
         }
 
         this._model.mediaController.on('seeked', function () {
-            this.checkDvrLiveEdge();
+            _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
 
         let playbackRateControls = _model.get('playbackRateControls');
@@ -398,8 +398,7 @@ export default class Controlbar {
         let countdownTime;
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
-            elapsedTime = countdownTime = this.elements.live.element().className.includes('jw-dvr-live') ?
-                '' : '-' + utils.timeFormat(-val);
+            elapsedTime = countdownTime = val >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-val);
         } else {
             elapsedTime = utils.timeFormat(val);
             countdownTime = utils.timeFormat(duration - val);
