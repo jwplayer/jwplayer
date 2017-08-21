@@ -74,7 +74,6 @@
     padding: 0 12px;
 
     > .jw-icon:not(.jw-text) {
-        font-size: 20px;
         max-width: @mobile-touch-target;
 
         &:before {
@@ -114,6 +113,12 @@
 .jw-text-duration,
 .jw-text-countdown {
     cursor: pointer;
+}
+
+.jw-text-elapsed,
+.jw-text-duration {
+    justify-content: flex-start;
+    width: fit-content;
 }
 
 .jw-icon-tooltip {
@@ -209,6 +214,9 @@
         .jw-svg-icon-live {
             display: none;
         }
+
+        // padding between elapsed time in DVR mode
+        margin-right: 16px;
     }
 }
 
@@ -222,7 +230,8 @@
     .jw-text-duration {
         &:before {
             content: "/";
-            padding-right: 0.5em;
+            padding-right: 1ch;
+            padding-left: 1ch;
         }
     }
 }
