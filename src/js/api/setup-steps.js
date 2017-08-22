@@ -4,6 +4,7 @@ import Promise, { resolved } from 'polyfills/promise';
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
+import { requiresProvider } from 'api/core-loader';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -37,6 +38,11 @@ function filterPlaylist(_model) {
         }
         // `setPlaylist` performs filtering
         setPlaylist(_model, _model.get('playlist'), _model.get('feedData'));
+
+        // skip provider loading if included in bundle
+        if (_model.get('controls') && requiresProvider(_model, 'html5')) {
+            return;
+        }
         return loadProvidersForPlaylist(_model);
     });
 }
@@ -61,19 +67,11 @@ function loadSkin(_model) {
     return resolved;
 }
 
-function setPlaylistItem(_model) {
-
-    return new Promise(resolve => {
-        _model.once('itemReady', resolve);
-        _model.setItemIndex(_model.get('item'));
-    });
-}
-
 function destroyed(_model) {
     return _model.attributes._destroyed;
 }
 
-const startSetup = function(_api, _model) {
+const startSetup = function(_model) {
     if (destroyed(_model)) {
         return Promise.reject();
     }
@@ -82,13 +80,7 @@ const startSetup = function(_api, _model) {
         // filterPlaylist -->
         // -- loadPlaylist,
         loadSkin(_model)
-    ]).then(() => {
-        if (destroyed(_model)) {
-            return;
-        }
-        // Set the active playlist item after plugins are loaded and the view is setup
-        return setPlaylistItem(_model);
-    });
+    ]);
 };
 
 export default startSetup;

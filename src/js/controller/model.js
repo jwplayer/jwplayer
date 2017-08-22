@@ -333,7 +333,7 @@ const Model = function() {
 
         var provider = this.chooseProvider(source);
         // If we are changing video providers
-        if (!provider || !(_provider instanceof provider)) {
+        if (!provider || !(_provider && _provider instanceof provider)) {
             _this.changeVideoProvider(provider);
         }
 

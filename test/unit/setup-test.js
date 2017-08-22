@@ -1,10 +1,23 @@
 import Api from 'api/api';
-import _ from 'test/underscore';
+import ApiSettings from 'api/api-settings';
 import $ from 'jquery';
 
 describe('Setup', function() {
+    this.timeout(3000);
 
-    it('fails when playlist is not an array', function (done) {
+    beforeEach(function() {
+        ApiSettings.debug = true;
+        // remove fixture
+        $('body').append('<div id="test-container"><div id="player"></div></div>');
+    });
+
+    afterEach(function() {
+        ApiSettings.debug = false;
+        // remove fixture
+        $('#test-container').remove();
+    });
+
+    it('fails when playlist is undefined', function (done) {
 
         var readyHandler = function() {
             assert.isOk(false, 'setup should not succeed');
@@ -14,17 +27,46 @@ describe('Setup', function() {
             assert.isOk(message, 'setup failed with message: ' + message);
         };
 
-        var model = {};
-        testSetup(done, model, readyHandler, errorHandler);
+        testSetup(done, {}, readyHandler, errorHandler);
+    });
 
-        model = { playlist: '' };
-        testSetup(done, model, readyHandler, errorHandler);
+    it('fails when playlist is an empty string', function (done) {
 
-        model = { playlist: 1 };
-        testSetup(done, model, readyHandler, errorHandler);
+        var readyHandler = function() {
+            assert.isOk(false, 'setup should not succeed');
+        };
 
-        model = { playlist: true };
-        testSetup(done, model, readyHandler, errorHandler);
+        var errorHandler = function (message) {
+            assert.isOk(message, 'setup failed with message: ' + message);
+        };
+
+        testSetup(done, { playlist: '' }, readyHandler, errorHandler);
+    });
+
+    it('fails when playlist is a number', function (done) {
+
+        var readyHandler = function() {
+            assert.isOk(false, 'setup should not succeed');
+        };
+
+        var errorHandler = function (message) {
+            assert.isOk(message, 'setup failed with message: ' + message);
+        };
+
+        testSetup(done, { playlist: 1 }, readyHandler, errorHandler);
+    });
+
+    it('fails when playlist is a boolean', function (done) {
+
+        var readyHandler = function() {
+            assert.isOk(false, 'setup should not succeed');
+        };
+
+        var errorHandler = function (message) {
+            assert.isOk(message, 'setup failed with message: ' + message);
+        };
+
+        testSetup(done, { playlist: true }, readyHandler, errorHandler);
     });
 
     it('fails if playlist is empty', function (done) {
@@ -34,10 +76,11 @@ describe('Setup', function() {
 
         testSetup(done, model, function() {
             assert.isOk(false, 'setup should not succeed');
+            done();
         }, function (message) {
             assert.isOk(message, 'setup failed with message: ' + message);
+            done();
         });
-        done();
     });
 
     it('fails when playlist items are filtered out', function (done) {
@@ -49,14 +92,15 @@ describe('Setup', function() {
         testSetup(done, model, function() {
             // 'this' is the api instance
             playlist = this.getPlaylist();
-            assert.deepEqual(playlist, [], 'playlist is an empty array');
+            expect(playlist, 'playlist is an empty array').to.be.an('array').that.is.empty;
             assert.isOk(false, 'setup should not succeed');
+            done();
         }, function (message) {
             playlist = this.getPlaylist();
-            assert.deepEqual(playlist, [], 'playlist is an empty array');
+            expect(playlist, 'playlist is an empty array').to.be.an('array').that.is.empty;
             assert.isOk(message, 'setup failed with message: ' + message);
+            done();
         });
-        done();
     });
 
     it('succeeds when model.playlist.sources is valid', function (done) {
@@ -66,37 +110,19 @@ describe('Setup', function() {
 
         testSetup(done, model, function() {
             assert.isOk(true, 'setup ok');
+            done();
         }, function (message) {
             assert.isOk(false, 'setup failed with message: ' + message);
+            done();
         });
-        done();
-    });
-
-    it('modifies config', function (done) {
-        var options = {
-            file: 'http://playertest.longtailvideo.com/mp4.mp4',
-            aspectratio: '4:3',
-            width: '100%'
-        };
-        var optionsOrig = Object.assign({}, options);
-
-        testSetup(done, options, function() {
-            assert.isOk(true, 'setup ok');
-            assert.notEqual(options, optionsOrig, 'config was modified');
-        }, function (message) {
-            assert.isOk(true, 'setup failed with message: ' + message);
-            assert.notEqual(options, optionsOrig, 'config was modified');
-        });
-        done();
     });
 
     function testSetup(done, model, success, error) {
-        var container = createContainer('player-' + Math.random().toFixed(12).substr(2));
+        var container = $('#player')[0];
         var api = new Api(container);
         api.setup(model);
 
         api.on('ready', function() {
-            clearTimeout(timeout);
             success.call(api);
             try {
                 api.remove();
@@ -106,7 +132,6 @@ describe('Setup', function() {
             done();
         });
         api.on('setupError', function (e) {
-            clearTimeout(timeout);
             error.call(api, e.message);
             try {
                 api.remove();
@@ -115,19 +140,6 @@ describe('Setup', function() {
             }
             done();
         });
-        var timeout = setTimeout(function() {
-            assert.isNotOk('Setup timed out');
-            try {
-                api.remove();
-            } catch (e) {
-                assert.isNotOk(e.toString());
-            }
-            done();
-        }, 8000);
         return api;
-    }
-
-    function createContainer(id) {
-        return $('<div id="' + id + '"></div>')[0];
     }
 });

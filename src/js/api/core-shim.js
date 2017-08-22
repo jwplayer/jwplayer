@@ -1,5 +1,6 @@
 import ApiQueueDecorator from 'api/api-queue';
 import Config from 'api/config';
+import Setup from 'api/Setup';
 import Providers from 'providers/providers';
 import loadPlugins from 'plugins/plugins';
 import Timer from 'api/timer';
@@ -21,6 +22,7 @@ const CoreShim = function(originalContainer) {
     this._events = {};
     this.modelShim = new ModelShim();
     this.modelShim._qoeItem = new Timer();
+    this.setup = new Setup(this.modelShim);
     this.currentContainer =
         this.originalContainer = originalContainer;
     this.apiQueue = new ApiQueueDecorator(this, [
@@ -75,19 +77,20 @@ Object.assign(CoreShim.prototype, {
         // Assigning config properties to the model needs to be synchronous for chained get API methods
         const configuration = Config(options, persisted);
         Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE);
+        model.getProviders = function() {
+            return new Providers(configuration);
+        };
+        model.setProvider = function() {};
 
         resolved.then(() => {
-            model.getProviders = function() {
-                return new Providers(configuration);
-            };
-        }).then(() => {
             return Promise.all([
                 loadCoreBundle(model),
-                loadPlugins(model, api)
+                loadPlugins(model, api),
+                this.setup.start()
             ]);
         }).then(allPromises => {
             const CoreMixin = allPromises[0];
-            if (!this.apiQueue) {
+            if (!this.setup) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
             }
@@ -102,11 +105,23 @@ Object.assign(CoreShim.prototype, {
 
             // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
             Object.assign(this, CoreMixin.prototype);
-            const setupPromise = this.setup(config, api, this.originalContainer, this._events, commandQueue).then(this.playerReady);
-            storage.track(this._model);
-            return setupPromise;
+            this.setup(config, api, this.originalContainer, this._events, commandQueue);
+
+            const coreModel = this._model;
+            storage.track(coreModel);
+
+            // Set the active playlist item after plugins are loaded and the view is setup
+            return new Promise(resolve => {
+                coreModel.once('itemReady', resolve);
+                coreModel.setItemIndex(coreModel.get('item'));
+            });
+        }).then(() => {
+            if (!this.setup) {
+                return;
+            }
+            this.playerReady();
         }).catch((error) => {
-            if (!this.apiQueue) {
+            if (!this.setup) {
                 return;
             }
             setupError(this, error);
@@ -116,12 +131,17 @@ Object.assign(CoreShim.prototype, {
         if (this.apiQueue) {
             this.apiQueue.destroy();
         }
+
+        if (this.setup) {
+            this.setup.destroy();
+        }
         this.off();
         this._events =
             this._model =
             this.modelShim =
             this.originalContainer =
-            this.apiQueue = null;
+            this.apiQueue =
+            this.setup = null;
     },
     getContainer() {
         return this.originalContainer;
@@ -231,7 +251,7 @@ export function showView(core, viewElement) {
     if (!document.body.contains(core.currentContainer)) {
         // This implies the player was removed from the DOM before setup completed
         //   or a player has been "re" setup after being removed from the DOM
-        const newContainer = document.getElementById(core._model.get('id'));
+        const newContainer = document.getElementById(core.get('id'));
         if (newContainer) {
             core.currentContainer = newContainer;
         }

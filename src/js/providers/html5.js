@@ -1049,10 +1049,7 @@ function VideoProvider(_playerId, _playerConfig) {
     }
 }
 
-// Register provider
-var F = function() {};
-F.prototype = DefaultProvider;
-VideoProvider.prototype = new F();
+Object.assign(VideoProvider.prototype, DefaultProvider);
 
 VideoProvider.getName = function() {
     return { name: 'html5' };
