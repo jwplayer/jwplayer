@@ -352,6 +352,13 @@ export default class Controls {
         const controlbar = this.controlbar;
         const settingsMenu = this.settingsMenu;
 
+        const activateSubmenuItem = (submenuName, itemIndex) => {
+            const submenu = settingsMenu.getSubmenu(submenuName);
+            if (submenu) {
+                submenu.activateItem(itemIndex);
+            }
+        };
+
         model.change('mediaModel', (newModel, mediaModel) => {
             // Quality Levels
             mediaModel.on('change:levels', (changedModel, levels) => {
@@ -368,11 +375,8 @@ export default class Controls {
                 );
             });
 
-            mediaModel.on('change:currentLevel', (changedModel, currentQualities) => {
-                const qualitiesSubmenu = settingsMenu.getSubmenu('quality');
-                if (qualitiesSubmenu) {
-                    qualitiesSubmenu.activateItem(currentQualities);
-                }
+            mediaModel.on('change:currentLevel', (changedModel, currentQuality) => {
+                activateSubmenuItem('quality', currentQuality);
             });
 
             // Audio Tracks
@@ -391,10 +395,7 @@ export default class Controls {
             };
             mediaModel.on('change:audioTracks', onAudiotracksChange);
             mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
-                const audioTracksSubmenu = settingsMenu.getSubmenu('audioTracks');
-                if (audioTracksSubmenu) {
-                    audioTracksSubmenu.activateItem(currentAudioTrack);
-                }
+                activateSubmenuItem('audioTracks', currentAudioTrack);
             });
             // change:audioTracks does not get triggered if the next item has no tracks, so trigger it every time the mediaModel changes (i.e. we're on a new item)
             onAudiotracksChange(newModel, model.get('audioTracks'));
@@ -427,7 +428,7 @@ export default class Controls {
         });
 
         // Playback Rates
-        model.change('playbackRates', function (changedModel, playbackRates) {
+        model.change('playbackRates', (changedModel, playbackRates) => {
             const provider = model.getVideo();
             const showPlaybackRateControls = provider &&
                 provider.supportsPlaybackRate &&
@@ -448,11 +449,8 @@ export default class Controls {
             );
         });
 
-        model.change('playbackRate', function (changedModel, playbackRate) {
-            const playbackRatesSubmenu = settingsMenu.getSubmenu('playbackRates');
-            if (playbackRatesSubmenu) {
-                playbackRatesSubmenu.activateItem(playbackRate);
-            }
+        model.change('playbackRate', (changedModel, playbackRate) => {
+            activateSubmenuItem('playbackRates', playbackRate);
         });
     }
 }
