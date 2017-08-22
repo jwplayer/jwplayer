@@ -43,7 +43,9 @@ describe('Skin Customization', function() {
             });
 
             expect(cssUtils.css.args[0]).to.eql([
-                '#id .jw-controlbar .jw-text',
+                '#id .jw-controlbar .jw-text, ' +
+                '#id .jw-title-primary, ' +
+                '#id .jw-title-secondary',
                 { color: 'green' },
                 'id'
             ]);
@@ -60,13 +62,16 @@ describe('Skin Customization', function() {
             });
 
             expect(cssUtils.css.args[0]).to.eql([
-                '#id .jw-controlbar .jw-text',
+                '#id .jw-controlbar .jw-text, ' +
+                '#id .jw-title-primary, ' +
+                '#id .jw-title-secondary',
                 { color: 'green' },
                 'id'
             ]);
 
             expect(cssUtils.css.args[1]).to.eql([
-                '#id .jw-button-color:not(.jw-icon-cast), #id .jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)',
+                '#id .jw-button-color:not(.jw-icon-cast), ' +
+                '#id .jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)',
                 { color: 'blue' },
                 'id'
             ]);

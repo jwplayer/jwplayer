@@ -99,6 +99,8 @@ export function handleColorOverrides(playerId, skin = {}) {
         addStyle([
             // controlbar text colors
             '.jw-controlbar .jw-text',
+            '.jw-title-primary',
+            '.jw-title-secondary',
         ], 'color', config.text);
 
         addStyle([
@@ -106,6 +108,14 @@ export function handleColorOverrides(playerId, skin = {}) {
             '.jw-button-color:not(.jw-icon-cast)',
             '.jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)',
         ], 'color', config.icons);
+
+        addStyle([
+            '.jw-display-icon-container .jw-svg-icon',
+        ], 'fill', config.icons);
+
+        addStyle([
+            '.jw-display-icon-container:not(.jw-flag-touch):hover .jw-svg-icon',
+        ], 'fill', config.iconsActive);
 
         // Apply active color
         addStyle([
@@ -160,7 +170,7 @@ export function handleColorOverrides(playerId, skin = {}) {
             '.jw-skip .jw-skip-icon',
             '.jw-nextup-body',
             '.jw-nextup-header',
-            '.jw-menu .jw-text'
+            '.jw-settings-content-item'
         ], 'color', config.text);
 
         addStyle([
@@ -170,13 +180,14 @@ export function handleColorOverrides(playerId, skin = {}) {
 
         addStyle([
             '.jw-nextup-body.jw-background-color',
-            '.jw-menu.jw-background-color',
             '.jw-nextup-body',
-            '.jw-nextup-header'
+            '.jw-nextup-header',
+            '.jw-settings-submenu',
+            '.jw-settings-topbar',
         ], 'background', config.background);
 
         addStyle([
-            '.jw-menu.jw-background-color',
+            '.jw-settings-submenu',
             '.jw-nextup-body',
         ], 'opacity', 0.7);
     }
@@ -184,12 +195,17 @@ export function handleColorOverrides(playerId, skin = {}) {
     function styleTooltips(config) {
 
         addStyle([
-            '.jw-skip.jw-background-color',
-            '.jw-tooltip-time .jw-time-tip'
+            '.jw-skip',
+            '.jw-time-tip .jw-text'
         ], 'background', config.background);
 
         addStyle([
+            '.jw-skip',
+        ], 'border', 'none');
+
+        addStyle([
             '.jw-skip .jw-text',
+            '.jw-skip .jw-icon',
             '.jw-time-tip .jw-text'
         ], 'color', config.text);
     }
