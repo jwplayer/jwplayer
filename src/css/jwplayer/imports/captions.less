@@ -6,7 +6,7 @@
     height: 100%;
     text-align: center;
     display: none;
-    max-height: calc(100% - 64px);
+    max-height: calc(100% - 60px);
     letter-spacing: normal;
     word-spacing: normal;
     text-transform: none;
@@ -64,8 +64,9 @@
             justify-content: flex-start;
         }
 
+        /* captions styles code specific to native text track rendering */
         &::-webkit-media-text-track-container {
-            max-height: calc(100% - 40px);
+            max-height: calc(100% - 60px);
             line-height: normal;
         }
 

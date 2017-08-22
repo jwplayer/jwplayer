@@ -82,9 +82,9 @@ export function removeQualitiesSubmenu(settingsMenu) {
 }
 
 export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialSelectionIndex) {
-    const rateItems = rateList.map((playbackRate, index) => {
+    const rateItems = rateList.map((playbackRate) => {
         return SettingsContentItem(playbackRate, playbackRate + 'x', () => {
-            action(index);
+            action(playbackRate);
             settingsMenu.close();
         });
     });
