@@ -3,7 +3,6 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
-import Setup from 'controller/Setup';
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import { OS } from 'environment/environment';
@@ -40,7 +39,6 @@ Object.assign(Controller.prototype, {
 
         let _view;
         let _captions;
-        let _setup;
         let _preplay = false;
         let _actionOnAttach;
         let _stopPlaylist = false;
@@ -56,8 +54,6 @@ Object.assign(Controller.prototype, {
         _model.setup(config);
         _view = this._view = new View(_api, _model);
         _view.on('all', _triggerAfterReady, _this);
-
-        _setup = new Setup(_api, _model);
 
         _model.mediaController.on('all', _triggerAfterReady, _this);
         _model.mediaController.on(MEDIA_COMPLETE, function() {
@@ -102,26 +98,6 @@ Object.assign(Controller.prototype, {
             if (bool) {
                 // Stop autoplay behavior when the player enters fullscreen
                 model.set('playOnViewable', false);
-            }
-        });
-        _model.on('change:playlistItem', function(model, playlistItem) {
-            _this.triggerAfterReady(PLAYLIST_ITEM, {
-                index: _model.get('item'),
-                item: playlistItem
-            });
-        });
-        _model.on('change:playlist', function(model, playlist) {
-            if (playlist.length) {
-                const eventData = {
-                    playlist: playlist
-                };
-                const feedData = _model.get('feedData');
-                if (feedData) {
-                    const eventFeedData = Object.assign({}, feedData);
-                    delete eventFeedData.playlist;
-                    eventData.feedData = eventFeedData;
-                }
-                _this.triggerAfterReady(PLAYLIST_LOADED, eventData);
             }
         });
         _model.on('change:volume', function(model, vol) {
@@ -194,12 +170,6 @@ Object.assign(Controller.prototype, {
         }, this);
 
         this.playerReady = function() {
-            if (_setup === null) {
-                // Player was destroyed during setup
-                return;
-            }
-            _setup = null;
-
             const related = _api.getPlugin('related');
             if (related) {
                 related.on('nextUp', (nextUp) => {
@@ -222,6 +192,30 @@ Object.assign(Controller.prototype, {
             _this.trigger(READY, {
                 // this will be updated by Api
                 setupTime: 0
+            });
+
+            _model.change('playlist', function(model, playlist) {
+                if (playlist.length) {
+                    const eventData = {
+                        playlist: playlist
+                    };
+                    const feedData = _model.get('feedData');
+                    if (feedData) {
+                        const eventFeedData = Object.assign({}, feedData);
+                        delete eventFeedData.playlist;
+                        eventData.feedData = eventFeedData;
+                    }
+                    _this.trigger(PLAYLIST_LOADED, eventData);
+                }
+            });
+
+            _model.change('playlistItem', function(model, playlistItem) {
+                if (playlistItem) {
+                    _this.trigger(PLAYLIST_ITEM, {
+                        index: _model.get('item'),
+                        item: playlistItem
+                    });
+                }
             });
 
             // Stop queueing certain events
@@ -816,10 +810,6 @@ Object.assign(Controller.prototype, {
             if (_model) {
                 _model.destroy();
             }
-            if (_setup) {
-                _setup.destroy();
-                _setup = null;
-            }
             if (apiQueue) {
                 apiQueue.destroy();
             }
@@ -870,8 +860,6 @@ Object.assign(Controller.prototype, {
         apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
         
         _view.setup();
-
-        return _setup.start();
     },
     get(property) {
         return this._model.get(property);

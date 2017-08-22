@@ -164,7 +164,7 @@ function triggerEvents(events, args, context, catchExceptionsForName) {
                 ev.callback.apply(ev.context || context, args);
             } catch (e) {
                 /* eslint-disable no-console */
-                console.log('Error in "' + name + '" event handler:', e);
+                console.log('Error in "' + catchExceptionsForName + '" event handler:', e);
             }
         } else {
             ev.callback.apply(ev.context || context, args);

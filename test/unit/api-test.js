@@ -1,6 +1,7 @@
 import jwplayer from 'jwplayer';
 import instances from 'api/players';
 import Api from 'api/api';
+import ApiSettings from 'api/api-settings';
 import _ from 'test/underscore';
 import sinon from 'sinon';
 import $ from 'jquery';
@@ -66,6 +67,8 @@ describe('Api', function() {
     });
 
     it('bad events do not break player', function() {
+        ApiSettings.debug = false;
+
         console.log = sinon.stub();
 
         const api = createApi('player');

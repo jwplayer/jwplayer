@@ -1,8 +1,8 @@
-import startSetup from 'controller/setup-steps';
+import startSetup from 'api/setup-steps';
 
 const SETUP_TIMEOUT_SECONDS = 30;
 
-const Setup = function(_api, _model, _view) {
+const Setup = function(_model) {
 
     let _setupFailureTimeout;
 
@@ -11,15 +11,13 @@ const Setup = function(_api, _model, _view) {
             _setupFailureTimeout = setTimeout(() => {
                 reject(new Error(`Setup Timeout Error: Setup took longer than ${SETUP_TIMEOUT_SECONDS} seconds to complete.`));
             }, SETUP_TIMEOUT_SECONDS * 1000);
-            return startSetup(_api, _model, _view).then(resolve).catch(reject);
+            return startSetup(_model).then(resolve).catch(reject);
         });
     };
 
     this.destroy = function() {
         clearTimeout(_setupFailureTimeout);
-        _api = null;
         _model = null;
-        _view = null;
     };
 
 };

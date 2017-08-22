@@ -1,5 +1,6 @@
 import Item from 'playlist/item';
 import ProvidersSupported from 'providers/providers-supported';
+import registerProvider from 'providers/providers-register';
 import { resolved } from 'polyfills/promise';
 
 let bundlePromise = null;
@@ -66,6 +67,7 @@ function loadControlsHtml5Bundle() {
         'view/controls/controls',
         'providers/html5'
     ], function (require) {
+        registerProvider(require('providers/html5').default);
         return require('controller/controller').default;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.html5');
 }
@@ -78,6 +80,7 @@ function loadControlsPolyfillHtml5Bundle() {
         'providers/html5'
     ], function (require) {
         require('intersection-observer');
+        registerProvider(require('providers/html5').default);
         return require('controller/controller').default;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills.html5');
 }
