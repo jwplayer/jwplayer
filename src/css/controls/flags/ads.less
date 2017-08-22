@@ -11,6 +11,10 @@
         display: none;
     }
 
+    .jw-controls::after {
+        bottom: (@mobile-touch-target + @rail-height);
+    }
+
     /* captions styles code specific to native text track rendering */
     video::-webkit-media-text-track-container {
         display: none;
@@ -32,6 +36,7 @@
         flex-wrap: wrap-reverse;
 
         .jw-slider-time {
+            height: auto;
             padding: 0;
             pointer-events: none;
 
@@ -120,6 +125,10 @@
     &.jw-flag-small-player {
         .jw-controls {
             background: none;
+
+            &::after {
+                content: none;
+            }
         }
     }
 }

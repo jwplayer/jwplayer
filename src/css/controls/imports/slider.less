@@ -2,7 +2,7 @@
 
 .jw-slider-container {
     display: flex;
-    height: 1em;
+    height: 5px;
     align-items: center;
     width: 100%;
     position: relative;
@@ -87,17 +87,17 @@
 }
 
 .jw-slider-time {
-    width: 100%;
+    .rect(100%, 16px);
     background: transparent none;
     padding: 0 12px;
+    align-items: flex-end;
 
     .jw-rail,
     .jw-buffer,
     .jw-progress,
     .jw-cue {
         backface-visibility: hidden;
-        height: @slider-fixed-rail-height;
-        transform-origin: 50% 100%;
+        height: 100%;
         transform: translate(0, -50%) scale(1, 0.6);
         transition: transform 150ms ease-in-out;
     }
