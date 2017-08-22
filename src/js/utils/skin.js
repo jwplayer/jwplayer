@@ -176,6 +176,7 @@ export function handleColorOverrides(playerId, skin = {}) {
         addStyle([
             '.jw-option.jw-active-option',
             '.jw-option:not(.jw-active-option):hover',
+            '.jw-settings-item-active'
         ], 'color', config.textActive);
 
         addStyle([
