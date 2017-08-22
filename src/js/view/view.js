@@ -342,7 +342,7 @@ function View(_api, _model) {
 
     function setMediaTitleAttribute(item) {
         var videotag = _videoLayer.querySelector('video, audio');
-        // Youtube, chromecast and flash providers do no support video tags
+        // chromecast and flash providers do no support video tags
         if (!videotag) {
             return;
         }

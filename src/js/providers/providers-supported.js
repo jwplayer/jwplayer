@@ -1,5 +1,5 @@
 import { isAndroidHls } from 'providers/html5-android-hls';
-import { isYouTube, isRtmp } from 'utils/validator';
+import { isRtmp } from 'utils/validator';
 import video from 'utils/video';
 
 const MimeTypes = {
@@ -25,8 +25,8 @@ const MimeTypes = {
 const SupportsMatrix = [
     {
         name: 'youtube',
-        supports: function (source) {
-            return (isYouTube(source.file, source.type));
+        supports: function () {
+            return false;
         }
     },
     {

@@ -253,7 +253,7 @@ export const CAST_AVAILABLE = 'castAvailable';
 
 /**
  * Fired when the currently playing item loads additional data into its buffer.
-    This only applies to VOD media; live streaming media (HLS/RTMP/YouTube/DASH) does not expose this behavior.
+    This only applies to VOD media; live streaming media (HLS/DASH) does not expose this behavior.
 */
 export const MEDIA_BUFFER = 'bufferChange';
 
