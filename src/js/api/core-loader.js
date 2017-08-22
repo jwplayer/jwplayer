@@ -5,6 +5,8 @@ import { resolved } from 'polyfills/promise';
 
 let bundlePromise = null;
 
+export const bundleContainsProviders = {};
+
 export default function loadCoreBundle(model) {
     if (!bundlePromise) {
         bundlePromise = selectBundle(model);
@@ -62,6 +64,7 @@ export function requiresProvider(model, providerName) {
 }
 
 function loadControlsHtml5Bundle() {
+    bundleContainsProviders.html5 = true;
     return require.ensure([
         'controller/controller',
         'view/controls/controls',
@@ -73,6 +76,7 @@ function loadControlsHtml5Bundle() {
 }
 
 function loadControlsPolyfillHtml5Bundle() {
+    bundleContainsProviders.html5 = true;
     return require.ensure([
         'controller/controller',
         'view/controls/controls',

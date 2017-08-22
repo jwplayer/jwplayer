@@ -7,11 +7,12 @@ const Setup = function(_model) {
     let _setupFailureTimeout;
 
     this.start = function () {
+        const setupPromise = startSetup(_model);
         return new Promise((resolve, reject) => {
             _setupFailureTimeout = setTimeout(() => {
                 reject(new Error(`Setup Timeout Error: Setup took longer than ${SETUP_TIMEOUT_SECONDS} seconds to complete.`));
             }, SETUP_TIMEOUT_SECONDS * 1000);
-            return startSetup(_model).then(resolve).catch(reject);
+            return setupPromise.then(resolve).catch(reject);
         });
     };
 
