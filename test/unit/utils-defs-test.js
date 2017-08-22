@@ -21,7 +21,6 @@ describe('utils definitions', function() {
         assert.equal(typeof utils.isHTTPS, 'function', 'isHTTPS function is defined');
         assert.equal(typeof utils.isRtmp, 'function', 'isRtmp function is defined');
         assert.equal(typeof utils.isYouTube, 'function', 'isYouTube function is defined');
-        assert.equal(typeof utils.youTubeID, 'function', 'youTubeID function is defined');
         assert.equal(typeof utils.typeOf, 'function', 'typeOf function is defined');
 
         // inherit from ajax

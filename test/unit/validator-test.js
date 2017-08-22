@@ -31,31 +31,6 @@ describe('validator', function() {
         test([null], 'null');
     });
 
-    it('validator.youTubeID', function() {
-        const ytVideoId = 'YE7VzlLtp-4';
-
-        const sampleUrls = [
-            'http://www.youtube.com/watch?v=' + ytVideoId,
-            'http://www.youtube.com/watch#!v=' + ytVideoId,
-            'http://www.youtube.com/v/' + ytVideoId,
-            'http://youtu.be/' + ytVideoId,
-            'http://www.youtube.com/watch?v=' + ytVideoId + '&extra=foo',
-            'http://www.youtube.com/watch#!v=' + ytVideoId + '?extra=foo&extra2=bar',
-            'http://www.youtube.com/v/' + ytVideoId + '?extra=foo&extra2=bar',
-            'http://youtu.be/' + ytVideoId + '?extra=foo&extra2=bar',
-            'https://www.youtube.com/v/' + ytVideoId,
-            '//www.youtube.com/v/' + ytVideoId,
-            ytVideoId
-        ];
-
-        assert.equal(typeof validator.youTubeID, 'function', 'is defined');
-        _.each(sampleUrls, function (value) {
-            assert.equal(validator.youTubeID(value), ytVideoId, 'Checking validator.youTubeID for ' + value);
-        });
-
-        assert.equal(validator.youTubeID('invalid?@?!@$?!$@'), '', 'youTubeID with invalid path');
-    });
-
     it('isYouTube test', function() {
         const sampleUrls = [
             'http://www.youtube.com/watch?v=YE7VzlLtp-4',
