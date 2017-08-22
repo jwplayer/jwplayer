@@ -11,13 +11,17 @@
         }
     }
 
-    .jw-controls::after {
+    .jw-controls {
         background: @controlbar-background;
+
+        &::after {
+            bottom: @mobile-touch-target;
+        }
     }
 
     .jw-controlbar {
         .jw-slider-time,
-        .jw-icon:not(.jw-text-duration),
+        .jw-icon,
         .jw-icon-playback-rate {
             display: none;
         }
@@ -71,9 +75,8 @@
     }
 
     &.jw-flag-user-inactive:not(.jw-flag-casting) {
-        .jw-controls:after {
+        .jw-controls::after {
             opacity: 0;
-            transform: translate(0, 100%);
         }
     }
 }
@@ -135,8 +138,11 @@
         }
     }
 
-    .jw-controls::after {
-        background: @controlbar-background;
+    .jw-controls {
+        &::after {
+            background: @controlbar-background;
+            height: 100%;
+        }
     }
 }
 
@@ -210,6 +216,10 @@ body .jwplayer.jw-state-error,
 .jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available) {
     .jw-controlbar {
         display: none;
+    }
+
+    .jw-controls::after {
+        content: none;
     }
 
     .jw-display {
