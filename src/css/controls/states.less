@@ -138,8 +138,11 @@
         }
     }
 
-    .jw-controls::after {
-        background: @controlbar-background;
+    .jw-controls {
+        &::after {
+            background: @controlbar-background;
+            height: 100%;
+        }
     }
 }
 
