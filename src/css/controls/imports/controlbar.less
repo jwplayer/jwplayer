@@ -21,10 +21,9 @@
 
     // adjust overlay bottom padding to match height of touch target
     .jw-overlay {
-        &:after {
-            content: "";
-            display: block;
-            height: (@mobile-touch-target * 0.5);
+        &::after {
+            &:extend(._pseudo);
+            height: @slider-fixed-knob-height;
         }
     }
 
