@@ -1,7 +1,7 @@
 import CLOSE_ICON from 'assets/SVG/close.svg';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
-import { createElement, emptyElement } from 'utils/dom';
+import { createElement, emptyElement, prependChild } from 'utils/dom';
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
@@ -53,7 +53,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             const name = submenu.name;
             submenus[name] = submenu;
 
-            topbarElement.insertBefore(submenu.categoryButtonElement, closeButton.element());
+            if (submenu.isDefault) {
+                prependChild(topbarElement, submenu.categoryButtonElement);
+            } else {
+                topbarElement.insertBefore(submenu.categoryButtonElement, closeButton.element());
+            }
+
             settingsMenuElement.appendChild(submenu.element());
             onSubmenuAdded();
         },

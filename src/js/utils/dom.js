@@ -148,3 +148,7 @@ export function bounds(element) {
 
     return boundsRect;
 }
+
+export function prependChild(parentElement, childElement) {
+    parentElement.insertBefore(childElement, parentElement.firstChild);
+}
