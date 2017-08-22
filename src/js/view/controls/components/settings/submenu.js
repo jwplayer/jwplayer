@@ -1,7 +1,7 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
 import { createElement, emptyElement, toggleClass } from 'utils/dom';
 
-export default function SettingsSubmenu(name, categoryButton) {
+export default function SettingsSubmenu(name, categoryButton, isDefault) {
     let active;
     let contentItems = [];
     const submenuElement = createElement(SubmenuTemplate(name));
@@ -60,20 +60,26 @@ export default function SettingsSubmenu(name, categoryButton) {
         }
     };
 
-    Object.defineProperty(instance, 'name', {
-        enumerable: true,
-        get: () => name
-    });
-
-    Object.defineProperty(instance, 'active', {
-        enumerable: true,
-        get: () => active
-    });
-
-    Object.defineProperty(instance, 'categoryButtonElement', {
-        enumerable: true,
-        get: () => categoryButtonElement
-    });
+    Object.defineProperties(instance,
+        {
+            name: {
+                enumerable: true,
+                get: () => name
+            },
+            active: {
+                enumerable: true,
+                get: () => active
+            },
+            categoryButtonElement: {
+                enumerable: true,
+                get: () => categoryButtonElement
+            },
+            isDefault: {
+                enumerable: true,
+                get: () => isDefault
+            }
+        }
+    );
 
     return instance;
 }

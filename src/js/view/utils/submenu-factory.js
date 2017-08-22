@@ -10,6 +10,7 @@ const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
 const QUALITIES_SUBMENU = 'quality';
 const PLAYBACK_RATE_SUBMENU = 'playbackRates';
+const DEFAULT_SUBMENU = QUALITIES_SUBMENU;
 
 const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
     let submenu = settingsMenu.getSubmenu(name);
@@ -23,7 +24,8 @@ const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
         categoryButtonElement.setAttribute('role', 'menuitemradio');
         categoryButtonElement.setAttribute('aria-checked', 'false');
 
-        submenu = SettingsSubmenu(name, categoryButton);
+        // Qualities submenu is the default submenu
+        submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);
         submenu.addContent(contentItems);
         settingsMenu.addSubmenu(submenu);
     }
