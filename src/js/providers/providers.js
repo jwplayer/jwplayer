@@ -55,6 +55,9 @@ Object.assign(Providers.prototype, {
         // prevent throw on missing source
         source = (source === Object(source)) ? source : {};
 
+        if (source.type === 'youtube' || source.type === 'rtmp') {
+            return null;
+        }
         const count = ProvidersSupported.length;
         for (let i = 0; i < count; i++) {
             const provider = ProvidersSupported[i];
