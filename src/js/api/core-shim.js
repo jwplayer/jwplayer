@@ -82,13 +82,11 @@ Object.assign(CoreShim.prototype, {
         };
         model.setProvider = function() {};
 
-        resolved.then(() => {
-            return Promise.all([
-                loadCoreBundle(model),
-                loadPlugins(model, api),
-                this.setup.start()
-            ]);
-        }).then(allPromises => {
+        return Promise.all([
+            loadCoreBundle(model),
+            this.setup.start(),
+            loadPlugins(model, api)
+        ]).then(allPromises => {
             const CoreMixin = allPromises[0];
             if (!this.setup) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
