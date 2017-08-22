@@ -24,12 +24,6 @@ const MimeTypes = {
 
 const SupportsMatrix = [
     {
-        name: 'youtube',
-        supports: function () {
-            return false;
-        }
-    },
-    {
         name: 'html5',
         supports: function (source) {
             const isAndroidHLS = isAndroidHls(source);
