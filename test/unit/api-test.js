@@ -308,7 +308,7 @@ describe('Api', function() {
         expect(api.getPlaylist(), '.getPlaylist()').to.be.an('array');
         expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.equal(0);
         expect(api.getPlaylistItem(), '.getPlaylistItem()').to.equal(undefined, 'getPlaylistItem() returns undefined');
-        expect(api.getPlaylistItem(0)).to.eql({}, 'getPlaylistItem(0) returns an empty item');
+        expect(api.getPlaylistItem(0)).to.be.an('object', 'getPlaylistItem(0) returns an object');
         expect(api.getPosition(), '.getPosition()').to.equal(0);
         expect(api.getProvider(), '.getProvider()').to.equal(undefined);
         expect(api.getState(), '.getState()').to.equal('idle');

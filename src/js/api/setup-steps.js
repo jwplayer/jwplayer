@@ -1,10 +1,10 @@
-import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
+import setPlaylist from 'api/set-playlist';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import Promise, { resolved } from 'polyfills/promise';
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
-import { requiresProvider } from 'api/core-loader';
+import { bundleContainsProviders } from 'api/core-loader';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -36,14 +36,20 @@ function filterPlaylist(_model) {
         if (destroyed(_model)) {
             return;
         }
-        // `setPlaylist` performs filtering
+        // Filter the playlist and update the model's 'playlist'
         setPlaylist(_model, _model.get('playlist'), _model.get('feedData'));
 
-        // skip provider loading if included in bundle
-        if (_model.get('controls') && requiresProvider(_model, 'html5')) {
+        // Adaptation of { loadProvidersForPlaylist } from 'api/set-playlist'
+        // Only loads first provider, if not included in the core bundle
+        // And does not call `model.setProvider` once the provider is loaded
+        const playlist = _model.get('playlist');
+        const providersManager = _model.getProviders();
+        const firstProviderNeeded = providersManager.required([playlist[0]]);
+        // Skip provider loading if included in bundle
+        if (bundleContainsProviders.html5 && firstProviderNeeded && firstProviderNeeded[0].name === 'html5') {
             return;
         }
-        return loadProvidersForPlaylist(_model);
+        return providersManager.load(firstProviderNeeded);
     });
 }
 
@@ -77,8 +83,6 @@ const startSetup = function(_model) {
     }
     return Promise.all([
         filterPlaylist(_model),
-        // filterPlaylist -->
-        // -- loadPlaylist,
         loadSkin(_model)
     ]);
 };
