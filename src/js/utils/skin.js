@@ -135,8 +135,10 @@ export function handleColorOverrides(playerId, skin = {}) {
         css('.jw-icon-cast button:focus', `{--connected-color: ${config.iconsActive}}`, playerId);
         css('.jw-icon-cast:hover button', `{--connected-color: ${config.iconsActive}}`, playerId);
 
+
+
         addStyle([
-            '.jw-background-color.jw-controlbar'
+            '.jw-controlbar'
         ], 'background', config.background);
     }
 
