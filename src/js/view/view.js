@@ -97,13 +97,6 @@ function View(_api, _model) {
     let _breakpoint = null;
     let _controls;
 
-    // Fetch the ControlsModule now so we can  call `addControls()` synchronously on `init`
-    if (_model.get('controls')) {
-        ControlsLoader.load().then(Controls => {
-            ControlsModule = Controls;
-        });
-    }
-
     function reasonInteraction() {
         return { reason: 'interaction' };
     }
@@ -321,6 +314,7 @@ function View(_api, _model) {
 
     function changeControls(model, enable) {
         if (enable) {
+            ControlsModule = ControlsLoader.module.controls;
             if (!ControlsModule) {
                 ControlsLoader.load()
                     .then(function (Controls) {
