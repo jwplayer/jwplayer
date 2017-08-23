@@ -128,8 +128,7 @@ describe('API Config', function() {
             const config = new Config({ skin: skinObject });
 
             expect(config.skinUrl).to.equal(skinObject.url);
-            expect(config.skin).to.equal(skinObject.name);
-            expect(_.size(config.skinColors)).to.equal(4);
+            expect(config.skinName).to.equal(skinObject.name);
         });
     });
 });

@@ -89,13 +89,8 @@ const Config = function(options, persisted) {
     config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
     if (_.isObject(config.skin)) {
-        config.skinColors = normalizeSkin(config.skin);
         config.skinUrl = config.skin.url; // get skin name if it exists
-        config.skin = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
-
-        // config.skinColorInactive = config.skin.inactive; // default icon color
-        // config.skinColorActive = config.skin.active; // icon hover, on, slider color
-        // config.skinColorBackground = config.skin.background; // control elements background
+        config.skinName = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
     }
 
     let rateControls = config.playbackRateControls;

@@ -10,7 +10,7 @@ import * as ControlsLoader from 'controller/controls-loader';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
     DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import { handleColorOverrides } from 'utils/skin';
+import { normalizeSkin, handleColorOverrides } from 'utils/skin';
 import {
     addClass,
     hasClass,
@@ -241,7 +241,7 @@ function View(_api, _model) {
                 _resizeMedia();
             }, this);
         });
-        _model.change('skin', onSkinChange, this);
+        _model.change('skinName', onSkinChange, this);
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
@@ -259,7 +259,8 @@ function View(_api, _model) {
             addClass(_playerElement, 'jw-ie');
         }
 
-        handleColorOverrides(_model.get('id'), _model.get('skinColors'));
+        const skinColors = normalizeSkin(_model.get('skin'));
+        handleColorOverrides(_model.get('id'), skinColors);
 
         // adds video tag to video layer
         _model.set('mediaContainer', _videoLayer);
