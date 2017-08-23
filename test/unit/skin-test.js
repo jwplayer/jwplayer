@@ -1,6 +1,6 @@
 import _ from 'test/underscore';
 import sinon from 'sinon';
-import { normalizeSkin, handleColorOverrides } from 'utils/skin';
+import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import * as cssUtils from 'utils/css';
 
 describe('Skin Customization', function() {

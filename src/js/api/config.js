@@ -1,8 +1,6 @@
 import _ from 'utils/underscore';
 import { loadFrom } from 'utils/playerutils';
 import { serialize, getScriptPath } from 'utils/parser';
-import { normalizeSkin } from 'utils/skin';
-
 
 /* global __webpack_public_path__:true*/
 /* eslint camelcase: 0 */

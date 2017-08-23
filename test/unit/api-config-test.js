@@ -1,7 +1,5 @@
 import _ from 'underscore';
-import sinon from 'sinon';
 import Config from 'api/config';
-import { normalizeSkin } from 'utils/skin';
 
 describe('API Config', function() {
 
