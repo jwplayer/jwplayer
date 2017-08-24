@@ -22,7 +22,7 @@ export function isHTTPS() {
  * Determines if a URL is an RTMP link
  */
 export function isRtmp(file, type) {
-    return (file.indexOf('rtmp') === 0 || type === 'rtmp');
+    return (file.indexOf('rtmp:') === 0 || type === 'rtmp');
 }
 
 /**

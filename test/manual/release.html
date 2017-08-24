@@ -9,31 +9,41 @@
 
 <h1>Setup Examples</h1>
 
-<h2>Video Playlist</h2>
+<h2>Video Playlist (with aria-label translated in French)</h2>
 
 <div id="video-container">before set up</div>
 <script type="text/javascript">
     (function(jwplayer) {
         var config = {
-
-            // FIXME: open-source release should not load from CDN
-            // Load skin file from script location
-            base: '.',
-
             // autostart: true,
 
-            width: '50%',
+            width: '100%',
+            aspectratio: '16:9',
+
+            localization: {
+                play: 'Lecture',
+                playback: 'Lancer la lecture',
+                pause: 'Pause',
+                volume: 'Volume',
+                prev: 'Précédent',
+                next: 'Suivant',
+                cast: 'Chromecast',
+                airplay: 'Airplay',
+                fullscreen: 'Plein écran',
+                playlist: 'Liste de lecture',
+                hd: 'Qualité',
+                cc: 'Sous-titres',
+                audioTracks: 'Pistes audio',
+                replay: 'Rejouer',
+                buffer: 'Chargement',
+                more: 'Plus',
+                liveBroadcast: 'Diffusion en direct',
+                loadingAd: 'Chargement de la publicité'
+            },
 
             logo: {
                 hide : true, // fade out w/ controlbar
                 file:'css-skins/icons/smiley.png'
-            },
-
-            skin : 'bekle.xml',
-
-
-            listbar: {
-                position: 'right'
             },
 
             playlist: [
@@ -83,36 +93,41 @@
                     file: 'not a playable option',
                     title: 'Filtered Out of Playlist'
                 }
-            ]
+            ],
+            captions: {
+                preprocessor: function(rawText){ return rawText.replace(/e/g,'E') }
+            }
         };
 
         var jwp = jwplayer('video-container').setup(config);
 
         jwp.addButton(
-                'css-skins/icons/both.png',
-                'TEST',
-                function() {
-                    console.log('first');
-                },
-                'first'
+            'css-skins/icons/both.png',
+            'TEST',
+            function() {
+                console.log('first');
+            },
+            'first'
         );
 
         jwp.addButton(
-                'css-skins/icons/both.png',
-                '',
-                function() {
-                    console.log('first');
-                },
-                'first'
+            'css-skins/icons/both.png',
+            '',
+            function() {
+                console.log('first');
+            },
+            'first',
+            'custom-class-1'
         );
 
         jwp.addButton(
-                'css-skins/icons/both.png',
-                'Click to delete me!',
-                function() {
-                    jwp.removeButton('second');
-                },
-                'second'
+            'css-skins/icons/both.png',
+            'Click to delete me!',
+            function() {
+                jwp.removeButton('second');
+            },
+            'second',
+            'custom-class-2'
         );
 
     })(window.jwplayer);
@@ -121,30 +136,7 @@
 <div id="hd-container">before set up</div>
 <script type="text/javascript">
     var jwp = jwplayer('hd-container').setup({
-
-        // FIXME: open-source release should not load from CDN, this prevents that
-        // Load Youtube provider and skin from script location
-        base: '.',
-
-        skin : 'roundster',
-
-        width: 1280,
-        height: 720,
-
         playlist: [
-            {
-                image: "http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg",
-                sources: [
-                    {file: '//content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4'},
-                    {file: '//content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm'}
-                ],
-                tracks: [
-                    {file: '//playertest.longtailvideo.com/chapters/bunny-chapters.vtt', kind: 'chapters'},
-                    {file: '//playertest.longtailvideo.com/captions/bunny-en.srt', label: 'English'},
-                    {file: '//playertest.longtailvideo.com/captions/bunny-ned.txt', label: 'Dutch'}
-                ],
-                title: 'Big Buck Bunny'
-            },
             {
                 sources: [
                     {
@@ -223,6 +215,35 @@
     });
 </script>
 
+
+<h2>Thumbnails</h2>
+
+<div id="container">before set up</div>
+<script type="text/javascript">
+    jwplayer("container").setup({
+        playlist: [
+            {
+                sources: [
+                    { file: "http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4" },
+                    { file: "http://content.bitsontherun.com/videos/q1fx20VZ-27m5HpIu.webm" }
+                ],
+                image: "http://content.bitsontherun.com/thumbs/q1fx20VZ-480.jpg",
+                tracks: [
+                    { file: "assets/thumbs.vtt", kind: "thumbnails" },
+                    {file: 'assets/os/chapters/sintel-long-chapters.vtt', kind: 'chapters'}
+                ]
+            },
+            {
+                sources: [
+                    { file: "http://content.bitsontherun.com/videos/bkaovAYt-52qL9xLP.mp4" },
+                    { file: "http://content.bitsontherun.com/videos/bkaovAYt-27m5HpIu.webm" }
+                ],
+                image: "http://content.bitsontherun.com/thumbs/bkaovAYt-480.jpg"
+            }
+        ]
+    });
+</script>
+
 <h2>Audio Single</h2>
 <div id="audio-container"></div>
 <script type="text/javascript">
@@ -233,60 +254,25 @@
     });
 </script>
 
-<h2>FLV Single with repeat:true</h2>
+<h2>Error screens</h2>
 
-<div id="flv-container"></div>
-<script type="text/javascript">
-    jwplayer('flv-container').setup({
-        // autostart: true,
-
-        width: 640,
-        height: 360,
-
-        repeat: true,
-
-        listbar: {
-            position: 'right'
-        },
-
-        skin : {
-            inactive : 'black',
-            background : 'white',
-            active : 'red'
-        },
-
-        file: '//playertest.longtailvideo.com/flv-cuepoints/honda_accord.flv',
-        type: 'flv'
-    });
-</script>
-
-<h2>Youtube Single</h2>
-
-<div id="youtube-container"></div>
-<script type="text/javascript">
-    jwplayer('youtube-container').setup({
-
-        // FIXME: open-source release should not load from CDN, this prevents that
-        // Load Youtube provider from script location
-        base: '.',
-
-        width: 640,
-        height: 360,
-
-        file: '//www.youtube.com/watch?v=YE7VzlLtp-4'
-    });
-</script>
-
-
-<h2>Error screen</h2>
+<h3>Playlist 404</h3>
 
 <div id="error-container"></div>
 <script type="text/javascript">
     jwplayer('error-container').setup({
-
         playlist: 'failure'
-
     });
 </script>
+
+<h3>No playable sources</h3>
+
+<div id="youtube-container"></div>
+<script type="text/javascript">
+    jwplayer('youtube-container').setup({
+        file: '//www.youtube.com/watch?v=YE7VzlLtp-4'
+    });
+</script>
+
 </body>
 </html>
