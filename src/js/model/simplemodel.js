@@ -31,15 +31,10 @@ const SimpleModel = {
         return cloned;
     },
     change(name, callback, context) {
-        name.split(' ').forEach((handlerName) => {
-            // Register a change handler and immediately invoke the callback with the current value
-            const eventName = 'change:' + handlerName;
-            const currentVal = this.get(handlerName);
-
-            this.on(eventName, callback, context);
-            callback.call(context, this, currentVal, currentVal);
-        });
-
+        // Register a change handler and immediately invoke the callback with the current value
+        this.on('change:' + name, callback, context);
+        const currentVal = this.get(name);
+        callback.call(context, this, currentVal, currentVal);
         return this;
     }
 };
