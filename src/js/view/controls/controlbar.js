@@ -199,6 +199,7 @@ export default class Controlbar {
         const buttonLayout = [
             elements.play,
             elements.rewind,
+            elements.next,
             elements.volumetooltip,
             elements.mute,
             elements.alt,
@@ -207,7 +208,6 @@ export default class Controlbar {
             elements.countdown,
             elements.duration,
             elements.spacer,
-            elements.next,
             elements.cast,
             elements.captionsButton,
             elements.settingsButton,
