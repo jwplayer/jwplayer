@@ -1,5 +1,7 @@
+@import "../../shared-imports/vars";
+
 .jw-flag-audio-player {
-    background-color: transparent;
+    background-color: @black;
 
     &:not(.jw-flag-flash-blocked) .jw-media {
         visibility: hidden;
@@ -9,9 +11,9 @@
         background: none;
     }
 
-    // min 60px object tag prevents IE11 CORS Flash Blocking
+    // min 44px object tag prevents IE11 CORS Flash Blocking
     object {
-        min-height: 60px;
+        min-height: @mobile-touch-target;
     }
 
     .jw-preview, // overrides 'block' from .jw-state-idle
@@ -22,17 +24,45 @@
     }
 
     .jw-controlbar {
-        position: relative; // prevents children from exploding out of this container when set too small
+        // prevents children from exploding out of this container when set too small
+        position: relative;
+
+        .jw-button-container {
+            //padding-right: 22px; // Duration does not have the proper amount of right-padding
+            padding-left: 0;
+        }
+
         .jw-icon-tooltip,
-        .jw-icon-settings,
-        .jw-icon-inline:not(.jw-icon-volume):not(.jw-icon-playback):not(.jw-icon-fullscreen):not(.jw-icon-next) {
+        .jw-icon-inline {
             display: none;
+        }
+
+        .jw-icon-volume:not(.jw-icon-tooltip),
+        .jw-icon-playback,
+        .jw-icon-next,
+        .jw-icon-rewind,
+        .jw-text-elapsed,
+        .jw-text-duration {
+            display: flex;
+            flex: 0 0 auto;
+        }
+
+        .jw-slider-time {
+            display: flex;
+            flex: 0 1 auto;
+            align-items: center;
         }
     }
 
     &.jw-flag-small-player {
         .jw-text-elapsed,
         .jw-text-duration {
+            display: none;
+        }
+    }
+
+    &.jw-flag-ads {
+        .jw-slider-time {
             display: none;
         }
     }

@@ -551,7 +551,13 @@ function View(_api, _model) {
             _model.set('aspectratio', null);
         }
         if (!_model.get('aspectratio')) {
-            playerStyle.height = playerHeight;
+            // If the height is a pixel value (number) greater than 0, snap it to the minimum supported height
+            // Allow zero to mean "hide the player"
+            let height = playerHeight;
+            if (_.isNumber(height) && height !== 0) {
+                height = Math.max(height, CONTROLBAR_ONLY_HEIGHT);
+            }
+            playerStyle.height = height;
         }
 
         if (widthSet && heightSet) {
