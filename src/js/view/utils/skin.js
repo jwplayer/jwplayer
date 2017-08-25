@@ -197,8 +197,14 @@ export function handleColorOverrides(playerId, skin = {}) {
 
         addStyle([
             '.jw-skip',
+            '.jw-tooltip .jw-text',
             '.jw-time-tip .jw-text'
-        ], 'background', config.background);
+        ], 'background-color', config.background);
+
+        addStyle([
+            '.jw-time-tip',
+            '.jw-tooltip'
+        ], 'color', config.background);
 
         addStyle([
             '.jw-skip',
@@ -207,7 +213,8 @@ export function handleColorOverrides(playerId, skin = {}) {
         addStyle([
             '.jw-skip .jw-text',
             '.jw-skip .jw-icon',
-            '.jw-time-tip .jw-text'
+            '.jw-time-tip .jw-text',
+            '.jw-tooltip .jw-text'
         ], 'color', config.text);
     }
 

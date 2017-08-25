@@ -25,6 +25,7 @@ import ariaLabel from 'utils/aria';
 import TimeSlider from 'view/controls/components/timeslider';
 import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
+import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import { prependChild } from 'utils/dom';
 
 function text(name, role) {
@@ -108,7 +109,7 @@ export default class Controlbar {
         this._api = _api;
         this._model = _model;
         this._isMobile = OS.mobile;
-        this._localization = _model.get('localization');
+        const localization = _model.get('localization');
 
         this.nextUpToolTip = null;
 
@@ -116,10 +117,10 @@ export default class Controlbar {
         let volumeTooltip;
         let muteButton;
 
-        const play = this._localization.play;
-        const next = this._localization.next;
-        const vol = this._localization.volume;
-        const rewind = this._localization.rewind;
+        const play = localization.play;
+        const next = localization.next;
+        const vol = localization.volume;
+        const rewind = localization.rewind;
 
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
@@ -139,32 +140,13 @@ export default class Controlbar {
 
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'quality', true);
-        }, this._localization.settings, [SETTINGS_ICON]);
+        }, localization.settings, [SETTINGS_ICON]);
         settingsButton.element().setAttribute('aria-haspopup', 'true');
 
         const captionsButton = button('jw-icon-cc jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'captions', false);
-        }, this._localization.cc, [CAPTIONS_OFF_ICON, CAPTIONS_ON_ICON]);
+        }, localization.cc, [CAPTIONS_OFF_ICON, CAPTIONS_ON_ICON]);
         captionsButton.element().setAttribute('aria-haspopup', 'true');
-
-        if (_model.get('nextUpDisplay')) {
-            new UI(nextButton.element(), { useHover: true, directSelect: true })
-                .on('over', function () {
-                    const nextUpToolTip = this.nextUpToolTip;
-                    if (nextUpToolTip) {
-                        nextUpToolTip.toggle(true, 'hover');
-                    }
-                }, this)
-                .on('out', function () {
-                    const nextUpToolTip = this.nextUpToolTip;
-                    if (nextUpToolTip) {
-                        if (nextUpToolTip.nextUpSticky) {
-                            return;
-                        }
-                        nextUpToolTip.toggle(false);
-                    }
-                }, this);
-        }
 
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
@@ -176,7 +158,7 @@ export default class Controlbar {
             }, rewind, [REWIND_ICON]),
             live: button('jw-icon-live', () => {
                 this.goToLiveEdge();
-            }, this._localization.liveBroadcast, [LIVE_ICON, DVR_ICON]),
+            }, localization.liveBroadcast, [LIVE_ICON, DVR_ICON]),
             next: nextButton,
             elapsed: textIcon('jw-text-elapsed', 'timer'),
             countdown: textIcon('jw-text-countdown', 'timer'),
@@ -186,15 +168,31 @@ export default class Controlbar {
             volumetooltip: volumeTooltip,
             cast: createCastButton(() => {
                 _api.castToggle();
-            }, this._localization),
+            }, localization),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
-            }, this._localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
+            }, localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
             captionsButton
         };
+
+        // Add text tooltips
+        const captionsTip = SimpleTooltip(captionsButton.element(), 'captions', localization.cc);
+        const onCaptionsChanged = (model) => {
+            const currentCaptions = model.get('captionsList')[model.get('captionsIndex')];
+            let newText = localization.cc;
+            if (currentCaptions && currentCaptions.label !== 'Off') {
+                newText = currentCaptions.label;
+            }
+            captionsTip.setText(newText);
+        };
+
+        const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp);
+        SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
+        SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
+        SimpleTooltip(elements.cast.element(), 'chromecast', localization.cast);
 
         // Filter out undefined elements
         const buttonLayout = [
@@ -251,7 +249,6 @@ export default class Controlbar {
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', this.onFullscreen, this);
         _model.change('streamType', this.onStreamTypeChange, this);
-        _model.change('nextUp', this.onNextUp, this);
         _model.change('cues', this.addCues, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
@@ -259,6 +256,17 @@ export default class Controlbar {
             // Check for change of position to counter race condition where state is updated before the current position
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
+        _model.on('change:captionsIndex', onCaptionsChanged, this);
+        _model.on('change:captionsList', onCaptionsChanged, this);
+        _model.change('nextUp', (model, nextUp) => {
+            if (nextUp) {
+                elements.next.toggle(true);
+                nextUpTip.setText(`NEXT: ${nextUp.title}`);
+            } else {
+                elements.next.toggle(false);
+                nextUpTip.setText(localization.nextUp);
+            }
+        });
         _model.on('change:audioMode', this.onAudioMode, this);
 
         // Event listeners
@@ -439,10 +447,6 @@ export default class Controlbar {
         this.onDuration(model, duration);
     }
 
-    onNextUp(model, nextUp) {
-        this.elements.next.toggle(!!nextUp);
-    }
-
     addLogo(logo) {
         const buttonContainer = this.elements.buttonContainer;
 
@@ -476,13 +480,18 @@ export default class Controlbar {
         this.removeButtons(buttonContainer, oldButtons);
 
         for (let i = newButtons.length - 1; i >= 0; i--) {
+            let buttonProps = newButtons[i];
             const newButton = new CustomButton(
-                newButtons[i].img,
-                newButtons[i].tooltip,
-                newButtons[i].callback,
-                newButtons[i].id,
-                newButtons[i].btnClass
+                buttonProps.img,
+                buttonProps.tooltip,
+                buttonProps.callback,
+                buttonProps.id,
+                buttonProps.btnClass
             );
+
+            if (buttonProps.tooltip) {
+                SimpleTooltip(newButton.element(), buttonProps.id, buttonProps.tooltip);
+            }
 
             let firstButton = buttonContainer.querySelector('.jw-spacer').nextSibling;
             if (firstButton && firstButton.getAttribute('button') === 'logo') {

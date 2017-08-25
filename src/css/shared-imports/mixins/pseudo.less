@@ -2,8 +2,8 @@
  * Set up a pseudo-element.
  *
  */
-.pseudo(@display: block) {
-    content: "";
+.pseudo(@content: ""; @display: block;) {
+    content: @content;
     display: @display;
 }
 

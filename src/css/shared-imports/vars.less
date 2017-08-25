@@ -25,26 +25,26 @@
 @white: #fff;
 
 @active-color: @white;
-@inactive-color: fade(@white, 60%);
+@inactive-color: fade(@white, 80%);
 @background-color: rgba(33, 33, 33, 0.8);
 @accent-color: rgba(11, 126, 244, 1);
 @option-inactive-color: @inactive-color;
 @option-active-color: @active-color;
 @option-active-bg-color: fade(@white, 10%);
 
-@rail-color: fade(@white, 20%);
+@rail-color: fade(@white, 30%);
 @buffer-color: fade(@white, 30%);
-@progress-color: @white;
+@progress-color: darken(@white, 5%);
 
-@hover-color: @accent-color;
+@hover-color: @active-color;
 @controlbar-background: fade(@black, 40%);
 
 @toggle-inactive: @inactive-color;
 @toggle-active: @accent-color;
 
 // Display icon is the big play button shown before playback
-@display-icon-color: @white;
-@display-icon-hover-color: @accent-color;
+@display-icon-color: @inactive-color;
+@display-icon-hover-color: @active-color;
 @display-icon-container-size: 3.75em;
 
 // Fonts
@@ -87,9 +87,11 @@
 @volume-border-radius: 0;
 
 // Text tooltip
+@tooltip-arrow-size: 6px;
 @tooltip-background-color: @white;
 @tooltip-color: @black;
-@tooltip-padding: (@ui-padding / 2) (@ui-padding * 0.75);
+@tooltip-font-size: 10px;
+@tooltip-popup-delay: 500ms;
 
 // Next up display
 @nextup-border-radius: 0;
@@ -102,3 +104,8 @@
 @nextup-close-button-color-active: @active-color;
 @nextup-close-button-color-hover: @hover-color;
 @fixed-time-slider-progress-color: @progress-color;
+
+// Settings Menu
+@menu-background-color: lighten(@black, 20%);
+@menu-color: fade(@white, 90%);
+@menu-active-color: @white;

@@ -50,24 +50,20 @@ display icons
 .jw-display-icon-container {
     display: inline-block;
 
-    .jw-icon,
-    .jw-svg-icon {
+    .jw-icon {
+        .square(75px);
         cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
-        // Default to .jw-breakpoint-2 to match pre 7.9 styles
-        width: 75px;
-        height: 75px;
-        line-height: 75px;
-
-        &:before {
-            width: (@mobile-touch-target * 0.75);
-            height: (@mobile-touch-target * 0.75);
+        .jw-svg-icon {
+            .square((@mobile-touch-target * 0.75));
+            padding: 0;
             position: relative;
         }
-    }
 
-    .jw-icon {
-        &.jw-icon-rewind:before {
+        .jw-svg-icon-rewind {
             padding: 0.2em 0.05em;
         }
     }

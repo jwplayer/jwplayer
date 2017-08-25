@@ -11,8 +11,12 @@
         display: none;
     }
 
-    .jw-controls::after {
-        bottom: (@mobile-touch-target + @rail-height);
+    .jw-controls {
+        z-index: auto;
+
+        &::after {
+            bottom: (@mobile-touch-target + @rail-height);
+        }
     }
 
     /* captions styles code specific to native text track rendering */
@@ -53,8 +57,6 @@
             }
 
             .jw-progress {
-                background-color: #0b7ef4;
-                height: 8px;
                 transform: none;
                 top: auto;
             }
@@ -63,6 +65,10 @@
         .jw-icon-tooltip:not(.jw-icon-volume),
         .jw-icon-inline:not(.jw-icon-playback):not(.jw-icon-fullscreen):not(.jw-icon-volume) {
             display: none;
+        }
+
+        .jw-icon[aria-label]::after {
+            content: none;
         }
 
         .jw-text-alt {
