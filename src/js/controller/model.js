@@ -3,9 +3,10 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import Providers from 'providers/providers';
 import initQoe from 'controller/qoe';
-import { STATE_IDLE, STATE_COMPLETE, STATE_BUFFERING, STATE_PAUSED, STATE_PLAYING, MEDIA_TYPE, MEDIA_BUFFER,
-    MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED, PLAYER_STATE,
-    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, PROVIDER_CHANGED, MEDIA_META } from 'events/events';
+import { PLAYER_STATE, STATE_IDLE, STATE_COMPLETE, STATE_BUFFERING, STATE_PAUSED, STATE_PLAYING,
+    MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
+    MEDIA_PLAY_ATTEMPT, MEDIA_BUFFER, MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
+    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META } from 'events/events';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
 import Events from 'utils/backbone.events';
@@ -421,12 +422,18 @@ const Model = function() {
     };
 
     // The model is also the mediaController for now
-    this.loadVideo = function(item) {
+    this.loadVideo = function(item, playReason) {
         if (!item) {
             item = this.get('playlist')[this.get('item')];
         }
+        if (!playReason) {
+            playReason = this.get('playReason');
+        }
         this.set('position', item.starttime || 0);
         this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
+        this.mediaModel.set('playAttempt', true);
+
+        this.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
 
         if (_provider) {
             _provider.load(item);
@@ -444,6 +451,7 @@ const Model = function() {
     };
 
     this.stopVideo = function() {
+        this.mediaModel.set('playAttempt', false);
         if (_provider) {
             _provider.stop();
         }

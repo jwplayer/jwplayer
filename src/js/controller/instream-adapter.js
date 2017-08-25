@@ -317,7 +317,6 @@ var InstreamAdapter = function(_controller, _model, _view) {
                 var item = Object.assign({}, _olditem);
                 item.starttime = _oldpos;
                 _model.loadVideo(item);
-                _model.mediaModel.set('playAttempt', true);
             } else if (_oldpos === -1) {
                 _model.stopVideo();
             }

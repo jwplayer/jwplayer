@@ -5,22 +5,22 @@ import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
-import { OS } from 'environment/environment';
-import { streamType } from 'providers/utils/stream-type';
-import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
-    STATE_STALLED, MEDIA_PLAY_ATTEMPT, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
-    MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
-    CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 import InstreamAdapter from 'controller/instream-adapter';
-import { resolved } from 'polyfills/promise';
-import cancelable from 'utils/cancelable';
-import _ from 'utils/underscore';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
 import View from 'view/view';
-import Events from 'utils/backbone.events';
 import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
+import Events from 'utils/backbone.events';
+import { OS } from 'environment/environment';
+import { streamType } from 'providers/utils/stream-type';
+import { resolved } from 'polyfills/promise';
+import cancelable from 'utils/cancelable';
+import _ from 'utils/underscore';
+import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
+    STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
+    MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
+    CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -383,10 +383,6 @@ Object.assign(Controller.prototype, {
                 _setItem(0);
             }
 
-            if (_isIdle()) {
-                _model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
-            }
-
             if (!_preplay) {
                 _preplay = true;
                 _this.triggerAfterReady(MEDIA_BEFOREPLAY, { playReason: playReason });
@@ -399,13 +395,12 @@ Object.assign(Controller.prototype, {
             }
 
             if (_isIdle()) {
-                _model.loadVideo().catch(error => {
+                _model.loadVideo(null, playReason).catch(error => {
                     _this.triggerError({
                         message: `Could not play video: ${error.message}`
                     });
                     _actionOnAttach = null;
                 });
-                _model.mediaModel.set('playAttempt', true);
 
             } else if (_model.get('state') === STATE_PAUSED) {
                 _model.playVideo().catch(error => {
@@ -426,7 +421,6 @@ Object.assign(Controller.prototype, {
 
         function _stop(internal) {
             checkAutoStartCancelable.cancel();
-            _model.mediaModel.set('playAttempt', false);
 
             const fromApi = !internal;
 
