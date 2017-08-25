@@ -1,44 +1,15 @@
 
-const performance = window.performance;
+const max = Math.max;
+const performance = window.performance || {};
+const navigationStart = max((performance.timing || {}).navigationStart || new Date().getTime(), 1503687428055);
 
-const supportsPerformance = !!(performance && performance.now);
+if (!('now' in performance)) {
+    performance.now = () => new Date().getTime() - navigationStart;
+}
 
-const MAX_INTERVAL = 10000;
+const now = () => {
+    const timeSinceNavigationStart = performance.now();
+    return max(timeSinceNavigationStart, 0);
+}
 
-const getTime = function() {
-    if (supportsPerformance) {
-        return performance.now();
-    }
-    return new Date().getTime();
-};
-
-const Clock = function() {
-    const started = getTime();
-    let updated = started;
-
-    const updateClock = function() {
-        let delta = getTime() - updated;
-        if (delta > MAX_INTERVAL) {
-            delta = MAX_INTERVAL;
-        } else if (delta < 0) {
-            delta = 0;
-        }
-        updated += delta;
-    };
-    setInterval(updateClock, 1000);
-
-    Object.defineProperty(this, 'currentTime', {
-        get: function() {
-            updateClock();
-            return updated - started;
-        }
-    });
-};
-
-Clock.prototype.now = function() {
-    return this.currentTime;
-};
-
-const clock = new Clock();
-
-export default clock;
+export const time = () => now() + navigationStart;

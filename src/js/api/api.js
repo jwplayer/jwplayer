@@ -25,9 +25,7 @@ function coreFactory(api, element) {
         api._qoe.tick('ready');
         event.setupTime = api._qoe.between('setup', 'ready');
     });
-    core.on('all', (type, event) => {
-        api.trigger(type, event);
-    });
+    core.on('all', api.trigger, api);
 
     return core;
 }
