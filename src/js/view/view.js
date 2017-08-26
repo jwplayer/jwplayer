@@ -241,7 +241,7 @@ function View(_api, _model) {
                 _resizeMedia();
             }, this);
         });
-        _model.change('skinName', onSkinChange, this);
+        _model.change('skin', onSkinChange, this);
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
@@ -415,8 +415,8 @@ function View(_api, _model) {
         return clickHandler;
     }
 
-    function onSkinChange(model, newSkin) {
-        replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-' + newSkin) : '');
+    function onSkinChange(model, skin = {}) {
+        replaceClass(_playerElement, /jw-skin-\S+/, skin.name ? ('jw-skin-' + skin.name) : '');
     }
 
     function onStretchChange(model, newVal) {

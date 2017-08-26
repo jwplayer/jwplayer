@@ -86,11 +86,6 @@ const Config = function(options, persisted) {
 
     config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
 
-    if (_.isObject(config.skin)) {
-        config.skinUrl = config.skin.url; // get skin name if it exists
-        config.skinName = _.isString(config.skin.name) ? config.skin.name : Defaults.skin; // get skin name if it exists
-    }
-
     let rateControls = config.playbackRateControls;
 
     if (rateControls) {

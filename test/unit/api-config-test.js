@@ -112,21 +112,4 @@ describe('API Config', function() {
             expect(apiConfig.base).to.equal(CUSTOM_BASE);
         });
     });
-
-    describe('skin', function() {
-
-        it('should flatten skin object', function() {
-            const skinObject = {
-                name: 'foo',
-                url: 'skin/url',
-                inactive: '#888888',
-                active: '#FFFFFF',
-                background: '#000000'
-            };
-            const config = new Config({ skin: skinObject });
-
-            expect(config.skinUrl).to.equal(skinObject.url);
-            expect(config.skinName).to.equal(skinObject.name);
-        });
-    });
 });

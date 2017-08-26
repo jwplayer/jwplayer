@@ -64,7 +64,7 @@ function isSkinLoaded(skinPath) {
 }
 
 function loadSkin(_model) {
-    const skinUrl = _model.get('skinUrl');
+    const skinUrl = _model.get('skin') ? _model.get('skin').url : undefined;
     if (typeof skinUrl === 'string' && !isSkinLoaded(skinUrl)) {
         const isStylesheet = true;
         const loader = new ScriptLoader(skinUrl, isStylesheet);
