@@ -9,7 +9,7 @@ if [ $lint -ne 0 ]; then
   exit 1
 fi
 
-karma start --browsers=PhantomJS --reporters=mocha
+npm run karma
 karma=$?
 if [ $karma -ne 0 ]; then
     echo "Karma Failed. Please fix the failing unit tests and push again. \n\n\n\n"
