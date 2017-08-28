@@ -75,7 +75,7 @@
     "lint:tests": "eslint './test/*.js'",
     "preversion": "grunt && grunt clean:docs && npm run docs && git add docs",
     "test": "karma start",
-    "karma": "karma start --browsers=PhantomJS --reporters=mocha"
+    "karma:hook": "karma start --browsers=PhantomJS --reporters=mocha"
   },
   "engines": {
     "node": ">=4.3.1"

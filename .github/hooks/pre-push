@@ -9,7 +9,7 @@ if [ $lint -ne 0 ]; then
   exit 1
 fi
 
-npm run karma
+npm run karma:hook
 karma=$?
 if [ $karma -ne 0 ]; then
     echo "Karma Failed. Please fix the failing unit tests and push again."
