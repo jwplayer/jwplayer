@@ -56,7 +56,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             if (submenu.isDefault) {
                 prependChild(topbarElement, submenu.categoryButtonElement);
             } else {
-                topbarElement.insertBefore(submenu.categoryButtonElement, closeButton.element());
+                // sharing should always be the last submenu
+                const sharingButton = topbarElement.getElementsByClassName('jw-submenu-sharing')[0];
+                topbarElement.insertBefore(
+                    submenu.categoryButtonElement,
+                    sharingButton ? sharingButton : closeButton.element()
+                );
             }
 
             settingsMenuElement.appendChild(submenu.element());

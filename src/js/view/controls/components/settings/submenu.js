@@ -8,6 +8,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
     const categoryButtonElement = categoryButton.element();
 
     categoryButtonElement.setAttribute('name', name);
+    categoryButtonElement.className += ' jw-submenu-' + name;
     categoryButton.show();
 
     const instance = {
