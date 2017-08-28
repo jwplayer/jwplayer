@@ -1,9 +1,6 @@
 import { trim } from 'utils/strings';
 import _ from 'utils/underscore';
 
-const DOMParser = window.DOMParser;
-let domParser = new DOMParser();
-
 // hasClass uses code from jQuery
 // jQuery v1.11.2 | (c) 2005, 2014 jQuery Foundation, Inc. | Released under the MIT license | jquery.org/license
 export function hasClass(element, searchClass) {
@@ -14,11 +11,7 @@ export function hasClass(element, searchClass) {
 
 // Given a string, convert to element and return
 export function createElement(html) {
-    const doc = domParser.parseFromString(html, 'text/html');
-    if (doc) {
-        return doc.body.firstChild;
-    }
-    const newElement = document.createElement('div');
+    var newElement = document.createElement('div');
     newElement.innerHTML = html;
     return newElement.firstChild;
 }
