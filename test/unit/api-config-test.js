@@ -1,7 +1,5 @@
 import _ from 'underscore';
-import sinon from 'sinon';
 import Config from 'api/config';
-import { normalizeSkin } from 'utils/skin';
 
 describe('API Config', function() {
 
@@ -112,24 +110,6 @@ describe('API Config', function() {
 
             apiConfig = new Config({ base: CUSTOM_BASE });
             expect(apiConfig.base).to.equal(CUSTOM_BASE);
-        });
-    });
-
-    describe('skin', function() {
-
-        it('should flatten skin object', function() {
-            const skinObject = {
-                name: 'foo',
-                url: 'skin/url',
-                inactive: '#888888',
-                active: '#FFFFFF',
-                background: '#000000'
-            };
-            const config = new Config({ skin: skinObject });
-
-            expect(config.skinUrl).to.equal(skinObject.url);
-            expect(config.skin).to.equal(skinObject.name);
-            expect(_.size(config.skinColors)).to.equal(4);
         });
     });
 });

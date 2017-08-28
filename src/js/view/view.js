@@ -5,12 +5,12 @@ import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
+import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
 import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
     DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import { handleColorOverrides } from 'utils/skin';
 import {
     addClass,
     hasClass,
@@ -241,7 +241,6 @@ function View(_api, _model) {
                 _resizeMedia();
             }, this);
         });
-        _model.change('skin', onSkinChange, this);
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
@@ -259,7 +258,14 @@ function View(_api, _model) {
             addClass(_playerElement, 'jw-ie');
         }
 
-        handleColorOverrides(_model.get('id'), _model.get('skinColors'));
+        const skin = _model.get('skin') || {};
+
+        if (skin.name) {
+            replaceClass(_playerElement, /jw-skin-\S+/, 'jw-skin-' + skin.name);
+        }
+
+        const skinColors = normalizeSkin(skin);
+        handleColorOverrides(_model.get('id'), skinColors);
 
         // adds video tag to video layer
         _model.set('mediaContainer', _videoLayer);
@@ -412,10 +418,6 @@ function View(_api, _model) {
         });
 
         return clickHandler;
-    }
-
-    function onSkinChange(model, newSkin) {
-        replaceClass(_playerElement, /jw-skin-\S+/, newSkin ? ('jw-skin-' + newSkin) : '');
     }
 
     function onStretchChange(model, newVal) {
