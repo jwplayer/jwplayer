@@ -241,7 +241,6 @@ function View(_api, _model) {
                 _resizeMedia();
             }, this);
         });
-        _model.change('skin', onSkinChange, this);
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
@@ -262,7 +261,7 @@ function View(_api, _model) {
         const skin = _model.get('skin') || {};
 
         if (skin.name) {
-            replaceClass(_playerElement, /jw-skin-\S+/, skin.name ? ('jw-skin-' + skin.name) : '');
+            replaceClass(_playerElement, /jw-skin-\S+/, 'jw-skin-' + skin.name);
         }
 
         const skinColors = normalizeSkin(skin);
@@ -419,10 +418,6 @@ function View(_api, _model) {
         });
 
         return clickHandler;
-    }
-
-    function onSkinChange(model, skin = {}) {
-        replaceClass(_playerElement, /jw-skin-\S+/, skin.name ? ('jw-skin-' + skin.name) : '');
     }
 
     function onStretchChange(model, newVal) {
