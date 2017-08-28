@@ -56,7 +56,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             if (submenu.isDefault) {
                 prependChild(topbarElement, submenu.categoryButtonElement);
             } else {
-                topbarElement.insertBefore(submenu.categoryButtonElement, closeButton.element());
+                // sharing should always be the last submenu
+                const sharingButton = topbarElement.querySelector('.jw-submenu-sharing');
+                topbarElement.insertBefore(
+                    submenu.categoryButtonElement,
+                    sharingButton || closeButton.element()
+                );
             }
 
             settingsMenuElement.appendChild(submenu.element());
@@ -106,19 +111,18 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         get: () => visible
     });
 
-
     return instance;
 }
 
 const addDocumentListeners = (handler) => {
-    document.addEventListener('mousedown', handler);
-    document.addEventListener('pointerdown', handler);
+    document.addEventListener('mouseup', handler);
+    document.addEventListener('pointerup', handler);
     document.addEventListener('touchstart', handler);
 };
 
 const removeDocumentListeners = (handler) => {
-    document.removeEventListener('mousedown', handler);
-    document.removeEventListener('pointerdown', handler);
+    document.removeEventListener('mouseup', handler);
+    document.removeEventListener('pointerup', handler);
     document.removeEventListener('touchstart', handler);
 };
 

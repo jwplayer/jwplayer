@@ -1,13 +1,16 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
+import Events from 'utils/backbone.events';
 import { createElement, emptyElement, toggleClass } from 'utils/dom';
 
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
+
     let active;
     let contentItems = [];
     const submenuElement = createElement(SubmenuTemplate(name));
     const categoryButtonElement = categoryButton.element();
 
     categoryButtonElement.setAttribute('name', name);
+    categoryButtonElement.className += ' jw-submenu-' + name;
     categoryButton.show();
 
     const instance = {
@@ -61,6 +64,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             this.removeContent();
         }
     };
+    Object.assign(instance, Events);
 
     Object.defineProperties(instance,
         {
