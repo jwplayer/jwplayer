@@ -21,7 +21,6 @@ describe('Providers', function() {
             providers[getName(provider)] = index;
             return providers;
         }, {});
-        expect(providerMap.youtube).to.be.below(providerMap.html5);
     });
 
     it('should choose html5 by default', function() {
@@ -74,11 +73,11 @@ describe('Providers', function() {
         });
     });
 
-    it('should choose youtube for youtube sources', function() {
+    it('should not choose youtube provider', function() {
         const youtubeSource = { file: 'http://www.youtube.com/watch?v=YE7VzlLtp-4' };
         const providers = new Providers();
         let provider = providers.choose(Source(youtubeSource));
 
-        expect(getName(provider)).to.equal('youtube');
+        expect(!provider);
     });
 });

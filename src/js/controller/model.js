@@ -165,7 +165,7 @@ const Model = function() {
     }
 
     this.setQualityLevel = function(quality, levels) {
-        if (quality > -1 && levels.length > 1 && _provider.getName().name !== 'youtube') {
+        if (quality > -1 && levels.length > 1) {
             this.mediaModel.set('currentLevel', parseInt(quality));
 
         }

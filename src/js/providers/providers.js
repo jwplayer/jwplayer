@@ -14,13 +14,6 @@ export const Loaders = {
             registerProvider(provider);
             return provider;
         }, chunkLoadErrorHandler, 'provider.html5');
-    },
-    youtube: function() {
-        return require.ensure(['providers/youtube'], function(require) {
-            const provider = require('providers/youtube').default;
-            registerProvider(provider);
-            return provider;
-        }, chunkLoadErrorHandler, 'provider.youtube');
     }
 };
 
@@ -61,7 +54,6 @@ Object.assign(Providers.prototype, {
     choose: function(source) {
         // prevent throw on missing source
         source = (source === Object(source)) ? source : {};
-
         const count = ProvidersSupported.length;
         for (let i = 0; i < count; i++) {
             const provider = ProvidersSupported[i];

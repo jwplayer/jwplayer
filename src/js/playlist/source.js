@@ -54,13 +54,13 @@ const Source = function(config) {
         case 'dash+xml':
             source.type = 'dash';
             break;
-        case 'smil':
-            source.type = 'rtmp';
-            break;
         // Although m4a is a container format, it is most often used for aac files
         // http://en.wikipedia.org/w/index.php?title=MPEG-4_Part_14
         case 'm4a':
             source.type = 'aac';
+            break;
+        case 'smil':
+            source.type = 'rtmp';
             break;
         default:
             break;
