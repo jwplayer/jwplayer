@@ -6,6 +6,8 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
     let contentItems = [];
     const submenuElement = createElement(SubmenuTemplate(name));
     const categoryButtonElement = categoryButton.element();
+
+    categoryButtonElement.setAttribute('name', name);
     categoryButton.show();
 
     const instance = {

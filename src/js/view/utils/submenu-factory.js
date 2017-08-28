@@ -12,7 +12,7 @@ const QUALITIES_SUBMENU = 'quality';
 const PLAYBACK_RATE_SUBMENU = 'playbackRates';
 const DEFAULT_SUBMENU = QUALITIES_SUBMENU;
 
-const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
+export const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
     let submenu = settingsMenu.getSubmenu(name);
     if (submenu) {
         submenu.replaceContent(contentItems);
