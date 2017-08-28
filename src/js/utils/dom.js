@@ -11,7 +11,7 @@ export function hasClass(element, searchClass) {
 
 // Given a string, convert to element and return
 export function createElement(html) {
-    var newElement = document.createElement('div');
+    const newElement = document.createElement('div');
     newElement.innerHTML = html;
     return newElement.firstChild;
 }
