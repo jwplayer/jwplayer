@@ -25,6 +25,7 @@ import ariaLabel from 'utils/aria';
 import TimeSlider from 'view/controls/components/timeslider';
 import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
+import { prependChild } from 'utils/dom';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -258,6 +259,7 @@ export default class Controlbar {
             // Check for change of position to counter race condition where state is updated before the current position
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
+        _model.on('change:audioMode', this.onAudioMode, this);
 
         // Event listeners
         // Volume sliders do not exist on mobile so don't assign listeners to them.
@@ -303,6 +305,10 @@ export default class Controlbar {
         _.each(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);
+
+        if (_model.get('audioMode')) {
+            this.onAudioMode(_model, true);
+        }
     }
 
     onVolume(model, pct) {
@@ -360,6 +366,18 @@ export default class Controlbar {
 
     onFullscreen(model, val) {
         utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
+    }
+
+    onAudioMode(model, val) {
+        const timeSlider = this.elements.time.element();
+        if (val) {
+            this.elements.buttonContainer.insertBefore(
+                timeSlider,
+                this.elements.elapsed
+            );
+        } else {
+            prependChild(this.el, timeSlider);
+        }
     }
 
     checkDvrLiveEdge() {
