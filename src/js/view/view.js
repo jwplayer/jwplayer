@@ -259,7 +259,13 @@ function View(_api, _model) {
             addClass(_playerElement, 'jw-ie');
         }
 
-        const skinColors = normalizeSkin(_model.get('skin'));
+        const skin = _model.get('skin') || {};
+
+        if (skin.name) {
+            replaceClass(_playerElement, /jw-skin-\S+/, skin.name ? ('jw-skin-' + skin.name) : '');
+        }
+
+        const skinColors = normalizeSkin(skin);
         handleColorOverrides(_model.get('id'), skinColors);
 
         // adds video tag to video layer
