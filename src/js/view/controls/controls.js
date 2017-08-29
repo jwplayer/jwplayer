@@ -371,7 +371,7 @@ export default class Controls {
                     settingsMenu,
                     levels,
                     model.getVideo().setCurrentQuality.bind(model.getVideo()),
-                    model.get('currentQuality')
+                    changedModel.get('currentLevel')
                 );
             });
 
