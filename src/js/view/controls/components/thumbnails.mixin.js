@@ -50,7 +50,6 @@ const ThumbnailsMixin = {
     loadThumbnail: function(seconds) {
         var url = this.chooseThumbnail(seconds);
         var style = {
-            display: 'block',
             margin: '0 auto',
             backgroundPosition: '0 0'
         };
