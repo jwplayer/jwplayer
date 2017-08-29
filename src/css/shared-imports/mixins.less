@@ -80,6 +80,7 @@
 /* Mixin for common skin styles with variable colors */
 /* stylelint-disable selector-max-id */
 #namespace() {
+    @import "vars";
     .basic-skin-styles() {
         .jw-background-color {
             background: @controlbar-background;
@@ -96,14 +97,12 @@
 
         .jw-button-color {
             color: @inactive-color;
-            fill: @inactive-color;
         }
 
         &:not(.jw-flag-touch) .jw-button-color:hover,
         .jw-button-color:focus {
             outline: none;
             color: @hover-color;
-            fill: @hover-color;
         }
 
         .jw-toggle {
@@ -170,12 +169,6 @@
 
             &.jw-skippable:hover .jw-skip-icon {
                 color: @active-color;
-            }
-        }
-
-        .jw-time-tip {
-            .jw-text {
-                color: @inactive-color;
             }
         }
 

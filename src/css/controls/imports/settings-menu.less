@@ -9,7 +9,7 @@
     right: 0;
     height: calc(100% - @controlbar-height);
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: @menu-background-color;
     pointer-events: auto;
 
     .jw-settings-open & {
@@ -19,24 +19,26 @@
     .jw-breakpoint-7 &,
     .jw-breakpoint-6 &,
     .jw-breakpoint-5 & {
-        height: 232px;
+        .rect(284px, 232px);
         max-height: 232px;
-        width: 284px;
         max-width: 284px;
         right: 12px;
     }
 
     .jw-breakpoint-4 &,
     .jw-breakpoint-3 & {
-        height: 192px;
+        .rect(284px, 192px);
         max-height: 192px;
-        width: 284px;
         max-width: 284px;
         right: 12px;
     }
 
     .jw-icon.jw-button-color {
         &:extend(.jw-controlbar .jw-icon.jw-button-color all);
+
+        &[aria-checked="true"] .jw-svg-icon {
+            box-shadow: inset 0 -2px 0 -1px currentColor;
+        }
     }
 }
 
@@ -45,8 +47,8 @@
     flex: 0 0 auto;
     align-items: center;
     width: 100%;
-    background-color: rgba(0, 0, 0, 1);
-    padding: 3px 5px;
+    background-color: @controlbar-background;
+    padding: 3px 5px 0;
 
     .jw-settings-close {
         margin-left: auto;
@@ -109,6 +111,12 @@
     }
 
     .jw-icon-settings {
-        color: @toggle-active;
+        .jw-svg-icon-settings {
+            &:extend(.jw-controlbar .jw-icon:hover .jw-svg-icon all);
+        }
+
+        &::after {
+            content: none;
+        }
     }
 }

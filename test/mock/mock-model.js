@@ -73,7 +73,7 @@ Object.assign(MockModel.prototype, SimpleModel, {
                 more: 'More',
                 liveBroadcast: 'Live broadcast',
                 loadingAd: 'Loading ad',
-                rewind: 'Rewind 10s',
+                rewind: 'Rewind 10 Seconds',
                 nextUp: 'Next Up',
                 nextUpClose: 'Next Up Close',
                 related: 'Related'

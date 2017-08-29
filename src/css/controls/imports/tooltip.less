@@ -17,31 +17,36 @@
 }
 
 .jw-time-tip {
-    box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.5);
-    font-family: inherit;
-    text-align: center;
+    .rect(100%, auto);
+    box-shadow: 0 0 10px fade(@black, 40%);
+    color: @tooltip-background-color;
+    display: block;
+    margin: 0 0 @tooltip-arrow-size;
+    pointer-events: none;
+    z-index: 0;
+
+    &::after {
+        &:extend(._pseudo);
+        .topleft(100%, 50%);
+        .square((@tooltip-arrow-size * 2));
+        border-radius: 1px;
+        background-color: currentColor;
+        transform-origin: 75% 50%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        z-index: -1;
+    }
 
     .jw-text {
         background-color: @tooltip-background-color;
-        border-radius: @ui-corner-round;
+        border-radius: 1px;
         color: @tooltip-color;
-        display: block;
+        font-size: @tooltip-font-size;
         height: auto;
-        line-height: 1;
-        padding: @tooltip-padding;
-        position: relative;
-        backface-visibility: hidden;
-        width: 100%;
-        z-index: 0;
-
-        &::after {
-            &:extend(._pseudo);
-            .square(11px);
-            .topleft(100%, 50%);
-            background-color: inherit;
-            transform: translate(-50%, -50%) rotate(45deg);
-            z-index: -1;
-        }
+        line-height: 1.4;
+        padding: @tooltip-arrow-size @tooltip-font-size;
+        display: inline-block;
+        min-width: 100%;
+        vertical-align: middle;
     }
 }
 
@@ -73,38 +78,83 @@
         font-size: 0.8em;
         margin: 0;
 
-        &:before {
+        &::before {
             padding-right: 0.125em;
         }
     }
 }
 
-.jw-tooltip-time {
-    box-shadow: 0 0 10px fade(@black, 50%);
-    height: auto;
-    line-height: normal;
-    padding: 0;
-    top: 0;
-    user-select: none;
-    width: 0;
+.jw-controlbar,
+.jw-settings-menu {
+    .jw-tooltip {
+        &:extend(.jw-time-tip all);
+        .bottomleft(100%, 50%);
+        opacity: 0;
+        transform: translate(-50%, 0);
+        transition: 100ms 0s cubic-bezier(0, -0.25, 0.25, 1);
+        transition-property: opacity, transform, visibility;
+        visibility: hidden;
+        white-space: nowrap;
+        width: auto;
+        z-index: 1;
 
-    .jw-overlay {
-        // Place the overlay above the time slider and aligned with the volume overlay
-        bottom: 0.5em;
-        /* prevents jitter on arrow when moving */
-        transform-style: preserve-3d;
-
-        &:after {
-            content: none;
+        &.jw-open {
+            opacity: 1;
+            transform: translate(-50%, (-@tooltip-font-size));
+            transition-duration: 150ms;
+            transition-delay: @tooltip-popup-delay, 0s, @tooltip-popup-delay;
+            visibility: visible;
         }
     }
 
-    .jw-time-tip {
-        bottom: 8px;
-        border-radius: @ui-corner-round;
+    .jw-icon:focus > .jw-tooltip {
+        &:extend(.jw-controlbar .jw-tooltip.jw-open);
+    }
+}
+
+.jw-tooltip-time {
+    .rect(0, auto);
+    line-height: normal;
+    padding: 0;
+    bottom: @slider-fixed-knob-height;
+    user-select: none;
+
+    .jw-overlay {
+        bottom: 0;
+    }
+}
+
+.jw-tooltip {
+    position: absolute;
+    display: none;
+    bottom: @controlbar-height;
+    flex-wrap: nowrap;
+    flex: 1 1 auto;
+
+    &.jw-open {
+        display: flex;
+    }
+
+    .jw-text {
+        height: 100%;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 246px;
+        overflow: hidden;
+    }
+
+    .jw-flag-audio-player & {
+        display: none;
+    }
+}
+
+.jw-settings-open & {
+    .jw-tooltip-settings {
+        display: none;
     }
 }
 
 .jw-flag-small-player .jw-time-thumb {
     display: none;
 }
+
