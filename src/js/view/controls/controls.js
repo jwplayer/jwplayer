@@ -371,7 +371,7 @@ export default class Controls {
                     settingsMenu,
                     levels,
                     model.getVideo().setCurrentQuality.bind(model.getVideo()),
-                    model.get('currentQuality')
+                    changedModel.get('currentLevel')
                 );
             });
 
@@ -450,7 +450,10 @@ export default class Controls {
         });
 
         model.change('playbackRate', (changedModel, playbackRate) => {
-            activateSubmenuItem('playbackRates', playbackRate);
+            const rates = model.get('playbackRates');
+            if (rates) {
+                activateSubmenuItem('playbackRates', rates.indexOf(playbackRate) || 1);
+            }
         });
     }
 }
