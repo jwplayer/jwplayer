@@ -15,7 +15,7 @@ export function exists(item) {
 
 /** Determines if the current page is HTTPS **/
 export function isHTTPS() {
-    return (window.location.href.indexOf('https') === 0);
+    return (window.location.protocol === 'https:');
 }
 
 /**

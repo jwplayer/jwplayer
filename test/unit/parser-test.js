@@ -55,15 +55,6 @@ describe('parser', function() {
         test(['100%'], '100%', 'percentage values are not changed');
     });
 
-    it.skip('parser.getScriptPath', function() {
-        var path = parser.getScriptPath(null);
-        assert.equal(path, '', 'returns an empty string when no file name is provided');
-
-        var scriptPath = parser.getScriptPath('parser-test.js');
-        assert.isOk(/\S+\:\/\/.+\/$/.it(scriptPath),
-            'returns a directory url ending with a forward slash "' + scriptPath + '"');
-    });
-
     it('parser.parseXML', function() {
         var xml = parser.parseXML('<input>');
         assert.isNotOk(xml);
