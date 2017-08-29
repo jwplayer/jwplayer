@@ -74,7 +74,8 @@
     "lint:styles": "stylelint './src/css/**/*.less'",
     "lint:tests": "eslint './test/*.js'",
     "preversion": "grunt && grunt clean:docs && npm run docs && git add docs",
-    "test": "karma start"
+    "test": "karma start",
+    "karma:hook": "karma start --browsers=PhantomJS --reporters=mocha"
   },
   "engines": {
     "node": ">=4.3.1"
