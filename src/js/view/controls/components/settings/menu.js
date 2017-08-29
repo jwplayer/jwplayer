@@ -57,10 +57,10 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                 prependChild(topbarElement, submenu.categoryButtonElement);
             } else {
                 // sharing should always be the last submenu
-                const sharingButton = topbarElement.getElementsByClassName('jw-submenu-sharing')[0];
+                const sharingButton = topbarElement.querySelector('.jw-submenu-sharing');
                 topbarElement.insertBefore(
                     submenu.categoryButtonElement,
-                    sharingButton ? sharingButton : closeButton.element()
+                    sharingButton || closeButton.element()
                 );
             }
 
