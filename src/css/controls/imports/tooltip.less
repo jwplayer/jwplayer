@@ -18,20 +18,27 @@
 
 .jw-time-tip {
     .rect(100%, auto);
-    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(-45deg, transparent 50%, currentColor 50%);
-    background-position: calc(50% - 3px) 100%, calc(50% + 3px) 100%;
-    background-repeat: no-repeat;
-    background-size: @tooltip-arrow-size @tooltip-arrow-size;
-    border-radius: 0.5px;
+    box-shadow: 0 0 10px fade(@black, 40%);
     color: @tooltip-background-color;
     display: block;
-    filter: drop-shadow(0 0 10px fade(@black, 40%));
-    padding: 0 0 @tooltip-arrow-size;
+    margin: 0 0 @tooltip-arrow-size;
     pointer-events: none;
     z-index: 0;
 
+    &::after {
+        &:extend(._pseudo);
+        .topleft(100%, 50%);
+        .square((@tooltip-arrow-size * 2));
+        border-radius: 1px;
+        background-color: currentColor;
+        transform-origin: 75% 50%;
+        transform: translate(-50%, -50%) rotate(45deg);
+        z-index: -1;
+    }
+
     .jw-text {
         background-color: @tooltip-background-color;
+        border-radius: 1px;
         color: @tooltip-color;
         font-size: @tooltip-font-size;
         height: auto;
@@ -106,12 +113,11 @@
 }
 
 .jw-tooltip-time {
-    height: auto;
+    .rect(0, auto);
     line-height: normal;
     padding: 0;
-    top: 0;
+    bottom: @slider-fixed-knob-height;
     user-select: none;
-    width: 0;
 
     .jw-overlay {
         bottom: 0;

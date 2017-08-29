@@ -19,14 +19,6 @@
     transition-property: opacity, visibility;
     transition-delay: 0s;
 
-    // adjust overlay bottom padding to match height of touch target
-    .jw-overlay {
-        &::after {
-            &:extend(._pseudo);
-            height: @slider-fixed-knob-height;
-        }
-    }
-
     .jw-button-image {
         width: 100%;
         height: 100%;
