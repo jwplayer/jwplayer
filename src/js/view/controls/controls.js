@@ -450,7 +450,8 @@ export default class Controls {
         });
 
         model.change('playbackRate', (changedModel, playbackRate) => {
-            activateSubmenuItem('playbackRates', playbackRate);
+            const rates = model.get('playbackRates');
+            activateSubmenuItem('playbackRates', rates.indexOf(playbackRate) || 1);
         });
     }
 }
