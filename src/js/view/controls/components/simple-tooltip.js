@@ -21,7 +21,7 @@ export function SimpleTooltip(attachToElement, name, text) {
 
     if ('PointerEvent' in window) {
         attachToElement.addEventListener('pointerover', instance.open);
-        attachToElement.addEventListener('pointereout', instance.close);
+        attachToElement.addEventListener('pointerout', instance.close);
     } else {
         attachToElement.addEventListener('mouseover', instance.open);
         attachToElement.addEventListener('mouseout', instance.close);
