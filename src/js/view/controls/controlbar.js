@@ -110,9 +110,6 @@ export default class Controlbar {
         this._model = _model;
         this._isMobile = OS.mobile;
         const localization = _model.get('localization');
-
-        this.nextUpToolTip = null;
-
         const timeSlider = new TimeSlider(_model, _api);
         let volumeTooltip;
         let muteButton;
@@ -259,13 +256,12 @@ export default class Controlbar {
         _model.on('change:captionsIndex', onCaptionsChanged, this);
         _model.on('change:captionsList', onCaptionsChanged, this);
         _model.change('nextUp', (model, nextUp) => {
+            let tipText = localization.nextUp;
             if (nextUp) {
-                elements.next.toggle(true);
-                nextUpTip.setText(`NEXT: ${nextUp.title}`);
-            } else {
-                elements.next.toggle(false);
-                nextUpTip.setText(localization.nextUp);
+                tipText = (`NEXT: ${nextUp.title}`);
             }
+            nextUpTip.setText(tipText);
+            elements.next.toggle(!!nextUp);
         });
         _model.on('change:audioMode', this.onAudioMode, this);
 
