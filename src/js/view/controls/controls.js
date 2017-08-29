@@ -452,7 +452,7 @@ export default class Controls {
         model.change('playbackRate', (changedModel, playbackRate) => {
             const rates = model.get('playbackRates');
             if (rates) {
-                activateSubmenuItem('playbackRates', rates.indexOf(playbackRate) || 1);
+                activateSubmenuItem('playbackRates', rates.indexOf(playbackRate));
             }
         });
     }
