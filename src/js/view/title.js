@@ -27,15 +27,12 @@ Object.assign(Title.prototype, {
     },
 
     update: function(model) {
-        var titleStyle = {
-            paddingLeft: 0,
-            paddingRight: 0
-        };
+        var titleStyle = {};
         var logo = model.get('logo');
         if (logo) {
             // Only use Numeric or pixel ("Npx") margin values
             var margin = 1 * ('' + logo.margin).replace('px', '');
-            var padding = model.get('logoWidth') + (isNaN(margin) ? 0 : margin);
+            var padding = model.get('logoWidth') + (isNaN(margin) ? 0 : margin + 10);
             if (logo.position === 'top-left') {
                 titleStyle.paddingLeft = padding;
             } else if (logo.position === 'top-right') {
