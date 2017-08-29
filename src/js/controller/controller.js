@@ -56,7 +56,7 @@ Object.assign(Controller.prototype, {
         _view.on('all', _triggerAfterReady, _this);
 
         _model.mediaController.on('all', _triggerAfterReady, _this);
-        _model.mediaController.on(MEDIA_COMPLETE, function() {
+        _model.mediaController.on(MEDIA_COMPLETE, () => {
             // Insert a small delay here so that other complete handlers can execute
             resolved.then(_completeHandler);
         });
@@ -653,8 +653,8 @@ Object.assign(Controller.prototype, {
             }
 
             _model.set('fullscreen', state);
-            if (this._instreamAdapter && this._instreamAdapter._adModel) {
-                this._instreamAdapter._adModel.set('fullscreen', state);
+            if (_this._instreamAdapter && _this._instreamAdapter._adModel) {
+                _this._instreamAdapter._adModel.set('fullscreen', state);
             }
         }
 
