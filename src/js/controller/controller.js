@@ -670,8 +670,8 @@ Object.assign(Controller.prototype, {
                         itemsShown: [ nextUp ],
                         feedData: nextUp.feedData,
                     });
+                    _item(nextUp.index);
                 }
-                related.next();
             }
         }
 
