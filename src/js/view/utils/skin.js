@@ -188,13 +188,15 @@ export function handleColorOverrides(playerId, skin = {}) {
             '.jw-nextup-body',
             '.jw-nextup-header',
             '.jw-settings-submenu',
-            '.jw-settings-topbar',
+            '.jw-settings-topbar'
         ], 'background', config.background);
 
-        addStyle([
-            '.jw-settings-submenu',
-            '.jw-nextup-body',
-        ], 'opacity', 0.7);
+        if (config.background) {
+            addStyle([
+                '.jw-settings-submenu',
+                '.jw-nextup-body',
+            ], 'opacity', 0.7);
+        }
     }
 
     function styleTooltips(config) {
