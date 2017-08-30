@@ -26,7 +26,7 @@ const InstreamHtml5 = function(_controller, _model) {
             fullscreen: _model.get('fullscreen'),
             mute: _model.get('mute') || _model.get('autostartMuted'),
             instreamMode: true,
-            edition: 'ads',
+            edition: _model.get('edition'),
         });
         _adModel.set('mediaContainer', _model.get('mediaContainer'));
         _adModel.on('fullscreenchange', _nativeFullscreenHandler);
