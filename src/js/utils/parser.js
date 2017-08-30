@@ -43,20 +43,6 @@ export function isAbsolutePath(path) {
     return /^(?:(?:https?|file):)?\/\//.test(path);
 }
 
-export const getScriptPath = _.memoize(function(scriptName) {
-    const scripts = document.getElementsByTagName('script');
-    for (let i = 0; i < scripts.length; i++) {
-        const src = scripts[i].src;
-        if (src) {
-            const index = src.indexOf('/' + scriptName);
-            if (index >= 0) {
-                return src.substr(0, index + 1);
-            }
-        }
-    }
-    return '';
-});
-
 function containsParserErrors(childNodes) {
     return _.some(childNodes, function(node) {
         return node.nodeName === 'parsererror';

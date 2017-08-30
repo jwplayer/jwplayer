@@ -1,4 +1,4 @@
-import { getScriptPath } from 'utils/parser';
+import { getScriptPath } from 'utils/playerutils';
 import ScriptLoader, {
     SCRIPT_LOAD_STATUS_NEW
 } from 'utils/scriptloader';
@@ -39,6 +39,6 @@ describe('ScriptLoader', function() {
 
         // loaded script should be added to head as first child
         const tag = document.getElementsByTagName('head')[0].firstChild;
-        assert.isOk(tag.src.indexOf('sinon.js') >= 0, 'script is laded properly');
+        assert.isOk(tag.src.indexOf('sinon.js') >= 0, 'script is loaded properly');
     });
 });

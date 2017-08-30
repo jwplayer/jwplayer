@@ -1,23 +1,29 @@
 import { version } from 'version';
-import _ from 'utils/underscore';
-import { isHTTPS } from 'utils/validator';
-import { getScriptPath } from 'utils/parser';
 
-const REPO_URL = __REPO__;
+export const getScriptPath = function(scriptName) {
+    const scripts = document.getElementsByTagName('script');
+    for (let i = 0; i < scripts.length; i++) {
+        const src = scripts[i].src;
+        if (src) {
+            const index = src.lastIndexOf('/' + scriptName);
+            if (index >= 0) {
+                return src.substr(0, index + 1);
+            }
+        }
+    }
+    return '';
+};
 
 /** Gets the repository location **/
-export const repo = _.memoize(function () {
+export const repo = function () {
     if (__SELF_HOSTED__) {
         return getScriptPath('jwplayer.js');
     }
 
-    const semver = version.split('+')[0];
-    const playerRepo = REPO_URL + semver + '/';
-    if (isHTTPS()) {
-        return playerRepo.replace(/^http:/, 'https:');
-    }
-    return playerRepo;
-});
+    const playerRepo = __REPO__;
+    const protocol = (playerRepo && window.location.protocol === 'file:') ? 'https:' : '';
+    return `${protocol}${playerRepo}`;
+};
 
 // Is the player at least a minimum required version?
 export const versionCheck = function (target) {

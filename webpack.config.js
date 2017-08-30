@@ -28,7 +28,7 @@ function getBuildVersion(build) {
 
 const compileConstants = {
     __SELF_HOSTED__: true,
-    __REPO__: '\'\'',
+    __REPO__: `''`,
     __DEBUG__: false,
     __BUILD_VERSION__: `'${getBuildVersion(packageInfo)}'`,
     __FLASH_VERSION__: flashVersion
