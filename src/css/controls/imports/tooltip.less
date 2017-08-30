@@ -12,7 +12,7 @@
 }
 
 .jw-volume-tip {
-    padding: @default-em-size 0;
+    padding: @slider-fixed-knob-height 0 (@slider-fixed-knob-height * 2);
 }
 
 .jw-time-tip {
@@ -28,7 +28,7 @@
     &::after {
         &:extend(._pseudo);
         .topleft(100%, 50%);
-        .square((@tooltip-arrow-size * 2));
+        .square(@tooltip-arrow-size);
         border-radius: 1px;
         background-color: currentColor;
         transform-origin: 75% 50%;
@@ -43,7 +43,7 @@
         font-size: @tooltip-font-size;
         height: auto;
         line-height: 1;
-        padding: @tooltip-arrow-size @tooltip-font-size;
+        padding: (@tooltip-arrow-size / 2) @tooltip-font-size;
         display: inline-block;
         min-width: 100%;
         vertical-align: middle;
@@ -120,7 +120,7 @@
     .rect(0, auto);
     line-height: normal;
     padding: 0;
-    bottom: @slider-fixed-knob-height;
+    bottom: 100%;
     user-select: none;
 
     .jw-overlay {
