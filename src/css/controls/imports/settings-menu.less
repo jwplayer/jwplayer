@@ -34,10 +34,19 @@
     }
 
     .jw-icon.jw-button-color {
-        &:extend(.jw-controlbar .jw-icon.jw-button-color all);
+        &::after {
+            &:extend(._pseudo, ._bottomleft, ._right);
+            .rect(24px, 100%);
+            box-shadow: inset 0 -3px 0 -1px currentColor;
+            margin: auto;
+            opacity: 0;
+            transition: opacity 150ms cubic-bezier(0, -0.25, 0.25, 1);
+        }
 
-        &[aria-checked="true"] .jw-svg-icon {
-            box-shadow: inset 0 -2px 0 -1px currentColor;
+        &[aria-checked="true"] {
+            &::after {
+                opacity: 1;
+            }
         }
     }
 }
@@ -80,7 +89,7 @@
 }
 
 .jw-settings-content-item {
-    color: #d2d2d2;
+    color: @inactive-color;
     width: 100%;
     font-size: 12px;
     line-height: 1;
@@ -90,6 +99,10 @@
     &.jw-settings-item-active {
         color: #fff;
         font-weight: bold;
+    }
+
+    &:hover {
+        color: @hover-color;
     }
 }
 
@@ -111,12 +124,13 @@
     }
 
     .jw-icon-settings {
-        .jw-svg-icon-settings {
-            &:extend(.jw-controlbar .jw-icon:hover .jw-svg-icon all);
-        }
-
         &::after {
-            content: none;
+            opacity: 1;
         }
+    }
+
+    .jw-tooltip-settings,
+    .jw-tooltip-captions {
+        display: none;
     }
 }

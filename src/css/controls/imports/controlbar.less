@@ -32,17 +32,9 @@
         align-self: stretch;
     }
 
-    .jw-icon {
-        &:focus {
-            .jw-svg-icon {
-                box-shadow: inset 0 -3px 0 -1px currentColor;
-            }
-        }
-
-        &.jw-button-color {
-            &:hover {
-                color: @hover-color;
-            }
+    .jw-icon.jw-button-color {
+        &:hover {
+            color: @hover-color;
         }
     }
 }
