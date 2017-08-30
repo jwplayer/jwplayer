@@ -134,7 +134,8 @@
         width: 6px;
     }
 
-    &:hover {
+    &:hover,
+    .jw-flag-touch & {
         .jw-rail,
         .jw-buffer,
         .jw-progress,
@@ -152,7 +153,8 @@
     }
 
     &:hover,
-    .jw-flag-dragging & {
+    .jw-flag-dragging &,
+    .jw-flag-touch & {
         .jw-knob {
             transform: translate(-50%, -50%) scale(1);
         }

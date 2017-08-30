@@ -1,14 +1,11 @@
 .jw-svg-icon {
-    .rect(24px, 100%);
+    .square(24px);
     fill: currentColor;
-    padding: 10px 0;
     pointer-events: none;
-    box-shadow: inset 0 0 0 currentColor;
-    transition: box-shadow 150ms cubic-bezier(0, -0.25, 0.25, 1);
 }
 
 .jw-icon {
-    .rect(24px, 100%);
+    .square(44px);
     background-color: transparent;
 }
 
@@ -103,5 +100,26 @@
         .jw-svg-icon-dvr {
             display: none;
         }
+    }
+}
+
+.jw-settings-menu .jw-icon,
+.jw-icon-settings,
+.jw-icon-volume {
+    &::after {
+        &:extend(._pseudo, ._bottomleft, ._right);
+        .rect(24px, 100%);
+        box-shadow: inset 0 -3px 0 -1px currentColor;
+        margin: auto;
+        opacity: 0;
+        transition: opacity 150ms cubic-bezier(0, -0.25, 0.25, 1);
+    }
+}
+
+.jw-settings-menu .jw-icon.jw-button-color[aria-checked="true"],
+.jw-settings-open .jw-icon-settings,
+.jw-icon-volume.jw-open {
+    &::after {
+        opacity: 1;
     }
 }
