@@ -116,10 +116,13 @@
     }
 }
 
-.jw-settings-menu .jw-icon.jw-button-color[aria-checked="true"],
+// Stylelint doesn't seem to like this list of selectors for no apparent reason https://github.com/stylelint/stylelint/issues/1741
+// stylelint-disable indentation
+.jw-settings-menu .jw-icon[aria-checked="true"],
 .jw-settings-open .jw-icon-settings,
 .jw-icon-volume.jw-open {
     &::after {
         opacity: 1;
     }
 }
+// stylelint-enable indentation
