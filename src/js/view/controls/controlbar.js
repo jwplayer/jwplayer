@@ -257,7 +257,7 @@ export default class Controlbar {
         _model.on('change:captionsList', onCaptionsChanged, this);
         _model.change('nextUp', (model, nextUp) => {
             let tipText = localization.nextUp;
-            if (nextUp) {
+            if (nextUp && nextUp.title) {
                 tipText = (`NEXT: ${nextUp.title}`);
             }
             nextUpTip.setText(tipText);
