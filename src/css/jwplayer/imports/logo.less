@@ -30,11 +30,15 @@
 }
 
 .jw-logo-bottom-left {
-    bottom: 0;
     left: 0;
 }
 
 .jw-logo-bottom-right {
-    bottom: 0;
     right: 0;
+}
+
+.jw-logo-bottom-left,
+.jw-logo-bottom-right {
+    bottom: @mobile-touch-target;
+    transition: bottom 150ms @default-timing-function;
 }

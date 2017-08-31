@@ -60,6 +60,11 @@
         .jw-controls {
             opacity: 0;
         }
+
+        .jw-logo-bottom-left,
+        .jw-logo-bottom-right {
+            bottom: 0;
+        }
     }
 }
 
@@ -195,7 +200,7 @@ body .jwplayer.jw-state-error.jw-flag-audio-player {
 
 // Hide control bar
 body .jwplayer.jw-state-error,
-.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-cast-available) {
+.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-cast-available) {
     .jw-controlbar {
         display: none;
     }
@@ -212,6 +217,11 @@ body .jwplayer.jw-state-error,
 
     .jw-display {
         padding: 0;
+    }
+
+    .jw-logo-bottom-left,
+    .jw-logo-bottom-right {
+        bottom: 0;
     }
 }
 
