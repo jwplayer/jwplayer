@@ -53,9 +53,21 @@ function div(classes) {
 }
 
 function createCastButton(castToggle, localization) {
+
+    if (Browser.safari) {
+        const airplayButton = button(
+            'jw-icon-airplay jw-off',
+            castToggle,
+            localization.airplay,
+            [AIRPLAY_OFF_ICON, AIRPLAY_ON_ICON]);
+
+        SimpleTooltip(airplayButton.element(), 'airplay', localization.airplay);
+
+        return airplayButton;
+    }
+
     if (!Browser.chrome || OS.iOS) {
-        return button('jw-icon-airplay jw-off', castToggle, localization.airplay, [AIRPLAY_OFF_ICON,
-            AIRPLAY_ON_ICON]);
+        return;
     }
 
     const ariaText = localization.cast;
@@ -68,6 +80,8 @@ function createCastButton(castToggle, localization) {
     element.style.display = 'none';
     element.style.cursor = 'pointer';
     element.appendChild(castButton);
+
+    SimpleTooltip(element, 'chromecast', localization.cast);
 
     return {
         element: function() {
@@ -189,7 +203,6 @@ export default class Controlbar {
         const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp);
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
-        SimpleTooltip(elements.cast.element(), 'chromecast', localization.cast);
 
         // Filter out undefined elements
         const buttonLayout = [
@@ -240,8 +253,6 @@ export default class Controlbar {
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
         _model.change('mute', this.onMute, this);
-        _model.change('castAvailable', this.onCastAvailable, this);
-        _model.change('castActive', this.onCastActive, this);
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', this.onFullscreen, this);
@@ -264,6 +275,10 @@ export default class Controlbar {
             elements.next.toggle(!!nextUp);
         });
         _model.on('change:audioMode', this.onAudioMode, this);
+        if (elements.cast) {
+            _model.change('castAvailable', this.onCastAvailable, this);
+            _model.change('castActive', this.onCastActive, this);
+        }
 
         // Event listeners
         // Volume sliders do not exist on mobile so don't assign listeners to them.
@@ -283,7 +298,7 @@ export default class Controlbar {
             }, this);
         }
 
-        if (elements.cast.button) {
+        if (elements.cast && elements.cast.button) {
             new UI(elements.cast.button).on('click tap', function () {
                 this._model.set('castClicked', true);
             }, this);
