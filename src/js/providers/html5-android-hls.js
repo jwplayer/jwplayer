@@ -7,7 +7,7 @@ export function isAndroidHls(source) {
         }
 
         // Allow Android hls playback on versions 4.1 and above, excluding Firefox (which does not support HLS in any version)
-        return OS.version.major >= 4 && OS.version.minor >= 1 && !Browser.firefox;
+        return !Browser.firefox && parseFloat(OS.version.version) >= 4.1;
     }
     return null;
 }
