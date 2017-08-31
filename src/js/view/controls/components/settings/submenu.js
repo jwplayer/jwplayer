@@ -2,12 +2,14 @@ import SubmenuTemplate from 'view/controls/templates/settings/submenu';
 import { createElement, emptyElement, toggleClass } from 'utils/dom';
 
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
+
     let active;
     let contentItems = [];
     const submenuElement = createElement(SubmenuTemplate(name));
     const categoryButtonElement = categoryButton.element();
 
     categoryButtonElement.setAttribute('name', name);
+    categoryButtonElement.className += ' jw-submenu-' + name;
     categoryButton.show();
 
     const instance = {
