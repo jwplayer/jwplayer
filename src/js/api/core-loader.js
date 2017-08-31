@@ -52,11 +52,11 @@ export function requiresProvider(model, providerName) {
     if (Array.isArray(playlist) && playlist.length) {
         const firstSource = Item(playlist[0]).sources[0];
         if (firstSource) {
-            for (let i = ProvidersSupported.length; i--;) {
-                const providerSupports = ProvidersSupported[i];
-                if (providerSupports.name === providerName) {
-                    const providersManager = model.getProviders();
-                    return providersManager.providerSupports(providerSupports, firstSource);
+            const providersManager = model.getProviders();
+            for (let i = 0; i < ProvidersSupported.length; i++) {
+                const provider = ProvidersSupported[i];
+                if (providersManager.providerSupports(provider, firstSource)) {
+                    return (provider.name === providerName);
                 }
             }
         }
