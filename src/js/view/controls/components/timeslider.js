@@ -43,8 +43,10 @@ class TimeTip extends Tooltip {
     }
 
     setWidth (width) {
+        const tolerance = 16; // add a little padding so the tooltip isn't flush against the edge
+
         if (width) {
-            this.containerWidth = width + 16; // add a little padding so the image isn't flush against the edge
+            this.containerWidth = width + tolerance;
             return;
         }
 
@@ -52,7 +54,7 @@ class TimeTip extends Tooltip {
             return;
         }
 
-        this.containerWidth = utils.bounds(this.container).width;
+        this.containerWidth = utils.bounds(this.container).width + tolerance;
     }
 
     resetWidth () {

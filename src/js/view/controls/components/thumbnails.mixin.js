@@ -61,6 +61,7 @@ const ThumbnailsMixin = {
                 url = matched[1];
                 style.backgroundPosition = (matched[2] * -1) + 'px ' + (matched[3] * -1) + 'px';
                 style.width = matched[4];
+                this.timeTip.setWidth(+style.width);
                 style.height = matched[5];
             } catch (e) {
                 // this.vttFailed('Could not parse thumbnail');
@@ -82,7 +83,8 @@ const ThumbnailsMixin = {
     },
 
     showThumbnail: function(seconds) {
-        if (this.thumbnails.length < 1) {
+        // Don't attempt to set thumbnail for small players or when a thumbnail doesn't exist
+        if (this._model.get('containerWidth') <= 420 || this.thumbnails.length < 1) {
             return;
         }
         this.timeTip.image(this.loadThumbnail(seconds));
