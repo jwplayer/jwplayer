@@ -3,17 +3,17 @@ import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
-var _supportsPointerEvents = ('PointerEvent' in window);
-var _supportsTouchEvents = ('ontouchstart' in window);
-var _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
-var _isOSXFirefox = Browser.firefox && OS.mac;
+const _supportsPointerEvents = ('PointerEvent' in window) && !OS.android;
+const _supportsTouchEvents = ('ontouchstart' in window);
+const _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
+const _isOSXFirefox = Browser.firefox && OS.mac;
 
 function getCoord(e, c) {
     return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
 }
 
 function isRightClick(evt) {
-    var e = evt || window.event;
+    const e = evt || window.event;
 
     if (!(evt instanceof MouseEvent)) {
         return false;
@@ -31,7 +31,7 @@ function isRightClick(evt) {
 }
 
 function normalizeUIEvent(type, srcEvent, target) {
-    var source;
+    let source;
 
     if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
         source = srcEvent;
@@ -67,15 +67,15 @@ function preventDefault(evt) {
     }
 }
 
-var UI = function (elem, options) {
-    var _elem = elem;
-    var _hasMoved = false;
-    var _startX = 0;
-    var _startY = 0;
-    var _lastClickTime = 0;
-    var _doubleClickDelay = 300;
-    var _touchListenerTarget;
-    var _pointerId;
+const UI = function (elem, options) {
+    const _elem = elem;
+    let _hasMoved = false;
+    let _startX = 0;
+    let _startY = 0;
+    let _lastClickTime = 0;
+    let _doubleClickDelay = 300;
+    let _touchListenerTarget;
+    let _pointerId;
 
     options = options || {};
 
@@ -176,16 +176,16 @@ var UI = function (elem, options) {
     }
 
     function interactDragHandler(evt) {
-        var movementThreshhold = 6;
+        const movementThreshold = 6;
 
         if (_hasMoved) {
             triggerEvent(DRAG, evt);
         } else {
-            var endX = getCoord(evt, 'X');
-            var endY = getCoord(evt, 'Y');
-            var moveX = endX - _startX;
-            var moveY = endY - _startY;
-            if (moveX * moveX + moveY * moveY > movementThreshhold * movementThreshhold) {
+            const endX = getCoord(evt, 'X');
+            const endY = getCoord(evt, 'Y');
+            const moveX = endX - _startX;
+            const moveY = endY - _startY;
+            if (moveX * moveX + moveY * moveY > movementThreshold * movementThreshold) {
                 triggerEvent(DRAG_START, evt);
                 _hasMoved = true;
                 triggerEvent(DRAG, evt);
@@ -199,7 +199,7 @@ var UI = function (elem, options) {
     }
 
     function interactEndHandler(evt) {
-        var isPointerEvent = (evt.type === 'pointerup' || evt.type === 'pointercancel');
+        const isPointerEvent = (evt.type === 'pointerup' || evt.type === 'pointercancel');
         if (isPointerEvent && options.preventScrolling) {
             elem.releasePointerCapture(_pointerId);
         }
@@ -232,12 +232,12 @@ var UI = function (elem, options) {
         _hasMoved = false;
     }
 
-    var self = this;
+    const self = this;
     function triggerEvent(type, srcEvent) {
-        var evt;
+        let evt;
         if (options.enableDoubleTap && (type === CLICK || type === TAP)) {
             if (now() - _lastClickTime < _doubleClickDelay) {
-                var doubleType = (type === CLICK) ?
+                const doubleType = (type === CLICK) ?
                     DOUBLE_CLICK : DOUBLE_TAP;
                 evt = normalizeUIEvent(doubleType, srcEvent, _elem);
                 self.trigger(doubleType, evt);
