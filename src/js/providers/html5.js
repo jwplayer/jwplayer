@@ -278,7 +278,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
     function _sendBufferFull() {
         // Wait until the canplay event on iOS to send the bufferFull event
-        if (!_bufferFull && (OS.iOS || _canPlay)) {
+        if (!_bufferFull && (!OS.iOS || _canPlay)) {
             _bufferFull = true;
             _canPlay = false;
             _this.trigger(MEDIA_BUFFER_FULL);
