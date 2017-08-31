@@ -1,5 +1,4 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
-import Events from 'utils/backbone.events';
 import { createElement, emptyElement, toggleClass } from 'utils/dom';
 
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
@@ -64,7 +63,6 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             this.removeContent();
         }
     };
-    Object.assign(instance, Events);
 
     Object.defineProperties(instance,
         {
