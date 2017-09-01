@@ -361,7 +361,7 @@ export default class Controls {
 
         model.change('mediaModel', (newModel, mediaModel) => {
             // Quality Levels
-            mediaModel.on('change:levels', (changedModel, levels) => {
+            mediaModel.change('levels', (changedModel, levels) => {
                 if (!levels || levels.length <= 1) {
                     removeQualitiesSubmenu(settingsMenu);
                     return;
@@ -393,12 +393,10 @@ export default class Controls {
                     mediaModel.get('currentAudioTrack')
                 );
             };
-            mediaModel.on('change:audioTracks', onAudiotracksChange);
+            mediaModel.change('audioTracks', onAudiotracksChange);
             mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
                 activateSubmenuItem('audioTracks', currentAudioTrack);
             });
-            // change:audioTracks does not get triggered if the next item has no tracks, so trigger it every time the mediaModel changes (i.e. we're on a new item)
-            onAudiotracksChange(newModel, mediaModel.get('audioTracks'));
         });
 
         // Captions
