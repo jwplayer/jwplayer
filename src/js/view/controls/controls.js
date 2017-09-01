@@ -390,7 +390,7 @@ export default class Controls {
                     settingsMenu,
                     audioTracks,
                     model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
-                    model.get('currentAudioTrack')
+                    mediaModel.get('currentAudioTrack')
                 );
             };
             mediaModel.on('change:audioTracks', onAudiotracksChange);
@@ -398,7 +398,7 @@ export default class Controls {
                 activateSubmenuItem('audioTracks', currentAudioTrack);
             });
             // change:audioTracks does not get triggered if the next item has no tracks, so trigger it every time the mediaModel changes (i.e. we're on a new item)
-            onAudiotracksChange(newModel, model.get('audioTracks'));
+            onAudiotracksChange(newModel, mediaModel.get('audioTracks'));
         });
 
         // Captions
