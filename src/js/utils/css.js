@@ -1,5 +1,6 @@
 import { pad } from 'utils/strings';
-import styleLoader from 'simple-style-loader/addStyles';
+
+const styleLoader = require('simple-style-loader/addStyles');
 
 export const clearCss = styleLoader.clear;
 

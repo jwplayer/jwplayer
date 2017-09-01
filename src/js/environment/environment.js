@@ -100,7 +100,7 @@ Object.defineProperties(Browser, {
         enumerable: true
     },
     version: {
-        get: memoize(browserVersion.bind(this, Browser, userAgent)),
+        get: memoize(browserVersion.bind(null, Browser, userAgent)),
         enumerable: true
     }
 });
@@ -139,7 +139,7 @@ Object.defineProperties(OS, {
         enumerable: true
     },
     version: {
-        get: memoize(osVersion.bind(this, OS, userAgent)),
+        get: memoize(osVersion.bind(null, OS, userAgent)),
         enumerable: true
     }
 });

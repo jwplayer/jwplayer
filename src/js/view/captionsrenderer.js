@@ -32,6 +32,7 @@ const CaptionsRenderer = function (_model) {
     var _textContainer;
     var _fontScale;
     var _windowStyle;
+    var _textStyle;
 
     _display = document.createElement('div');
     _display.className = 'jw-captions jw-reset';
@@ -148,24 +149,24 @@ const CaptionsRenderer = function (_model) {
         var windowOpacity = _options.windowOpacity;
         var edgeStyle = _options.edgeStyle;
         _windowStyle = {};
-        var textStyle = {};
+        _textStyle = {};
 
-        _addTextStyle(textStyle, _options);
+        _addTextStyle(_textStyle, _options);
 
         if (windowColor || windowOpacity !== _defaults.windowOpacity) {
             _windowStyle.backgroundColor = getRgba(windowColor || '#000000', windowOpacity);
         }
 
-        _addEdgeStyle(edgeStyle, textStyle, _options.fontOpacity);
+        _addEdgeStyle(edgeStyle, _textStyle, _options.fontOpacity);
 
         if (!_options.back && edgeStyle === null) {
-            _addEdgeStyle('uniform', textStyle);
+            _addEdgeStyle('uniform', _textStyle);
         }
 
+        // DOM work
         style(_captionsWindow, _windowStyle);
-        style(_textContainer, textStyle);
-        _setupCaptionStyles(playerElementId, textStyle);
-
+        style(_textContainer, _textStyle);
+        _setupCaptionStyles(playerElementId, _textStyle);
         _captionsWindow.appendChild(_textContainer);
         _display.appendChild(_captionsWindow);
 
