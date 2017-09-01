@@ -15,6 +15,12 @@ export default class CustomButton {
 
         new UI(buttonElement).on('click tap', callback, this);
 
+        // Prevent button from being focused on mousedown so that the tooltips don't remain visible until
+        // the user interacts with another element on the page
+        buttonElement.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+        });
+
         this.id = id;
         this.buttonElement = buttonElement;
     }
