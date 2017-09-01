@@ -203,6 +203,7 @@ export default class Controlbar {
         const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp);
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
+        SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
 
         // Filter out undefined elements
         const buttonLayout = [
