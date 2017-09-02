@@ -154,6 +154,7 @@
         jwplayerCompatible.utils = utils;
         jwplayerCompatible.version = playerLibrary.version;
         jwplayerCompatible.vid = playerLibrary.vid;
+        jwplayerCompatible.defaults = playerLibrary.defaults;
 
         /*
             In JW8 we've removed the jwplayer.events.JWPLAYER_* events, as well as the jwplayer.events.states.* states.
