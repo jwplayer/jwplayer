@@ -97,11 +97,12 @@
     cursor: pointer;
 
     &.jw-settings-item-active {
-        color: #fff;
+        color: @active-color;
         font-weight: bold;
     }
 
-    &:hover {
+    &:hover,
+    &:focus {
         color: @hover-color;
     }
 }
