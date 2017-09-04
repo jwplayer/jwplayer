@@ -1,4 +1,3 @@
-import _ from 'utils/underscore';
 import { prefix } from 'utils/strings';
 import { css } from 'utils/css';
 
@@ -18,49 +17,64 @@ export function normalizeSkin(skinConfig = {}) {
 
     colors.tooltips = getTooltips(skinConfig.tooltips);
 
-    function getControlBar(controlBarConfig = {}) {
-        const config = {};
+    function getControlBar(controlBarConfig) {
+        if (controlBarConfig || active || inactive || background) {
+            const config = {};
 
-        config.iconsActive = controlBarConfig.iconsActive || active;
-        config.icons = controlBarConfig.icons || inactive;
-        config.text = controlBarConfig.text || inactive;
-        config.background = controlBarConfig.background || background;
+            controlBarConfig = controlBarConfig || {};
+            config.iconsActive = controlBarConfig.iconsActive || active;
+            config.icons = controlBarConfig.icons || inactive;
+            config.text = controlBarConfig.text || inactive;
+            config.background = controlBarConfig.background || background;
 
-        return config;
+            return config;
+        }
     }
 
-    function getTimeSlider(timesliderConfig = {}) {
-        const config = {};
+    function getTimeSlider(timesliderConfig) {
+        if (timesliderConfig || active) {
+            const config = {};
 
-        config.progress = timesliderConfig.progress || active;
-        config.rail = timesliderConfig.rail;
+            timesliderConfig = timesliderConfig || {};
+            config.progress = timesliderConfig.progress || active;
+            config.rail = timesliderConfig.rail;
 
-        return config;
+            return config;
+        }
     }
 
-    function getMenus(menusConfig = {}) {
-        const config = {};
+    function getMenus(menusConfig) {
+        if (menusConfig || active || inactive || background) {
+            const config = {};
 
-        config.text = menusConfig.text || inactive;
-        config.textActive = menusConfig.textActive || active;
-        config.background = menusConfig.background || background;
+            menusConfig = menusConfig || {};
+            config.text = menusConfig.text || inactive;
+            config.textActive = menusConfig.textActive || active;
+            config.background = menusConfig.background || background;
 
-        return config;
+            return config;
+        }
     }
 
-    function getTooltips(tooltipsConfig = {}) {
-        const config = {};
+    function getTooltips(tooltipsConfig) {
+        if (tooltipsConfig || inactive || background) {
+            const config = {};
 
-        config.text = tooltipsConfig.text || inactive;
-        config.background = tooltipsConfig.background || background;
+            tooltipsConfig = tooltipsConfig || {};
+            config.text = tooltipsConfig.text || inactive;
+            config.background = tooltipsConfig.background || background;
 
-        return config;
+            return config;
+        }
     }
 
     return colors;
 }
 
-export function handleColorOverrides(playerId, skin = {}) {
+export function handleColorOverrides(playerId, skin) {
+    if (!skin) {
+        return;
+    }
 
     function addStyle(elements, attr, value, extendParent) {
         if (!value) {
@@ -79,16 +93,16 @@ export function handleColorOverrides(playerId, skin = {}) {
     // These will use standard style names for CSS since they are added directly to a style sheet
     // Using background instead of background-color so we don't have to clear gradients with background-image
 
-    if (_.size(skin.controlbar)) {
+    if (skin.controlbar) {
         styleControlbar(skin.controlbar);
     }
-    if (_.size(skin.timeslider)) {
+    if (skin.timeslider) {
         styleTimeslider(skin.timeslider);
     }
-    if (_.size(skin.menus)) {
+    if (skin.menus) {
         styleMenus(skin.menus);
     }
-    if (_.size(skin.tooltips)) {
+    if (skin.tooltips) {
         styleTooltips(skin.tooltips);
     }
 
@@ -103,34 +117,36 @@ export function handleColorOverrides(playerId, skin = {}) {
             '.jw-title-secondary',
         ], 'color', config.text);
 
-        addStyle([
-            // controlbar button colors
-            '.jw-button-color:not(.jw-icon-cast)',
-            '.jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)',
-        ], 'color', config.icons);
-
-        addStyle([
-            '.jw-display-icon-container .jw-svg-icon',
-        ], 'fill', config.icons);
-
-        addStyle([
-            '.jw-display-icon-container:not(.jw-flag-touch):hover .jw-svg-icon',
-        ], 'fill', config.iconsActive);
-
-        // Apply active color
-        addStyle([
-            // Toggle and menu button active colors
-            '.jw-button-color.jw-toggle:not(.jw-icon-cast)',
-            '.jw-button-color:hover:not(.jw-icon-cast)',
-            '.jw-button-color.jw-toggle.jw-off:hover:not(.jw-icon-cast)'
-        ], 'color', config.iconsActive);
-
-        // Chromecast overrides
-        // Can't use addStyle since it will camel case the style name
         if (config.icons) {
+            addStyle([
+                // controlbar button colors
+                '.jw-button-color:not(.jw-icon-cast)',
+                '.jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)',
+            ], 'color', config.icons);
+
+            addStyle([
+                '.jw-display-icon-container .jw-svg-icon',
+            ], 'fill', config.icons);
+
+            // Chromecast overrides
+            // Can't use addStyle since it will camel case the style name
             css('.jw-icon-cast button.jw-off', `{--disconnected-color: ${config.icons}}`, playerId);
         }
         if (config.iconsActive) {
+            addStyle([
+                '.jw-display-icon-container:not(.jw-flag-touch):hover .jw-svg-icon',
+            ], 'fill', config.iconsActive);
+
+            // Apply active color
+            addStyle([
+                // Toggle and menu button active colors
+                '.jw-button-color.jw-toggle:not(.jw-icon-cast)',
+                '.jw-button-color:hover:not(.jw-icon-cast)',
+                '.jw-button-color.jw-toggle.jw-off:hover:not(.jw-icon-cast)'
+            ], 'color', config.iconsActive);
+
+            // Chromecast overrides
+            // Can't use addStyle since it will camel case the style name
             css('.jw-icon-cast:hover button.jw-off', `{--disconnected-color: ${config.iconsActive}}`, playerId);
             css('.jw-icon-cast button.jw-off:focus', `{--disconnected-color: ${config.iconsActive}}`, playerId);
 
