@@ -26,9 +26,13 @@ export default function (icon, apiAction, ariaText, svgIcons) {
         e.preventDefault();
     });
 
-    if (svgIcons && svgIcons.length > 0) {
-        svgIcons.forEach((svgIcon) => {
-            element.appendChild(svgParse(svgIcon));
+    if (svgIcons) {
+        Array.prototype.slice.call(svgIcons).forEach((svgIcon) => {
+            if (typeof svgIcon === 'string') {
+                element.appendChild(svgParse(svgIcon));
+            } else {
+                element.appendChild(svgIcon);
+            }
         });
     }
 

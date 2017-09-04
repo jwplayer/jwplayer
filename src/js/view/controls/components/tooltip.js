@@ -22,8 +22,12 @@ export default class Tooltip {
 
         this.el.appendChild(this.container);
         if (svgIcons && svgIcons.length > 0) {
-            svgIcons.forEach((svgIcon) => {
-                this.el.appendChild(svgParse(svgIcon));
+            Array.prototype.slice.call(svgIcons).forEach((svgIcon) => {
+                if (typeof svgIcon === 'string') {
+                    this.el.appendChild(svgParse(svgIcon));
+                } else {
+                    this.el.appendChild(svgIcon);
+                }
             });
         }
     }
