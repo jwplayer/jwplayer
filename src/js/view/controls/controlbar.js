@@ -200,7 +200,17 @@ export default class Controlbar {
             captionsTip.setText(newText);
         };
 
-        const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp);
+        const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp, () => {
+            const nextUp = _model.get('nextUp');
+
+            this.trigger('nextShown', {
+                mode: nextUp.mode,
+                ui: 'nextup',
+                itemsShown: [nextUp],
+                feedData: nextUp.feedData,
+                reason: 'hover'
+            });
+        });
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
         SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
@@ -270,7 +280,7 @@ export default class Controlbar {
         _model.change('nextUp', (model, nextUp) => {
             let tipText = localization.nextUp;
             if (nextUp && nextUp.title) {
-                tipText = (`NEXT: ${nextUp.title}`);
+                tipText += (`: ${nextUp.title}`);
             }
             nextUpTip.setText(tipText);
             elements.next.toggle(!!nextUp);
