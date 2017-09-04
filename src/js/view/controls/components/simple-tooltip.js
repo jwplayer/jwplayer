@@ -1,7 +1,7 @@
 import SimpleTooltipTemplate from 'view/controls/templates/simple-tooltip';
 import { createElement, addClass, removeClass } from 'utils/dom';
 
-export function SimpleTooltip(attachToElement, name, text) {
+export function SimpleTooltip(attachToElement, name, text, openCallback) {
     const tooltipElement = createElement(SimpleTooltipTemplate(name, text));
     attachToElement.appendChild(tooltipElement);
 
@@ -9,6 +9,10 @@ export function SimpleTooltip(attachToElement, name, text) {
         open() {
             tooltipElement.setAttribute('aria-expanded', 'true');
             addClass(tooltipElement, 'jw-open');
+
+            if (openCallback) {
+                openCallback();
+            }
         },
         close() {
             tooltipElement.setAttribute('aria-expanded', 'false');

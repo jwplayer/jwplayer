@@ -108,6 +108,10 @@ export default class Controls {
         // Controlbar
         const controlbar = this.controlbar = new Controlbar(api, model);
         controlbar.on(USER_ACTION, () => this.userActive());
+        controlbar.on('nextShown', function(data) {
+            this.trigger('nextShown', data);
+        }, this);
+
         // Next Up Tooltip
         if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
             const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
@@ -118,6 +122,7 @@ export default class Controls {
             // NextUp needs to be behind the controlbar to not block other tooltips
             this.div.appendChild(nextUpToolTip.element());
         }
+
         this.addActiveListeners(controlbar.element());
         this.div.appendChild(controlbar.element());
 
