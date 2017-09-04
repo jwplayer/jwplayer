@@ -1,4 +1,3 @@
-import _ from 'utils/underscore';
 import { prefix } from 'utils/strings';
 import { css } from 'utils/css';
 
@@ -79,23 +78,14 @@ export function handleColorOverrides(playerId, skin = {}) {
     // These will use standard style names for CSS since they are added directly to a style sheet
     // Using background instead of background-color so we don't have to clear gradients with background-image
 
-    if (_.size(skin.controlbar)) {
-        styleControlbar(skin.controlbar);
-    }
-    if (_.size(skin.timeslider)) {
-        styleTimeslider(skin.timeslider);
-    }
-    if (_.size(skin.menus)) {
-        styleMenus(skin.menus);
-    }
-    if (_.size(skin.tooltips)) {
-        styleTooltips(skin.tooltips);
-    }
+    styleControlbar(skin.controlbar);
+    styleTimeslider(skin.timeslider);
+    styleMenus(skin.menus);
+    styleTooltips(skin.tooltips);
 
     insertGlobalColorClasses(skin.menus);
 
     function styleControlbar(config) {
-
         addStyle([
             // controlbar text colors
             '.jw-controlbar .jw-text',
@@ -130,6 +120,7 @@ export function handleColorOverrides(playerId, skin = {}) {
         if (config.icons) {
             css('.jw-icon-cast button.jw-off', `{--disconnected-color: ${config.icons}}`, playerId);
         }
+
         if (config.iconsActive) {
             css('.jw-icon-cast:hover button.jw-off', `{--disconnected-color: ${config.iconsActive}}`, playerId);
             css('.jw-icon-cast button.jw-off:focus', `{--disconnected-color: ${config.iconsActive}}`, playerId);
@@ -149,25 +140,27 @@ export function handleColorOverrides(playerId, skin = {}) {
         addStyle([
             '.jw-progress',
             '.jw-buffer',
-            '.jw-slider-time .jw-cue',
             '.jw-knob'
         ], 'background', 'none ' + config.progress);
 
-        addStyle([
-            '.jw-buffer',
-        ], 'opacity', 0.5);
+        if (config.progress) {
+            // Buffer uses the same color as progress, but is distinguished by opacity
+            addStyle([
+                '.jw-buffer',
+            ], 'opacity', 0.4);
+        }
 
         addStyle([
             '.jw-rail'
         ], 'background', 'none ' + config.rail);
 
         addStyle([
-            '.jw-background-color.jw-slider-time'
+            '.jw-background-color.jw-slider-time',
+            '.jw-slider-time .jw-cue'
         ], 'background', config.background);
     }
 
     function styleMenus(config) {
-
         addStyle([
             '.jw-option',
             '.jw-toggle.jw-off',
@@ -201,7 +194,6 @@ export function handleColorOverrides(playerId, skin = {}) {
     }
 
     function styleTooltips(config) {
-
         addStyle([
             '.jw-skip',
             '.jw-tooltip .jw-text',
@@ -213,9 +205,11 @@ export function handleColorOverrides(playerId, skin = {}) {
             '.jw-tooltip'
         ], 'color', config.background);
 
-        addStyle([
-            '.jw-skip',
-        ], 'border', 'none');
+        if (config.background) {
+            addStyle([
+                '.jw-skip',
+            ], 'border', 'none');
+        }
 
         addStyle([
             '.jw-skip .jw-text',
@@ -237,6 +231,7 @@ export function handleColorOverrides(playerId, skin = {}) {
             css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
             css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
         }
+
         if (config.text) {
             const inactiveColorSet = {
                 color: config.text,
