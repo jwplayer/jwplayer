@@ -7,9 +7,6 @@ import utils from 'utils/helpers';
 import button from 'view/controls/components/button';
 import Controlbar from 'view/controls/controlbar';
 import DisplayContainer from 'view/controls/display-container';
-import RewindDisplayIcon from 'view/controls/rewind-display-icon';
-import PlayDisplayIcon from 'view/controls/play-display-icon';
-import NextDisplayIcon from 'view/controls/next-display-icon';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { SettingsMenu } from 'view/controls/components/settings/menu';
@@ -72,20 +69,13 @@ export default class Controls {
 
         // Display Buttons
         if (!this.displayContainer) {
-            const displayContainer = new DisplayContainer();
-            const rewindDisplayIcon = new RewindDisplayIcon(model, api);
-            const playDisplayIcon = new PlayDisplayIcon(model);
-            const nextDisplayIcon = new NextDisplayIcon(model, api);
+            const displayContainer = new DisplayContainer(model, api);
 
-            playDisplayIcon.on('click tap', () => {
+            displayContainer.buttons.display.on('click tap', () => {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
                 api.play(reasonInteraction());
             });
-
-            displayContainer.addButton(rewindDisplayIcon);
-            displayContainer.addButton(playDisplayIcon);
-            displayContainer.addButton(nextDisplayIcon);
 
             this.div.appendChild(displayContainer.element());
             this.displayContainer = displayContainer;
