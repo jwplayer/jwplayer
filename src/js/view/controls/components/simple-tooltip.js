@@ -1,8 +1,14 @@
-import SimpleTooltipTemplate from 'view/controls/templates/simple-tooltip';
-import { createElement, addClass, removeClass } from 'utils/dom';
+import { addClass, removeClass } from 'utils/dom';
 
 export function SimpleTooltip(attachToElement, name, text, openCallback) {
-    const tooltipElement = createElement(SimpleTooltipTemplate(name, text));
+    const tooltipElement = document.createElement('div');
+    tooltipElement.className = `jw-reset jw-tooltip jw-tooltip-${name}`;
+
+    const textElement = document.createElement('div');
+    textElement.className = 'jw-text';
+    textElement.textContent = text;
+
+    tooltipElement.appendChild(textElement);
     attachToElement.appendChild(tooltipElement);
 
     const instance = {

@@ -1,17 +1,33 @@
-import buttonTemplate from 'view/controls/templates/custom-button';
-import utils from 'utils/helpers';
+import { style } from 'utils/css';
 import UI from 'utils/ui';
+import svgParse from 'utils/svgParser';
 
 export default class CustomButton {
 
     constructor(img, ariaText, callback, id, btnClass) {
-        const button = buttonTemplate(btnClass,
-            id,
-            img,
-            ariaText
-        );
+        const buttonElement = document.createElement('div');
+        buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset ${btnClass}`;
+        buttonElement.setAttribute('button', id);
+        buttonElement.setAttribute('role', 'button');
+        buttonElement.setAttribute('tabindex', '0');
+        if (ariaText) {
+            buttonElement.setAttribute('aria-label', ariaText);
+        }
 
-        const buttonElement = utils.createElement(button);
+        let iconElement;
+        if (img && img.substring(0, 4) === '<svg') {
+            iconElement = svgParse(img);
+        } else {
+            iconElement = document.createElement('div');
+            iconElement.className = 'jw-icon jw-button-image jw-button-color jw-reset';
+            if (img) {
+                style(iconElement, {
+                    backgroundImage: `url(${img})`
+                });
+            }
+        }
+        
+        buttonElement.appendChild(iconElement);
 
         new UI(buttonElement).on('click tap', callback, this);
 
