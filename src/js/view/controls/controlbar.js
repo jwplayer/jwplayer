@@ -499,10 +499,17 @@ export default class Controlbar {
 
     updateButtons(model, newButtons = [], oldButtons = []) {
         const buttonContainer = this.elements.buttonContainer;
-        this.removeButtons(buttonContainer, oldButtons);
 
-        for (let i = newButtons.length - 1; i >= 0; i--) {
-            let buttonProps = newButtons[i];
+        const removedButtons = oldButtons.filter(oldButton =>
+            !newButtons.some(newButton => newButton.id + newButton.btnClass === oldButton.id + oldButton.btnClass));
+
+        this.removeButtons(buttonContainer, removedButtons);
+
+        const addedButtons = newButtons.filter(newButton =>
+            !oldButtons.some(oldButton => newButton.id + newButton.btnClass === oldButton.id + oldButton.btnClass));
+
+        for (let i = addedButtons.length - 1; i >= 0; i--) {
+            let buttonProps = addedButtons[i];
             const newButton = new CustomButton(
                 buttonProps.img,
                 buttonProps.tooltip,
@@ -527,24 +534,10 @@ export default class Controlbar {
         }
     }
 
-    removeButtons(buttonContainer, oldButtons = []) {
-        const toRemove = {};
-        const buttonElements = _.clone(buttonContainer.children);
-
-        for (let i = 0; i < oldButtons.length; i++) {
-            const oldButton = oldButtons[i];
-            toRemove[oldButton.id] = oldButton;
-        }
-
-        for (let i = 0; i < buttonElements.length; i++) {
-            const buttonElement = buttonElements[i];
-            if (!buttonElement) {
-                return;
-            }
-
-            const id = buttonElement.getAttribute('button');
-
-            if (toRemove[id]) {
+    removeButtons(buttonContainer, buttonsToRemove) {
+        for (let i = buttonsToRemove.length; i--;) {
+            const buttonElement = buttonContainer.querySelector(`[button="${buttonsToRemove[i].id}"]`);
+            if (buttonElement) {
                 buttonContainer.removeChild(buttonElement);
             }
         }
