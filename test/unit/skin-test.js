@@ -27,6 +27,12 @@ describe('Skin Customization', function() {
         });
 
         it('should not style any element with an empty config', function() {
+            handleColorOverrides('id', {});
+
+            expect(cssUtils.css.callCount).to.equal(0);
+        });
+
+        it('should not style any element with an undefined config', function() {
             handleColorOverrides('id');
 
             expect(cssUtils.css.callCount).to.equal(0);

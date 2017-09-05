@@ -14,6 +14,7 @@ import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import DVR_ICON from 'assets/SVG/dvr.svg';
 import LIVE_ICON from 'assets/SVG/live.svg';
+import svgParse from 'utils/svgParser';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -133,43 +134,61 @@ export default class Controlbar {
         const vol = localization.volume;
         const rewind = localization.rewind;
 
+        const svgCollection = svgParse('<xml>' +
+            PLAY_ICON +
+            PAUSE_ICON +
+            REWIND_ICON +
+            NEXT_ICON +
+            VOLUME_ICON_0 +
+            VOLUME_ICON_50 +
+            VOLUME_ICON_100 +
+            CAPTIONS_OFF_ICON +
+            CAPTIONS_ON_ICON +
+            FULLSCREEN_ENTER_ICON +
+            FULLSCREEN_EXIT_ICON +
+            SETTINGS_ICON +
+            LIVE_ICON +
+            DVR_ICON +
+        '</xml>');
+
+
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
-            volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol, [VOLUME_ICON_0, VOLUME_ICON_50,
-                VOLUME_ICON_100]);
+            volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
+                svgCollection.querySelectorAll('.jw-svg-icon-volume-0,.jw-svg-icon-volume-50,.jw-svg-icon-volume-100'));
         }
         // Do not show the volume toggle in the mobile SDKs or <iOS10
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
             muteButton = button('jw-icon-volume', () => {
                 _api.setMute();
-            }, vol, [VOLUME_ICON_0, VOLUME_ICON_100]);
+            }, vol, svgCollection.querySelectorAll('.jw-svg-icon-volume-0,.jw-svg-icon-volume-100'));
         }
 
         const nextButton = button('jw-icon-next', () => {
             _api.next();
-        }, next, [NEXT_ICON]);
+        }, next, svgCollection.querySelectorAll('.jw-svg-icon-next'));
 
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'quality', true);
-        }, localization.settings, [SETTINGS_ICON]);
+        }, localization.settings, svgCollection.querySelectorAll('.jw-svg-icon-settings'));
         settingsButton.element().setAttribute('aria-haspopup', 'true');
 
         const captionsButton = button('jw-icon-cc jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'captions', false);
-        }, localization.cc, [CAPTIONS_OFF_ICON, CAPTIONS_ON_ICON]);
+        }, localization.cc, svgCollection.querySelectorAll('.jw-svg-icon-cc-off,.jw-svg-icon-cc-on'));
         captionsButton.element().setAttribute('aria-haspopup', 'true');
 
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
                 _api.play(null, reasonInteraction());
-            }, play, [PLAY_ICON, PAUSE_ICON]),
+            }, play, svgCollection.querySelectorAll('.jw-svg-icon-play,.jw-svg-icon-pause')),
             rewind: button('jw-icon-rewind', () => {
                 this.rewind();
-            }, rewind, [REWIND_ICON]),
+            }, rewind, svgCollection.querySelectorAll('.jw-svg-icon-rewind')),
             live: button('jw-icon-live', () => {
                 this.goToLiveEdge();
-            }, localization.liveBroadcast, [LIVE_ICON, DVR_ICON]),
+            }, localization.liveBroadcast, svgCollection.querySelectorAll('.jw-svg-icon-live,.jw-svg-icon-dvr')),
             next: nextButton,
             elapsed: textIcon('jw-text-elapsed', 'timer'),
             countdown: textIcon('jw-text-countdown', 'timer'),
@@ -182,7 +201,8 @@ export default class Controlbar {
             }, localization),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
-            }, localization.fullscreen, [FULLSCREEN_ENTER_ICON, FULLSCREEN_EXIT_ICON]),
+            }, localization.fullscreen,
+            svgCollection.querySelectorAll('.jw-svg-icon-fullscreen-off,.jw-svg-icon-fullscreen-on')),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
@@ -499,10 +519,17 @@ export default class Controlbar {
 
     updateButtons(model, newButtons = [], oldButtons = []) {
         const buttonContainer = this.elements.buttonContainer;
-        this.removeButtons(buttonContainer, oldButtons);
 
-        for (let i = newButtons.length - 1; i >= 0; i--) {
-            let buttonProps = newButtons[i];
+        const removedButtons = oldButtons.filter(oldButton =>
+            !newButtons.some(newButton => newButton.id + newButton.btnClass === oldButton.id + oldButton.btnClass));
+
+        this.removeButtons(buttonContainer, removedButtons);
+
+        const addedButtons = newButtons.filter(newButton =>
+            !oldButtons.some(oldButton => newButton.id + newButton.btnClass === oldButton.id + oldButton.btnClass));
+
+        for (let i = addedButtons.length - 1; i >= 0; i--) {
+            let buttonProps = addedButtons[i];
             const newButton = new CustomButton(
                 buttonProps.img,
                 buttonProps.tooltip,
@@ -527,24 +554,10 @@ export default class Controlbar {
         }
     }
 
-    removeButtons(buttonContainer, oldButtons = []) {
-        const toRemove = {};
-        const buttonElements = _.clone(buttonContainer.children);
-
-        for (let i = 0; i < oldButtons.length; i++) {
-            const oldButton = oldButtons[i];
-            toRemove[oldButton.id] = oldButton;
-        }
-
-        for (let i = 0; i < buttonElements.length; i++) {
-            const buttonElement = buttonElements[i];
-            if (!buttonElement) {
-                return;
-            }
-
-            const id = buttonElement.getAttribute('button');
-
-            if (toRemove[id]) {
+    removeButtons(buttonContainer, buttonsToRemove) {
+        for (let i = buttonsToRemove.length; i--;) {
+            const buttonElement = buttonContainer.querySelector(`[button="${buttonsToRemove[i].id}"]`);
+            if (buttonElement) {
                 buttonContainer.removeChild(buttonElement);
             }
         }

@@ -1,11 +1,8 @@
-import displayIconTemplate from 'view/controls/templates/display-icon';
-import REWIND_ICON from 'assets/SVG/rewind-10.svg';
-import utils from 'utils/helpers';
 import UI from 'utils/ui';
 
 export default class RewindDisplayIcon {
-    constructor(model, api) {
-        this.el = utils.createElement(displayIconTemplate('rewind', model.get('localization').rewind, REWIND_ICON));
+    constructor(model, api, element) {
+        this.el = element;
 
         new UI(this.el).on('click tap', function() {
             const currentPosition = model.get('position');

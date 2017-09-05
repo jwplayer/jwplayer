@@ -76,8 +76,8 @@ describe('Control Bar', function() {
 
     describe('removeButtons', function() {
 
-        it('should do nothing if there are no buttons in the container', function() {
-            controlBar.removeButtons(container);
+        it('should do nothing if the second argument is empty', function() {
+            controlBar.removeButtons(container, []);
 
             expect(children.length).to.equal(2);
         });
