@@ -1,10 +1,11 @@
 # <img height="70px" src="http://www.jwplayer.com/wp-content/uploads/JWP-GitHub-Banner-1.png" alt="JW Player Logo" title="JW Player Logo"/>
 
-[![Join the chat at https://gitter.im/jwplayer/jwplayer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jwplayer/jwplayer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 > Plays everywhere, every time.
 
 Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
+  
+## Disclaimer
+This is the non-commercial version of JW Player. It does not contain the same features as the commercial-use player available from [jwplayer.com](https://www.jwplayer.com/). Commercial use and access to features requires a license. Learn more at https://www.jwplayer.com/pricing/. If you are a paid customer and want a player, please download it from the "Downloads" section of your JW Dashboard.
   
 ## Official Documentation
 - [Developer Portal](https://developer.jwplayer.com/)
@@ -12,10 +13,6 @@ Live on over 2 million sites with 1.3 billion unique plays per month, JW Player 
 - [Configuration Reference](https://developer.jwplayer.com/jw-player/docs/developer-guide/customization/configuration-reference/)
 - [Demos](https://developer.jwplayer.com/jw-player/demos/)
 - [Support](http://support.jwplayer.com/)
-
-
-This is the free version of JW Player. It does not contain the same features as the Premium, Platinum, or Enterprise editions. If you are a paid customer and want a player, please download it from the "Downloads" section of your JW Dashboard.
-
 
 ## A Simple Example
 
