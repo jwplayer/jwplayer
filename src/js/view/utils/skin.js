@@ -85,7 +85,7 @@ export function handleColorOverrides(playerId, skin = {}) {
 
     insertGlobalColorClasses(skin.menus);
 
-    function styleControlbar(config) {
+    function styleControlbar(config = {}) {
         addStyle([
             // controlbar text colors
             '.jw-controlbar .jw-text',
@@ -135,24 +135,25 @@ export function handleColorOverrides(playerId, skin = {}) {
         ], 'background', config.background);
     }
 
-    function styleTimeslider(config) {
-
-        addStyle([
-            '.jw-progress',
-            '.jw-buffer',
-            '.jw-knob'
-        ], 'background', 'none ' + config.progress);
-
+    function styleTimeslider(config = {}) {
         if (config.progress) {
+            addStyle([
+                '.jw-progress',
+                '.jw-buffer',
+                '.jw-knob'
+            ], 'background', 'none ' + config.progress);
+
             // Buffer uses the same color as progress, but is distinguished by opacity
             addStyle([
                 '.jw-buffer',
             ], 'opacity', 0.4);
         }
 
-        addStyle([
-            '.jw-rail'
-        ], 'background', 'none ' + config.rail);
+        if (config.rail) {
+            addStyle([
+                '.jw-rail'
+            ], 'background', 'none ' + config.rail);
+        }
 
         addStyle([
             '.jw-background-color.jw-slider-time',
@@ -160,7 +161,7 @@ export function handleColorOverrides(playerId, skin = {}) {
         ], 'background', config.background);
     }
 
-    function styleMenus(config) {
+    function styleMenus(config = {}) {
         addStyle([
             '.jw-option',
             '.jw-toggle.jw-off',
@@ -193,7 +194,7 @@ export function handleColorOverrides(playerId, skin = {}) {
         }
     }
 
-    function styleTooltips(config) {
+    function styleTooltips(config = {}) {
         addStyle([
             '.jw-skip',
             '.jw-tooltip .jw-text',
