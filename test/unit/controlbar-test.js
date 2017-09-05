@@ -39,15 +39,6 @@ describe('Control Bar', function() {
             expect(children.length).to.equal(2);
         });
 
-        it('should removeButtons before adding any', function() {
-            controlBar.removeButtons = sinon.stub();
-            container.insertBefore = sinon.spy();
-
-            controlBar.updateButtons(model, [{ id: '1' }]);
-
-            expect(controlBar.removeButtons.calledBefore(container.insertBefore)).to.be.true;
-        });
-
         it('should add button after spacer if there is no logo', function() {
             controlBar.updateButtons(model, [{ id: '1' }]);
 

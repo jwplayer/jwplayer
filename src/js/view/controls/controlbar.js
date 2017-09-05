@@ -110,6 +110,11 @@ function reasonInteraction() {
     return { reason: 'interaction' };
 }
 
+function buttonsInFirstNotInSecond(buttonsA, buttonsB) {
+    return buttonsA.filter(a =>
+        !buttonsB.some(b => (b.id + b.btnClass === a.id + a.btnClass) && a.callback === b.callback));
+}
+
 const appendChildren = (container, elements) => {
     elements.forEach(e => {
         if (e.element) {
@@ -518,16 +523,27 @@ export default class Controlbar {
         }
     }
 
-    updateButtons(model, newButtons = [], oldButtons = []) {
+    updateButtons(model, newButtons, oldButtons) {
+        // If buttons are undefined exit, buttons are only removed if newButtons is an array
+        if (!newButtons) {
+            return;
+        }
+
         const buttonContainer = this.elements.buttonContainer;
 
-        const removedButtons = oldButtons.filter(oldButton =>
-            !newButtons.some(newButton => newButton.id + newButton.btnClass === oldButton.id + oldButton.btnClass));
+        let addedButtons;
+        let removedButtons;
 
-        this.removeButtons(buttonContainer, removedButtons);
+        // On model.change these obects are the same and all buttons need to be added
+        if (newButtons === oldButtons || !oldButtons) {
+            addedButtons = newButtons;
 
-        const addedButtons = newButtons.filter(newButton =>
-            !oldButtons.some(oldButton => newButton.id + newButton.btnClass === oldButton.id + oldButton.btnClass));
+        } else {
+            addedButtons = buttonsInFirstNotInSecond(newButtons, oldButtons);
+            removedButtons = buttonsInFirstNotInSecond(oldButtons, newButtons);
+
+            this.removeButtons(buttonContainer, removedButtons);
+        }
 
         for (let i = addedButtons.length - 1; i >= 0; i--) {
             let buttonProps = addedButtons[i];
