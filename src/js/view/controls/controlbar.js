@@ -157,17 +157,21 @@ export default class Controlbar {
             DVR_ICON +
         '</xml>');
 
+        // Do not show the volume toggle in the mobile SDKs or <iOS10
+        if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
+            // Clone icons so that can be used in VolumeTooltip
+            const svgIcons = Array.prototype.map.call(
+                svgCollection.querySelectorAll('.jw-svg-icon-volume-0,.jw-svg-icon-volume-100'),
+                icon => icon.cloneNode(true));
+            muteButton = button('jw-icon-volume', () => {
+                _api.setMute();
+            }, vol, svgIcons);
+        }
 
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
             volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
                 svgCollection.querySelectorAll('.jw-svg-icon-volume-0,.jw-svg-icon-volume-50,.jw-svg-icon-volume-100'));
-        }
-        // Do not show the volume toggle in the mobile SDKs or <iOS10
-        if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
-            muteButton = button('jw-icon-volume', () => {
-                _api.setMute();
-            }, vol, svgCollection.querySelectorAll('.jw-svg-icon-volume-0,.jw-svg-icon-volume-100'));
         }
 
         const nextButton = button('jw-icon-next', () => {
