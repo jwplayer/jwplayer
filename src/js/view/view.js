@@ -495,7 +495,7 @@ function View(_api, _model) {
 
         if (_controls) {
             _controls.removeActiveListeners(_logo.element());
-            _controls.disable();
+            _controls.disable(_model);
             _controls = null;
         }
 
@@ -849,7 +849,7 @@ function View(_api, _model) {
             _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
         }
         if (_controls) {
-            _controls.disable();
+            _controls.disable(_model);
         }
 
         if (_instreamModel) {
