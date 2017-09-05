@@ -149,7 +149,6 @@ export function handleColorOverrides(playerId, skin = {}) {
         addStyle([
             '.jw-progress',
             '.jw-buffer',
-            '.jw-slider-time .jw-cue',
             '.jw-knob'
         ], 'background', 'none ' + config.progress);
 
@@ -162,7 +161,8 @@ export function handleColorOverrides(playerId, skin = {}) {
         ], 'background', 'none ' + config.rail);
 
         addStyle([
-            '.jw-background-color.jw-slider-time'
+            '.jw-background-color.jw-slider-time',
+            '.jw-slider-time .jw-cue'
         ], 'background', config.background);
     }
 

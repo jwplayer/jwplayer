@@ -16,7 +16,6 @@ describe('Skin Customization', function() {
     });
 
     describe('handleColorOverrides', function() {
-
         let cssStub;
 
         before(function() {
@@ -28,7 +27,7 @@ describe('Skin Customization', function() {
         });
 
         it('should not style any element with an empty config', function() {
-            handleColorOverrides({});
+            handleColorOverrides('id');
 
             expect(cssUtils.css.callCount).to.equal(0);
         });
