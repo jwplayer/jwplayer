@@ -110,6 +110,11 @@ function reasonInteraction() {
     return { reason: 'interaction' };
 }
 
+function buttonsInFirstNotInSecond(buttonsA, buttonsB) {
+    return buttonsA.filter(a =>
+        !buttonsB.some(b => (b.id + b.btnClass === a.id + a.btnClass) && a.callback === b.callback));
+}
+
 const appendChildren = (container, elements) => {
     elements.forEach(e => {
         if (e.element) {
@@ -534,11 +539,8 @@ export default class Controlbar {
             addedButtons = newButtons;
 
         } else {
-            addedButtons = newButtons.filter(newButton =>
-                !oldButtons.some(oldButton => newButton.id + newButton.btnClass === oldButton.id + oldButton.btnClass));
-
-            removedButtons = oldButtons.filter(oldButton =>
-                !newButtons.some(newButton => newButton.id + newButton.btnClass === oldButton.id + oldButton.btnClass));
+            addedButtons = buttonsInFirstNotInSecond(newButtons, oldButtons);
+            removedButtons = buttonsInFirstNotInSecond(oldButtons, newButtons);
 
             this.removeButtons(buttonContainer, removedButtons);
         }
