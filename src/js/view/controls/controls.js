@@ -92,7 +92,7 @@ export default class Controls {
                 } else {
                     this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
                 }
-            });
+            }, this);
         }
 
         // Controlbar
@@ -138,7 +138,7 @@ export default class Controls {
             // Hide the controlbar until the autostart flag is removed
             utils.addClass(this.playerContainer, 'jw-flag-autostart');
 
-            model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback);
+            model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback, this);
             this.unmuteCallback = unmuteCallback;
         }
 
@@ -232,8 +232,17 @@ export default class Controls {
         this.playerContainer.appendChild(this.div);
     }
 
-    disable() {
+    disable(model) {
         this.off();
+
+        if (model) {
+            model.off(null, null, this);
+            const mediaModel = model.get('mediaModel');
+            if (mediaModel) {
+                mediaModel.off(null, null, this);
+            }
+        }
+
         clearTimeout(this.activeTimeout);
 
         if (this.div.parentNode) {
@@ -368,11 +377,11 @@ export default class Controls {
                     model.getVideo().setCurrentQuality.bind(model.getVideo()),
                     changedModel.get('currentLevel')
                 );
-            });
+            }, this);
 
             mediaModel.on('change:currentLevel', (changedModel, currentQuality) => {
                 activateSubmenuItem('quality', currentQuality);
-            });
+            }, this);
 
             // Audio Tracks
             const onAudiotracksChange = (changedModel, audioTracks) => {
@@ -388,11 +397,11 @@ export default class Controls {
                     mediaModel.get('currentAudioTrack')
                 );
             };
-            mediaModel.change('audioTracks', onAudiotracksChange);
+            mediaModel.change('audioTracks', onAudiotracksChange, this);
             mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
                 activateSubmenuItem('audioTracks', currentAudioTrack);
-            });
-        });
+            }, this);
+        }, this);
 
         // Captions
         model.change('captionsList', (changedModel, captionsList) => {
@@ -410,7 +419,7 @@ export default class Controls {
             );
             controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
             controlbarButton.show();
-        });
+        }, this);
 
         model.change('captionsIndex', (changedModel, index) => {
             const captionsSubmenu = settingsMenu.getSubmenu('captions');
@@ -418,7 +427,7 @@ export default class Controls {
                 captionsSubmenu.activateItem(index);
                 controlbar.toggleCaptionsButtonState(!!index);
             }
-        });
+        }, this);
 
         // Playback Rates
         model.change('playbackRates', (changedModel, playbackRates) => {
@@ -440,14 +449,14 @@ export default class Controls {
                 provider.setPlaybackRate.bind(model.getVideo()),
                 model.get('playbackRate')
             );
-        });
+        }, this);
 
         model.change('playbackRate', (changedModel, playbackRate) => {
             const rates = model.get('playbackRates');
             if (rates) {
                 activateSubmenuItem('playbackRates', rates.indexOf(playbackRate));
             }
-        });
+        }, this);
     }
 }
 
