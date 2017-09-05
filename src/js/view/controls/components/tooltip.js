@@ -1,6 +1,6 @@
 import Events from 'utils/backbone.events';
 import ariaLabel from 'utils/aria';
-import utils from 'utils/helpers';
+import { toggleClass } from 'utils/dom';
 import svgParse from 'utils/svgParser';
 
 export default class Tooltip {
@@ -22,7 +22,7 @@ export default class Tooltip {
 
         this.el.appendChild(this.container);
         if (svgIcons && svgIcons.length > 0) {
-            Array.prototype.slice.call(svgIcons).forEach((svgIcon) => {
+            Array.prototype.forEach.call(svgIcons, svgIcon => {
                 if (typeof svgIcon === 'string') {
                     this.el.appendChild(svgParse(svgIcon));
                 } else {
@@ -59,13 +59,13 @@ export default class Tooltip {
     openTooltip(evt) {
         this.trigger('open-' + this.componentType, evt, { isOpen: true });
         this.isOpen = true;
-        utils.toggleClass(this.el, this.openClass, this.isOpen);
+        toggleClass(this.el, this.openClass, this.isOpen);
     }
 
     closeTooltip(evt) {
         this.trigger('close-' + this.componentType, evt, { isOpen: false });
         this.isOpen = false;
-        utils.toggleClass(this.el, this.openClass, this.isOpen);
+        toggleClass(this.el, this.openClass, this.isOpen);
     }
 
     toggleOpenState(evt) {

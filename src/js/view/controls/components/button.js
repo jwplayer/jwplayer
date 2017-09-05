@@ -27,7 +27,7 @@ export default function (icon, apiAction, ariaText, svgIcons) {
     });
 
     if (svgIcons) {
-        Array.prototype.slice.call(svgIcons).forEach((svgIcon) => {
+        Array.prototype.forEach.call(svgIcons, svgIcon => {
             if (typeof svgIcon === 'string') {
                 element.appendChild(svgParse(svgIcon));
             } else {
