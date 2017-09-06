@@ -25,22 +25,22 @@ const Captions = function(_model) {
             return;
         }
 
-        var tracks = e.tracks || [];
-        for (var i = 0; i < tracks.length; i++) {
+        const tracks = e.tracks || [];
+        for (let i = 0; i < tracks.length; i++) {
             _addTrack(tracks[i]);
         }
 
         // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
         _tracks = Object.keys(_tracksById).map(id => _tracksById[id]);
 
-        var captionsMenu = _captionsMenu();
+        const captionsMenu = _captionsMenu();
         _selectDefaultIndex();
         this.setCaptionsList(captionsMenu);
     }
 
-    var _tracks = [];
-    var _tracksById = {};
-    var _unknownCount = 0;
+    let _tracks = [];
+    let _tracksById = {};
+    let _unknownCount = 0;
 
     /** Listen to playlist item updates. **/
     function _itemHandler() {
@@ -53,17 +53,14 @@ const Captions = function(_model) {
         // Clean up in case we're replaying
         _itemHandler(_model, item);
 
-        var tracks = item.tracks;
-        var len = tracks && tracks.length;
+        const tracks = item.tracks;
+        const len = tracks && tracks.length;
 
         // Sideload tracks when not rendering natively
         if (!_model.get('renderCaptionsNatively') && len) {
-            var i;
-            var track;
-
-            for (i = 0; i < len; i++) {
+            for (let i = 0; i < len; i++) {
                 /* eslint-disable no-loop-func */
-                track = tracks[i];
+                const track = tracks[i];
                 if (_kindSupported(track.kind) && !_tracksById[track._id]) {
                     _addTrack(track);
                     loadFile(track,
@@ -80,7 +77,7 @@ const Captions = function(_model) {
             }
         }
 
-        var captionsMenu = _captionsMenu();
+        const captionsMenu = _captionsMenu();
         _selectDefaultIndex();
         this.setCaptionsList(captionsMenu);
     }
@@ -94,7 +91,7 @@ const Captions = function(_model) {
     }
 
     function _captionsIndexHandler(model, captionsMenuIndex) {
-        var track = null;
+        let track = null;
         if (captionsMenuIndex !== 0) {
             track = _tracks[captionsMenuIndex - 1];
         }
@@ -107,7 +104,7 @@ const Captions = function(_model) {
         track._id = createId(track, _tracks.length);
 
         if (!track.name) {
-            var labelInfo = createLabel(track, _unknownCount);
+            const labelInfo = createLabel(track, _unknownCount);
             track.name = labelInfo.label;
             _unknownCount = labelInfo.unknownCount;
         }
@@ -118,11 +115,11 @@ const Captions = function(_model) {
     }
 
     function _captionsMenu() {
-        var list = [{
+        const list = [{
             id: 'off',
             label: 'Off'
         }];
-        for (var i = 0; i < _tracks.length; i++) {
+        for (let i = 0; i < _tracks.length; i++) {
             list.push({
                 id: _tracks[i]._id,
                 label: _tracks[i].name || 'Unknown CC'
@@ -132,8 +129,8 @@ const Captions = function(_model) {
     }
 
     function _selectDefaultIndex() {
-        var captionsMenuIndex = 0;
-        var label = _model.get('captionLabel');
+        let captionsMenuIndex = 0;
+        const label = _model.get('captionLabel');
 
         // Because there is no explicit track for "Off"
         //  it is the implied zeroth track
@@ -142,8 +139,8 @@ const Captions = function(_model) {
             return;
         }
 
-        for (var i = 0; i < _tracks.length; i++) {
-            var track = _tracks[i];
+        for (let i = 0; i < _tracks.length; i++) {
+            const track = _tracks[i];
             if (label && label === track.name) {
                 captionsMenuIndex = i + 1;
                 break;
