@@ -11,7 +11,7 @@ export default class RightClick {
 
         var menu = {
             items: [{
-                title: 'Powered by JW Player ' + majorMinorPatchPre,
+                title: 'Powered by <span>JW Player ' + majorMinorPatchPre + '</span>',
                 featured: true,
                 showLogo: true,
                 link: 'https://jwplayer.com/learn-more'
