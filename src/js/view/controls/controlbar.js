@@ -563,15 +563,19 @@ export default class Controlbar {
                 SimpleTooltip(newButton.element(), buttonProps.id, buttonProps.tooltip);
             }
 
-            let firstButton = buttonContainer.querySelector('.jw-spacer').nextSibling;
-            if (firstButton && firstButton.getAttribute('button') === 'logo') {
-                firstButton = firstButton.nextSibling;
+            let firstButton;
+            if (newButton.id === 'related') {
+                firstButton = this.elements.settingsButton.element();
+            } else if (newButton.id === 'share') {
+                firstButton = buttonContainer.querySelector('[button="related"]') ||
+                    this.elements.settingsButton.element();
+            } else {
+                firstButton = this.elements.spacer.nextSibling;
+                if (firstButton && firstButton.getAttribute('button') === 'logo') {
+                    firstButton = firstButton.nextSibling;
+                }
             }
-
-            buttonContainer.insertBefore(
-                newButton.element(),
-                firstButton
-            );
+            buttonContainer.insertBefore(newButton.element(), firstButton);
         }
     }
 

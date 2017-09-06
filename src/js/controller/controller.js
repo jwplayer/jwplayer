@@ -732,7 +732,7 @@ Object.assign(Controller.prototype, {
                 btnClass: btnClass
             };
 
-            customButtons = _.reduce(customButtons, function(buttons, button) {
+            customButtons = customButtons.reduce(function(buttons, button) {
                 if (button.id === newButton.id) {
                     added = true;
                     buttons.push(newButton);
@@ -743,11 +743,7 @@ Object.assign(Controller.prototype, {
             }, []);
 
             if (!added) {
-                if (newButton.id === 'related') {
-                    customButtons.push(newButton);
-                } else {
-                    customButtons.unshift(newButton);
-                }
+                customButtons.unshift(newButton);
             }
 
             _model.set('customButtons', customButtons);
