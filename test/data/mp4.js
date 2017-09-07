@@ -1,4 +1,4 @@
-/* jshint maxlen: 1000 */
+
 define({
     tagged : {
         file : 'sample',

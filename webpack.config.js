@@ -1,4 +1,4 @@
-/* jshint node: true */
+
 var webpack = require('webpack');
 var path = require('path');
 var env = process.env;

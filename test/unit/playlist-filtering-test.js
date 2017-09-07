@@ -1,4 +1,4 @@
-// jshint ignore: start
+
 define([
     'test/underscore',
     'utils/helpers',

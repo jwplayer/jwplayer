@@ -1,4 +1,4 @@
-/* jshint jquery: true */
+
 window.requireBaseUrl = document.location.href.replace(/[^\/]+\/[^\/]+\/[^\/]*$/, '');
 window.requireCallback = function(){
     require([
