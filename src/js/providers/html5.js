@@ -44,9 +44,12 @@ function VideoProvider(_playerId, _playerConfig) {
 
     // Always render natively in iOS, Safari and Edge, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
-    // FF and IE are excluded due to styling/positioning drawbacks.
+    // FF, IE & Edge are excluded due to styling/positioning drawbacks.
+    // The following issues need to be addressed before we enable native rendering in Edge:
+    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8120475/
+    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12079271/
     function renderNatively (configRenderNatively) {
-        if (OS.iOS || Browser.safari || Browser.edge) {
+        if (OS.iOS || Browser.safari) {
             return true;
         }
         return configRenderNatively && Browser.chrome;
