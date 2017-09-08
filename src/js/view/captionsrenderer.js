@@ -23,15 +23,15 @@ const _defaults = {
 
 const CaptionsRenderer = function (_model) {
 
-    var _options = {};
-    var _captionsTrack;
-    var _currentCues;
-    var _timeEvent;
-    var _display;
-    var _captionsWindow;
-    var _textContainer;
-    var _fontScale;
-    var _windowStyle;
+    let _options;
+    let _captionsTrack;
+    let _currentCues;
+    let _timeEvent;
+    let _display;
+    let _captionsWindow;
+    let _textContainer;
+    let _fontScale;
+    let _windowStyle;
 
     _display = document.createElement('div');
     _display.className = 'jw-captions jw-reset';
@@ -73,19 +73,16 @@ const CaptionsRenderer = function (_model) {
     };
 
     this.selectCues = function (track, timeEvent) {
-        var cues;
-        var pos;
-
         if (!track || !track.data || !timeEvent) {
             return;
         }
 
-        pos = this.getAlignmentPosition(track, timeEvent);
+        const pos = this.getAlignmentPosition(track, timeEvent);
         if (pos === false) {
             return;
         }
 
-        cues = this.getCurrentCues(track.data, pos);
+        const cues = this.getCurrentCues(track.data, pos);
 
         this.updateCurrentCues(cues);
         this.renderCues(true);
@@ -110,8 +107,8 @@ const CaptionsRenderer = function (_model) {
     };
 
     this.getAlignmentPosition = function (track, timeEvent) {
-        var source = track.source;
-        var metadata = timeEvent.metadata;
+        const source = track.source;
+        const metadata = timeEvent.metadata;
 
         // subtitles with "source" time must be synced with "metadata[source]"
         if (source) {
@@ -119,8 +116,8 @@ const CaptionsRenderer = function (_model) {
                 return metadata[source];
             }
             return;
-        } else if (track.embedded && timeEvent.duration < 0) {
-            // In DVR mode, need to make alignmentPosition positive for captions to work
+        } else if (timeEvent.duration < 0) {
+            // When the duration is negative (DVR mode), need to make alignmentPosition positive for captions to work
             return timeEvent.position - timeEvent.duration;
         }
 
@@ -144,11 +141,11 @@ const CaptionsRenderer = function (_model) {
         _fontScale = _defaults.fontScale;
         _setFontScale(_options.fontSize);
 
-        var windowColor = _options.windowColor;
-        var windowOpacity = _options.windowOpacity;
-        var edgeStyle = _options.edgeStyle;
+        const windowColor = _options.windowColor;
+        const windowOpacity = _options.windowOpacity;
+        const edgeStyle = _options.edgeStyle;
         _windowStyle = {};
-        var textStyle = {};
+        const textStyle = {};
 
         _addTextStyle(textStyle, _options);
 
@@ -187,7 +184,7 @@ const CaptionsRenderer = function (_model) {
             return;
         }
 
-        var height = _model.get('containerHeight');
+        const height = _model.get('containerHeight');
 
         if (!height) {
             _model.once('change:containerHeight', _setFontScale, this);
@@ -199,13 +196,13 @@ const CaptionsRenderer = function (_model) {
     }
 
     function _setFontSize() {
-        var height = _model.get('containerHeight');
+        const height = _model.get('containerHeight');
 
         if (!height) {
             return;
         }
 
-        var fontSize = Math.round(height * _fontScale);
+        const fontSize = Math.round(height * _fontScale);
 
         if (_model.get('renderCaptionsNatively')) {
             _setShadowDOMFontSize(_model.get('id'), fontSize);
@@ -247,15 +244,15 @@ const CaptionsRenderer = function (_model) {
     }
 
     function _addTextStyle(textStyle, options) {
-        var color = options.color;
-        var fontOpacity = options.fontOpacity;
+        const color = options.color;
+        const fontOpacity = options.fontOpacity;
         if (color || fontOpacity !== _defaults.fontOpacity) {
             textStyle.color = getRgba(color || '#ffffff', fontOpacity);
         }
 
         if (options.back) {
-            var bgColor = options.backgroundColor;
-            var bgOpacity = options.backgroundOpacity;
+            const bgColor = options.backgroundColor;
+            const bgOpacity = options.backgroundOpacity;
             if (bgColor !== _defaults.backgroundColor || bgOpacity !== _defaults.backgroundOpacity) {
                 textStyle.backgroundColor = getRgba(bgColor, bgOpacity);
             }
@@ -281,7 +278,7 @@ const CaptionsRenderer = function (_model) {
     }
 
     function _addEdgeStyle(option, styles, fontOpacity) {
-        var color = getRgba('#000000', fontOpacity);
+        const color = getRgba('#000000', fontOpacity);
         if (option === 'dropshadow') { // small drop shadow
             styles.textShadow = '0 2px 1px ' + color;
         } else if (option === 'raised') { // larger drop shadow
