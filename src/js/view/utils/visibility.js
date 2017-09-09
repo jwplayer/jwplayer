@@ -1,4 +1,4 @@
-export default function getVisibility(model, element, bounds) {
+export default function getVisibility(model, element) {
     // Set visibility to 1 if we're in fullscreen
     if (model.get('fullscreen')) {
         return 1;
@@ -13,13 +13,13 @@ export default function getVisibility(model, element, bounds) {
 
     if (intersectionRatio === undefined) {
         // Get intersectionRatio through brute force
-        intersectionRatio = computeVisibility(element, bounds);
+        intersectionRatio = computeVisibility(element);
     }
 
     return intersectionRatio;
 }
 
-function computeVisibility(target, bounds) {
+function computeVisibility(target) {
     const html = document.documentElement;
     const body = document.body;
     const rootRect = {
@@ -34,7 +34,15 @@ function computeVisibility(target, bounds) {
     if (!body.contains(target)) {
         return 0;
     }
-    const targetRect = target.getBoundingClientRect();
+    // If the element isn't displayed, an intersection can't happen.
+    if (window.getComputedStyle(target).display === 'none') {
+        return 0;
+    }
+
+    const targetRect = getBoundingClientRect(target);
+    if (!targetRect) {
+        return 0;
+    }
 
     let intersectionRect = targetRect;
     let parent = target.parentNode;
@@ -42,16 +50,16 @@ function computeVisibility(target, bounds) {
 
     while (!atRoot) {
         let parentRect = null;
-        if (!parent || parent.nodeType !== 1) {
+        if (parent === body || parent === html || parent.nodeType !== 1) {
             atRoot = true;
             parentRect = rootRect;
         } else if (window.getComputedStyle(parent).overflow !== 'visible') {
-            parentRect = bounds(parent);
+            parentRect = getBoundingClientRect(parent);
         }
         if (parentRect) {
             intersectionRect = computeRectIntersection(parentRect, intersectionRect);
             if (!intersectionRect) {
-                return 0;
+                break;
             }
         }
         parent = parent.parentNode;
@@ -59,6 +67,12 @@ function computeVisibility(target, bounds) {
     const targetArea = targetRect.width * targetRect.height;
     const intersectionArea = intersectionRect.width * intersectionRect.height;
     return targetArea ? (intersectionArea / targetArea) : 0;
+}
+
+function getBoundingClientRect(el) {
+    try {
+        return el.getBoundingClientRect();
+    } catch (e) {/* ignore Windows 7 IE11 "Unspecified error" */}
 }
 
 function computeRectIntersection(rect1, rect2) {

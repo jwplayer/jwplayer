@@ -1,9 +1,11 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
-import { STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING, STATE_STALLED, MEDIA_TIME,
-    MEDIA_BUFFER, MEDIA_META, MEDIA_BUFFER_FULL, PROVIDER_FIRST_FRAME, MEDIA_ERROR, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
-    MEDIA_SEEK, MEDIA_SEEKED, MEDIA_COMPLETE } from 'events/events';
+import { STATE_IDLE, MEDIA_META, MEDIA_BUFFER_FULL, MEDIA_ERROR,
+    MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK } from 'events/events';
+import VideoEvents from 'providers/video-listener-mixin';
+import VideoAction from 'providers/video-actions-mixin';
+import VideoAttached from 'providers/video-attached-mixin';
 import { style, transform } from 'utils/css';
 import utils from 'utils/helpers';
 import { emptyElement } from 'utils/dom';
@@ -12,22 +14,22 @@ import DefaultProvider from 'providers/default';
 import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
+import createPlayPromise from 'providers/utils/play-promise';
 
 const clearTimeout = window.clearTimeout;
-const STALL_DELAY = 256;
 const MIN_DVR_DURATION = 120;
 const _name = 'html5';
 
 function _setupListeners(eventsHash, videoTag) {
-    _removeListeners(eventsHash, videoTag);
-    utils.foreach(eventsHash, function(evt, evtCallback) {
-        videoTag.addEventListener(evt, evtCallback, false);
+    Object.keys(eventsHash).forEach(eventName => {
+        videoTag.removeEventListener(eventName, eventsHash[eventName]);
+        videoTag.addEventListener(eventName, eventsHash[eventName]);
     });
 }
 
 function _removeListeners(eventsHash, videoTag) {
-    utils.foreach(eventsHash, function(evt, evtCallback) {
-        videoTag.removeEventListener(evt, evtCallback, false);
+    Object.keys(eventsHash).forEach(eventName => {
+        videoTag.removeEventListener(eventName, eventsHash[eventName]);
     });
 }
 
@@ -37,8 +39,6 @@ function VideoProvider(_playerId, _playerConfig) {
 
     // Are we buffering due to seek, or due to playback?
     this.seeking = false;
-
-    Object.assign(this, Events, Tracks);
 
     this.renderNatively = renderNatively(_playerConfig.renderCaptionsNatively);
 
@@ -55,141 +55,152 @@ function VideoProvider(_playerId, _playerConfig) {
         return configRenderNatively && Browser.chrome;
     }
 
-    var _this = this;
-    var _mediaEvents = {
-        click: _clickHandler,
-        durationchange: _durationChangeHandler,
-        ended: _endedHandler,
-        error: _errorHandler,
-        loadstart: _onLoadStart,
-        loadeddata: _onLoadedData, // we have video tracks (text, audio, metadata)
-        loadedmetadata: _loadedMetadataHandler, // we have video dimensions
-        canplay: _canPlayHandler,
-        playing: _playingHandler,
-        progress: _progressHandler,
-        pause: _pauseHandler,
-        seeked: _seekedHandler,
-        timeupdate: _timeUpdateHandler,
-        ratechange: _playbackRateHandler,
-        volumechange: _volumeChangeHandler,
-        webkitbeginfullscreen: _fullscreenBeginHandler,
-        webkitendfullscreen: _fullscreenEndHandler
+    const _this = this;
+
+    const MediaEvents = {
+        progress() {
+            VideoEvents.progress.call(_this);
+            checkStaleStream();
+        },
+        timeupdate() {
+            VideoEvents.timeupdate.call(_this);
+            checkStaleStream();
+        },
+        resize() {
+            checkVisualQuality();
+        },
+        ended() {
+            _currentQuality = -1;
+            clearTimeouts();
+            VideoEvents.ended.call(_this);
+        },
+
+        loadedmetadata() {
+            var duration = _this.getDuration();
+            if (duration === Infinity && isAndroidHls(_levels[0])) {
+                duration = 0;
+            }
+            var metadata = {
+                duration: duration,
+                height: _videotag.videoHeight,
+                width: _videotag.videoWidth
+            };
+            _this.trigger(MEDIA_META, metadata);
+            _updateDuration(duration);
+        },
+
+        loadeddata() {
+            VideoEvents.loadeddata.call(_this);
+            _setAudioTracks(_videotag.audioTracks);
+        },
+
+        canplay() {
+            _canSeek = true;
+            if (!isAndroidHls(_levels[0])) {
+                _setMediaType();
+            }
+            if (Browser.ie && Browser.version.major === 9) {
+                // In IE9, set tracks here since they are not ready
+                // on load
+                _this.setTextTracks(_this._textTracks);
+            }
+            _this.trigger(MEDIA_BUFFER_FULL);
+        },
+
+        webkitbeginfullscreen(e) {
+            _fullscreenState = true;
+            _sendFullscreen(e);
+        },
+
+        webkitendfullscreen(e) {
+            _fullscreenState = false;
+            _sendFullscreen(e);
+        }
     };
-    var _container;
-    var _duration;
-    var _position;
-    var _canSeek = false;
-    var _bufferFull;
-    var _delayedSeek = 0;
-    var _playbackTimeout = -1;
-    var _buffered = -1;
-    var _levels;
-    var _currentQuality = -1;
-    var _isAndroidHLS = null;
-    var _isSDK = !!_playerConfig.sdkplatform;
-    var _fullscreenState = false;
-    var _beforeResumeHandler = utils.noop;
-    var _audioTracks = null;
-    var _currentAudioTrackIndex = -1;
-    var _visualQuality = { level: {} };
-    var _canPlay = false;
+    Object.keys(VideoEvents).forEach(eventName => {
+        if (!MediaEvents[eventName]) {
+            const mixinEventHandler = VideoEvents[eventName];
+            MediaEvents[eventName] = (e) => {
+                mixinEventHandler.call(_this, e);
+            };
+        }
+    });
 
-    var _staleStreamDuration = 3 * 10 * 1000;
-    var _staleStreamTimeout = null;
-    var _lastEndOfBuffer = null;
-    var _stale = false;
-    var _edgeOfLiveStream = false;
+    Object.assign(this, Events, VideoAction, VideoAttached, Tracks, {
+        eventsOn_() {
+            _setupListeners(MediaEvents, _videotag);
+        },
+        eventsOff_() {
+            _removeListeners(MediaEvents, _videotag);
+        },
+        detachMedia() {
+            VideoAttached.detachMedia.call(_this);
+            clearTimeouts();
+            // Stop listening to track changes so disabling the current track doesn't update the model
+            this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
+            // Prevent tracks from showing during ad playback
+            this.disableTextTrack();
+            return _videotag;
+        },
+        attachMedia() {
+            VideoAttached.attachMedia.call(_this);
+            _canSeek = false;
+            // If we were mid-seek when detached, we want to allow it to resume
+            this.seeking = false;
+            // In case the video tag was modified while we shared it
+            _videotag.loop = false;
+            // If there was a showing track, re-enable it
+            this.enableTextTrack();
+            this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
+        },
+        stalledHandler(checkStartTime) {
+            // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
+            if (isAndroidHls(_levels[0])) {
+                return;
+            }
+            VideoAttached.stalledHandler.call(_this, checkStartTime);
+        },
+        isLive() {
+            return _videotag.duration === Infinity;
+        }
+    });
 
-    // Find video tag, or create it if it doesn't exist.  View may not be built yet.
-    var element = document.getElementById(_playerId);
-    var _videotag = (element) ? element.querySelector('video, audio') : undefined;
+    const _videotag = _this.getVideo(_playerId);
+    const visualQuality = { level: {} };
+    const _staleStreamDuration = 3 * 10 * 1000;
+
+    let _duration;
+    let _position;
+    let _canSeek = false; // true on valid time event
+    let _delayedSeek = 0;
+    let _levels;
+    let _currentQuality = -1;
+    let _fullscreenState = false;
+    let _beforeResumeHandler = utils.noop;
+    let _audioTracks = null;
+    let _currentAudioTrackIndex = -1;
+    let _staleStreamTimeout = -1;
+    let _stale = false;
+    let _lastEndOfBuffer = null;
 
     function _setAttribute(name, value) {
         _videotag.setAttribute(name, value || '');
     }
 
-    if (!_videotag) {
-        _videotag = document.createElement('video');
-
-        if (OS.mobile) {
-            _setAttribute('jw-gesture-required');
-        }
-    }
-
     _videotag.className = 'jw-video jw-reset';
 
-    this.isSDK = _isSDK;
+    this.isSDK = !!_playerConfig.sdkplatform;
     this.video = _videotag;
     this.supportsPlaybackRate = true;
 
-    _setupListeners(_mediaEvents, _videotag);
+    _setupListeners(MediaEvents, _videotag);
 
     _setAttribute('disableRemotePlayback', '');
     _setAttribute('webkit-playsinline');
     _setAttribute('playsinline');
 
-    // Enable tracks support for HLS videos
-    function _onLoadedData() {
-        _setAudioTracks(_videotag.audioTracks);
-        _this.setTextTracks(_videotag.textTracks);
-        _setAttribute('jw-loaded', 'data');
-    }
-
-    function _onLoadStart() {
-        _setAttribute('jw-loaded', 'started');
-    }
-
-    function _clickHandler(evt) {
-        _this.trigger('click', evt);
-    }
-
-    function _durationChangeHandler() {
-        if (_isAndroidHLS) {
-            return;
-        }
-        _updateDuration(_getDuration());
-        _setBuffered(_getBuffer(), _position, _duration);
-    }
-
-    function _progressHandler() {
-        _setBuffered(_getBuffer(), _position, _duration);
-    }
-
-    function _timeUpdateHandler() {
-        clearTimeout(_playbackTimeout);
-
-        _canSeek = true;
-        if (_this.state === STATE_STALLED) {
-            _this.setState(STATE_PLAYING);
-        } else if (_this.state === STATE_PLAYING) {
-            _playbackTimeout = setTimeout(_checkPlaybackStalled, STALL_DELAY);
-        }
-        // When video has not yet started playing for androidHLS, we cannot get the correct duration
-        if (_isAndroidHLS && (_videotag.duration === Infinity) && (_videotag.currentTime === 0)) {
-            return;
-        }
-        _updateDuration(_getDuration());
-        _setPosition(_videotag.currentTime);
-        // buffer ranges change during playback, not just on file progress
-        _setBuffered(_getBuffer(), _position, _duration);
-
-        // send time events when playing
-        if (_this.state === STATE_PLAYING) {
-            _this.trigger(MEDIA_TIME, {
-                position: _position,
-                duration: _duration
-            });
-
-            _checkVisualQuality();
-        }
-    }
-
-    function _playbackRateHandler() {
-        _this.trigger('ratechange', { playbackRate: _videotag.playbackRate });
-    }
-
-    function _checkVisualQuality() {
-        var level = _visualQuality.level;
+    function checkVisualQuality() {
+        const level = visualQuality.level;
         if (level.width !== _videotag.videoWidth ||
             level.height !== _videotag.videoHeight) {
             level.width = _videotag.videoWidth;
@@ -198,40 +209,29 @@ function VideoProvider(_playerId, _playerConfig) {
             if (!level.width || !level.height || _currentQuality === -1) {
                 return;
             }
-            _visualQuality.reason = _visualQuality.reason || 'auto';
-            _visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
-            _visualQuality.bitrate = 0;
+            visualQuality.reason = visualQuality.reason || 'auto';
+            visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
+            visualQuality.bitrate = 0;
             level.index = _currentQuality;
             level.label = _levels[_currentQuality].label;
-            _this.trigger('visualQuality', _visualQuality);
-            _visualQuality.reason = '';
+            _this.trigger('visualQuality', visualQuality);
+            visualQuality.reason = '';
         }
     }
 
-    function _setBuffered(buffered, currentTime, duration) {
-        if (duration !== 0 && (buffered !== _buffered || duration !== _duration)) {
-            _buffered = buffered;
-            _this.trigger(MEDIA_BUFFER, {
-                bufferPercent: buffered * 100,
-                position: currentTime,
-                duration: duration
-            });
-        }
-
-        checkStaleStream();
-    }
-
-    function _setPosition(currentTime) {
+    _this.getCurrentTime = function() {
+        let currentTime = _videotag.currentTime;
         if (_duration < 0) {
             currentTime = -(_getSeekableEnd() - currentTime);
         }
         _position = currentTime;
-    }
+        return _position;
+    };
 
-    function _getDuration() {
+    _this.getDuration = function() {
         var duration = _videotag.duration;
         var end = _getSeekableEnd();
-        if (duration === Infinity && end) {
+        if (_this.isLive() && end) {
             var seekableDuration = end - _getSeekableStart();
             if (seekableDuration !== Infinity && seekableDuration > MIN_DVR_DURATION) {
                 // Player interprets negative duration as DVR
@@ -239,120 +239,13 @@ function VideoProvider(_playerId, _playerConfig) {
             }
         }
         return duration;
-    }
+    };
 
     function _updateDuration(duration) {
         _duration = duration;
         if (_delayedSeek && duration && duration !== Infinity) {
             _this.seek(_delayedSeek);
         }
-    }
-
-    function _sendMetaEvent() {
-        var duration = _getDuration();
-        if (_isAndroidHLS && duration === Infinity) {
-            duration = 0;
-        }
-        _this.trigger(MEDIA_META, {
-            duration: duration,
-            height: _videotag.videoHeight,
-            width: _videotag.videoWidth
-        });
-        _updateDuration(duration);
-    }
-
-    function _canPlayHandler() {
-        _canSeek = _canPlay = true;
-        if (!_isAndroidHLS) {
-            _setMediaType();
-        }
-        if (Browser.ie && Browser.version.major === 9) {
-            // In IE9, set tracks here since they are not ready
-            // on load
-            _this.setTextTracks(_this._textTracks);
-        }
-        _sendBufferFull();
-    }
-
-    function _loadedMetadataHandler() {
-        _setAttribute('jw-loaded', 'meta');
-        _sendMetaEvent();
-    }
-
-    function _sendBufferFull() {
-        // Wait until the canplay event on iOS to send the bufferFull event
-        if (!_bufferFull && (!OS.iOS || _canPlay)) {
-            _bufferFull = true;
-            _canPlay = false;
-            _this.trigger(MEDIA_BUFFER_FULL);
-        }
-    }
-
-    function _playingHandler() {
-        _this.setState(STATE_PLAYING);
-        if (!_videotag.hasAttribute('jw-played')) {
-            _setAttribute('jw-played', '');
-        }
-        if (_videotag.hasAttribute('jw-gesture-required')) {
-            _videotag.removeAttribute('jw-gesture-required');
-        }
-        _this.trigger(PROVIDER_FIRST_FRAME, {});
-    }
-
-    function _pauseHandler() {
-        // Sometimes the browser will fire "complete" and then a "pause" event
-        if (_this.state === STATE_COMPLETE) {
-            return;
-        }
-
-        // If "pause" fires before "complete" or before we've started playback, we still don't want to propagate it
-        if (!_videotag.hasAttribute('jw-played') || _videotag.currentTime === _videotag.duration) {
-            return;
-        }
-
-        _this.setState(STATE_PAUSED);
-    }
-
-    function _stalledHandler() {
-        // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
-        if (_isAndroidHLS) {
-            return;
-        }
-
-        if (_videotag.paused || _videotag.ended) {
-            return;
-        }
-
-        // A stall after loading/error, should just stay loading/error
-        if (_this.state === STATE_LOADING || _this.state === STATE_ERROR) {
-            return;
-        }
-
-        // During seek we stay in paused state
-        if (_this.seeking) {
-            return;
-        }
-
-        // Workaround for iOS not completing after midroll with HLS streams
-        if (OS.iOS && (_videotag.duration - _videotag.currentTime <= 0.1)) {
-            _endedHandler();
-            return;
-        }
-
-        if (atEdgeOfLiveStream()) {
-            _edgeOfLiveStream = true;
-            if (checkStreamEnded()) {
-                return;
-            }
-        }
-
-        _this.setState(STATE_STALLED);
-    }
-
-    function _errorHandler() {
-        _this.trigger(MEDIA_ERROR, {
-            message: 'Error loading media: File could not be played'
-        });
     }
 
     function _getPublicLevels(levels) {
@@ -372,7 +265,6 @@ function VideoProvider(_playerId, _playerConfig) {
         _currentQuality = _pickInitialQuality(levels);
         var publicLevels = _getPublicLevels(levels);
         if (publicLevels) {
-            // _trigger?
             _this.trigger(MEDIA_LEVELS, {
                 levels: publicLevels,
                 currentQuality: _currentQuality
@@ -393,25 +285,13 @@ function VideoProvider(_playerId, _playerConfig) {
                 }
             }
         }
-        _visualQuality.reason = 'initial choice';
-        _visualQuality.level = {};
+        visualQuality.reason = 'initial choice';
+        visualQuality.level = {};
         return currentQuality;
     }
 
     function _play() {
-        var promise = _videotag.play();
-        if (promise && promise.catch) {
-            promise.catch(function(err) {
-                console.warn(err);
-                // User gesture required to start playback
-                if (err.name === 'NotAllowedError' && _videotag.hasAttribute('jw-gesture-required')) {
-                    _this.trigger('autoplayFailed');
-                }
-            });
-        } else if (_videotag.hasAttribute('jw-gesture-required')) {
-            // Autoplay isn't supported in older versions of Safari (<10) and Chrome (<53)
-            _this.trigger('autoplayFailed');
-        }
+        return _videotag.play() || createPlayPromise(_videotag);
     }
 
     function _completeLoad(startTime, duration) {
@@ -422,41 +302,20 @@ function VideoProvider(_playerId, _playerConfig) {
         sourceElement.src = _levels[_currentQuality].file;
         var sourceChanged = (_videotag.src !== sourceElement.src);
 
-        var loadedSrc = _videotag.getAttribute('jw-loaded');
-
-        var hasPlayed = _videotag.hasAttribute('jw-played');
-
-        if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
+        if (sourceChanged) {
             _duration = duration;
             _setVideotagSource(_levels[_currentQuality]);
             _this.setupSideloadedTracks(_this._itemTracks);
             _videotag.load();
-        } else {
-            // Load event is from the same video as before
-            if (startTime === 0 && _videotag.currentTime > 0) {
-                // restart video without dispatching seek event
-                _delayedSeek = -1;
-                _this.seek(startTime);
-            }
 
-            _play();
+        } else if (startTime === 0 && _videotag.currentTime > 0) {
+            // Load event is from the same video as before
+            // restart video without dispatching seek event
+            _delayedSeek = -1;
+            _this.seek(startTime);
         }
 
         _position = _videotag.currentTime;
-
-        if (OS.mobile && !hasPlayed) {
-            // results in html5.controller calling video.play()
-            _sendBufferFull();
-            // If we're still paused, then the tag isn't loading yet due to mobile interaction restrictions.
-            if (!_videotag.paused && _this.state !== STATE_PLAYING) {
-                _this.setState(STATE_LOADING);
-            }
-        }
-
-        // in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
-        if (OS.iOS && _this.getFullScreen()) {
-            _videotag.controls = true;
-        }
 
         if (startTime > 0) {
             _this.seek(startTime);
@@ -466,25 +325,20 @@ function VideoProvider(_playerId, _playerConfig) {
     function _setVideotagSource(source) {
         _audioTracks = null;
         _currentAudioTrackIndex = -1;
-        if (!_visualQuality.reason) {
-            _visualQuality.reason = 'initial choice';
-            _visualQuality.level = {};
+        if (!visualQuality.reason) {
+            visualQuality.reason = 'initial choice';
+            visualQuality.level = {};
         }
         _canSeek = false;
-        _bufferFull = false;
-        _isAndroidHLS = isAndroidHls(source);
-        if (_isAndroidHLS) {
+        if (isAndroidHls(source)) {
             // Playback rate is broken on Android HLS
             _this.supportsPlaybackRate = false;
         }
-
-        _setAttribute('preload', 'none');
 
         var sourceElement = document.createElement('source');
         sourceElement.src = source.file;
         var sourceChanged = (_videotag.src !== sourceElement.src);
         if (sourceChanged) {
-            _setAttribute('jw-loaded', 'none');
             _videotag.src = source.file;
         }
     }
@@ -494,8 +348,6 @@ function VideoProvider(_playerId, _playerConfig) {
             _this.disableTextTrack();
             _videotag.removeAttribute('preload');
             _videotag.removeAttribute('src');
-            _videotag.removeAttribute('jw-loaded');
-            _videotag.removeAttribute('jw-played');
             emptyElement(_videotag);
             style(_videotag, {
                 objectFit: ''
@@ -540,13 +392,11 @@ function VideoProvider(_playerId, _playerConfig) {
         this.setState(STATE_IDLE);
     };
 
-
     this.destroy = function() {
         _beforeResumeHandler = utils.noop;
-        _removeListeners(_mediaEvents, _videotag);
+        _removeListeners(MediaEvents, _videotag);
         this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
         this.removeTracksListener(_videotag.textTracks, 'change', _this.textTrackChangeHandler);
-        this.remove();
         this.off();
     };
 
@@ -560,14 +410,13 @@ function VideoProvider(_playerId, _playerConfig) {
 
         _position = item.starttime || 0;
         _duration = item.duration || 0;
-        _visualQuality.reason = '';
-        _setVideotagSource(_levels[_currentQuality]);
-        this.setupSideloadedTracks(item.tracks);
+        visualQuality.reason = '';
     };
 
     this.preload = function(item) {
         const preload = item.sources[_currentQuality] ? item.sources[_currentQuality].preload : 'metadata';
         _setAttribute('preload', preload);
+        _setVideotagSource(_levels[_currentQuality]);
     };
 
     this.load = function(item) {
@@ -576,29 +425,19 @@ function VideoProvider(_playerId, _playerConfig) {
         if (item.sources.length && item.sources[0].type !== 'hls') {
             this.sendMediaType(item.sources);
         }
-        if (!OS.mobile || _videotag.hasAttribute('jw-played')) {
-            // don't change state on mobile before user initiates playback
-            _this.setState(STATE_LOADING);
-        }
         _completeLoad(item.starttime || 0, item.duration || 0);
     };
 
     this.play = function() {
-        if (_this.seeking) {
-            _this.setState(STATE_LOADING);
-            _this.once(MEDIA_SEEKED, _this.play);
-            return;
-        }
         _beforeResumeHandler();
-        _play();
+        return _play();
     };
 
     this.pause = function() {
         clearTimeouts();
-        _videotag.pause();
         _beforeResumeHandler = function() {
             var unpausing = _videotag.paused && _videotag.currentTime;
-            if (unpausing && _videotag.duration === Infinity) {
+            if (unpausing && _this.isLive()) {
                 var end = _getSeekableEnd();
                 var seekableDuration = end - _getSeekableStart();
                 var isLiveNotDvr = seekableDuration < MIN_DVR_DURATION;
@@ -610,7 +449,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
             }
         };
-        this.setState(STATE_PAUSED);
+        _videotag.pause();
     };
 
     this.seek = function(seekPos) {
@@ -647,67 +486,6 @@ function VideoProvider(_playerId, _playerConfig) {
         }
     };
 
-    function _seekedHandler() {
-        _this.seeking = false;
-        _this.trigger(MEDIA_SEEKED);
-    }
-
-    this.volume = function(vol) {
-        // volume must be 0.0 - 1.0
-        vol = utils.between(vol / 100, 0, 1);
-
-        _videotag.volume = vol;
-    };
-
-    function _volumeChangeHandler() {
-        _this.trigger('volume', {
-            volume: Math.round(_videotag.volume * 100)
-        });
-        _this.trigger('mute', {
-            mute: _videotag.muted
-        });
-    }
-
-    this.mute = function(state) {
-        _videotag.muted = !!state;
-    };
-
-    function _checkPlaybackStalled() {
-        // Browsers, including latest chrome, do not always report Stalled events in a timely fashion
-        if (_videotag.currentTime === _position) {
-            _stalledHandler();
-        } else {
-            _edgeOfLiveStream = false;
-        }
-    }
-
-    function _getBuffer() {
-        var buffered = _videotag.buffered;
-        var duration = _videotag.duration;
-        if (!buffered || buffered.length === 0 || duration <= 0 || duration === Infinity) {
-            return 0;
-        }
-        return utils.between(buffered.end(buffered.length - 1) / duration, 0, 1);
-    }
-
-    function _endedHandler() {
-        if (_this.state !== STATE_IDLE && _this.state !== STATE_COMPLETE) {
-            clearTimeouts();
-            _currentQuality = -1;
-
-            _this.trigger(MEDIA_COMPLETE);
-        }
-    }
-
-    function _fullscreenBeginHandler(e) {
-        _fullscreenState = true;
-        _sendFullscreen(e);
-        // show controls on begin fullscreen so that they are disabled properly at end
-        if (OS.iOS) {
-            _videotag.controls = false;
-        }
-    }
-
     function _audioTrackChangeHandler() {
         var _selectedAudioTrackIndex = -1;
         for (var i = 0; i < _videotag.audioTracks.length; i++) {
@@ -719,71 +497,12 @@ function VideoProvider(_playerId, _playerConfig) {
         _setCurrentAudioTrack(_selectedAudioTrackIndex);
     }
 
-    function _fullscreenEndHandler(e) {
-        _fullscreenState = false;
-        _sendFullscreen(e);
-        if (OS.iOS) {
-            _videotag.controls = false;
-        }
-    }
-
     function _sendFullscreen(e) {
         _this.trigger('fullscreenchange', {
             target: e.target,
             jwstate: _fullscreenState
         });
     }
-
-    /**
-     * Return the video tag and stop listening to events
-     */
-    this.detachMedia = function() {
-        clearTimeouts();
-        _removeListeners(_mediaEvents, _videotag);
-        // Stop listening to track changes so disabling the current track doesn't update the model
-        this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
-        // Prevent tracks from showing during ad playback
-        this.disableTextTrack();
-        return _videotag;
-    };
-
-    /**
-     * Begin listening to events again
-     */
-    this.attachMedia = function() {
-        _setupListeners(_mediaEvents, _videotag);
-        _canSeek = false;
-
-        // If we were mid-seek when detached, we want to allow it to resume
-        this.seeking = false;
-
-        // In case the video tag was modified while we shared it
-        _videotag.loop = false;
-
-        // If there was a showing track, re-enable it
-        this.enableTextTrack();
-        this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
-    };
-
-    this.setContainer = function(containerElement) {
-        _container = containerElement;
-        containerElement.insertBefore(_videotag, containerElement.firstChild);
-    };
-
-    this.getContainer = function() {
-        return _container;
-    };
-
-    this.remove = function() {
-        // stop video silently
-        _clearVideotagSource();
-        clearTimeouts();
-
-        // remove
-        if (_container === _videotag.parentNode) {
-            _container.removeChild(_videotag);
-        }
-    };
 
     this.setVisibility = function(state) {
         state = !!state;
@@ -792,12 +511,12 @@ function VideoProvider(_playerId, _playerConfig) {
             // the pause event to be fired. This causes audio files to
             // become unplayable. Hence the video tag is always kept
             // visible on Android devices.
-            style(_container, {
+            style(_this.container, {
                 visibility: 'visible',
                 opacity: 1
             });
         } else {
-            style(_container, {
+            style(_this.container, {
                 visibility: '',
                 opacity: 0
             });
@@ -808,15 +527,15 @@ function VideoProvider(_playerId, _playerConfig) {
         if (!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) {
             return false;
         }
-        var styles = {
+        const styles = {
             objectFit: '',
             width: '',
             height: ''
         };
         if (stretching === 'uniform') {
             // snap video to edges when the difference in aspect ratio is less than 9%
-            var playerAspectRatio = width / height;
-            var videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
+            const playerAspectRatio = width / height;
+            const videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
                 styles.objectFit = 'fill';
                 stretching = 'exactfit';
@@ -826,13 +545,13 @@ function VideoProvider(_playerId, _playerConfig) {
         // object-fit is not implemented in IE or Android Browser in 4.4 and lower
         // http://caniuse.com/#feat=object-fit
         // feature detection may work for IE but not for browsers where object-fit works for images only
-        var fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || (OS.android && !Browser.firefox);
+        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || (OS.android && !Browser.firefox);
         if (fitVideoUsingTransforms) {
             // Use transforms to center and scale video in container
-            var x = -Math.floor(_videotag.videoWidth / 2 + 1);
-            var y = -Math.floor(_videotag.videoHeight / 2 + 1);
-            var scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
-            var scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
+            const x = -Math.floor(_videotag.videoWidth / 2 + 1);
+            const y = -Math.floor(_videotag.videoHeight / 2 + 1);
+            let scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
+            let scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
             if (stretching === 'none') {
                 scaleX = scaleY = 1;
             } else if (stretching === 'fill') {
@@ -895,8 +614,8 @@ function VideoProvider(_playerId, _playerConfig) {
         if (quality >= 0) {
             if (_levels && _levels.length > quality) {
                 _currentQuality = quality;
-                _visualQuality.reason = 'api';
-                _visualQuality.level = {};
+                visualQuality.reason = 'api';
+                visualQuality.level = {};
                 this.trigger(MEDIA_LEVEL_CHANGED, {
                     currentQuality: quality,
                     levels: _getPublicLevels(_levels)
@@ -911,8 +630,8 @@ function VideoProvider(_playerId, _playerConfig) {
                 if (duration <= 0) {
                     duration = _duration;
                 }
-                _this.setState(STATE_LOADING);
                 _completeLoad(time, duration);
+                _play();
             }
         }
     };
@@ -1006,18 +725,17 @@ function VideoProvider(_playerId, _playerConfig) {
     // If we're live and the buffer end has remained the same for some time, mark the stream as stale and check if the stream is over
     function checkStaleStream() {
         var endOfBuffer = endOfRange(_videotag.buffered);
-        var live = (_videotag.duration === Infinity);
+        var live = _this.isLive();
 
         if (live && _lastEndOfBuffer === endOfBuffer) {
-            if (!_staleStreamTimeout) {
+            if (_staleStreamTimeout === -1) {
                 _staleStreamTimeout = setTimeout(function () {
                     _stale = true;
                     checkStreamEnded();
                 }, _staleStreamDuration);
             }
         } else {
-            clearTimeout(_staleStreamTimeout);
-            _staleStreamTimeout = null;
+            clearTimeouts();
             _stale = false;
         }
 
@@ -1025,7 +743,7 @@ function VideoProvider(_playerId, _playerConfig) {
     }
 
     function checkStreamEnded() {
-        if (_stale && _edgeOfLiveStream) {
+        if (_stale && _this.atEdgeOfLiveStream()) {
             _this.trigger(MEDIA_ERROR, {
                 message: 'The live stream is either down or has ended'
             });
@@ -1035,20 +753,9 @@ function VideoProvider(_playerId, _playerConfig) {
         return false;
     }
 
-    function atEdgeOfLiveStream() {
-        if (_videotag.duration !== Infinity) {
-            return false;
-        }
-
-        // currentTime doesn't always get to the end of the buffered range
-        var timeFudge = 2;
-        return (endOfRange(_videotag.buffered)) - _videotag.currentTime <= timeFudge;
-    }
-
     function clearTimeouts() {
-        clearTimeout(_playbackTimeout);
         clearTimeout(_staleStreamTimeout);
-        _staleStreamTimeout = null;
+        _staleStreamTimeout = -1;
     }
 }
 

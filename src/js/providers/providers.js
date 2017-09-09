@@ -20,9 +20,9 @@ export const Loaders = {
 Object.assign(Providers.prototype, {
 
     load: function(providersToLoad) {
-        return Promise.all(providersToLoad.map(function(provider) {
+        return Promise.all(providersToLoad.filter(provider => !!Loaders[provider.name]).map(provider => {
             // Resolve event for unknown registered providers
-            const providerLoaderMethod = Loaders[provider.name] || Promise.resolve;
+            const providerLoaderMethod = Loaders[provider.name];
             return providerLoaderMethod();
         }));
     },

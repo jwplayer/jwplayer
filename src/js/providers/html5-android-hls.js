@@ -1,6 +1,9 @@
 import { OS, Browser } from 'environment/environment';
 
-export function isAndroidHls(source) {
+export function isAndroidHls(source, provider) {
+    if (provider && provider.name() !== 'html5') {
+        return false;
+    }
     if (source.type === 'hls' && OS.android) {
         if (source.androidhls === false) {
             return false;

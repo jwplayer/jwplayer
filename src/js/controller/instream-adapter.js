@@ -95,8 +95,6 @@ var InstreamAdapter = function(_controller, _model, _view) {
             }
         }
 
-        _model.mediaModel.set('state', STATE_BUFFERING);
-
         if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {
             // make sure video restarts after preroll
             _oldpos = 0;
@@ -318,7 +316,11 @@ var InstreamAdapter = function(_controller, _model, _view) {
             } else {
                 const item = Object.assign({}, _olditem);
                 item.starttime = _oldpos;
-                _model.loadVideo(item);
+                _model.loadVideo(item).catch(function(error) {
+                    _model.mediaController.trigger('error', {
+                        message: error.message
+                    });
+                });
             }
         }
     };

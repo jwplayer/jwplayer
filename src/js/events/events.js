@@ -221,6 +221,13 @@ export const MEDIA_FIRST_FRAME = 'firstFrame';
 export const MEDIA_PLAY_ATTEMPT = 'playAttempt';
 
 /**
+ * Fired when playback is aborted or blocked. Pausing the video or changing the media results
+ * in play attempts being aborted. In mobile browsers play attempts are blocked when not started by
+ * a user gesture.
+ */
+export const MEDIA_PLAY_ATTEMPT_FAILED = 'playAttemptFailed';
+
+/**
  * Fired when media has been loaded into the player.
 */
 export const MEDIA_LOADED = 'loaded';
@@ -261,6 +268,11 @@ export const MEDIA_BUFFER = 'bufferChange';
  * Fired as the playback position gets updated, while the player is playing.
 */
 export const MEDIA_TIME = 'time';
+
+/**
+ * Fired when the playbackRate of the video tag changes.
+ */
+export const MEDIA_RATE_CHANGE = 'ratechange';
 
 /**
  * Fired when a loaded item's media type is detected.

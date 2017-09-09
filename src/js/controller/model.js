@@ -2,23 +2,28 @@ import { Browser, OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import Providers from 'providers/providers';
+import { loadProvidersForPlaylist } from 'api/set-playlist';
+import { isAndroidHls } from 'providers/html5-android-hls';
 import initQoe from 'controller/qoe';
-import { PLAYER_STATE, STATE_IDLE, STATE_COMPLETE, STATE_BUFFERING, STATE_PAUSED, STATE_PLAYING,
+import { PLAYER_STATE, STATE_IDLE, STATE_LOADING, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
-    MEDIA_PLAY_ATTEMPT, MEDIA_BUFFER, MEDIA_TIME, MEDIA_BUFFER_FULL, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
+    MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_RATE_CHANGE,
+    MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
     MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META } from 'events/events';
-import utils from 'utils/helpers';
+import { seconds } from 'utils/strings';
 import _ from 'utils/underscore';
 import Events from 'utils/backbone.events';
 import { resolved } from 'polyfills/promise';
+import cancelable from 'utils/cancelable';
 
 // Represents the state of the player
 const Model = function() {
-    var _this = this;
-    var _providers;
-    var _provider;
-    var _beforecompleted = false;
-    var _attached = true;
+    const _this = this;
+    let _providers;
+    let _provider;
+    let _beforecompleted = false;
+    let _attached = true;
+    let thenPlayPromise = cancelable(function() {});
 
     this.mediaController = Object.assign({}, Events);
     this.mediaModel = new MediaModel();
@@ -60,16 +65,16 @@ const Model = function() {
             case 'flashUnblocked':
                 this.set('flashBlocked', false);
                 return;
-            case 'volume':
+            case MEDIA_VOLUME:
                 this.set(type, data[type]);
                 return;
-            case 'mute':
+            case MEDIA_MUTE:
                 if (!this.get('autostartMuted')) {
                     // Don't persist mute state with muted autostart
                     this.set(type, data[type]);
                 }
                 return;
-            case 'ratechange':
+            case MEDIA_RATE_CHANGE:
                 var rate = data.playbackRate;
                 // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
                 if (rate > 0) {
@@ -83,7 +88,7 @@ const Model = function() {
                 }
                 return;
             case PLAYER_STATE:
-                mediaModel.set('state', data.newstate);
+                mediaModel.set(PLAYER_STATE, data.newstate);
 
                 // This "return" is important because
                 //  we are choosing to not propagate this event.
@@ -101,17 +106,12 @@ const Model = function() {
                 var itemMeta = this.get('itemMeta');
                 Object.assign(itemMeta, data.metadata);
                 break;
-            case MEDIA_BUFFER_FULL:
-                // media controller
-                mediaModel.change('playAttempt', (mediaModelChanged, playAttempt) => {
-                    if (playAttempt) {
-                        mediaModelChanged.off('playAttempt', null, this);
-                        this.playVideo();
-                    }
-                }, this);
-                this.setPlaybackRate(this.get('defaultPlaybackRate'));
-                break;
             case MEDIA_TIME:
+                // Don't sent time event on Android before real duration is known
+                if (data.currentTime === 0 && data.duration === Infinity &&
+                    isAndroidHls(this.get('playlistItem').sources[0], _provider)) {
+                    return;
+                }
                 mediaModel.set('position', data.position);
                 this.set('position', data.position);
                 if (_.isNumber(data.duration)) {
@@ -150,12 +150,6 @@ const Model = function() {
             case 'visualQuality':
                 var visualQuality = Object.assign({}, data);
                 mediaModel.set('visualQuality', visualQuality);
-                break;
-            case 'autoplayFailed':
-                this.set('autostartFailed', true);
-                if (mediaModel.get('state') === STATE_PLAYING) {
-                    mediaModel.set('state', STATE_PAUSED);
-                }
                 break;
             default:
                 break;
@@ -312,6 +306,7 @@ const Model = function() {
     };
 
     this.setActiveItem = function(item) {
+        thenPlayPromise.cancel();
         // Item is actually changing
         this.mediaModel.off();
         this.mediaModel = new MediaModel();
@@ -319,7 +314,7 @@ const Model = function() {
         this.set('mediaModel', this.mediaModel);
         this.set('position', item.starttime || 0);
         this.set('minDvrWindow', item.minDvrWindow);
-        this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
+        this.set('duration', (item.duration && seconds(item.duration)) || 0);
         this.attributes.playlistItem = null;
         this.set('playlistItem', item);
         this.setProvider(item);
@@ -335,11 +330,18 @@ const Model = function() {
         var provider = this.chooseProvider(source);
         // If we are changing video providers
         if (!provider || !(_provider && _provider instanceof provider)) {
-            _this.changeVideoProvider(provider);
+            this.changeVideoProvider(provider);
         }
 
         if (!_provider) {
-            return;
+            this.mediaModel.set(PLAYER_STATE, STATE_LOADING);
+            return loadProvidersForPlaylist(this).then(loadedPromises => {
+                this.mediaModel.set(PLAYER_STATE, STATE_IDLE);
+                if (!loadedPromises.length) {
+                    throw new Error('Unsupported media');
+                }
+                _this.setProvider(item);
+            });
         }
 
         // this allows the providers to preload
@@ -381,7 +383,7 @@ const Model = function() {
     };
 
     this.setMute = function(mute) {
-        if (!utils.exists(mute)) {
+        if (mute === undefined) {
             mute = !(this.getMute());
         }
         this.set('mute', mute);
@@ -408,7 +410,7 @@ const Model = function() {
         }
 
         // Clamp the rate between 0.25x and 4x
-        playbackRate = utils.between(playbackRate, 0.25, 4);
+        playbackRate = Math.max(Math.min(playbackRate, 4), 0.25);
 
         if (this.get('streamType') === 'LIVE') {
             playbackRate = 1;
@@ -430,38 +432,77 @@ const Model = function() {
             playReason = this.get('playReason');
         }
         this.set('position', item.starttime || 0);
-        this.set('duration', (item.duration && utils.seconds(item.duration)) || 0);
-        this.mediaModel.set('playAttempt', true);
+        this.set('duration', (item.duration && seconds(item.duration)) || 0);
 
-        this.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
+        const playPromise = loadAndPlay(this, item);
 
-        if (_provider) {
-            _provider.load(item);
-            return resolved;
-        }
-        this.set('state', STATE_BUFFERING);
-        const providerNeeded = _providers.required([item]);
-        return _providers.load(providerNeeded).then(() => {
-            if (!_provider && _attached && this.get('playlist')[this.get('item')].file === item.file) {
-                this.setProvider(item);
-                _provider.load(item);
-                return resolved;
-            }
-        });
+        playAttempt(this.mediaController, this.mediaModel, playPromise, playReason);
+
+        return playPromise;
     };
 
+    function loadAndPlay(model, item) {
+        thenPlayPromise.cancel();
+
+        if (_provider) {
+            // Calling load() on Shaka may return a player setup promise
+            const playerPromise = _provider.load(item);
+            if (playerPromise) {
+                thenPlayPromise = cancelable(() => {
+                    return _provider.play() || resolved;
+                });
+                return playerPromise.then(thenPlayPromise.async);
+            }
+            return _provider.play() || resolved;
+        }
+
+        const providerNeeded = _providers.required([item]);
+
+        thenPlayPromise = cancelable(() => {
+            if (!_provider && _attached && model.get('playlist')[model.get('item')].file === item.file) {
+                model.setProvider(item);
+                return loadAndPlay(model, item);
+            }
+        });
+        return _providers.load(providerNeeded).then(thenPlayPromise.async);
+    }
+
+    function playAttempt(mediaController, mediaModel, playPromise, playReason) {
+
+        mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
+
+        // Immediately set state to buffering if these conditions are met
+        const settingUpProviderOrPlayer = !thenPlayPromise.cancelled();
+        const videoTagUnpaused = _provider && _provider.video && !_provider.video.paused;
+        if (settingUpProviderOrPlayer || videoTagUnpaused) {
+            mediaModel.set(PLAYER_STATE, STATE_LOADING);
+        }
+
+        playPromise.then(() => {
+            mediaModel.set('started', true);
+        }).catch(error => {
+            mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+                error: error,
+                playReason: playReason
+            });
+            return error;
+        });
+    }
+
     this.stopVideo = function() {
-        this.mediaModel.set('playAttempt', false);
+        thenPlayPromise.cancel();
         if (_provider) {
             _provider.stop();
         }
     };
 
-    this.playVideo = function() {
-        const playPromise = _provider.play();
-        if (!playPromise) {
-            // TODO: polyfill video tag play promise
-            return resolved;
+    this.playVideo = function(playReason) {
+        if (!_provider) {
+            return this.loadVideo(null, playReason);
+        }
+        const playPromise = _provider.play() || resolved;
+        if (!this.mediaModel.get('started')) {
+            playAttempt(this.mediaController, this.mediaModel, playPromise, playReason);
         }
         return playPromise;
     };
@@ -536,7 +577,10 @@ const Model = function() {
 
 // Represents the state of the provider/media element
 const MediaModel = Model.MediaModel = function() {
-    this.set('state', STATE_IDLE);
+    this.attributes = {
+        state: STATE_IDLE,
+        started: false
+    };
 };
 
 Object.assign(Model.prototype, SimpleModel);

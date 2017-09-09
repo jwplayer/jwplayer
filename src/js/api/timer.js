@@ -1,4 +1,4 @@
-import clock from 'utils/clock';
+import { dateTime } from 'utils/clock';
 
 /**
  * QoE metrics returned by `jwplayer()._qoe.dump()`.
@@ -20,8 +20,6 @@ const Timer = function() {
 
     const ticks = {};
 
-    const started = Math.max(1, new Date().getTime());
-
     /** @lends Timer */
     return {
         // Profile methods
@@ -33,7 +31,7 @@ const Timer = function() {
          * @param {string} methodName - The method or player state name.
          */
         start: function(methodName) {
-            startTimes[methodName] = started + clock.now();
+            startTimes[methodName] = dateTime();
             counts[methodName] = counts[methodName] + 1 || 1;
         },
         /**
@@ -46,7 +44,7 @@ const Timer = function() {
             if (!startTimes[methodName]) {
                 return;
             }
-            const now = started + clock.now();
+            const now = dateTime();
             const e = now - startTimes[methodName];
             delete startTimes[methodName];
             sum[methodName] = sum[methodName] + e || e;
@@ -63,7 +61,7 @@ const Timer = function() {
             const runningSums = Object.assign({}, sum);
             for (const methodName in startTimes) {
                 if (Object.prototype.hasOwnProperty.call(startTimes, methodName)) {
-                    const now = started + clock.now();
+                    const now = dateTime();
                     const e = now - startTimes[methodName];
                     runningSums[methodName] = runningSums[methodName] + e || e;
                 }
@@ -83,7 +81,7 @@ const Timer = function() {
          * @param {string} event - The event name.
          */
         tick: function(event) {
-            ticks[event] = started + clock.now();
+            ticks[event] = dateTime();
         },
 
         /**

@@ -19,13 +19,9 @@ const setPlaylist = function(model, playlist, feedData = {}) {
 export function loadProvidersForPlaylist(model) {
     const playlist = model.get('playlist');
     const providersManager = model.getProviders();
-    const firstProviderNeeded = providersManager.required([playlist[0]]);
+    const providersNeeded = providersManager.required(playlist);
 
-    return providersManager.load(firstProviderNeeded).then(() => {
-        if (!model.get('provider')) {
-            model.setProvider(model.get('playlistItem'));
-        }
-    });
+    return providersManager.load(providersNeeded);
 }
 
 export default setPlaylist;

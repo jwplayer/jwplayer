@@ -29,28 +29,8 @@ describe('Model QoE', function() {
         validateQoeFirstFrame(assert, model._qoeItem, startTime);
     });
 
-    it('tracks first frame with first increasing time event', function() {
-        var startTime = now();
-        var model = new Model().setup({});
-
-        model.set('mediaModel', new MediaModel());
-        var mediaModel = model.get('mediaModel');
-
-        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
-        mediaModel.set('state', STATE_LOADING);
-        mediaModel.set('state', STATE_PLAYING);
-        model.mediaController.trigger(MEDIA_TIME, {
-            position: 0
-        });
-        model.mediaController.trigger(MEDIA_TIME, {
-            position: 1
-        });
-
-        validateQoeFirstFrame(assert, model._qoeItem, startTime);
-    });
-
     it('removes media controller event listeners', function() {
-        var startTime = now();
+        var startTime = now() - 1;
         var model = new Model().setup({});
 
         model.set('mediaModel', new MediaModel());
@@ -59,7 +39,8 @@ describe('Model QoE', function() {
         var qoeItem = model._qoeItem;
 
         var qoeDump = qoeItem.dump();
-        assert.isOk(validateMeasurement(qoeDump.events.playAttempt, startTime), 'play attempt event was fired');
+        assert.isOk(validateMeasurement(qoeDump.events.playAttempt, startTime), 'play attempt event was fired ' +
+            JSON.stringify(qoeDump.events) + ' startTime: ' + startTime);
         assert.isOk(validateMeasurement(qoeDump.events.firstFrame, startTime), 'first frame event was fired');
 
         // test that listeners are removed by testing that tick events are no longer changed
