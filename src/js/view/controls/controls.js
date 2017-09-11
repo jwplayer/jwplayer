@@ -115,10 +115,10 @@ export default class Controls {
 
             utils.toggleClass(this.div, 'jw-settings-open', visible);
             if (getBreakpoint(model.get('containerWidth')) < 2) {
-                if (state === STATE_PLAYING) {
+                if (visible && state === STATE_PLAYING) {
                     // Pause playback on open if we're currently playing
                     api.pause(true, settingsInteraction);
-                } else if (state === STATE_PAUSED && lastState === STATE_PLAYING) {
+                } else if (!visible && state === STATE_PAUSED && lastState === STATE_PLAYING) {
                     // Resume playback on close if we are paused and were playing before
                     api.play(true, settingsInteraction);
                 }
