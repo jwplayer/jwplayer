@@ -1,6 +1,6 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
-import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
+import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING } from 'events/events';
 
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -10,6 +10,7 @@ import DisplayContainer from 'view/controls/display-container';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/settings-menu';
+import { getBreakpoint } from 'view/utils/breakpoint';
 
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 
@@ -107,10 +108,24 @@ export default class Controls {
         this.div.appendChild(controlbar.element());
 
         // Settings Menu
+        let lastState = null;
         const visibilityChangeHandler = (visible) => {
+            const state = model.get('state');
+            const settingsInteraction = { reason: 'settingsInteraction' };
+
             utils.toggleClass(this.div, 'jw-settings-open', visible);
+            if (getBreakpoint(model.get('containerWidth')) < 2) {
+                if (state === STATE_PLAYING) {
+                    // Pause playback on open if we're currently playing
+                    api.pause(true, settingsInteraction);
+                } else if (state === STATE_PAUSED && lastState === STATE_PLAYING) {
+                    // Resume playback on close if we are paused and were playing before
+                    api.play(true, settingsInteraction);
+                }
+            }
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive();
+            lastState = state;
         };
         const settingsMenu = this.settingsMenu = createSettingsMenu(controlbar, visibilityChangeHandler);
         setupSubmenuListeners(settingsMenu, controlbar, model, api);

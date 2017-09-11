@@ -5,9 +5,9 @@
     position: absolute;
     flex-flow: column nowrap;
     align-items: flex-start;
-    bottom: @controlbar-height;
+    bottom: 0;
     right: 0;
-    height: calc(100% - @controlbar-height);
+    height: 100%;
     width: 100%;
     background-color: @menu-background-color;
     pointer-events: auto;
@@ -121,6 +121,13 @@
 
         &.jw-controls {
             z-index: 1;
+        }
+    }
+
+    .jw-breakpoint-1,
+    .jw-breakpoint-0 {
+        .jw-controlbar {
+            visibility: hidden;
         }
     }
 
