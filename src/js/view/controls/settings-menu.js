@@ -76,11 +76,11 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
                 model.getVideo().setCurrentQuality.bind(model.getVideo()),
                 changedModel.get('currentLevel')
             );
-        });
+        }, this);
 
         mediaModel.on('change:currentLevel', (changedModel, currentQuality) => {
             activateSubmenuItem('quality', currentQuality);
-        });
+        }, this);
 
         // Audio Tracks
         const onAudiotracksChange = (changedModel, audioTracks) => {
@@ -96,11 +96,11 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
                 mediaModel.get('currentAudioTrack')
             );
         };
-        mediaModel.change('audioTracks', onAudiotracksChange);
+        mediaModel.change('audioTracks', onAudiotracksChange, this);
         mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
             activateSubmenuItem('audioTracks', currentAudioTrack);
-        });
-    });
+        }, this);
+    }, this);
 
     // Captions
     model.change('captionsList', (changedModel, captionsList) => {
@@ -118,7 +118,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         );
         controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
         controlbarButton.show();
-    });
+    }, this);
 
     model.change('captionsIndex', (changedModel, index) => {
         const captionsSubmenu = settingsMenu.getSubmenu('captions');
@@ -126,7 +126,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             captionsSubmenu.activateItem(index);
             controlbar.toggleCaptionsButtonState(!!index);
         }
-    });
+    }, this);
 
     // Playback Rates
     model.change('playbackRates', (changedModel, playbackRates) => {
@@ -148,12 +148,12 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             provider.setPlaybackRate.bind(model.getVideo()),
             model.get('playbackRate')
         );
-    });
+    }, this);
 
     model.change('playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
         if (rates) {
             activateSubmenuItem('playbackRates', rates.indexOf(playbackRate));
         }
-    });
+    }, this);
 }

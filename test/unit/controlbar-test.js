@@ -21,12 +21,15 @@ describe('Control Bar', function() {
     beforeEach(function() {
         const spacer = document.createElement('div');
         spacer.className += 'jw-spacer';
+        const settingsButton = document.createElement('div');
 
         container = document.createElement('div');
-        container.appendChild(document.createElement('div'));
+        container.appendChild(settingsButton);
         container.appendChild(spacer);
 
         controlBar = new ControlBar({}, model);
+        controlBar.elements.spacer = spacer;
+        controlBar.elements.settingsButton = settingsButton;
         controlBar.elements.buttonContainer = container;
         children = container.children;
     });

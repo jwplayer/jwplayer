@@ -83,13 +83,13 @@ export default class Controls {
                 } else {
                     this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
                 }
-            });
+            }, this);
         }
 
         // Controlbar
         const controlbar = this.controlbar = new Controlbar(api, model);
         controlbar.on(USER_ACTION, () => this.userActive());
-        controlbar.on('nextShown', function(data) {
+        controlbar.on('nextShown', function (data) {
             this.trigger('nextShown', data);
         }, this);
 
@@ -111,7 +111,7 @@ export default class Controls {
         let lastState = null;
         const visibilityChangeHandler = (visible) => {
             const state = model.get('state');
-            const settingsInteraction = { reason: 'settingsInteraction' };
+            const settingsInteraction = {reason: 'settingsInteraction'};
 
             utils.toggleClass(this.div, 'jw-settings-open', visible);
             if (getBreakpoint(model.get('containerWidth')) < 2) {
@@ -143,7 +143,7 @@ export default class Controls {
             // Hide the controlbar until the autostart flag is removed
             utils.addClass(this.playerContainer, 'jw-flag-autostart');
 
-            model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback);
+            model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback, this);
             this.unmuteCallback = unmuteCallback;
         }
 
@@ -159,10 +159,12 @@ export default class Controls {
             const newSeek = utils.between(position + amount, min, max);
             api.seek(newSeek, reasonInteraction());
         }
+
         function adjustVolume(amount) {
             const newVol = utils.between(model.get('volume') + amount, 0, 100);
             api.setVolume(newVol);
         }
+
         const handleKeydown = (evt) => {
             // If Meta keys return
             if (evt.ctrlKey || evt.metaKey) {
@@ -198,14 +200,14 @@ export default class Controls {
                     adjustVolume(-10);
                     break;
                 case 67: // c-key
-                    {
-                        const captionsList = api.getCaptionsList();
-                        const listLength = captionsList.length;
-                        if (listLength) {
-                            const nextIndex = (api.getCurrentCaptions() + 1) % listLength;
-                            api.setCurrentCaptions(nextIndex);
-                        }
+                {
+                    const captionsList = api.getCaptionsList();
+                    const listLength = captionsList.length;
+                    if (listLength) {
+                        const nextIndex = (api.getCurrentCaptions() + 1) % listLength;
+                        api.setCurrentCaptions(nextIndex);
                     }
+                }
                     break;
                 case 77: // m-key
                     api.setMute();
@@ -237,8 +239,17 @@ export default class Controls {
         this.playerContainer.appendChild(this.div);
     }
 
-    disable() {
+    disable(model) {
         this.off();
+
+        if (model) {
+            model.off(null, null, this);
+            const mediaModel = model.get('mediaModel');
+            if (mediaModel) {
+                mediaModel.off(null, null, this);
+            }
+        }
+
         clearTimeout(this.activeTimeout);
 
         if (this.div.parentNode) {

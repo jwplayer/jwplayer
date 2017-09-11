@@ -10,16 +10,16 @@ export default (menu) => {
 
     return (
         `<div class="jw-rightclick jw-reset">` +
-            `<ul class="jw-reset">${itemsHtml}</ul>` +
+            `<ul class="jw-rightclick-list jw-reset">${itemsHtml}</ul>` +
         `</div>`
     );
 };
 
 const rightClickItem = (link = '', title = '', featured, showLogo) => {
-    const logo = showLogo ? `<span class="jw-icon jw-rightclick-logo jw-reset">${JW_LOGO}</span>` : '';
+    const logo = showLogo ? `<span class="jw-rightclick-logo jw-reset">${JW_LOGO}</span>` : '';
     return (
-        `<li class="jw-reset ${featured ? 'jw-featured' : ''}">` +
-            `<a href="${link}" class="jw-reset" target="_blank">${logo}${title}</a>` +
+        `<li class="jw-reset jw-rightclick-item ${featured ? 'jw-featured' : ''}">` +
+            `<a href="${link}" class="jw-rightclick-link jw-reset" target="_blank">${logo}${title}</a>` +
         `</li>`
     );
 };
