@@ -111,7 +111,7 @@ export default class Controls {
         let lastState = null;
         const visibilityChangeHandler = (visible) => {
             const state = model.get('state');
-            const settingsInteraction = {reason: 'settingsInteraction'};
+            const settingsInteraction = { reason: 'settingsInteraction' };
 
             utils.toggleClass(this.div, 'jw-settings-open', visible);
             if (getBreakpoint(model.get('containerWidth')) < 2) {
@@ -200,14 +200,14 @@ export default class Controls {
                     adjustVolume(-10);
                     break;
                 case 67: // c-key
-                {
-                    const captionsList = api.getCaptionsList();
-                    const listLength = captionsList.length;
-                    if (listLength) {
-                        const nextIndex = (api.getCurrentCaptions() + 1) % listLength;
-                        api.setCurrentCaptions(nextIndex);
+                    {
+                        const captionsList = api.getCaptionsList();
+                        const listLength = captionsList.length;
+                        if (listLength) {
+                            const nextIndex = (api.getCurrentCaptions() + 1) % listLength;
+                            api.setCurrentCaptions(nextIndex);
+                        }
                     }
-                }
                     break;
                 case 77: // m-key
                     api.setMute();
