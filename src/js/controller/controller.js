@@ -260,6 +260,7 @@ Object.assign(Controller.prototype, {
             _this.trigger('viewable', {
                 viewable: viewable
             });
+
             if (shouldPreload(model, viewable)) {
                 const item = model.get('playlistItem');
 
@@ -278,11 +279,12 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        // Should only attempt to preload if the player is viewable.
+        // Should only attempt to preload if the player is viewable and IDLE
         // Otherwise, it should try to preload the first player on the page,
         // which is the player that has a uniqueId of 1
         function shouldPreload(model, viewable) {
-            return model.get('playlistItem').preload !== 'none' &&
+            return model.get('state') === STATE_IDLE &&
+                model.get('playlistItem').preload !== 'none' &&
                 _preloaded === false &&
                 model.get('autostart') === false &&
                 (instances[0] === _api || viewable === 1);
