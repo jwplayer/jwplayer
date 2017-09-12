@@ -7,10 +7,14 @@ function configurePlugin(pluginObj, pluginConfig, api) {
     div.id = api.id + '_' + pluginName;
     div.className = 'jw-plugin jw-reset';
 
+    if (pluginName === 'googima' || pluginName === 'vast') {
+        div.style.zIndex = "1";
+    }
+
     const pluginOptions = Object.assign({}, pluginConfig);
     const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
-    api.addPlugin(pluginName, pluginInstance, div);
+    api.addPlugin(pluginName, pluginInstance);
 }
 
 const PluginLoader = function () {
