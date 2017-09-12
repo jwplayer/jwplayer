@@ -63,6 +63,7 @@ function VideoProvider(_playerId, _playerConfig) {
             checkStaleStream();
         },
         timeupdate() {
+            _checkDelayedSeek(_this.getDuration());
             VideoEvents.timeupdate.call(_this);
             checkStaleStream();
         },
@@ -76,8 +77,8 @@ function VideoProvider(_playerId, _playerConfig) {
         },
 
         loadedmetadata() {
-            var duration = _this.getDuration();
-            if (duration === Infinity && isAndroidHls(_levels[0])) {
+            let duration = _this.getDuration();
+            if (_androidHls && duration === Infinity) {
                 duration = 0;
             }
             var metadata = {
@@ -86,7 +87,15 @@ function VideoProvider(_playerId, _playerConfig) {
                 width: _videotag.videoWidth
             };
             _this.trigger(MEDIA_META, metadata);
-            _updateDuration(duration);
+            _checkDelayedSeek(duration);
+        },
+
+        durationchange() {
+            if (_androidHls) {
+                return;
+            }
+            _checkDelayedSeek(_this.getDuration());
+            VideoEvents.progress.call(_this);
         },
 
         loadeddata() {
@@ -96,7 +105,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
         canplay() {
             _canSeek = true;
-            if (!isAndroidHls(_levels[0])) {
+            if (!_androidHls) {
                 _setMediaType();
             }
             if (Browser.ie && Browser.version.major === 9) {
@@ -155,7 +164,7 @@ function VideoProvider(_playerId, _playerConfig) {
         },
         stalledHandler(checkStartTime) {
             // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
-            if (isAndroidHls(_levels[0])) {
+            if (_androidHls) {
                 return;
             }
             VideoAttached.stalledHandler.call(_this, checkStartTime);
@@ -165,12 +174,10 @@ function VideoProvider(_playerId, _playerConfig) {
         }
     });
 
-    const _videotag = _this.getVideo(_playerId);
+    const _videotag = _playerConfig.mediaElement || _this.getVideo(_playerId);
     const visualQuality = { level: {} };
     const _staleStreamDuration = 3 * 10 * 1000;
 
-    let _duration;
-    let _position;
     let _canSeek = false; // true on valid time event
     let _delayedSeek = 0;
     let _levels;
@@ -182,6 +189,7 @@ function VideoProvider(_playerId, _playerConfig) {
     let _staleStreamTimeout = -1;
     let _stale = false;
     let _lastEndOfBuffer = null;
+    let _androidHls = false;
 
     function _setAttribute(name, value) {
         _videotag.setAttribute(name, value || '');
@@ -221,15 +229,18 @@ function VideoProvider(_playerId, _playerConfig) {
 
     _this.getCurrentTime = function() {
         let currentTime = _videotag.currentTime;
-        if (_duration < 0) {
+        if (_this.getDuration() < 0) {
             currentTime = -(_getSeekableEnd() - currentTime);
         }
-        _position = currentTime;
-        return _position;
+        return currentTime;
     };
 
     _this.getDuration = function() {
         var duration = _videotag.duration;
+        // Don't sent time event on Android before real duration is known
+        if (_androidHls && duration === Infinity && _videotag.currentTime === 0) {
+            return;
+        }
         var end = _getSeekableEnd();
         if (_this.isLive() && end) {
             var seekableDuration = end - _getSeekableStart();
@@ -241,8 +252,7 @@ function VideoProvider(_playerId, _playerConfig) {
         return duration;
     };
 
-    function _updateDuration(duration) {
-        _duration = duration;
+    function _checkDelayedSeek(duration) {
         if (_delayedSeek && duration && duration !== Infinity) {
             _this.seek(_delayedSeek);
         }
@@ -294,7 +304,7 @@ function VideoProvider(_playerId, _playerConfig) {
         return _videotag.play() || createPlayPromise(_videotag);
     }
 
-    function _completeLoad(startTime, duration) {
+    function _completeLoad(startTime) {
         _delayedSeek = 0;
         clearTimeouts();
 
@@ -303,7 +313,6 @@ function VideoProvider(_playerId, _playerConfig) {
         var sourceChanged = (_videotag.src !== sourceElement.src);
 
         if (sourceChanged) {
-            _duration = duration;
             _setVideotagSource(_levels[_currentQuality]);
             _this.setupSideloadedTracks(_this._itemTracks);
             _videotag.load();
@@ -315,14 +324,13 @@ function VideoProvider(_playerId, _playerConfig) {
             _this.seek(startTime);
         }
 
-        _position = _videotag.currentTime;
-
         if (startTime > 0) {
             _this.seek(startTime);
         }
     }
 
     function _setVideotagSource(source) {
+        _androidHls = isAndroidHls(source);
         _audioTracks = null;
         _currentAudioTrackIndex = -1;
         if (!visualQuality.reason) {
@@ -330,7 +338,7 @@ function VideoProvider(_playerId, _playerConfig) {
             visualQuality.level = {};
         }
         _canSeek = false;
-        if (isAndroidHls(source)) {
+        if (_androidHls) {
             // Playback rate is broken on Android HLS
             _this.supportsPlaybackRate = false;
         }
@@ -407,9 +415,6 @@ function VideoProvider(_playerId, _playerConfig) {
         if (item.sources.length && item.sources[0].type !== 'hls') {
             this.sendMediaType(item.sources);
         }
-
-        _position = item.starttime || 0;
-        _duration = item.duration || 0;
         visualQuality.reason = '';
     };
 
@@ -625,11 +630,8 @@ function VideoProvider(_playerId, _playerConfig) {
                 // from when the provider was first initialized
                 _playerConfig.qualityLabel = _levels[quality].label;
 
-                var time = _videotag.currentTime || 0;
-                var duration = _videotag.duration || 0;
-                if (duration <= 0) {
-                    duration = _duration;
-                }
+                const time = _videotag.currentTime || 0;
+                const duration = _this.getDuration();
                 _completeLoad(time, duration);
                 _play();
             }

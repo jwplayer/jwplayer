@@ -14,6 +14,7 @@ import Promise, { resolved } from 'polyfills/promise';
 import viewError from 'templates/error';
 import { style } from 'utils/css';
 import { createElement } from 'utils/dom';
+import getMediaElement from 'api/get-media-element';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -82,6 +83,11 @@ Object.assign(CoreShim.prototype, {
         };
         model.setProvider = function() {};
 
+        // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
+        const mediaElement =
+            model.attributes.mediaElement = getMediaElement(api.id, this.originalContainer);
+        mediaElement.load();
+
         return Promise.all([
             loadCoreBundle(model),
             this.setup.start(),
@@ -109,10 +115,7 @@ Object.assign(CoreShim.prototype, {
             storage.track(coreModel);
 
             // Set the active playlist item after plugins are loaded and the view is setup
-            return new Promise(resolve => {
-                coreModel.once('itemReady', resolve);
-                coreModel.setItemIndex(coreModel.get('item'));
-            });
+            return coreModel.setItemIndex(coreModel.get('item'));
         }).then(() => {
             if (!this.setup) {
                 return;

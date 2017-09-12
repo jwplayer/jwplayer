@@ -3,7 +3,6 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import Providers from 'providers/providers';
 import { loadProvidersForPlaylist } from 'api/set-playlist';
-import { isAndroidHls } from 'providers/html5-android-hls';
 import initQoe from 'controller/qoe';
 import { PLAYER_STATE, STATE_IDLE, STATE_LOADING, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
@@ -107,11 +106,6 @@ const Model = function() {
                 Object.assign(itemMeta, data.metadata);
                 break;
             case MEDIA_TIME:
-                // Don't sent time event on Android before real duration is known
-                if (data.currentTime === 0 && data.duration === Infinity &&
-                    isAndroidHls(this.get('playlistItem').sources[0], _provider)) {
-                    return;
-                }
                 mediaModel.set('position', data.position);
                 this.set('position', data.position);
                 if (_.isNumber(data.duration)) {
@@ -302,7 +296,7 @@ const Model = function() {
         index = (index + playlist.length) % playlist.length;
 
         this.set('item', index);
-        this.setActiveItem(playlist[index]);
+        return this.setActiveItem(playlist[index]);
     };
 
     this.setActiveItem = function(item) {
@@ -317,20 +311,20 @@ const Model = function() {
         this.set('duration', (item.duration && seconds(item.duration)) || 0);
         this.attributes.playlistItem = null;
         this.set('playlistItem', item);
-        this.setProvider(item);
+        return this.setProvider(item);
     };
 
     this.setProvider = function(item) {
         var source = item && item.sources && item.sources[0];
         if (source === undefined) {
             // source is undefined when resetting index with empty playlist
-            return;
+            throw new Error('No media');
         }
 
-        var provider = this.chooseProvider(source);
+        var Provider = this.chooseProvider(source);
         // If we are changing video providers
-        if (!provider || !(_provider && _provider instanceof provider)) {
-            this.changeVideoProvider(provider);
+        if (!Provider || !(_provider && _provider instanceof Provider)) {
+            this.changeVideoProvider(Provider);
         }
 
         if (!_provider) {
@@ -340,7 +334,7 @@ const Model = function() {
                 if (!loadedPromises.length) {
                     throw new Error('Unsupported media');
                 }
-                _this.setProvider(item);
+                return _this.setProvider(item);
             });
         }
 
@@ -356,6 +350,7 @@ const Model = function() {
         // We also can't listen for change:mediaModel because it triggers whether or not
         //  an item was actually loaded
         this.trigger('itemReady', item);
+        return resolved;
     };
 
     this.getProviders = function() {

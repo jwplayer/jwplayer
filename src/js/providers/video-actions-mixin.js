@@ -1,3 +1,4 @@
+import getMediaElement from 'api/get-media-element';
 import { style } from 'utils/css';
 
 const VideoActionsMixin = {
@@ -54,15 +55,9 @@ const VideoActionsMixin = {
     },
 
     getVideo: function(playerId, container) {
-        // Find video tag, or create it if it doesn't exist.  View may not be built yet.
-        var element = container || document.getElementById(playerId);
-        var video = element ? element.querySelector('video, audio') : null;
-        if (!video) {
-            video = document.createElement('video');
-        }
-        video.className = 'jw-video jw-reset';
-        this.video = video;
-        return video;
+        const media = getMediaElement(playerId, container);
+        this.video = media;
+        return media;
     }
 };
 

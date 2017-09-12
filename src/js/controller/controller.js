@@ -409,7 +409,7 @@ Object.assign(Controller.prototype, {
 
         function _stop(internal) {
             checkAutoStartCancelable.cancel();
-            apiQueue.queue.length = 0;
+            apiQueue.empty();
 
             const fromApi = !internal;
 

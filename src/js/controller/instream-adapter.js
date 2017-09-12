@@ -222,7 +222,9 @@ var InstreamAdapter = function(_controller, _model, _view) {
                 });
 
                 _options = Object.assign({}, _defaultOptions, options);
-                _instream.load(item);
+                _instream.load(item).catch(error => {
+                    console.warn('Creative play request rejected.', error);
+                });
 
                 _this.addClickHandler();
 

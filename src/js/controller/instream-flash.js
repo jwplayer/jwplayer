@@ -3,6 +3,7 @@ import { STATE_PAUSED, STATE_PLAYING, PLAYER_STATE, MEDIA_COMPLETE, MEDIA_TIME, 
 import Events from 'utils/backbone.events';
 import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
+import { resolved } from 'polyfills/promise';
 
 const InstreamFlash = function(_controller, _model) {
     this.model = _model;
@@ -118,6 +119,7 @@ Object.assign(InstreamFlash.prototype, {
     load: function(item) {
         // Show the instream layer
         this.swf.triggerFlash('instream:load', item);
+        return resolved;
     },
 
     instreamPlay: function() {
