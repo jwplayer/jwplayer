@@ -24,24 +24,25 @@ describe('viewsManager', function() {
             expect(intersectionObserver.unobserve.callCount).to.equal(1);
         });
 
-        it('should observe the same container once on multiple calls', function() {
+        it('should observe & unobserve the same container once on multiple calls', function() {
             const container = document.createElement('div');
             container.id = 1;
 
             viewsManager.observe(container);
             viewsManager.observe(container);
             viewsManager.unobserve(container);
+            viewsManager.unobserve(container);
 
             expect(intersectionObserver.observe.callCount).to.equal(1);
             expect(intersectionObserver.unobserve.callCount).to.equal(1);
         });
 
-        it('should observe the same container once on multiple calls', function() {
+        it('should observe & unobserve multiple containers', function() {
             const container1 = document.createElement('div');
             container1.id = 1;
 
             const container2 = document.createElement('div');
-            container2.id = 1;
+            container2.id = 2;
 
             viewsManager.observe(container1);
             viewsManager.observe(container2);

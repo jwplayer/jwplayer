@@ -7,13 +7,9 @@ const observed = [];
 let intersectionObserver;
 let responsiveRepaintRequestId = -1;
 
-console.log('lazyInitIntersectionObservers');
-
 function lazyInitIntersectionObserver() {
     const IntersectionObserver = window.IntersectionObserver;
-
     if (!intersectionObserver) {
-
         // Fire the callback every time 25% of the player comes in/out of view
         intersectionObserver = new IntersectionObserver((entries) => {
             if (entries && entries.length) {
