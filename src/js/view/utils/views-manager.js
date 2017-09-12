@@ -2,6 +2,7 @@ import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 
 const views = [];
+const observed = {};
 
 let intersectionObserver;
 let responsiveRepaintRequestId = -1;
@@ -77,14 +78,21 @@ export default {
     },
     observe(container) {
         lazyInitIntersectionObserver();
-        try {
-            intersectionObserver.unobserve(container);
-        } catch (e) {/* catch Exception thrown by Edge 15 browser */}
+
+        if (observed[container.id]) {
+            return;
+        }
+
+        observed[container.id] = true;
         intersectionObserver.observe(container);
     },
     unobserve(container) {
-        if (intersectionObserver) {
+        if (intersectionObserver && observed[container.id]) {
+            delete observed[container.id];
             intersectionObserver.unobserve(container);
         }
+    },
+    getIntersectionObsever() {
+        return intersectionObserver;
     }
 };
