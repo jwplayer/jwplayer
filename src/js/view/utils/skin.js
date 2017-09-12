@@ -155,10 +155,11 @@ export function handleColorOverrides(playerId, skin) {
             css('.jw-icon-cast:hover button', `{--connected-color: ${config.iconsActive}}`, playerId);
         }
 
+        // A space is purposefully left before '.jw-settings-topbar' since extendParent is set to true in order to append ':not(.jw-state-idle)'
         addStyle([
-            '.jw-controlbar',
-            '.jw-settings-topbar'
-        ], 'background', config.background);
+            ' .jw-settings-topbar',
+            ':not(.jw-state-idle) .jw-controlbar'
+        ], 'background', config.background, true);
     }
 
     function styleTimeslider(config) {
