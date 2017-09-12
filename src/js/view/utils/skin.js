@@ -197,7 +197,8 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-option:not(.jw-active-option):hover',
             '.jw-settings-item-active',
             '.jw-settings-content-item:hover',
-            '.jw-nextup-close:hover',
+            '.jw-nextup-tooltip:hover',
+            '.jw-nextup-close:hover'
         ], 'color', config.textActive);
 
         addStyle([
