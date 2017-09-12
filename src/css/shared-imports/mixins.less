@@ -125,17 +125,6 @@
             color: @hover-color;
         }
 
-        /* Colors for display icons */
-        .jw-display-icon-container {
-            .jw-icon {
-                color: @display-icon-color;
-            }
-
-            .jw-svg-icon {
-                fill: @display-icon-color;
-            }
-        }
-
         /* Slider colors */
         .jw-rail {
             background: @rail-color;
@@ -294,23 +283,6 @@
 
     // Set color classes in the skin so they can be reused in other parts of the player (i.e. the related overlay)
     .set-global-color-classes() {
-        // Set the highlight color of the center display icon when we are hovering the player.
-        &.jwplayer:not(.jw-flag-touch) {
-            // When not in an error state or in a buffering state...
-            &:not(.jw-error):not(.jw-state-error):not(.jw-state-buffering) {
-                // Highlight the display icon
-                .jw-display-icon-container:hover {
-                    .jw-icon {
-                        color: @display-icon-hover-color;
-                    }
-
-                    .jw-svg-icon {
-                        fill: @display-icon-hover-color;
-                    }
-                }
-            }
-        }
-
         .jw-color-active {
             color: @active-color;
             stroke: @active-color;
