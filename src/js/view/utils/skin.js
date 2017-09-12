@@ -1,5 +1,5 @@
 import { prefix } from 'utils/strings';
-import { css } from 'utils/css';
+import { css, getRgba } from 'utils/css';
 
 export function normalizeSkin(skinConfig = {}) {
 
@@ -156,7 +156,8 @@ export function handleColorOverrides(playerId, skin) {
         }
 
         addStyle([
-            '.jw-controlbar'
+            '.jw-controlbar',
+            '.jw-settings-topbar'
         ], 'background', config.background);
     }
 
@@ -164,22 +165,21 @@ export function handleColorOverrides(playerId, skin) {
 
         addStyle([
             '.jw-progress',
-            '.jw-buffer',
             '.jw-knob'
-        ], 'background', 'none ' + config.progress);
+        ], 'background-color', config.progress);
 
         addStyle([
             '.jw-buffer',
-        ], 'opacity', 0.5);
+        ], 'background-color', getRgba(config.progress, 50));
 
         addStyle([
             '.jw-rail'
-        ], 'background', 'none ' + config.rail);
+        ], 'background-color', config.rail);
 
         addStyle([
             '.jw-background-color.jw-slider-time',
             '.jw-slider-time .jw-cue'
-        ], 'background', config.background);
+        ], 'background-color', config.background);
     }
 
     function styleMenus(config) {
@@ -205,12 +205,10 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-nextup-body',
             '.jw-nextup-header',
             '.jw-settings-submenu',
-            '.jw-settings-topbar'
         ], 'background', config.background);
 
         if (config.background) {
             addStyle([
-                '.jw-settings-submenu',
                 '.jw-nextup-body',
             ], 'opacity', 0.7);
         }
