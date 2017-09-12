@@ -5,10 +5,9 @@
     position: absolute;
     flex-flow: column nowrap;
     align-items: flex-start;
+    right: 12px;
     bottom: @controlbar-height;
-    right: 0;
-    height: calc(100% - @controlbar-height);
-    width: 100%;
+    max-width: 284px;
     background-color: @menu-background-color;
     pointer-events: auto;
 
@@ -21,16 +20,25 @@
     .jw-breakpoint-5 & {
         .rect(284px, 232px);
         max-height: 232px;
-        max-width: 284px;
-        right: 12px;
     }
 
     .jw-breakpoint-4 &,
     .jw-breakpoint-3 & {
         .rect(284px, 192px);
         max-height: 192px;
-        max-width: 284px;
-        right: 12px;
+    }
+
+    .jw-breakpoint-2 & {
+        .rect(284px, 179px);
+        max-height: 179px;
+    }
+
+    .jw-flag-small-player & {
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        max-width: none;
     }
 
     .jw-icon.jw-button-color {
@@ -117,14 +125,19 @@
 
 .jw-settings-open {
     .jw-breakpoint-2 &,
-    .jw-breakpoint-1 &,
-    .jw-breakpoint-0 & {
+    .jw-flag-small-player & {
         .jw-display-container {
             display: none;
         }
 
         &.jw-controls {
             z-index: 1;
+        }
+    }
+
+    .jw-flag-small-player {
+        .jw-controlbar {
+            visibility: hidden;
         }
     }
 

@@ -1,6 +1,6 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
-import { DISPLAY_CLICK, USER_ACTION } from 'events/events';
+import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING } from 'events/events';
 
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -9,17 +9,8 @@ import Controlbar from 'view/controls/controlbar';
 import DisplayContainer from 'view/controls/display-container';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
-import { SettingsMenu } from 'view/controls/components/settings/menu';
-import {
-    addCaptionsSubmenu,
-    removeCaptionsSubmenu,
-    addQualitiesSubmenu,
-    removeQualitiesSubmenu,
-    addAudioTracksSubmenu,
-    removeAudioTracksSubmenu,
-    addPlaybackRatesSubmenu,
-    removePlaybackRatesSubmenu
-} from 'view/utils/submenu-factory';
+import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/settings-menu';
+import { getBreakpoint } from 'view/utils/breakpoint';
 
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 
@@ -98,7 +89,7 @@ export default class Controls {
         // Controlbar
         const controlbar = this.controlbar = new Controlbar(api, model);
         controlbar.on(USER_ACTION, () => this.userActive());
-        controlbar.on('nextShown', function(data) {
+        controlbar.on('nextShown', function (data) {
             this.trigger('nextShown', data);
         }, this);
 
@@ -117,14 +108,28 @@ export default class Controls {
         this.div.appendChild(controlbar.element());
 
         // Settings Menu
+        let lastState = null;
         const visibilityChangeHandler = (visible) => {
+            const state = model.get('state');
+            const settingsInteraction = { reason: 'settingsInteraction' };
+
             utils.toggleClass(this.div, 'jw-settings-open', visible);
+            if (getBreakpoint(model.get('containerWidth')) < 2) {
+                if (visible && state === STATE_PLAYING) {
+                    // Pause playback on open if we're currently playing
+                    api.pause(true, settingsInteraction);
+                } else if (!visible && state === STATE_PAUSED && lastState === STATE_PLAYING) {
+                    // Resume playback on close if we are paused and were playing before
+                    api.play(true, settingsInteraction);
+                }
+            }
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive();
+            lastState = state;
         };
-        this.settingsMenu = setupSettingsMenu(controlbar, visibilityChangeHandler);
-        this.setupSubmenuListeners(model, api);
-        this.div.appendChild(this.settingsMenu.element());
+        const settingsMenu = this.settingsMenu = createSettingsMenu(controlbar, visibilityChangeHandler);
+        setupSubmenuListeners(settingsMenu, controlbar, model, api);
+        this.div.appendChild(settingsMenu.element());
 
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
         if (model.get('autostartMuted')) {
@@ -154,10 +159,12 @@ export default class Controls {
             const newSeek = utils.between(position + amount, min, max);
             api.seek(newSeek, reasonInteraction());
         }
+
         function adjustVolume(amount) {
             const newVol = utils.between(model.get('volume') + amount, 0, 100);
             api.setVolume(newVol);
         }
+
         const handleKeydown = (evt) => {
             // If Meta keys return
             if (evt.ctrlKey || evt.metaKey) {
@@ -351,154 +358,4 @@ export default class Controls {
         utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
     }
-
-    setupSubmenuListeners(model, api) {
-        const controlbar = this.controlbar;
-        const settingsMenu = this.settingsMenu;
-
-        const activateSubmenuItem = (submenuName, itemIndex) => {
-            const submenu = settingsMenu.getSubmenu(submenuName);
-            if (submenu) {
-                submenu.activateItem(itemIndex);
-            }
-        };
-
-        model.change('mediaModel', (newModel, mediaModel) => {
-            // Quality Levels
-            mediaModel.change('levels', (changedModel, levels) => {
-                if (!levels || levels.length <= 1) {
-                    removeQualitiesSubmenu(settingsMenu);
-                    return;
-                }
-
-                addQualitiesSubmenu(
-                    settingsMenu,
-                    levels,
-                    model.getVideo().setCurrentQuality.bind(model.getVideo()),
-                    changedModel.get('currentLevel')
-                );
-            }, this);
-
-            mediaModel.on('change:currentLevel', (changedModel, currentQuality) => {
-                activateSubmenuItem('quality', currentQuality);
-            }, this);
-
-            // Audio Tracks
-            const onAudiotracksChange = (changedModel, audioTracks) => {
-                if (!audioTracks || audioTracks.length <= 1) {
-                    removeAudioTracksSubmenu(settingsMenu);
-                    return;
-                }
-
-                addAudioTracksSubmenu(
-                    settingsMenu,
-                    audioTracks,
-                    model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
-                    mediaModel.get('currentAudioTrack')
-                );
-            };
-            mediaModel.change('audioTracks', onAudiotracksChange, this);
-            mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
-                activateSubmenuItem('audioTracks', currentAudioTrack);
-            }, this);
-        }, this);
-
-        // Captions
-        model.change('captionsList', (changedModel, captionsList) => {
-            const controlbarButton = controlbar.elements.captionsButton;
-            if (!captionsList || captionsList.length <= 1) {
-                removeCaptionsSubmenu(settingsMenu);
-                controlbarButton.hide();
-                return;
-            }
-
-            addCaptionsSubmenu(settingsMenu,
-                captionsList,
-                api.setCurrentCaptions.bind(this),
-                model.get('captionsIndex')
-            );
-            controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
-            controlbarButton.show();
-        }, this);
-
-        model.change('captionsIndex', (changedModel, index) => {
-            const captionsSubmenu = settingsMenu.getSubmenu('captions');
-            if (captionsSubmenu) {
-                captionsSubmenu.activateItem(index);
-                controlbar.toggleCaptionsButtonState(!!index);
-            }
-        }, this);
-
-        // Playback Rates
-        model.change('playbackRates', (changedModel, playbackRates) => {
-            const provider = model.getVideo();
-            const showPlaybackRateControls = provider &&
-                provider.supportsPlaybackRate &&
-                model.get('streamType') !== 'LIVE' &&
-                model.get('playbackRateControls') &&
-                playbackRates.length > 1;
-
-            if (!showPlaybackRateControls) {
-                removePlaybackRatesSubmenu(settingsMenu);
-                return;
-            }
-
-            addPlaybackRatesSubmenu(
-                settingsMenu,
-                playbackRates,
-                provider.setPlaybackRate.bind(model.getVideo()),
-                model.get('playbackRate')
-            );
-        }, this);
-
-        model.change('playbackRate', (changedModel, playbackRate) => {
-            const rates = model.get('playbackRates');
-            if (rates) {
-                activateSubmenuItem('playbackRates', rates.indexOf(playbackRate));
-            }
-        }, this);
-    }
 }
-
-const setupSettingsMenu = (controlbar, onVisibility) => {
-    const settingsButton = controlbar.elements.settingsButton;
-    const onSubmenuAdded = () => {
-        settingsButton.show();
-    };
-    const onMenuEmpty = () => {
-        settingsButton.hide();
-    };
-
-    const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty);
-
-    controlbar.on('settingsInteraction', (submenuName, isDefault) => {
-        const submenu = settingsMenu.getSubmenu(submenuName);
-        if (!submenu && !isDefault) {
-            // Do nothing if activating an invalid submenu
-            // An invalid submenu is one which does not exist
-            // The default submenu may not exist, but this case has defined behavior
-            return;
-        }
-
-        if (settingsMenu.visible) {
-            if (isDefault || submenu.active) {
-                // Close the submenu if clicking the default button (the gear) or if we're already at that submenu
-                settingsMenu.close();
-            } else {
-                // Tab to the newly activated submenu
-                settingsMenu.activateSubmenu(submenuName);
-            }
-        } else {
-            if (submenu) {
-                // Activate the selected submenu
-                settingsMenu.activateSubmenu(submenuName);
-            } else {
-                // Activate the first submenu if clicking the default button
-                settingsMenu.activateFirstSubmenu();
-            }
-            settingsMenu.open();
-        }
-    });
-
-    return settingsMenu;
-};
