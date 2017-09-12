@@ -112,6 +112,14 @@ export default class NextUpTooltip {
             this.title = this.content.querySelector('.jw-nextup-title');
             const title = nextUpItem.title;
             this.title.innerText = title ? utils.createElement(title).textContent : '';
+
+            // Set duration
+            if (nextUpItem.duration) {
+                this.duration = this.content.querySelector('.jw-nextup-duration');
+                const duration = nextUpItem.duration;
+                this.duration.innerText = duration ? utils.createElement(duration).textContent : '';
+            }
+
         }, 500);
     }
 
