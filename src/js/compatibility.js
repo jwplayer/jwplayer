@@ -123,14 +123,27 @@
         var utils = playerLibrary.utils;
         var valueFn = function (getter) {
             return function() {
-                return getter; 
-            }; 
+                return getter;
+            };
         };
 
         utils.isAndroidNative = valueFn(environment.OS.androidNative);
-        utils.isAndroid = valueFn(environment.OS.android);
+        utils.isAndroid = function(osVersion, excludeChrome) {
+            if (excludeChrome && environment.OS.androidNative()) {
+                return false;
+            }
+            if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {
+                return false;
+            }
+            return environment.OS.android();
+        };
         utils.isChrome = valueFn(environment.Browser.chrome);
-        utils.isEdge = valueFn(environment.Browser.edge);
+        utils.isEdge = function(browserVersion) {
+            if (browserVersion && environment.Browser.version.indexOf(browserVersion) !== 0) {
+                return false;
+            }
+            return environment.Browser.edge();
+        };
         utils.isFF = valueFn(environment.Browser.firefox);
         utils.isFacebook = valueFn(environment.Browser.facebook);
         utils.isFlashSupported = valueFn(environment.Features.flash);
@@ -138,7 +151,12 @@
         utils.isIETrident = function () {
             return environment.Browser.ie && environment.Browser.version.major >= 11; 
         };
-        utils.isIOS = valueFn(environment.OS.iOS);
+        utils.isIOS = function(osVersion) {
+            if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {
+                return false;
+            }
+            return environment.OS.iOS();
+        };
         utils.isIPad = valueFn(environment.OS.iPad);
         utils.isIPod = valueFn(environment.OS.iPhone);
         utils.isMSIE = valueFn(environment.Browser.msie);
