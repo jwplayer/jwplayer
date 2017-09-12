@@ -1,5 +1,6 @@
 import { STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN,
     MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
+import { OS } from 'environment/environment';
 import Events from 'utils/backbone.events';
 import changeStateEvent from 'events/change-state-event';
 import Model from 'controller/model';
@@ -28,7 +29,9 @@ const InstreamHtml5 = function(_controller, _model) {
             instreamMode: true,
             edition: _model.get('edition'),
         });
-        _adModel.set('mediaContainer', _model.get('mediaContainer'));
+        if (!OS.mobile) {
+            _adModel.set('mediaContainer', _model.get('mediaContainer'));
+        }
         _adModel.on('fullscreenchange', _nativeFullscreenHandler);
 
         this._adModel = _adModel;
