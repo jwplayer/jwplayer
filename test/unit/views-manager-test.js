@@ -15,7 +15,7 @@ describe('viewsManager', function() {
 
         it('should observe & unobserve the same container', function() {
             const container = document.createElement('div');
-            container.id = 1;
+            container.id = 'player-1';
 
             viewsManager.observe(container);
             viewsManager.unobserve(container);
@@ -26,7 +26,7 @@ describe('viewsManager', function() {
 
         it('should observe & unobserve the same container once on multiple calls', function() {
             const container = document.createElement('div');
-            container.id = 1;
+            container.id = 'player-1';
 
             viewsManager.observe(container);
             viewsManager.observe(container);
@@ -39,10 +39,10 @@ describe('viewsManager', function() {
 
         it('should observe & unobserve multiple containers', function() {
             const container1 = document.createElement('div');
-            container1.id = 1;
+            container1.id = 'player-1';
 
             const container2 = document.createElement('div');
-            container2.id = 2;
+            container2.id = 'player-2';
 
             viewsManager.observe(container1);
             viewsManager.observe(container2);
@@ -56,7 +56,7 @@ describe('viewsManager', function() {
 
     it('should do nothing when there is nothing to unobserve', function() {
         const container = document.createElement('div');
-        container.id = 1;
+        container.id = 'player-1';
 
         viewsManager.unobserve(container);
 

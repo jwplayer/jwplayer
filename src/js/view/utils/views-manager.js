@@ -2,7 +2,7 @@ import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 
 const views = [];
-const observed = [];
+const observed = {};
 
 let intersectionObserver;
 let responsiveRepaintRequestId = -1;
@@ -88,7 +88,7 @@ export default {
     },
     unobserve(container) {
         if (intersectionObserver && observed[container.id]) {
-            observed[container.id] = false;
+            delete observed[container.id];
             intersectionObserver.unobserve(container);
         }
     },
