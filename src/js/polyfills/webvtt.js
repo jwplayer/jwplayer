@@ -194,9 +194,6 @@ function parseContent(window, input) {
             return null;
         }
         var element = window.document.createElement(tagName);
-        Object.assign(element, {
-            localName: tagName
-        });
         var name = TAG_ANNOTATION[type];
         if (name && annotation) {
             element[name] = annotation.trim();
