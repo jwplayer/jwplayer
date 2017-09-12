@@ -1,11 +1,10 @@
-import { OS } from 'environment/environment';
-import utils from 'utils/helpers';
+import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import { style } from 'utils/css';
 
 const Preview = function(_model) {
     this.model = _model;
-
-    _model.on('change:playlistItem', onPlaylistItem, this);
-    _model.on('change:mediaModel', onMediaModel, this);
+    this.raf = -1;
+    this.image = null;
 };
 
 function onMediaModel(model, mediaModel) {
@@ -18,38 +17,40 @@ function onMediaModel(model, mediaModel) {
 }
 
 function onPlaylistItem(model, playlistItem) {
-    var delayPosterLoad = (model.get('autostart') && !OS.mobile) ||
-        (model.get('item') > 0);
-
-    if (delayPosterLoad) {
+    if (this.image) {
         this.setImage(null);
-        model.off('change:state', null, this);
-        model.on('change:state', function(stateChangeModel, state) {
-            if (state === 'complete' || state === 'idle' || state === 'error') {
+    }
+    model.off('change:state', null, this);
+    model.change('state', function(stateChangeModel, state) {
+        if (validState(state)) {
+            cancelAnimationFrame(this.raf);
+            this.raf = requestAnimationFrame(() => {
                 this.setImage(playlistItem.image);
                 this.resize(null, null, stateChangeModel.get('stretching'));
-            }
-        }, this);
-        return;
-    }
+            });
+        }
+    }, this);
+}
 
-    this.setImage(playlistItem.image);
+function validState(state) {
+    return state === 'complete' || state === 'idle' || state === 'error';
 }
 
 Object.assign(Preview.prototype, {
     setup: function(element) {
         this.el = element;
-        var playlistItem = this.model.get('playlistItem');
-        if (playlistItem) {
-            this.setImage(playlistItem.image);
-        }
+        this.model.on('change:mediaModel', onMediaModel, this);
+        this.model.on('change:playlistItem', onPlaylistItem, this);
     },
     setImage: function(img) {
         // Remove onload function from previous image
         var image = this.image;
         if (image) {
             image.onload = null;
-            this.image = null;
+        }
+        this.image = null;
+        if (!validState(this.model.get('state'))) {
+            return;
         }
         this.model.off('change:state', null, this);
         var backgroundImage = '';
@@ -58,7 +59,7 @@ Object.assign(Preview.prototype, {
             image = this.image = new Image();
             image.src = img;
         }
-        utils.style(this.el, {
+        style(this.el, {
             backgroundImage: backgroundImage
         });
     },
@@ -67,7 +68,9 @@ Object.assign(Preview.prototype, {
             if (width) {
                 this.playerAspectRatio = width / height;
             }
-            if (!this.playerAspectRatio) {
+            if (!this.playerAspectRatio ||
+                !this.image ||
+                !validState(this.model.get('state'))) {
                 return;
             }
             // snap image to edges when the difference in aspect ratio is less than 9%
@@ -86,7 +89,7 @@ Object.assign(Preview.prototype, {
                     backgroundSize = 'cover';
                 }
             }
-            utils.style(this.el, {
+            style(this.el, {
                 backgroundSize: backgroundSize
             });
         }
