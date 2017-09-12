@@ -189,8 +189,8 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-option',
             '.jw-toggle.jw-off',
             '.jw-skip .jw-skip-icon',
-            '.jw-nextup-body',
-            '.jw-nextup-header',
+            '.jw-nextup-tooltip',
+            '.jw-nextup-close',
             '.jw-settings-content-item'
         ], 'color', config.text);
 
@@ -198,19 +198,19 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-option.jw-active-option',
             '.jw-option:not(.jw-active-option):hover',
             '.jw-settings-item-active',
-            '.jw-settings-content-item:hover'
+            '.jw-settings-content-item:hover',
+            '.jw-nextup-tooltip:hover',
+            '.jw-nextup-close:hover'
         ], 'color', config.textActive);
 
         addStyle([
-            '.jw-nextup-body.jw-background-color',
-            '.jw-nextup-body',
-            '.jw-nextup-header',
+            '.jw-nextup',
             '.jw-settings-submenu',
         ], 'background', config.background);
 
         if (config.background) {
             addStyle([
-                '.jw-nextup-body',
+                '.jw-settings-submenu'
             ], 'opacity', 0.7);
         }
     }
