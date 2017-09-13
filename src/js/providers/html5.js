@@ -40,8 +40,6 @@ function VideoProvider(_playerId, _playerConfig) {
     // Are we buffering due to seek, or due to playback?
     this.seeking = false;
 
-    this.renderNatively = renderNatively(_playerConfig.renderCaptionsNatively);
-
     // Always render natively in iOS and Safari, where HLS is supported.
     // Otherwise, use native rendering when set in the config for browsers that have adequate support.
     // FF, IE & Edge are excluded due to styling/positioning drawbacks.
@@ -136,6 +134,7 @@ function VideoProvider(_playerId, _playerConfig) {
     });
 
     Object.assign(this, Events, VideoAction, VideoAttached, Tracks, {
+        renderNatively: renderNatively(_playerConfig.renderCaptionsNatively),
         eventsOn_() {
             _setupListeners(MediaEvents, _videotag);
         },
