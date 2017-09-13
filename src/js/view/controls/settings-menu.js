@@ -62,48 +62,35 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         }
     };
 
-    model.change('mediaModel', (newModel, mediaModel) => {
-        // Quality Levels
-        mediaModel.change('levels', (changedModel, levels) => {
-            if (!levels || levels.length <= 1) {
-                removeQualitiesSubmenu(settingsMenu);
-                return;
-            }
+    const onAudiotracksChanged = (mediaModel, changedModel, audioTracks) => {
+        if (!audioTracks || audioTracks.length <= 1) {
+            removeAudioTracksSubmenu(settingsMenu);
+            return;
+        }
 
-            addQualitiesSubmenu(
-                settingsMenu,
-                levels,
-                model.getVideo().setCurrentQuality.bind(model.getVideo()),
-                changedModel.get('currentLevel')
-            );
-        }, this);
+        addAudioTracksSubmenu(
+            settingsMenu,
+            audioTracks,
+            model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
+            mediaModel.get('currentAudioTrack')
+        );
+    };
 
-        mediaModel.on('change:currentLevel', (changedModel, currentQuality) => {
-            activateSubmenuItem('quality', currentQuality);
-        }, this);
+    const onQualitiesChanged = (changedModel, levels) => {
+        if (!levels || levels.length <= 1) {
+            removeQualitiesSubmenu(settingsMenu);
+            return;
+        }
 
-        // Audio Tracks
-        const onAudiotracksChange = (changedModel, audioTracks) => {
-            if (!audioTracks || audioTracks.length <= 1) {
-                removeAudioTracksSubmenu(settingsMenu);
-                return;
-            }
+        addQualitiesSubmenu(
+            settingsMenu,
+            levels,
+            model.getVideo().setCurrentQuality.bind(model.getVideo()),
+            changedModel.get('currentLevel')
+        );
+    };
 
-            addAudioTracksSubmenu(
-                settingsMenu,
-                audioTracks,
-                model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
-                mediaModel.get('currentAudioTrack')
-            );
-        };
-        mediaModel.change('audioTracks', onAudiotracksChange, this);
-        mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
-            activateSubmenuItem('audioTracks', currentAudioTrack);
-        }, this);
-    }, this);
-
-    // Captions
-    model.change('captionsList', (changedModel, captionsList) => {
+    const onCaptionsChanged = (changedModel, captionsList) => {
         const controlbarButton = controlbar.elements.captionsButton;
         if (!captionsList || captionsList.length <= 1) {
             removeCaptionsSubmenu(settingsMenu);
@@ -118,18 +105,9 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         );
         controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
         controlbarButton.show();
-    }, this);
+    };
 
-    model.change('captionsIndex', (changedModel, index) => {
-        const captionsSubmenu = settingsMenu.getSubmenu('captions');
-        if (captionsSubmenu) {
-            captionsSubmenu.activateItem(index);
-            controlbar.toggleCaptionsButtonState(!!index);
-        }
-    }, this);
-
-    // Playback Rates
-    model.change('playbackRates', (changedModel, playbackRates) => {
+    const onPlaybackRatesChange = (changedModel, playbackRates) => {
         const provider = model.getVideo();
         const showPlaybackRateControls = provider &&
             provider.supportsPlaybackRate &&
@@ -148,12 +126,52 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             provider.setPlaybackRate.bind(model.getVideo()),
             model.get('playbackRate')
         );
+    };
+
+    model.change('mediaModel', (newModel, mediaModel) => {
+        // Quality Levels
+        mediaModel.change('levels', onQualitiesChanged, this);
+        mediaModel.on('change:currentLevel', (changedModel, currentQuality) => {
+            activateSubmenuItem('quality', currentQuality);
+        }, this);
+
+        // Audio Tracks
+        mediaModel.change('audioTracks', onAudiotracksChanged.bind(this, mediaModel), this);
+        mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
+            activateSubmenuItem('audioTracks', currentAudioTrack);
+        }, this);
     }, this);
 
+    // Captions
+    model.change('captionsList', onCaptionsChanged, this);
+    model.change('captionsIndex', (changedModel, index) => {
+        const captionsSubmenu = settingsMenu.getSubmenu('captions');
+        if (captionsSubmenu) {
+            captionsSubmenu.activateItem(index);
+            controlbar.toggleCaptionsButtonState(!!index);
+        }
+    }, this);
+
+    // Playback Rates
+    model.change('playbackRates', onPlaybackRatesChange, this);
     model.change('playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
         if (rates) {
             activateSubmenuItem('playbackRates', rates.indexOf(playbackRate));
         }
     }, this);
+
+    // Remove the audio tracks, qualities, and playback rates submenus when casting
+    model.on('change:castActive', (changedModel, active) => {
+        if (active) {
+            removeAudioTracksSubmenu(settingsMenu);
+            removeQualitiesSubmenu(settingsMenu);
+            removePlaybackRatesSubmenu(settingsMenu);
+        } else {
+            const mediaModel = model.get('mediaModel');
+            onAudiotracksChanged(mediaModel, mediaModel, model.get('audioTracks'));
+            onQualitiesChanged(model, model.get('levels'));
+            onPlaybackRatesChange(model, model.get('playbackRates'));
+        }
+    });
 }
