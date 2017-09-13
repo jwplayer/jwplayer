@@ -92,7 +92,7 @@ export default {
             intersectionObserver.unobserve(container);
         }
     },
-    getIntersectionObsever() {
+    getIntersectionObserver() {
         return intersectionObserver;
     }
 };
