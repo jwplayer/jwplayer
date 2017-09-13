@@ -316,27 +316,33 @@ const Model = function() {
     };
 
     this.setProvider = function(item) {
-        var source = item && item.sources && item.sources[0];
+        const source = item && item.sources && item.sources[0];
         if (source === undefined) {
             // source is undefined when resetting index with empty playlist
             throw new Error('No media');
         }
 
-        var Provider = this.chooseProvider(source);
+        const Provider = this.chooseProvider(source);
         // If we are changing video providers
         if (!Provider || !(_provider && _provider instanceof Provider)) {
+            // Replace the video tag for the next provider
+            if (_provider) {
+                replaceMediaElement(this);
+            }
             this.changeVideoProvider(Provider);
         }
 
         if (!_provider) {
             this.set(PLAYER_STATE, STATE_BUFFERING);
+            const mediaModelContext = this.mediaModel;
             return loadProvidersForPlaylist(this).then(loadedPromises => {
-                this.set(PLAYER_STATE, STATE_IDLE);
-
                 if (!loadedPromises.length) {
                     throw new Error('Unsupported media');
                 }
-                return _this.setProvider(item);
+                if (mediaModelContext === this.mediaModel) {
+                    return this.setProvider(item);
+                }
+                return resolved;
             });
         }
 
@@ -354,6 +360,16 @@ const Model = function() {
         this.trigger('itemReady', item);
         return resolved;
     };
+
+    function replaceMediaElement(model) {
+        // Replace click-to-play media element, and call .load() to unblock user-gesture to play requirement
+        const lastMediaElement = model.attributes.mediaElement;
+        const mediaElement =
+            model.attributes.mediaElement = document.createElement('video');
+        mediaElement.volume = lastMediaElement.volume;
+        mediaElement.muted = lastMediaElement.muted;
+        mediaElement.load();
+    }
 
     this.getProviders = function() {
         return _providers;
@@ -441,14 +457,16 @@ const Model = function() {
     function loadAndPlay(model, item) {
         thenPlayPromise.cancel();
 
+        const mediaModelContext = model.mediaModel;
+
         if (_provider) {
             // Calling load() on Shaka may return a player setup promise
-            const playerPromise = _provider.load(item);
-            if (playerPromise) {
+            const providerSetupPromise = _provider.load(item);
+            if (providerSetupPromise) {
                 thenPlayPromise = cancelable(() => {
                     return _provider.play() || resolved;
                 });
-                return playerPromise.then(thenPlayPromise.async);
+                return providerSetupPromise.then(thenPlayPromise.async);
             }
             return _provider.play() || resolved;
         }
@@ -456,10 +474,10 @@ const Model = function() {
         const providerNeeded = _providers.required([item]);
 
         thenPlayPromise = cancelable(() => {
-            if (!_provider && _attached && model.get('playlist')[model.get('item')].file === item.file) {
-                model.setProvider(item);
+            if (mediaModelContext === model.mediaModel) {
                 return loadAndPlay(model, item);
             }
+            throw new Error('Playback cancelled.');
         });
         return _providers.load(providerNeeded).then(thenPlayPromise.async);
     }
@@ -479,10 +497,12 @@ const Model = function() {
         playPromise.then(() => {
             mediaModelContext.set('started', true);
         }).catch(error => {
-            model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
-                error: error,
-                playReason: playReason
-            });
+            if (mediaModelContext === model.mediaModel) {
+                model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+                    error: error,
+                    playReason: playReason
+                });
+            }
         });
     }
 

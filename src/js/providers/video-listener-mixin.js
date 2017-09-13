@@ -1,5 +1,5 @@
 import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING, STATE_PAUSED,
-    PROVIDER_FIRST_FRAME, CLICK, MEDIA_RATE_CHANGE, MEDIA_ERROR,
+    PROVIDER_FIRST_FRAME, CLICK, MEDIA_BUFFER_FULL, MEDIA_RATE_CHANGE, MEDIA_ERROR,
     MEDIA_BUFFER, MEDIA_META, MEDIA_TIME, MEDIA_SEEKED, MEDIA_VOLUME, MEDIA_MUTE, MEDIA_COMPLETE
 } from 'events/events';
 import utils from 'utils/helpers';
@@ -12,6 +12,9 @@ import utils from 'utils/helpers';
 //  2. The provider has an attribute "video" which is the video tag
 
 const VideoListenerMixin = {
+    canplay() {
+        this.trigger(MEDIA_BUFFER_FULL);
+    },
 
     play() {
         if (!this.video.paused && this.state !== STATE_PLAYING) {

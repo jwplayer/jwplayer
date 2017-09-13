@@ -85,7 +85,7 @@ Object.assign(CoreShim.prototype, {
 
         // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
         const mediaElement =
-            model.attributes.mediaElement = getMediaElement(api.id, this.originalContainer);
+            model.attributes.mediaElement = getMediaElement(this.originalContainer);
         mediaElement.load();
 
         return Promise.all([

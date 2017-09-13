@@ -115,7 +115,7 @@ const InstreamHtml5 = function(_controller, _model) {
         if (!_adModel.getVideo()) {
             return;
         }
-        _adModel.getVideo().play(true);
+        _adModel.getVideo().play();
     };
 
     /** Pause instream playback **/
@@ -123,7 +123,7 @@ const InstreamHtml5 = function(_controller, _model) {
         if (!_adModel.getVideo()) {
             return;
         }
-        _adModel.getVideo().pause(true);
+        _adModel.getVideo().pause();
     };
 
 

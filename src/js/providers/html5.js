@@ -1,7 +1,7 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
-import { STATE_IDLE, MEDIA_META, MEDIA_BUFFER_FULL, MEDIA_ERROR,
+import { STATE_IDLE, MEDIA_META, MEDIA_ERROR,
     MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
@@ -113,7 +113,7 @@ function VideoProvider(_playerId, _playerConfig) {
                 // on load
                 _this.setTextTracks(_this._textTracks);
             }
-            _this.trigger(MEDIA_BUFFER_FULL);
+            VideoEvents.canplay.call(_this);
         },
 
         webkitbeginfullscreen(e) {
@@ -174,7 +174,7 @@ function VideoProvider(_playerId, _playerConfig) {
         }
     });
 
-    const _videotag = _playerConfig.mediaElement || _this.getVideo(_playerId);
+    const _videotag = _this.video = _playerConfig.mediaElement;
     const visualQuality = { level: {} };
     const _staleStreamDuration = 3 * 10 * 1000;
 

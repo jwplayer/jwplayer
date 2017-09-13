@@ -1,4 +1,3 @@
-import getMediaElement from 'api/get-media-element';
 import { style } from 'utils/css';
 
 const VideoActionsMixin = {
@@ -52,12 +51,6 @@ const VideoActionsMixin = {
         if (this.container === this.video.parentNode) {
             this.container.removeChild(this.video);
         }
-    },
-
-    getVideo: function(playerId, container) {
-        const media = getMediaElement(playerId, container);
-        this.video = media;
-        return media;
     }
 };
 

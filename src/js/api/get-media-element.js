@@ -1,12 +1,11 @@
-export default function getMediaElement(playerId, container) {
+export default function getMediaElement(parent) {
     // Find video tag, or create it if it doesn't exist.  View may not be built yet.
-    const element = container || document.getElementById(playerId);
     let media = null;
-    if (element) {
-        if (element.nodeName === 'VIDEO' || element.nodeName === 'AUDIO') {
-            media = element;
+    if (parent) {
+        if (parent.nodeName === 'VIDEO' || parent.nodeName === 'AUDIO') {
+            media = parent;
         } else {
-            media = element.querySelector('video, audio');
+            media = parent.querySelector('video, audio');
         }
     }
     if (!media) {
