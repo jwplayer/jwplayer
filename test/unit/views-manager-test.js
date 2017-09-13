@@ -6,7 +6,7 @@ describe('viewsManager', function() {
     let intersectionObserver;
 
     beforeEach(function() {
-        intersectionObserver = viewsManager.getIntersectionObsever();
+        intersectionObserver = viewsManager.getIntersectionObserver();
         intersectionObserver.observe = sinon.spy();
         intersectionObserver.unobserve = sinon.spy();
     });
