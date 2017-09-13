@@ -160,12 +160,7 @@ Object.assign(Controller.prototype, {
 
         _model.on('change:viewSetup', function(model, viewSetup) {
             if (viewSetup) {
-                const mediaElement = this.currentContainer.querySelector('video, audio');
                 showView(this, _view.element());
-                if (mediaElement) {
-                    const mediaContainer = _model.get('mediaContainer');
-                    mediaContainer.appendChild(mediaElement);
-                }
             }
         }, this);
 

@@ -1,6 +1,7 @@
 import { OS } from 'environment/environment';
-import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, ERROR, MEDIA_TIME, MEDIA_COMPLETE,
-    PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, MEDIA_META, AD_SKIPPED } from 'events/events';
+import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING,
+    ERROR, MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
+    PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
 import InstreamHtml5 from 'controller/instream-html5';
 import InstreamFlash from 'controller/instream-flash';
 import utils from 'utils/helpers';
@@ -80,6 +81,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
         _instream.on(MEDIA_TIME, _instreamTime, this);
         _instream.on(MEDIA_COMPLETE, _instreamItemComplete, this);
         _instream.init();
+        _instream._adModel.set('mediaElement', sharedVideoTag || _model.get('mediaElement'));
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();

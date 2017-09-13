@@ -238,8 +238,8 @@ function VideoProvider(_playerId, _playerConfig) {
     _this.getDuration = function() {
         var duration = _videotag.duration;
         // Don't sent time event on Android before real duration is known
-        if (_androidHls && duration === Infinity && _videotag.currentTime === 0) {
-            return;
+        if (_androidHls && (duration === Infinity && _videotag.currentTime === 0) || isNaN(duration)) {
+            return 0;
         }
         var end = _getSeekableEnd();
         if (_this.isLive() && end) {

@@ -496,6 +496,9 @@ const Model = function() {
 
         playPromise.then(() => {
             mediaModelContext.set('started', true);
+            // Sync player state with mediaModel state
+            const mediaState = mediaModelContext.get('state');
+            mediaModelContext.trigger('change:state', mediaModelContext, mediaState, mediaState);
         }).catch(error => {
             if (mediaModelContext === model.mediaModel) {
                 model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
