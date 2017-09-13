@@ -4,7 +4,7 @@ import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import Providers from 'providers/providers';
 import { loadProvidersForPlaylist } from 'api/set-playlist';
 import initQoe from 'controller/qoe';
-import { PLAYER_STATE, STATE_IDLE, STATE_LOADING, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
+import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_RATE_CHANGE,
     MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
@@ -310,6 +310,7 @@ const Model = function() {
         this.set('minDvrWindow', item.minDvrWindow);
         this.set('duration', (item.duration && seconds(item.duration)) || 0);
         this.attributes.playlistItem = null;
+        this.set(PLAYER_STATE, STATE_IDLE);
         this.set('playlistItem', item);
         return this.setProvider(item);
     };
@@ -328,9 +329,10 @@ const Model = function() {
         }
 
         if (!_provider) {
-            this.mediaModel.set(PLAYER_STATE, STATE_LOADING);
+            this.set(PLAYER_STATE, STATE_BUFFERING);
             return loadProvidersForPlaylist(this).then(loadedPromises => {
-                this.mediaModel.set(PLAYER_STATE, STATE_IDLE);
+                this.set(PLAYER_STATE, STATE_IDLE);
+
                 if (!loadedPromises.length) {
                     throw new Error('Unsupported media');
                 }
@@ -431,7 +433,7 @@ const Model = function() {
 
         const playPromise = loadAndPlay(this, item);
 
-        playAttempt(this.mediaController, this.mediaModel, playPromise, playReason);
+        playAttempt(this, playPromise, playReason);
 
         return playPromise;
     };
@@ -462,25 +464,25 @@ const Model = function() {
         return _providers.load(providerNeeded).then(thenPlayPromise.async);
     }
 
-    function playAttempt(mediaController, mediaModel, playPromise, playReason) {
+    function playAttempt(model, playPromise, playReason) {
+        const mediaModelContext = model.mediaModel;
 
-        mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
+        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
 
-        // Immediately set state to buffering if these conditions are met
+        // Immediately set player state to buffering if these conditions are met
         const settingUpProviderOrPlayer = !thenPlayPromise.cancelled();
         const videoTagUnpaused = _provider && _provider.video && !_provider.video.paused;
         if (settingUpProviderOrPlayer || videoTagUnpaused) {
-            mediaModel.set(PLAYER_STATE, STATE_LOADING);
+            model.set(PLAYER_STATE, STATE_BUFFERING);
         }
 
         playPromise.then(() => {
-            mediaModel.set('started', true);
+            mediaModelContext.set('started', true);
         }).catch(error => {
-            mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+            model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
                 error: error,
                 playReason: playReason
             });
-            return error;
         });
     }
 
@@ -497,7 +499,7 @@ const Model = function() {
         }
         const playPromise = _provider.play() || resolved;
         if (!this.mediaModel.get('started')) {
-            playAttempt(this.mediaController, this.mediaModel, playPromise, playReason);
+            playAttempt(this, playPromise, playReason);
         }
         return playPromise;
     };

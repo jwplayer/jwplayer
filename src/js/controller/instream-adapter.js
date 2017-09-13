@@ -316,12 +316,15 @@ var InstreamAdapter = function(_controller, _model, _view) {
             if (_oldpos === null) {
                 _model.stopVideo();
             } else {
+                const mediaModelContext = _model.mediaModel;
                 const item = Object.assign({}, _olditem);
                 item.starttime = _oldpos;
                 _model.loadVideo(item).catch(function(error) {
-                    _model.mediaController.trigger('error', {
-                        message: error.message
-                    });
+                    if (mediaModelContext === _model.mediaModel) {
+                        _model.mediaController.trigger('error', {
+                            message: error.message
+                        });
+                    }
                 });
             }
         }

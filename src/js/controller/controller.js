@@ -304,43 +304,55 @@ Object.assign(Controller.prototype, {
 
             checkAutoStartCancelable.cancel();
             checkAutoStartCancelable = cancelable(_checkAutoStart);
-            _model.once('itemReady', checkAutoStartCancelable.async);
 
             switch (typeof item) {
                 case 'string':
-                    _loadPlaylist(item);
-                    break;
-                case 'object': {
-                    try {
-                        const playlist = Playlist(item);
-                        setPlaylist(_model, playlist, feedData);
-                    } catch (error) {
+                    _loadPlaylist(item).then(data => {
+                        return _updatePlaylist(data.playlist, data);
+                    }).then(checkAutoStartCancelable.async).catch(error => {
                         _this.triggerError({
                             message: `Error loading playlist: ${error.message}`
                         });
-                        return;
-                    }
-                    _setItem(0);
+                    });
                     break;
-                }
+                case 'object':
+                    _updatePlaylist(item, feedData).then(checkAutoStartCancelable.async);
+                    break;
                 case 'number':
-                    _setItem(item);
+                    _setItem(item).then(checkAutoStartCancelable.async);
                     break;
                 default:
                     break;
             }
         }
 
+        function _updatePlaylist(data, feedData) {
+            try {
+                const playlist = Playlist(data);
+                setPlaylist(_model, playlist, feedData);
+            } catch (error) {
+                _this.triggerError({
+                    message: `Playlist error: ${error.message}`
+                });
+                return;
+            }
+            return _setItem(0);
+        }
+
         function _loadPlaylist(toLoad) {
-            const loader = new PlaylistLoader();
-            loader.on(PLAYLIST_LOADED, function(data) {
-                _load(data.playlist, data);
+            return new Promise((resolve, reject) => {
+                const loader = new PlaylistLoader();
+                loader.on(PLAYLIST_LOADED, function(data) {
+                    resolve(data);
+                });
+                loader.on(ERROR, function(error) {
+                    _model.set('feedData', {
+                        error: error
+                    });
+                    reject(error);
+                }, this);
+                loader.load(toLoad);
             });
-            loader.on(ERROR, function(evt) {
-                evt.message = `Error loading playlist: ${evt.message}`;
-                _this.triggerError(evt);
-            }, this);
-            loader.load(toLoad);
         }
 
         function _getAdState() {
@@ -485,7 +497,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _setItem(index) {
-            _model.setItemIndex(index);
+            return _model.setItemIndex(index);
         }
 
         function _prev(meta) {
