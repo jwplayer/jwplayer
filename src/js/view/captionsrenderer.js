@@ -119,8 +119,8 @@ define([
                     return metadata[source];
                 }
                 return;
-            } else if (track.embedded && timeEvent.duration < 0) {
-                // In DVR mode, need to make alignmentPosition positive for captions to work
+            } else if (timeEvent.duration < 0) {
+                // When the duration is negative (DVR mode), make alignmentPosition positive to align captions
                 return timeEvent.position - timeEvent.duration;
             }
 
