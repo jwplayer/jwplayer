@@ -19,7 +19,7 @@ const InstreamHtml5 = function(_controller, _model) {
      *****  Public instream API methods  *****
      *****************************************/
 
-    this.init = function() {
+    this.init = function(mediaElement) {
         // Initialize the instream player's model copied from main player's model
         _adModel = new Model().setup({
             id: _model.get('id'),
@@ -28,6 +28,7 @@ const InstreamHtml5 = function(_controller, _model) {
             mute: _model.get('mute') || _model.get('autostartMuted'),
             instreamMode: true,
             edition: _model.get('edition'),
+            mediaElement: mediaElement
         });
         if (!OS.mobile) {
             _adModel.set('mediaContainer', _model.get('mediaContainer'));
@@ -43,10 +44,12 @@ const InstreamHtml5 = function(_controller, _model) {
         _adModel.set('item', 0);
         _adModel.set('playlistItem', item);
         // Make sure it chooses a provider
-        _adModel.setActiveItem(item);
-
-        // check provider after item change
-        _checkProvider();
+        _adModel.setActiveItem(item).then(() => {
+            if (!_adModel) {
+                return;
+            }
+            _checkProvider(_adModel.getVideo());
+        });
 
         // Match the main player's controls state
         _adModel.off(ERROR);

@@ -488,9 +488,8 @@ const Model = function() {
         model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
 
         // Immediately set player state to buffering if these conditions are met
-        const settingUpProviderOrPlayer = !thenPlayPromise.cancelled();
         const videoTagUnpaused = _provider && _provider.video && !_provider.video.paused;
-        if (settingUpProviderOrPlayer || videoTagUnpaused) {
+        if (videoTagUnpaused) {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         }
 

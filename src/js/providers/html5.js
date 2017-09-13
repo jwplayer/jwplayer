@@ -273,13 +273,6 @@ function VideoProvider(_playerId, _playerConfig) {
     function _setLevels(levels) {
         _levels = levels;
         _currentQuality = _pickInitialQuality(levels);
-        var publicLevels = _getPublicLevels(levels);
-        if (publicLevels) {
-            _this.trigger(MEDIA_LEVELS, {
-                levels: publicLevels,
-                currentQuality: _currentQuality
-            });
-        }
     }
 
     function _pickInitialQuality(levels) {
@@ -326,6 +319,17 @@ function VideoProvider(_playerId, _playerConfig) {
 
         if (startTime > 0) {
             _this.seek(startTime);
+        }
+
+        var publicLevels = _getPublicLevels(_levels);
+        if (publicLevels) {
+            _this.trigger(MEDIA_LEVELS, {
+                levels: publicLevels,
+                currentQuality: _currentQuality
+            });
+        }
+        if (_levels.length && _levels[0].type !== 'hls') {
+            _this.sendMediaType(_levels);
         }
     }
 
@@ -426,10 +430,6 @@ function VideoProvider(_playerId, _playerConfig) {
 
     this.load = function(item) {
         _setLevels(item.sources);
-
-        if (item.sources.length && item.sources[0].type !== 'hls') {
-            this.sendMediaType(item.sources);
-        }
         _completeLoad(item.starttime || 0, item.duration || 0);
     };
 

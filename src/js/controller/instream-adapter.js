@@ -1,5 +1,5 @@
 import { OS } from 'environment/environment';
-import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING,
+import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING,
     ERROR, MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
 import InstreamHtml5 from 'controller/instream-html5';
@@ -80,8 +80,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
         _instream.on('all', _instreamForward, this);
         _instream.on(MEDIA_TIME, _instreamTime, this);
         _instream.on(MEDIA_COMPLETE, _instreamItemComplete, this);
-        _instream.init();
-        _instream._adModel.set('mediaElement', sharedVideoTag || _model.get('mediaElement'));
+        _instream.init(sharedVideoTag || _model.get('mediaElement'));
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
@@ -207,34 +206,28 @@ var InstreamAdapter = function(_controller, _model, _view) {
             playlist = [item];
         }
 
-        var providersManager = _model.getProviders();
-        var providersNeeded = providersManager.required(playlist);
+        _instream._adModel.set('playlist', playlist);
 
         _model.set('hideAdsControls', false);
-        _instream._adModel.set('state', STATE_BUFFERING);
-        providersManager.load(providersNeeded)
-            .then(function() {
-                if (!_instream) {
-                    return;
-                }
-                // Dispatch playlist item event for ad pods
-                _this.trigger(PLAYLIST_ITEM, {
-                    index: _arrayIndex,
-                    item: item
-                });
 
-                _options = Object.assign({}, _defaultOptions, options);
-                _instream.load(item).catch(error => {
-                    console.warn('Creative play request rejected.', error);
-                });
+        // Dispatch playlist item event for ad pods
+        _this.trigger(PLAYLIST_ITEM, {
+            index: _arrayIndex,
+            item: item
+        });
 
-                _this.addClickHandler();
+        _options = Object.assign({}, _defaultOptions, options);
 
-                var skipoffset = item.skipoffset || _options.skipoffset;
-                if (skipoffset) {
-                    _this.setupSkipButton(skipoffset, _options);
-                }
-            });
+        _this.addClickHandler();
+
+        var skipoffset = item.skipoffset || _options.skipoffset;
+        if (skipoffset) {
+            _this.setupSkipButton(skipoffset, _options);
+        }
+
+        return _instream.load(item).catch(error => {
+            console.warn('Creative play request rejected.', error);
+        });
     };
 
     this.setupSkipButton = function(skipoffset, options, customNext) {
@@ -321,6 +314,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
                 const mediaModelContext = _model.mediaModel;
                 const item = Object.assign({}, _olditem);
                 item.starttime = _oldpos;
+                _model.set(PLAYER_STATE, STATE_IDLE);
                 _model.loadVideo(item).catch(function(error) {
                     if (mediaModelContext === _model.mediaModel) {
                         _model.mediaController.trigger('error', {

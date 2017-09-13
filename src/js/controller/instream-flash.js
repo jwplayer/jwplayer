@@ -1,5 +1,5 @@
 import { Browser } from 'environment/environment';
-import { STATE_PAUSED, STATE_PLAYING, PLAYER_STATE, MEDIA_COMPLETE, MEDIA_TIME, MEDIA_ERROR } from 'events/events';
+import { STATE_BUFFERING, STATE_PAUSED, STATE_PLAYING, PLAYER_STATE, MEDIA_COMPLETE, MEDIA_TIME, MEDIA_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import Model from 'controller/model';
 import changeStateEvent from 'events/change-state-event';
@@ -117,6 +117,7 @@ Object.assign(InstreamFlash.prototype, {
     },
 
     load: function(item) {
+        this._adModel.set('state', STATE_BUFFERING);
         // Show the instream layer
         this.swf.triggerFlash('instream:load', item);
         return resolved;
