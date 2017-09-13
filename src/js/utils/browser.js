@@ -1,9 +1,8 @@
-import _ from 'utils/underscore';
+const userAgent = navigator.userAgent;
 
-const userAgentMatch = _.memoize(function (regex) {
-    var agent = navigator.userAgent.toLowerCase();
-    return (agent.match(regex) !== null);
-});
+function userAgentMatch(regex) {
+    return userAgent.match(regex) !== null;
+}
 
 function lazyUserAgentMatch(regex) {
     return function () {
@@ -28,18 +27,11 @@ export const isOSX = lazyUserAgentMatch(/Macintosh/i);
 // Check for Facebook App Version to see if it's Facebook
 export const isFacebook = lazyUserAgentMatch(/FBAV/i);
 
-export function isEdge(browserVersion) {
-    if (browserVersion) {
-        return userAgentMatch(new RegExp('\\sedge\\/' + browserVersion, 'i'));
-    }
+export function isEdge() {
     return userAgentMatch(/\sEdge\/\d+/i);
 }
 
-export function isMSIE(browserVersion) {
-    if (browserVersion) {
-        browserVersion = parseFloat(browserVersion).toFixed(1);
-        return userAgentMatch(new RegExp('msie\\s*' + browserVersion, 'i'));
-    }
+export function isMSIE() {
     return userAgentMatch(/msie/i);
 }
 
@@ -47,51 +39,29 @@ export function isChrome() {
     return userAgentMatch(/\s(?:Chrome|CriOS)\//i) && !isEdge();
 }
 
-export function isIE(browserVersion) {
-    if (browserVersion) {
-        browserVersion = parseFloat(browserVersion).toFixed(1);
-        if (browserVersion >= 12) {
-            return isEdge(browserVersion);
-        } else if (browserVersion >= 11) {
-            return isIETrident();
-        }
-        return isMSIE(browserVersion);
-    }
+export function isIE() {
     return isEdge() || isIETrident() || isMSIE();
 }
 
 export function isSafari() {
-    return (userAgentMatch(/safari/i) && !userAgentMatch(/chrome/i) && !userAgentMatch(/crios/i) &&
-    !userAgentMatch(/chromium/i) && !userAgentMatch(/android/i));
+    return userAgentMatch(/safari/i) && !userAgentMatch(/(?:Chrome|CriOS|chromium|android)/i);
 }
 
 /** Matches iOS devices **/
-export function isIOS(osVersion) {
-    if (osVersion) {
-        return userAgentMatch(
-            new RegExp('iP(hone|ad|od).+\\s(OS\\s' + osVersion + '|.*\\sVersion/' + osVersion + ')', 'i')
-        );
-    }
+export function isIOS() {
     return userAgentMatch(/iP(hone|ad|od)/i);
 }
 
 /** Matches Android devices **/
-export function isAndroidNative(osVersion) {
-    return isAndroid(osVersion, true);
-}
-
-export function isAndroid(osVersion, excludeChrome) {
+export function isAndroidNative() {
     // Android Browser appears to include a user-agent string for Chrome/18
-    if (excludeChrome && userAgentMatch(/chrome\/[123456789]/i) && !userAgentMatch(/chrome\/18/)) {
+    if (userAgentMatch(/chrome\/[123456789]/i) && !userAgentMatch(/chrome\/18/)) {
         return false;
     }
-    if (osVersion) {
-        // make sure whole number version check ends with point '.'
-        if (isInt(osVersion) && !/\./.test(osVersion)) {
-            osVersion = '' + osVersion + '.';
-        }
-        return userAgentMatch(new RegExp('Android\\s*' + osVersion, 'i'));
-    }
+    return isAndroid();
+}
+
+export function isAndroid() {
     return userAgentMatch(/Android/i);
 }
 
