@@ -111,6 +111,40 @@
                 return setup.call(this, options);
             };
 
+
+            const play = playerInstance.play;
+            const pause = playerInstance.pause;
+
+            playerInstance.play = function(state, meta) {
+                if (state === true) {
+                    return play.call(this, state, meta);
+                } else if (state === false) {
+                    return pause.call(this, state, meta);
+                }
+
+                const playerState = this.getState();
+                switch (playerState) {
+                    case events.state.PLAYING:
+                    case events.state.BUFFERING:
+                        pause.call(this, state, meta);
+                        break;
+                    default:
+                        return;
+                }
+
+                return play.call(this, state, meta);
+            };
+
+            playerInstance.pause = function(state, meta) {
+                if (state === true) {
+                    return pause.call(this, state, meta);
+                } else if (state === false) {
+                    return play.call(this, state, meta);
+                }
+
+                return pause.call(this, state, meta);
+            };
+
             return playerInstance;
         };
 
@@ -123,8 +157,8 @@
         var utils = playerLibrary.utils;
         var valueFn = function (getter) {
             return function() {
-                return getter; 
-            }; 
+                return getter;
+            };
         };
 
         utils.isAndroidNative = valueFn(environment.OS.androidNative);
@@ -136,7 +170,7 @@
         utils.isFlashSupported = valueFn(environment.Features.flash);
         utils.isIE = valueFn(environment.Browser.ie);
         utils.isIETrident = function () {
-            return environment.Browser.ie && environment.Browser.version.major >= 11; 
+            return environment.Browser.ie && environment.Browser.version.major >= 11;
         };
         utils.isIOS = valueFn(environment.OS.iOS);
         utils.isIPad = valueFn(environment.OS.iPad);

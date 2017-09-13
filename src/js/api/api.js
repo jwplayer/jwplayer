@@ -3,7 +3,7 @@ import * as Environment from 'environment/environment';
 import instances from './players';
 import Core from './core-shim';
 import { version } from '../version';
-import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
+import { READY } from 'events/events';
 import Timer from 'api/timer';
 import Events, { on, once, off, trigger, triggerSafe } from 'utils/backbone.events';
 import { registerPlugin } from 'plugins/plugins';
@@ -668,52 +668,32 @@ export default function Api(element) {
         },
 
         /**
-         * Toggles or un-pauses playback.
+         * Starts or resumes playback if not playing.
          * @param {boolean} [state] - An optional argument that indicates whether to play (true) or pause (false).
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
          */
-        play(state, meta) {
+        play(state, meta = { reason: 'external' }) {
             if (_.isObject(state) && state.reason) {
                 meta = state;
             }
-            if (!meta) {
-                meta = { reason: 'external' };
-            }
-            if (state === true) {
-                core.play(meta);
-                return this;
-            } else if (state === false) {
-                core.pause(meta);
-                return this;
-            }
-
-            state = this.getState();
-            switch (state) {
-                case STATE_PLAYING:
-                case STATE_BUFFERING:
-                    core.pause(meta);
-                    break;
-                default:
-                    core.play(meta);
-            }
-
+            core.play(meta);
             return this;
         },
 
         /**
-         * Toggles or pauses playback.
+         * Pauses playback if playing.
          * @param {boolean} [state] - An optional argument that indicates whether to pause (true) or play (false).
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
          */
-        pause(state, meta) {
-            // TODO: meta should no longer be accepted from the base API, it should be passed in to the controller by special wrapped interfaces
-            if (_.isBoolean(state)) {
-                return this.play(!state, meta);
+        pause(state, meta = { reason: 'external' }) {
+            if (_.isObject(state) && state.reason) {
+                meta = state;
             }
 
-            return this.play(meta);
+            core.pause(meta);
+            return this;
         },
 
         /**
