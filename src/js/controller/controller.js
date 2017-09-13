@@ -539,7 +539,20 @@ Object.assign(Controller.prototype, {
             }
 
             // It wasn't the last item in the playlist,
-            //  so go to the next one
+            //  so go to the next one and trigger an autoadvance event
+            const related = _api.getPlugin('related');
+            if (related) {
+                const nextUp = _model.get('nextUp');
+                if (nextUp) {
+                    _this.trigger('nextAutoAdvance', {
+                        mode: nextUp.mode,
+                        ui: 'nextup',
+                        target: nextUp,
+                        itemsShown: [ nextUp ],
+                        feedData: nextUp.feedData,
+                    });
+                }
+            }
             _next({ reason: 'playlist' });
         }
 
@@ -850,7 +863,7 @@ Object.assign(Controller.prototype, {
         ], () => !_model.getVideo());
         // Add commands from CoreLoader to queue
         apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
-        
+
         _view.setup();
     },
     get(property) {
