@@ -162,15 +162,19 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
     }, this);
 
     // Remove the audio tracks, qualities, and playback rates submenus when casting
-    model.on('change:castActive', (changedModel, active) => {
+    model.on('change:castActive', (changedModel, active, previousState) => {
+        if (active === previousState) {
+            return;
+        }
+
         if (active) {
             removeAudioTracksSubmenu(settingsMenu);
             removeQualitiesSubmenu(settingsMenu);
             removePlaybackRatesSubmenu(settingsMenu);
         } else {
             const mediaModel = model.get('mediaModel');
-            onAudiotracksChanged(mediaModel, mediaModel, model.get('audioTracks'));
-            onQualitiesChanged(model, model.get('levels'));
+            onAudiotracksChanged(mediaModel, mediaModel, mediaModel.get('audioTracks'));
+            onQualitiesChanged(model, mediaModel.get('levels'));
             onPlaybackRatesChange(model, model.get('playbackRates'));
         }
     });
