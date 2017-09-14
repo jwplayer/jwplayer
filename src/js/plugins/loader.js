@@ -10,7 +10,7 @@ function configurePlugin(pluginObj, pluginConfig, api) {
     const pluginOptions = Object.assign({}, pluginConfig);
     const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
-    api.addPlugin(pluginName, pluginInstance, div);
+    api.addPlugin(pluginName, pluginInstance);
 }
 
 const PluginLoader = function () {
