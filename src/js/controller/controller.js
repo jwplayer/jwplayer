@@ -850,7 +850,7 @@ Object.assign(Controller.prototype, {
         ], () => !_model.getVideo());
         // Add commands from CoreLoader to queue
         apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
-        
+
         _view.setup();
     },
     get(property) {
