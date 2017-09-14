@@ -27,6 +27,13 @@ describe('Api', function() {
         utils.log.reset();
     });
 
+    it('instances has a uniqueIds greater than 0', function() {
+        // We expect uniqueId to be truthy to quickly validate player instances with `!!jwplayer(i).uniqueId`
+        // jwplayer() always returns an object even when the query doesn't match. In that case uniqueId is falsy
+        const api = createApi('player');
+        expect(api.uniqueId).to.be.above(0);
+    });
+
     it('extends Events', function() {
         const api = createApi('player');
         _.each(Events, function (value, key) {
