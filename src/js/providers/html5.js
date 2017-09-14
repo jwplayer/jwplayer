@@ -300,14 +300,18 @@ function VideoProvider(_playerId, _playerConfig) {
         _delayedSeek = 0;
         clearTimeouts();
 
-        var sourceElement = document.createElement('source');
+        const previousSource = _videotag.src;
+        const sourceElement = document.createElement('source');
         sourceElement.src = _levels[_currentQuality].file;
-        var sourceChanged = (_videotag.src !== sourceElement.src);
+        const sourceChanged = (sourceElement.src !== previousSource);
 
         if (sourceChanged) {
             _setVideotagSource(_levels[_currentQuality]);
             _this.setupSideloadedTracks(_this._itemTracks);
-            _videotag.load();
+            // Do not call load if src was not set. load() will cancel any active play promise.
+            if (previousSource) {
+                _videotag.load();
+            }
 
         } else if (startTime === 0 && _videotag.currentTime > 0) {
             // Load event is from the same video as before

@@ -1,5 +1,5 @@
 import { OS } from 'environment/environment';
-import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING,
+import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     ERROR, MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
 import InstreamHtml5 from 'controller/instream-html5';
@@ -73,27 +73,21 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
     this.init = function(sharedVideoTag) {
         // Keep track of the original player state
-        const provider = _model.getVideo();
+        const mediaElement = sharedVideoTag || _model.get('mediaElement');
         _oldpos = _model.get('position');
         _olditem = _model.get('playlist')[_model.get('item')];
 
         _instream.on('all', _instreamForward, this);
         _instream.on(MEDIA_TIME, _instreamTime, this);
         _instream.on(MEDIA_COMPLETE, _instreamItemComplete, this);
-        _instream.init(sharedVideoTag || _model.get('mediaElement'));
+        _instream.init(mediaElement, _model.clone());
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
 
-        // Reset playback rate to 1 in case we reuse the video tag used to play back ad content
-        if (provider) {
-            // FIXME: Playback rate should be reset on the tag playing the ad, not the media provider
-            provider.setPlaybackRate(1);
-            // If the player's currently playing, pause the video tag
-            var currState = _model.get('state');
-            if (!sharedVideoTag && (currState === STATE_PLAYING || currState === STATE_BUFFERING)) {
-                provider.pause();
-            }
+        // Let the element finish loading for mobile before calling pause
+        if (mediaElement && !mediaElement.paused) {
+            mediaElement.pause();
         }
 
         if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {

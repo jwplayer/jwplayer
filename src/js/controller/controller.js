@@ -405,10 +405,9 @@ Object.assign(Controller.prototype, {
             const state = _model.get('state');
             if (state === STATE_IDLE || state === STATE_PAUSED) {
                 _play({ reason: 'autostart' }).catch(error => {
-                    _model.set('autostartFailed', true);
-                    _this.triggerError({
-                        message: `Could not play video: ${error.message}`
-                    });
+                    if (!_this._instreamAdapter || !_this._instreamAdapter._adModel) {
+                        _model.set('autostartFailed', true);
+                    }
                     _actionOnAttach = null;
                 });
             }

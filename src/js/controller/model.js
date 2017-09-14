@@ -232,6 +232,7 @@ const Model = function() {
     };
 
     this.detachMedia = function() {
+        thenPlayPromise.cancel();
         _attached = false;
         if (_provider) {
             _provider.off('all', _videoEventHandler, this);
@@ -499,7 +500,7 @@ const Model = function() {
             const mediaState = mediaModelContext.get('state');
             mediaModelContext.trigger('change:state', mediaModelContext, mediaState, mediaState);
         }).catch(error => {
-            if (mediaModelContext === model.mediaModel) {
+            if (mediaModelContext === model.mediaModel && _attached) {
                 model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
                     error: error,
                     playReason: playReason

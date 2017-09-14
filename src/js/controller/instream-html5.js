@@ -21,14 +21,19 @@ const InstreamHtml5 = function(_controller, _model) {
 
     this.init = function(mediaElement) {
         // Initialize the instream player's model copied from main player's model
+        const playerAttributes = _model.attributes;
         _adModel = new Model().setup({
-            id: _model.get('id'),
-            volume: _model.get('volume'),
-            fullscreen: _model.get('fullscreen'),
-            mute: _model.get('mute') || _model.get('autostartMuted'),
+            id: playerAttributes.id,
+            volume: playerAttributes.volume,
+            fullscreen: playerAttributes.fullscreen,
             instreamMode: true,
-            edition: _model.get('edition'),
-            mediaElement: mediaElement
+            edition: playerAttributes.edition,
+            mediaElement: mediaElement,
+            mute: playerAttributes.mute || playerAttributes.autostartMuted,
+            autostartMuted: playerAttributes.autostartMuted,
+            autostart: playerAttributes.autostart,
+            advertising: playerAttributes.advertising,
+            sdkplatform: playerAttributes.sdkplatform,
         });
         if (!OS.mobile) {
             _adModel.set('mediaContainer', _model.get('mediaContainer'));
@@ -50,6 +55,7 @@ const InstreamHtml5 = function(_controller, _model) {
             }
             _checkProvider(_adModel.getVideo());
         });
+        _checkProvider();
 
         // Match the main player's controls state
         _adModel.off(ERROR);
@@ -161,6 +167,9 @@ const InstreamHtml5 = function(_controller, _model) {
             provider.attachMedia();
             provider.volume(_model.get('volume'));
             provider.mute(_model.get('mute') || _model.get('autostartMuted'));
+            if (provider.setPlaybackRate) {
+                provider.setPlaybackRate(1);
+            }
 
             _adModel.on('change:state', changeStateEvent, _this);
         }
