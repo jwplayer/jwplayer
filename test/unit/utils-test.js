@@ -3,12 +3,12 @@ import utils from 'utils/helpers';
 describe('utils', function() {
 
     it('utils.log', function() {
-        assert.equal(typeof utils.log, 'function', 'is defined');
-        assert.strictEqual(utils.log(), undefined, 'utils.log returns undefined');
+        expect(typeof utils.log, 'is defined').to.equal('function');
+        expect(utils.log(), 'utils.log returns undefined').to.equal(undefined);
     });
 
     it('utils.indexOf', function() {
-        assert.equal(typeof utils.indexOf, 'function', 'is defined');
+        expect(typeof utils.indexOf, 'is defined').to.equal('function');
         // provided by underscore 1.6
     });
 });

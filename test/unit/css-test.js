@@ -20,29 +20,25 @@ describe('css', function() {
         // check that css() accepts a style object and that a new style sheet has been added since
         // this is the first time calling css().
         var newCount = document.getElementsByTagName('style').length;
-        assert.equal(newCount, count + 1, 'css adds a new style sheet');
+        expect(newCount, 'css adds a new style sheet').to.equal(count + 1);
 
         // check that style sheet is correctly included to the end of head
         var styleSheet = document.getElementsByTagName('head')[0].lastChild;
-        assert.isOk(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),
-            'css object correctly included');
+        expect(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),'css object correctly included').to.be.true;
 
         // check that css() accepts a style object and css will be replaced
         css(testSelector, stylesRed, playerId);
-        assert.isOk(!/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),
-            'css object correctly replaced');
-        assert.isOk(/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML),
-            'css object correctly replaced');
+        expect(!/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),'css object correctly replaced').to.be.true;
+        expect(/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML),'css object correctly replaced').to.be.true;
 
         clearCss(playerId);
 
         // check clearCss() works correctly
-        assert.isOk(!/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML), 'css correctly removed');
+        expect(!/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML), 'css correctly removed').to.be.true;
 
         // check that css() accepts css style as a string
         css(testSelector, '{test-selector{background-color: blue}', playerId);
-        assert.isOk(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),
-            'css text correctly inserted');
+        expect(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),'css text correctly inserted').to.be.true;
     });
 
     it('style', function() {
@@ -66,15 +62,15 @@ describe('css', function() {
         style(element, null);
 
         style(element, styles);
-        assert.isOk(element.getAttribute('style').indexOf('background-color: white') >= 0, 'css style background');
-        assert.isOk(element.getAttribute('style').indexOf('z-index: 10') >= 0, 'css style z index');
-        assert.isOk(element.getAttribute('style').indexOf('background-image: url(') >= 0, 'css style img');
-        assert.isOk(element.getAttribute('style').indexOf('color: rgb(18, 52, 86)') >= 0, 'css style color');
+        expect(element.getAttribute('style').indexOf('background-color: white') >= 0, 'css style background').to.be.true;
+        expect(element.getAttribute('style').indexOf('z-index: 10') >= 0, 'css style z index').to.be.true;
+        expect(element.getAttribute('style').indexOf('background-image: url(') >= 0, 'css style img').to.be.true;
+        expect(element.getAttribute('style').indexOf('color: rgb(18, 52, 86)') >= 0, 'css style color').to.be.true;
 
         // test camelCases
         style(element2, styles2);
-        assert.isOk(element2.getAttribute('style').indexOf('background-color: white') >= 0, 'camelCase style background');
-        assert.isOk(element2.getAttribute('style').indexOf('background-image: url(') >= 0, 'camelCase style img');
+        expect(element2.getAttribute('style').indexOf('background-color: white') >= 0, 'camelCase style background').to.be.true;
+        expect(element2.getAttribute('style').indexOf('background-image: url(') >= 0, 'camelCase style img').to.be.true;
     });
 
     it('transform', function() {
@@ -86,17 +82,17 @@ describe('css', function() {
 
         transform(element, 'none');
 
-        assert.equal(element.style.transform, 'none', 'css transform');
-        assert.equal(element.style.msTransform, 'none', 'css transform ms');
-        assert.equal(element.style.mozTransform, 'none', 'css transform moz');
-        assert.equal(element.style.oTransform, 'none', 'css transform o');
+        expect(element.style.transform, 'css transform').to.equal('none');
+        expect(element.style.msTransform, 'css transform ms').to.equal('none');
+        expect(element.style.mozTransform, 'css transform moz').to.equal('none');
+        expect(element.style.oTransform, 'css transform o').to.equal('none');
 
         transform(element, '');
 
-        assert.equal(element.style.transform, '', 'css transform');
-        assert.equal(element.style.msTransform, '', 'css transform ms');
-        assert.equal(element.style.mozTransform, '', 'css transform moz');
-        assert.equal(element.style.oTransform, '', 'css transform o');
+        expect(element.style.transform, 'css transform').to.equal('');
+        expect(element.style.msTransform, 'css transform ms').to.equal('');
+        expect(element.style.mozTransform, 'css transform moz').to.equal('');
+        expect(element.style.oTransform, 'css transform o').to.equal('');
     });
 
     it('getRgba', function() {
@@ -104,15 +100,15 @@ describe('css', function() {
         getRgba(null, null);
 
         var rgba = getRgba('123456', 0.5);
-        assert.equal(rgba, 'rgba(18, 52, 86, 0.005)', 'css getRgba test');
+        expect(rgba, 'css getRgba test').to.equal('rgba(18, 52, 86, 0.005)');
 
         rgba = getRgba('123', 0);
-        assert.equal(rgba, 'rgba(17, 34, 51, 0)', 'css getRgba test with length 3');
+        expect(rgba, 'css getRgba test with length 3').to.equal('rgba(17, 34, 51, 0)');
 
         rgba = getRgba('', 0);
-        assert.equal(rgba, 'rgba(0, 0, 0, 0)', 'css getRgba test with invalid value');
+        expect(rgba, 'css getRgba test with invalid value').to.equal('rgba(0, 0, 0, 0)');
 
         rgba = getRgba('red');
-        assert.equal(rgba, 'rgb(255, 0, 0)', 'css getRgba test with color value and no alpha');
+        expect(rgba, 'css getRgba test with color value and no alpha').to.equal('rgb(255, 0, 0)');
     });
 });

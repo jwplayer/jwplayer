@@ -20,11 +20,11 @@ describe('timer', function() {
         time.end('test');
 
         var dump = time.dump();
-        assert.equal(dump.counts.test, 1, 'test has been called once');
-        assert.equal(typeof dump.sums.test, 'number', 'sum is a number');
+        expect(dump.counts.test, 'test has been called once').to.equal(1);
+        expect(typeof dump.sums.test, 'sum is a number').to.equal('number');
 
         var invalidEnd = time.end('notStarted');
-        assert.isNotOk(invalidEnd, 'function that has not yet started should have no end time');
+        expect(invalidEnd, 'function that has not yet started should have no end time').to.be.undefined;
     });
 
     it('timer tick test', function (done) {
@@ -36,10 +36,10 @@ describe('timer', function() {
             time.tick('event2');
 
             var between = time.between('event1', 'event2');
-            assert.isOk(between > 5 && between < 30000, 'between tick time is correctly calculated');
+            expect(between > 5 && between < 30000, 'between tick time is correctly calculated').to.be.true;
 
             between = time.between('no', 'value');
-            assert.equal(between, null, 'invalid tick events returns null');
+            expect(between, 'invalid tick events returns null').to.equal(null);
             done();
         }, 10);
     });

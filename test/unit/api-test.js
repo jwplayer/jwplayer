@@ -46,7 +46,7 @@ describe('Api', function() {
             const itExtends = api[key] === value;
             const itOverrides = _.isFunction(api[key]);
             const action = itExtends ? 'extends' : (itOverrides ? 'overrides' : 'does not implement');
-            assert.isOk(itExtends || itOverrides, 'api.' + key + ' ' + action + ' Events.' + key);
+            expect(itExtends || itOverrides, 'api.' + key + ' ' + action + ' Events.' + key).to.be.true;
         });
     });
 
@@ -61,7 +61,7 @@ describe('Api', function() {
         api.on('x', update);
         api.trigger('x');
 
-        assert.isOk(check, 'api.trigger works');
+        expect(check, 'api.trigger works').to.be.true;
     });
 
     it('api.off works', function() {
@@ -76,7 +76,7 @@ describe('Api', function() {
         api.off('x', update);
         api.trigger('x');
 
-        assert.equal(check, false, 'api.off works');
+        expect(check, 'api.off works').to.equal(false);
     });
 
     it('bad events do not break player', function() {
@@ -126,15 +126,15 @@ describe('Api', function() {
 
         let removeCount = 0;
         api.on('remove', function (event) {
-            assert.equal(++removeCount, 1, 'first remove event callback is triggered first once');
-            assert.equal(event.type, 'remove', 'event type is "remove"');
-            assert.strictEqual(this, api, 'callback context is the removed api instance');
+            expect(++removeCount, 'first remove event callback is triggered first once').to.equal(1);
+            expect(event.type, 'event type is "remove"').to.equal('remove');
+            expect(this, 'callback context is the removed api instance').to.equal(api);
         });
 
         api.remove();
 
         api.setup({}).on('remove', function() {
-            assert.equal(++removeCount, 2, 'second remove event callback is triggered second');
+            expect(++removeCount, 'second remove event callback is triggered second').to.equal(2);
             done();
         }).remove();
     });
@@ -146,13 +146,13 @@ describe('Api', function() {
         };
 
         api.on('test', function (event) {
-            assert.equal(event.type, 'test', 'event type matches event name');
-            assert.isOk(_.isObject(event) && event !== originalEvent, 'event object is a shallow clone of original');
+            expect(event.type, 'event type matches event name').to.equal('test');
+            expect(_.isObject(event) && event !== originalEvent, 'event object is a shallow clone of original').to.be.true;
         });
 
         api.trigger('test', originalEvent);
 
-        assert.equal(originalEvent.type, 'original', 'original event.type is not modified');
+        expect(originalEvent.type, 'original event.type is not modified').to.equal('original');
     });
 
     it('defines expected methods', function() {
@@ -166,7 +166,7 @@ describe('Api', function() {
         const api = createApi('player');
 
         _.each(apiMethodsDeprecated, (args, method) => {
-            assert.isNotOk(_.isFunction(api[method]), 'deprecated api.' + method + ' is not defined');
+            expect(_.isFunction(api[method]), 'deprecated api.' + method + ' is not defined').to.be.false;
         });
     });
 
@@ -175,7 +175,7 @@ describe('Api', function() {
         _.each(apiMembers, (value, member) => {
             const actualType = (typeof api[member]);
             const expectedType = (typeof value);
-            assert.equal(actualType, expectedType, 'api.' + member + ' is a ' + expectedType);
+            expect(actualType, 'api.' + member + ' is a ' + expectedType).to.equal(expectedType);
         });
 
     });
@@ -190,13 +190,13 @@ describe('Api', function() {
             const message = '"' + property + '" is XXX of api';
 
             if (isApiMethod) {
-                assert.isOk(true, message.replace('XXX', 'a method'));
+                expect(true, message.replace('XXX', 'a method')).to.be.true;
             } else if (isApiMember) {
-                assert.isOk(true, message.replace('XXX', 'a member'));
+                expect(true, message.replace('XXX', 'a member')).to.be.true;
             } else {
                 const expectedMessage = 'api.' + property + ' is undefined';
                 const actualdMessage = 'api.' + property + ' is a ' + (typeof api[property]);
-                assert.equal(actualdMessage, expectedMessage, message.replace('XXX', 'not part') +
+                expect(actualdMessage, expectedMessage, 'not part').to.equal(message.replace('XXX') +
                     '. Is this a new API method or member?');
             }
 
@@ -209,17 +209,17 @@ describe('Api', function() {
 
         _.each(apiMethodsChainable, (args, method) => {
             const fn = api[method];
-            assert.isOk(_.isFunction(fn), 'api.' + method + ' is defined');
+            expect(_.isFunction(fn), 'api.' + method + ' is defined').to.be.true;
 
             let result;
             try {
                 result = fn.apply(api, args);
             } catch (e) {
                 const expectedMessage = method + ' does not throw an error';
-                assert.equal(method + ' threw an error', expectedMessage, expectedMessage + ':' + e.message);
+                expect(method + ' threw an error', expectedMessage + ':' + e.message).to.equal(expectedMessage);
             }
 
-            assert.strictEqual(result, api, 'api.' + method + ' returns an instance of itself');
+            expect(result, 'api.' + method + ' returns an instance of itself').to.equal(api);
         });
     });
 

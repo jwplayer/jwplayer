@@ -1,50 +1,51 @@
+import ApiSettings from 'api/api-settings';
 import { tryCatch, JwError } from 'utils/trycatch';
 
 describe('trycatch', function() {
 
     it('defines', function() {
-        assert.equal(typeof tryCatch, 'function', 'trycatch function is defined');
-        assert.equal(typeof JwError, 'function', 'Error function is defined');
+        expect(typeof tryCatch, 'trycatch function is defined').to.equal('function');
+        expect(typeof JwError, 'Error function is defined').to.equal('function');
     });
 
     it('should not throw Error for valid call', function() {
-        var value = tryCatch(function() {
+        const value = tryCatch(function() {
             return 1;
         });
 
-        assert.strictEqual(value, 1, 'returns value returned by function argument when no exception is thrown');
+        expect(value, 'returns value returned by function argument when no exception is thrown').to.equal(1);
     });
 
-    it.skip('should throw custom Error on catch', function() {
-        var trycatchThrow = function() {
+    it('should throw custom Error on catch', function() {
+        const jwError = tryCatch(function() {
+            throw new Error('Danger, Danger, Will Robinson!');
+        });
+
+        expect(jwError.name).to.equal('');
+        expect(jwError.message).to.equal('Danger, Danger, Will Robinson!');
+    });
+
+
+    it('should throw Error in debug mode', function() {
+        const error = new Error('Error');
+        const debug = ApiSettings.debug;
+        ApiSettings.debug = true;
+
+        const trycatchThrow = function() {
             tryCatch(function() {
-                throw new Error('Danger, Danger, Will Robinson!');
+                throw error;
             });
         };
 
-        expect(trycatchThrow).to.throw(JwError);
-    });
+        expect(trycatchThrow).to.throw(error);
 
-
-    it.skip('should throw Error in debug mode', function() {
-        var debug = window.jwplayer.debug;
-        window.jwplayer.debug = true;
-
-        var trycatchThrow = function() {
-            tryCatch(function() {
-                throw new Error('Error');
-            });
-        };
-
-        expect(trycatchThrow).to.throw(Error);
-
-        window.jwplayer.debug = debug;
+        ApiSettings.debug = debug;
     });
 
     it('Error', function() {
-        var error = new JwError('error name', 'error message');
+        const error = new JwError('error name', 'error message');
 
-        assert.equal(error.name, 'error name', 'error.name is set');
-        assert.equal(error.message, 'error message', 'error.message is set');
+        expect(error.name, 'error.name is set').to.equal('error name');
+        expect(error.message, 'error.message is set').to.equal('error message');
     });
 });

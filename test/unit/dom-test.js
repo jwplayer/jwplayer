@@ -17,38 +17,37 @@ describe('dom', function() {
 
     it('addClass', function() {
         var element = document.createElement('div');
-        assert.strictEqual(element.className, '', 'Created an element with no classes');
+        expect(element.className, 'Created an element with no classes').to.equal('');
 
         addClass(element, 'class1');
-        assert.equal(element.className, 'class1', 'Added first class to element');
+        expect(element.className, 'Added first class to element').to.equal('class1');
 
         addClass(element, 'class1');
-        assert.equal(element.className, 'class1', 'Added same class to element');
+        expect(element.className, 'Added same class to element').to.equal('class1');
 
         addClass(element, 'class2');
-        assert.equal(element.className, 'class1 class2', 'Added second class to element');
+        expect(element.className, 'Added second class to element').to.equal('class1 class2');
 
         addClass(element, ['class3', 'class4']);
-        assert.equal(element.className, 'class1 class2 class3 class4', 'Added array of classes to element');
+        expect(element.className, 'Added array of classes to element').to.equal('class1 class2 class3 class4');
 
         addClass(element, 'class5 class6');
-        assert.equal(element.className, 'class1 class2 class3 class4 class5 class6',
-            'Added space delimited classes to element');
+        expect(element.className, 'Added space delimited classes to element').to.equal('class1 class2 class3 class4 class5 class6');
     });
 
     it('removeClass', function() {
         var element = document.createElement('div');
         element.className = 'class1 class2 class3';
-        assert.equal(element.className, 'class1 class2 class3', 'Created an element with two classes');
+        expect(element.className, 'Created an element with two classes').to.equal('class1 class2 class3');
 
         removeClass(element, 'class3');
-        assert.equal(element.className, 'class1 class2', 'Removed a class from element');
+        expect(element.className, 'Removed a class from element').to.equal('class1 class2');
 
         removeClass(element, ['class2']);
-        assert.equal(element.className, 'class1', 'Removed array of classes from element');
+        expect(element.className, 'Removed array of classes from element').to.equal('class1');
 
         removeClass(element, 'class1');
-        assert.equal(element.className, '', 'Removed lass class from element');
+        expect(element.className, 'Removed lass class from element').to.equal('');
     });
 
 
@@ -56,26 +55,26 @@ describe('dom', function() {
         var element = document.createElement('div');
 
         replaceClass(element, /class0/, 'class1');
-        assert.equal(element.className, 'class1', 'Adds class to element when pattern is not matched');
+        expect(element.className, 'Adds class to element when pattern is not matched').to.equal('class1');
 
         element.className = 'class0';
         replaceClass(element, /class0/, 'class2');
-        assert.equal(element.className, 'class2', 'Replaces class when pattern matches only class');
+        expect(element.className, 'Replaces class when pattern matches only class').to.equal('class2');
 
 
         element.className = 'class1 class2 class3';
         replaceClass(element, /class3/, 'class4');
-        assert.equal(element.className, 'class1 class2 class4', 'Replaces classes when pattern matches any class');
+        expect(element.className, 'Replaces classes when pattern matches any class').to.equal('class1 class2 class4');
 
         element.className = 'class1 class2 classB';
         replaceClass(element, /class\d/g, '');
-        assert.equal(element.className, 'classB', 'Replaces classes when pattern matches any class');
+        expect(element.className, 'Replaces classes when pattern matches any class').to.equal('classB');
     });
 
     it('createElement', function() {
         var element = createElement('<div id=\'testid\'></div>');
 
-        assert.equal(element.id, 'testid', 'element create test');
+        expect(element.id, 'element create test').to.equal('testid');
     });
 
     it('styleDimension', function() {
@@ -83,8 +82,8 @@ describe('dom', function() {
         var px = styleDimension('50');
 
         // check style dimensions with percentage and px
-        assert.equal(percentage, '50%', 'percentage dimension test');
-        assert.equal(px, '50px', 'px dimension test');
+        expect(percentage, 'percentage dimension test').to.equal('50%');
+        expect(px, 'px dimension test').to.equal('50px');
     });
 
     it('classList', function() {
@@ -99,14 +98,14 @@ describe('dom', function() {
         var classB = classList(elementB);
 
         // check that the classList is what we expect
-        assert.equal(classA[0], 'class1', 'first class add to class list');
-        assert.equal(classA[1], 'class2', 'first class add to class list');
-        assert.equal(classB[0], 'a', 'first class add to class name');
-        assert.equal(classB[1], 'b', 'first class add to class name');
+        expect(classA[0], 'first class add to class list').to.equal('class1');
+        expect(classA[1], 'first class add to class list').to.equal('class2');
+        expect(classB[0], 'first class add to class name').to.equal('a');
+        expect(classB[1], 'first class add to class name').to.equal('b');
 
         // check that hasClass function works correctly
-        assert.isOk(hasClass(elementA, 'class1'), 'has class test with existing class');
-        assert.isNotOk(hasClass(elementA, 'class3'), 'has class test with non existing class');
+        expect(hasClass(elementA, 'class1'), 'has class test with existing class').to.be.true;
+        expect(hasClass(elementA, 'class3'), 'has class test with non existing class').to.be.false;
     });
 
     it('toggleClass', function() {
@@ -118,8 +117,8 @@ describe('dom', function() {
         toggleClass(element, 'b');
 
         // check that b is added to element by toggle, and a is removed by toggle
-        assert.isOk(hasClass(element, 'b'), 'has class test with toggle class');
-        assert.isNotOk(hasClass(element, 'a'), 'has class test with removed class');
+        expect(hasClass(element, 'b'), 'has class test with toggle class').to.be.true;
+        expect(hasClass(element, 'a'), 'has class test with removed class').to.be.false;
     });
 
     it('emptyElement', function() {
@@ -128,48 +127,48 @@ describe('dom', function() {
 
         // confirm that child is added to the element
         element.appendChild(child);
-        assert.equal(element.firstChild, child);
+        expect(element.firstChild).to.equal(child);
 
         // empty the element and test that firstChild is not child anymore
         emptyElement(element);
-        assert.isNotOk(element.firstChild, 'emptyElement should remove all children');
+        expect(element.firstChild, 'emptyElement should remove all children').to.be.null;
 
         // add child again to test empty
         element.appendChild(child);
-        assert.equal(element.firstChild, child);
+        expect(element.firstChild).to.equal(child);
 
         // empty the children in element
         empty(element);
-        assert.isNotOk(element.firstChild, 'empty should remove all children');
+        expect(element.firstChild, 'empty should remove all children').to.be.null;
 
         // check empty with null will not break
         empty(null);
     });
 
-    it.skip('addStyleSheet test', function() {
+    it('addStyleSheet test', function() {
         var url = './data/playlist.json';
         addStyleSheet(url);
 
         // check that stylesheet with testUrl href has been added to the head
-        assert.isOk(document.getElementsByTagName('head')[0].lastChild.href.indexOf('playlist') >= 0);
+        expect(document.getElementsByTagName('head')[0].lastChild.href.indexOf('playlist') >= 0).to.be.true;
     });
 
-    it.skip('bounds test', function() {
+    it('bounds test', function() {
         var element = document.createElement('div');
         var emptyBound = { left: 0, right: 0, width: 0, height: 0, top: 0, bottom: 0 };
 
         // check null bounds does not break
-        assert.deepEqual(bounds(null), emptyBound, 'bounds should be empty when element is not defined');
+        expect(bounds(null), 'bounds should be empty when element is not defined').to.deep.equal(emptyBound);
 
-        assert.deepEqual(bounds(element), emptyBound, 'bounds should be empty when element is not in DOM');
+        expect(bounds(element), 'bounds should be empty when element is not in DOM').to.deep.equal(emptyBound);
 
         element.style.display = 'none';
         window.document.body.appendChild(element);
-        assert.equal(bounds(element), emptyBound, 'bounds should be empty when element has no layout');
+        expect(bounds(element), 'bounds should be empty when element has no layout').to.deep.equal(emptyBound);
 
         element.style.display = 'block';
         element.style.width = '400px';
         element.style.height = '400px';
-        assert.notEqual(bounds(element), emptyBound, 'bounds should not be empty when element has layout');
+        expect('bounds should not be empty when element has layout').to.not.equal(bounds(element), emptyBound);
     });
 });

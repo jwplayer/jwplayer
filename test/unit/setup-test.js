@@ -26,11 +26,11 @@ describe('Setup', function() {
     it('fails when playlist is undefined', function (done) {
 
         var readyHandler = function() {
-            assert.isOk(false, 'setup should not succeed');
+            expect(false, 'setup should not succeed').to.be.true;
         };
 
         var errorHandler = function (message) {
-            assert.isOk(message, 'setup failed with message: ' + message);
+            expect(message, 'setup failed with message: ' + message).to.be.true;
         };
 
         testSetup(done, {}, readyHandler, errorHandler);
@@ -39,11 +39,11 @@ describe('Setup', function() {
     it('fails when playlist is an empty string', function (done) {
 
         var readyHandler = function() {
-            assert.isOk(false, 'setup should not succeed');
+            expect(false, 'setup should not succeed').to.be.true;
         };
 
         var errorHandler = function (message) {
-            assert.isOk(message, 'setup failed with message: ' + message);
+            expect(message, 'setup failed with message: ' + message).to.be.true;
         };
 
         testSetup(done, { playlist: '' }, readyHandler, errorHandler);
@@ -52,11 +52,11 @@ describe('Setup', function() {
     it('fails when playlist is a number', function (done) {
 
         var readyHandler = function() {
-            assert.isOk(false, 'setup should not succeed');
+            expect(false, 'setup should not succeed').to.be.true;
         };
 
         var errorHandler = function (message) {
-            assert.isOk(message, 'setup failed with message: ' + message);
+            expect(message, 'setup failed with message: ' + message).to.be.true;
         };
 
         testSetup(done, { playlist: 1 }, readyHandler, errorHandler);
@@ -65,11 +65,11 @@ describe('Setup', function() {
     it('fails when playlist is a boolean', function (done) {
 
         var readyHandler = function() {
-            assert.isOk(false, 'setup should not succeed');
+            expect(false, 'setup should not succeed').to.be.true;
         };
 
         var errorHandler = function (message) {
-            assert.isOk(message, 'setup failed with message: ' + message);
+            expect(message, 'setup failed with message: ' + message).to.be.true;
         };
 
         testSetup(done, { playlist: true }, readyHandler, errorHandler);
@@ -81,10 +81,10 @@ describe('Setup', function() {
         };
 
         testSetup(done, model, function() {
-            assert.isOk(false, 'setup should not succeed');
+            expect(false, 'setup should not succeed').to.be.true;
             done();
         }, function (message) {
-            assert.isOk(message, 'setup failed with message: ' + message);
+            expect(message, 'setup failed with message: ' + message).to.be.true;
             done();
         });
     });
@@ -99,12 +99,12 @@ describe('Setup', function() {
             // 'this' is the api instance
             playlist = this.getPlaylist();
             expect(playlist, 'playlist is an empty array').to.be.an('array').that.is.empty;
-            assert.isOk(false, 'setup should not succeed');
+            expect(false, 'setup should not succeed').to.be.true;
             done();
         }, function (message) {
             playlist = this.getPlaylist();
             expect(playlist, 'playlist is an empty array').to.be.an('array').that.is.empty;
-            assert.isOk(message, 'setup failed with message: ' + message);
+            expect(message, 'setup failed with message: ' + message).to.be.true;
             done();
         });
         done();
@@ -116,10 +116,10 @@ describe('Setup', function() {
         };
 
         testSetup(done, model, function() {
-            assert.isOk(true, 'setup ok');
+            expect(true, 'setup ok').to.be.true;
             done();
         }, function (message) {
-            assert.isOk(false, 'setup failed with message: ' + message);
+            expect(false, 'setup failed with message: ' + message).to.be.true;
             done();
         });
     });
@@ -134,7 +134,7 @@ describe('Setup', function() {
             try {
                 api.remove();
             } catch (e) {
-                assert.isNotOk(e.toString());
+                expect(e.toString()).to.be.false;
             }
             done();
         });
@@ -143,7 +143,7 @@ describe('Setup', function() {
             try {
                 api.remove();
             } catch (evt) {
-                assert.isNotOk(evt.toString());
+                expect(evt.toString()).to.be.false;
             }
             done();
         });

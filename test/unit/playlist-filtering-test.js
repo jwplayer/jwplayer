@@ -148,10 +148,10 @@ describe('playlist.filterPlaylist', function() {
 
         const pl = filterPlaylist(withCredentialsPlaylist, model);
 
-        assert.equal(pl.length, 3);
-        assert.equal(pl[0].allSources[0].withCredentials, false);
-        assert.equal(pl[1].allSources[0].withCredentials, false);
-        assert.equal(pl[2].allSources[0].withCredentials, true);
+        expect(pl.length).to.equal(3);
+        expect(pl[0].allSources[0].withCredentials).to.equal(false);
+        expect(pl[1].allSources[0].withCredentials).to.equal(false);
+        expect(pl[2].allSources[0].withCredentials).to.equal(true);
     });
 
 
@@ -169,7 +169,7 @@ describe('playlist.filterPlaylist', function() {
         };
 
         const pl = filterPlaylist(undefinedCredentialsPlaylist, model);
-        assert.equal(pl.length, 1);
-        assert.equal(pl[0].allSources[0].withCredentials, undefined);
+        expect(pl.length).to.equal(1);
+        expect(pl[0].allSources[0].withCredentials).to.equal(undefined);
     });
 });
