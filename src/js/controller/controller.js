@@ -346,7 +346,7 @@ Object.assign(Controller.prototype, {
             });
             loader.on(ERROR, function(evt) {
                 evt.message = `Error loading playlist: ${evt.message}`;
-                this.triggerError(evt);
+                _this.triggerError(evt);
             }, this);
             loader.load(toLoad);
         }
