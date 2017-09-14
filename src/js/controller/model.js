@@ -439,9 +439,6 @@ const Model = function() {
 
     // The model is also the mediaController for now
     this.loadVideo = function(item, playReason) {
-        if (!item) {
-            item = this.get('playlist')[this.get('item')];
-        }
         if (!playReason) {
             playReason = this.get('playReason');
         }
@@ -459,6 +456,8 @@ const Model = function() {
         thenPlayPromise.cancel();
 
         const mediaModelContext = model.mediaModel;
+
+        mediaModelContext.set('setup', true);
 
         if (_provider) {
             // Calling load() on Shaka may return a player setup promise
@@ -517,9 +516,6 @@ const Model = function() {
     };
 
     this.playVideo = function(playReason) {
-        if (!_provider) {
-            return this.loadVideo(null, playReason);
-        }
         const playPromise = _provider.play() || resolved;
         if (!this.mediaModel.get('started')) {
             playAttempt(this, playPromise, playReason);
@@ -599,6 +595,7 @@ const Model = function() {
 const MediaModel = Model.MediaModel = function() {
     this.attributes = {
         state: STATE_IDLE,
+        setup: false,
         started: false
     };
 };

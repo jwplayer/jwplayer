@@ -230,6 +230,8 @@ Object.assign(Controller.prototype, {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
 
+            // Run _checkAutoStart() last
+            // 'viewable' changes can result in preload() being called on the initial provider instance
             _checkAutoStart();
         }
 
@@ -300,37 +302,41 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable.cancel();
             checkAutoStartCancelable = cancelable(_checkAutoStart);
 
+            let loadPromise;
+
             switch (typeof item) {
-                case 'string':
-                    _loadPlaylist(item).then(data => {
-                        return _updatePlaylist(data.playlist, data);
-                    }).then(checkAutoStartCancelable.async).catch(error => {
+                case 'string': {
+                    const loadPlaylistPromise = _loadPlaylist(item).catch(error => {
                         _this.triggerError({
                             message: `Error loading playlist: ${error.message}`
                         });
                     });
+                    loadPromise = loadPlaylistPromise.then(data => {
+                        return _updatePlaylist(data.playlist, data);
+                    });
                     break;
+                }
                 case 'object':
-                    _updatePlaylist(item, feedData).then(checkAutoStartCancelable.async);
+                    loadPromise = _updatePlaylist(item, feedData);
                     break;
                 case 'number':
-                    _setItem(item).then(checkAutoStartCancelable.async);
+                    loadPromise = _setItem(item);
                     break;
                 default:
-                    break;
+                    return;
             }
-        }
-
-        function _updatePlaylist(data, feedData) {
-            try {
-                const playlist = Playlist(data);
-                setPlaylist(_model, playlist, feedData);
-            } catch (error) {
+            loadPromise.catch(error => {
                 _this.triggerError({
                     message: `Playlist error: ${error.message}`
                 });
-                return;
-            }
+            });
+
+            loadPromise.then(checkAutoStartCancelable.async);
+        }
+
+        function _updatePlaylist(data, feedData) {
+            const playlist = Playlist(data);
+            setPlaylist(_model, playlist, feedData);
             return _setItem(0);
         }
 
@@ -395,8 +401,9 @@ Object.assign(Controller.prototype, {
                 }
             }
 
-            if (_isIdle()) {
-                return _model.loadVideo(null, playReason);
+            if (!_model.mediaModel.get('setup')) {
+                const item = _model.get('playlist')[_model.get('item')];
+                return _model.loadVideo(item, playReason);
             }
             return _model.playVideo(playReason);
         }
@@ -404,7 +411,7 @@ Object.assign(Controller.prototype, {
         function _autoStart() {
             const state = _model.get('state');
             if (state === STATE_IDLE || state === STATE_PAUSED) {
-                _play({ reason: 'autostart' }).catch(error => {
+                _play({ reason: 'autostart' }).catch(() => {
                     if (!_this._instreamAdapter || !_this._instreamAdapter._adModel) {
                         _model.set('autostartFailed', true);
                     }
