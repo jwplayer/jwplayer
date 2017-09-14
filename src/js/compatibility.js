@@ -129,20 +129,20 @@
 
         utils.isAndroidNative = valueFn(environment.OS.androidNative);
         utils.isAndroid = function(osVersion, excludeChrome) {
-            if (excludeChrome && environment.OS.androidNative()) {
+            if (excludeChrome && environment.OS.androidNative) {
                 return false;
             }
             if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {
                 return false;
             }
-            return environment.OS.android();
+            return environment.OS.android;
         };
         utils.isChrome = valueFn(environment.Browser.chrome);
         utils.isEdge = function(browserVersion) {
             if (browserVersion && environment.Browser.version.indexOf(browserVersion) !== 0) {
                 return false;
             }
-            return environment.Browser.edge();
+            return environment.Browser.edge;
         };
         utils.isFF = valueFn(environment.Browser.firefox);
         utils.isFacebook = valueFn(environment.Browser.facebook);
@@ -155,7 +155,7 @@
             if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {
                 return false;
             }
-            return environment.OS.iOS();
+            return environment.OS.iOS;
         };
         utils.isIPad = valueFn(environment.OS.iPad);
         utils.isIPod = valueFn(environment.OS.iPhone);
