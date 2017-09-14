@@ -64,8 +64,9 @@ function removePlayer(api) {
  */
 export default function Api(element) {
     // Add read-only properties which access privately scoped data
-    // TODO: The alternative to pass this to the controller/model and access it from there
-    const uniqueId = instancesCreated++;
+
+    // `uniqueId` should start at 1
+    const uniqueId = ++instancesCreated;
     const playerId = element.id;
     const qoeTimer = new Timer();
     const pluginsMap = {};
