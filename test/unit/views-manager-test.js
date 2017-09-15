@@ -1,7 +1,7 @@
 import viewsManager from 'view/utils/views-manager';
 import sinon from 'sinon';
 
-describe('viewsManager', function() {
+describe.skip('viewsManager', function() {
 
     let intersectionObserver;
 
