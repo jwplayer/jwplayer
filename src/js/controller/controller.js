@@ -539,7 +539,9 @@ Object.assign(Controller.prototype, {
             }
 
             // It wasn't the last item in the playlist,
-            //  so go to the next one
+            //  so go to the next one and trigger an autoadvance event
+            const related = _api.getPlugin('related');
+            triggerAdvanceEvent(related, 'nextAutoAdvance');
             _next({ reason: 'playlist' });
         }
 
@@ -662,18 +664,25 @@ Object.assign(Controller.prototype, {
 
         function _nextUp() {
             const related = _api.getPlugin('related');
-            if (related) {
-                const nextUp = _model.get('nextUp');
-                if (nextUp) {
-                    _this.trigger('nextClick', {
-                        mode: nextUp.mode,
-                        ui: 'nextup',
-                        target: nextUp,
-                        itemsShown: [ nextUp ],
-                        feedData: nextUp.feedData,
-                    });
-                }
-                related.next();
+            triggerAdvanceEvent(related, 'nextClick', () => related.next());
+        }
+
+        function triggerAdvanceEvent(related, evt, cb) {
+            if (!related) {
+                return;
+            }
+            const nextUp = _model.get('nextUp');
+            if (nextUp) {
+                _this.trigger(evt, {
+                    mode: nextUp.mode,
+                    ui: 'nextup',
+                    target: nextUp,
+                    itemsShown: [ nextUp ],
+                    feedData: nextUp.feedData,
+                });
+            }
+            if (typeof cb === 'function') {
+                cb();
             }
         }
 
