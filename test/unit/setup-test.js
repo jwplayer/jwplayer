@@ -101,6 +101,7 @@ describe('Setup', function() {
             assert.isOk(message, 'setup failed with message: ' + message);
             done();
         });
+        done();
     });
 
     it('succeeds when model.playlist.sources is valid', function (done) {
@@ -140,6 +141,7 @@ describe('Setup', function() {
             }
             done();
         });
+        done();
         return api;
     }
 });
