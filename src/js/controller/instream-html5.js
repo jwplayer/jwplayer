@@ -64,7 +64,7 @@ const InstreamHtml5 = function(_controller, _model) {
         }, _this);
 
         // Load the instream item
-        return _adModel.loadVideo(item);
+        return _adModel.playVideo(item);
     };
 
     _this.applyProviderListeners = function(provider) {

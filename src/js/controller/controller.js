@@ -371,12 +371,12 @@ Object.assign(Controller.prototype, {
         function _play(meta = {}) {
             checkAutoStartCancelable.cancel();
 
-            const playReason = meta.reason;
-            _model.set('playReason', playReason);
-
             if (_model.get('state') === STATE_ERROR) {
                 return resolved;
             }
+
+            const playReason = meta.reason;
+            _model.set('playReason', playReason);
 
             const adState = _getAdState();
             if (_.isString(adState)) {
@@ -401,11 +401,9 @@ Object.assign(Controller.prototype, {
                 }
             }
 
-            if (!_model.mediaModel.get('setup')) {
-                const item = _model.get('playlist')[_model.get('item')];
-                return _model.loadVideo(item, playReason);
-            }
-            return _model.playVideo(playReason);
+            const item = _model.get('playlist')[_model.get('item')];
+
+            return _model.playVideo(item, playReason);
         }
 
         function _autoStart() {

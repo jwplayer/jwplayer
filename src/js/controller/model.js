@@ -7,7 +7,7 @@ import initQoe from 'controller/qoe';
 import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_RATE_CHANGE,
-    MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED,
+    MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
     MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META } from 'events/events';
 import { seconds } from 'utils/strings';
 import _ from 'utils/underscore';
@@ -89,10 +89,19 @@ const Model = function() {
             case PLAYER_STATE:
                 mediaModel.set(PLAYER_STATE, data.newstate);
 
+                if (PLAYER_STATE === STATE_IDLE) {
+                    mediaModel.set('setup', false);
+                    mediaModel.set('started', false);
+                }
+
                 // This "return" is important because
                 //  we are choosing to not propagate this event.
                 //  Instead letting the master controller do so
                 return;
+            case MEDIA_ERROR:
+                mediaModel.set('setup', false);
+                mediaModel.set('started', false);
+                break;
             case MEDIA_BUFFER:
                 this.set('buffer', data.bufferPercent);
             /* falls through */
@@ -437,21 +446,6 @@ const Model = function() {
         }
     };
 
-    // The model is also the mediaController for now
-    this.loadVideo = function(item, playReason) {
-        if (!playReason) {
-            playReason = this.get('playReason');
-        }
-        this.set('position', item.starttime || 0);
-        this.set('duration', (item.duration && seconds(item.duration)) || 0);
-
-        const playPromise = loadAndPlay(this, item);
-
-        playAttempt(this, playPromise, playReason);
-
-        return playPromise;
-    };
-
     function loadAndPlay(model, item) {
         thenPlayPromise.cancel();
 
@@ -510,15 +504,32 @@ const Model = function() {
 
     this.stopVideo = function() {
         thenPlayPromise.cancel();
+        this.mediaModel.set('setup', false);
+        this.mediaModel.set('started', false);
         if (_provider) {
             _provider.stop();
         }
     };
 
-    this.playVideo = function(playReason) {
-        const playPromise = _provider.play() || resolved;
-        if (!this.mediaModel.get('started')) {
+    this.playVideo = function(item, playReason) {
+        if (!playReason) {
+            playReason = this.get('playReason');
+        }
+
+        let playPromise;
+
+        if (!this.mediaModel.get('setup')) {
+            this.set('position', item.starttime || 0);
+            this.set('duration', (item.duration && seconds(item.duration)) || 0);
+
+            playPromise = loadAndPlay(this, item);
+
             playAttempt(this, playPromise, playReason);
+        } else {
+            playPromise = _provider.play() || resolved;
+            if (!this.mediaModel.get('started')) {
+                playAttempt(this, playPromise, playReason);
+            }
         }
         return playPromise;
     };
