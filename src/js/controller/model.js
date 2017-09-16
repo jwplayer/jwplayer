@@ -3,6 +3,7 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import Providers from 'providers/providers';
 import { loadProvidersForPlaylist } from 'api/set-playlist';
+import getMediaElement from 'api/get-media-element';
 import initQoe from 'controller/qoe';
 import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
@@ -388,7 +389,7 @@ const Model = function() {
         // Replace click-to-play media element, and call .load() to unblock user-gesture to play requirement
         const lastMediaElement = model.attributes.mediaElement;
         const mediaElement =
-            model.attributes.mediaElement = document.createElement('video');
+            model.attributes.mediaElement = getMediaElement();
         mediaElement.volume = lastMediaElement.volume;
         mediaElement.muted = lastMediaElement.muted;
         mediaElement.load();
