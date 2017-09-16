@@ -87,12 +87,11 @@ const Model = function() {
                 }
                 return;
             case PLAYER_STATE:
-                mediaModel.set(PLAYER_STATE, data.newstate);
-
-                if (PLAYER_STATE === STATE_IDLE) {
+                if (data.newstate === STATE_IDLE) {
                     mediaModel.set('setup', false);
                     mediaModel.set('started', false);
                 }
+                mediaModel.set(PLAYER_STATE, data.newstate);
 
                 // This "return" is important because
                 //  we are choosing to not propagate this event.
@@ -314,16 +313,28 @@ const Model = function() {
         // Item is actually changing
         this.mediaModel.off();
         this.mediaModel = new MediaModel();
-        this.set('itemMeta', {});
-        this.set('mediaModel', this.mediaModel);
-        this.set('position', item.starttime || 0);
+        resetItem(this, item);
         this.set('minDvrWindow', item.minDvrWindow);
-        this.set('duration', (item.duration && seconds(item.duration)) || 0);
+        this.set('mediaModel', this.mediaModel);
         this.attributes.playlistItem = null;
-        this.set(PLAYER_STATE, STATE_IDLE);
         this.set('playlistItem', item);
         return this.setProvider(item);
     };
+
+    function resetItem(model, item) {
+        const position = item.starttime || 0;
+        const duration = (item.duration && seconds(item.duration)) || 0;
+        const mediaModelState = model.mediaModel.attributes;
+        mediaModelState.setup = false;
+        mediaModelState.started = false;
+        mediaModelState.visualQuality = null;
+        mediaModelState.position = position;
+        mediaModelState.duration = duration;
+
+        model.set('itemMeta', {});
+        model.set('position', position);
+        model.set('duration', duration);
+    }
 
     this.setProvider = function(item) {
         const source = item && item.sources && item.sources[0];
@@ -504,14 +515,25 @@ const Model = function() {
 
     this.stopVideo = function() {
         thenPlayPromise.cancel();
-        this.mediaModel.set('setup', false);
-        this.mediaModel.set('started', false);
+        const item = this.get('playlist')[this.get('item')];
+        this.attributes.playlistItem = item;
+        resetItem(this, item);
         if (_provider) {
             _provider.stop();
         }
     };
 
-    this.playVideo = function(item, playReason) {
+    this.preloadVideo = function() {
+        if (_provider && !this.mediaModel.get('setup') &&
+            this.get('autostart') === false &&
+            this.get('playlistItem').preload !== 'none') {
+            _provider.preload();
+        }
+    }
+
+    this.playVideo = function(playReason) {
+        const item = this.get('playlistItem');
+
         if (!playReason) {
             playReason = this.get('playReason');
         }
@@ -519,8 +541,7 @@ const Model = function() {
         let playPromise;
 
         if (!this.mediaModel.get('setup')) {
-            this.set('position', item.starttime || 0);
-            this.set('duration', (item.duration && seconds(item.duration)) || 0);
+            resetItem(this, item);
 
             playPromise = loadAndPlay(this, item);
 
@@ -604,11 +625,7 @@ const Model = function() {
 
 // Represents the state of the provider/media element
 const MediaModel = Model.MediaModel = function() {
-    this.attributes = {
-        state: STATE_IDLE,
-        setup: false,
-        started: false
-    };
+    this.attributes = {};
 };
 
 Object.assign(Model.prototype, SimpleModel);

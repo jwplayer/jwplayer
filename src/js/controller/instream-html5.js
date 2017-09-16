@@ -1,4 +1,4 @@
-import { STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN,
+import { STATE_IDLE, STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN,
     MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
 import { OS } from 'environment/environment';
 import Events from 'utils/backbone.events';
@@ -44,12 +44,14 @@ const InstreamHtml5 = function(_controller, _model) {
     };
 
     /** Load an instream item and initialize playback **/
-    _this.load = function(item) {
+    _this.load = function() {
+        // Let the player media model know we're using it's video tag
+        const mediaModelState = _model.mediaModel.attributes;
+        mediaModelState.setup = false;
+        mediaModelState.started = false;
 
-        _adModel.set('item', 0);
-        _adModel.set('playlistItem', item);
         // Make sure it chooses a provider
-        _adModel.setActiveItem(item).then(() => {
+        _adModel.setItemIndex(0).then(() => {
             if (!_adModel) {
                 return;
             }
@@ -64,7 +66,7 @@ const InstreamHtml5 = function(_controller, _model) {
         }, _this);
 
         // Load the instream item
-        return _adModel.playVideo(item);
+        return _adModel.playVideo();
     };
 
     _this.applyProviderListeners = function(provider) {

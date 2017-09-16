@@ -43,7 +43,6 @@ Object.assign(Controller.prototype, {
         let _actionOnAttach;
         let _stopPlaylist = false;
         let _interruptPlay;
-        let _preloaded = false;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
 
         _this.originalContainer = _this.currentContainer = originalContainer;
@@ -258,11 +257,10 @@ Object.assign(Controller.prototype, {
                 viewable: viewable
             });
 
-            if (shouldPreload(model, viewable)) {
-                const item = model.get('playlistItem');
 
-                model.getVideo().preload(item);
-                _preloaded = true;
+            // Only attempt to preload if this is the first player on the page and viewable
+            if (instances[0] === _api || viewable === 1) {
+                model.preloadVideo();
             }
         }
 
@@ -274,17 +272,6 @@ Object.assign(Controller.prototype, {
                     _this.pause({ reason: 'autostart' });
                 }
             }
-        }
-
-        // Should only attempt to preload if the player is viewable and IDLE
-        // Otherwise, it should try to preload the first player on the page,
-        // which is the player that has a uniqueId of 1
-        function shouldPreload(model, viewable) {
-            return model.get('state') === STATE_IDLE &&
-                model.get('playlistItem').preload !== 'none' &&
-                _preloaded === false &&
-                model.get('autostart') === false &&
-                (instances[0] === _api || viewable === 1);
         }
 
         this.triggerAfterReady = function(type, args) {
@@ -401,9 +388,7 @@ Object.assign(Controller.prototype, {
                 }
             }
 
-            const item = _model.get('playlist')[_model.get('item')];
-
-            return _model.playVideo(item, playReason);
+            return _model.playVideo(playReason);
         }
 
         function _autoStart() {
@@ -422,10 +407,14 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable.cancel();
             apiQueue.empty();
 
+            const adState = _getAdState();
+            if (_.isString(adState)) {
+                return;
+            }
+
             const fromApi = !internal;
 
             _actionOnAttach = null;
-            _preloaded = false;
 
             if (fromApi) {
                 _stopPlaylist = true;
