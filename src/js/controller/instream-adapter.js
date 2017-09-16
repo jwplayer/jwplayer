@@ -212,22 +212,23 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
         _this.addClickHandler();
 
-        _instream._adModel.set('skipButton', false);
-        _skipAd = _instreamItemNext;
+
         var skipoffset = item.skipoffset || _options.skipoffset;
         if (skipoffset) {
             _this.setupSkipButton(skipoffset, _options);
+        } else {
+            _instream._adModel.set('skipButton', false);
         }
 
-        return _instream.load(item).catch(error => {
-            console.warn('Creative play request rejected.', error);
-        });
+        return _instream.load(item);
     };
 
     this.setupSkipButton = function(skipoffset, options, customNext) {
         const adModel = _instream._adModel;
         if (customNext) {
             _skipAd = customNext;
+        } else {
+            _skipAd = _instreamItemNext;
         }
         adModel.set('skipMessage', options.skipMessage);
         adModel.set('skipText', options.skipText);
