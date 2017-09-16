@@ -1,5 +1,5 @@
-import { STATE_IDLE, STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN,
-    MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
+import { STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN,
+    PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
 import { OS } from 'environment/environment';
 import Events from 'utils/backbone.events';
 import changeStateEvent from 'events/change-state-event';
@@ -51,6 +51,7 @@ const InstreamHtml5 = function(_controller, _model) {
         mediaModelState.started = false;
 
         // Make sure it chooses a provider
+        _adModel.stopVideo();
         _adModel.setItemIndex(0).then(() => {
             if (!_adModel) {
                 return;
@@ -163,8 +164,6 @@ const InstreamHtml5 = function(_controller, _model) {
                 this.trigger(type, Object.assign({}, data, { type: type }));
             }, _this);
 
-            provider.on(MEDIA_BUFFER_FULL, _bufferFullHandler);
-
             provider.on(PLAYER_STATE, stateHandler);
             provider.attachMedia();
             provider.volume(_model.get('volume'));
@@ -178,10 +177,11 @@ const InstreamHtml5 = function(_controller, _model) {
     }
 
     function stateHandler(evt) {
+        _adModel.mediaModel.set(PLAYER_STATE, evt.newstate);
         switch (evt.newstate) {
             case STATE_PLAYING:
             case STATE_PAUSED:
-                _adModel.set('state', evt.newstate);
+                _adModel.set(PLAYER_STATE, evt.newstate);
                 break;
             default:
                 break;
@@ -194,11 +194,6 @@ const InstreamHtml5 = function(_controller, _model) {
         _this.trigger(FULLSCREEN, {
             fullscreen: evt.jwstate
         });
-    }
-
-    /** Handle the MEDIA_BUFFER_FULL event **/
-    function _bufferFullHandler() {
-        _adModel.getVideo().play();
     }
 
     return _this;

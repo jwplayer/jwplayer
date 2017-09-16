@@ -42,7 +42,9 @@ const VideoActionsMixin = {
 
     setContainer: function(element) {
         this.container = element;
-        element.insertBefore(this.video, element.firstChild);
+        if (this.video !== element.firstChild) {
+            element.insertBefore(this.video, element.firstChild);
+        }
     },
 
     remove: function() {

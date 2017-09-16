@@ -1,5 +1,5 @@
 import { OS } from 'environment/environment';
-import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
+import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     ERROR, MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
 import InstreamHtml5 from 'controller/instream-html5';
@@ -37,6 +37,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
     var _oldpos;
     var _olditem;
     var _this = this;
+    var _skipAd = _instreamItemNext;
 
     var _clickHandler = _.bind(function(evt) {
         evt = evt || {};
@@ -114,9 +115,6 @@ var InstreamAdapter = function(_controller, _model, _view) {
     function _loadNextItem() {
         const adModel = _instream._adModel;
 
-        // We want a play event for the next item, so we ensure the state != playing
-        adModel.set('state', STATE_BUFFERING);
-
         // destroy skip button
         adModel.set('skipButton', false);
 
@@ -162,7 +160,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
         _instreamItemNext.call(this, e);
     }
 
-    var _instreamItemNext = function(e) {
+    function _instreamItemNext(e) {
         if (_array && _arrayIndex + 1 < _array.length) {
             _loadNextItem();
         } else {
@@ -174,7 +172,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
             }
             this.destroy();
         }
-    };
+    }
 
     this.loadItem = function(item, options) {
         if (!_instream) {
@@ -214,6 +212,8 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
         _this.addClickHandler();
 
+        _instream._adModel.set('skipButton', false);
+        _skipAd = _instreamItemNext;
         var skipoffset = item.skipoffset || _options.skipoffset;
         if (skipoffset) {
             _this.setupSkipButton(skipoffset, _options);
@@ -226,9 +226,8 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
     this.setupSkipButton = function(skipoffset, options, customNext) {
         const adModel = _instream._adModel;
-        adModel.set('skipButton', false);
         if (customNext) {
-            _instreamItemNext = customNext;
+            _skipAd = customNext;
         }
         adModel.set('skipMessage', options.skipMessage);
         adModel.set('skipText', options.skipText);
@@ -262,7 +261,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
     this.skipAd = function(evt) {
         var skipAdType = AD_SKIPPED;
         this.trigger(skipAdType, evt);
-        _instreamItemNext.call(this, {
+        _skipAd.call(this, {
             type: skipAdType
         });
     };

@@ -50,15 +50,20 @@ const VideoListenerMixin = {
         }
         this._helperLastVideoHeight = height;
 
+        const position = this.getCurrentTime();
+        const duration = this.getDuration();
+        if (isNaN(duration)) {
+            return;
+        }
+
         if (!this.video.paused && (this.state === STATE_STALLED || this.state === STATE_LOADING)) {
             this.startStallCheck();
             this.setState(STATE_PLAYING);
         }
 
-        var position = this.getCurrentTime();
         var timeEventObject = {
             position: position,
-            duration: this.getDuration()
+            duration: duration
         };
         if (this.getPtsOffset) {
             var ptsOffset = this.getPtsOffset();

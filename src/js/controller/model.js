@@ -104,23 +104,25 @@ const Model = function() {
             case MEDIA_BUFFER:
                 this.set('buffer', data.bufferPercent);
             /* falls through */
-            case MEDIA_META:
-                var duration = data.duration;
+            case MEDIA_META: {
+                const duration = data.duration;
                 if (_.isNumber(duration) && !_.isNaN(duration)) {
                     mediaModel.set('duration', duration);
                     this.set('duration', duration);
                 }
-                var itemMeta = this.get('itemMeta');
-                Object.assign(itemMeta, data.metadata);
+                Object.assign(this.get('itemMeta'), data.metadata);
                 break;
-            case MEDIA_TIME:
+            }
+            case MEDIA_TIME: {
                 mediaModel.set('position', data.position);
                 this.set('position', data.position);
-                if (_.isNumber(data.duration)) {
-                    mediaModel.set('duration', data.duration);
-                    this.set('duration', data.duration);
+                const duration = data.duration;
+                if (_.isNumber(duration) && !_.isNaN(duration)) {
+                    mediaModel.set('duration', duration);
+                    this.set('duration', duration);
                 }
                 break;
+            }
             case PROVIDER_CHANGED:
                 this.set('provider', _provider.getName());
                 break;
@@ -322,8 +324,8 @@ const Model = function() {
     };
 
     function resetItem(model, item) {
-        const position = item.starttime || 0;
-        const duration = (item.duration && seconds(item.duration)) || 0;
+        const position = seconds(item.starttime);
+        const duration = seconds(item.duration);
         const mediaModelState = model.mediaModel.attributes;
         mediaModelState.setup = false;
         mediaModelState.started = false;
@@ -524,12 +526,12 @@ const Model = function() {
     };
 
     this.preloadVideo = function() {
-        if (_provider && !this.mediaModel.get('setup') &&
-            this.get('autostart') === false &&
-            this.get('playlistItem').preload !== 'none') {
-            _provider.preload();
+        const item = this.get('playlistItem');
+        if (_provider && item.preload !== 'none' && this.get('autostart') === false &&
+            !this.mediaModel.get('setup')) {
+            _provider.preload(item);
         }
-    }
+    };
 
     this.playVideo = function(playReason) {
         const item = this.get('playlistItem');
