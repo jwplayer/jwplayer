@@ -40,12 +40,10 @@ export default function Logo(_model) {
         // apply styles onload when image width and height are known
         _img.onload = function () {
             // update logo style
-            const height = this.height;
-            const width = this.width;
+            let height = this.height;
+            let width = this.width;
             const styles = {
-                backgroundImage: 'url("' + this.src + '")',
-                width,
-                height
+                backgroundImage: 'url("' + this.src + '")'
             };
             if (_settings.margin !== LogoDefaults.margin) {
                 const positions = (/(\w+)-(\w+)/).exec(_settings.position);
@@ -56,8 +54,26 @@ export default function Logo(_model) {
             }
 
             // Constraint logo size to 15% of their respective player dimension
-            styles.width = Math.min(width, Math.round(_model.get('containerWidth') / 6.67));
-            styles.height = Math.min(height, Math.round( _model.get('containerHeight') / 6.67));
+            const maxHeight = _model.get('containerHeight') * 0.15;
+            const maxWidth = _model.get('containerWidth') * 0.15;
+
+            if (height > maxHeight || width > maxWidth) {
+                const logoAR = width / height;
+                const videoAR = maxWidth / maxHeight;
+
+                if (videoAR > logoAR) {
+                    // height = max dimension
+                    height = maxHeight;
+                    width = maxHeight * logoAR;
+                } else {
+                    // width = max dimension
+                    width = maxWidth;
+                    height = maxWidth * logoAR;
+                }
+            }
+
+            styles.width = Math.round(width);
+            styles.height = Math.round(height);
 
             style(_logo, styles);
 
