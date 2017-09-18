@@ -570,6 +570,16 @@ export default function Api(element) {
         },
 
         /**
+         * Toggles player controlbar ads mode.
+         * @param {boolean} [toggle] - Specifies whether controlbar ads mode should be enabled or disabled.
+         * @returns {Api}
+         */
+        setAdsMode(toggle) {
+            core.setAdsMode(toggle);
+            return this;
+        },
+
+        /**
          * Sets the active audio track.
          * @param {number} index
          */

@@ -791,6 +791,13 @@ Object.assign(Controller.prototype, {
             }
         };
 
+        this.setAdsMode = function (mode) {
+            if (!_.isBoolean(mode)) {
+                return;
+            }
+            _model.set('adsMode', mode);
+        };
+
         this.playerDestroy = function () {
             this.trigger('destroyPlugin', {});
             this.off();

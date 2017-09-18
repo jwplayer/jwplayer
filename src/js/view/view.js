@@ -229,6 +229,9 @@ function View(_api, _model) {
         _model.on('change:hideAdsControls', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
         });
+        _model.on('change:adsMode', function (model, val) {
+            toggleClass(_playerElement, 'jw-flag-ads', val);
+        });
         _model.on('change:scrubbing', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-dragging', val);
         });

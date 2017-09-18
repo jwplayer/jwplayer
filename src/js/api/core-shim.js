@@ -54,6 +54,7 @@ const CoreShim = function(originalContainer) {
         'resize',
         'setCaptions',
         'setControls',
+        'setAdsMode',
         'setCues',
     ], () => true);
 };
