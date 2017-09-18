@@ -101,7 +101,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
             // make sure video restarts after preroll
             _oldpos = 0;
         } else if (_model.checkComplete() || _model.get('state') === STATE_COMPLETE) {
-            _oldpos = -1;
+            _oldpos = null;
         }
 
         // Show instream state instead of normal player state
@@ -313,12 +313,12 @@ var InstreamAdapter = function(_controller, _model, _view) {
             // Re-attach the controller
             _controller.attachMedia();
 
-            if (_oldpos >= 0) {
-                var item = Object.assign({}, _olditem);
+            if (_oldpos === null) {
+                _model.stopVideo();
+            } else {
+                const item = Object.assign({}, _olditem);
                 item.starttime = _oldpos;
                 _model.loadVideo(item);
-            } else if (_oldpos === -1) {
-                _model.stopVideo();
             }
         }
     };
