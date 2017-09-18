@@ -313,11 +313,12 @@ var InstreamAdapter = function(_controller, _model, _view) {
             // Re-attach the controller
             _controller.attachMedia();
 
-            if (_oldpos >= 0) {
-                var item = Object.assign({}, _olditem);
+            // -1 is used to resume at the live edge
+            if (_oldpos !== -1) {
+                const item = Object.assign({}, _olditem);
                 item.starttime = _oldpos;
                 _model.loadVideo(item);
-            } else if (_oldpos === -1) {
+            } else {
                 _model.stopVideo();
             }
         }
