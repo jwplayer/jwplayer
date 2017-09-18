@@ -49,6 +49,7 @@ const InstreamHtml5 = function(_controller, _model) {
         const mediaModelState = _model.mediaModel.attributes;
         mediaModelState.setup = false;
         mediaModelState.started = false;
+        mediaModelState.preloaded = false;
 
         // Make sure it chooses a provider
         _adModel.stopVideo();

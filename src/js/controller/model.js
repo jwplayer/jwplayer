@@ -91,6 +91,7 @@ const Model = function() {
                 if (data.newstate === STATE_IDLE) {
                     mediaModel.set('setup', false);
                     mediaModel.set('started', false);
+                    mediaModel.set('preloaded', false);
                 }
                 mediaModel.set(PLAYER_STATE, data.newstate);
 
@@ -101,6 +102,7 @@ const Model = function() {
             case MEDIA_ERROR:
                 mediaModel.set('setup', false);
                 mediaModel.set('started', false);
+                mediaModel.set('preloaded', false);
                 break;
             case MEDIA_BUFFER:
                 this.set('buffer', data.bufferPercent);
@@ -330,6 +332,7 @@ const Model = function() {
         const mediaModelState = model.mediaModel.attributes;
         mediaModelState.setup = false;
         mediaModelState.started = false;
+        mediaModelState.preloaded = false;
         mediaModelState.visualQuality = null;
         mediaModelState.position = position;
         mediaModelState.duration = duration;
@@ -528,8 +531,13 @@ const Model = function() {
 
     this.preloadVideo = function() {
         const item = this.get('playlistItem');
-        if (_provider && item.preload !== 'none' && this.get('autostart') === false &&
-            !this.mediaModel.get('setup')) {
+        // Only attempt to preload if media is attached and hasn't been loaded
+        if (_attached && _provider &&
+            item.preload !== 'none' &&
+            this.get('autostart') === false &&
+            !this.mediaModel.get('setup') &&
+            !this.mediaModel.get('preloaded')) {
+            this.mediaModel.set('preloaded', true);
             _provider.preload(item);
         }
     };
