@@ -68,7 +68,7 @@ export default function Logo(_model) {
                 } else {
                     // width = max dimension
                     width = maxWidth;
-                    height = maxWidth * logoAR;
+                    height = maxWidth / logoAR;
                 }
             }
 
