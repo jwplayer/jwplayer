@@ -307,7 +307,6 @@ function VideoProvider(_playerId, _playerConfig) {
 
         if (sourceChanged) {
             _setVideotagSource(_levels[_currentQuality]);
-            _this.setupSideloadedTracks(_this._itemTracks);
             // Do not call load if src was not set. load() will cancel any active play promise.
             if (previousSource) {
                 _videotag.load();
@@ -356,6 +355,8 @@ function VideoProvider(_playerId, _playerConfig) {
         if (sourceChanged) {
             _videotag.src = source.file;
         }
+
+        _this.setupSideloadedTracks(source.tracks);
     }
 
     function _clearVideotagSource() {
