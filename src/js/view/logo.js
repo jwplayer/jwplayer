@@ -17,7 +17,7 @@ export default function Logo(_model) {
 
     var _logo;
     var _settings;
-    var _img = new Image();
+    const _img = new Image();
 
     this.setup = function() {
         _settings = Object.assign({}, LogoDefaults, _model.get('logo'));
@@ -40,18 +40,41 @@ export default function Logo(_model) {
         // apply styles onload when image width and height are known
         _img.onload = function () {
             // update logo style
-            var styles = {
-                backgroundImage: 'url("' + this.src + '")',
-                width: this.width,
-                height: this.height
+            let height = this.height;
+            let width = this.width;
+            const styles = {
+                backgroundImage: 'url("' + this.src + '")'
             };
             if (_settings.margin !== LogoDefaults.margin) {
-                var positions = (/(\w+)-(\w+)/).exec(_settings.position);
+                const positions = (/(\w+)-(\w+)/).exec(_settings.position);
                 if (positions.length === 3) {
                     styles['margin-' + positions[1]] = _settings.margin;
                     styles['margin-' + positions[2]] = _settings.margin;
                 }
             }
+
+            // Constraint logo size to 15% of their respective player dimension
+            const maxHeight = _model.get('containerHeight') * 0.15;
+            const maxWidth = _model.get('containerWidth') * 0.15;
+
+            if (height > maxHeight || width > maxWidth) {
+                const logoAR = width / height;
+                const videoAR = maxWidth / maxHeight;
+
+                if (videoAR > logoAR) {
+                    // height = max dimension
+                    height = maxHeight;
+                    width = maxHeight * logoAR;
+                } else {
+                    // width = max dimension
+                    width = maxWidth;
+                    height = maxWidth / logoAR;
+                }
+            }
+
+            styles.width = Math.round(width);
+            styles.height = Math.round(height);
+
             style(_logo, styles);
 
             // update title
@@ -60,7 +83,7 @@ export default function Logo(_model) {
 
         _img.src = _settings.file;
 
-        var logoInteractHandler = new UI(_logo);
+        const logoInteractHandler = new UI(_logo);
         logoInteractHandler.on('click tap', function (evt) {
             if (evt && evt.stopPropagation) {
                 evt.stopPropagation();
