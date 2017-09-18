@@ -29,6 +29,7 @@ const InstreamHtml5 = function(_controller, _model) {
             instreamMode: true,
             edition: playerAttributes.edition,
             mediaElement: mediaElement,
+            mediaSrc: mediaElement.src,
             mute: playerAttributes.mute || playerAttributes.autostartMuted,
             autostartMuted: playerAttributes.autostartMuted,
             autostart: playerAttributes.autostart,
@@ -46,10 +47,7 @@ const InstreamHtml5 = function(_controller, _model) {
     /** Load an instream item and initialize playback **/
     _this.load = function() {
         // Let the player media model know we're using it's video tag
-        const mediaModelState = _model.mediaModel.attributes;
-        mediaModelState.setup = false;
-        mediaModelState.started = false;
-        mediaModelState.preloaded = false;
+        _model.mediaModel.srcReset();
 
         // Make sure it chooses a provider
         _adModel.stopVideo();
@@ -113,6 +111,13 @@ const InstreamHtml5 = function(_controller, _model) {
             if (_adModel.getVideo()) {
                 _currentProvider.destroy();
             }
+        }
+
+
+        // Reset the player media model if the src was changed externally
+        const srcChanged = _adModel.get('mediaElement').src !== _adModel.get('mediaSrc');
+        if (srcChanged) {
+            _model.mediaModel.srcReset();
         }
 
         // Return the view to its normal state

@@ -89,7 +89,7 @@ const Model = function() {
                 return;
             case PLAYER_STATE:
                 if (data.newstate === STATE_IDLE) {
-                    resetMediaLoaded(mediaModel);
+                    mediaModel.srcReset();
                 }
                 mediaModel.set(PLAYER_STATE, data.newstate);
 
@@ -98,7 +98,7 @@ const Model = function() {
                 //  Instead letting the master controller do so
                 return;
             case MEDIA_ERROR:
-                resetMediaLoaded(mediaModel);
+                mediaModel.srcReset();
                 break;
             case MEDIA_BUFFER:
                 this.set('buffer', data.bufferPercent);
@@ -326,21 +326,13 @@ const Model = function() {
         const position = seconds(item.starttime);
         const duration = seconds(item.duration);
         const mediaModelState = model.mediaModel.attributes;
-        resetMediaLoaded(model.mediaModel);
+        model.mediaModel.srcReset();
         mediaModelState.position = position;
         mediaModelState.duration = duration;
 
         model.set('itemMeta', {});
         model.set('position', position);
         model.set('duration', duration);
-    }
-
-    function resetMediaLoaded(mediaModel) {
-        const mediaModelState = mediaModel.attributes;
-        mediaModelState.setup = false;
-        mediaModelState.started = false;
-        mediaModelState.preloaded = false;
-        mediaModelState.visualQuality = null;
     }
 
     this.setProvider = function(item) {
@@ -641,6 +633,14 @@ const MediaModel = Model.MediaModel = function() {
 };
 
 Object.assign(Model.prototype, SimpleModel);
-Object.assign(MediaModel.prototype, SimpleModel);
+Object.assign(MediaModel.prototype, SimpleModel, {
+    srcReset() {
+        const attributes = this.attributes;
+        attributes.setup = false;
+        attributes.started = false;
+        attributes.preloaded = false;
+        attributes.visualQuality = null;
+    }
+});
 
 export default Model;
