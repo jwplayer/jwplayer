@@ -89,9 +89,7 @@ const Model = function() {
                 return;
             case PLAYER_STATE:
                 if (data.newstate === STATE_IDLE) {
-                    mediaModel.set('setup', false);
-                    mediaModel.set('started', false);
-                    mediaModel.set('preloaded', false);
+                    resetMediaLoaded(mediaModel);
                 }
                 mediaModel.set(PLAYER_STATE, data.newstate);
 
@@ -100,9 +98,7 @@ const Model = function() {
                 //  Instead letting the master controller do so
                 return;
             case MEDIA_ERROR:
-                mediaModel.set('setup', false);
-                mediaModel.set('started', false);
-                mediaModel.set('preloaded', false);
+                resetMediaLoaded(mediaModel);
                 break;
             case MEDIA_BUFFER:
                 this.set('buffer', data.bufferPercent);
@@ -330,16 +326,21 @@ const Model = function() {
         const position = seconds(item.starttime);
         const duration = seconds(item.duration);
         const mediaModelState = model.mediaModel.attributes;
-        mediaModelState.setup = false;
-        mediaModelState.started = false;
-        mediaModelState.preloaded = false;
-        mediaModelState.visualQuality = null;
+        resetMediaLoaded(model.mediaModel);
         mediaModelState.position = position;
         mediaModelState.duration = duration;
 
         model.set('itemMeta', {});
         model.set('position', position);
         model.set('duration', duration);
+    }
+
+    function resetMediaLoaded(mediaModel) {
+        const mediaModelState = mediaModel.attributes;
+        mediaModelState.setup = false;
+        mediaModelState.started = false;
+        mediaModelState.preloaded = false;
+        mediaModelState.visualQuality = null;
     }
 
     this.setProvider = function(item) {

@@ -258,7 +258,7 @@ Object.assign(Controller.prototype, {
             });
 
 
-            // Only attempt to preload if this is the first player on the page and viewable
+            // Only attempt to preload if this is the first player on the page or viewable
             if (instances[0] === _api || viewable === 1) {
                 model.preloadVideo();
             }
