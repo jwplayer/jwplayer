@@ -57,6 +57,7 @@
     }
 
     &.jw-flag-user-inactive:not(.jw-flag-audio-player):not(.jw-flag-casting):not(.jw-flag-media-audio) {
+        .jw-gradient,
         .jw-controls::after {
             opacity: 0;
         }
@@ -126,10 +127,8 @@
     }
 
     .jw-controls {
-        &::after {
-            background: @controlbar-background;
-            height: 100%;
-        }
+        background: @controlbar-background;
+        height: 100%;
     }
 }
 
@@ -163,6 +162,11 @@ body .jwplayer.jw-state-error {
         .jw-svg-icon-error {
             display: block;
         }
+    }
+
+    .jw-controls {
+        background: @controlbar-background;
+        height: 100%;
     }
 }
 
@@ -209,6 +213,10 @@ body .jwplayer.jw-state-error,
         height: 100%;
         top: 0;
         bottom: 0;
+    }
+
+    .jw-gradient {
+        opacity: 0;
     }
 
     .jw-controls::after {
