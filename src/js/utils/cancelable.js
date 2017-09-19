@@ -12,6 +12,7 @@ export default function cancelable(callback) {
         }),
         cancel: () => {
             cancelled = true;
-        }
+        },
+        cancelled: () => cancelled
     };
 }

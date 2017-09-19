@@ -1,5 +1,5 @@
 import { STATE_PAUSED, STATE_PLAYING, ERROR, FULLSCREEN,
-    MEDIA_BUFFER_FULL, PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
+    PLAYER_STATE, MEDIA_COMPLETE } from 'events/events';
 import { OS } from 'environment/environment';
 import Events from 'utils/backbone.events';
 import changeStateEvent from 'events/change-state-event';
@@ -19,15 +19,22 @@ const InstreamHtml5 = function(_controller, _model) {
      *****  Public instream API methods  *****
      *****************************************/
 
-    this.init = function() {
+    this.init = function(mediaElement) {
         // Initialize the instream player's model copied from main player's model
+        const playerAttributes = _model.attributes;
         _adModel = new Model().setup({
-            id: _model.get('id'),
-            volume: _model.get('volume'),
-            fullscreen: _model.get('fullscreen'),
-            mute: _model.get('mute') || _model.get('autostartMuted'),
+            id: playerAttributes.id,
+            volume: playerAttributes.volume,
+            fullscreen: playerAttributes.fullscreen,
             instreamMode: true,
-            edition: _model.get('edition'),
+            edition: playerAttributes.edition,
+            mediaElement: mediaElement,
+            mediaSrc: mediaElement.src,
+            mute: playerAttributes.mute || playerAttributes.autostartMuted,
+            autostartMuted: playerAttributes.autostartMuted,
+            autostart: playerAttributes.autostart,
+            advertising: playerAttributes.advertising,
+            sdkplatform: playerAttributes.sdkplatform,
         });
         if (!OS.mobile) {
             _adModel.set('mediaContainer', _model.get('mediaContainer'));
@@ -38,14 +45,18 @@ const InstreamHtml5 = function(_controller, _model) {
     };
 
     /** Load an instream item and initialize playback **/
-    _this.load = function(item) {
+    _this.load = function() {
+        // Let the player media model know we're using it's video tag
+        _model.mediaModel.srcReset();
 
-        _adModel.set('item', 0);
-        _adModel.set('playlistItem', item);
         // Make sure it chooses a provider
-        _adModel.setActiveItem(item);
-
-        // check provider after item change
+        _adModel.stopVideo();
+        _adModel.setItemIndex(0).then(() => {
+            if (!_adModel) {
+                return;
+            }
+            _checkProvider(_adModel.getVideo());
+        });
         _checkProvider();
 
         // Match the main player's controls state
@@ -55,7 +66,7 @@ const InstreamHtml5 = function(_controller, _model) {
         }, _this);
 
         // Load the instream item
-        _adModel.loadVideo(item);
+        return _adModel.playVideo();
     };
 
     _this.applyProviderListeners = function(provider) {
@@ -102,6 +113,13 @@ const InstreamHtml5 = function(_controller, _model) {
             }
         }
 
+
+        // Reset the player media model if the src was changed externally
+        const srcChanged = _adModel.get('mediaElement').src !== _adModel.get('mediaSrc');
+        if (srcChanged) {
+            _model.mediaModel.srcReset();
+        }
+
         // Return the view to its normal state
         _adModel = null;
 
@@ -115,7 +133,7 @@ const InstreamHtml5 = function(_controller, _model) {
         if (!_adModel.getVideo()) {
             return;
         }
-        _adModel.getVideo().play(true);
+        _adModel.getVideo().play();
     };
 
     /** Pause instream playback **/
@@ -123,7 +141,7 @@ const InstreamHtml5 = function(_controller, _model) {
         if (!_adModel.getVideo()) {
             return;
         }
-        _adModel.getVideo().pause(true);
+        _adModel.getVideo().pause();
     };
 
 
@@ -152,22 +170,24 @@ const InstreamHtml5 = function(_controller, _model) {
                 this.trigger(type, Object.assign({}, data, { type: type }));
             }, _this);
 
-            provider.on(MEDIA_BUFFER_FULL, _bufferFullHandler);
-
             provider.on(PLAYER_STATE, stateHandler);
             provider.attachMedia();
             provider.volume(_model.get('volume'));
             provider.mute(_model.get('mute') || _model.get('autostartMuted'));
+            if (provider.setPlaybackRate) {
+                provider.setPlaybackRate(1);
+            }
 
             _adModel.on('change:state', changeStateEvent, _this);
         }
     }
 
     function stateHandler(evt) {
+        _adModel.mediaModel.set(PLAYER_STATE, evt.newstate);
         switch (evt.newstate) {
             case STATE_PLAYING:
             case STATE_PAUSED:
-                _adModel.set('state', evt.newstate);
+                _adModel.set(PLAYER_STATE, evt.newstate);
                 break;
             default:
                 break;
@@ -180,11 +200,6 @@ const InstreamHtml5 = function(_controller, _model) {
         _this.trigger(FULLSCREEN, {
             fullscreen: evt.jwstate
         });
-    }
-
-    /** Handle the MEDIA_BUFFER_FULL event **/
-    function _bufferFullHandler() {
-        _adModel.getVideo().play();
     }
 
     return _this;

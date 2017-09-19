@@ -1,11 +1,16 @@
 import Api from 'api/api';
 import ApiSettings from 'api/api-settings';
 import $ from 'jquery';
+import {
+    install as installVideoPolyfill,
+    uninstall as uninstallVideoPolyfill
+} from 'mock/video-element-polyfill';
 
 describe('Setup', function() {
     this.timeout(3000);
 
     beforeEach(function() {
+        installVideoPolyfill();
         ApiSettings.debug = true;
         // remove fixture
         $('body').append('<div id="test-container"><div id="player"></div></div>');
@@ -15,6 +20,7 @@ describe('Setup', function() {
         ApiSettings.debug = false;
         // remove fixture
         $('#test-container').remove();
+        uninstallVideoPolyfill();
     });
 
     it('fails when playlist is undefined', function (done) {

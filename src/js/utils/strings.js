@@ -59,7 +59,10 @@ export function hms(secondsNumber) {
 
 // Convert a time-representing string to a number
 export function seconds(str, frameRate) {
-    if (_.isNumber(str)) {
+    if (!str) {
+        return 0;
+    }
+    if (_.isNumber(str) && !_.isNaN(str)) {
         return str;
     }
 
@@ -89,6 +92,9 @@ export function seconds(str, frameRate) {
         }
     } else {
         sec = parseFloat(str);
+    }
+    if (_.isNaN(sec)) {
+        return 0;
     }
     return sec;
 }

@@ -1,4 +1,16 @@
 import Timer from 'api/timer';
+import { dateTime } from 'utils/clock';
+import { now } from 'utils/date';
+
+describe('clock', function() {
+    it('provides date time equal or close to Date.now()', function() {
+        const clockTime = dateTime();
+        const dateGetTime = now();
+        // With rounding differences between Date.now() and performance.now(),
+        // and JavaScipt execution, only allow a few milliseconds difference
+        expect(Math.abs(clockTime - dateGetTime)).to.be.below(5);
+    });
+});
 
 describe('timer', function() {
 

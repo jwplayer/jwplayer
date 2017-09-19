@@ -89,6 +89,7 @@ function View(_api, _model) {
 
     let _resizeMediaTimeout = -1;
     let _resizeContainerRequestId = -1;
+    let _stateClassRequestId = -1;
 
     let displayClickHandler;
     let fullscreenHelpers;
@@ -286,7 +287,7 @@ function View(_api, _model) {
     };
 
     function updateVisibility() {
-        _model.set('visibility', getVisibility(_model, _playerElement, bounds));
+        _model.set('visibility', getVisibility(_model, _playerElement));
     }
 
     this.init = function() {
@@ -704,7 +705,8 @@ function View(_api, _model) {
             _controls.instreamState = instreamState;
         }
 
-        _stateUpdate(_playerState);
+        cancelAnimationFrame(_stateClassRequestId);
+        _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
     }
 
     function _stateUpdate(state) {
@@ -714,18 +716,20 @@ function View(_api, _model) {
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
         // Update captions renderer
-        switch (state) {
-            case STATE_IDLE:
-            case STATE_ERROR:
-            case STATE_COMPLETE:
-                _captionsRenderer.hide();
-                break;
-            default:
-                _captionsRenderer.show();
-                if (state === STATE_PAUSED && _controls && !_controls.showing) {
-                    _captionsRenderer.renderCues(true);
-                }
-                break;
+        if (_captionsRenderer) {
+            switch (state) {
+                case STATE_IDLE:
+                case STATE_ERROR:
+                case STATE_COMPLETE:
+                    _captionsRenderer.hide();
+                    break;
+                default:
+                    _captionsRenderer.show();
+                    if (state === STATE_PAUSED && _controls && !_controls.showing) {
+                        _captionsRenderer.renderCues(true);
+                    }
+                    break;
+            }
         }
     }
 

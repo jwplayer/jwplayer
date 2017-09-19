@@ -26,9 +26,8 @@ const SupportsMatrix = [
     {
         name: 'html5',
         supports: function (source) {
-            const isAndroidHLS = isAndroidHls(source);
-            if (isAndroidHLS !== null) {
-                return isAndroidHLS;
+            if (isAndroidHls(source) === false) {
+                return false;
             }
 
             if (!video.canPlayType) {

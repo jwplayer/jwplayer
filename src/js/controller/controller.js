@@ -1,7 +1,7 @@
 import instances from 'api/players';
 import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
-import setPlaylist, { loadProvidersForPlaylist } from 'api/set-playlist';
+import setPlaylist from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
@@ -43,7 +43,6 @@ Object.assign(Controller.prototype, {
         let _actionOnAttach;
         let _stopPlaylist = false;
         let _interruptPlay;
-        let _preloaded = false;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
 
         _this.originalContainer = _this.currentContainer = originalContainer;
@@ -160,12 +159,7 @@ Object.assign(Controller.prototype, {
 
         _model.on('change:viewSetup', function(model, viewSetup) {
             if (viewSetup) {
-                const mediaElement = this.currentContainer.querySelector('video, audio');
                 showView(this, _view.element());
-                if (mediaElement) {
-                    const mediaContainer = _model.get('mediaContainer');
-                    mediaContainer.appendChild(mediaElement);
-                }
             }
         }, this);
 
@@ -229,13 +223,15 @@ Object.assign(Controller.prototype, {
                 _preplay = false;
             }
 
-            _checkAutoStart();
-
             _model.change('viewable', viewableChange);
             _model.change('viewable', _checkPlayOnViewable);
             _model.once('change:autostartFailed change:autostartMuted change:mute', function(model) {
                 model.off('change:viewable', _checkPlayOnViewable);
             });
+
+            // Run _checkAutoStart() last
+            // 'viewable' changes can result in preload() being called on the initial provider instance
+            _checkAutoStart();
         }
 
         function _updateViewable(model, visibility) {
@@ -261,11 +257,10 @@ Object.assign(Controller.prototype, {
                 viewable: viewable
             });
 
-            if (shouldPreload(model, viewable)) {
-                const item = model.get('playlistItem');
 
-                model.getVideo().preload(item);
-                _preloaded = true;
+            // Only attempt to preload if this is the first player on the page or viewable
+            if (instances[0] === _api || viewable === 1) {
+                model.preloadVideo();
             }
         }
 
@@ -279,17 +274,6 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        // Should only attempt to preload if the player is viewable and IDLE
-        // Otherwise, it should try to preload the first player on the page,
-        // which is the player that has a uniqueId of 1
-        function shouldPreload(model, viewable) {
-            return model.get('state') === STATE_IDLE &&
-                model.get('playlistItem').preload !== 'none' &&
-                _preloaded === false &&
-                model.get('autostart') === false &&
-                (instances[0] === _api || viewable === 1);
-        }
-
         this.triggerAfterReady = function(type, args) {
             _eventQueuedUntilReady.push({
                 type: type,
@@ -298,57 +282,65 @@ Object.assign(Controller.prototype, {
         };
 
         function _load(item, feedData) {
-            if (_model.get('state') === STATE_ERROR) {
-                _model.set('state', STATE_IDLE);
-            }
 
             _this.trigger('destroyPlugin', {});
             _stop(true);
 
             checkAutoStartCancelable.cancel();
             checkAutoStartCancelable = cancelable(_checkAutoStart);
-            _model.once('itemReady', checkAutoStartCancelable.async);
+
+            let loadPromise;
 
             switch (typeof item) {
-                case 'string':
-                    _loadPlaylist(item);
-                    break;
-                case 'object': {
-                    try {
-                        const playlist = Playlist(item);
-                        setPlaylist(_model, playlist, feedData);
-                    } catch (error) {
+                case 'string': {
+                    const loadPlaylistPromise = _loadPlaylist(item).catch(error => {
                         _this.triggerError({
                             message: `Error loading playlist: ${error.message}`
                         });
-                        return;
-                    }
-                    loadProvidersForPlaylist(_model).catch(error => {
-                        _this.triggerError({
-                            message: `Could not play video: ${error.message}`
-                        });
                     });
-                    _setItem(0);
+                    loadPromise = loadPlaylistPromise.then(data => {
+                        return _updatePlaylist(data.playlist, data);
+                    });
                     break;
                 }
+                case 'object':
+                    loadPromise = _updatePlaylist(item, feedData);
+                    break;
                 case 'number':
-                    _setItem(item);
+                    loadPromise = _setItem(item);
                     break;
                 default:
-                    break;
+                    return;
             }
+            loadPromise.catch(error => {
+                _this.triggerError({
+                    message: `Playlist error: ${error.message}`
+                });
+            });
+
+            loadPromise.then(checkAutoStartCancelable.async);
+        }
+
+        function _updatePlaylist(data, feedData) {
+            const playlist = Playlist(data);
+            setPlaylist(_model, playlist, feedData);
+            return _setItem(0);
         }
 
         function _loadPlaylist(toLoad) {
-            const loader = new PlaylistLoader();
-            loader.on(PLAYLIST_LOADED, function(data) {
-                _load(data.playlist, data);
+            return new Promise((resolve, reject) => {
+                const loader = new PlaylistLoader();
+                loader.on(PLAYLIST_LOADED, function(data) {
+                    resolve(data);
+                });
+                loader.on(ERROR, function(error) {
+                    _model.set('feedData', {
+                        error: error
+                    });
+                    reject(error);
+                }, this);
+                loader.load(toLoad);
             });
-            loader.on(ERROR, function(evt) {
-                evt.message = `Error loading playlist: ${evt.message}`;
-                _this.triggerError(evt);
-            }, this);
-            loader.load(toLoad);
         }
 
         function _getAdState() {
@@ -366,18 +358,18 @@ Object.assign(Controller.prototype, {
         function _play(meta = {}) {
             checkAutoStartCancelable.cancel();
 
+            if (_model.get('state') === STATE_ERROR) {
+                return resolved;
+            }
+
             const playReason = meta.reason;
             _model.set('playReason', playReason);
-
-            if (_model.get('state') === STATE_ERROR) {
-                return;
-            }
 
             const adState = _getAdState();
             if (_.isString(adState)) {
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false);
-                return;
+                return resolved;
             }
 
             if (_model.get('state') === STATE_COMPLETE) {
@@ -392,44 +384,37 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
-                    return;
+                    return resolved;
                 }
             }
 
-            if (_isIdle()) {
-                _model.loadVideo(null, playReason).catch(error => {
-                    _this.triggerError({
-                        message: `Could not play video: ${error.message}`
-                    });
-                    _actionOnAttach = null;
-                });
-
-            } else if (_model.get('state') === STATE_PAUSED) {
-                _model.playVideo().catch(error => {
-                    _this.triggerError({
-                        message: `Could not resume playback: ${error.message}`
-                    });
-                    _actionOnAttach = null;
-                });
-            }
+            return _model.playVideo(playReason);
         }
 
         function _autoStart() {
             const state = _model.get('state');
             if (state === STATE_IDLE || state === STATE_PAUSED) {
-                _play({ reason: 'autostart' });
+                _play({ reason: 'autostart' }).catch(() => {
+                    if (!_this._instreamAdapter || !_this._instreamAdapter._adModel) {
+                        _model.set('autostartFailed', true);
+                    }
+                    _actionOnAttach = null;
+                });
             }
         }
 
         function _stop(internal) {
             checkAutoStartCancelable.cancel();
+            apiQueue.empty();
+
+            const adState = _getAdState();
+            if (_.isString(adState)) {
+                return;
+            }
 
             const fromApi = !internal;
 
             _actionOnAttach = null;
-            _preloaded = false;
-
-            _model.stopVideo();
 
             if (fromApi) {
                 _stopPlaylist = true;
@@ -438,10 +423,17 @@ Object.assign(Controller.prototype, {
             if (_preplay) {
                 _interruptPlay = true;
             }
+
+            const provider = _model.getVideo();
+            _model.stopVideo();
+            if (!provider) {
+                _model.set('state', STATE_IDLE);
+            }
         }
 
         function _pause(meta = {}) {
             _actionOnAttach = null;
+            checkAutoStartCancelable.cancel();
 
             _model.set('pauseReason', meta.reason);
             // Stop autoplay behavior if the video is paused by the user or an api call
@@ -488,15 +480,12 @@ Object.assign(Controller.prototype, {
 
         function _item(index, meta) {
             _stop(true);
-            if (_model.get('state') === STATE_ERROR) {
-                _model.set('state', STATE_IDLE);
-            }
             _setItem(index);
             _play(meta);
         }
 
         function _setItem(index) {
-            _model.setItemIndex(index);
+            return _model.setItemIndex(index);
         }
 
         function _prev(meta) {
@@ -843,15 +832,9 @@ Object.assign(Controller.prototype, {
 
         // Setup ApiQueueDecorator after instance methods have been assigned
         const apiQueue = new ApiQueueDecorator(this, [
-            'load',
             'play',
             'pause',
             'seek',
-            'stop',
-            'playlistItem',
-            'playlistNext',
-            'playlistPrev',
-            'next',
             'setCurrentAudioTrack',
             'setCurrentCaptions',
             'setCurrentQuality',

@@ -37,6 +37,10 @@ export default function ApiQueueDecorator(instance, queuedCommands, predicate) {
 
     this.flush = executeQueuedCommands;
 
+    this.empty = function() {
+        commandQueue.length = 0;
+    };
+
     this.destroy = function() {
         commandQueue.forEach(({ command }) => {
             const method = undecoratedMethods[command];
@@ -45,6 +49,6 @@ export default function ApiQueueDecorator(instance, queuedCommands, predicate) {
                 delete undecoratedMethods[command];
             }
         });
-        commandQueue.length = 0;
+        this.empty();
     };
 }
