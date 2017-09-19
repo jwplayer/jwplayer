@@ -1,4 +1,4 @@
-import { STATE_IDLE, PLAYER_STATE, MEDIA_TYPE } from 'events/events';
+import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
 
 const noop = function() {};
 const returnFalse = (() => false);
@@ -71,12 +71,7 @@ const DefaultProvider = {
     init: noop,
 
     setState: function(state) {
-        var oldState = this.state || STATE_IDLE;
         this.state = state;
-
-        if (state === oldState) {
-            return;
-        }
 
         this.trigger(PLAYER_STATE, {
             newstate: state
