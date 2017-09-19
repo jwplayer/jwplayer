@@ -17,8 +17,8 @@ export default class VolumeTooltip extends Tooltip {
             this.trigger('update', evt);
         }, this);
 
-        new UI(this.el, { useHover: true, directSelect: true })
-            .on('click', this.toggleValue, this)
+        new UI(this.el, { useHover: true, directSelect: true, useFocus: true })
+            .on('click enter', this.toggleValue, this)
             .on('tap', this.toggleOpenState, this)
             .on('over', this.openTooltip, this)
             .on('out', this.closeTooltip, this);

@@ -10,6 +10,7 @@ export default class CustomButton {
         buttonElement.setAttribute('button', id);
         buttonElement.setAttribute('role', 'button');
         buttonElement.setAttribute('tabindex', '0');
+        buttonElement.setAttribute('aria-haspopup', 'true');
         if (ariaText) {
             buttonElement.setAttribute('aria-label', ariaText);
         }
@@ -26,10 +27,10 @@ export default class CustomButton {
                 });
             }
         }
-        
+
         buttonElement.appendChild(iconElement);
 
-        new UI(buttonElement).on('click tap', callback, this);
+        new UI(buttonElement).on('click tap enter', callback, this);
 
         // Prevent button from being focused on mousedown so that the tooltips don't remain visible until
         // the user interacts with another element on the page

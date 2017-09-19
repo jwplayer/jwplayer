@@ -1,5 +1,5 @@
 import { Browser, OS } from 'environment/environment';
-import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER } from 'events/events';
+import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
@@ -30,6 +30,17 @@ function isRightClick(evt) {
     return false;
 }
 
+function isEnterKey(evt) {
+    const e = evt || window.event;
+
+    if ((e instanceof KeyboardEvent) && e.keyCode === 13) {
+        evt.stopPropagation();
+        return true;
+    }
+
+    return false;
+}
+
 function normalizeUIEvent(type, srcEvent, target) {
     let source;
 
@@ -55,7 +66,7 @@ function normalizeUIEvent(type, srcEvent, target) {
 function preventDefault(evt) {
     // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
     //  we cannot call evt.preventDefault() on them
-    if (!(evt instanceof MouseEvent) && !(evt instanceof window.TouchEvent)) {
+    if (!(evt instanceof MouseEvent) && !(evt instanceof window.TouchEvent)) { //&& !(evt instanceof KeyboardEvent)) {
         return;
     }
     if (evt.preventManipulation) {
@@ -104,6 +115,13 @@ const UI = function (elem, options) {
 
         // Always add this, in case we don't properly identify the device as mobile
         elem.addEventListener('touchstart', interactStartHandler);
+
+    }
+
+    elem.addEventListener('keydown', keyHandler);
+    if (options.useFocus) {
+        elem.addEventListener('focus', overHandler);
+        elem.addEventListener('blur', outHandler);
     }
 
     // overHandler and outHandler not assigned in touch situations
@@ -124,6 +142,12 @@ const UI = function (elem, options) {
         if (_useMouseEvents || (_supportsPointerEvents && evt.pointerType !== 'touch' &&
             !elem.contains(document.elementFromPoint(evt.x, evt.y)))) {
             triggerEvent(OUT, evt);
+        }
+    }
+
+    function keyHandler(evt) {
+        if (isEnterKey(evt)) {
+            triggerEvent(ENTER, evt);
         }
     }
 
@@ -256,6 +280,7 @@ const UI = function (elem, options) {
         this.off();
         elem.removeEventListener('touchstart', interactStartHandler);
         elem.removeEventListener('mousedown', interactStartHandler);
+        elem.removeEventListener('keydown', keyHandler);
 
         if (_touchListenerTarget) {
             _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
@@ -283,6 +308,11 @@ const UI = function (elem, options) {
         elem.removeEventListener('mouseout', outHandler);
         document.removeEventListener('mousemove', interactDragHandler);
         document.removeEventListener('mouseup', interactEndHandler);
+
+        if (options.useFocus) {
+            elem.removeEventListener('focus', overHandler);
+            elem.removeEventListener('blur', outHandler);
+        }
     };
 
     return this;

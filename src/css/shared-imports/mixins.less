@@ -150,14 +150,18 @@
 
         .jw-skip {
             padding: @ui-padding;
+            outline: none;
 
             .jw-skiptext,
             .jw-skip-icon {
                 color: @inactive-color;
             }
 
-            &.jw-skippable:hover .jw-skip-icon {
-                color: @active-color;
+            &.jw-skippable:hover,
+            &.jw-skippable:focus {
+                .jw-skip-icon {
+                    color: @active-color;
+                }
             }
         }
 
@@ -171,14 +175,17 @@
                 --disconnected-color: @inactive-color;
 
                 &:focus {
-                    --connected-color: @active-color;
-                    --disconnected-color: @hover-color;
                     outline: none;
                 }
 
                 &.jw-off {
                     --connected-color: @inactive-color;
                 }
+            }
+
+            &:focus button {
+                --connected-color: @active-color;
+                --disconnected-color: @hover-color;
             }
 
             &:hover button {

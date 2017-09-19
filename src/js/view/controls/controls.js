@@ -62,7 +62,7 @@ export default class Controls {
         if (!this.displayContainer) {
             const displayContainer = new DisplayContainer(model, api);
 
-            displayContainer.buttons.display.on('click tap', () => {
+            displayContainer.buttons.display.on('click tap enter', () => {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
                 api.play(reasonInteraction());
@@ -123,6 +123,7 @@ export default class Controls {
                     api.play(true, settingsInteraction);
                 }
             }
+
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive();
             lastState = state;
@@ -357,5 +358,7 @@ export default class Controls {
         this.showing = false;
         utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
+
+        // this.playerContainer.focus();
     }
 }

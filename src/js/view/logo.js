@@ -84,7 +84,13 @@ export default function Logo(_model) {
         _img.src = _settings.file;
 
         const logoInteractHandler = new UI(_logo);
-        logoInteractHandler.on('click tap', function (evt) {
+
+        if (_settings.link) {
+            _logo.setAttribute('tabindex', '0');
+            _logo.setAttribute('aria-label', 'Logo');
+        }
+
+        logoInteractHandler.on('click tap enter', function (evt) {
             if (evt && evt.stopPropagation) {
                 evt.stopPropagation();
             }
