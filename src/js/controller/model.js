@@ -554,10 +554,7 @@ const Model = function() {
         let playPromise;
 
         if (!this.mediaModel.get('setup')) {
-            resetItem(this, item);
-
             playPromise = loadAndPlay(this, item);
-
             playAttempt(this, playPromise, playReason);
         } else {
             playPromise = _provider.play() || resolved;
