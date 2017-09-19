@@ -364,6 +364,7 @@ const Model = function() {
                     throw new Error('Unsupported media');
                 }
                 if (mediaModelContext === this.mediaModel) {
+                    syncPlayerWithMediaModel(mediaModelContext);
                     return this.setProvider(item);
                 }
                 return resolved;
@@ -508,9 +509,7 @@ const Model = function() {
         playPromise.then(() => {
             mediaModelContext.set('started', true);
             if (mediaModelContext === model.mediaModel) {
-                // Sync player state with mediaModel state
-                const mediaState = mediaModelContext.get('state');
-                mediaModelContext.trigger('change:state', mediaModelContext, mediaState, mediaState);
+                syncPlayerWithMediaModel(mediaModelContext);
             }
         }).catch(error => {
             model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
@@ -519,6 +518,12 @@ const Model = function() {
                 playReason: playReason
             });
         });
+    }
+
+    function syncPlayerWithMediaModel(mediaModel) {
+        // Sync player state with mediaModel state
+        const mediaState = mediaModel.get('state');
+        mediaModel.trigger('change:state', mediaModel, mediaState, mediaState);
     }
 
     this.stopVideo = function() {
@@ -635,7 +640,9 @@ const Model = function() {
 
 // Represents the state of the provider/media element
 const MediaModel = Model.MediaModel = function() {
-    this.attributes = {};
+    this.attributes = {
+        state: STATE_IDLE
+    };
 };
 
 Object.assign(MediaModel.prototype, SimpleModel, {
