@@ -81,8 +81,7 @@
     align-items: flex-start;
     align-content: flex-start;
     padding: 8px 20px 0 5px;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
 
     &::-webkit-scrollbar {
         width: 6px;
@@ -93,6 +92,11 @@
         background-color: @white;
         border-radius: 6px;
         border: 1px solid @menu-background-color;
+    }
+
+    .jw-flag-touch & {
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
     }
 }
 
