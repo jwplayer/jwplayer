@@ -4,12 +4,15 @@ export default function cancelable(callback) {
     let cancelled = false;
 
     return {
-        async: () => resolved.then(() => {
-            if (cancelled) {
-                return;
-            }
-            return callback();
-        }),
+        async: function() {
+            const args = arguments;
+            return resolved.then(() => {
+                if (cancelled) {
+                    return;
+                }
+                return callback.apply(this, args);
+            });
+        },
         cancel: () => {
             cancelled = true;
         },

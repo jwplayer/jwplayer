@@ -44,6 +44,7 @@ Object.assign(Controller.prototype, {
         let _stopPlaylist = false;
         let _interruptPlay;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
+        let updatePlaylistCancelable = cancelable(function() {});
 
         _this.originalContainer = _this.currentContainer = originalContainer;
         _this._events = eventListeners;
@@ -288,6 +289,7 @@ Object.assign(Controller.prototype, {
 
             checkAutoStartCancelable.cancel();
             checkAutoStartCancelable = cancelable(_checkAutoStart);
+            updatePlaylistCancelable.cancel();
 
             let loadPromise;
 
@@ -298,9 +300,10 @@ Object.assign(Controller.prototype, {
                             message: `Error loading playlist: ${error.message}`
                         });
                     });
-                    loadPromise = loadPlaylistPromise.then(data => {
+                    updatePlaylistCancelable = cancelable((data) => {
                         return _updatePlaylist(data.playlist, data);
                     });
+                    loadPromise = loadPlaylistPromise.then(updatePlaylistCancelable.async);
                     break;
                 }
                 case 'object':
