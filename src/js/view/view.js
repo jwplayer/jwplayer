@@ -751,7 +751,7 @@ function View(_api, _model) {
         _instreamModel.on('change:controls', _onChangeControls, this);
         _instreamModel.on('change:state', _stateHandler, this);
 
-        _playerElement.insertBefore(_gradientLayer, _controls.element());
+        _playerElement.insertBefore(_gradientLayer, this.controlsContainer());
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
 
