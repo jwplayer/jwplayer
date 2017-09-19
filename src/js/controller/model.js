@@ -43,7 +43,9 @@ const Model = function() {
     };
 
     this.getConfiguration = function() {
-        return _.omit(this.clone(), ['mediaModel']);
+        const config = this.clone();
+        delete config.mediaModel;
+        return config;
     };
 
     this.updateProviders = function() {
@@ -51,13 +53,16 @@ const Model = function() {
     };
 
     function _videoEventHandler(type, data) {
-        var evt = Object.assign({}, data, { type: type });
-        var mediaModel = this.mediaModel;
+        const event = Object.assign({}, data, {
+            type: type
+        });
+        const mediaModel = this.mediaModel;
         switch (type) {
-            case 'flashThrottle':
-                var throttled = (data.state !== 'resume');
+            case 'flashThrottle': {
+                const throttled = (data.state !== 'resume');
                 this.set('flashThrottle', throttled);
                 this.set('flashBlocked', throttled);
+            }
                 break;
             case 'flashBlocked':
                 this.set('flashBlocked', true);
@@ -74,17 +79,18 @@ const Model = function() {
                     this.set(type, data[type]);
                 }
                 return;
-            case MEDIA_RATE_CHANGE:
-                var rate = data.playbackRate;
+            case MEDIA_RATE_CHANGE: {
+                const rate = data.playbackRate;
                 // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
                 if (rate > 0) {
                     this.set('playbackRate', rate);
                 }
+            }
                 return;
             case MEDIA_TYPE:
                 if (mediaModel.get('mediaType') !== data.mediaType) {
                     mediaModel.set('mediaType', data.mediaType);
-                    this.mediaController.trigger(type, evt);
+                    this.mediaController.trigger(type, event);
                 }
                 return;
             case PLAYER_STATE:
@@ -135,7 +141,7 @@ const Model = function() {
                 break;
             case MEDIA_COMPLETE:
                 _beforecompleted = true;
-                this.mediaController.trigger(MEDIA_BEFORECOMPLETE, evt);
+                this.mediaController.trigger(MEDIA_BEFORECOMPLETE, event);
                 if (_attached) {
                     this.playbackComplete();
                 }
@@ -151,20 +157,18 @@ const Model = function() {
                 this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
                 break;
             case 'visualQuality':
-                var visualQuality = Object.assign({}, data);
-                mediaModel.set('visualQuality', visualQuality);
+                mediaModel.set('visualQuality', Object.assign({}, data));
                 break;
             default:
                 break;
         }
 
-        this.mediaController.trigger(type, evt);
+        this.mediaController.trigger(type, event);
     }
 
     this.setQualityLevel = function(quality, levels) {
         if (quality > -1 && levels.length > 1) {
             this.mediaModel.set('currentLevel', parseInt(quality));
-
         }
     };
 
@@ -360,6 +364,7 @@ const Model = function() {
                     throw new Error('Unsupported media');
                 }
                 if (mediaModelContext === this.mediaModel) {
+                    syncPlayerWithMediaModel(mediaModelContext);
                     return this.setProvider(item);
                 }
                 return resolved;
@@ -488,8 +493,12 @@ const Model = function() {
 
     function playAttempt(model, playPromise, playReason) {
         const mediaModelContext = model.mediaModel;
+        const itemContext = model.get('playlistItem');
 
-        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, { playReason: playReason });
+        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, {
+            item: itemContext,
+            playReason: playReason
+        });
 
         // Immediately set player state to buffering if these conditions are met
         const videoTagUnpaused = _provider && _provider.video && !_provider.video.paused;
@@ -499,17 +508,22 @@ const Model = function() {
 
         playPromise.then(() => {
             mediaModelContext.set('started', true);
-            // Sync player state with mediaModel state
-            const mediaState = mediaModelContext.get('state');
-            mediaModelContext.trigger('change:state', mediaModelContext, mediaState, mediaState);
-        }).catch(error => {
-            if (mediaModelContext === model.mediaModel && _attached) {
-                model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
-                    error: error,
-                    playReason: playReason
-                });
+            if (mediaModelContext === model.mediaModel) {
+                syncPlayerWithMediaModel(mediaModelContext);
             }
+        }).catch(error => {
+            model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+                error: error,
+                item: itemContext,
+                playReason: playReason
+            });
         });
+    }
+
+    function syncPlayerWithMediaModel(mediaModel) {
+        // Sync player state with mediaModel state
+        const mediaState = mediaModel.get('state');
+        mediaModel.trigger('change:state', mediaModel, mediaState, mediaState);
     }
 
     this.stopVideo = function() {
@@ -545,10 +559,7 @@ const Model = function() {
         let playPromise;
 
         if (!this.mediaModel.get('setup')) {
-            resetItem(this, item);
-
             playPromise = loadAndPlay(this, item);
-
             playAttempt(this, playPromise, playReason);
         } else {
             playPromise = _provider.play() || resolved;
@@ -629,10 +640,11 @@ const Model = function() {
 
 // Represents the state of the provider/media element
 const MediaModel = Model.MediaModel = function() {
-    this.attributes = {};
+    this.attributes = {
+        state: STATE_IDLE
+    };
 };
 
-Object.assign(Model.prototype, SimpleModel);
 Object.assign(MediaModel.prototype, SimpleModel, {
     srcReset() {
         const attributes = this.attributes;
@@ -642,5 +654,7 @@ Object.assign(MediaModel.prototype, SimpleModel, {
         attributes.visualQuality = null;
     }
 });
+
+Object.assign(Model.prototype, SimpleModel);
 
 export default Model;

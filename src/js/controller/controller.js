@@ -17,7 +17,7 @@ import { streamType } from 'providers/utils/stream-type';
 import { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import _ from 'utils/underscore';
-import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
+import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
@@ -44,6 +44,7 @@ Object.assign(Controller.prototype, {
         let _stopPlaylist = false;
         let _interruptPlay;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
+        let updatePlaylistCancelable = cancelable(function() {});
 
         _this.originalContainer = _this.currentContainer = originalContainer;
         _this._events = eventListeners;
@@ -134,8 +135,8 @@ Object.assign(Controller.prototype, {
         });
 
         _model.on('change:mediaModel', function(model) {
-            model.mediaModel.on('change:state', function(mediaModel, state) {
-                model.set('state', normalizeState(state));
+            model.mediaModel.change(PLAYER_STATE, function(mediaModel, state) {
+                model.set(PLAYER_STATE, normalizeState(state));
             });
         });
 
@@ -288,6 +289,7 @@ Object.assign(Controller.prototype, {
 
             checkAutoStartCancelable.cancel();
             checkAutoStartCancelable = cancelable(_checkAutoStart);
+            updatePlaylistCancelable.cancel();
 
             let loadPromise;
 
@@ -298,9 +300,10 @@ Object.assign(Controller.prototype, {
                             message: `Error loading playlist: ${error.message}`
                         });
                     });
-                    loadPromise = loadPlaylistPromise.then(data => {
+                    updatePlaylistCancelable = cancelable((data) => {
                         return _updatePlaylist(data.playlist, data);
                     });
+                    loadPromise = loadPlaylistPromise.then(updatePlaylistCancelable.async);
                     break;
                 }
                 case 'object':

@@ -285,6 +285,8 @@ var InstreamAdapter = function(_controller, _model, _view) {
                 _view.clickHandler().revertAlternateClickHandlers();
             }
 
+            const adState = _instream._adModel.get('state');
+
             _model.off(null, null, _instream);
             _instream.off(null, null, _this);
             _instream.instreamDestroy();
@@ -301,6 +303,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
             // Re-attach the controller
             _controller.attachMedia();
+            _model.set('state', adState);
 
             if (_oldpos === null) {
                 _model.stopVideo();
