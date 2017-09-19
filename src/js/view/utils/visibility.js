@@ -59,7 +59,7 @@ function computeVisibility(target) {
         if (parentRect) {
             intersectionRect = computeRectIntersection(parentRect, intersectionRect);
             if (!intersectionRect) {
-                break;
+                return 0;
             }
         }
         parent = parent.parentNode;

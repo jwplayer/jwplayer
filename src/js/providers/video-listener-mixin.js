@@ -168,7 +168,7 @@ const VideoListenerMixin = {
             1: 'Unknown operation aborted',
             2: 'Unknown network error',
             3: 'Unknown decode error',
-            4: 'Source not supported'
+            4: 'File could not be played'
         }[code] || 'Unknown');
         this.trigger(MEDIA_ERROR, {
             code: code,
