@@ -117,10 +117,10 @@ export default class Controls {
             if (getBreakpoint(model.get('containerWidth')) < 2) {
                 if (visible && state === STATE_PLAYING) {
                     // Pause playback on open if we're currently playing
-                    api.pause(true, settingsInteraction);
+                    api.pause(settingsInteraction);
                 } else if (!visible && state === STATE_PAUSED && lastState === STATE_PLAYING) {
                     // Resume playback on close if we are paused and were playing before
-                    api.play(true, settingsInteraction);
+                    api.play(settingsInteraction);
                 }
             }
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar

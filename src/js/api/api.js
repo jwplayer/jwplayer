@@ -670,48 +670,26 @@ export default function Api(element) {
 
         /**
          * Toggles or un-pauses playback.
-         * @param {boolean} [state] - An optional argument that indicates whether to play (true) or pause (false).
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
          */
-        play(state, meta) {
-            if (_.isObject(state) && state.reason) {
-                meta = state;
+        play(meta) {
+            if (!meta) {
+                meta = { reason: 'external' };
             }
-            if (state === true) {
-                core.play(meta);
-                return this;
-            } else if (state === false) {
-                core.pause(meta);
-                return this;
-            }
-
-            state = this.getState();
-            switch (state) {
-                case STATE_PLAYING:
-                case STATE_BUFFERING:
-                    core.pause(meta);
-                    break;
-                default:
-                    core.play(meta);
-            }
-
+            core.play();
             return this;
         },
 
         /**
          * Toggles or pauses playback.
-         * @param {boolean} [state] - An optional argument that indicates whether to pause (true) or play (false).
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
          */
-        pause(state, meta) {
+        pause(meta) {
             // TODO: meta should no longer be accepted from the base API, it should be passed in to the controller by special wrapped interfaces
-            if (_.isBoolean(state)) {
-                return this.play(!state, meta);
-            }
-
-            return this.play(meta);
+            core.pause(meta);
+            return this;
         },
 
         /**

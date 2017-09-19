@@ -111,6 +111,46 @@
                 return setup.call(this, options);
             };
 
+            /*
+             Play and Pause no longer accept the state argument, and no longer toggle.
+             */
+            var play = playerInstance.play;
+            var pause = playerInstance.pause;
+            playerInstance.play = function(state, meta) {
+                if (state && state.reason) {
+                    meta = state;
+                }
+
+                if (!meta) {
+                    meta = { reason: 'external' };
+                }
+
+                if (state === true) {
+                    play(meta);
+                } else if (state === false) {
+                    pause(meta);
+                }
+
+                state = playerInstance.getState();
+                switch (state) {
+                    case 'playing':
+                    case 'buffering':
+                        pause(meta);
+                        break;
+                    default:
+                        play(meta);
+                }
+            };
+
+            playerInstance.pause = function(state, meta) {
+                if (typeof state === 'boolean') {
+                    playerInstance.play(!state, meta);
+                    return;
+                }
+
+                playerInstance.play(meta);
+            };
+
             return playerInstance;
         };
 
