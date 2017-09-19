@@ -19,7 +19,7 @@
     if (parseInt(playerLibrary.version, 10) >= 8) {
         var jwplayerCompatible = function(query) {
             var playerInstance = playerLibrary(query);
-            if (!playerInstance.trigger) {
+            if (!playerInstance.trigger || playerInstance.compatibility) {
                 return playerInstance;
             }
 
@@ -108,14 +108,15 @@
                         }
                     });
                 }
+
                 return setup.call(this, options);
             };
 
             /*
              Play and Pause no longer accept the state argument, and no longer toggle.
              */
-            var play = playerInstance.play;
-            var pause = playerInstance.pause;
+            var play = playerInstance.play.bind(this);
+            var pause = playerInstance.pause.bind(this);
             playerInstance.play = function(state, meta) {
                 if (state && state.reason) {
                     meta = state;
@@ -127,8 +128,10 @@
 
                 if (state === true) {
                     play(meta);
+                    return playerInstance;
                 } else if (state === false) {
                     pause(meta);
+                    return playerInstance;
                 }
 
                 state = playerInstance.getState();
@@ -140,17 +143,20 @@
                     default:
                         play(meta);
                 }
+
+                return playerInstance;
             };
 
             playerInstance.pause = function(state, meta) {
                 if (typeof state === 'boolean') {
                     playerInstance.play(!state, meta);
-                    return;
+                } else {
+                    playerInstance.play(state, meta);
                 }
-
-                playerInstance.play(meta);
+                return playerInstance;
             };
 
+            playerInstance.compatibility = true;
             return playerInstance;
         };
 
