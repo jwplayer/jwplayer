@@ -387,6 +387,11 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
+                    // If we're in a user-gesture event call load() on video to allow async playback
+                    const event = window.event;
+                    if (event && /mouse|pointer|touch|gesture|click/.test(event.type)) {
+                        _model.attributes.mediaElement.load();
+                    }
                     return resolved;
                 }
             }
