@@ -172,7 +172,7 @@ const VideoListenerMixin = {
         }[code] || 'Unknown');
         this.trigger(MEDIA_ERROR, {
             code: code,
-            message: 'Error playing file: ' + message
+            message: 'Error loading media: ' + message
         });
     }
 };
