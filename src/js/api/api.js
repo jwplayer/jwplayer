@@ -678,9 +678,6 @@ export default function Api(element) {
             if (_.isObject(state) && state.reason) {
                 meta = state;
             }
-            if (!meta) {
-                meta = { reason: 'external' };
-            }
             if (state === true) {
                 core.play(meta);
                 return this;

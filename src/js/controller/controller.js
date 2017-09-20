@@ -291,6 +291,8 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable = cancelable(_checkAutoStart);
             updatePlaylistCancelable.cancel();
 
+            _primeMediaElementForPlayback();
+
             let loadPromise;
 
             switch (typeof item) {
@@ -358,14 +360,14 @@ Object.assign(Controller.prototype, {
             return _model.get('state');
         }
 
-        function _play(meta = {}) {
+        function _play(meta) {
             checkAutoStartCancelable.cancel();
 
             if (_model.get('state') === STATE_ERROR) {
                 return resolved;
             }
 
-            const playReason = meta.reason;
+            const playReason = _getReason(meta);
             _model.set('playReason', playReason);
 
             const adState = _getAdState();
@@ -387,11 +389,36 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
+                    _primeMediaElementForPlayback();
                     return resolved;
                 }
             }
 
             return _model.playVideo(playReason);
+        }
+
+        function _getReason(meta) {
+            if (!meta) {
+                if (_inInteraction(window.event)) {
+                    return 'interaction';
+                }
+                return 'external';
+            }
+            return meta.reason;
+        }
+
+        function _inInteraction(event) {
+            return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
+        }
+
+        function _primeMediaElementForPlayback() {
+            // If we're in a user-gesture event call load() on video to allow async playback
+            if (_inInteraction(window.event)) {
+                const mediaElement = _model.get('mediaElement');
+                if (!mediaElement.src) {
+                    mediaElement.load();
+                }
+            }
         }
 
         function _autoStart() {
@@ -434,13 +461,14 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        function _pause(meta = {}) {
+        function _pause(meta) {
             _actionOnAttach = null;
             checkAutoStartCancelable.cancel();
 
-            _model.set('pauseReason', meta.reason);
+            const pauseReason = _getReason(meta);
+            _model.set('pauseReason', pauseReason);
             // Stop autoplay behavior if the video is paused by the user or an api call
-            if (meta.reason === 'interaction' || meta.reason === 'external') {
+            if (pauseReason === 'interaction' || pauseReason === 'external') {
                 _model.set('playOnViewable', false);
             }
 
