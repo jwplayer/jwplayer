@@ -119,7 +119,10 @@
          an Environment object. This object details the environment in which the player thinks it's in. Refer to our
          API docs for more information.
          */
-        var environment = playerLibrary(document.createElement('div')).getEnvironment();
+        var tempPlayer = playerLibrary(document.createElement('div'));
+        var environment = tempPlayer.getEnvironment();
+        tempPlayer.remove();
+
         var utils = playerLibrary.utils;
         var valueFn = function (getter) {
             return function() {
