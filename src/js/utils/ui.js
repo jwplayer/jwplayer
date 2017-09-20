@@ -66,7 +66,7 @@ function normalizeUIEvent(type, srcEvent, target) {
 function preventDefault(evt) {
     // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
     //  we cannot call evt.preventDefault() on them
-    if (!(evt instanceof MouseEvent) && !(evt instanceof window.TouchEvent)) { //&& !(evt instanceof KeyboardEvent)) {
+    if (!(evt instanceof MouseEvent) && !(evt instanceof window.TouchEvent)) {
         return;
     }
     if (evt.preventManipulation) {
@@ -115,7 +115,6 @@ const UI = function (elem, options) {
 
         // Always add this, in case we don't properly identify the device as mobile
         elem.addEventListener('touchstart', interactStartHandler);
-
     }
 
     elem.addEventListener('keydown', keyHandler);

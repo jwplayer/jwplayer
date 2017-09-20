@@ -10,7 +10,6 @@ export default class CustomButton {
         buttonElement.setAttribute('button', id);
         buttonElement.setAttribute('role', 'button');
         buttonElement.setAttribute('tabindex', '0');
-        buttonElement.setAttribute('aria-haspopup', 'true');
         if (ariaText) {
             buttonElement.setAttribute('aria-label', ariaText);
         }

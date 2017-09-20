@@ -122,7 +122,6 @@ describe('Setup', function() {
             assert.isOk(false, 'setup failed with message: ' + message);
             done();
         });
-        done();
     });
 
     function testSetup(done, model, success, error) {

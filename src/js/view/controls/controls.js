@@ -358,7 +358,5 @@ export default class Controls {
         this.showing = false;
         utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
-
-        // this.playerContainer.focus();
     }
 }
