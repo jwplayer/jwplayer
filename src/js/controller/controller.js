@@ -291,6 +291,8 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable = cancelable(_checkAutoStart);
             updatePlaylistCancelable.cancel();
 
+            _primeMediaElementForPlayback();
+
             let loadPromise;
 
             switch (typeof item) {
@@ -387,16 +389,23 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
-                    // If we're in a user-gesture event call load() on video to allow async playback
-                    const event = window.event;
-                    if (event && /mouse|pointer|touch|gesture|click/.test(event.type)) {
-                        _model.attributes.mediaElement.load();
-                    }
+                    _primeMediaElementForPlayback();
                     return resolved;
                 }
             }
 
             return _model.playVideo(playReason);
+        }
+
+        function _primeMediaElementForPlayback() {
+            // If we're in a user-gesture event call load() on video to allow async playback
+            const event = window.event;
+            if (event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type)) {
+                const mediaElement = _model.get('mediaElement');
+                if (!mediaElement.src) {
+                    mediaElement.load();
+                }
+            }
         }
 
         function _autoStart() {
