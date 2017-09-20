@@ -355,8 +355,6 @@ function VideoProvider(_playerId, _playerConfig) {
         if (sourceChanged) {
             _videotag.src = source.file;
         }
-
-        _this.setupSideloadedTracks(source.tracks);
     }
 
     function _clearVideotagSource() {
@@ -435,6 +433,7 @@ function VideoProvider(_playerId, _playerConfig) {
     this.load = function(item) {
         _setLevels(item.sources);
         _completeLoad(item.starttime || 0, item.duration || 0);
+        this.setupSideloadedTracks(item.tracks);        
     };
 
     this.play = function() {
