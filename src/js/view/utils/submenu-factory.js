@@ -19,7 +19,6 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
     } else {
         const categoryButton = button(`jw-settings-${name}`, () => {
             settingsMenu.activateSubmenu(name);
-            console.log('submenu enter', submenu.element().children[0]);
             submenu.element().children[0].focus();
         }, name, [icon]);
         const categoryButtonElement = categoryButton.element();
