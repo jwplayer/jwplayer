@@ -50,8 +50,9 @@ function setTextTracks(tracks) {
     } else {
         // Remove the 608 captions track that was mutated by the browser
         this._textTracks = _.reject(this._textTracks, function(track) {
-            if ((this.renderNatively && track._id === 'nativecaptions')) {
-                delete this._tracksById[track._id];
+            const trackId = track._id;
+            if (this.renderNatively && trackId && trackId.indexOf( 'nativecaptions') === 0) {
+                delete this._tracksById[trackId];
                 return true;
             }
         }, this);
@@ -69,7 +70,7 @@ function setTextTracks(tracks) {
             var track = tracks[i];
             if (!track._id) {
                 if (track.kind === 'captions' || track.kind === 'metadata') {
-                    track._id = 'native' + track.kind;
+                    track._id = 'native' + track.kind + i;
                     if (!track.label && track.kind === 'captions') {
                         // track label is read only in Safari
                         // 'captions' tracks without a label need a name in order for the cc menu to work
@@ -384,7 +385,8 @@ function disableTextTrack() {
         if (track) {
             // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
             track.mode = 'disabled';
-            if (track.embedded || track._id === 'nativecaptions') {
+            const trackId = track._id;
+            if (trackId && trackId.indexOf('nativecaptions') === 0) {
                 track.mode = 'hidden';
             }
         }
