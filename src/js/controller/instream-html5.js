@@ -35,6 +35,7 @@ const InstreamHtml5 = function(_controller, _model) {
             autostart: playerAttributes.autostart,
             advertising: playerAttributes.advertising,
             sdkplatform: playerAttributes.sdkplatform,
+            skipButton: false
         });
         if (!OS.mobile) {
             _adModel.set('mediaContainer', _model.get('mediaContainer'));

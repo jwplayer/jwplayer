@@ -113,11 +113,6 @@ var InstreamAdapter = function(_controller, _model, _view) {
     };
 
     function _loadNextItem() {
-        const adModel = _instream._adModel;
-
-        // destroy skip button
-        adModel.set('skipButton', false);
-
         _arrayIndex++;
         var item = _array[_arrayIndex];
         var options;
@@ -186,7 +181,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
             return;
         }
         // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
-        var playlist = item;
+        let playlist = item;
         if (_.isArray(item)) {
             _array = item;
             _arrayOptions = options;
@@ -198,7 +193,8 @@ var InstreamAdapter = function(_controller, _model, _view) {
             playlist = [item];
         }
 
-        _instream._adModel.set('playlist', playlist);
+        const adModel = _instream._adModel;
+        adModel.set('playlist', playlist);
 
         _model.set('hideAdsControls', false);
 
@@ -212,12 +208,11 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
         _this.addClickHandler();
 
-
-        var skipoffset = item.skipoffset || _options.skipoffset;
+        const skipoffset = item.skipoffset || _options.skipoffset;
         if (skipoffset) {
             _this.setupSkipButton(skipoffset, _options);
         } else {
-            _instream._adModel.set('skipButton', false);
+            adModel.set('skipButton', false);
         }
 
         return _instream.load(item);
@@ -233,6 +228,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
         adModel.set('skipMessage', options.skipMessage);
         adModel.set('skipText', options.skipText);
         adModel.set('skipOffset', skipoffset);
+        adModel.set('skipButton', false);
         adModel.set('skipButton', true);
     };
 
