@@ -95,6 +95,7 @@ const Model = function() {
                 return;
             case PLAYER_STATE:
                 if (data.newstate === STATE_IDLE) {
+                    thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
                 mediaModel.set(PLAYER_STATE, data.newstate);
@@ -104,6 +105,7 @@ const Model = function() {
                 //  Instead letting the master controller do so
                 return;
             case MEDIA_ERROR:
+                thenPlayPromise.cancel();
                 mediaModel.srcReset();
                 break;
             case MEDIA_BUFFER:
@@ -507,6 +509,10 @@ const Model = function() {
         }
 
         playPromise.then(() => {
+            if (!mediaModelContext.setup) {
+                // Exit if model state was reset
+                return;
+            }
             mediaModelContext.set('started', true);
             if (mediaModelContext === model.mediaModel) {
                 syncPlayerWithMediaModel(mediaModelContext);
