@@ -229,7 +229,7 @@ const Model = function() {
         _provider.volume(_this.get('volume'));
 
         // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
-        _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
+        _provider.mute(_this.autoStartOnMobile() || _this.get('mute'));
 
         _provider.on('all', _videoEventHandler, this);
 

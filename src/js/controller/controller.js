@@ -425,7 +425,7 @@ Object.assign(Controller.prototype, {
             const state = _model.get('state');
             if (state === STATE_IDLE || state === STATE_PAUSED) {
                 _play({ reason: 'autostart' }).catch(() => {
-                    if (!_this._instreamAdapter || !_this._instreamAdapter._adModel) {
+                    if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
                     }
                     _actionOnAttach = null;
@@ -858,6 +858,7 @@ Object.assign(Controller.prototype, {
         this.instreamDestroy = function() {
             if (_this._instreamAdapter) {
                 _this._instreamAdapter.destroy();
+                _this._instreamAdapter = null;
             }
         };
 
