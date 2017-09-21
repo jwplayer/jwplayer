@@ -8,6 +8,18 @@
         height: auto;
         /* Prevent border styles from impacting width and height */
         box-sizing: content-box;
+
+        .jw-display .jw-icon,
+        .jw-display .jw-svg-icon {
+            height: @mobile-touch-target;
+            line-height: @mobile-touch-target;
+            width: @mobile-touch-target;
+
+            &:before {
+                width: @mobile-touch-target;
+                height: @mobile-touch-target;
+            }
+        }
     }
 }
 
