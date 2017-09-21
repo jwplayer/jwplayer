@@ -44,7 +44,6 @@ export default class Controls {
         this.showing = false;
         this.unmuteCallback = null;
         this.div = null;
-        this.gradient = null;
         this.right = null;
         this.activeListeners = {
             mousemove: () => clearTimeout(this.activeTimeout),
@@ -57,8 +56,6 @@ export default class Controls {
         const element = this.context.createElement('div');
         element.className = 'jw-controls jw-reset';
         this.div = element;
-        this.gradient = this.context.createElement('div');
-        this.gradient.className = 'jw-gradient jw-reset';
 
         const touchMode = model.get('touchMode');
 
@@ -241,12 +238,6 @@ export default class Controls {
         // Show controls when enabled
         this.userActive();
 
-        if (this.playerContainer.className.indexOf('jw-flag-ads') === -1) {
-            this.playerContainer.insertBefore(this.gradient, this.preview);
-        } else {
-            // Order matters, gradient should be right ahead of controls during ads
-            this.playerContainer.appendChild(this.gradient);
-        }
         this.playerContainer.appendChild(this.div);
     }
 
@@ -266,7 +257,6 @@ export default class Controls {
         if (this.div.parentNode) {
             utils.removeClass(this.playerContainer, 'jw-flag-touch');
             this.playerContainer.removeChild(this.div);
-            this.playerContainer.removeChild(this.gradient);
         }
         if (this.controlbar) {
             this.removeActiveListeners(this.controlbar.element());

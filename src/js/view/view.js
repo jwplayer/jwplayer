@@ -71,7 +71,8 @@ function View(_api, _model) {
 
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
     const _videoLayer = _playerElement.querySelector('.jw-media');
-    let _gradientLayer;
+    const _gradientLayer = document.createElement('div');
+    _gradientLayer.className = 'jw-gradient jw-reset';
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -338,16 +339,28 @@ function View(_api, _model) {
             } else {
                 addControls();
             }
-            _gradientLayer = _playerElement.querySelector('.jw-gradient');
         } else {
             _this.removeControls();
-            _gradientLayer = null;
         }
     }
 
     function addControls() {
         const controls = new ControlsModule(document, _this.element());
         _this.addControls(controls);
+        addGradient();
+    }
+
+    function addGradient() {
+
+        if (_playerElement.className.indexOf('jw-flag-ads') >= 0) {
+            _playerElement.insertBefore(_gradientLayer, _controls.element());
+        } else {
+            _playerElement.insertBefore(_gradientLayer, _preview.element());
+        }
+    }
+
+    function removeGradient() {
+        _playerElement.removeChild(_gradientLayer);
     }
 
     function setMediaTitleAttribute(item) {
@@ -509,6 +522,7 @@ function View(_api, _model) {
         }
 
         addClass(_playerElement, 'jw-flag-controls-hidden');
+        removeGradient();
     };
 
     // Perform the switch to fullscreen
@@ -752,11 +766,11 @@ function View(_api, _model) {
         this.instreamModel = _instreamModel = instreamModel;
         _instreamModel.on('change:controls', _onChangeControls, this);
         _instreamModel.on('change:state', _stateHandler, this);
-        if (_controls && _gradientLayer) {
-            _playerElement.insertBefore(_gradientLayer, this.controlsContainer());
-        }
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
+        if (_controls) {
+            addGradient();
+        }
 
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         if (_controls) {
@@ -786,11 +800,11 @@ function View(_api, _model) {
         }
 
         this.setAltText('');
-        if (_controls && _gradientLayer) {
-            _playerElement.insertBefore(_gradientLayer, _preview.element());
-        }
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
+        if (_controls) {
+            addGradient();
+        }
         const provider = _model.getVideo();
         if (provider) {
             provider.setContainer(_videoLayer);
