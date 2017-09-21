@@ -283,12 +283,8 @@ var InstreamAdapter = function(_controller, _model, _view) {
                 _view.clickHandler().revertAlternateClickHandlers();
             }
 
-            // Sync player and media state with ad for model "change:state" events to trigger
+            // Sync player state with ad for model "change:state" events to trigger
             const adState = _instream._adModel.get('state');
-            const adMediaModel = _instream._adModel.mediaModel;
-            if (adMediaModel) {
-                _model.mediaModel.attributes.state = adMediaModel.get('state');
-            }
             _model.attributes.state = adState;
 
             _model.off(null, null, _instream);
