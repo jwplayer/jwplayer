@@ -27,18 +27,18 @@ export function browserVersion(browserEnvironment, agent) {
         }
     }
 
-    // trim the version string
-    if ((ix = version.indexOf(';')) !== -1) {
-        version = version.substring(0, ix);
-    }
-    if ((ix = version.indexOf(' ')) !== -1) {
-        version = version.substring(0, ix);
-    }
-    if ((ix = version.indexOf(')')) !== -1) {
-        version = version.substring(0, ix);
-    }
-
     if (version) {
+        // trim the version string
+        if ((ix = version.indexOf(';')) !== -1) {
+            version = version.substring(0, ix);
+        }
+        if ((ix = version.indexOf(' ')) !== -1) {
+            version = version.substring(0, ix);
+        }
+        if ((ix = version.indexOf(')')) !== -1) {
+            version = version.substring(0, ix);
+        }
+
         major = parseInt(version, 10);
         // Versions will always be in the d.d.d format
         minor = parseInt(version.split('.')[1], 10);
