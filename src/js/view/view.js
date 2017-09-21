@@ -822,7 +822,7 @@ function View(_api, _model) {
             _gradientLayer = _playerElement.querySelector('.jw-gradient');
         }
         return _controls ? _gradientLayer : null;
-    }
+    };
 
     this.getSafeRegion = function (excludeControlbar = true) {
         const safeRegion = {
