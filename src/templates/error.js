@@ -1,3 +1,5 @@
+import ERROR_ICON from 'assets/SVG/playback-error.svg';
+
 export default (id, title = '', body = '') => {
     return (
         `<div id="${id}" class="jw-error jw-reset">` +
@@ -7,7 +9,7 @@ export default (id, title = '', body = '') => {
             `</div>` +
             `<div class="jw-display-container jw-reset">` +
                 `<div class="jw-display-icon-container jw-reset">` +
-                    `<div class="jw-icon jw-icon-display jw-reset" aria-hidden="true"></div>` +
+                    `<div class="jw-icon jw-icon-display jw-reset" aria-hidden="true">${ERROR_ICON}</div>` +
                 `</div>` +
             `</div>` +
         `</div>`
