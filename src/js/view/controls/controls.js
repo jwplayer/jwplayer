@@ -241,9 +241,13 @@ export default class Controls {
         // Show controls when enabled
         this.userActive();
 
-        this.playerContainer.insertBefore(this.gradient, this.preview);
+        // During ads, gradient must be appended before controls
+        if (this.playerContainer.className.indexOf('jw-flag-ads') === -1) {
+            this.playerContainer.insertBefore(this.gradient, this.preview);
+        } else {
+            this.playerContainer.appendChild(this.gradient);
+        }
         this.playerContainer.appendChild(this.div);
-
     }
 
     disable(model) {
