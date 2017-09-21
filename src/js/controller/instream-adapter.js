@@ -208,14 +208,16 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
         _this.addClickHandler();
 
+        adModel.set('skipButton', false);
+
+        const playPromise = _instream.load(item);
+
         const skipoffset = item.skipoffset || _options.skipoffset;
         if (skipoffset) {
             _this.setupSkipButton(skipoffset, _options);
-        } else {
-            adModel.set('skipButton', false);
         }
 
-        return _instream.load(item);
+        return playPromise;
     };
 
     this.setupSkipButton = function(skipoffset, options, customNext) {
