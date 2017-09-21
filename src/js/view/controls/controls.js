@@ -38,7 +38,7 @@ export default class Controls {
         this.mute = null;
         this.nextUpToolTip = null;
         this.playerContainer = playerContainer;
-        this.preview = this.playerContainer.querySelector('.jw-preview');
+        this.preview = this.playerContainer.querySelector(':scope > .jw-preview');
         this.rightClickMenu = null;
         this.settingsMenu = null;
         this.showing = false;

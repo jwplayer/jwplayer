@@ -71,7 +71,7 @@ function View(_api, _model) {
 
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
     const _videoLayer = _playerElement.querySelector('.jw-media');
-    const _gradientLayer = _playerElement.querySelector('.jw-gradient');
+    let _gradientLayer = _playerElement.querySelector('.jw-gradient');
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -750,8 +750,9 @@ function View(_api, _model) {
         this.instreamModel = _instreamModel = instreamModel;
         _instreamModel.on('change:controls', _onChangeControls, this);
         _instreamModel.on('change:state', _stateHandler, this);
-
-        _playerElement.insertBefore(_gradientLayer, this.controlsContainer());
+        if (_controls) {
+            _playerElement.insertBefore(this.gradient(), this.controlsContainer());
+        }
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
 
@@ -783,7 +784,9 @@ function View(_api, _model) {
         }
 
         this.setAltText('');
-        _playerElement.insertBefore(_gradientLayer, _preview.element());
+        if (_controls) {
+            _playerElement.insertBefore(this.gradient(), _preview.element());
+        }
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
         const provider = _model.getVideo();
@@ -813,6 +816,13 @@ function View(_api, _model) {
         }
         return null;
     };
+
+    this.gradient = function () {
+        if (!_gradientLayer) {
+            _gradientLayer = _playerElement.querySelector('.jw-gradient');
+        }
+        return _controls ? _gradientLayer : null;
+    }
 
     this.getSafeRegion = function (excludeControlbar = true) {
         const safeRegion = {
