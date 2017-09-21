@@ -674,7 +674,7 @@ export default function Api(element) {
          * @return {Api}
          */
         play(meta = { reason: 'external' }) {
-            core.play();
+            core.play(meta);
             return this;
         },
 

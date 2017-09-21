@@ -65,7 +65,7 @@ export default class Controls {
             displayContainer.buttons.display.on('click tap', () => {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
-                api.play(reasonInteraction());
+                api.playToggle(reasonInteraction());
             });
 
             this.div.appendChild(displayContainer.element());
@@ -181,7 +181,7 @@ export default class Controls {
                     break;
                 case 13: // enter
                 case 32: // space
-                    api.play(reasonInteraction());
+                    api.playToggle(reasonInteraction());
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!this.instreamState) {
