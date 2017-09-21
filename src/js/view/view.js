@@ -704,9 +704,13 @@ function View(_api, _model) {
         if (_controls) {
             _controls.instreamState = instreamState;
         }
-
+        
         cancelAnimationFrame(_stateClassRequestId);
-        _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
+        if (_playerState === STATE_PLAYING) {
+            _stateUpdate(_playerState);
+        } else {
+            _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
+        }
     }
 
     function _stateUpdate(state) {

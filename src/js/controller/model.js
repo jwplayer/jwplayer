@@ -93,13 +93,17 @@ const Model = function() {
                     this.mediaController.trigger(type, event);
                 }
                 return;
-            case PLAYER_STATE:
+            case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
                     thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
-                mediaModel.set(PLAYER_STATE, data.newstate);
+                // Always fire change:state to keep player model in sync
+                const previousState = mediaModel.attributes[PLAYER_STATE];
+                mediaModel.attributes[PLAYER_STATE] = data.newstate;
+                mediaModel.trigger('change:' + PLAYER_STATE, mediaModel, data.newstate, previousState);
 
+            }
                 // This "return" is important because
                 //  we are choosing to not propagate this event.
                 //  Instead letting the master controller do so
