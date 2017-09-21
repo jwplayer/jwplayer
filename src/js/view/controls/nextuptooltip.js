@@ -45,7 +45,7 @@ export default class NextUpTooltip {
 
         // Close button
         new UI(this.closeButton, { directSelect: true })
-            .on('click tap', function() {
+            .on('click tap enter', function() {
                 this.nextUpSticky = false;
                 this.toggle(false);
             }, this);

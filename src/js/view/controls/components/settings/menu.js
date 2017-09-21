@@ -15,6 +15,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     };
 
     let visible;
+    let active = null;
     const submenus = {};
     const settingsMenuElement = createElement(SettingsMenuTemplate());
     const topbarElement = settingsMenuElement.querySelector('.jw-settings-topbar');
@@ -24,6 +25,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     }, 'Close Settings', [CLOSE_ICON]);
     closeButton.show();
     topbarElement.appendChild(closeButton.element());
+    settingsMenuElement.addEventListener('keydown', function(evt) {
+        if (evt && evt.keyCode === 27) {
+            instance.close();
+            evt.stopPropagation();
+        }
+    });
 
     const instance = {
         open() {
@@ -31,10 +38,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             onVisibility(visible);
             settingsMenuElement.setAttribute('aria-expanded', 'true');
             addDocumentListeners(documentClickHandler);
+            active.categoryButtonElement.focus();
         },
         close() {
             visible = false;
             onVisibility(visible);
+            active = null;
             deactivateAllSubmenus(submenus);
             settingsMenuElement.setAttribute('aria-expanded', 'false');
             removeDocumentListeners(documentClickHandler);
@@ -92,6 +101,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             }
             deactivateAllSubmenus(submenus);
             submenu.activate();
+            active = submenu;
         },
         activateFirstSubmenu() {
             const firstSubmenuName = Object.keys(submenus)[0];
@@ -106,9 +116,15 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         }
     };
 
-    Object.defineProperty(instance, 'visible', {
-        enumerable: true,
-        get: () => visible
+    Object.defineProperties(instance, {
+        visible: {
+            enumerable: true,
+            get: () => visible
+        },
+        active: {
+            enumerable: true,
+            get: () => active
+        },
     });
 
     return instance;

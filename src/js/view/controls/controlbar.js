@@ -71,17 +71,17 @@ function createCastButton(castToggle, localization) {
         return;
     }
 
-    const ariaText = localization.cast;
 
     const castButton = document.createElement('button', 'google-cast-button');
-    ariaLabel(castButton, ariaText);
     castButton.setAttribute('type', 'button');
+    castButton.setAttribute('tabindex', '-1');
 
     const element = document.createElement('div');
     element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
     element.style.display = 'none';
     element.style.cursor = 'pointer';
     element.appendChild(castButton);
+    ariaLabel(element, localization.cast);
 
     SimpleTooltip(element, 'chromecast', localization.cast);
 
@@ -340,7 +340,10 @@ export default class Controlbar {
         }
 
         if (elements.cast && elements.cast.button) {
-            new UI(elements.cast.button).on('click tap', function () {
+            new UI(elements.cast.element()).on('click tap enter', function(evt) {
+                if (evt.type === 'enter') {
+                    elements.cast.button.click();
+                }
                 this._model.set('castClicked', true);
             }, this);
         }
@@ -349,7 +352,7 @@ export default class Controlbar {
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
 
-        new UI(elements.duration).on('click tap', function () {
+        new UI(elements.duration).on('click tap enter', function () {
             if (this._model.get('streamType') === 'DVR') {
                 // Seek to "Live" position within live buffer, but not before current position
                 const currentPosition = this._model.get('position');

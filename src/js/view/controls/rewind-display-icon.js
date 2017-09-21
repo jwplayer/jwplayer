@@ -4,7 +4,7 @@ export default class RewindDisplayIcon {
     constructor(model, api, element) {
         this.el = element;
 
-        new UI(this.el).on('click tap', function() {
+        new UI(this.el).on('click tap enter', function() {
             const currentPosition = model.get('position');
             const duration = model.get('duration');
             const rewindPosition = currentPosition - 10;

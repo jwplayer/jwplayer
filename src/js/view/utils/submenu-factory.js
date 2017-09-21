@@ -19,10 +19,14 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
     } else {
         const categoryButton = button(`jw-settings-${name}`, () => {
             settingsMenu.activateSubmenu(name);
+            submenu.element().children[0].focus();
         }, name, [icon]);
         const categoryButtonElement = categoryButton.element();
         categoryButtonElement.setAttribute('role', 'menuitemradio');
         categoryButtonElement.setAttribute('aria-checked', 'false');
+        categoryButtonElement.addEventListener('focus', function() {
+            settingsMenu.activateSubmenu(name);
+        });
 
         // Qualities submenu is the default submenu
         submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);

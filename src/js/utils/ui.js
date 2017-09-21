@@ -1,5 +1,5 @@
 import { Browser, OS } from 'environment/environment';
-import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER } from 'events/events';
+import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
@@ -25,6 +25,17 @@ function isRightClick(evt) {
     } else if ('button' in e) {
         // IE and Opera
         return (e.button === 2);
+    }
+
+    return false;
+}
+
+function isEnterKey(evt) {
+    const e = evt || window.event;
+
+    if ((e instanceof KeyboardEvent) && e.keyCode === 13) {
+        evt.stopPropagation();
+        return true;
     }
 
     return false;
@@ -106,6 +117,12 @@ const UI = function (elem, options) {
         elem.addEventListener('touchstart', interactStartHandler);
     }
 
+    elem.addEventListener('keydown', keyHandler);
+    if (options.useFocus) {
+        elem.addEventListener('focus', overHandler);
+        elem.addEventListener('blur', outHandler);
+    }
+
     // overHandler and outHandler not assigned in touch situations
     function overHandler(evt) {
         if (evt.pointerType !== 'touch') {
@@ -124,6 +141,12 @@ const UI = function (elem, options) {
         if (_useMouseEvents || (_supportsPointerEvents && evt.pointerType !== 'touch' &&
             !elem.contains(document.elementFromPoint(evt.x, evt.y)))) {
             triggerEvent(OUT, evt);
+        }
+    }
+
+    function keyHandler(evt) {
+        if (isEnterKey(evt)) {
+            triggerEvent(ENTER, evt);
         }
     }
 
@@ -256,6 +279,7 @@ const UI = function (elem, options) {
         this.off();
         elem.removeEventListener('touchstart', interactStartHandler);
         elem.removeEventListener('mousedown', interactStartHandler);
+        elem.removeEventListener('keydown', keyHandler);
 
         if (_touchListenerTarget) {
             _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
@@ -283,6 +307,11 @@ const UI = function (elem, options) {
         elem.removeEventListener('mouseout', outHandler);
         document.removeEventListener('mousemove', interactDragHandler);
         document.removeEventListener('mouseup', interactEndHandler);
+
+        if (options.useFocus) {
+            elem.removeEventListener('focus', overHandler);
+            elem.removeEventListener('blur', outHandler);
+        }
     };
 
     return this;

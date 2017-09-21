@@ -15,7 +15,7 @@ export default function (icon, apiAction, ariaText, svgIcons) {
 
     if (apiAction) {
         // Don't send the event to the handler so we don't have unexpected results. (e.g. play)
-        new UI(element).on('click tap', function() {
+        new UI(element).on('click tap enter', function() {
             apiAction();
         });
     }
