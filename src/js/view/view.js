@@ -347,12 +347,12 @@ function View(_api, _model) {
     function addControls() {
         const controls = new ControlsModule(document, _this.element());
         _this.addControls(controls);
-        addGradient();
+        addGradient(_playerElement.className.indexOf('jw-flag-ads') >= 0);
     }
 
-    function addGradient() {
+    function addGradient(adsMode) {
 
-        if (_playerElement.className.indexOf('jw-flag-ads') >= 0) {
+        if (adsMode) {
             _playerElement.insertBefore(_gradientLayer, _controls.element());
         } else {
             _playerElement.insertBefore(_gradientLayer, _preview.element());
@@ -766,10 +766,11 @@ function View(_api, _model) {
         this.instreamModel = _instreamModel = instreamModel;
         _instreamModel.on('change:controls', _onChangeControls, this);
         _instreamModel.on('change:state', _stateHandler, this);
+        
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
         if (_controls) {
-            addGradient();
+            addGradient(true);
         }
 
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
@@ -803,7 +804,7 @@ function View(_api, _model) {
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
         if (_controls) {
-            addGradient();
+            addGradient(false);
         }
         const provider = _model.getVideo();
         if (provider) {
