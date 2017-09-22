@@ -1,5 +1,7 @@
 # <img height="70px" src="http://www.jwplayer.com/wp-content/uploads/JWP-GitHub-Banner-1.png" alt="JW Player Logo" title="JW Player Logo"/>
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/jwplayer/jwplayer.svg)](https://greenkeeper.io/)
+
 > Plays everywhere, every time.
 
 Live on over 2 million sites with 1.3 billion unique plays per month, JW Player is the solution for seamless video playback across browsers and media types. It empowers the developer to interact with video programmatically to create unique and awesome user experiences.
