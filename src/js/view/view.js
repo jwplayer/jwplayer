@@ -719,21 +719,23 @@ function View(_api, _model) {
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
-        // Update captions renderer
-        if (_captionsRenderer) {
-            switch (state) {
-                case STATE_IDLE:
-                case STATE_ERROR:
-                case STATE_COMPLETE:
+        switch (state) {
+            case STATE_IDLE:
+            case STATE_ERROR:
+            case STATE_COMPLETE:
+                _preview.setImage(_model.get('playlistItem').image);
+                if (_captionsRenderer) {
                     _captionsRenderer.hide();
-                    break;
-                default:
+                }
+                break;
+            default:
+                if (_captionsRenderer) {
                     _captionsRenderer.show();
                     if (state === STATE_PAUSED && _controls && !_controls.showing) {
                         _captionsRenderer.renderCues(true);
                     }
-                    break;
-            }
+                }
+                break;
         }
     }
 
