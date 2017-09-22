@@ -19,7 +19,6 @@ define([
     var MIN_DVR_DURATION = 120;
     var _isIE = utils.isIE();
     var _isIE9 = utils.isIE(9);
-    var _isMSIE = utils.isMSIE();
     var _isMobile = utils.isMobile();
     var _isFirefox = utils.isFF();
     var _isAndroid = utils.isAndroidNative();
@@ -105,23 +104,15 @@ define([
         var _stale = false;
         var _edgeOfLiveStream = false;
 
-        // Find video tag, or create it if it doesn't exist.  View may not be built yet.
-        var element = document.getElementById(_playerId);
-        var _videotag = (element) ? element.querySelector('video, audio') : undefined;
+        var _videotag = _playerConfig.mediaElement;
 
         function _setAttribute(name, value) {
             _videotag.setAttribute(name, value || '');
         }
 
-        if (!_videotag) {
-            _videotag = document.createElement('video');
-
-            if (_isMobile) {
-                _setAttribute('jw-gesture-required');
-            }
+        if (_isMobile) {
+            _setAttribute('jw-gesture-required');
         }
-
-        _videotag.className = 'jw-video jw-reset';
 
         this.isSDK = _isSDK;
         this.video = _videotag;
@@ -423,9 +414,10 @@ define([
             _delayedSeek = 0;
             clearTimeouts();
 
+            var previousSource = _videotag.src;
             var sourceElement = document.createElement('source');
             sourceElement.src = _levels[_currentQuality].file;
-            var sourceChanged = (_videotag.src !== sourceElement.src);
+            var sourceChanged = (previousSource !== sourceElement.src);
 
             var loadedSrc = _videotag.getAttribute('jw-loaded');
 
@@ -435,7 +427,10 @@ define([
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
                 _this.setupSideloadedTracks(_this._itemTracks);
-                _videotag.load();
+                // Do not call load if src was not set. load() will cancel any active play promise.
+                if (previousSource) {
+                    _videotag.load();
+                }
             } else {
                 // Load event is from the same video as before
                 if (startTime === 0 && _videotag.currentTime > 0) {
@@ -498,6 +493,7 @@ define([
         function _clearVideotagSource() {
             if (_videotag) {
                 _this.disableTextTrack();
+                _videotag.pause();
                 _videotag.removeAttribute('preload');
                 _videotag.removeAttribute('src');
                 _videotag.removeAttribute('jw-loaded');
@@ -507,10 +503,6 @@ define([
                     objectFit: ''
                 });
                 _currentQuality = -1;
-                // Don't call load in iE9/10 and check for load in PhantomJS
-                if (!_isMSIE && 'load' in _videotag) {
-                    _videotag.load();
-                }
             }
         }
 
@@ -536,13 +528,9 @@ define([
 
         this.stop = function() {
             clearTimeouts();
+            _removeListeners(_mediaEvents, _videotag);
             _clearVideotagSource();
             this.clearTracks();
-            // IE/Edge continue to play a video after changing video.src and calling video.load()
-            // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5383483/ (not fixed in Edge 14)
-            if (utils.isIE()) {
-                _videotag.pause();
-            }
             this.setState(states.IDLE);
         };
 
@@ -777,6 +765,7 @@ define([
 
         this.remove = function() {
             // stop video silently
+            _removeListeners(_mediaEvents, _videotag);
             _clearVideotagSource();
             clearTimeouts();
 

@@ -8,7 +8,8 @@ define([
     'data/api-methods-chainable',
     'data/config-small',
     'utils/backbone.events',
-], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events) {
+    'mock/video-element-polyfill'
+], function (_, $, sinon, Api, apiMembers, apiMethods, apiMethodsChainable, configSmall, Events, videoPolyfill) {
     var log = console.log;
 
     var vid = document.createElement('video');
@@ -17,6 +18,7 @@ define([
     describe('Api', function() {
 
         beforeEach(function() {
+            videoPolyfill.install();
             console.log = sinon.stub().returns(function() {
                 assert.isOk(arguments[1] === 'x', 'Should output error');
             });
@@ -24,6 +26,7 @@ define([
 
         afterEach(function() {
             console.log = log;
+            videoPolyfill.uninstall();
         });
 
         it('extends Events', function() {
