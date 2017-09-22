@@ -1,0 +1,7 @@
+.idea
+.settings
+.project
+built
+node_modules
+npm-debug.log
+reports
