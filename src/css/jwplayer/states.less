@@ -26,14 +26,45 @@ body .jwplayer.jw-state-error {
 }
 
 body .jw-error {
+    &:extend(._stretch);
     font-size: @default-em-size;
-    background-color: #000;
+    background-color: fade(@background-color, 100%);
     color: @font-color;
-    width: 100%;
-    height: 100%;
     display: table;
     opacity: 1;
+    overflow: hidden;
     position: relative;
+
+    .jw-title {
+        position: static;
+
+        &,
+        &-primary,
+        &-secondary {
+            font-size: 14px;
+            line-height: 1.35;
+            padding: 0;
+        }
+
+        &-primary {
+            font-weight: 600;
+        }
+    }
+
+    .jw-svg-icon-error {
+        .square(36px);
+        margin-right: 20px;
+        flex: 0 0 auto;
+    }
+
+    .jw-error-msg {
+        .topleft(50%, 50%);
+        align-items: center;
+        background-color: @black;
+        display: flex;
+        padding: 20px;
+        transform: translate(-50%, -50%);
+    }
 }
 
 // Show preview

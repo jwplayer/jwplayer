@@ -226,15 +226,17 @@ Object.assign(CoreShim.prototype, {
 
 function setupError(core, error) {
     let message = error.message;
-    if (message.indexOf(':') === -1) {
-        message = `Error loading player: ${message}`;
+    const index = message.indexOf(':');
+    let title = 'Error loading player:';
+    if (index > 0) {
+        title = error.message.substr(0, index + 1);
+        message = error.message.substr(index + 1);
     }
-    const errorElement = createElement(viewError(core.get('id'), message));
+    const errorElement = createElement(viewError(core.get('id'), title, message));
     const width = core.get('width');
     const height = core.get('height');
 
     style(errorElement, {
-        backgroundColor: '#000',
         width: width.toString().indexOf('%') > 0 ? width : `${width}px`,
         height: height.toString().indexOf('%') > 0 ? height : `${height}px`
     });
