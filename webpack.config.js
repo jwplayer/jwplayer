@@ -117,14 +117,6 @@ const multiConfig = [
                     ]
                 },
                 {
-                    test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
-                    loader: 'file-loader?name=[name].[ext]'
-                },
-                {
-                    test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-                    loader: 'file-loader?name=[name].[ext]'
-                },
-                {
                     test: /\.js$/,
                     loader: 'babel-loader',
                     exclude: /node_modules/,
