@@ -18,7 +18,8 @@
     */
     if (parseInt(playerLibrary.version, 10) >= 8) {
         var jwplayerCompatible = function(query) {
-            var playerInstance = playerLibrary(query);
+            var basePlayer = playerLibrary(query);
+            var playerInstance = Object.create(basePlayer);
             if (!playerInstance.trigger || playerInstance.compatibility) {
                 return playerInstance;
             }
@@ -26,10 +27,10 @@
             /*
                 We've removed a few methods from the public API, and our events now implement Backbone events.
              */
-            playerInstance.dispatchEvent = playerInstance.trigger;
-            playerInstance.removeEventListener = playerInstance.off;
-            playerInstance.getItem = playerInstance.getPlaylistIndex;
-            playerInstance.getMeta = playerInstance.getItemMeta;
+            playerInstance.dispatchEvent = basePlayer.trigger;
+            playerInstance.removeEventListener = basePlayer.off;
+            playerInstance.getItem = basePlayer.getPlaylistIndex;
+            playerInstance.getMeta = basePlayer.getItemMeta;
             playerInstance.getRenderingMode = function() {
                 return 'html5';
             };
@@ -96,7 +97,7 @@
              `jwplayer().setup({ events: { onReady: fn } })` becomes
              `jwplayer().setup({ events: { ready: fn } })`
              */
-            var setup = playerInstance.setup;
+            var setup = basePlayer.setup;
             playerInstance.setup = function(options) {
                 var eventMap = options.events;
                 if (eventMap) {
@@ -109,14 +110,14 @@
                     });
                 }
 
-                return setup.call(this, options);
+                return setup.call(basePlayer, options);
             };
 
             /*
              Play and Pause no longer accept the state argument, and no longer toggle.
              */
-            var play = playerInstance.play.bind(this);
-            var pause = playerInstance.pause.bind(this);
+            var play = basePlayer.play.bind(this);
+            var pause = basePlayer.pause.bind(this);
             playerInstance.play = function(state, meta) {
                 if (state && state.reason) {
                     meta = state;
