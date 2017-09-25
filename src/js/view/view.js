@@ -351,7 +351,6 @@ function View(_api, _model) {
     }
 
     function addGradient(adsMode) {
-
         if (adsMode) {
             _playerElement.insertBefore(_gradientLayer, _controls.element());
         } else {
@@ -766,7 +765,7 @@ function View(_api, _model) {
         this.instreamModel = _instreamModel = instreamModel;
         _instreamModel.on('change:controls', _onChangeControls, this);
         _instreamModel.on('change:state', _stateHandler, this);
-        
+
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
         if (_controls) {
