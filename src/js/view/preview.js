@@ -1,36 +1,9 @@
-import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
 import { style } from 'utils/css';
 
 const Preview = function(_model) {
     this.model = _model;
-    this.raf = -1;
     this.image = null;
 };
-
-function onMediaModel(model, mediaModel) {
-    mediaModel.off('change:mediaType', null, this);
-    mediaModel.on('change:mediaType', function(mediaTypeChangeModel, mediaType) {
-        if (mediaType === 'audio') {
-            this.setImage(model.get('playlistItem').image);
-        }
-    }, this);
-}
-
-function onPlaylistItem(model, playlistItem) {
-    if (this.image) {
-        this.setImage(null);
-    }
-    model.off('change:state', null, this);
-    model.change('state', function(stateChangeModel, state) {
-        if (validState(state)) {
-            cancelAnimationFrame(this.raf);
-            this.raf = requestAnimationFrame(() => {
-                this.setImage(playlistItem.image);
-                this.resize(null, null, stateChangeModel.get('stretching'));
-            });
-        }
-    }, this);
-}
 
 function validState(state) {
     return state === 'complete' || state === 'idle' || state === 'error';
@@ -39,8 +12,6 @@ function validState(state) {
 Object.assign(Preview.prototype, {
     setup: function(element) {
         this.el = element;
-        this.model.on('change:mediaModel', onMediaModel, this);
-        this.model.on('change:playlistItem', onPlaylistItem, this);
     },
     setImage: function(img) {
         // Remove onload function from previous image
