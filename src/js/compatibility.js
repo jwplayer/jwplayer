@@ -116,8 +116,8 @@
             /*
              Play and Pause no longer accept the state argument, and no longer toggle.
              */
-            var play = basePlayer.play.bind(this);
-            var pause = basePlayer.pause.bind(this);
+            var play = basePlayer.play;
+            var pause = basePlayer.pause;
             playerInstance.play = function(state, meta) {
                 if (state && state.reason) {
                     meta = state;
