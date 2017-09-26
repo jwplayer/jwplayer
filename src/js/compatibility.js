@@ -28,7 +28,6 @@
                 We've removed a few methods from the public API, and our events now implement Backbone events.
              */
             playerInstance.dispatchEvent = basePlayer.trigger;
-            playerInstance.removeEventListener = basePlayer.off;
             playerInstance.getItem = basePlayer.getPlaylistIndex;
             playerInstance.getMeta = basePlayer.getItemMeta;
             playerInstance.getRenderingMode = function() {
@@ -41,6 +40,7 @@
             */
             playerInstance.on = playerInstance.on.bind(basePlayer);
             playerInstance.off = playerInstance.off.bind(basePlayer);
+            playerInstance.removeEventListener = playerInstance.off;
 
             /*
                 In JW8 we've removed the on* events. They've been replaced by the on() method, which accepts a string and
