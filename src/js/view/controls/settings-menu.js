@@ -46,7 +46,7 @@ export function createSettingsMenu(controlbar, onVisibility) {
                 // Activate the first submenu if clicking the default button
                 settingsMenu.activateFirstSubmenu();
             }
-            settingsMenu.open();
+            settingsMenu.open(isDefault);
         }
     });
 

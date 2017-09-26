@@ -773,7 +773,7 @@ function View(_api, _model) {
     function onFocus() {
         // On tab-focus, show the control bar for a few seconds
         if (_controls && !_instreamModel && !_isMobile) {
-            _controls.userActive();
+            _controls.userActive(null, true);
         }
     }
 
