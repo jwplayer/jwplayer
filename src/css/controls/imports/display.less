@@ -90,6 +90,10 @@ display icons
 }
 
 .jw-breakpoint-1 {
+    .jw-display-icon-container {
+        margin: 0 (@mobile-touch-target * 0.5);
+    }
+
     .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
         height: (@mobile-touch-target);
@@ -103,8 +107,6 @@ display icons
     }
 
     .jw-display .jw-icon {
-        padding: 0 (@mobile-touch-target * 0.5);
-
         &.jw-icon-rewind:before {
             width: (@mobile-touch-target * 0.75);
             height: (@mobile-touch-target * 0.75);
