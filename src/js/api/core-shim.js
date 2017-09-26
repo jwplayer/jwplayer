@@ -223,11 +223,10 @@ Object.assign(CoreShim.prototype, {
 });
 
 function setupError(core, error) {
-    let _errorContainer = new ErrorContainer(core);
     const message = error.message;
+    const errorContainer = new ErrorContainer(core, message);
 
-    _errorContainer.setMessage(message);
-    showView(core, _errorContainer.el);
+    showView(core, errorContainer.el);
 
     resolved.then(() => {
         core.trigger(SETUP_ERROR, {

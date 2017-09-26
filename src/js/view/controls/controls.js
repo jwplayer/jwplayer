@@ -1,7 +1,6 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING } from 'events/events';
-
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
 import button from 'view/controls/components/button';
@@ -11,8 +10,7 @@ import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/settings-menu';
 import { getBreakpoint } from 'view/utils/breakpoint';
-
-import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
+import { cloneIcons } from 'view/controls/icons';
 
 require('css/controls.less');
 
@@ -136,7 +134,7 @@ export default class Controls {
         if (model.get('autostartMuted')) {
             const unmuteCallback = () => this.unmuteAutoplay(api, model);
             this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').unmute,
-                [VOLUME_ICON_0]);
+                cloneIcons('volume-0'));
             this.mute.show();
             this.div.appendChild(this.mute.element());
             // Set mute state in the controlbar

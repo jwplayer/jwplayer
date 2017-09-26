@@ -75,7 +75,6 @@ function View(_api, _model) {
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
-    const _errorContainer = new ErrorContainer();
 
     let _captionsRenderer = new CaptionsRenderer(_model);
     _captionsRenderer.on('all', _this.trigger, _this);
@@ -685,16 +684,17 @@ function View(_api, _model) {
             _title.playlistItem(model, model.get('playlistItem'));
             return;
         }
+        const errorContainer = new ErrorContainer(_model, evt.message);
+        _playerElement.appendChild(errorContainer.el.firstChild);
+
         if (evt.name) {
             _title.updateText(evt.name, evt.message);
         } else {
-            _errorContainer.setMessage(evt.message);
-            _errorContainer.setContainer(_playerElement);
             _title.updateText(evt.message, '');
         }
     }
 
-    function _stateHandler(model) {
+    function _stateHandler(model, newState, oldState) {
         if (!_model.get('viewSetup')) {
             return;
         }
@@ -707,6 +707,13 @@ function View(_api, _model) {
         }
         if (_controls) {
             _controls.instreamState = instreamState;
+        }
+
+        if (oldState === STATE_ERROR) {
+            const errorContainer = _playerElement.querySelector('.jw-error-msg');
+            if (errorContainer) {
+                errorContainer.parentNode.removeChild(errorContainer);
+            }
         }
 
         cancelAnimationFrame(_stateClassRequestId);

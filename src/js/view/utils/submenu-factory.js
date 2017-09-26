@@ -1,10 +1,7 @@
+import { cloneIcon } from 'view/controls/icons';
 import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
 import button from 'view/controls/components/button';
-import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
-import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
-import QUALITY_ICON from 'assets/SVG/quality-100.svg';
-import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
@@ -45,7 +42,7 @@ export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSe
         });
     });
 
-    const captionsSubmenu = makeSubmenu(settingsMenu, CAPTIONS_SUBMENU, captionsContentItems, CAPTIONS_OFF_ICON);
+    const captionsSubmenu = makeSubmenu(settingsMenu, CAPTIONS_SUBMENU, captionsContentItems, cloneIcon('cc-off'));
     captionsSubmenu.activateItem(initialSelectionIndex);
 }
 
@@ -61,7 +58,8 @@ export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, ini
         });
     });
 
-    const audioTracksSubmenu = makeSubmenu(settingsMenu, AUDIO_TRACKS_SUBMENU, audioTracksItems, AUDIO_TRACKS_ICON);
+    const audioTracksSubmenu = makeSubmenu(settingsMenu, AUDIO_TRACKS_SUBMENU, audioTracksItems,
+        cloneIcon('audio-tracks'));
     audioTracksSubmenu.activateItem(initialSelectionIndex);
 }
 
@@ -77,7 +75,7 @@ export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initial
         });
     });
 
-    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, QUALITY_ICON);
+    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, cloneIcon('quality-100'));
     qualitiesSubmenu.activateItem(initialSelectionIndex);
 }
 
@@ -93,7 +91,7 @@ export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialS
         });
     });
 
-    const playbackRatesSubmenu = makeSubmenu(settingsMenu, PLAYBACK_RATE_SUBMENU, rateItems, PLAYBACK_RATE_ICON);
+    const playbackRatesSubmenu = makeSubmenu(settingsMenu, PLAYBACK_RATE_SUBMENU, rateItems, cloneIcon('playback-rate'));
     playbackRatesSubmenu.activateItem(initialSelectionIndex);
 }
 
