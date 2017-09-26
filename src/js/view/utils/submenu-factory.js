@@ -1,6 +1,7 @@
 import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
 import button from 'view/controls/components/button';
+import SimpleTooltip from 'view/controls/components/simple-tooltip';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
@@ -12,7 +13,7 @@ const QUALITIES_SUBMENU = 'quality';
 const PLAYBACK_RATE_SUBMENU = 'playbackRates';
 const DEFAULT_SUBMENU = QUALITIES_SUBMENU;
 
-export const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
+export const makeSubmenu = (settingsMenu, name, contentItems, icon, localizedText) => {
     let submenu = settingsMenu.getSubmenu(name);
     if (submenu) {
         submenu.replaceContent(contentItems);
@@ -31,13 +32,14 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon) => {
         // Qualities submenu is the default submenu
         submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);
         submenu.addContent(contentItems);
+        SimpleTooltip(categoryButtonElement, name, localizedText);
         settingsMenu.addSubmenu(submenu);
     }
 
     return submenu;
 };
 
-export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSelectionIndex) {
+export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSelectionIndex, localizedText) {
     const captionsContentItems = captionsList.map((track, index) => {
         return SettingsContentItem(track.id, track.label, () => {
             action(index);
@@ -45,7 +47,7 @@ export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSe
         });
     });
 
-    const captionsSubmenu = makeSubmenu(settingsMenu, CAPTIONS_SUBMENU, captionsContentItems, CAPTIONS_OFF_ICON);
+    const captionsSubmenu = makeSubmenu(settingsMenu, CAPTIONS_SUBMENU, captionsContentItems, CAPTIONS_OFF_ICON, localizedText);
     captionsSubmenu.activateItem(initialSelectionIndex);
 }
 
@@ -53,7 +55,7 @@ export function removeCaptionsSubmenu(settingsMenu) {
     settingsMenu.removeSubmenu(CAPTIONS_SUBMENU);
 }
 
-export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, initialSelectionIndex) {
+export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, initialSelectionIndex, localizedText) {
     const audioTracksItems = audioTracksList.map((track, index) => {
         return SettingsContentItem(track.name, track.name, () => {
             action(index);
@@ -61,7 +63,7 @@ export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, ini
         });
     });
 
-    const audioTracksSubmenu = makeSubmenu(settingsMenu, AUDIO_TRACKS_SUBMENU, audioTracksItems, AUDIO_TRACKS_ICON);
+    const audioTracksSubmenu = makeSubmenu(settingsMenu, AUDIO_TRACKS_SUBMENU, audioTracksItems, AUDIO_TRACKS_ICON, localizedText);
     audioTracksSubmenu.activateItem(initialSelectionIndex);
 }
 
@@ -69,7 +71,7 @@ export function removeAudioTracksSubmenu(settingsMenu) {
     settingsMenu.removeSubmenu(AUDIO_TRACKS_SUBMENU);
 }
 
-export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex) {
+export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, localizedText) {
     const qualitiesItems = qualitiesList.map((track, index) => {
         return SettingsContentItem(track.label, track.label, () => {
             action(index);
@@ -77,7 +79,7 @@ export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initial
         });
     });
 
-    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, QUALITY_ICON);
+    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, QUALITY_ICON, localizedText);
     qualitiesSubmenu.activateItem(initialSelectionIndex);
 }
 
@@ -85,7 +87,7 @@ export function removeQualitiesSubmenu(settingsMenu) {
     settingsMenu.removeSubmenu(QUALITIES_SUBMENU);
 }
 
-export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialSelectionIndex) {
+export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialSelectionIndex, localizedText) {
     const rateItems = rateList.map((playbackRate) => {
         return SettingsContentItem(playbackRate, playbackRate + 'x', () => {
             action(playbackRate);
@@ -93,7 +95,7 @@ export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialS
         });
     });
 
-    const playbackRatesSubmenu = makeSubmenu(settingsMenu, PLAYBACK_RATE_SUBMENU, rateItems, PLAYBACK_RATE_ICON);
+    const playbackRatesSubmenu = makeSubmenu(settingsMenu, PLAYBACK_RATE_SUBMENU, rateItems, PLAYBACK_RATE_ICON, localizedText);
     playbackRatesSubmenu.activateItem(initialSelectionIndex);
 }
 
