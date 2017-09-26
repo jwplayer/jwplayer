@@ -191,7 +191,7 @@ export default class Controlbar {
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
-                _api.play(null, reasonInteraction());
+                _api.playToggle(reasonInteraction());
             }, play, svgCollection.querySelectorAll('.jw-svg-icon-play,.jw-svg-icon-pause')),
             rewind: button('jw-icon-rewind', () => {
                 this.rewind();

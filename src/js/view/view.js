@@ -378,7 +378,7 @@ function View(_api, _model) {
                     if (settingsMenuVisible()) {
                         _controls.settingsMenu.close();
                     } else {
-                        api.play(reasonInteraction());
+                        api.playToggle(reasonInteraction());
                     }
                 }
             },
@@ -392,7 +392,7 @@ function View(_api, _model) {
                 if (controls &&
                     ((state === STATE_IDLE || state === STATE_COMPLETE) ||
                     (_instreamModel && _instreamModel.get('state') === STATE_PAUSED))) {
-                    api.play(reasonInteraction());
+                    api.playToggle(reasonInteraction());
                 }
 
                 if (controls && state === STATE_PAUSED) {
@@ -439,12 +439,11 @@ function View(_api, _model) {
 
     function _logoClickHandler(evt) {
         if (!evt.link) {
-            // _togglePlay();
             if (_model.get('controls')) {
-                _api.play(reasonInteraction());
+                _api.playToggle(reasonInteraction());
             }
         } else {
-            _api.pause(true, reasonInteraction());
+            _api.pause(reasonInteraction());
             _api.setFullscreen(false);
             window.open(evt.link, evt.linktarget);
         }
