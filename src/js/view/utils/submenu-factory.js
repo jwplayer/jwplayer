@@ -1,7 +1,7 @@
 import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
 import button from 'view/controls/components/button';
-import SimpleTooltip from 'view/controls/components/simple-tooltip';
+import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
