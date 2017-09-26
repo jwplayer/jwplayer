@@ -1,5 +1,6 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
 import { createElement, emptyElement, toggleClass } from 'utils/dom';
+import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
@@ -10,6 +11,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
     categoryButtonElement.setAttribute('name', name);
     categoryButtonElement.className += ' jw-submenu-' + name;
+    SimpleTooltip(categoryButtonElement, name, name);
     categoryButton.show();
 
     const instance = {
