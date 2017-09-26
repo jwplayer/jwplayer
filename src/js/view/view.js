@@ -721,11 +721,13 @@ function View(_api, _model) {
         switch (state) {
             case STATE_IDLE:
             case STATE_ERROR:
-            case STATE_COMPLETE:
-                _preview.setImage(_model.get('playlistItem').image);
+            case STATE_COMPLETE: {
+                const playlistItem = _model.get('playlistItem');
+                _preview.setImage(playlistItem && playlistItem.image);
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
+            }
                 break;
             default:
                 if (_captionsRenderer) {
