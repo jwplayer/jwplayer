@@ -36,6 +36,13 @@
             };
 
             /*
+                Bind the context of events to basePlayer so events are registered the "real" API, which does the event triggering
+                Without this, the compatible API does not receive events
+            */
+            playerInstance.on = playerInstance.on.bind(basePlayer);
+            playerInstance.off = playerInstance.off.bind(basePlayer);
+
+            /*
                 In JW8 we've removed the on* events. They've been replaced by the on() method, which accepts a string and
                 a callback. The event name is typically the name as it's on* event, with the "on" removed and the first letter
                 decapitalized.
