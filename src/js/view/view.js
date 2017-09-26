@@ -1,4 +1,5 @@
 import playerTemplate from 'templates/player';
+import ErrorContainer from 'view/error-container';
 import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
@@ -74,6 +75,7 @@ function View(_api, _model) {
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
+    const _errorContainer = new ErrorContainer();
 
     let _captionsRenderer = new CaptionsRenderer(_model);
     _captionsRenderer.on('all', _this.trigger, _this);
@@ -686,6 +688,8 @@ function View(_api, _model) {
         if (evt.name) {
             _title.updateText(evt.name, evt.message);
         } else {
+            _errorContainer.setMessage(evt.message);
+            _errorContainer.setContainer(_playerElement);
             _title.updateText(evt.message, '');
         }
     }
@@ -704,7 +708,7 @@ function View(_api, _model) {
         if (_controls) {
             _controls.instreamState = instreamState;
         }
-        
+
         cancelAnimationFrame(_stateClassRequestId);
         if (_playerState === STATE_PLAYING) {
             _stateUpdate(_playerState);

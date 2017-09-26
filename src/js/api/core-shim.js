@@ -11,9 +11,7 @@ import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
 import Promise, { resolved } from 'polyfills/promise';
-import viewError from 'templates/error';
-import { style } from 'utils/css';
-import { createElement } from 'utils/dom';
+import ErrorContainer from 'view/error-container';
 import getMediaElement from 'api/get-media-element';
 
 const ModelShim = function() {};
@@ -225,23 +223,11 @@ Object.assign(CoreShim.prototype, {
 });
 
 function setupError(core, error) {
-    let message = error.message;
-    const index = message.indexOf(':');
-    let title = 'Error loading player:';
-    if (index > 0) {
-        title = error.message.substr(0, index + 1);
-        message = error.message.substr(index + 1);
-    }
-    const errorElement = createElement(viewError(core.get('id'), title, message));
-    const width = core.get('width');
-    const height = core.get('height');
+    let _errorContainer = new ErrorContainer(core);
+    const message = error.message;
 
-    style(errorElement, {
-        width: width.toString().indexOf('%') > 0 ? width : `${width}px`,
-        height: height.toString().indexOf('%') > 0 ? height : `${height}px`
-    });
-
-    showView(core, errorElement);
+    _errorContainer.setMessage(message);
+    showView(core, _errorContainer.el);
 
     resolved.then(() => {
         core.trigger(SETUP_ERROR, {

@@ -12,20 +12,6 @@
 // errors
 body .jw-error,
 body .jwplayer.jw-state-error {
-    .jw-title {
-        display: block;
-
-        .jw-title-primary {
-            white-space: normal;
-        }
-
-        .jw-title-secondary {
-            display: block;
-        }
-    }
-}
-
-body .jw-error {
     &:extend(._stretch);
     font-size: @default-em-size;
     background-color: fade(@background-color, 100%);
@@ -36,6 +22,7 @@ body .jw-error {
     position: relative;
 
     .jw-title {
+        display: block;
         position: static;
 
         &,
@@ -48,22 +35,26 @@ body .jw-error {
 
         &-primary {
             font-weight: 600;
+            white-space: normal;
         }
-    }
-
-    .jw-svg-icon-error {
-        .square(36px);
-        margin-right: 20px;
-        flex: 0 0 auto;
     }
 
     .jw-error-msg {
         .topleft(50%, 50%);
         align-items: center;
         background-color: @black;
-        display: flex;
         padding: 20px;
         transform: translate(-50%, -50%);
+
+        .jw-icon {
+            .square(36px);
+            margin-right: 20px;
+            flex: 0 0 auto;
+
+            &:empty {
+                display: none;
+            }
+        }
     }
 }
 
