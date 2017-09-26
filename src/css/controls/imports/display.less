@@ -92,9 +92,9 @@ display icons
 .jw-breakpoint-1 {
     .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
-        height: (@mobile-touch-target * 1.25);
-        line-height: (@mobile-touch-target * 1.25);
-        width: (@mobile-touch-target * 1.25);
+        height: (@mobile-touch-target);
+        line-height: (@mobile-touch-target);
+        width: (@mobile-touch-target);
 
         &:before {
             width: (@mobile-touch-target * 0.5);
@@ -103,6 +103,8 @@ display icons
     }
 
     .jw-display .jw-icon {
+        padding: 0 (@mobile-touch-target * 0.5);
+
         &.jw-icon-rewind:before {
             width: (@mobile-touch-target * 0.75);
             height: (@mobile-touch-target * 0.75);
