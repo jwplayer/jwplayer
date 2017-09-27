@@ -30,7 +30,7 @@ const VideoActionsMixin = {
                 objectFit = 'fill';
             }
             style(this.video, {
-                objectFit: objectFit,
+                objectFit,
                 width: null,
                 height: null
             });
