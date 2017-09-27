@@ -1,6 +1,6 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
-import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING } from 'events/events';
+import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
 import button from 'view/controls/components/button';
@@ -12,12 +12,21 @@ import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/setting
 import { getBreakpoint } from 'view/utils/breakpoint';
 import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
+import instances from 'api/players';
 
 require('css/controls.less');
 
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
 ErrorContainer.cloneIcon = cloneIcon;
+instances.forEach(api => {
+    if (api.getState() === STATE_ERROR) {
+        const errorIconContainer = api.getContainer().querySelector('.jw-error-msg .jw-icon');
+        if (errorIconContainer && !errorIconContainer.hasChildNodes()) {
+            errorIconContainer.appendChild(ErrorContainer.cloneIcon('error'));
+        }
+    }
+});
 
 const reasonInteraction = function() {
     return { reason: 'interaction' };
