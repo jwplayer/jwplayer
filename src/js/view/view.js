@@ -688,13 +688,10 @@ function View(_api, _model) {
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-        if (isAudioFile && !isFlash) {
-            // Put the preview element before the media element in order to display browser captions
-            _playerElement.insertBefore(_preview.el, _videoLayer);
-        } else {
-            // Put the preview element on top of the media element to display captions with the captions renderer
-            _playerElement.insertBefore(_preview.el, _videoLayer.nextSibling);
-        }
+        const element = (isAudioFile && !isFlash) ? _videoLayer : _videoLayer.nextSibling;
+        // Put the preview element before the media element in order to display browser captions
+        // otherwise keep it on top of the media element to display captions with the captions renderer
+        _playerElement.insertBefore(_preview.el, element);
     }
 
     function _errorHandler(model, evt) {
