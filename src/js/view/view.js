@@ -352,17 +352,19 @@ function View(_api, _model) {
     function addControls() {
         const controls = new ControlsModule(document, _this.element());
         _this.addControls(controls);
-        _this.addGradient();
+        addGradient();
     }
 
-    this.addGradient = function () {
-        let element = _model.get('adModel') ? _controls.element() : _preview.element();
+    function addGradient() {
+        // Put the gradient element on top of overlays during instream mode
+        // otherwise keep it behind captions and on top of preview poster
+        const element = _instreamModel ? _controls.element() : _captionsRenderer.element();
         _playerElement.insertBefore(_gradientLayer, element);
-    };
+    }
 
-    this.removeGradient = function () {
+    function removeGradient() {
         _playerElement.removeChild(_gradientLayer);
-    };
+    }
 
     function setMediaTitleAttribute(item) {
         var videotag = _videoLayer.querySelector('video, audio');
@@ -522,7 +524,7 @@ function View(_api, _model) {
         }
 
         addClass(_playerElement, 'jw-flag-controls-hidden');
-        _this.removeGradient();
+        removeGradient();
     };
 
     // Perform the switch to fullscreen
@@ -690,8 +692,8 @@ function View(_api, _model) {
             // Put the preview element before the media element in order to display browser captions
             _playerElement.insertBefore(_preview.el, _videoLayer);
         } else {
-            // Put the preview element before the captions element to display captions with the captions renderer
-            _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
+            // Put the preview element on top of the media element to display captions with the captions renderer
+            _playerElement.insertBefore(_preview.el, _videoLayer.nextSibling);
         }
     }
 
@@ -796,7 +798,7 @@ function View(_api, _model) {
 
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         if (_controls) {
-            _this.addGradient();
+            addGradient();
             _controls.userActive();
             _controls.controlbar.useInstreamTime(instreamModel);
             if (_controls.settingsMenu) {
@@ -819,7 +821,7 @@ function View(_api, _model) {
             return;
         }
         if (_controls) {
-            _this.addGradient();
+            addGradient();
             _controls.controlbar.syncPlaybackTime(_model);
         }
 

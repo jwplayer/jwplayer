@@ -8,7 +8,8 @@
 }
 
 .jw-gradient {
-    &:extend(._pseudo, ._stretch, ._topleft);
+    &:extend(._stretch, ._topleft);
+    display: block;
     background: linear-gradient(to bottom, transparent, fade(@black, 40%) 77%, fade(@black, 40%) 100%) 100% 100% / 100% 240px no-repeat transparent;
     transition: opacity 250ms @default-timing-function;
     pointer-events: none;
