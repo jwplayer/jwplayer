@@ -11,9 +11,7 @@ import { SETUP_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
 import Promise, { resolved } from 'polyfills/promise';
-import viewError from 'templates/error';
-import { style } from 'utils/css';
-import { createElement } from 'utils/dom';
+import ErrorContainer from 'view/error-container';
 import getMediaElement from 'api/get-media-element';
 
 const ModelShim = function() {};
@@ -225,23 +223,14 @@ Object.assign(CoreShim.prototype, {
 });
 
 function setupError(core, error) {
-    let message = error.message;
-    if (message.indexOf(':') === -1) {
-        message = `Error loading player: ${message}`;
-    }
-    const errorElement = createElement(viewError(core.get('id'), message));
-    const width = core.get('width');
-    const height = core.get('height');
-
-    style(errorElement, {
-        backgroundColor: '#000',
-        width: width.toString().indexOf('%') > 0 ? width : `${width}px`,
-        height: height.toString().indexOf('%') > 0 ? height : `${height}px`
-    });
-
-    showView(core, errorElement);
-
     resolved.then(() => {
+        const message = error.message;
+        const errorContainer = ErrorContainer(core, message);
+        if (ErrorContainer.cloneIcon) {
+            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+        }
+        showView(core, errorContainer);
+
         core.trigger(SETUP_ERROR, {
             message
         });

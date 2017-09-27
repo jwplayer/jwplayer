@@ -1,20 +1,4 @@
-import PLAY_ICON from 'assets/SVG/play.svg';
-import PAUSE_ICON from 'assets/SVG/pause.svg';
-import REWIND_ICON from 'assets/SVG/rewind-10.svg';
-import NEXT_ICON from 'assets/SVG/next.svg';
-import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
-import VOLUME_ICON_50 from 'assets/SVG/volume-50.svg';
-import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
-import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
-import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
-import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
-import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
-import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
-import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
-import SETTINGS_ICON from 'assets/SVG/settings.svg';
-import DVR_ICON from 'assets/SVG/dvr.svg';
-import LIVE_ICON from 'assets/SVG/live.svg';
-import svgParse from 'utils/svgParser';
+import { cloneIcons } from 'view/controls/icons';
 import { Browser, OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
@@ -60,7 +44,7 @@ function createCastButton(castToggle, localization) {
             'jw-icon-airplay jw-off',
             castToggle,
             localization.airplay,
-            [AIRPLAY_OFF_ICON, AIRPLAY_ON_ICON]);
+            cloneIcons('airplay-off,airplay-on'));
 
         SimpleTooltip(airplayButton.element(), 'airplay', localization.airplay);
 
@@ -140,29 +124,10 @@ export default class Controlbar {
         const vol = localization.volume;
         const rewind = localization.rewind;
 
-        const svgCollection = svgParse('<xml>' +
-            PLAY_ICON +
-            PAUSE_ICON +
-            REWIND_ICON +
-            NEXT_ICON +
-            VOLUME_ICON_0 +
-            VOLUME_ICON_50 +
-            VOLUME_ICON_100 +
-            CAPTIONS_OFF_ICON +
-            CAPTIONS_ON_ICON +
-            FULLSCREEN_ENTER_ICON +
-            FULLSCREEN_EXIT_ICON +
-            SETTINGS_ICON +
-            LIVE_ICON +
-            DVR_ICON +
-        '</xml>');
-
         // Do not show the volume toggle in the mobile SDKs or <iOS10
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
             // Clone icons so that can be used in VolumeTooltip
-            const svgIcons = Array.prototype.map.call(
-                svgCollection.querySelectorAll('.jw-svg-icon-volume-0,.jw-svg-icon-volume-100'),
-                icon => icon.cloneNode(true));
+            const svgIcons = cloneIcons('volume-0,volume-100');
             muteButton = button('jw-icon-volume', () => {
                 _api.setMute();
             }, vol, svgIcons);
@@ -171,34 +136,34 @@ export default class Controlbar {
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
             volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
-                svgCollection.querySelectorAll('.jw-svg-icon-volume-0,.jw-svg-icon-volume-50,.jw-svg-icon-volume-100'));
+                cloneIcons('volume-0,volume-50,volume-100'));
         }
 
         const nextButton = button('jw-icon-next', () => {
             _api.next();
-        }, next, svgCollection.querySelectorAll('.jw-svg-icon-next'));
+        }, next, cloneIcons('next'));
 
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'quality', true);
-        }, localization.settings, svgCollection.querySelectorAll('.jw-svg-icon-settings'));
+        }, localization.settings, cloneIcons('settings'));
         settingsButton.element().setAttribute('aria-haspopup', 'true');
 
         const captionsButton = button('jw-icon-cc jw-settings-submenu-button', () => {
             this.trigger('settingsInteraction', 'captions', false);
-        }, localization.cc, svgCollection.querySelectorAll('.jw-svg-icon-cc-off,.jw-svg-icon-cc-on'));
+        }, localization.cc, cloneIcons('cc-off,cc-on'));
         captionsButton.element().setAttribute('aria-haspopup', 'true');
 
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
                 _api.playToggle(reasonInteraction());
-            }, play, svgCollection.querySelectorAll('.jw-svg-icon-play,.jw-svg-icon-pause')),
+            }, play, cloneIcons('play,pause')),
             rewind: button('jw-icon-rewind', () => {
                 this.rewind();
-            }, rewind, svgCollection.querySelectorAll('.jw-svg-icon-rewind')),
+            }, rewind, cloneIcons('rewind')),
             live: button('jw-icon-live', () => {
                 this.goToLiveEdge();
-            }, localization.liveBroadcast, svgCollection.querySelectorAll('.jw-svg-icon-live,.jw-svg-icon-dvr')),
+            }, localization.liveBroadcast, cloneIcons('live,dvr')),
             next: nextButton,
             elapsed: textIcon('jw-text-elapsed', 'timer'),
             countdown: textIcon('jw-text-countdown', 'timer'),
@@ -211,8 +176,7 @@ export default class Controlbar {
             }, localization),
             fullscreen: button('jw-icon-fullscreen', () => {
                 _api.setFullscreen();
-            }, localization.fullscreen,
-            svgCollection.querySelectorAll('.jw-svg-icon-fullscreen-off,.jw-svg-icon-fullscreen-on')),
+            }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,

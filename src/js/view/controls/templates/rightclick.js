@@ -1,5 +1,3 @@
-import JW_LOGO from 'assets/SVG/jw-logo.svg';
-
 export default (menu) => {
     const { items = [] } = menu;
     const itemsHtml = items
@@ -16,7 +14,7 @@ export default (menu) => {
 };
 
 const rightClickItem = (link = '', title = '', featured, showLogo) => {
-    const logo = showLogo ? `<span class="jw-rightclick-logo jw-reset">${JW_LOGO}</span>` : '';
+    const logo = showLogo ? `<span class="jw-rightclick-logo jw-reset"></span>` : '';
     return (
         `<li class="jw-reset jw-rightclick-item ${featured ? 'jw-featured' : ''}">` +
             `<a href="${link}" class="jw-rightclick-link jw-reset" target="_blank">${logo}${title}</a>` +

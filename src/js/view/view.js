@@ -1,4 +1,5 @@
 import playerTemplate from 'templates/player';
+import ErrorContainer from 'view/error-container';
 import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
@@ -682,6 +683,12 @@ function View(_api, _model) {
             _title.playlistItem(model, model.get('playlistItem'));
             return;
         }
+        const errorContainer = ErrorContainer(_model, evt.message);
+        if (ErrorContainer.cloneIcon) {
+            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+        }
+        _playerElement.appendChild(errorContainer.firstChild);
+
         if (evt.name) {
             _title.updateText(evt.name, evt.message);
         } else {
@@ -689,7 +696,7 @@ function View(_api, _model) {
         }
     }
 
-    function _stateHandler(model) {
+    function _stateHandler(model, newState, oldState) {
         if (!_model.get('viewSetup')) {
             return;
         }
@@ -703,7 +710,14 @@ function View(_api, _model) {
         if (_controls) {
             _controls.instreamState = instreamState;
         }
-        
+
+        if (oldState === STATE_ERROR) {
+            const errorContainer = _playerElement.querySelector('.jw-error-msg');
+            if (errorContainer) {
+                errorContainer.parentNode.removeChild(errorContainer);
+            }
+        }
+
         cancelAnimationFrame(_stateClassRequestId);
         if (_playerState === STATE_PLAYING) {
             _stateUpdate(_playerState);

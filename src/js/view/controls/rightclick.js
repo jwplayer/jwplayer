@@ -1,7 +1,18 @@
 import rightclickTemplate from 'view/controls/templates/rightclick';
+import { cloneIcon } from 'view/controls/icons';
 import { version } from 'version';
-import utils from 'utils/helpers';
+import { flashVersion } from 'utils/browser';
+import { createElement, emptyElement, addClass, removeClass } from 'utils/dom';
 import UI from 'utils/ui';
+
+function createDomElement(html) {
+    const element = createElement(html);
+    const logoContainer = element.querySelector('.jw-rightclick-logo');
+    if (logoContainer) {
+        logoContainer.append(cloneIcon('jwplayer-logo'));
+    }
+    return element;
+}
 
 export default class RightClick {
 
@@ -30,7 +41,7 @@ export default class RightClick {
 
         var provider = this.model.get('provider');
         if (provider && provider.name.indexOf('flash') >= 0) {
-            var text = 'Flash Version ' + utils.flashVersion();
+            var text = 'Flash Version ' + flashVersion();
             menu.items.push({
                 title: text,
                 link: 'http://www.adobe.com/software/flash/about/'
@@ -76,8 +87,8 @@ export default class RightClick {
         this.el.style.left = off.x + 'px';
         this.el.style.top = off.y + 'px';
 
-        utils.addClass(this.playerElement, 'jw-flag-rightclick-open');
-        utils.addClass(this.el, 'jw-open');
+        addClass(this.playerElement, 'jw-flag-rightclick-open');
+        addClass(this.el, 'jw-open');
         clearTimeout(this._menuTimeout);
         this._menuTimeout = setTimeout(() => this.hideMenu(), 3000);
         return false;
@@ -90,8 +101,8 @@ export default class RightClick {
             this.elementUI.on('out', this.hideMenu, this);
             return;
         }
-        utils.removeClass(this.playerElement, 'jw-flag-rightclick-open');
-        utils.removeClass(this.el, 'jw-open');
+        removeClass(this.playerElement, 'jw-flag-rightclick-open');
+        removeClass(this.el, 'jw-open');
     }
 
     lazySetup() {
@@ -99,8 +110,8 @@ export default class RightClick {
         if (this.el) {
             if (this.html !== html) {
                 this.html = html;
-                const newEl = utils.createElement(html);
-                utils.emptyElement(this.el);
+                const newEl = createDomElement(html);
+                emptyElement(this.el);
                 for (let i = newEl.childNodes.length; i--;) {
                     this.el.appendChild(newEl.firstChild);
                 }
@@ -109,7 +120,7 @@ export default class RightClick {
         }
 
         this.html = html;
-        this.el = utils.createElement(this.html);
+        this.el = createDomElement(this.html);
 
         this.layer.appendChild(this.el);
 
