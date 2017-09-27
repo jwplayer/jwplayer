@@ -171,7 +171,13 @@ const InstreamHtml5 = function(_controller, _model) {
                 this.trigger(type, Object.assign({}, data, { type: type }));
             }, _this);
 
-            provider.on(PLAYER_STATE, stateHandler);
+            const mediaModelContext = _adModel.mediaModel;
+            provider.on(PLAYER_STATE, (event) => {
+                mediaModelContext.set(PLAYER_STATE, event.newstate);
+            });
+            mediaModelContext.on('change:' + PLAYER_STATE, (changeAdModel, state) => {
+                stateHandler(state);
+            });
             provider.attachMedia();
             provider.volume(_model.get('volume'));
             provider.mute(_model.get('mute') || _model.get('autostartMuted'));
@@ -183,12 +189,11 @@ const InstreamHtml5 = function(_controller, _model) {
         }
     }
 
-    function stateHandler(evt) {
-        _adModel.mediaModel.set(PLAYER_STATE, evt.newstate);
-        switch (evt.newstate) {
+    function stateHandler(state) {
+        switch (state) {
             case STATE_PLAYING:
             case STATE_PAUSED:
-                _adModel.set(PLAYER_STATE, evt.newstate);
+                _adModel.set(PLAYER_STATE, state);
                 break;
             default:
                 break;

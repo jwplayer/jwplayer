@@ -5,7 +5,7 @@ import Providers from 'providers/providers';
 import { loadProvidersForPlaylist } from 'api/set-playlist';
 import getMediaElement from 'api/get-media-element';
 import initQoe from 'controller/qoe';
-import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
+import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_RATE_CHANGE,
     MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
@@ -341,6 +341,7 @@ const Model = function() {
         mediaModelState.position = position;
         mediaModelState.duration = duration;
 
+        model.set('playRejected', false);
         model.set('itemMeta', {});
         model.set('position', position);
         model.set('duration', duration);
@@ -514,7 +515,7 @@ const Model = function() {
         }
 
         playPromise.then(() => {
-            if (!mediaModelContext.setup) {
+            if (!mediaModelContext.get('setup')) {
                 // Exit if model state was reset
                 return;
             }
@@ -523,6 +524,11 @@ const Model = function() {
                 syncPlayerWithMediaModel(mediaModelContext);
             }
         }).catch(error => {
+            model.set('playRejected', true);
+            const videoTagPaused = _provider && _provider.video && _provider.video.paused;
+            if (videoTagPaused) {
+                mediaModelContext.set(PLAYER_STATE, STATE_PAUSED);
+            }
             model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
                 error: error,
                 item: itemContext,
@@ -572,6 +578,7 @@ const Model = function() {
 
         let playPromise;
 
+        this.set('playRejected', false);
         if (!this.mediaModel.get('setup')) {
             playPromise = loadAndPlay(this, item);
             playAttempt(this, playPromise, playReason);
