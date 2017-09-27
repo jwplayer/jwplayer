@@ -13,13 +13,21 @@
 body .jw-error,
 body .jwplayer.jw-state-error {
     &:extend(._stretch);
-    font-size: @default-em-size;
-    background-color: fade(@background-color, 100%);
+    background-color: #333;
     color: @font-color;
+    font-size: @default-em-size;
     display: table;
     opacity: 1;
     overflow: hidden;
     position: relative;
+
+    .jw-media {
+        cursor: default;
+    }
+
+    .jw-preview {
+        background-color: #333;
+    }
 
     .jw-title {
         display: block;
@@ -43,6 +51,7 @@ body .jwplayer.jw-state-error {
         .topleft(50%, 50%);
         align-items: center;
         background-color: @black;
+        border-radius: 2px;
         padding: 20px;
         transform: translate(-50%, -50%);
 
