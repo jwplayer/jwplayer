@@ -233,6 +233,10 @@ function View(_api, _model) {
         _model.on('change:scrubbing', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-dragging', val);
         });
+        _model.on('change:playRejected', function (model, val) {
+            toggleClass(_playerElement, 'jw-flag-play-rejected', val);
+        });
+
         // Native fullscreen (coming through from the provider)
         _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
 
@@ -756,6 +760,9 @@ function View(_api, _model) {
         this.instreamModel = _instreamModel = instreamModel;
         _instreamModel.on('change:controls', _onChangeControls, this);
         _instreamModel.on('change:state', _stateHandler, this);
+        _instreamModel.on('change:playRejected', function (model, val) {
+            toggleClass(_playerElement, 'jw-flag-play-rejected', val);
+        }, this);
 
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
