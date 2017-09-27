@@ -353,7 +353,7 @@ function View(_api, _model) {
     this.addGradient = function () {
         let element = _model.get('adModel') ? _controls.element() : _preview.element();
         _playerElement.insertBefore(_gradientLayer, element);
-    }
+    };
 
     function removeGradient() {
         _playerElement.removeChild(_gradientLayer);
