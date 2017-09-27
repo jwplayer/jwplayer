@@ -355,9 +355,9 @@ function View(_api, _model) {
         _playerElement.insertBefore(_gradientLayer, element);
     };
 
-    function removeGradient() {
+    this.removeGradient = function () {
         _playerElement.removeChild(_gradientLayer);
-    }
+    };
 
     function setMediaTitleAttribute(item) {
         var videotag = _videoLayer.querySelector('video, audio');
@@ -518,7 +518,7 @@ function View(_api, _model) {
         }
 
         addClass(_playerElement, 'jw-flag-controls-hidden');
-        removeGradient();
+        _this.removeGradient();
     };
 
     // Perform the switch to fullscreen
