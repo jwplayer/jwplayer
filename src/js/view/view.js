@@ -72,6 +72,8 @@ function View(_api, _model) {
 
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
     const _videoLayer = _playerElement.querySelector('.jw-media');
+    const _gradientLayer = document.createElement('div');
+    _gradientLayer.className = 'jw-gradient jw-reset';
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -216,7 +218,7 @@ function View(_api, _model) {
         // captions rendering
         _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
-        // captions should be place behind controls, and not hidden when controls are hidden
+        // captions should be placed behind controls, and not hidden when controls are hidden
         _playerElement.insertBefore(_captionsRenderer.element(), _title.element());
 
         // Display Click and Double Click Handling
@@ -350,6 +352,18 @@ function View(_api, _model) {
     function addControls() {
         const controls = new ControlsModule(document, _this.element());
         _this.addControls(controls);
+        addGradient();
+    }
+
+    function addGradient() {
+        // Put the gradient element on top of overlays during instream mode
+        // otherwise keep it behind captions and on top of preview poster
+        const element = _instreamModel ? _controls.element() : _captionsRenderer.element();
+        _playerElement.insertBefore(_gradientLayer, element);
+    }
+
+    function removeGradient() {
+        _playerElement.removeChild(_gradientLayer);
     }
 
     function setMediaTitleAttribute(item) {
@@ -510,6 +524,7 @@ function View(_api, _model) {
         }
 
         addClass(_playerElement, 'jw-flag-controls-hidden');
+        removeGradient();
     };
 
     // Perform the switch to fullscreen
@@ -673,13 +688,10 @@ function View(_api, _model) {
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-        if (isAudioFile && !isFlash) {
-            // Put the preview element before the media element in order to display browser captions
-            _playerElement.insertBefore(_preview.el, _videoLayer);
-        } else {
-            // Put the preview element before the captions element to display captions with the captions renderer
-            _playerElement.insertBefore(_preview.el, _captionsRenderer.element());
-        }
+        const element = (isAudioFile && !isFlash) ? _videoLayer : _videoLayer.nextSibling;
+        // Put the preview element before the media element in order to display browser captions
+        // otherwise keep it on top of the media element to display captions with the captions renderer
+        _playerElement.insertBefore(_preview.el, element);
     }
 
     function _errorHandler(model, evt) {
@@ -783,6 +795,7 @@ function View(_api, _model) {
 
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         if (_controls) {
+            addGradient();
             _controls.userActive();
             _controls.controlbar.useInstreamTime(instreamModel);
             if (_controls.settingsMenu) {
@@ -805,6 +818,7 @@ function View(_api, _model) {
             return;
         }
         if (_controls) {
+            addGradient();
             _controls.controlbar.syncPlaybackTime(_model);
         }
 
