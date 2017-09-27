@@ -5,7 +5,7 @@ import Providers from 'providers/providers';
 import { loadProvidersForPlaylist } from 'api/set-playlist';
 import getMediaElement from 'api/get-media-element';
 import initQoe from 'controller/qoe';
-import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
+import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_RATE_CHANGE,
     MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
@@ -93,13 +93,17 @@ const Model = function() {
                     this.mediaController.trigger(type, event);
                 }
                 return;
-            case PLAYER_STATE:
+            case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
                     thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
-                mediaModel.set(PLAYER_STATE, data.newstate);
+                // Always fire change:state to keep player model in sync
+                const previousState = mediaModel.attributes[PLAYER_STATE];
+                mediaModel.attributes[PLAYER_STATE] = data.newstate;
+                mediaModel.trigger('change:' + PLAYER_STATE, mediaModel, data.newstate, previousState);
 
+            }
                 // This "return" is important because
                 //  we are choosing to not propagate this event.
                 //  Instead letting the master controller do so
@@ -225,7 +229,7 @@ const Model = function() {
         _provider.volume(_this.get('volume'));
 
         // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
-        _provider.mute(this.autoStartOnMobile() || _this.get('mute'));
+        _provider.mute(_this.autoStartOnMobile() || _this.get('mute'));
 
         _provider.on('all', _videoEventHandler, this);
 
@@ -305,11 +309,12 @@ const Model = function() {
     };
 
     this.setItemIndex = function(index) {
-        var playlist = this.get('playlist');
+        const playlist = this.get('playlist');
+        const length = playlist.length;
 
         // If looping past the end, or before the beginning
         index = parseInt(index, 10) || 0;
-        index = (index + playlist.length) % playlist.length;
+        index = (index + length) % length;
 
         this.set('item', index);
         return this.setActiveItem(playlist[index]);
@@ -329,13 +334,14 @@ const Model = function() {
     };
 
     function resetItem(model, item) {
-        const position = seconds(item.starttime);
-        const duration = seconds(item.duration);
+        const position = item ? seconds(item.starttime) : 0;
+        const duration = item ? seconds(item.duration) : 0;
         const mediaModelState = model.mediaModel.attributes;
         model.mediaModel.srcReset();
         mediaModelState.position = position;
         mediaModelState.duration = duration;
 
+        model.set('playRejected', false);
         model.set('itemMeta', {});
         model.set('position', position);
         model.set('duration', duration);
@@ -509,7 +515,7 @@ const Model = function() {
         }
 
         playPromise.then(() => {
-            if (!mediaModelContext.setup) {
+            if (!mediaModelContext.get('setup')) {
                 // Exit if model state was reset
                 return;
             }
@@ -518,6 +524,11 @@ const Model = function() {
                 syncPlayerWithMediaModel(mediaModelContext);
             }
         }).catch(error => {
+            model.set('playRejected', true);
+            const videoTagPaused = _provider && _provider.video && _provider.video.paused;
+            if (videoTagPaused) {
+                mediaModelContext.set(PLAYER_STATE, STATE_PAUSED);
+            }
             model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
                 error: error,
                 item: itemContext,
@@ -557,6 +568,9 @@ const Model = function() {
 
     this.playVideo = function(playReason) {
         const item = this.get('playlistItem');
+        if (!item) {
+            return;
+        }
 
         if (!playReason) {
             playReason = this.get('playReason');
@@ -564,6 +578,7 @@ const Model = function() {
 
         let playPromise;
 
+        this.set('playRejected', false);
         if (!this.mediaModel.get('setup')) {
             playPromise = loadAndPlay(this, item);
             playAttempt(this, playPromise, playReason);

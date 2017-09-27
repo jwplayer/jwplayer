@@ -1,4 +1,5 @@
 import playerTemplate from 'templates/player';
+import ErrorContainer from 'view/error-container';
 import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
@@ -235,6 +236,10 @@ function View(_api, _model) {
         _model.on('change:scrubbing', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-dragging', val);
         });
+        _model.on('change:playRejected', function (model, val) {
+            toggleClass(_playerElement, 'jw-flag-play-rejected', val);
+        });
+
         // Native fullscreen (coming through from the provider)
         _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
 
@@ -390,7 +395,7 @@ function View(_api, _model) {
                     if (settingsMenuVisible()) {
                         _controls.settingsMenu.close();
                     } else {
-                        api.play(reasonInteraction());
+                        api.playToggle(reasonInteraction());
                     }
                 }
             },
@@ -404,7 +409,7 @@ function View(_api, _model) {
                 if (controls &&
                     ((state === STATE_IDLE || state === STATE_COMPLETE) ||
                     (_instreamModel && _instreamModel.get('state') === STATE_PAUSED))) {
-                    api.play(reasonInteraction());
+                    api.playToggle(reasonInteraction());
                 }
 
                 if (controls && state === STATE_PAUSED) {
@@ -451,12 +456,11 @@ function View(_api, _model) {
 
     function _logoClickHandler(evt) {
         if (!evt.link) {
-            // _togglePlay();
             if (_model.get('controls')) {
-                _api.play(reasonInteraction());
+                _api.playToggle(reasonInteraction());
             }
         } else {
-            _api.pause(true, reasonInteraction());
+            _api.pause(reasonInteraction());
             _api.setFullscreen(false);
             window.open(evt.link, evt.linktarget);
         }
@@ -696,6 +700,12 @@ function View(_api, _model) {
             _title.playlistItem(model, model.get('playlistItem'));
             return;
         }
+        const errorContainer = ErrorContainer(_model, evt.message);
+        if (ErrorContainer.cloneIcon) {
+            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+        }
+        _playerElement.appendChild(errorContainer.firstChild);
+
         if (evt.name) {
             _title.updateText(evt.name, evt.message);
         } else {
@@ -703,7 +713,7 @@ function View(_api, _model) {
         }
     }
 
-    function _stateHandler(model) {
+    function _stateHandler(model, newState, oldState) {
         if (!_model.get('viewSetup')) {
             return;
         }
@@ -718,8 +728,19 @@ function View(_api, _model) {
             _controls.instreamState = instreamState;
         }
 
+        if (oldState === STATE_ERROR) {
+            const errorContainer = _playerElement.querySelector('.jw-error-msg');
+            if (errorContainer) {
+                errorContainer.parentNode.removeChild(errorContainer);
+            }
+        }
+
         cancelAnimationFrame(_stateClassRequestId);
-        _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
+        if (_playerState === STATE_PLAYING) {
+            _stateUpdate(_playerState);
+        } else {
+            _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
+        }
     }
 
     function _stateUpdate(state) {
@@ -728,21 +749,25 @@ function View(_api, _model) {
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
-        // Update captions renderer
-        if (_captionsRenderer) {
-            switch (state) {
-                case STATE_IDLE:
-                case STATE_ERROR:
-                case STATE_COMPLETE:
+        switch (state) {
+            case STATE_IDLE:
+            case STATE_ERROR:
+            case STATE_COMPLETE: {
+                const playlistItem = _model.get('playlistItem');
+                _preview.setImage(playlistItem && playlistItem.image);
+                if (_captionsRenderer) {
                     _captionsRenderer.hide();
-                    break;
-                default:
+                }
+            }
+                break;
+            default:
+                if (_captionsRenderer) {
                     _captionsRenderer.show();
                     if (state === STATE_PAUSED && _controls && !_controls.showing) {
                         _captionsRenderer.renderCues(true);
                     }
-                    break;
-            }
+                }
+                break;
         }
     }
 
@@ -762,6 +787,9 @@ function View(_api, _model) {
         this.instreamModel = _instreamModel = instreamModel;
         _instreamModel.on('change:controls', _onChangeControls, this);
         _instreamModel.on('change:state', _stateHandler, this);
+        _instreamModel.on('change:playRejected', function (model, val) {
+            toggleClass(_playerElement, 'jw-flag-play-rejected', val);
+        }, this);
 
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');

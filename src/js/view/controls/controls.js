@@ -1,7 +1,6 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
-import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING } from 'events/events';
-
+import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
 import button from 'view/controls/components/button';
@@ -11,12 +10,23 @@ import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/settings-menu';
 import { getBreakpoint } from 'view/utils/breakpoint';
-
-import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
+import { cloneIcon } from 'view/controls/icons';
+import ErrorContainer from 'view/error-container';
+import instances from 'api/players';
 
 require('css/controls.less');
 
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
+
+ErrorContainer.cloneIcon = cloneIcon;
+instances.forEach(api => {
+    if (api.getState() === STATE_ERROR) {
+        const errorIconContainer = api.getContainer().querySelector('.jw-error-msg .jw-icon');
+        if (errorIconContainer && !errorIconContainer.hasChildNodes()) {
+            errorIconContainer.appendChild(ErrorContainer.cloneIcon('error'));
+        }
+    }
+});
 
 const reasonInteraction = function() {
     return { reason: 'interaction' };
@@ -65,7 +75,7 @@ export default class Controls {
             displayContainer.buttons.display.on('click tap enter', () => {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
-                api.play(reasonInteraction());
+                api.playToggle(reasonInteraction());
             });
 
             this.div.appendChild(displayContainer.element());
@@ -117,10 +127,10 @@ export default class Controls {
             if (getBreakpoint(model.get('containerWidth')) < 2) {
                 if (visible && state === STATE_PLAYING) {
                     // Pause playback on open if we're currently playing
-                    api.pause(true, settingsInteraction);
+                    api.pause(settingsInteraction);
                 } else if (!visible && state === STATE_PAUSED && lastState === STATE_PLAYING) {
                     // Resume playback on close if we are paused and were playing before
-                    api.play(true, settingsInteraction);
+                    api.play(settingsInteraction);
                 }
             }
 
@@ -136,7 +146,7 @@ export default class Controls {
         if (model.get('autostartMuted')) {
             const unmuteCallback = () => this.unmuteAutoplay(api, model);
             this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').unmute,
-                [VOLUME_ICON_0]);
+                [cloneIcon('volume-0')]);
             this.mute.show();
             this.div.appendChild(this.mute.element());
             // Set mute state in the controlbar
@@ -182,7 +192,7 @@ export default class Controls {
                     break;
                 case 13: // enter
                 case 32: // space
-                    api.play(reasonInteraction());
+                    api.playToggle(reasonInteraction());
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!this.instreamState) {

@@ -7,13 +7,11 @@ import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
-import { SETUP_ERROR } from 'events/events';
+import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
 import Promise, { resolved } from 'polyfills/promise';
-import viewError from 'templates/error';
-import { style } from 'utils/css';
-import { createElement } from 'utils/dom';
+import ErrorContainer from 'view/error-container';
 import getMediaElement from 'api/get-media-element';
 
 const ModelShim = function() {};
@@ -145,7 +143,7 @@ Object.assign(CoreShim.prototype, {
             this.setup = null;
     },
     getContainer() {
-        return this.originalContainer;
+        return this.currentContainer;
     },
 
     // These methods read from the model
@@ -225,26 +223,20 @@ Object.assign(CoreShim.prototype, {
 });
 
 function setupError(core, error) {
-    let message = error.message;
-    if (message.indexOf(':') === -1) {
-        message = `Error loading player: ${message}`;
-    }
-    const errorElement = createElement(viewError(core.get('id'), message));
-    const width = core.get('width');
-    const height = core.get('height');
-
-    style(errorElement, {
-        backgroundColor: '#000',
-        width: width.toString().indexOf('%') > 0 ? width : `${width}px`,
-        height: height.toString().indexOf('%') > 0 ? height : `${height}px`
-    });
-
-    showView(core, errorElement);
-
     resolved.then(() => {
-        core.trigger(SETUP_ERROR, {
-            message
-        });
+        const { message, code } = error;
+        const errorContainer = ErrorContainer(core, message);
+        if (ErrorContainer.cloneIcon) {
+            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+        }
+        showView(core, errorContainer);
+
+        const errorEvent = { message, code, error };
+        const model = core._model || core.modelShim;
+        model.set('errorEvent', errorEvent);
+        model.set('state', STATE_ERROR);
+
+        core.trigger(SETUP_ERROR, errorEvent);
     });
 }
 

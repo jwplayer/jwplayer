@@ -14,7 +14,7 @@ import eventsMiddleware from 'controller/events-middleware';
 import Events from 'utils/backbone.events';
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
-import { resolved } from 'polyfills/promise';
+import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import _ from 'utils/underscore';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
@@ -323,12 +323,18 @@ Object.assign(Controller.prototype, {
                 });
             });
 
-            loadPromise.then(checkAutoStartCancelable.async);
+            loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
         }
 
         function _updatePlaylist(data, feedData) {
             const playlist = Playlist(data);
-            setPlaylist(_model, playlist, feedData);
+            try {
+                setPlaylist(_model, playlist, feedData);
+            } catch (error) {
+                _model.set('item', 0);
+                _model.set('playlistItem', null);
+                return Promise.reject(error);
+            }
             return _setItem(0);
         }
 
@@ -425,7 +431,7 @@ Object.assign(Controller.prototype, {
             const state = _model.get('state');
             if (state === STATE_IDLE || state === STATE_PAUSED) {
                 _play({ reason: 'autostart' }).catch(() => {
-                    if (!_this._instreamAdapter || !_this._instreamAdapter._adModel) {
+                    if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
                     }
                     _actionOnAttach = null;
@@ -858,6 +864,7 @@ Object.assign(Controller.prototype, {
         this.instreamDestroy = function() {
             if (_this._instreamAdapter) {
                 _this._instreamAdapter.destroy();
+                _this._instreamAdapter = null;
             }
         };
 

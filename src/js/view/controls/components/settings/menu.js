@@ -1,4 +1,4 @@
-import CLOSE_ICON from 'assets/SVG/close.svg';
+import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement, emptyElement, prependChild } from 'utils/dom';
@@ -22,7 +22,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const closeButton = button('jw-settings-close', () => {
         instance.close();
-    }, 'Close Settings', [CLOSE_ICON]);
+    }, 'Close Settings', [cloneIcon('close')]);
     closeButton.show();
     topbarElement.appendChild(closeButton.element());
     settingsMenuElement.addEventListener('keydown', function(evt) {

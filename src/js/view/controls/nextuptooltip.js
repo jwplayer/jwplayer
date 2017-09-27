@@ -3,6 +3,7 @@ import { toggleClass } from 'utils/dom';
 import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
+import { cloneIcon } from 'view/controls/icons';
 
 export default class NextUpTooltip {
     constructor(_model, _api, playerElement) {
@@ -22,6 +23,7 @@ export default class NextUpTooltip {
         this.container = context.createElement('div');
         this.container.className = 'jw-nextup-container jw-reset';
         const element = utils.createElement(nextUpTemplate());
+        element.querySelector('.jw-nextup-close').appendChild(cloneIcon('close'));
         this.addContent(element);
 
         this.closeButton = this.content.querySelector('.jw-nextup-close');

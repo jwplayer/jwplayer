@@ -12,28 +12,59 @@
 // errors
 body .jw-error,
 body .jwplayer.jw-state-error {
-    .jw-title {
-        display: block;
-
-        .jw-title-primary {
-            white-space: normal;
-        }
-
-        .jw-title-secondary {
-            display: block;
-        }
-    }
-}
-
-body .jw-error {
-    font-size: @default-em-size;
-    background-color: #000;
+    &:extend(._stretch);
+    background-color: #333;
     color: @font-color;
-    width: 100%;
-    height: 100%;
+    font-size: @default-em-size;
     display: table;
     opacity: 1;
+    overflow: hidden;
     position: relative;
+
+    .jw-media {
+        cursor: default;
+    }
+
+    .jw-preview {
+        background-color: #333;
+    }
+
+    .jw-title {
+        display: block;
+        position: static;
+
+        &,
+        &-primary,
+        &-secondary {
+            font-size: 14px;
+            line-height: 1.35;
+            padding: 0;
+        }
+
+        &-primary {
+            font-weight: 600;
+            white-space: normal;
+        }
+    }
+
+    .jw-error-msg {
+        .topleft(50%, 50%);
+        align-items: center;
+        background-color: @black;
+        border-radius: 2px;
+        padding: 20px;
+        transform: translate(-50%, -50%);
+
+        .jw-icon {
+            .square(36px);
+            margin-right: 20px;
+            flex: 0 0 auto;
+
+            &:empty {
+                display: none;
+            }
+        }
+    }
 }
 
 // Show preview

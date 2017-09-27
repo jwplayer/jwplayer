@@ -91,8 +91,10 @@ const initQoe = function(initialModel) {
         trackFirstFrame(model);
 
         mediaModel.on('change:state', function (changeMediaModel, newstate, oldstate) {
-            model._qoeItem.end(oldstate);
-            model._qoeItem.start(newstate);
+            if (newstate !== oldstate) {
+                model._qoeItem.end(oldstate);
+                model._qoeItem.start(newstate);
+            }
         });
     }
 
