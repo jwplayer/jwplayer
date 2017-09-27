@@ -91,15 +91,15 @@ display icons
 
 .jw-breakpoint-1 {
     .jw-display-icon-container {
-        margin: 0 (@mobile-touch-target * 0.5);
         padding: (@mobile-touch-target * 0.125);
+        margin: 0 (@mobile-touch-target * 0.5);
     }
 
     .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
+        width: (@mobile-touch-target);
         height: (@mobile-touch-target);
         line-height: (@mobile-touch-target);
-        width: (@mobile-touch-target);
 
         &:before {
             width: (@mobile-touch-target * 0.5);
