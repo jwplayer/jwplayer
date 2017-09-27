@@ -66,7 +66,7 @@ export default class Controls {
             displayContainer.buttons.display.on('click tap enter', () => {
                 this.trigger(DISPLAY_CLICK);
                 this.userActive(1000);
-                api.play(reasonInteraction());
+                api.playToggle(reasonInteraction());
             });
 
             this.div.appendChild(displayContainer.element());
@@ -118,10 +118,10 @@ export default class Controls {
             if (getBreakpoint(model.get('containerWidth')) < 2) {
                 if (visible && state === STATE_PLAYING) {
                     // Pause playback on open if we're currently playing
-                    api.pause(true, settingsInteraction);
+                    api.pause(settingsInteraction);
                 } else if (!visible && state === STATE_PAUSED && lastState === STATE_PLAYING) {
                     // Resume playback on close if we are paused and were playing before
-                    api.play(true, settingsInteraction);
+                    api.play(settingsInteraction);
                 }
             }
 
@@ -183,7 +183,7 @@ export default class Controls {
                     break;
                 case 13: // enter
                 case 32: // space
-                    api.play(reasonInteraction());
+                    api.playToggle(reasonInteraction());
                     break;
                 case 37: // left-arrow, if not adMode
                     if (!this.instreamState) {

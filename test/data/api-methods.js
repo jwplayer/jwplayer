@@ -55,6 +55,7 @@ export default {
     playlistItem: null,
     playlistNext: null,
     playlistPrev: null,
+    playToggle: null,
     qoe: null,
     registerPlugin: null,
     remove: null,

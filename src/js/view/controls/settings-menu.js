@@ -72,7 +72,8 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             settingsMenu,
             audioTracks,
             model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
-            mediaModel.get('currentAudioTrack')
+            mediaModel.get('currentAudioTrack'),
+            model.get('localization').audioTracks
         );
     };
 
@@ -86,7 +87,8 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             settingsMenu,
             levels,
             model.getVideo().setCurrentQuality.bind(model.getVideo()),
-            changedModel.get('currentLevel')
+            changedModel.get('currentLevel'),
+            model.get('localization').hd
         );
     };
 
@@ -101,7 +103,8 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         addCaptionsSubmenu(settingsMenu,
             captionsList,
             api.setCurrentCaptions.bind(this),
-            model.get('captionsIndex')
+            model.get('captionsIndex'),
+            model.get('localization').cc
         );
         controlbar.toggleCaptionsButtonState(!!model.get('captionsIndex'));
         controlbarButton.show();
@@ -124,7 +127,8 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             settingsMenu,
             playbackRates,
             provider.setPlaybackRate.bind(model.getVideo()),
-            model.get('playbackRate')
+            model.get('playbackRate'),
+            model.get('localization').playbackRates
         );
     };
 

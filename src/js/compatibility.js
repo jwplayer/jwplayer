@@ -18,21 +18,29 @@
     */
     if (parseInt(playerLibrary.version, 10) >= 8) {
         var jwplayerCompatible = function(query) {
-            var playerInstance = playerLibrary(query);
-            if (!playerInstance.trigger) {
+            var basePlayer = playerLibrary(query);
+            var playerInstance = Object.create(basePlayer);
+            if (!playerInstance.trigger || playerInstance.compatibility) {
                 return playerInstance;
             }
 
             /*
                 We've removed a few methods from the public API, and our events now implement Backbone events.
              */
-            playerInstance.dispatchEvent = playerInstance.trigger;
-            playerInstance.removeEventListener = playerInstance.off;
-            playerInstance.getItem = playerInstance.getPlaylistIndex;
-            playerInstance.getMeta = playerInstance.getItemMeta;
+            playerInstance.dispatchEvent = basePlayer.trigger;
+            playerInstance.getItem = basePlayer.getPlaylistIndex;
+            playerInstance.getMeta = basePlayer.getItemMeta;
             playerInstance.getRenderingMode = function() {
                 return 'html5';
             };
+
+            /*
+                Bind the context of events to basePlayer so events are registered the "real" API, which does the event triggering
+                Without this, the compatible API does not receive events
+            */
+            playerInstance.on = playerInstance.on.bind(basePlayer);
+            playerInstance.off = playerInstance.off.bind(basePlayer);
+            playerInstance.removeEventListener = playerInstance.off;
 
             /*
                 In JW8 we've removed the on* events. They've been replaced by the on() method, which accepts a string and
@@ -96,7 +104,7 @@
              `jwplayer().setup({ events: { onReady: fn } })` becomes
              `jwplayer().setup({ events: { ready: fn } })`
              */
-            var setup = playerInstance.setup;
+            var setup = basePlayer.setup;
             playerInstance.setup = function(options) {
                 var eventMap = options.events;
                 if (eventMap) {
@@ -108,9 +116,55 @@
                         }
                     });
                 }
-                return setup.call(this, options);
+
+                return setup.call(basePlayer, options);
             };
 
+            /*
+             Play and Pause no longer accept the state argument, and no longer toggle.
+             */
+            var play = basePlayer.play;
+            var pause = basePlayer.pause;
+            playerInstance.play = function(state, meta) {
+                if (state && state.reason) {
+                    meta = state;
+                }
+
+                if (!meta) {
+                    meta = { reason: 'external' };
+                }
+
+                if (state === true) {
+                    play(meta);
+                    return playerInstance;
+                } else if (state === false) {
+                    pause(meta);
+                    return playerInstance;
+                }
+
+                state = playerInstance.getState();
+                switch (state) {
+                    case 'playing':
+                    case 'buffering':
+                        pause(meta);
+                        break;
+                    default:
+                        play(meta);
+                }
+
+                return playerInstance;
+            };
+
+            playerInstance.pause = function(state, meta) {
+                if (typeof state === 'boolean') {
+                    playerInstance.play(!state, meta);
+                } else {
+                    playerInstance.play(state, meta);
+                }
+                return playerInstance;
+            };
+
+            playerInstance.compatibility = true;
             return playerInstance;
         };
 

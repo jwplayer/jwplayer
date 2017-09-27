@@ -309,11 +309,12 @@ const Model = function() {
     };
 
     this.setItemIndex = function(index) {
-        var playlist = this.get('playlist');
+        const playlist = this.get('playlist');
+        const length = playlist.length;
 
         // If looping past the end, or before the beginning
         index = parseInt(index, 10) || 0;
-        index = (index + playlist.length) % playlist.length;
+        index = (index + length) % length;
 
         this.set('item', index);
         return this.setActiveItem(playlist[index]);
@@ -333,8 +334,8 @@ const Model = function() {
     };
 
     function resetItem(model, item) {
-        const position = seconds(item.starttime);
-        const duration = seconds(item.duration);
+        const position = item ? seconds(item.starttime) : 0;
+        const duration = item ? seconds(item.duration) : 0;
         const mediaModelState = model.mediaModel.attributes;
         model.mediaModel.srcReset();
         mediaModelState.position = position;
@@ -561,6 +562,9 @@ const Model = function() {
 
     this.playVideo = function(playReason) {
         const item = this.get('playlistItem');
+        if (!item) {
+            return;
+        }
 
         if (!playReason) {
             playReason = this.get('playReason');

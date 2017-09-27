@@ -156,7 +156,7 @@ export default class Controlbar {
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
-                _api.play(null, reasonInteraction());
+                _api.playToggle(reasonInteraction());
             }, play, cloneIcons('play,pause')),
             rewind: button('jw-icon-rewind', () => {
                 this.rewind();
