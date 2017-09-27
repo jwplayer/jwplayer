@@ -7,7 +7,7 @@ import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
-import { SETUP_ERROR } from 'events/events';
+import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
 import Promise, { resolved } from 'polyfills/promise';
@@ -143,7 +143,7 @@ Object.assign(CoreShim.prototype, {
             this.setup = null;
     },
     getContainer() {
-        return this.originalContainer;
+        return this.currentContainer;
     },
 
     // These methods read from the model
@@ -224,16 +224,19 @@ Object.assign(CoreShim.prototype, {
 
 function setupError(core, error) {
     resolved.then(() => {
-        const message = error.message;
+        const { message, code } = error;
         const errorContainer = ErrorContainer(core, message);
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }
         showView(core, errorContainer);
 
-        core.trigger(SETUP_ERROR, {
-            message
-        });
+        const errorEvent = { message, code, error };
+        const model = core._model || core.modelShim;
+        model.set('errorEvent', errorEvent);
+        model.set('state', STATE_ERROR);
+
+        core.trigger(SETUP_ERROR, errorEvent);
     });
 }
 
