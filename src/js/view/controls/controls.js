@@ -10,11 +10,14 @@ import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/settings-menu';
 import { getBreakpoint } from 'view/utils/breakpoint';
-import { cloneIcons } from 'view/controls/icons';
+import { cloneIcon } from 'view/controls/icons';
+import ErrorContainer from 'view/error-container';
 
 require('css/controls.less');
 
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
+
+ErrorContainer.cloneIcon = cloneIcon;
 
 const reasonInteraction = function() {
     return { reason: 'interaction' };
@@ -134,7 +137,7 @@ export default class Controls {
         if (model.get('autostartMuted')) {
             const unmuteCallback = () => this.unmuteAutoplay(api, model);
             this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').unmute,
-                cloneIcons('volume-0'));
+                [cloneIcon('volume-0')]);
             this.mute.show();
             this.div.appendChild(this.mute.element());
             // Set mute state in the controlbar

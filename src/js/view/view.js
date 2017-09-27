@@ -684,8 +684,11 @@ function View(_api, _model) {
             _title.playlistItem(model, model.get('playlistItem'));
             return;
         }
-        const errorContainer = new ErrorContainer(_model, evt.message);
-        _playerElement.appendChild(errorContainer.el.firstChild);
+        const errorContainer = ErrorContainer(_model, evt.message);
+        if (ErrorContainer.cloneIcon) {
+            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+        }
+        _playerElement.appendChild(errorContainer.firstChild);
 
         if (evt.name) {
             _title.updateText(evt.name, evt.message);

@@ -223,12 +223,14 @@ Object.assign(CoreShim.prototype, {
 });
 
 function setupError(core, error) {
-    const message = error.message;
-    const errorContainer = new ErrorContainer(core, message);
-
-    showView(core, errorContainer.el);
-
     resolved.then(() => {
+        const message = error.message;
+        const errorContainer = ErrorContainer(core, message);
+        if (ErrorContainer.cloneIcon) {
+            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+        }
+        showView(core, errorContainer);
+
         core.trigger(SETUP_ERROR, {
             message
         });
