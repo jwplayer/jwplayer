@@ -515,7 +515,7 @@ const Model = function() {
         }
 
         playPromise.then(() => {
-            if (!mediaModelContext.setup) {
+            if (!mediaModelContext.get('setup')) {
                 // Exit if model state was reset
                 return;
             }
