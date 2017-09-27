@@ -768,12 +768,10 @@ function View(_api, _model) {
 
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
-        if (_controls) {
-            addGradient(true);
-        }
 
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         if (_controls) {
+            addGradient(true);
             _controls.userActive();
             _controls.controlbar.useInstreamTime(instreamModel);
             if (_controls.settingsMenu) {
@@ -796,15 +794,13 @@ function View(_api, _model) {
             return;
         }
         if (_controls) {
+            addGradient(false);
             _controls.controlbar.syncPlaybackTime(_model);
         }
 
         this.setAltText('');
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
-        if (_controls) {
-            addGradient(false);
-        }
         const provider = _model.getVideo();
         if (provider) {
             provider.setContainer(_videoLayer);
