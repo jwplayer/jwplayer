@@ -78,23 +78,28 @@ display icons
 
     .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
-        height: @mobile-touch-target;
         width: @mobile-touch-target;
+        height: @mobile-touch-target;
         line-height: @mobile-touch-target;
 
         &:before {
-            height: (@mobile-touch-target * 0.5);
             width: (@mobile-touch-target * 0.5);
+            height: (@mobile-touch-target * 0.5);
         }
     }
 }
 
 .jw-breakpoint-1 {
+    .jw-display-icon-container {
+        padding: (@mobile-touch-target * 0.125);
+        margin: 0 (@mobile-touch-target * 0.5);
+    }
+
     .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
-        height: (@mobile-touch-target * 1.25);
-        line-height: (@mobile-touch-target * 1.25);
-        width: (@mobile-touch-target * 1.25);
+        width: (@mobile-touch-target);
+        height: (@mobile-touch-target);
+        line-height: (@mobile-touch-target);
 
         &:before {
             width: (@mobile-touch-target * 0.5);
@@ -114,13 +119,13 @@ display icons
 .jw-breakpoint-3 {
     .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
+        width: (@mobile-touch-target * 1.75);
         height: (@mobile-touch-target * 1.75);
         line-height: (@mobile-touch-target * 1.75);
-        width: (@mobile-touch-target * 1.75);
 
         &:before {
-            height: (@mobile-touch-target * 0.875);
             width: (@mobile-touch-target * 0.875);
+            height: (@mobile-touch-target * 0.875);
         }
     }
 }
@@ -131,9 +136,9 @@ display icons
 .jw-breakpoint-7 {
     .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
+        width: (@mobile-touch-target * 2);
         height: (@mobile-touch-target * 2);
         line-height: (@mobile-touch-target * 2);
-        width: (@mobile-touch-target * 2);
 
         &:before {
             width: @mobile-touch-target;
