@@ -13,6 +13,10 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
 
     const instance = {
         open() {
+            if (instance.isTouch) {
+                return;
+            }
+
             tooltipElement.setAttribute('aria-expanded', 'true');
             addClass(tooltipElement, 'jw-open');
 
@@ -21,6 +25,11 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
             }
         },
         close() {
+            if (instance.isTouch) {
+                instance.isTouch = false;
+                return;
+            }
+
             tooltipElement.setAttribute('aria-expanded', 'false');
             removeClass(tooltipElement, 'jw-open');
         },
@@ -33,6 +42,9 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
         attachToElement.addEventListener('pointerover', instance.open);
         attachToElement.addEventListener('pointerout', instance.close);
     } else {
+        attachToElement.addEventListener('touchstart', function() {
+            instance.isTouch = true;
+        });
         attachToElement.addEventListener('mouseover', instance.open);
         attachToElement.addEventListener('mouseout', instance.close);
     }
