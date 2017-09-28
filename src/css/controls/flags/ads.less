@@ -71,7 +71,7 @@
 
     // Control bar should always be visible during ad playback on touch devices
     // except when jw-flag-ads-vpaid is set
-    &.jw-flag-ads.jw-flag-touch:not(.jw-flag-ads-vpaid) {
+    &.jw-flag-ads.jw-state-playing.jw-flag-touch:not(.jw-flag-ads-vpaid) {
         &,
         &.jw-flag-autostart {
             .jw-controls .jw-controlbar {
@@ -79,6 +79,12 @@
                 pointer-events: all;
                 visibility: visible;
                 opacity: 1;
+            }
+
+            &.jw-flag-user-inactive .jw-controls-backdrop {
+                opacity: 1;
+                // Change gradient height with background-size
+                background-size: 100% 60px;
             }
         }
     }
