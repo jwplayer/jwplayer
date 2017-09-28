@@ -394,6 +394,7 @@ export default class Controls {
     }
 
     setupInstream(instreamModel) {
+        this.instreamState = instreamModel.get('state');
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         this.userActive();
         this.addBackdrop();
@@ -404,6 +405,7 @@ export default class Controls {
     }
 
     destroyInstream(model) {
+        this.instreamState = null;
         this.addBackdrop();
         this.controlbar.syncPlaybackTime(model);
     }
