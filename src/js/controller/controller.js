@@ -786,11 +786,6 @@ Object.assign(Controller.prototype, {
             _model.set('customButtons', customButtons);
         };
         this.removeButton = function(id) {
-            const pluginIds = ['cardboard', 'share', 'related'];
-            if (_.contains(pluginIds, id)) {
-                return;
-            }
-
             const customButtons = _.filter(
                 _model.get('customButtons'),
                 (button) => button.id !== id
