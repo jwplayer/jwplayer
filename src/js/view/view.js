@@ -72,8 +72,6 @@ function View(_api, _model) {
 
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
     const _videoLayer = _playerElement.querySelector('.jw-media');
-    const _gradientLayer = document.createElement('div');
-    _gradientLayer.className = 'jw-gradient jw-reset';
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
@@ -352,18 +350,6 @@ function View(_api, _model) {
     function addControls() {
         const controls = new ControlsModule(document, _this.element());
         _this.addControls(controls);
-        addGradient();
-    }
-
-    function addGradient() {
-        // Put the gradient element on top of overlays during instream mode
-        // otherwise keep it behind captions and on top of preview poster
-        const element = _instreamModel ? _controls.element() : _captionsRenderer.element();
-        _playerElement.insertBefore(_gradientLayer, element);
-    }
-
-    function removeGradient() {
-        _playerElement.removeChild(_gradientLayer);
     }
 
     function setMediaTitleAttribute(item) {
@@ -505,6 +491,10 @@ function View(_api, _model) {
 
         controls.on('all', _this.trigger, _this);
 
+        if (_instreamModel) {
+            _controls.setupInstream(_instreamModel);
+        }
+
         const overlaysElement = _playerElement.querySelector('.jw-overlays');
         overlaysElement.addEventListener('mousemove', _userActivityCallback);
     };
@@ -524,7 +514,6 @@ function View(_api, _model) {
         }
 
         addClass(_playerElement, 'jw-flag-controls-hidden');
-        removeGradient();
     };
 
     // Perform the switch to fullscreen
@@ -719,13 +708,7 @@ function View(_api, _model) {
 
         _playerState = model.get('state');
 
-        let instreamState = null;
-        if (_instreamModel) {
-            instreamState = _playerState;
-        }
-        if (_controls) {
-            _controls.instreamState = instreamState;
-        }
+        instreamStateUpdate(_playerState);
 
         if (oldState === STATE_ERROR) {
             const errorContainer = _playerElement.querySelector('.jw-error-msg');
@@ -739,6 +722,16 @@ function View(_api, _model) {
             _stateUpdate(_playerState);
         } else {
             _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
+        }
+    }
+
+    function instreamStateUpdate(state) {
+        let instreamState = null;
+        if (_instreamModel) {
+            instreamState = state;
+        }
+        if (_controls) {
+            _controls.instreamState = instreamState;
         }
     }
 
@@ -793,14 +786,8 @@ function View(_api, _model) {
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
 
-        // Call Controls.userActivity to display the UI temporarily for the start of the ad
         if (_controls) {
-            addGradient();
-            _controls.userActive();
-            _controls.controlbar.useInstreamTime(instreamModel);
-            if (_controls.settingsMenu) {
-                _controls.settingsMenu.close();
-            }
+            _controls.setupInstream(instreamModel);
         }
     };
 
@@ -818,8 +805,7 @@ function View(_api, _model) {
             return;
         }
         if (_controls) {
-            addGradient();
-            _controls.controlbar.syncPlaybackTime(_model);
+            _controls.destroyInstream(_model);
         }
 
         this.setAltText('');
