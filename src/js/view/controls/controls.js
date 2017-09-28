@@ -68,7 +68,7 @@ export default class Controls {
         this.div = element;
 
         const backdrop = this.context.createElement('div');
-        backdrop.className = 'jw-gradient jw-reset';
+        backdrop.className = 'jw-controls-backdrop jw-reset';
         this.backdrop = backdrop;
 
         const touchMode = model.get('touchMode');
