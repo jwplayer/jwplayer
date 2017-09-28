@@ -378,7 +378,7 @@ export default class Controlbar {
         let countdownTime;
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
-            elapsedTime = countdownTime = val >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-val);
+            elapsedTime = countdownTime = Math.ceil(val) >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-val);
         } else {
             elapsedTime = utils.timeFormat(val);
             countdownTime = utils.timeFormat(duration - val);
@@ -409,7 +409,7 @@ export default class Controlbar {
 
     checkDvrLiveEdge() {
         if (this._model.get('streamType') === 'DVR') {
-            const currentPosition = this._model.get('position');
+            const currentPosition = Math.ceil(this._model.get('position'));
             // update live icon and displayed time when DVR stream enters or exits live edge
             utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition >= dvrSeekLimit);
             this.onElapsed(this._model, currentPosition);
