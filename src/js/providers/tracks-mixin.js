@@ -375,7 +375,9 @@ function clearTracks() {
 function clearCueData(trackId) {
     if (this._cachedVTTCues[trackId]) {
         this._cachedVTTCues[trackId] = {};
-        this._tracksById[trackId].data = [];
+        if (this._tracksById) {
+            this._tracksById[trackId].data = [];
+        }
     }
 }
 
