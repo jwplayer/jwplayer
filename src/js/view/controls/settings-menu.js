@@ -126,7 +126,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         addPlaybackRatesSubmenu(
             settingsMenu,
             playbackRates,
-            provider.setPlaybackRate.bind(model.getVideo()),
+            model.setPlaybackRate.bind(model),
             model.get('playbackRate'),
             model.get('localization').playbackRates
         );
