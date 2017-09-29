@@ -318,8 +318,8 @@ const UI = function (elem, options) {
 };
 
 // Expose what the source of the event is so that we can ensure it's handled correctly.
-// This returns only 'touch' or 'mouse'.  'pen' will be treated as a mouse.
-UI.getPointerType = function (evt) {
+// This returns only 'touch' or 'mouse'. 'pen' will be treated as a mouse.
+UI.getPointerType = function(evt) {
     if (_supportsPointerEvents && evt instanceof window.PointerEvent) {
         return (evt.pointerType === 'touch') ? 'touch' : 'mouse';
     } else if (_supportsTouchEvents && evt instanceof window.TouchEvent) {
@@ -330,5 +330,7 @@ UI.getPointerType = function (evt) {
 };
 
 Object.assign(UI.prototype, Events);
+
+export const getPointerType = UI.getPointerType;
 
 export default UI;
