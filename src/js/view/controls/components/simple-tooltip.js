@@ -1,5 +1,5 @@
 import { addClass, removeClass } from 'utils/dom';
-import UI from 'utils/ui';
+import { getPointerType } from 'utils/ui';
 
 export function SimpleTooltip(attachToElement, name, text, openCallback) {
     const tooltipElement = document.createElement('div');
@@ -43,7 +43,7 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
     attachToElement.addEventListener('mouseover', instance.open);
     attachToElement.addEventListener('mouseout', instance.close);
     attachToElement.addEventListener('touchstart', (evt) => {
-        instance.pointerType = UI.getPointerType(evt);
+        instance.pointerType = getPointerType(evt);
     });
 
     return instance;
