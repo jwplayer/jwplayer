@@ -12,6 +12,20 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
     categoryButtonElement.className += ' jw-submenu-' + name;
     categoryButton.show();
 
+    // return focus to topbar element when tabbing after the first or last item
+    const onFocus = function(evt) {
+        const focus =
+            categoryButtonElement &&
+            evt.keyCode === 9 && (
+                evt.srcElement === contentItems[0].element() && evt.shiftKey ||
+                evt.srcElement === contentItems[contentItems.length - 1].element() && !evt.shiftKey
+            );
+
+        if (focus) {
+            categoryButtonElement.focus();
+        }
+    };
+
     const instance = {
         addContent(items) {
             if (!items) {
@@ -20,13 +34,20 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             items.forEach(item => {
                 submenuElement.appendChild(item.element());
             });
+
             contentItems = items;
+
+            contentItems[0].element().addEventListener('keydown', onFocus);
+            contentItems[contentItems.length - 1].element().addEventListener('keydown', onFocus);
         },
         replaceContent(items) {
-            emptyElement(submenuElement);
+            instance.removeContent();
             this.addContent(items);
         },
         removeContent() {
+            contentItems[0].element().removeEventListener('keydown', onFocus);
+            contentItems[contentItems.length - 1].element().removeEventListener('keydown', onFocus);
+
             emptyElement(submenuElement);
             contentItems = [];
         },

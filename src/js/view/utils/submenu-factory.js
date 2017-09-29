@@ -22,9 +22,6 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
         const categoryButtonElement = categoryButton.element();
         categoryButtonElement.setAttribute('role', 'menuitemradio');
         categoryButtonElement.setAttribute('aria-checked', 'false');
-        categoryButtonElement.addEventListener('focus', function() {
-            settingsMenu.activateSubmenu(name);
-        });
 
         // Qualities submenu is the default submenu
         submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);

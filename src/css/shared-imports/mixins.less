@@ -99,10 +99,12 @@
             color: @inactive-color;
         }
 
-        &:not(.jw-flag-touch) .jw-button-color:hover,
-        .jw-button-color:focus {
-            outline: none;
-            color: @hover-color;
+        &:not(.jw-flag-touch) .jw-button-color:not(.jw-logo-button) {
+            &:focus,
+            &:hover {
+                outline: none;
+                color: @hover-color;
+            }
         }
 
         .jw-toggle {

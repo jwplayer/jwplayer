@@ -393,6 +393,7 @@ export default class Controlbar {
 
     onFullscreen(model, val) {
         utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
+        this.elements.play.element().focus();
     }
 
     onAudioMode(model, val) {
@@ -477,9 +478,13 @@ export default class Controlbar {
                     window.open(logo.link, '_blank');
                 }
             },
-            'logo'
+            'logo',
+            'jw-logo-button'
         );
 
+        if (!logo.link) {
+            logoButton.element().setAttribute('tabindex', '-1');
+        }
         buttonContainer.insertBefore(
             logoButton.element(),
             buttonContainer.querySelector('.jw-spacer').nextSibling

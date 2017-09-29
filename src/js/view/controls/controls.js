@@ -142,6 +142,10 @@ export default class Controls {
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive();
             lastState = state;
+
+            if (!visible && this.controlbar.elements.settingsButton) {
+                this.controlbar.elements.settingsButton.element().focus();
+            }
         };
         const settingsMenu = this.settingsMenu = createSettingsMenu(controlbar, visibilityChangeHandler);
         setupSubmenuListeners(settingsMenu, controlbar, model, api);
@@ -357,10 +361,12 @@ export default class Controls {
         }
     }
 
-    userActive(timeout) {
-        clearTimeout(this.activeTimeout);
-        this.activeTimeout = setTimeout(() => this.userInactive(),
-            timeout || ACTIVE_TIMEOUT);
+    userActive(timeout = ACTIVE_TIMEOUT, isKeyDown) {
+        if (!isKeyDown) {
+            clearTimeout(this.activeTimeout);
+            this.activeTimeout = setTimeout(() => this.userInactive(),
+                timeout || ACTIVE_TIMEOUT);
+        }
         if (!this.showing) {
             utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
             this.showing = true;
@@ -374,8 +380,17 @@ export default class Controls {
             return;
         }
 
+        const container = this.playerContainer;
+        const focused = document.activeElement;
+        if (container !== focused && container.contains(focused)) {
+            return;
+        } else if (container === focused) {
+            return;
+        }
+
         this.showing = false;
-        utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
+        utils.addClass(container, 'jw-flag-user-inactive');
+
         this.trigger('userInactive');
     }
 
