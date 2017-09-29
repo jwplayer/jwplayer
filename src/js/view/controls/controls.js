@@ -42,6 +42,7 @@ export default class Controls {
         this.context = context;
         this.controlbar = null;
         this.displayContainer = null;
+        this.backdrop = null;
         this.enabled = true;
         this.instreamState = null;
         this.keydownCallback = null;
@@ -65,6 +66,10 @@ export default class Controls {
         const element = this.context.createElement('div');
         element.className = 'jw-controls jw-reset';
         this.div = element;
+
+        const backdrop = this.context.createElement('div');
+        backdrop.className = 'jw-controls-backdrop jw-reset';
+        this.backdrop = backdrop;
 
         const touchMode = model.get('touchMode');
 
@@ -248,6 +253,8 @@ export default class Controls {
         this.userActive();
 
         this.playerContainer.appendChild(this.div);
+
+        this.addBackdrop();
     }
 
     disable(model) {
@@ -288,6 +295,8 @@ export default class Controls {
             settingsMenu.destroy();
             this.div.removeChild(settingsMenu.element());
         }
+
+        this.removeBackdrop();
     }
 
     controlbarHeight() {
@@ -368,5 +377,36 @@ export default class Controls {
         this.showing = false;
         utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
+    }
+
+    addBackdrop() {
+        // Put the backdrop element on top of overlays during instream mode
+        // otherwise keep it behind captions and on top of preview poster
+        const element = this.instreamState ? this.div : this.playerContainer.querySelector('.jw-captions');
+        this.playerContainer.insertBefore(this.backdrop, element);
+    }
+
+    removeBackdrop() {
+        const parent = this.backdrop.parentNode;
+        if (parent) {
+            parent.removeChild(this.backdrop);
+        }
+    }
+
+    setupInstream(instreamModel) {
+        this.instreamState = instreamModel.get('state');
+        // Call Controls.userActivity to display the UI temporarily for the start of the ad
+        this.userActive();
+        this.addBackdrop();
+        this.controlbar.useInstreamTime(instreamModel);
+        if (this.settingsMenu) {
+            this.settingsMenu.close();
+        }
+    }
+
+    destroyInstream(model) {
+        this.instreamState = null;
+        this.addBackdrop();
+        this.controlbar.syncPlaybackTime(model);
     }
 }
