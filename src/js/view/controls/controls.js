@@ -384,8 +384,6 @@ export default class Controls {
         const focused = document.activeElement;
         if (container !== focused && container.contains(focused)) {
             return;
-        } else if (container === focused) {
-            return;
         }
 
         this.showing = false;
@@ -417,11 +415,15 @@ export default class Controls {
         if (this.settingsMenu) {
             this.settingsMenu.close();
         }
+        utils.removeClass(this.playerContainer, 'jw-flag-autostart');
     }
 
     destroyInstream(model) {
         this.instreamState = null;
         this.addBackdrop();
         this.controlbar.syncPlaybackTime(model);
+        if (model.get('autostartMuted')) {
+            utils.addClass(this.playerContainer, 'jw-flag-autostart');
+        }
     }
 }
