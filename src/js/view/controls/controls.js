@@ -380,15 +380,8 @@ export default class Controls {
             return;
         }
 
-        const container = this.playerContainer;
-        const focused = document.activeElement;
-        if (container !== focused && container.contains(focused)) {
-            return;
-        }
-
         this.showing = false;
-        utils.addClass(container, 'jw-flag-user-inactive');
-
+        utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
     }
 
