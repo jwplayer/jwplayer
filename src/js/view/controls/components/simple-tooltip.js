@@ -1,4 +1,5 @@
 import { addClass, removeClass } from 'utils/dom';
+import UI from 'utils/ui';
 
 export function SimpleTooltip(attachToElement, name, text, openCallback) {
     const tooltipElement = document.createElement('div');
@@ -13,6 +14,11 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
 
     const instance = {
         open() {
+            if (instance.pointerType === 'touch') {
+                delete instance.pointerType;
+                return;
+            }
+
             tooltipElement.setAttribute('aria-expanded', 'true');
             addClass(tooltipElement, 'jw-open');
 
@@ -21,6 +27,11 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
             }
         },
         close() {
+            if (instance.pointerType === 'touch') {
+                delete instance.pointerType;
+                return;
+            }
+
             tooltipElement.setAttribute('aria-expanded', 'false');
             removeClass(tooltipElement, 'jw-open');
         },
@@ -29,13 +40,11 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
         }
     };
 
-    if ('PointerEvent' in window) {
-        attachToElement.addEventListener('pointerover', instance.open);
-        attachToElement.addEventListener('pointerout', instance.close);
-    } else {
-        attachToElement.addEventListener('mouseover', instance.open);
-        attachToElement.addEventListener('mouseout', instance.close);
-    }
+    attachToElement.addEventListener('mouseover', instance.open);
+    attachToElement.addEventListener('mouseout', instance.close);
+    attachToElement.addEventListener('touchstart', (evt) => {
+        instance.pointerType = UI.getPointerType(evt);
+    });
 
     return instance;
 }
