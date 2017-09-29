@@ -61,7 +61,6 @@ function VideoProvider(_playerId, _playerConfig) {
             checkStaleStream();
         },
         timeupdate() {
-            _checkDelayedSeek(_this.getDuration());
             VideoEvents.timeupdate.call(_this);
             checkStaleStream();
         },
@@ -85,20 +84,19 @@ function VideoProvider(_playerId, _playerConfig) {
                 width: _videotag.videoWidth
             };
             _this.trigger(MEDIA_META, metadata);
-            _checkDelayedSeek(duration);
         },
 
         durationchange() {
             if (_androidHls) {
                 return;
             }
-            _checkDelayedSeek(_this.getDuration());
             VideoEvents.progress.call(_this);
         },
 
         loadeddata() {
             VideoEvents.loadeddata.call(_this);
             _setAudioTracks(_videotag.audioTracks);
+            _checkDelayedSeek(_this.getDuration());
         },
 
         canplay() {
