@@ -41,6 +41,10 @@ const InstreamHtml5 = function(_controller, _model) {
             _adModel.set('mediaContainer', _model.get('mediaContainer'));
         }
         _adModel.on('fullscreenchange', _nativeFullscreenHandler);
+        _adModel.on('change:state', changeStateEvent, _this);
+        _adModel.on(ERROR, function(data) {
+            _this.trigger(ERROR, data);
+        }, _this);
 
         this._adModel = _adModel;
     };
@@ -59,12 +63,6 @@ const InstreamHtml5 = function(_controller, _model) {
             _checkProvider(_adModel.getVideo());
         });
         _checkProvider();
-
-        // Match the main player's controls state
-        _adModel.off(ERROR);
-        _adModel.on(ERROR, function(data) {
-            this.trigger(ERROR, data);
-        }, _this);
 
         // Load the instream item
         return _adModel.playVideo();
@@ -103,6 +101,9 @@ const InstreamHtml5 = function(_controller, _model) {
         }
 
         _adModel.off();
+        if (_adModel.mediaModel) {
+            _adModel.mediaModel.off();
+        }
 
         // We don't want the instream provider to be attached to the video tag anymore
         this.off();
@@ -152,40 +153,34 @@ const InstreamHtml5 = function(_controller, _model) {
 
     function _checkProvider(pseudoProvider) {
         var provider = pseudoProvider || _adModel.getVideo();
+        if (!provider) {
+            return;
+        }
 
-        if (_currentProvider !== provider) {
-            _currentProvider = provider;
+        _currentProvider = provider;
 
-            if (!provider) {
+        var isVpaidProvider = provider.type === 'vpaid';
+
+        provider.off();
+        provider.on('all', function(type, data) {
+            if (isVpaidProvider && (type === MEDIA_COMPLETE)) {
                 return;
             }
+            this.trigger(type, Object.assign({}, data, { type: type }));
+        }, _this);
 
-            var isVpaidProvider = provider.type === 'vpaid';
-
-            provider.off();
-
-            provider.on('all', function(type, data) {
-                if (isVpaidProvider && (type === MEDIA_COMPLETE)) {
-                    return;
-                }
-                this.trigger(type, Object.assign({}, data, { type: type }));
-            }, _this);
-
-            const mediaModelContext = _adModel.mediaModel;
-            provider.on(PLAYER_STATE, (event) => {
-                mediaModelContext.set(PLAYER_STATE, event.newstate);
-            });
-            mediaModelContext.on('change:' + PLAYER_STATE, (changeAdModel, state) => {
-                stateHandler(state);
-            });
-            provider.attachMedia();
-            provider.volume(_model.get('volume'));
-            provider.mute(_model.get('mute') || _model.get('autostartMuted'));
-            if (provider.setPlaybackRate) {
-                provider.setPlaybackRate(1);
-            }
-
-            _adModel.on('change:state', changeStateEvent, _this);
+        const mediaModelContext = _adModel.mediaModel;
+        provider.on(PLAYER_STATE, (event) => {
+            mediaModelContext.set(PLAYER_STATE, event.newstate);
+        });
+        mediaModelContext.on('change:' + PLAYER_STATE, (changeAdModel, state) => {
+            stateHandler(state);
+        });
+        provider.attachMedia();
+        provider.volume(_model.get('volume'));
+        provider.mute(_model.get('mute') || _model.get('autostartMuted'));
+        if (provider.setPlaybackRate) {
+            provider.setPlaybackRate(1);
         }
     }
 
