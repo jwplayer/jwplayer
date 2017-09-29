@@ -14,6 +14,16 @@
     .jw-controls {
         background: @controlbar-background;
     }
+
+    &.jw-flag-cast-available,
+    &.jw-flag-cardboard-available {
+        .jw-controlbar {
+            .jw-slider-time,
+            .jw-icon:not(.jw-icon-cardboard):not(.jw-icon-cast):not(.jw-icon-airplay) {
+                display: none;
+            }
+        }
+    }
 }
 
 // buffering
