@@ -1,7 +1,7 @@
 @import "../../shared-imports/vars";
 
 .jwplayer.jw-flag-casting {
-    .jw-cast {
+    &:not(.jw-flag-audio-player) .jw-cast {
         display: block;
     }
 
@@ -27,9 +27,9 @@
     }
 }
 
-.jwplayer.jw-state-playing.jw-flag-casting,
-.jwplayer.jw-state-paused.jw-flag-casting {
-    .jw-display {
+.jw-state-playing,
+.jw-state-paused {
+    &.jw-flag-casting:not(.jw-flag-audio-player) .jw-display {
         display: table;
     }
 }
