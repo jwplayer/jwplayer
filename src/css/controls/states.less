@@ -14,6 +14,16 @@
     .jw-controls {
         background: @controlbar-background;
     }
+
+    &.jw-flag-cast-available,
+    &.jw-flag-cardboard-available {
+        .jw-controlbar {
+            .jw-slider-time,
+            .jw-icon:not(.jw-icon-cardboard):not(.jw-icon-cast):not(.jw-icon-airplay) {
+                display: none;
+            }
+        }
+    }
 }
 
 // buffering
@@ -203,7 +213,7 @@ body .jwplayer.jw-state-error.jw-flag-audio-player {
 
 // Hide control bar
 body .jwplayer.jw-state-error,
-.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-cast-available) {
+.jwplayer.jw-state-idle:not(.jw-flag-audio-player):not(.jw-flag-cast-available):not(.jw-flag-cardboard-available) {
     .jw-controlbar {
         display: none;
     }
