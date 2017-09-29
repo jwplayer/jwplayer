@@ -112,7 +112,7 @@ export function handleColorOverrides(playerId, skin) {
 
         addStyle([
             // controlbar text colors
-            '.jw-controlbar .jw-text',
+            '.jw-controlbar .jw-icon-inline.jw-text',
             '.jw-title-primary',
             '.jw-title-secondary',
         ], 'color', config.text);
