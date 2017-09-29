@@ -48,7 +48,7 @@ describe('Skin Customization', function() {
             });
 
             expect(cssUtils.css.args[0]).to.eql([
-                '#id .jw-controlbar .jw-text, ' +
+                '#id .jw-controlbar .jw-icon-inline.jw-text, ' +
                 '#id .jw-title-primary, ' +
                 '#id .jw-title-secondary',
                 { color: 'green' },
@@ -67,7 +67,7 @@ describe('Skin Customization', function() {
             });
 
             expect(cssUtils.css.args[0]).to.eql([
-                '#id .jw-controlbar .jw-text, ' +
+                '#id .jw-controlbar .jw-icon-inline.jw-text, ' +
                 '#id .jw-title-primary, ' +
                 '#id .jw-title-secondary',
                 { color: 'green' },
