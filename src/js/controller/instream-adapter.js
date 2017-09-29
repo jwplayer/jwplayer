@@ -87,8 +87,11 @@ var InstreamAdapter = function(_controller, _model, _view) {
         _controller.detachMedia();
 
         // Let the element finish loading for mobile before calling pause
-        if (mediaElement && !mediaElement.paused) {
-            mediaElement.pause();
+        if (mediaElement) {
+            if (!mediaElement.paused) {
+                mediaElement.pause();
+            }
+            mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
         }
 
         if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {
