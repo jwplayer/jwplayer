@@ -6220,7 +6220,7 @@ The listener is removed after the first call.</p>
     
 
     
-    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">(state<span class="signature-attributes">opt</span>, meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
+    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">(meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
     
 
     
@@ -6228,7 +6228,7 @@ The listener is removed after the first call.</p>
 
 
 <div class="description">
-    <p>Toggles or pauses playback.</p>
+    <p>Pauses playback.</p>
 </div>
 
 
@@ -6262,39 +6262,6 @@ The listener is removed after the first call.</p>
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>state</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>An optional argument that indicates whether to pause (true) or play (false).</p></td>
-        </tr>
-
     
 
         <tr>
@@ -6543,7 +6510,7 @@ The listener is removed after the first call.</p>
     
 
     
-    <h4 class="name" id="play"><span class="type-signature"></span>play<span class="signature">(state<span class="signature-attributes">opt</span>, meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
+    <h4 class="name" id="play"><span class="type-signature"></span>play<span class="signature">(meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
     
 
     
@@ -6551,7 +6518,7 @@ The listener is removed after the first call.</p>
 
 
 <div class="description">
-    <p>Toggles or un-pauses playback.</p>
+    <p>Starts playback.</p>
 </div>
 
 
@@ -6585,39 +6552,6 @@ The listener is removed after the first call.</p>
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>state</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>An optional argument that indicates whether to play (true) or pause (false).</p></td>
-        </tr>
-
     
 
         <tr>
@@ -7263,6 +7197,166 @@ When the player is at the beginning of the playlist, this will play the last pla
             
 
             <td class="type">
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>An optional argument used to specify cause.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Api.html">Api</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="playToggle"><span class="type-signature"></span>playToggle<span class="signature">(meta<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Api.html">Api</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Toggles playback between play and pause.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>meta</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
             
             </td>
 
