@@ -29,14 +29,14 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             return;
         }
 
-        instance.close();
+        instance.close(true);
     });
 
     topbarElement.appendChild(closeButton.element());
 
     const keyHandler = function(evt) {
         if (evt && evt.keyCode === 27) {
-            instance.close();
+            instance.close(true);
             evt.stopPropagation();
         }
     };
@@ -57,9 +57,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             }
 
         },
-        close() {
+        close(isKeyEvent = false) {
             visible = false;
-            onVisibility(visible);
+            onVisibility(visible, isKeyEvent);
 
             active = null;
             deactivateAllSubmenus(submenus);

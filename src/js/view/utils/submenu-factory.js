@@ -26,7 +26,9 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
         // Qualities submenu is the default submenu
         submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);
         submenu.addContent(contentItems);
-        SimpleTooltip(categoryButtonElement, name, tooltipText);
+        if (!('ontouchstart' in window)) {
+            SimpleTooltip(categoryButtonElement, name, tooltipText);
+        }
         settingsMenu.addSubmenu(submenu);
     }
 
