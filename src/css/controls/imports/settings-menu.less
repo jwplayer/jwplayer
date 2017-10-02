@@ -155,9 +155,14 @@
         }
     }
 
-    .jw-tooltip-settings,
-    .jw-settings-submenu-button .jw-tooltip-captions {
+    .jw-tooltip-settings {
         display: none;
+    }
+
+    .jwplayer:not(.jw-flag-small-player) & {
+        .jw-controlbar:hover {
+            z-index: 1;
+        }
     }
 }
 
