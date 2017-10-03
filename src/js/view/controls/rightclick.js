@@ -9,7 +9,7 @@ function createDomElement(html) {
     const element = createElement(html);
     const logoContainer = element.querySelector('.jw-rightclick-logo');
     if (logoContainer) {
-        logoContainer.append(cloneIcon('jwplayer-logo'));
+        logoContainer.appendChild(cloneIcon('jwplayer-logo'));
     }
     return element;
 }
