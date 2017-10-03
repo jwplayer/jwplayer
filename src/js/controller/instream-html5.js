@@ -82,14 +82,14 @@ const InstreamHtml5 = function(_controller, _model) {
             this.trigger(ERROR, data);
         }, _this);
         _model.on('change:volume', function(data, value) {
-            _currentProvider.volume(value);
+            provider.volume(value);
         }, _this);
         _model.on('change:mute', function(data, value) {
-            _currentProvider.mute(value);
+            provider.mute(value);
         }, _this);
         _model.on('change:autostartMuted', function(data, value) {
             if (!value) {
-                _currentProvider.mute(_model.get('mute'));
+                provider.mute(_model.get('mute'));
             }
         }, _this);
     };
@@ -152,12 +152,14 @@ const InstreamHtml5 = function(_controller, _model) {
      *****************************/
 
     function _checkProvider(pseudoProvider) {
-        var provider = pseudoProvider || _adModel.getVideo();
+        const provider = pseudoProvider || _adModel.getVideo();
+
+        // Clear current provider when applyProviderListeners(null) is called
+        _currentProvider = provider;
+
         if (!provider) {
             return;
         }
-
-        _currentProvider = provider;
 
         var isVpaidProvider = provider.type === 'vpaid';
 
