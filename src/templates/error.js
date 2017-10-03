@@ -1,11 +1,19 @@
 export default (id, title = '', body = '') => {
     return (
-        `<div id="${id}" class="jw-error jw-reset" style="position:relative;background:#333">` +
-            `<div class="jw-error-msg jw-reset" style="top:50%;left:50%;position:absolute;align-items:center;background-color:#000;display:flex;padding:20px;transform:translate(-50%,-50%)">` +
+        `<div id="${id}" class="jw-error jw-reset">` +
+            `<div class="jw-error-msg jw-reset">` +
+                `<style>` +
+                `[id="${id}"].jw-error{position:relative;background:#000;overflow:hidden;position:relative}` +
+                `[id="${id}"] .jw-error-msg{top:50%;left:50%;position:absolute;align-items:center;display:flex;transform:translate(-50%,-50%)}` +
+                `[id="${id}"] .jw-title{color:#FFF;position:static}` +
+                `[id="${id}"] .jw-title-primary,` +
+                `[id="${id}"] .jw-title-secondary{font:600 14px/1.35 Arial,Helvetica,sans-serif}` +
+                `[id="${id}"] .jw-title-secondary{font-weight:400}` +
+                `</style>` +
                 `<div class="jw-icon jw-reset"></div>` +
-                `<div class="jw-title jw-reset" style="color:#FFF;position:static">` +
-                    `<div class="jw-title-primary jw-reset" style="font:600 14px/1.35 Arial,Helvetica,sans-serif">${title}</div>` +
-                    `<div class="jw-title-secondary jw-reset" style="font:400 14px/1.35 Arial,Helvetica,sans-serif">${body}</div>` +
+                `<div class="jw-title jw-reset">` +
+                    `<div class="jw-title-primary jw-reset">${title}</div>` +
+                    `<div class="jw-title-secondary jw-reset">${body}</div>` +
                 `</div>` +
             `</div>` +
         `</div>`

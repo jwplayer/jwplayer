@@ -693,12 +693,7 @@ function View(_api, _model) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }
         _playerElement.appendChild(errorContainer.firstChild);
-
-        if (evt.name) {
-            _title.updateText(evt.name, evt.message);
-        } else {
-            _title.updateText(evt.message, '');
-        }
+        toggleClass(_playerElement, 'jw-flag-audio-player', model.get('audioMode'));
     }
 
     function _stateHandler(model, newState, oldState) {

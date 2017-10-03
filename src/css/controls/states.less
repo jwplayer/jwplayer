@@ -173,9 +173,8 @@ body .jwplayer.jw-state-error {
         }
     }
 
-    .jw-controls {
-        background: @controlbar-background;
-        height: 100%;
+    .jw-controls-backdrop {
+        &:extend(.jw-state-idle .jw-controls-backdrop);
     }
 }
 
@@ -201,7 +200,7 @@ body .jwplayer.jw-state-error.jw-flag-audio-player {
     .jw-title-primary {
         width: auto;
         display: inline-block;
-        padding-right: 0;
+        padding-right: 0.5ch;
     }
 
     .jw-title-secondary {
@@ -222,10 +221,6 @@ body .jwplayer.jw-state-error,
         height: 100%;
         top: 0;
         bottom: 0;
-    }
-
-    .jw-controls-backdrop {
-        opacity: 0;
     }
 
     .jw-display {
