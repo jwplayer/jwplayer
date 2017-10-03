@@ -101,7 +101,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         },
         removeSubmenu(name) {
             const submenu = submenus[name];
-            if (!submenu) {
+            if (!submenu || submenu.element().parentNode !== settingsMenuElement) {
                 return;
             }
             settingsMenuElement.removeChild(submenu.element());
