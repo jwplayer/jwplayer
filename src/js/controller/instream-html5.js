@@ -152,12 +152,10 @@ const InstreamHtml5 = function(_controller, _model) {
      *****************************/
 
     function _checkProvider(pseudoProvider) {
-        var provider = pseudoProvider || _adModel.getVideo();
+        var provider = _currentProvider = pseudoProvider || _adModel.getVideo();
         if (!provider) {
             return;
         }
-
-        _currentProvider = provider;
 
         var isVpaidProvider = provider.type === 'vpaid';
 
