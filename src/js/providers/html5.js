@@ -1,7 +1,7 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
-import { STATE_IDLE, MEDIA_META, MEDIA_ERROR,
+import { STATE_IDLE, STATE_PLAYING, MEDIA_META, MEDIA_ERROR,
     MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
@@ -63,6 +63,9 @@ function VideoProvider(_playerId, _playerConfig) {
         timeupdate() {
             VideoEvents.timeupdate.call(_this);
             checkStaleStream();
+            if (_this.state === STATE_PLAYING) {
+                checkVisualQuality();
+            }
         },
         resize() {
             checkVisualQuality();
