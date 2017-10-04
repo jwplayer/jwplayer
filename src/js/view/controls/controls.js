@@ -149,7 +149,7 @@ export default class Controls {
         };
         const settingsMenu = this.settingsMenu = createSettingsMenu(controlbar, visibilityChangeHandler);
         setupSubmenuListeners(settingsMenu, controlbar, model, api);
-        this.div.appendChild(settingsMenu.element());
+        this.div.insertBefore(settingsMenu.element(), controlbar.element());
 
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
         if (model.get('autostartMuted')) {
