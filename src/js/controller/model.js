@@ -475,28 +475,31 @@ const Model = function() {
         const mediaModelContext = model.mediaModel;
 
         mediaModelContext.set('setup', true);
-
         if (_provider) {
-            // Calling load() on Shaka may return a player setup promise
-            const providerSetupPromise = _provider.load(item);
-            if (providerSetupPromise) {
-                thenPlayPromise = cancelable(() => {
-                    return _provider.play() || resolved;
-                });
-                return providerSetupPromise.then(thenPlayPromise.async);
-            }
-            return _provider.play() || resolved;
+            return playWithProvider(item);
         }
 
         const providerNeeded = _providers.required([item]);
 
         thenPlayPromise = cancelable(() => {
             if (mediaModelContext === model.mediaModel) {
-                return loadAndPlay(model, item);
+                return playWithProvider(item);
             }
             throw new Error('Playback cancelled.');
         });
         return _providers.load(providerNeeded).then(thenPlayPromise.async);
+    }
+
+    function playWithProvider(item) {
+        // Calling load() on Shaka may return a player setup promise
+        const providerSetupPromise = _provider.load(item);
+        if (providerSetupPromise) {
+            thenPlayPromise = cancelable(() => {
+                return _provider.play() || resolved;
+            });
+            return providerSetupPromise.then(thenPlayPromise.async);
+        }
+        return _provider.play() || resolved;
     }
 
     function playAttempt(model, playPromise, playReason) {
