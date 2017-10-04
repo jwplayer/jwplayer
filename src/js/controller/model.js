@@ -253,6 +253,7 @@ const Model = function() {
     this.detachMedia = function() {
         thenPlayPromise.cancel();
         _attached = false;
+        this.mediaModel.set('setup', false);
         if (_provider) {
             _provider.off('all', _videoEventHandler, this);
             _provider.detachMedia();
