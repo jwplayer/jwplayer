@@ -86,6 +86,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             if (submenu.isDefault) {
                 prependChild(topbarElement, submenu.categoryButtonElement);
                 submenu.categoryButtonElement.addEventListener('keydown', function(evt) {
+                    // close settings menu if you shift-tab on the first category button element
                     if (evt.keyCode === 9 && evt.shiftKey) {
                         instance.close(true);
                     }
