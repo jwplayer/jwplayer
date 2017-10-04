@@ -43,8 +43,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const outOfFocus = () => {
         removeClass(active.categoryButtonElement, 'jw-first-submenu');
-//        window.removeEventListener('blur', outOfFocus);
-        console.log('blur out');
+        active.categoryButtonElement.removeEventListener('blur', outOfFocus);
     };
 
     settingsMenuElement.addEventListener('keydown', keyHandler);
@@ -57,10 +56,11 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             addDocumentListeners(documentClickHandler);
 
             if (isDefault) {
-                addClass(active.categoryButtonElement, 'jw-first-submenu');
+                if (window.event.pointerType === 'mouse') {
+                    addClass(active.categoryButtonElement, 'jw-first-submenu');
+                    active.categoryButtonElement.addEventListener('blur', outOfFocus);
+                }
                 active.categoryButtonElement.focus();
-                console.log('blur in');
-                window.addEventListener('blur', outOfFocus, true);
             } else {
                 active.element().firstChild.focus();
             }
@@ -75,7 +75,6 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
             settingsMenuElement.setAttribute('aria-expanded', 'false');
             removeDocumentListeners(documentClickHandler);
-            window.removeEventListener('blur', outOfFocus);
         },
         toggle() {
             if (visible) {
