@@ -24,6 +24,7 @@ const Model = function() {
     let _beforecompleted = false;
     let _attached = true;
     let thenPlayPromise = cancelable(function() {});
+    let providerPromise = resolved;
 
     this.mediaController = Object.assign({}, Events);
     this.mediaModel = new MediaModel();
@@ -330,7 +331,8 @@ const Model = function() {
         this.set('mediaModel', this.mediaModel);
         this.attributes.playlistItem = null;
         this.set('playlistItem', item);
-        return this.setProvider(item);
+        providerPromise = this.setProvider(item);
+        return providerPromise;
     };
 
     function resetItem(model, item) {
@@ -479,15 +481,13 @@ const Model = function() {
             return playWithProvider(item);
         }
 
-        const providerNeeded = _providers.required([item]);
-
         thenPlayPromise = cancelable(() => {
             if (mediaModelContext === model.mediaModel) {
                 return playWithProvider(item);
             }
             throw new Error('Playback cancelled.');
         });
-        return _providers.load(providerNeeded).then(thenPlayPromise.async);
+        return providerPromise.then(thenPlayPromise.async);
     }
 
     function playWithProvider(item) {
