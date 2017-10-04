@@ -60,6 +60,7 @@ function VideoProvider(_playerId, _playerConfig) {
             VideoEvents.progress.call(_this);
             checkStaleStream();
         },
+        
         timeupdate() {
             VideoEvents.timeupdate.call(_this);
             checkStaleStream();
@@ -67,9 +68,7 @@ function VideoProvider(_playerId, _playerConfig) {
                 checkVisualQuality();
             }
         },
-        resize() {
-            checkVisualQuality();
-        },
+
         ended() {
             _currentQuality = -1;
             clearTimeouts();
