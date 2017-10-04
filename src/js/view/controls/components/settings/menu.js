@@ -26,19 +26,21 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             evt.stopPropagation();
         }
     };
-    settingsMenuElement.addEventListener('keydown', closeOnEnter);
+    settingsMenuElement.addEventListener('keyup', closeOnEnter);
 
     const closeButton = button('jw-settings-close', () => {
         instance.close();
     }, 'Close Settings', [cloneIcon('close')]);
 
     const closeOnButton = function(evt) {
+        // Close settings menu when enter is pressed on the close button
+        // or when tab key is pressed since it is the last element in topbar
         if (evt.keyCode === 13 || (evt.keyCode === 9 && !evt.shiftKey)) {
             instance.close(true);
         }
     };
     closeButton.show();
-    closeButton.element().addEventListener('keydown', closeOnButton);
+    closeButton.element().addEventListener('keyup', closeOnButton);
 
     const topbarElement = settingsMenuElement.querySelector('.jw-settings-topbar');
     topbarElement.appendChild(closeButton.element());
