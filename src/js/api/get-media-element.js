@@ -7,6 +7,6 @@ export default function getMediaElement(parent) {
     if (!media) {
         media = document.createElement('video');
     }
-    media.className = 'jw-video jw-reset';
+    media.className = 'jw-video';
     return media;
 }

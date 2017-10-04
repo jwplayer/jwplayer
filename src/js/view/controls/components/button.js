@@ -3,7 +3,7 @@ import svgParse from 'utils/svgParser';
 
 export default function (icon, apiAction, ariaText, svgIcons) {
     const element = document.createElement('div');
-    element.className = 'jw-icon jw-icon-inline jw-button-color jw-reset ' + icon;
+    element.className = 'jw-icon jw-icon-inline jw-button-color ' + icon;
     element.setAttribute('role', 'button');
     element.setAttribute('tabindex', '0');
 

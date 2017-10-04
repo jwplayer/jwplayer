@@ -6,7 +6,7 @@ export default class CustomButton {
 
     constructor(img, ariaText, callback, id, btnClass) {
         const buttonElement = document.createElement('div');
-        buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset ${btnClass}`;
+        buttonElement.className = `jw-icon jw-icon-inline jw-button-color ${btnClass}`;
         buttonElement.setAttribute('button', id);
         buttonElement.setAttribute('role', 'button');
         buttonElement.setAttribute('tabindex', '0');
@@ -19,7 +19,7 @@ export default class CustomButton {
             iconElement = svgParse(img);
         } else {
             iconElement = document.createElement('div');
-            iconElement.className = 'jw-icon jw-button-image jw-button-color jw-reset';
+            iconElement.className = 'jw-icon jw-button-image jw-button-color';
             if (img) {
                 style(iconElement, {
                     backgroundImage: `url(${img})`

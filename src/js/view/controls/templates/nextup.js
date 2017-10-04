@@ -1,15 +1,15 @@
 export default (header = '', title = '', duration = '', closeAriaLabel = '') => {
     return (
-        `<div class="jw-nextup jw-background-color jw-reset">` +
-             `<div class="jw-nextup-tooltip jw-reset">` +
-                `<div class="jw-nextup-thumbnail jw-reset"></div>` +
-                `<div class="jw-nextup-body jw-reset">` +
-                    `<div class="jw-nextup-header jw-reset">${header}</div>` +
-                    `<div class="jw-nextup-title jw-reset">${title}</div>` +
-                    `<div class="jw-nextup-duration jw-reset">${duration}</div>` +
+        `<div class="jw-nextup jw-background-color">` +
+             `<div class="jw-nextup-tooltip">` +
+                `<div class="jw-nextup-thumbnail"></div>` +
+                `<div class="jw-nextup-body">` +
+                    `<div class="jw-nextup-header">${header}</div>` +
+                    `<div class="jw-nextup-title">${title}</div>` +
+                    `<div class="jw-nextup-duration">${duration}</div>` +
                 `</div>` +
             `</div>` +
-            `<button type="button" class="jw-icon jw-nextup-close jw-reset" aria-label="${closeAriaLabel}"></button>` +
+            `<button type="button" class="jw-icon jw-nextup-close" aria-label="${closeAriaLabel}"></button>` +
         `</div>`
     );
 };

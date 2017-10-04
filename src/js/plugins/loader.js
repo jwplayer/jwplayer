@@ -5,7 +5,7 @@ function configurePlugin(pluginObj, pluginConfig, api) {
 
     const div = document.createElement('div');
     div.id = api.id + '_' + pluginName;
-    div.className = 'jw-plugin jw-reset';
+    div.className = 'jw-plugin';
 
     const pluginOptions = Object.assign({}, pluginConfig);
     const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);

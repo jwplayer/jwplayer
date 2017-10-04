@@ -21,7 +21,7 @@ export default class NextUpTooltip {
 
     setup(context) {
         this.container = context.createElement('div');
-        this.container.className = 'jw-nextup-container jw-reset';
+        this.container.className = 'jw-nextup-container';
         const element = utils.createElement(nextUpTemplate());
         element.querySelector('.jw-nextup-close').appendChild(cloneIcon('close'));
         this.addContent(element);

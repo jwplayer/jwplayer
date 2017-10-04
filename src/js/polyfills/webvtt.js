@@ -403,7 +403,7 @@ function CueStyleBox(window, cue) {
     // have inline positioning and will function as the cue background box.
     this.cueDiv = parseContent(window, cue.text);
     // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-    this.cueDiv.className = 'jw-text-track-cue jw-reset';
+    this.cueDiv.className = 'jw-text-track-cue';
     var styles = {
         textShadow: '',
         position: 'relative',
@@ -867,7 +867,7 @@ WebVTT.processCues = function (window, cues, overlay, updateBoxPosition) {
 
     var paddedOverlay = window.document.createElement('div');
     // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-    paddedOverlay.className = 'jw-text-track-container jw-reset';
+    paddedOverlay.className = 'jw-text-track-container';
     paddedOverlay.style.position = 'absolute';
     paddedOverlay.style.left = '0';
     paddedOverlay.style.right = '0';
@@ -897,7 +897,7 @@ WebVTT.processCues = function (window, cues, overlay, updateBoxPosition) {
             // Compute the initial position and styles of the cue div.
             var styleBox = new CueStyleBox(window, cue);
             // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
-            styleBox.div.className = 'jw-text-track-display jw-reset';
+            styleBox.div.className = 'jw-text-track-display';
             paddedOverlay.appendChild(styleBox.div);
 
             // Move the cue div to it's correct line position.

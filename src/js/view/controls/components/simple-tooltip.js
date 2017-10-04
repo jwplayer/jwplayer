@@ -3,7 +3,7 @@ import { getPointerType } from 'utils/ui';
 
 export function SimpleTooltip(attachToElement, name, text, openCallback) {
     const tooltipElement = document.createElement('div');
-    tooltipElement.className = `jw-reset jw-tooltip jw-tooltip-${name}`;
+    tooltipElement.className = `jw-tooltip jw-tooltip-${name}`;
 
     const textElement = document.createElement('div');
     textElement.className = 'jw-text';

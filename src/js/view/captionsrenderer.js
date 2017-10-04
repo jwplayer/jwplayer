@@ -34,7 +34,7 @@ const CaptionsRenderer = function (_model) {
     let _windowStyle;
 
     _display = document.createElement('div');
-    _display.className = 'jw-captions jw-reset';
+    _display.className = 'jw-captions';
 
     this.show = function () {
         addClass(_display, 'jw-captions-enabled');
@@ -133,8 +133,8 @@ const CaptionsRenderer = function (_model) {
     this.setup = function (playerElementId, options) {
         _captionsWindow = document.createElement('div');
         _textContainer = document.createElement('span');
-        _captionsWindow.className = 'jw-captions-window jw-reset';
-        _textContainer.className = 'jw-captions-text jw-reset';
+        _captionsWindow.className = 'jw-captions-window';
+        _textContainer.className = 'jw-captions-text';
 
         _options = Object.assign({}, _defaults, options);
 

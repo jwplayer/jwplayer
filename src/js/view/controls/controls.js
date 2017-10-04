@@ -66,11 +66,11 @@ export default class Controls {
 
     enable(api, model) {
         const element = this.context.createElement('div');
-        element.className = 'jw-controls jw-reset';
+        element.className = 'jw-controls';
         this.div = element;
 
         const backdrop = this.context.createElement('div');
-        backdrop.className = 'jw-controls-backdrop jw-reset';
+        backdrop.className = 'jw-controls-backdrop';
         this.backdrop = backdrop;
 
         const touchMode = model.get('touchMode');

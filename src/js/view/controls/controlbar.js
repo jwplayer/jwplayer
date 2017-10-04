@@ -15,7 +15,7 @@ import { prependChild } from 'utils/dom';
 
 function text(name, role) {
     const element = document.createElement('span');
-    element.className = 'jw-text jw-reset ' + name;
+    element.className = 'jw-text ' + name;
     if (role) {
         element.setAttribute('role', role);
     }
@@ -24,7 +24,7 @@ function text(name, role) {
 
 function textIcon(name, role) {
     const element = document.createElement('div');
-    element.className = 'jw-icon jw-icon-inline jw-text jw-reset ' + name;
+    element.className = 'jw-icon jw-icon-inline jw-text ' + name;
     if (role) {
         element.setAttribute('role', role);
     }
@@ -33,7 +33,7 @@ function textIcon(name, role) {
 
 function div(classes) {
     const element = document.createElement('div');
-    element.className = `jw-reset ${classes}`;
+    element.className = `${classes}`;
     return element;
 }
 
@@ -61,7 +61,7 @@ function createCastButton(castToggle, localization) {
     castButton.setAttribute('tabindex', '-1');
 
     const element = document.createElement('div');
-    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
+    element.className = 'jw-icon jw-icon-inline jw-icon-cast jw-button-color';
     element.style.display = 'none';
     element.style.cursor = 'pointer';
     element.appendChild(castButton);
@@ -238,7 +238,7 @@ export default class Controlbar {
         ].filter(e => e);
 
         this.el = document.createElement('div');
-        this.el.className = 'jw-controlbar jw-reset';
+        this.el.className = 'jw-controlbar';
 
         appendChildren(elements.buttonContainer, buttonLayout);
         appendChildren(this.el, layout);

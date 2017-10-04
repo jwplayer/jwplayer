@@ -20,7 +20,7 @@ export default class Slider {
     constructor(className, orientation) {
         Object.assign(this, Events);
 
-        this.className = className + ' jw-background-color jw-reset';
+        this.className = className + ' jw-background-color';
         this.orientation = orientation;
 
         this.dragStartListener = this.dragStart.bind(this);

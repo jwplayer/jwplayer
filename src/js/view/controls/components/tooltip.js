@@ -7,7 +7,7 @@ export default class Tooltip {
     constructor(name, ariaText, elementShown, svgIcons) {
         Object.assign(this, Events);
         this.el = document.createElement('div');
-        let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
+        let className = 'jw-icon jw-icon-tooltip jw-button-color ' + name;
         if (!elementShown) {
             className += ' jw-hidden';
         }
@@ -16,7 +16,7 @@ export default class Tooltip {
 
         this.el.className = className;
         this.container = document.createElement('div');
-        this.container.className = 'jw-overlay jw-reset';
+        this.container.className = 'jw-overlay';
         this.openClass = 'jw-open';
         this.componentType = 'tooltip';
 

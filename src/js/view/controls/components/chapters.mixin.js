@@ -7,7 +7,7 @@ class Cue {
         this.time = time;
         this.text = text;
         this.el = document.createElement('div');
-        this.el.className = 'jw-cue jw-reset';
+        this.el.className = 'jw-cue';
     }
 
     align(duration) {

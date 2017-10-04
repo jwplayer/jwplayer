@@ -197,7 +197,7 @@ function VideoProvider(_playerId, _playerConfig) {
         _videotag.setAttribute(name, value || '');
     }
 
-    _videotag.className = 'jw-video jw-reset';
+    _videotag.className = 'jw-video';
 
     this.isSDK = !!_playerConfig.sdkplatform;
     this.video = _videotag;
@@ -436,7 +436,7 @@ function VideoProvider(_playerId, _playerConfig) {
     this.load = function(item) {
         _setLevels(item.sources);
         _completeLoad(item.starttime || 0, item.duration || 0);
-        this.setupSideloadedTracks(item.tracks);        
+        this.setupSideloadedTracks(item.tracks);
     };
 
     this.play = function() {

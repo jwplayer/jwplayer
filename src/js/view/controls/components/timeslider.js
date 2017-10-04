@@ -11,15 +11,15 @@ class TimeTip extends Tooltip {
 
     setup() {
         this.text = document.createElement('span');
-        this.text.className = 'jw-text jw-reset';
+        this.text.className = 'jw-text';
         this.img = document.createElement('div');
-        this.img.className = 'jw-time-thumb jw-reset';
+        this.img.className = 'jw-time-thumb';
         this.containerWidth = 0;
         this.textLength = 0;
         this.dragJustReleased = false;
 
         var wrapper = document.createElement('div');
-        wrapper.className = 'jw-time-tip jw-reset';
+        wrapper.className = 'jw-time-tip';
         wrapper.appendChild(this.img);
         wrapper.appendChild(this.text);
 

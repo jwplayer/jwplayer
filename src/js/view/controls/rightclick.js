@@ -22,7 +22,7 @@ export default class RightClick {
 
         var menu = {
             items: [{
-                title: 'Powered by <span class="jw-reset">JW Player ' + majorMinorPatchPre + '</span>',
+                title: 'Powered by <span>JW Player ' + majorMinorPatchPre + '</span>',
                 featured: true,
                 showLogo: true,
                 link: 'https://jwplayer.com/learn-more'
