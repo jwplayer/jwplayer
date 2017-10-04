@@ -6,7 +6,7 @@ export default function SettingsContentItem(name, content, action) {
     let active;
     const contentItemElement = createElement(ContentItemTemplate(content));
     const contentItemUI = new UI(contentItemElement);
-    contentItemUI.on('click tap enter', () => {
+    contentItemUI.on('click tap', () => {
         action();
     });
 
@@ -23,6 +23,9 @@ export default function SettingsContentItem(name, content, action) {
         },
         element() {
             return contentItemElement;
+        },
+        uiElement() {
+            return contentItemUI;
         },
         destroy() {
             this.deactivate();

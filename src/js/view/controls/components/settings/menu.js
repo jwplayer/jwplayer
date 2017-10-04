@@ -17,31 +17,31 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     let visible;
     let active = null;
     const submenus = {};
+
     const settingsMenuElement = createElement(SettingsMenuTemplate());
-    const topbarElement = settingsMenuElement.querySelector('.jw-settings-topbar');
 
-    const closeButton = button('jw-settings-close', () => {
-        instance.close();
-    }, 'Close Settings', [cloneIcon('close')]);
-    closeButton.show();
-    closeButton.element().addEventListener('keydown', function(evt) {
-        if (evt.keyCode !== 9 || evt.shiftKey) {
-            return;
-        }
-
-        instance.close(true);
-    });
-
-    topbarElement.appendChild(closeButton.element());
-
-    const keyHandler = function(evt) {
+    const closeOnEnter = function(evt) {
         if (evt && evt.keyCode === 27) {
             instance.close(true);
             evt.stopPropagation();
         }
     };
+    settingsMenuElement.addEventListener('keydown', closeOnEnter);
 
-    settingsMenuElement.addEventListener('keydown', keyHandler);
+    const closeButton = button('jw-settings-close', () => {
+        instance.close();
+    }, 'Close Settings', [cloneIcon('close')]);
+
+    const closeOnButton = function(evt) {
+        if (evt.keyCode === 13 || (evt.keyCode === 9 && !evt.shiftKey)) {
+            instance.close(true);
+        }
+    };
+    closeButton.show();
+    closeButton.element().addEventListener('keydown', closeOnButton);
+
+    const topbarElement = settingsMenuElement.querySelector('.jw-settings-topbar');
+    topbarElement.appendChild(closeButton.element());
 
     const instance = {
         open(isDefault) {
@@ -83,6 +83,11 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
             if (submenu.isDefault) {
                 prependChild(topbarElement, submenu.categoryButtonElement);
+                submenu.categoryButtonElement.addEventListener('keydown', function(evt) {
+                    if (evt.keyCode === 9 && evt.shiftKey) {
+                        instance.close(true);
+                    }
+                });
             } else {
                 // sharing should always be the last submenu
                 const sharingButton = topbarElement.querySelector('.jw-submenu-sharing');
@@ -137,7 +142,8 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         },
         destroy() {
             this.close();
-            settingsMenuElement.removeEventListener('keydown', keyHandler);
+            settingsMenuElement.removeEventListener('keydown', closeOnEnter);
+            closeButton.element().removeEventListener('keydown', closeOnButton);
             emptyElement(settingsMenuElement);
         }
     };
