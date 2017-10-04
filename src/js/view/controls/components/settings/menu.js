@@ -1,7 +1,7 @@
 import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
-import { createElement, emptyElement, prependChild } from 'utils/dom';
+import { createElement, emptyElement, prependChild, addClass, removeClass } from 'utils/dom';
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
@@ -41,6 +41,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         }
     };
 
+    const outOfFocus = () => {
+        removeClass(active.categoryButtonElement, 'jw-first-submenu');
+//        window.removeEventListener('blur', outOfFocus);
+        console.log('blur out');
+    };
+
     settingsMenuElement.addEventListener('keydown', keyHandler);
 
     const instance = {
@@ -51,7 +57,10 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             addDocumentListeners(documentClickHandler);
 
             if (isDefault) {
+                addClass(active.categoryButtonElement, 'jw-first-submenu');
                 active.categoryButtonElement.focus();
+                console.log('blur in');
+                window.addEventListener('blur', outOfFocus, true);
             } else {
                 active.element().firstChild.focus();
             }
@@ -66,6 +75,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
             settingsMenuElement.setAttribute('aria-expanded', 'false');
             removeDocumentListeners(documentClickHandler);
+            window.removeEventListener('blur', outOfFocus);
         },
         toggle() {
             if (visible) {
