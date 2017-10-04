@@ -124,7 +124,7 @@ export default class Controls {
 
         // Settings Menu
         let lastState = null;
-        const visibilityChangeHandler = (visible) => {
+        const visibilityChangeHandler = (visible, isKeyEvent) => {
             const state = model.get('state');
             const settingsInteraction = { reason: 'settingsInteraction' };
 
@@ -143,8 +143,9 @@ export default class Controls {
             this.userActive();
             lastState = state;
 
-            if (!visible && this.controlbar.elements.settingsButton) {
-                this.controlbar.elements.settingsButton.element().focus();
+            const settingsButton = this.controlbar.elements.settingsButton;
+            if (!visible && isKeyEvent && settingsButton) {
+                settingsButton.element().focus();
             }
         };
         const settingsMenu = this.settingsMenu = createSettingsMenu(controlbar, visibilityChangeHandler);

@@ -26,7 +26,9 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
         // Qualities submenu is the default submenu
         submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);
         submenu.addContent(contentItems);
-        SimpleTooltip(categoryButtonElement, name, tooltipText);
+        if (!('ontouchstart' in window)) {
+            SimpleTooltip(categoryButtonElement, name, tooltipText);
+        }
         settingsMenu.addSubmenu(submenu);
     }
 
@@ -35,10 +37,17 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
 
 export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSelectionIndex, tooltipText) {
     const captionsContentItems = captionsList.map((track, index) => {
-        return SettingsContentItem(track.id, track.label, () => {
+        const contentItemElement = SettingsContentItem(track.id, track.label, () => {
             action(index);
             settingsMenu.close();
         });
+
+        contentItemElement.uiElement().on('enter', () => {
+            action(index);
+            settingsMenu.close(true);
+        });
+
+        return contentItemElement;
     });
 
     const captionsSubmenu = makeSubmenu(settingsMenu, CAPTIONS_SUBMENU, captionsContentItems, cloneIcon('cc-off'), tooltipText);
