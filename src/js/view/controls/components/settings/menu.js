@@ -26,7 +26,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             evt.stopPropagation();
         }
     };
-    settingsMenuElement.addEventListener('keyup', closeOnEnter);
+    settingsMenuElement.addEventListener('keydown', closeOnEnter);
 
     const closeButton = button('jw-settings-close', () => {
         instance.close();
@@ -40,7 +40,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         }
     };
     closeButton.show();
-    closeButton.element().addEventListener('keyup', closeOnButton);
+    closeButton.element().addEventListener('keydown', closeOnButton);
 
     const topbarElement = settingsMenuElement.querySelector('.jw-settings-topbar');
     topbarElement.appendChild(closeButton.element());
