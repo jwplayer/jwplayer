@@ -1,7 +1,7 @@
 import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
-import { createElement, emptyElement, prependChild, addClass, removeClass } from 'utils/dom';
+import { createElement, emptyElement, prependChild } from 'utils/dom';
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
@@ -41,11 +41,6 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         }
     };
 
-    const outOfFocus = () => {
-        removeClass(active.categoryButtonElement, 'jw-first-submenu');
-        active.categoryButtonElement.removeEventListener('blur', outOfFocus);
-    };
-
     settingsMenuElement.addEventListener('keydown', keyHandler);
 
     const instance = {
@@ -56,11 +51,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             addDocumentListeners(documentClickHandler);
 
             if (isDefault) {
-                if (window.event.pointerType === 'mouse') {
-                    addClass(active.categoryButtonElement, 'jw-first-submenu');
-                    active.categoryButtonElement.addEventListener('blur', outOfFocus);
+                if (!window.event.pointerType) {
+                    active.categoryButtonElement.focus();
                 }
-                active.categoryButtonElement.focus();
             } else {
                 active.element().firstChild.focus();
             }
