@@ -51,7 +51,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             addDocumentListeners(documentClickHandler);
 
             if (isDefault) {
-                active.categoryButtonElement.focus();
+                if (!window.event.pointerType) {
+                    active.categoryButtonElement.focus();
+                }
             } else {
                 active.element().firstChild.focus();
             }
