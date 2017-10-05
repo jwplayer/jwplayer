@@ -253,7 +253,6 @@ const Model = function() {
     this.detachMedia = function() {
         thenPlayPromise.cancel();
         _attached = false;
-        this.mediaModel.set('setup', false);
         if (_provider) {
             _provider.off('all', _videoEventHandler, this);
             _provider.detachMedia();
@@ -587,6 +586,9 @@ const Model = function() {
             playPromise = loadAndPlay(this, item);
             playAttempt(this, playPromise, playReason);
         } else {
+            if (item.starttime) {
+                _provider.seek(item.starttime);
+            }
             playPromise = _provider.play() || resolved;
             if (!this.mediaModel.get('started')) {
                 playAttempt(this, playPromise, playReason);
