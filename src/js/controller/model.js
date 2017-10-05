@@ -586,9 +586,6 @@ const Model = function() {
             playPromise = loadAndPlay(this, item);
             playAttempt(this, playPromise, playReason);
         } else {
-            if (item.starttime) {
-                _provider.seek(item.starttime);
-            }
             playPromise = _provider.play() || resolved;
             if (!this.mediaModel.get('started')) {
                 playAttempt(this, playPromise, playReason);
