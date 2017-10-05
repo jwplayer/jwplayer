@@ -51,6 +51,8 @@ const InstreamHtml5 = function(_controller, _model) {
 
     /** Load an instream item and initialize playback **/
     _this.load = function() {
+        // Let the player media model know we're using it's video tag
+        _model.mediaModel.srcReset();
 
         // Make sure it chooses a provider
         _adModel.stopVideo();
@@ -159,10 +161,7 @@ const InstreamHtml5 = function(_controller, _model) {
             return;
         }
 
-        // Let the player media model know we're using it's video tag
-        _model.mediaModel.srcReset();
-
-        const isVpaidProvider = provider.type === 'vpaid';
+        var isVpaidProvider = provider.type === 'vpaid';
 
         provider.off();
         provider.on('all', function(type, data) {
