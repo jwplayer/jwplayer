@@ -559,7 +559,7 @@ const Model = function() {
     this.preloadVideo = function() {
         const item = this.get('playlistItem');
         // Only attempt to preload if media is attached and hasn't been loaded
-        if (_attached && _provider &&
+        if (this.get('state') === 'idle' && _attached && _provider &&
             item.preload !== 'none' &&
             this.get('autostart') === false &&
             !this.mediaModel.get('setup') &&
