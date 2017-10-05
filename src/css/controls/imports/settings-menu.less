@@ -73,25 +73,25 @@
 }
 
 .jw-settings-submenu {
+    &:extend(._stretch);
     display: none;
     flex: 1 1 auto;
-    flex-flow: row wrap;
-    width: 100%;
-    height: 100%;
-    align-items: flex-start;
-    align-content: flex-start;
-    padding: 8px 20px 0 5px;
     overflow-y: auto;
+    padding: 8px 20px 0 5px;
+
+    &.jw-settings-submenu-active {
+        display: block;
+    }
 
     &::-webkit-scrollbar {
-        width: 6px;
         background-color: transparent;
+        width: 6px;
     }
 
     &::-webkit-scrollbar-thumb {
         background-color: @white;
-        border-radius: 6px;
         border: 1px solid @menu-background-color;
+        border-radius: 6px;
     }
 
     .jw-flag-touch & {
@@ -125,10 +125,6 @@
     .jw-flag-small-player & {
         line-height: 1.75;
     }
-}
-
-.jw-settings-submenu-active {
-    display: flex;
 }
 
 .jw-settings-open {
