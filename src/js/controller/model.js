@@ -21,6 +21,7 @@ const Model = function() {
     const _this = this;
     let _providers;
     let _provider;
+    let _oldSrc;
     let _beforecompleted = false;
     let _attached = true;
     let thenPlayPromise = cancelable(function() {});
@@ -251,11 +252,23 @@ const Model = function() {
         return _beforecompleted;
     };
 
+    function sourceChanged(event) {
+        _provider.video.removeEventListener('loadeddata', sourceChanged);
+        if (_oldSrc && event && event.srcElement && event.srcElement.src !== _oldSrc) {
+            _this.mediaModel.srcReset();
+        }
+        _oldSrc = null;
+    }
+
     this.detachMedia = function() {
         thenPlayPromise.cancel();
         _attached = false;
         if (_provider) {
             _provider.off('all', _videoEventHandler, this);
+            if (_provider.video) {
+                _oldSrc = _provider.video.src;
+                _provider.video.addEventListener('loadeddata', sourceChanged);
+            }
             _provider.detachMedia();
         }
     };
@@ -263,6 +276,10 @@ const Model = function() {
     this.attachMedia = function() {
         _attached = true;
         if (_provider) {
+            if (_provider.video) {
+                _provider.video.removeEventListener('loadeddata', sourceChanged);
+                _oldSrc = null;
+            }
             _provider.off('all', _videoEventHandler, this);
             _provider.on('all', _videoEventHandler, this);
         }
