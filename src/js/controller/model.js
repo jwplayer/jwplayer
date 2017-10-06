@@ -229,8 +229,9 @@ const Model = function() {
 
         _provider.volume(_this.get('volume'));
 
-        // Mute the video if autostarting on mobile. Otherwise, honor the model's mute value
-        _provider.mute(_this.autoStartOnMobile() || _this.get('mute'));
+        // Mute the video if autostarting on mobile, except for Android SDK. Otherwise, honor the model's mute value
+        const isAndroidSdk = _this.get('sdkplatform') === 1;
+        _provider.mute((this.autoStartOnMobile() && !isAndroidSdk) || _this.get('mute'));
 
         _provider.on('all', _videoEventHandler, this);
 
@@ -655,7 +656,8 @@ const Model = function() {
         }
 
         const autoStartOnMobile = this.autoStartOnMobile();
-        if (autoStartOnMobile) {
+        const isAndroidSdk = _this.get('sdkplatform') === 1;
+        if (autoStartOnMobile && !isAndroidSdk) {
             this.set('autostartMuted', true);
         }
         this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
