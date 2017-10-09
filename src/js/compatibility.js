@@ -184,9 +184,9 @@
             };
         };
 
-        utils.isAndroidNative = valueFn(environment.OS.androidNative);
+        utils.isAndroidNative = valueFn(environment.Browser.androidNative);
         utils.isAndroid = function(osVersion, excludeChrome) {
-            if (excludeChrome && environment.OS.androidNative) {
+            if (excludeChrome && environment.Browser.androidNative) {
                 return false;
             }
             if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {

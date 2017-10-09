@@ -33,6 +33,7 @@ const userAgent = navigator.userAgent;
 
 /**
  * @typedef {object} BrowserEnvironment
+ * @property {boolean} androidNative - Is the browser Android Native?
  * @property {boolean} chrome - Is the browser Chrome?
  * @property {boolean} edge - Is the browser Edge?
  * @property {boolean} facebook - Is the browser a Facebook webview?
@@ -47,7 +48,6 @@ export const Browser = {};
 /**
  * @typedef {object} OSEnvironment
  * @property {boolean} android - Is the operating system Android?
- * @property {boolean} androidNative - Is the operating system Android Native?
  * @property {boolean} iOS - Is the operating system iOS?
  * @property {boolean} mobile - Is the operating system iOS or Android?
  * @property {boolean} osx - Is the operating system Mac OS X?
@@ -71,6 +71,10 @@ const isWindows = () => {
 };
 
 Object.defineProperties(Browser, {
+    androidNative: {
+        get: memoize(isAndroidNative),
+        enumerable: true
+    },
     chrome: {
         get: memoize(isChrome),
         enumerable: true
@@ -108,10 +112,6 @@ Object.defineProperties(Browser, {
 Object.defineProperties(OS, {
     android: {
         get: memoize(isAndroid),
-        enumerable: true
-    },
-    androidNative: {
-        get: memoize(isAndroidNative),
         enumerable: true
     },
     iOS: {
