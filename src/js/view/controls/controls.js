@@ -198,7 +198,7 @@ export default class Controls {
                 return true;
             }
 
-            // On keypress show the controlbar for a few seconds;
+            // keep controls active when navigating inside the player
             if (!this.instreamState) {
                 const fullscreenButton = this.controlbar.elements.fullscreen;
                 const insideContainer = this.playerContainer.contains(evt.target);
@@ -207,7 +207,6 @@ export default class Controls {
                     (evt.keyCode === 9 && evt.shiftKey && evt.target === this.playerContainer) ||
                     (evt.keyCode === 9 && evt.target === fullscreenButton.element());
 
-                // keep controlbar open if inside the player via key events
                 this.userActive(null, insideContainer && !exitingContainer);
             }
 
@@ -269,6 +268,7 @@ export default class Controls {
         this.playerContainer.addEventListener('keydown', handleKeydown);
         this.keydownCallback = handleKeydown;
 
+        // If not mobile, show controls after closing overlay
         if (!OS.mobile) {
             const blurHandler = (evt) => {
                 const insidePlayer = evt.currentTarget.contains(evt.relatedTarget);
@@ -276,7 +276,6 @@ export default class Controls {
                     evt.currentTarget.classList.contains('jw-flag-overlay-open-related') ||
                     settingsMenu.element().contains(evt.target);
 
-                console.log('blur', insidePlayer, overlayOpen);
                 this.userActive(null, insidePlayer || overlayOpen);
             };
 
