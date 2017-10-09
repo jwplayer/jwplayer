@@ -135,8 +135,11 @@ Object.assign(Controller.prototype, {
         });
 
         _model.on('change:mediaModel', function(model) {
+            model.set('errorEvent', undefined);
             model.mediaModel.change(PLAYER_STATE, function(mediaModel, state) {
-                model.set(PLAYER_STATE, normalizeState(state));
+                if (!model.get('errorEvent')) {
+                    model.set(PLAYER_STATE, normalizeState(state));
+                }
             });
         });
 
@@ -459,6 +462,8 @@ Object.assign(Controller.prototype, {
             if (_preplay) {
                 _interruptPlay = true;
             }
+
+            _model.set('errorEvent', undefined);
 
             const provider = _model.getVideo();
             _model.stopVideo();
