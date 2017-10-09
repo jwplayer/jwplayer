@@ -59,7 +59,7 @@ const InstreamHtml5 = function(_controller, _model) {
     /** Load an instream item and initialize playback **/
     _this.load = function() {
         // Let the player media model know we're using it's video tag
-        _adModel.get('mediaContext').srcReset();
+        _this.srcReset();
 
         // Make sure it chooses a provider
         _adModel.stopVideo();
@@ -123,8 +123,8 @@ const InstreamHtml5 = function(_controller, _model) {
         }
 
         const mediaElement = _adModel.get('mediaElement');
-        mediaElement.addEventListener('abort', _this.srcReset);
-        mediaElement.addEventListener('emptied', _this.srcReset);
+        mediaElement.removeEventListener('abort', _this.srcReset);
+        mediaElement.removeEventListener('emptied', _this.srcReset);
 
         // Reset the player media model if the src was changed externally
         const srcChanged = mediaElement.src !== _adModel.get('mediaSrc');
