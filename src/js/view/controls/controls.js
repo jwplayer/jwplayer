@@ -203,10 +203,12 @@ export default class Controls {
                 const container = this.playerContainer;
                 const fullscreenButton = this.controlbar.elements.fullscreen;
                 const insideContainer = container !== evt.target && container.contains(evt.target);
+                const isTab = evt.keyCode === 9;
 
+                // check if we tab after fullscreen or shift-tab from player
                 const exitingContainer =
-                    (evt.keyCode === 9 && evt.shiftKey && evt.target === container) ||
-                    (evt.keyCode === 9 && evt.target === fullscreenButton.element());
+                    (isTab && evt.shiftKey && evt.target === container) ||
+                    (isTab && evt.target === fullscreenButton.element());
 
                 this.userActive(null, insideContainer && !exitingContainer);
             }
@@ -273,11 +275,12 @@ export default class Controls {
         if (!OS.mobile) {
             const blurHandler = (evt) => {
                 const insidePlayer = evt.currentTarget.contains(evt.relatedTarget);
-                const overlayOpen =
+                const overlayClosed =
                     evt.currentTarget.classList.contains('jw-flag-overlay-open-related') ||
                     settingsMenu.element().contains(evt.target);
 
-                this.userActive(null, insidePlayer || overlayOpen);
+                // show controls if inside the player and after overlay is closed
+                this.userActive(null, insidePlayer || overlayClosed);
             };
 
             this.playerContainer.addEventListener('blur', blurHandler, true);
