@@ -159,6 +159,9 @@ function VideoProvider(_playerId, _playerConfig) {
             _videotag.loop = false;
             // If there was a showing track, re-enable it
             this.enableTextTrack();
+            if (this.renderNatively) {
+                this.setTextTracks(this.video.textTracks);
+            }
             this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
         },
         stalledHandler(checkStartTime) {
