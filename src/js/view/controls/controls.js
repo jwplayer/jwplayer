@@ -197,10 +197,20 @@ export default class Controls {
                 // Let event bubble upwards
                 return true;
             }
-            // On keypress show the controlbar for a few seconds
+
+            // On keypress show the controlbar for a few seconds;
             if (!this.instreamState) {
-                this.userActive();
+                const fullscreenButton = this.controlbar.elements.fullscreen;
+                const insideContainer = this.playerContainer.contains(evt.target);
+
+                const exitingContainer =
+                    (evt.keyCode === 9 && evt.shiftKey && evt.target === this.playerContainer) ||
+                    (evt.keyCode === 9 && evt.target === fullscreenButton.element());
+
+                // keep controlbar open if inside the player via key events
+                this.userActive(null, insideContainer && !exitingContainer);
             }
+
             switch (evt.keyCode) {
                 case 27: // Esc
                     api.setFullscreen(false);
@@ -259,6 +269,21 @@ export default class Controls {
         this.playerContainer.addEventListener('keydown', handleKeydown);
         this.keydownCallback = handleKeydown;
 
+        if (!OS.mobile) {
+            const blurHandler = (evt) => {
+                const insidePlayer = evt.currentTarget.contains(evt.relatedTarget);
+                const overlayOpen =
+                    evt.currentTarget.classList.contains('jw-flag-overlay-open-related') ||
+                    settingsMenu.element().contains(evt.target);
+
+                console.log('blur', insidePlayer, overlayOpen);
+                this.userActive(null, insidePlayer || overlayOpen);
+            };
+
+            this.playerContainer.addEventListener('blur', blurHandler, true);
+            this.blurCallback = blurHandler;
+        }
+
         // Show controls when enabled
         this.userActive();
 
@@ -293,6 +318,10 @@ export default class Controls {
 
         if (this.keydownCallback) {
             this.playerContainer.removeEventListener('keydown', this.keydownCallback);
+        }
+
+        if (this.blurCallback) {
+            this.playerContainer.removeEventListener('blur', this.blurCallback);
         }
 
         const nextUpToolTip = this.nextUpToolTip;
@@ -368,8 +397,9 @@ export default class Controls {
     }
 
     userActive(timeout = ACTIVE_TIMEOUT, isKeyDown) {
+        clearTimeout(this.activeTimeout);
+
         if (!isKeyDown) {
-            clearTimeout(this.activeTimeout);
             this.activeTimeout = setTimeout(() => this.userInactive(),
                 timeout || ACTIVE_TIMEOUT);
         }
