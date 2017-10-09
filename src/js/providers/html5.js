@@ -732,7 +732,8 @@ function VideoProvider(_playerId, _playerConfig) {
         var endOfBuffer = endOfRange(_videotag.buffered);
         var live = _this.isLive();
 
-        if (live && _lastEndOfBuffer === endOfBuffer) {
+        // Don't end if we have noting buffered yet, or cannot get any information about the buffer
+        if (live && endOfBuffer && _lastEndOfBuffer === endOfBuffer) {
             if (_staleStreamTimeout === -1) {
                 _staleStreamTimeout = setTimeout(function () {
                     _stale = true;
