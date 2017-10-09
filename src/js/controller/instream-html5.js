@@ -22,12 +22,14 @@ const InstreamHtml5 = function(_controller, _model) {
     this.init = function(mediaElement) {
         // Initialize the instream player's model copied from main player's model
         const playerAttributes = _model.attributes;
+        const mediaModelContext = _model.mediaModel;
         _adModel = new Model().setup({
             id: playerAttributes.id,
             volume: playerAttributes.volume,
             fullscreen: playerAttributes.fullscreen,
             instreamMode: true,
             edition: playerAttributes.edition,
+            mediaContext: mediaModelContext,
             mediaElement: mediaElement,
             mediaSrc: mediaElement.src,
             mute: playerAttributes.mute || playerAttributes.autostartMuted,
@@ -45,14 +47,19 @@ const InstreamHtml5 = function(_controller, _model) {
         _adModel.on(ERROR, function(data) {
             _this.trigger(ERROR, data);
         }, _this);
-
+        // Listen to media element for events that indicate src was reset or load() was called
+        _this.srcReset = function() {
+            mediaModelContext.srcReset();
+        };
+        mediaElement.addEventListener('abort', _this.srcReset);
+        mediaElement.addEventListener('emptied', _this.srcReset);
         this._adModel = _adModel;
     };
 
     /** Load an instream item and initialize playback **/
     _this.load = function() {
         // Let the player media model know we're using it's video tag
-        _model.mediaModel.srcReset();
+        _this.srcReset();
 
         // Make sure it chooses a provider
         _adModel.stopVideo();
@@ -115,9 +122,12 @@ const InstreamHtml5 = function(_controller, _model) {
             }
         }
 
+        const mediaElement = _adModel.get('mediaElement');
+        mediaElement.removeEventListener('abort', _this.srcReset);
+        mediaElement.removeEventListener('emptied', _this.srcReset);
 
         // Reset the player media model if the src was changed externally
-        const srcChanged = _adModel.get('mediaElement').src !== _adModel.get('mediaSrc');
+        const srcChanged = mediaElement.src !== _adModel.get('mediaSrc');
         if (srcChanged) {
             _model.mediaModel.srcReset();
         }
@@ -171,11 +181,11 @@ const InstreamHtml5 = function(_controller, _model) {
             this.trigger(type, Object.assign({}, data, { type: type }));
         }, _this);
 
-        const mediaModelContext = _adModel.mediaModel;
+        const adMediaModelContext = _adModel.mediaModel;
         provider.on(PLAYER_STATE, (event) => {
-            mediaModelContext.set(PLAYER_STATE, event.newstate);
+            adMediaModelContext.set(PLAYER_STATE, event.newstate);
         });
-        mediaModelContext.on('change:' + PLAYER_STATE, (changeAdModel, state) => {
+        adMediaModelContext.on('change:' + PLAYER_STATE, (changeAdModel, state) => {
             stateHandler(state);
         });
         provider.attachMedia();
