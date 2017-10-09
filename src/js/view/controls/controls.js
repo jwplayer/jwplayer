@@ -200,11 +200,12 @@ export default class Controls {
 
             // keep controls active when navigating inside the player
             if (!this.instreamState) {
+                const container = this.playerContainer;
                 const fullscreenButton = this.controlbar.elements.fullscreen;
-                const insideContainer = this.playerContainer.contains(evt.target);
+                const insideContainer = container !== evt.target && container.contains(evt.target);
 
                 const exitingContainer =
-                    (evt.keyCode === 9 && evt.shiftKey && evt.target === this.playerContainer) ||
+                    (evt.keyCode === 9 && evt.shiftKey && evt.target === container) ||
                     (evt.keyCode === 9 && evt.target === fullscreenButton.element());
 
                 this.userActive(null, insideContainer && !exitingContainer);
