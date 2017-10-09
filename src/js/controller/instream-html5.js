@@ -45,7 +45,12 @@ const InstreamHtml5 = function(_controller, _model) {
         _adModel.on(ERROR, function(data) {
             _this.trigger(ERROR, data);
         }, _this);
-
+        // Listen to media element for events that indicate src was reset or load() was called
+        _this.srcReset = function() {
+            _model.mediaModel.srcReset();
+        };
+        mediaElement.addEventListener('abort', _this.srcReset);
+        mediaElement.addEventListener('emptied', _this.srcReset);
         this._adModel = _adModel;
     };
 
@@ -115,9 +120,12 @@ const InstreamHtml5 = function(_controller, _model) {
             }
         }
 
+        const mediaElement = _adModel.get('mediaElement');
+        mediaElement.addEventListener('abort', _this.srcReset);
+        mediaElement.addEventListener('emptied', _this.srcReset);
 
         // Reset the player media model if the src was changed externally
-        const srcChanged = _adModel.get('mediaElement').src !== _adModel.get('mediaSrc');
+        const srcChanged = mediaElement.src !== _adModel.get('mediaSrc');
         if (srcChanged) {
             _model.mediaModel.srcReset();
         }
