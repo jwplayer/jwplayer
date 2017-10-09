@@ -399,7 +399,7 @@ export default class Controls {
         }
     }
 
-    userActive(timeout = ACTIVE_TIMEOUT, isKeyDown) {
+    userActive(timeout, isKeyDown) {
         clearTimeout(this.activeTimeout);
 
         if (!isKeyDown) {
