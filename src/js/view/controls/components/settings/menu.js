@@ -53,7 +53,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             addDocumentListeners(documentClickHandler);
 
             if (isDefault) {
-                if (!window.event.pointerType) {
+                if (!window.event || !window.event.pointerType) {
                     active.categoryButtonElement.focus();
                 }
             } else {
