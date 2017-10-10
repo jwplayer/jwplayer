@@ -55,7 +55,7 @@ export function isIOS() {
 /** Matches Android devices **/
 export function isAndroidNative() {
     // Android Browser appears to include a user-agent string for Chrome/18
-    if (userAgentMatch(/chrome\/[123456789]/i) && !userAgentMatch(/chrome\/18/)) {
+    if (userAgentMatch(/chrome\/[123456789]/i) && !userAgentMatch(/chrome\/18/i) && !isFF()) {
         return false;
     }
     return isAndroid();
