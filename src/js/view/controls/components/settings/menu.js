@@ -53,7 +53,8 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             addDocumentListeners(documentClickHandler);
 
             if (isDefault) {
-                if (!window.event.pointerType) {
+                // TODO: remove window.event; instead, pass the event from the button interaction or use 'keyup' in controls.js
+                if (!window.event || !window.event.pointerType) {
                     active.categoryButtonElement.focus();
                 }
             } else {
