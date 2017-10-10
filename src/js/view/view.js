@@ -225,8 +225,6 @@ function View(_api, _model) {
         focusHelper = flagNoFocus(_playerElement);
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
-        _playerElement.addEventListener('focus', onFocus);
-
         _model.on('change:errorEvent', _errorHandler);
         _model.on('change:hideAdsControls', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
@@ -758,13 +756,6 @@ function View(_api, _model) {
         }
     }
 
-    function onFocus() {
-        // On tab-focus, show the control bar for a few seconds
-        if (_controls && !_instreamModel && !_isMobile) {
-            _controls.userActive(null, true);
-        }
-    }
-
     const settingsMenuVisible = () => {
         const settingsMenu = _controls && _controls.settingsMenu;
         return !!(settingsMenu && settingsMenu.visible);
@@ -863,7 +854,6 @@ function View(_api, _model) {
         this.off();
         cancelAnimationFrame(_resizeContainerRequestId);
         clearTimeout(_resizeMediaTimeout);
-        _playerElement.removeEventListener('focus', onFocus);
         if (focusHelper) {
             focusHelper.destroy();
             focusHelper = null;

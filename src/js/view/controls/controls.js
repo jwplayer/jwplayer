@@ -46,6 +46,8 @@ export default class Controls {
         this.enabled = true;
         this.instreamState = null;
         this.keydownCallback = null;
+        this.keyupCallback = null;
+        this.blurCallback = null;
         this.mute = null;
         this.nextUpToolTip = null;
         this.playerContainer = playerContainer;
@@ -140,7 +142,7 @@ export default class Controls {
             }
 
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
-            this.userActive();
+            this.userActive(null, visible || isKeyEvent);
             lastState = state;
 
             const settingsButton = this.controlbar.elements.settingsButton;
@@ -197,13 +199,12 @@ export default class Controls {
                 // Let event bubble upwards
                 return true;
             }
-            // On keypress show the controlbar for a few seconds
-            if (!this.instreamState) {
-                this.userActive();
-            }
+
             switch (evt.keyCode) {
                 case 27: // Esc
                     api.setFullscreen(false);
+                    this.playerContainer.blur();
+                    this.userInactive();
                     break;
                 case 13: // enter
                 case 32: // space
@@ -259,6 +260,29 @@ export default class Controls {
         this.playerContainer.addEventListener('keydown', handleKeydown);
         this.keydownCallback = handleKeydown;
 
+        // keep controls active when navigating inside the player
+        const handleKeyup = (evt) => {
+            if (!this.instreamState) {
+                const isTab = evt.keyCode === 9;
+                if (isTab) {
+                    const insideContainer = this.playerContainer.contains(evt.target);
+                    this.userActive(null, insideContainer);
+                }
+            }
+        };
+        this.playerContainer.addEventListener('keyup', handleKeyup);
+        this.keyupCallback = handleKeyup;
+
+        // Hide controls when focus leaves the player
+        const blurCallback = (evt) => {
+            const insideContainer = this.playerContainer.contains(evt.relatedTarget);
+            if (!insideContainer) {
+                this.userInactive();
+            }
+        };
+        this.playerContainer.addEventListener('blur', blurCallback, true);
+        this.blurCallback = blurCallback;
+
         // Show controls when enabled
         this.userActive();
 
@@ -293,6 +317,14 @@ export default class Controls {
 
         if (this.keydownCallback) {
             this.playerContainer.removeEventListener('keydown', this.keydownCallback);
+        }
+
+        if (this.keyupCallback) {
+            this.playerContainer.removeEventListener('keyup', this.keyupCallback);
+        }
+
+        if (this.blurCallback) {
+            this.playerContainer.removeEventListener('blur', this.blurCallback);
         }
 
         const nextUpToolTip = this.nextUpToolTip;
@@ -367,9 +399,10 @@ export default class Controls {
         }
     }
 
-    userActive(timeout = ACTIVE_TIMEOUT, isKeyDown) {
+    userActive(timeout, isKeyDown) {
+        clearTimeout(this.activeTimeout);
+
         if (!isKeyDown) {
-            clearTimeout(this.activeTimeout);
             this.activeTimeout = setTimeout(() => this.userInactive(),
                 timeout || ACTIVE_TIMEOUT);
         }
