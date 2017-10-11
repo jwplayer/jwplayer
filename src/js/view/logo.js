@@ -82,12 +82,12 @@ define([
             if (_logo) {
                 const dock = container.querySelector('.jw-dock');
 
-                if (_model.get('controls') && dock) {
+                // Dock must be a child of this container, to insert the logo before it when "controls" is true.
+                if (dock && dock.parentNode === container) {
                     container.insertBefore(_logo, dock);
-                    return;
+                } else {
+                    container.appendChild(_logo);
                 }
-
-                container.appendChild(_logo);
             }
         };
 
