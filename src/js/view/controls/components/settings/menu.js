@@ -22,7 +22,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const closeOnEnter = function(evt) {
         if (evt && evt.keyCode === 27) {
-            instance.close(true);
+            instance.close(evt);
             evt.stopPropagation();
         }
     };
@@ -36,7 +36,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         // Close settings menu when enter is pressed on the close button
         // or when tab key is pressed since it is the last element in topbar
         if (evt.keyCode === 13 || (evt.keyCode === 9 && !evt.shiftKey)) {
-            instance.close(true);
+            instance.close(evt);
         }
     };
     closeButton.show();
@@ -62,9 +62,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             }
 
         },
-        close(isKeyEvent = false) {
+        close(event = {}) {
             visible = false;
-            onVisibility(visible, isKeyEvent);
+            onVisibility(visible, event);
 
             active = null;
             deactivateAllSubmenus(submenus);
@@ -91,7 +91,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                 submenu.categoryButtonElement.addEventListener('keydown', function(evt) {
                     // close settings menu if you shift-tab on the first category button element
                     if (evt.keyCode === 9 && evt.shiftKey) {
-                        instance.close(true);
+                        instance.close(evt);
                     }
                 });
             } else {

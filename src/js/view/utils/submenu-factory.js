@@ -39,7 +39,7 @@ export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSe
     const captionsContentItems = captionsList.map((track, index) => {
         const contentItemElement = SettingsContentItem(track.id, track.label, (evt) => {
             action(index);
-            settingsMenu.close(evt.type === 'enter');
+            settingsMenu.close(evt);
         });
 
         return contentItemElement;
@@ -57,7 +57,7 @@ export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, ini
     const audioTracksItems = audioTracksList.map((track, index) => {
         return SettingsContentItem(track.name, track.name, (evt) => {
             action(index);
-            settingsMenu.close(evt.type === 'enter');
+            settingsMenu.close(evt);
         });
     });
 
@@ -74,7 +74,7 @@ export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initial
     const qualitiesItems = qualitiesList.map((track, index) => {
         return SettingsContentItem(track.label, track.label, (evt) => {
             action(index);
-            settingsMenu.close(evt.type === 'enter');
+            settingsMenu.close(evt);
         });
     });
 
@@ -90,7 +90,7 @@ export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialS
     const rateItems = rateList.map((playbackRate) => {
         return SettingsContentItem(playbackRate, playbackRate + 'x', (evt) => {
             action(playbackRate);
-            settingsMenu.close(evt.type === 'enter');
+            settingsMenu.close(evt);
         });
     });
 
