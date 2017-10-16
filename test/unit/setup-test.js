@@ -2,9 +2,18 @@ define([
     'test/underscore',
     'jquery',
     'api/api',
-], function (_, $, Api) {
+    'mock/video-element-polyfill'
+], function (_, $, Api, videoPolyfill) {
 
     describe('Setup', function() {
+
+        beforeEach(function() {
+            videoPolyfill.install();
+        });
+
+        afterEach(function() {
+            videoPolyfill.uninstall();
+        });
 
         it('fails when playlist is not an array', function (done) {
 

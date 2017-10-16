@@ -21,14 +21,22 @@ define([
          *****  Public instream API methods  *****
          *****************************************/
 
-        this.init = function() {
+        this.init = function(mediaElement) {
             // Initialize the instream player's model copied from main player's model
+            var playerAttributes = _model.attributes;
             _adModel = new Model().setup({
                 id: _model.get('id'),
                 volume: _model.get('volume'),
                 fullscreen: _model.get('fullscreen'),
-                mute: _model.get('mute') || _model.get('autostartMuted'),
-                instreamMode: true
+                instreamMode: true,
+                mediaElement: mediaElement,
+                edition: playerAttributes.edition,
+                mute: playerAttributes.mute || playerAttributes.autostartMuted,
+                autostartMuted: playerAttributes.autostartMuted,
+                autostart: playerAttributes.autostart,
+                advertising: playerAttributes.advertising,
+                sdkplatform: playerAttributes.sdkplatform,
+                skipButton: false
             });
             _adModel.on('fullscreenchange', _nativeFullscreenHandler);
 

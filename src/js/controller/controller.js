@@ -87,6 +87,15 @@ define([
             _model.setup(config, storage);
             _view = this._view = new View(_api, _model);
 
+            // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
+            let mediaElement = this.currentContainer.querySelector('video, audio');
+            if (!mediaElement) {
+                mediaElement = document.createElement('video');
+            }
+            mediaElement.className = 'jw-video jw-reset';
+            _model.attributes.mediaElement = mediaElement;
+            mediaElement.load();
+
             _setup = new Setup(_api, _model, _view, _setPlaylist);
 
             _setup.on(events.JWPLAYER_READY, _playerReady, this);
@@ -212,12 +221,7 @@ define([
 
             _model.on('change:viewSetup', function(model, viewSetup) {
                 if (viewSetup) {
-                    const mediaElement = this.currentContainer.querySelector('video, audio');
                     _this.showView(_view.element());
-                    if (mediaElement) {
-                        const mediaContainer = _model.get('mediaContainer');
-                        mediaContainer.appendChild(mediaElement);
-                    }
                 }
             }, this);
 
@@ -358,6 +362,8 @@ define([
                 _this.trigger('destroyPlugin', {});
                 _stop(true);
 
+                _primeMediaElementForPlayback();
+
                 autostartFallbackOnItemReady();
 
                 switch (typeof item) {
@@ -429,6 +435,7 @@ define([
                     if (_interruptPlay) {
                         _interruptPlay = false;
                         _actionOnAttach = null;
+                        _primeMediaElementForPlayback();
                         return;
                     }
                 }
@@ -452,6 +459,20 @@ define([
                 if (status instanceof utils.Error) {
                     _this.triggerError(status);
                     _actionOnAttach = null;
+                }
+            }
+
+            function _inInteraction(event) {
+                return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
+            }
+
+            function _primeMediaElementForPlayback() {
+                // If we're in a user-gesture event call load() on video to allow async playback
+                if (_inInteraction(window.event)) {
+                    mediaElement = _model.get('mediaElement');
+                    if (!mediaElement.src) {
+                        mediaElement.load();
+                    }
                 }
             }
 
