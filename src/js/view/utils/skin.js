@@ -213,14 +213,8 @@ export function handleColorOverrides(playerId, skin) {
 
         addStyle([
             '.jw-nextup',
-            '.jw-settings-submenu',
+            '.jw-settings-menu',
         ], 'background', config.background);
-
-        if (config.background) {
-            addStyle([
-                '.jw-settings-submenu'
-            ], 'opacity', 0.7);
-        }
     }
 
     function styleTooltips(config) {
