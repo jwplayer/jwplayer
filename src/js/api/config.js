@@ -31,7 +31,7 @@ const Defaults = {
         prev: 'Previous',
         next: 'Next',
         cast: 'Chromecast',
-        airplay: 'Airplay',
+        airplay: 'AirPlay',
         fullscreen: 'Fullscreen',
         playlist: 'Playlist',
         hd: 'Quality',
