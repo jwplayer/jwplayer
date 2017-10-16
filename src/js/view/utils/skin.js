@@ -213,7 +213,7 @@ export function handleColorOverrides(playerId, skin) {
 
         addStyle([
             '.jw-nextup',
-            '.jw-settings-submenu',
+            '.jw-settings-menu',
         ], 'background', config.background);
     }
 
