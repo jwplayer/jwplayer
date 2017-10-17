@@ -25,7 +25,7 @@
     box-shadow: 0 0 10px fade(@black, 50%);
     color: @inactive-color;
     display: inline-block;
-    max-width: 400px;
+    max-width: 280px;
     overflow: hidden;
     opacity: 0;
     position: relative;
@@ -38,6 +38,14 @@
 
     &:hover .jw-nextup-tooltip {
         color: @active-color;
+    }
+
+    &.jw-nextup-thumbnail-visible {
+        max-width: 400px;
+
+        .jw-nextup-thumbnail {
+            display: block;
+        }
     }
 }
 
@@ -53,10 +61,11 @@
 
 .jw-nextup-tooltip {
     display: flex;
+    height: 80px;
 }
 
 .jw-nextup-thumbnail {
-    .rect(120px, 80px);
+    width: 120px;
     background-position: center;
     background-size: cover;
     flex: 0 0 auto;
@@ -80,10 +89,6 @@
 
 .jw-nextup-header {
     font-weight: bold;
-}
-
-.jw-nextup-thumbnail-visible {
-    display: block;
 }
 
 .jw-nextup-title {
