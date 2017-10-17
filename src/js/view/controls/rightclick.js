@@ -19,6 +19,7 @@ export default class RightClick {
     buildArray() {
         var semverParts = version.split('+');
         var majorMinorPatchPre = semverParts[0];
+        var isBeta = majorMinorPatchPre.indexOf('beta') > 0;
 
         var menu = {
             items: [{
@@ -33,8 +34,10 @@ export default class RightClick {
         var versionMeta = semverParts[1];
         if (isPrerelease && versionMeta) {
             var pairs = versionMeta.split('.');
+            var titleString = isBeta ? pairs[0] : pairs[0] + '.' + pairs[1];
+
             menu.items.push({
-                title: 'build: (' + pairs[0] + '.' + pairs[1] + ')',
+                title: 'build: (' + titleString + ')',
                 link: '#'
             });
         }
