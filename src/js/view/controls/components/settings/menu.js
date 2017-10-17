@@ -62,7 +62,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             }
 
         },
-        close(event = {}) {
+        close(event) {
             visible = false;
             onVisibility(visible, event);
 
