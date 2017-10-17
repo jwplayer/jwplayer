@@ -29,16 +29,6 @@ export default class RightClick {
             }]
         };
 
-        var isPrerelease = majorMinorPatchPre.indexOf('-') > 0;
-        var versionMeta = semverParts[1];
-        if (isPrerelease && versionMeta) {
-            var pairs = versionMeta.split('.');
-            menu.items.push({
-                title: 'build: (' + pairs[0] + '.' + pairs[1] + ')',
-                link: '#'
-            });
-        }
-
         var provider = this.model.get('provider');
         if (provider && provider.name.indexOf('flash') >= 0) {
             var text = 'Flash Version ' + flashVersion();
