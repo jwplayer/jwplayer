@@ -19,7 +19,6 @@ define([
     var MIN_DVR_DURATION = 120;
     var _isIE = utils.isIE();
     var _isIE9 = utils.isIE(9);
-    var _isMSIE = utils.isMSIE();
     var _isMobile = utils.isMobile();
     var _isFirefox = utils.isFF();
     var _isAndroid = utils.isAndroidNative();
@@ -115,6 +114,7 @@ define([
 
         if (!_videotag) {
             _videotag = document.createElement('video');
+            _videotag.load();
 
             if (_isMobile) {
                 _setAttribute('jw-gesture-required');
@@ -423,9 +423,10 @@ define([
             _delayedSeek = 0;
             clearTimeouts();
 
+            var previousSource = _videotag.src;
             var sourceElement = document.createElement('source');
             sourceElement.src = _levels[_currentQuality].file;
-            var sourceChanged = (_videotag.src !== sourceElement.src);
+            var sourceChanged = (previousSource !== sourceElement.src);
 
             var loadedSrc = _videotag.getAttribute('jw-loaded');
 
@@ -435,7 +436,9 @@ define([
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
                 _this.setupSideloadedTracks(_this._itemTracks);
-                _videotag.load();
+                if (previousSource && sourceChanged) {
+                    _videotag.load();
+                }
             } else {
                 // Load event is from the same video as before
                 if (startTime === 0 && _videotag.currentTime > 0) {
@@ -482,7 +485,7 @@ define([
                 // Playback rate is broken on Android HLS
                 _this.supportsPlaybackRate = false;
             }
-            if (source.preload && source.preload !== _videotag.getAttribute('preload')) {
+            if (source.preload && source.preload !== 'none' && source.preload !== _videotag.getAttribute('preload')) {
                 _setAttribute('preload', source.preload);
             }
 
@@ -502,15 +505,12 @@ define([
                 _videotag.removeAttribute('src');
                 _videotag.removeAttribute('jw-loaded');
                 _videotag.removeAttribute('jw-played');
+                _videotag.pause();
                 dom.emptyElement(_videotag);
                 cssUtils.style(_videotag, {
                     objectFit: ''
                 });
                 _currentQuality = -1;
-                // Don't call load in iE9/10 and check for load in PhantomJS
-                if (!_isMSIE && 'load' in _videotag) {
-                    _videotag.load();
-                }
             }
         }
 
@@ -567,7 +567,12 @@ define([
             _position = item.starttime || 0;
             _duration = item.duration || 0;
             _visualQuality.reason = '';
-            _setVideotagSource(_levels[_currentQuality]);
+
+            var source = _levels[_currentQuality];
+            if (source.preload !== 'none') {
+                _setVideotagSource(source);
+            }
+
             this.setupSideloadedTracks(item.tracks);
         };
 

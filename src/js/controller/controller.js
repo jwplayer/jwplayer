@@ -360,6 +360,8 @@ define([
 
                 autostartFallbackOnItemReady();
 
+                _primeMediaElementForPlayback();
+
                 switch (typeof item) {
                     case 'string':
                         _loadPlaylist(item);
@@ -422,6 +424,8 @@ define([
                     _setItem(0);
                 }
 
+                _primeMediaElementForPlayback();
+
                 if (!_preplay) {
                     _preplay = true;
                     _this.triggerAfterReady(events.JWPLAYER_MEDIA_BEFOREPLAY, { playReason: _model.get('playReason') });
@@ -452,6 +456,20 @@ define([
                 if (status instanceof utils.Error) {
                     _this.triggerError(status);
                     _actionOnAttach = null;
+                }
+            }
+
+            function _inInteraction(event) {
+                return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
+            }
+
+            function _primeMediaElementForPlayback() {
+                // If we're in a user-gesture event call load() on video to allow async playback
+                if (_inInteraction(window.event)) {
+                    const mediaElement = _this.currentContainer.querySelector('video, audio');
+                    if (mediaElement && _isIdle()) {
+                        mediaElement.load();
+                    }
                 }
             }
 
