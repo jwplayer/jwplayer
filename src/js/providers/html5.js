@@ -193,6 +193,7 @@ function VideoProvider(_playerId, _playerConfig) {
     let _lastEndOfBuffer = null;
     let _androidHls = false;
 
+
     function _setAttribute(name, value) {
         _videotag.setAttribute(name, value || '');
     }
@@ -339,7 +340,6 @@ function VideoProvider(_playerId, _playerConfig) {
     }
 
     function _setVideotagSource(source) {
-        _androidHls = isAndroidHls(source);
         _audioTracks = null;
         _currentAudioTrackIndex = -1;
         if (!visualQuality.reason) {
@@ -347,10 +347,7 @@ function VideoProvider(_playerId, _playerConfig) {
             visualQuality.level = {};
         }
         _canSeek = false;
-        if (_androidHls) {
-            // Playback rate is broken on Android HLS
-            _this.supportsPlaybackRate = false;
-        }
+
 
         var sourceElement = document.createElement('source');
         sourceElement.src = source.file;
@@ -420,6 +417,12 @@ function VideoProvider(_playerId, _playerConfig) {
     this.init = function(item) {
         _levels = item.sources;
         _currentQuality = _pickInitialQuality(item.sources);
+        const source = _levels[_currentQuality];
+        _androidHls = isAndroidHls(source);        
+        if (_androidHls) {
+            // Playback rate is broken on Android HLS
+            _this.supportsPlaybackRate = false;
+        }
         // the loadeddata event determines the mediaType for HLS sources
         if (item.sources.length && item.sources[0].type !== 'hls') {
             this.sendMediaType(item.sources);
