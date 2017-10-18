@@ -8,7 +8,7 @@ export default class NextDisplayIcon {
         });
 
         model.change('nextUp', function(nextUpChangeModel, nextUp) {
-            element.style.display = nextUp ? '' : 'none';
+            element.style.visibility = nextUp ? '' : 'hidden';
         });
 
         this.el = element;
