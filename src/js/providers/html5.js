@@ -304,6 +304,8 @@ define([
         }
 
         function _pauseHandler() {
+            clearTimeouts();
+
             // Sometimes the browser will fire "complete" and then a "pause" event
             if (_this.state === states.COMPLETE) {
                 return;
@@ -407,6 +409,13 @@ define([
             if (promise && promise.catch) {
                 promise.catch(function(err) {
                     if (_videotag.paused) {
+                        // Send a time update to update ads UI
+                        // `isDurationChange` prevents this from propigating an "adTime" event
+                        _this.trigger(events.JWPLAYER_MEDIA_TIME, {
+                            position: _position,
+                            duration: _duration,
+                            isDurationChange: true
+                        });
                         _this.setState(states.PAUSED);
                     }
                     // User gesture required to start playback
