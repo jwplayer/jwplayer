@@ -347,7 +347,6 @@ function VideoProvider(_playerId, _playerConfig) {
         }
         _canSeek = false;
 
-
         var sourceElement = document.createElement('source');
         sourceElement.src = source.file;
         var sourceChanged = (_videotag.src !== sourceElement.src);
