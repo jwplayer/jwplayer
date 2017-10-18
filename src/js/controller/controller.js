@@ -387,8 +387,8 @@ define([
                 });
                 loader.on(events.JWPLAYER_ERROR, function(evt) {
                     evt.message = 'Error loading playlist: ' + evt.message;
-                    this.triggerError(evt);
-                }, this);
+                    _this.triggerError(evt);
+                }, _this);
                 loader.load(toLoad);
             }
 
