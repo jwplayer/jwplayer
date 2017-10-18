@@ -97,7 +97,6 @@ define([
         var _audioTracks = null;
         var _currentAudioTrackIndex = -1;
         var _visualQuality = { level: {} };
-        var _canPlay = false;
 
         var _staleStreamDuration = 3 * 10 * 1000;
         var _staleStreamTimeout = null;
@@ -268,7 +267,7 @@ define([
         }
 
         function _canPlayHandler() {
-            _canSeek = _canPlay = true;
+            _canSeek = true;
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
@@ -287,9 +286,8 @@ define([
 
         function _sendBufferFull() {
             // Wait until the canplay event on iOS to send the bufferFull event
-            if (!_bufferFull && (!utils.isIOS() || _canPlay)) {
+            if (!_bufferFull) {
                 _bufferFull = true;
-                _canPlay = false;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
