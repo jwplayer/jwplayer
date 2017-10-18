@@ -126,9 +126,10 @@ export default class Controls {
 
         // Settings Menu
         let lastState = null;
-        const visibilityChangeHandler = (visible, isKeyEvent) => {
+        const visibilityChangeHandler = (visible, evt) => {
             const state = model.get('state');
             const settingsInteraction = { reason: 'settingsInteraction' };
+            const isKeyEvent = (evt && evt.sourceEvent || evt || {}).type === 'keydown';
 
             utils.toggleClass(this.div, 'jw-settings-open', visible);
             if (getBreakpoint(model.get('containerWidth')) < 2) {
@@ -140,7 +141,7 @@ export default class Controls {
                     api.play(settingsInteraction);
                 }
             }
-
+            
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive(null, visible || isKeyEvent);
             lastState = state;

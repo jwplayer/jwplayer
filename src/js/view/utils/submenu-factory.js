@@ -37,14 +37,9 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
 
 export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSelectionIndex, tooltipText) {
     const captionsContentItems = captionsList.map((track, index) => {
-        const contentItemElement = SettingsContentItem(track.id, track.label, () => {
+        const contentItemElement = SettingsContentItem(track.id, track.label, (evt) => {
             action(index);
-            settingsMenu.close();
-        });
-
-        contentItemElement.uiElement().on('enter', () => {
-            action(index);
-            settingsMenu.close(true);
+            settingsMenu.close(evt);
         });
 
         return contentItemElement;
@@ -60,9 +55,9 @@ export function removeCaptionsSubmenu(settingsMenu) {
 
 export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, initialSelectionIndex, tooltipText) {
     const audioTracksItems = audioTracksList.map((track, index) => {
-        return SettingsContentItem(track.name, track.name, () => {
+        return SettingsContentItem(track.name, track.name, (evt) => {
             action(index);
-            settingsMenu.close();
+            settingsMenu.close(evt);
         });
     });
 
@@ -77,9 +72,9 @@ export function removeAudioTracksSubmenu(settingsMenu) {
 
 export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, tooltipText) {
     const qualitiesItems = qualitiesList.map((track, index) => {
-        return SettingsContentItem(track.label, track.label, () => {
+        return SettingsContentItem(track.label, track.label, (evt) => {
             action(index);
-            settingsMenu.close();
+            settingsMenu.close(evt);
         });
     });
 
@@ -93,9 +88,9 @@ export function removeQualitiesSubmenu(settingsMenu) {
 
 export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialSelectionIndex, tooltipText) {
     const rateItems = rateList.map((playbackRate) => {
-        return SettingsContentItem(playbackRate, playbackRate + 'x', () => {
+        return SettingsContentItem(playbackRate, playbackRate + 'x', (evt) => {
             action(playbackRate);
-            settingsMenu.close();
+            settingsMenu.close(evt);
         });
     });
 
