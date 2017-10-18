@@ -193,7 +193,6 @@ function VideoProvider(_playerId, _playerConfig) {
     let _lastEndOfBuffer = null;
     let _androidHls = false;
 
-
     function _setAttribute(name, value) {
         _videotag.setAttribute(name, value || '');
     }
