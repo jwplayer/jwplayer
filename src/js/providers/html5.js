@@ -69,6 +69,7 @@ define([
             loadeddata: _onLoadedData, // we have video tracks (text, audio, metadata)
             loadedmetadata: _loadedMetadataHandler, // we have video dimensions
             canplay: _canPlayHandler,
+            play: _loading,
             playing: _playingHandler,
             progress: _progressHandler,
             pause: _pauseHandler,
@@ -96,7 +97,6 @@ define([
         var _audioTracks = null;
         var _currentAudioTrackIndex = -1;
         var _visualQuality = { level: {} };
-        var _canPlay = false;
 
         var _staleStreamDuration = 3 * 10 * 1000;
         var _staleStreamTimeout = null;
@@ -267,7 +267,7 @@ define([
         }
 
         function _canPlayHandler() {
-            _canSeek = _canPlay = true;
+            _canSeek = true;
             if (!_isAndroidHLS) {
                 _setMediaType();
             }
@@ -286,9 +286,8 @@ define([
 
         function _sendBufferFull() {
             // Wait until the canplay event on iOS to send the bufferFull event
-            if (!_bufferFull && (!utils.isIOS() || _canPlay)) {
+            if (!_bufferFull) {
                 _bufferFull = true;
-                _canPlay = false;
                 _this.trigger(events.JWPLAYER_MEDIA_BUFFER_FULL);
             }
         }
@@ -407,10 +406,15 @@ define([
             var promise = _videotag.play();
             if (promise && promise.catch) {
                 promise.catch(function(err) {
-                    console.warn(err);
+                    if (_videotag.paused) {
+                        _this.setState(states.PAUSED);
+                    }
                     // User gesture required to start playback
-                    if (err.name === 'NotAllowedError' && _videotag.hasAttribute('jw-gesture-required')) {
-                        _this.trigger('autoplayFailed');
+                    if (err.name === 'NotAllowedError') {
+                        console.warn(err);
+                        if (_videotag.hasAttribute('jw-gesture-required')) {
+                            _this.trigger('autoplayFailed');
+                        }
                     }
                 });
             } else if (_videotag.hasAttribute('jw-gesture-required')) {
@@ -430,8 +434,6 @@ define([
 
             var loadedSrc = _videotag.getAttribute('jw-loaded');
 
-            var hasPlayed = _videotag.hasAttribute('jw-played');
-
             if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
@@ -446,29 +448,15 @@ define([
                     _delayedSeek = -1;
                     _this.seek(startTime);
                 }
-
-                _play();
             }
 
             _position = _videotag.currentTime;
 
-            if (_isMobile && !hasPlayed) {
-                // results in html5.controller calling video.play()
-                _sendBufferFull();
-                // If we're still paused, then the tag isn't loading yet due to mobile interaction restrictions.
-                if (!_videotag.paused && _this.state !== states.PLAYING) {
-                    _this.setState(states.LOADING);
-                }
-            }
-
-            // in ios and fullscreen, set controls true, then when it goes to normal screen the controls don't show'
-            if (utils.isIOS() && _this.getFullScreen()) {
-                _videotag.controls = true;
-            }
-
             if (startTime > 0) {
                 _this.seek(startTime);
             }
+
+            _play();
         }
 
         function _setVideotagSource(source) {
@@ -534,6 +522,10 @@ define([
             return end;
         }
 
+        function _loading() {
+            _this.setState(states.LOADING);
+        }
+
         this.stop = function() {
             clearTimeouts();
             _clearVideotagSource();
@@ -584,14 +576,14 @@ define([
             }
             if (!_isMobile || _videotag.hasAttribute('jw-played')) {
                 // don't change state on mobile before user initiates playback
-                _this.setState(states.LOADING);
+                _loading();
             }
             _completeLoad(item.starttime || 0, item.duration || 0);
         };
 
         this.play = function() {
             if (_this.seeking) {
-                _this.setState(states.LOADING);
+                _loading();
                 _this.once(events.JWPLAYER_MEDIA_SEEKED, _this.play);
                 return;
             }
@@ -917,7 +909,7 @@ define([
                     if (duration <= 0) {
                         duration = _duration;
                     }
-                    _this.setState(states.LOADING);
+                    _loading();
                     _completeLoad(time, duration);
                 }
             }
