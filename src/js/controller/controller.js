@@ -424,8 +424,6 @@ define([
                     _setItem(0);
                 }
 
-                _primeMediaElementForPlayback();
-
                 if (!_preplay) {
                     _preplay = true;
                     _this.triggerAfterReady(events.JWPLAYER_MEDIA_BEFOREPLAY, { playReason: _model.get('playReason') });
@@ -907,6 +905,7 @@ define([
 
             this.createInstream = function() {
                 this.instreamDestroy();
+                _primeMediaElementForPlayback();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
                 return this._instreamAdapter;
             };
