@@ -49,7 +49,7 @@ The example below will render a video player into the div with the `player` id, 
 </html>
 ````
 
-Check out an interactive example in this [JSFiddle](https://jsfiddle.net/Lgs0ou8s/4/).
+Check out an interactive example in this [JSFiddle](https://jsfiddle.net/Lgs0ou8s/683/).
 
 ## Contributing
 
