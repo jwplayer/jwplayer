@@ -387,8 +387,8 @@ define([
                 });
                 loader.on(events.JWPLAYER_ERROR, function(evt) {
                     evt.message = 'Error loading playlist: ' + evt.message;
-                    this.triggerError(evt);
-                }, this);
+                    _this.triggerError(evt);
+                }, _this);
                 loader.load(toLoad);
             }
 
@@ -423,8 +423,6 @@ define([
                     _stop(true);
                     _setItem(0);
                 }
-
-                _primeMediaElementForPlayback();
 
                 if (!_preplay) {
                     _preplay = true;
@@ -907,6 +905,7 @@ define([
 
             this.createInstream = function() {
                 this.instreamDestroy();
+                _primeMediaElementForPlayback();
                 this._instreamAdapter = new InstreamAdapter(this, _model, _view);
                 return this._instreamAdapter;
             };
