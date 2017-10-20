@@ -306,7 +306,9 @@ Object.assign(Controller.prototype, {
                         });
                     });
                     updatePlaylistCancelable = cancelable((data) => {
-                        return _updatePlaylist(data.playlist, data);
+                        if (data) {
+                            return _updatePlaylist(data.playlist, data);
+                        }
                     });
                     loadPromise = loadPlaylistPromise.then(updatePlaylistCancelable.async);
                     break;
