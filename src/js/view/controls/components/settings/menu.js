@@ -46,15 +46,14 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     topbarElement.appendChild(closeButton.element());
 
     const instance = {
-        open(isDefault) {
+        open(isDefault, event) {
             visible = true;
-            onVisibility(visible);
+            onVisibility(visible, event);
             settingsMenuElement.setAttribute('aria-expanded', 'true');
             addDocumentListeners(documentClickHandler);
 
             if (isDefault) {
-                // TODO: remove window.event; instead, pass the event from the button interaction or use 'keyup' in controls.js
-                if (!window.event || !window.event.pointerType) {
+                if (event && event.type === 'enter') {
                     active.categoryButtonElement.focus();
                 }
             } else {
