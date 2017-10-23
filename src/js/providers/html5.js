@@ -446,7 +446,6 @@ define([
             if (sourceChanged || loadedSrc === 'none' || loadedSrc === 'started') {
                 _duration = duration;
                 _setVideotagSource(_levels[_currentQuality]);
-                _this.setupSideloadedTracks(_this._itemTracks);
                 if (previousSource && sourceChanged) {
                     _videotag.load();
                 }
@@ -573,8 +572,6 @@ define([
             if (source.preload !== 'none') {
                 _setVideotagSource(source);
             }
-
-            this.setupSideloadedTracks(item.tracks);
         };
 
         this.load = function(item) {
@@ -588,6 +585,7 @@ define([
                 _loading();
             }
             _completeLoad(item.starttime || 0, item.duration || 0);
+            this.setupSideloadedTracks(item.tracks);
         };
 
         this.play = function() {
