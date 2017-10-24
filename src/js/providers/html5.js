@@ -201,6 +201,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
     this.isSDK = !!_playerConfig.sdkplatform;
     this.video = _videotag;
+    this.supportsPlaybackRate = true;
 
     _setupListeners(MediaEvents, _videotag);
 
