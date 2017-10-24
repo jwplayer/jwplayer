@@ -143,13 +143,13 @@ export default class Controlbar {
             _api.next();
         }, next, cloneIcons('next'));
 
-        const settingsButton = button('jw-icon-settings jw-settings-submenu-button', () => {
-            this.trigger('settingsInteraction', 'quality', true);
+        const settingsButton = button('jw-icon-settings jw-settings-submenu-button', (event) => {
+            this.trigger('settingsInteraction', 'quality', true, event);
         }, localization.settings, cloneIcons('settings'));
         settingsButton.element().setAttribute('aria-haspopup', 'true');
 
-        const captionsButton = button('jw-icon-cc jw-settings-submenu-button', () => {
-            this.trigger('settingsInteraction', 'captions', false);
+        const captionsButton = button('jw-icon-cc jw-settings-submenu-button', (event) => {
+            this.trigger('settingsInteraction', 'captions', false, event);
         }, localization.cc, cloneIcons('cc-off,cc-on'));
         captionsButton.element().setAttribute('aria-haspopup', 'true');
 

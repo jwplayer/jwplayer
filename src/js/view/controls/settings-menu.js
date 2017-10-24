@@ -21,7 +21,7 @@ export function createSettingsMenu(controlbar, onVisibility) {
 
     const settingsMenu = SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty);
 
-    controlbar.on('settingsInteraction', (submenuName, isDefault) => {
+    controlbar.on('settingsInteraction', (submenuName, isDefault, event) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
         if (!submenu && !isDefault) {
             // Do nothing if activating an invalid submenu
@@ -46,7 +46,7 @@ export function createSettingsMenu(controlbar, onVisibility) {
                 // Activate the first submenu if clicking the default button
                 settingsMenu.activateFirstSubmenu();
             }
-            settingsMenu.open(isDefault);
+            settingsMenu.open(isDefault, event);
         }
     });
 
