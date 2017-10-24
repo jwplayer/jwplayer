@@ -40,6 +40,7 @@ function coreFactory(api, element) {
 function resetPlayer(api, core) {
     api.off();
     core.playerDestroy();
+    core.getContainer().removeAttribute('data-jwplayer-id');
 }
 
 /**
@@ -67,13 +68,14 @@ export default function Api(element) {
 
     // `uniqueId` should start at 1
     const uniqueId = ++instancesCreated;
-    const playerId = element.id;
+    const playerId = element.id || `player-${uniqueId}`;
     const qoeTimer = new Timer();
     const pluginsMap = {};
 
     let core = coreFactory(this, element);
 
     qoeTimer.tick('init');
+    element.setAttribute('data-jwplayer-id', playerId);
 
     Object.defineProperties(this, /** @lends Api.prototype */ {
         /**

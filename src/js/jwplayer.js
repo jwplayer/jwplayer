@@ -33,7 +33,7 @@ const jwplayer = function(query) {
         player = instances[query];
     } else if (query.nodeType) {
         domElement = query;
-        player = playerById(domElement.id);
+        player = playerById(domElement.id || domElement.getAttribute('data-jwplayer-id'));
     }
     // found player
     if (player) {
