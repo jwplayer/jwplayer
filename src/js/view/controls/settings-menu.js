@@ -195,7 +195,4 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         onPlaybackRatesChange(model, model.get('playbackRates'));
     });
 
-    model.on('change:playlistItem', (changedModel, playlistItem) => {
-        onPlaybackRatesChange(model, model.get('playbackRates')); 
-    });
 }
