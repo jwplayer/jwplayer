@@ -73,6 +73,7 @@ define([
             playing: _playingHandler,
             progress: _progressHandler,
             pause: _pauseHandler,
+            seeking: _seekingHandler,
             seeked: _seekedHandler,
             timeupdate: _timeUpdateHandler,
             ratechange: _playbackRateHandler,
@@ -86,6 +87,7 @@ define([
         var _canSeek = false;
         var _bufferFull;
         var _delayedSeek = 0;
+        var _seekOffset = null;
         var _playbackTimeout = -1;
         var _buffered = -1;
         var _levels;
@@ -248,7 +250,8 @@ define([
 
         function _updateDuration(duration) {
             _duration = duration;
-            if (_delayedSeek && duration && duration !== Infinity) {
+            // Don't seek when _delayedSeek is set to -1 in _completeLoad
+            if (_delayedSeek && _delayedSeek !== -1 && duration && duration !== Infinity) {
                 _this.seek(_delayedSeek);
             }
         }
@@ -610,7 +613,9 @@ define([
                     var behindLiveEdge = end - _videotag.currentTime;
                     if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
                         // resume playback at edge of live stream
-                        _videotag.currentTime = Math.max(end - 10, end - seekableDuration);
+                        _seekOffset = Math.max(end - 10, end - seekableDuration);
+                        _setPosition(_videotag.currentTime);
+                        _videotag.currentTime = _seekOffset;
                     }
 
                 }
@@ -623,12 +628,6 @@ define([
                 seekPos += _getSeekableStart() + _getSeekableEnd();
             }
 
-            if (_delayedSeek === 0) {
-                this.trigger(events.JWPLAYER_MEDIA_SEEK, {
-                    position: _videotag.currentTime,
-                    offset: seekPos
-                });
-            }
             if (!_canSeek) {
                 _canSeek = !!_getSeekableEnd();
             }
@@ -637,6 +636,8 @@ define([
                 // setting currentTime can throw an invalid DOM state exception if the video is not ready
                 try {
                     _this.seeking = true;
+                    _seekOffset = seekPos;
+                    _setPosition(_videotag.currentTime);
                     _videotag.currentTime = seekPos;
                 } catch (e) {
                     _this.seeking = false;
@@ -651,6 +652,17 @@ define([
                 }
             }
         };
+
+        function _seekingHandler() {
+            var offset = _seekOffset !== null ? _seekOffset : _videotag.currentTime;
+            _seekOffset = null;
+            _delayedSeek = 0;
+            _this.seeking = true;
+            _this.trigger(events.JWPLAYER_MEDIA_SEEK, {
+                position: _position,
+                offset: offset
+            });
+        }
 
         function _seekedHandler() {
             _this.seeking = false;
