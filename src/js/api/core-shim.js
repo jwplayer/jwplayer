@@ -27,6 +27,7 @@ const CoreShim = function(originalContainer) {
     this.apiQueue = new ApiQueueDecorator(this, [
         // These commands require a provider instance to be available
         'load',
+        'loadAtIndex',
         'play',
         'pause',
         'seek',

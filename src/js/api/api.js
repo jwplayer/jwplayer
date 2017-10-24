@@ -669,6 +669,18 @@ export default function Api(element) {
         },
 
         /**
+         * Stop any active playback, and loads a new playlist item to the given index of the current playlist item.
+         * @param {object} toLoad - The new playlist item to replace at index.
+         * @param {number} [index] - The index within the current playlist where the new playlist item goes into.
+         * Only applied when passing in a playlist or playlist items.
+         * @returns {Api}
+         */
+        loadAtIndex(toLoad, index) {
+            core.loadAtIndex(toLoad, index);
+            return this;
+        },
+
+        /**
          * Starts playback.
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
