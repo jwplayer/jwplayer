@@ -127,15 +127,14 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             removePlaybackRatesSubmenu(settingsMenu);
             return;
         }
-        if (!settingsMenu.getSubmenu('playbackRates')) {
-            addPlaybackRatesSubmenu(
-                settingsMenu,
-                playbackRates,
-                model.setPlaybackRate.bind(model),
-                model.get('playbackRate'),
-                model.get('localization').playbackRates
-            );
-        }
+
+        addPlaybackRatesSubmenu(
+            settingsMenu,
+            playbackRates,
+            model.setPlaybackRate.bind(model),
+            model.get('playbackRate'),
+            model.get('localization').playbackRates
+        );
     };
 
     model.change('mediaModel', (newModel, mediaModel) => {
