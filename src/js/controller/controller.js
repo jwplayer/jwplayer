@@ -285,7 +285,14 @@ Object.assign(Controller.prototype, {
             });
         };
 
-        function _load(item, feedData) {
+        function _loadAtIndex(item, index) {
+            const feedData = _model.get('feedData');
+            const newPlaylist = _model.get('playlist');
+            newPlaylist[index] = item;
+            return _load(newPlaylist, feedData, index);
+        }
+
+        function _load(item, feedData, index = 0) {
 
             _this.trigger('destroyPlugin', {});
             _stop(true);
@@ -314,7 +321,7 @@ Object.assign(Controller.prototype, {
                     break;
                 }
                 case 'object':
-                    loadPromise = _updatePlaylist(item, feedData);
+                    loadPromise = _updatePlaylist(item, feedData, index);
                     break;
                 case 'number':
                     loadPromise = _setItem(item);
@@ -328,10 +335,10 @@ Object.assign(Controller.prototype, {
                 });
             });
 
-            loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
+            return loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
         }
 
-        function _updatePlaylist(data, feedData) {
+        function _updatePlaylist(data, feedData, itemIndex = 0) {
             const playlist = Playlist(data);
             try {
                 setPlaylist(_model, playlist, feedData);
@@ -340,7 +347,7 @@ Object.assign(Controller.prototype, {
                 _model.set('playlistItem', null);
                 return Promise.reject(error);
             }
-            return _setItem(0);
+            return _setItem(itemIndex);
         }
 
         function _loadPlaylist(toLoad) {
@@ -721,6 +728,7 @@ Object.assign(Controller.prototype, {
 
         /** Controller API / public methods **/
         this.load = _load;
+        this.loadAtIndex = _loadAtIndex;
         this.play = _play;
         this.pause = _pause;
         this.seek = _seek;
