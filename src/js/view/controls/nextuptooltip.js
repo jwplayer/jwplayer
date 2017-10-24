@@ -100,7 +100,7 @@ export default class NextUpTooltip {
         setTimeout(() => {
             // Set thumbnail
             this.thumbnail = this.content.querySelector('.jw-nextup-thumbnail');
-            toggleClass(this.thumbnail, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
+            toggleClass(this.content, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
             if (nextUpItem.image) {
                 const thumbnailStyle = this.loadThumbnail(nextUpItem.image);
                 utils.style(this.thumbnail, thumbnailStyle);
