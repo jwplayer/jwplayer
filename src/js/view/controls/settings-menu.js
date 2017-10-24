@@ -111,9 +111,14 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
     };
 
     const onPlaybackRatesChange = (changedModel, playbackRates) => {
+        setupPlaybackRatesMenu(changedModel, playbackRates)
+    };
+
+    const setupPlaybackRatesMenu = (changedModel, playbackRates) => {
         const provider = model.getVideo();
-        const showPlaybackRateControls = provider &&
-            provider.supportsPlaybackRate &&
+        const showPlaybackRateControls = 
+            provider &&
+            provider.supportsPlaybackRate && 
             model.get('streamType') !== 'LIVE' &&
             model.get('playbackRateControls') &&
             playbackRates.length > 1;
@@ -122,14 +127,15 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             removePlaybackRatesSubmenu(settingsMenu);
             return;
         }
-
-        addPlaybackRatesSubmenu(
-            settingsMenu,
-            playbackRates,
-            model.setPlaybackRate.bind(model),
-            model.get('playbackRate'),
-            model.get('localization').playbackRates
-        );
+        if (!settingsMenu.getSubmenu('playbackRates')) {
+            addPlaybackRatesSubmenu(
+                settingsMenu,
+                playbackRates,
+                model.setPlaybackRate.bind(model),
+                model.get('playbackRate'),
+                model.get('localization').playbackRates
+            );
+        }
     };
 
     model.change('mediaModel', (newModel, mediaModel) => {
@@ -160,12 +166,8 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
     model.change('playbackRates', onPlaybackRatesChange, this);
     model.change('playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
-        const provider = model.getVideo();
-        if (rates && provider.supportsPlaybackRate) {
+        if (rates) {
             activateSubmenuItem('playbackRates', rates.indexOf(playbackRate));
-        }
-        if (!provider.supportsPlaybackRate) {
-            removePlaybackRatesSubmenu(settingsMenu);
         }
     }, this);
 
@@ -190,17 +192,11 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
     model.on('change:streamType', (changedModel, newStreamType, previousStreamType) => {
         if (newStreamType === previousStreamType) {
             return;
-        }
-        if (newStreamType === 'LIVE') {
-            removePlaybackRatesSubmenu(settingsMenu);
-        } else {
-            addPlaybackRatesSubmenu(
-                settingsMenu,
-                model.get('playbackRates'),
-                model.setPlaybackRate.bind(model),
-                model.get('playbackRate'),
-                model.get('localization').playbackRates
-            );
-        }
+        } 
+        onPlaybackRatesChange(model, model.get('playbackRates'));
+    });
+
+    model.on('change:playlistItem', (changedModel, playlistItem) => {
+        onPlaybackRatesChange(model, model.get('playbackRates')); 
     });
 }
