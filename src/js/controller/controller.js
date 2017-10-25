@@ -61,6 +61,7 @@ Object.assign(Controller.prototype, {
             resolved.then(_completeHandler);
         });
         _model.mediaController.on(MEDIA_ERROR, _this.triggerError, _this);
+        _model.on(ERROR, _this.triggerError, _this);
 
         // If we attempt to load flash, assume it is blocked if we don't hear back within a second
         _model.on('change:flashBlocked', function(model, isBlocked) {
