@@ -114,6 +114,17 @@ function VideoProvider(_playerId, _playerConfig) {
             VideoEvents.canplay.call(_this);
         },
 
+        seeking() {
+            var offset = _seekOffset !== null ? _seekOffset : _videotag.currentTime;
+            _seekOffset = null;
+            _delayedSeek = 0;
+            _this.seeking = true;
+            _this.trigger(events.JWPLAYER_MEDIA_SEEK, {
+                position: _position,
+                offset: offset
+            });
+        }
+
         webkitbeginfullscreen(e) {
             _fullscreenState = true;
             _sendFullscreen(e);
@@ -182,6 +193,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
     let _canSeek = false; // true on valid time event
     let _delayedSeek = 0;
+    let _seekOffset = null;
     let _levels;
     let _currentQuality = -1;
     let _fullscreenState = false;
@@ -255,7 +267,7 @@ function VideoProvider(_playerId, _playerConfig) {
     };
 
     function _checkDelayedSeek(duration) {
-        if (_delayedSeek && duration && duration !== Infinity) {
+        if (_delayedSeek && _delayedSeek !== -1 && duration && duration !== Infinity) {
             _this.seek(_delayedSeek);
         }
     }
@@ -455,7 +467,9 @@ function VideoProvider(_playerId, _playerConfig) {
                 var behindLiveEdge = end - _videotag.currentTime;
                 if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
                     // resume playback at edge of live stream
-                    _videotag.currentTime = Math.max(end - 10, end - seekableDuration);
+                    _seekOffset = Math.max(end - 10, end - seekableDuration);
+                    _setPosition(_videotag.currentTime);
+                    _videotag.currentTime = _seekOffset;
                 }
 
             }
@@ -467,13 +481,6 @@ function VideoProvider(_playerId, _playerConfig) {
         if (seekPos < 0) {
             seekPos += _getSeekableStart() + _getSeekableEnd();
         }
-
-        if (_delayedSeek === 0) {
-            this.trigger(MEDIA_SEEK, {
-                position: _videotag.currentTime,
-                offset: seekPos
-            });
-        }
         if (!_canSeek) {
             _canSeek = !!_getSeekableEnd();
         }
@@ -482,6 +489,8 @@ function VideoProvider(_playerId, _playerConfig) {
             // setting currentTime can throw an invalid DOM state exception if the video is not ready
             try {
                 _this.seeking = true;
+                _seekOffset = seekPos;
+                _setPosition(_videotag.currentTime);
                 _videotag.currentTime = seekPos;
             } catch (e) {
                 _this.seeking = false;
