@@ -119,11 +119,11 @@ function VideoProvider(_playerId, _playerConfig) {
             _seekOffset = null;
             _delayedSeek = 0;
             _this.seeking = true;
-            _this.trigger(events.JWPLAYER_MEDIA_SEEK, {
-                position: _position,
+            _this.trigger(MEDIA_SEEK, {
+                position: _positionBeforeSeek,
                 offset: offset
             });
-        }
+        },
 
         webkitbeginfullscreen(e) {
             _fullscreenState = true;
@@ -194,6 +194,7 @@ function VideoProvider(_playerId, _playerConfig) {
     let _canSeek = false; // true on valid time event
     let _delayedSeek = 0;
     let _seekOffset = null;
+    let _positionBeforeSeek = null;
     let _levels;
     let _currentQuality = -1;
     let _fullscreenState = false;
@@ -241,13 +242,20 @@ function VideoProvider(_playerId, _playerConfig) {
         }
     }
 
+    function _setPositionBeforeSeek(position) {
+        _positionBeforeSeek = _convertTime(position);
+    }
+
     _this.getCurrentTime = function() {
-        let currentTime = _videotag.currentTime;
-        if (_this.getDuration() < 0) {
-            currentTime = -(_getSeekableEnd() - currentTime);
-        }
-        return currentTime;
+        return _convertTime(_videotag.currentTime);
     };
+
+    function _convertTime(position) {
+        if (_this.getDuration() < 0) {
+            position = -(_getSeekableEnd() - position);
+        }
+        return position;
+    }
 
     _this.getDuration = function() {
         var duration = _videotag.duration;
@@ -468,7 +476,7 @@ function VideoProvider(_playerId, _playerConfig) {
                 if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
                     // resume playback at edge of live stream
                     _seekOffset = Math.max(end - 10, end - seekableDuration);
-                    _setPosition(_videotag.currentTime);
+                    _setPositionBeforeSeek(_videotag.currentTime);
                     _videotag.currentTime = _seekOffset;
                 }
 
@@ -490,7 +498,7 @@ function VideoProvider(_playerId, _playerConfig) {
             try {
                 _this.seeking = true;
                 _seekOffset = seekPos;
-                _setPosition(_videotag.currentTime);
+                _setPositionBeforeSeek(_videotag.currentTime);
                 _videotag.currentTime = seekPos;
             } catch (e) {
                 _this.seeking = false;
