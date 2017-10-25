@@ -125,6 +125,7 @@ function VideoProvider(_playerId, _playerConfig) {
                 offset: offset
             });
             _setPositionBeforeSeek(offset);
+            _checkForBuffering(offset);
         },
 
         webkitbeginfullscreen(e) {
@@ -241,6 +242,17 @@ function VideoProvider(_playerId, _playerConfig) {
             level.label = _levels[_currentQuality].label;
             _this.trigger('visualQuality', visualQuality);
             visualQuality.reason = '';
+        }
+    }
+
+    function _checkForBuffering(position) {
+        if (_videotag.buffered.length <= 0) {
+            return;
+        }
+
+        const buffered = _videotag.buffered.find(bufferRange => bufferRange.start <= position && bufferRange.end >= position);
+        if (!buffered) {
+            this.addEventListener('waiting', () => console.log('we are waiting'));
         }
     }
 
