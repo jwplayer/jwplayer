@@ -8,7 +8,7 @@ import initQoe from 'controller/qoe';
 import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_RATE_CHANGE,
-    MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
+    MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR, ERROR,
     MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META } from 'events/events';
 import { seconds } from 'utils/strings';
 import _ from 'utils/underscore';
@@ -370,15 +370,14 @@ const Model = function() {
         if (!_provider) {
             this.set(PLAYER_STATE, STATE_BUFFERING);
             const mediaModelContext = this.mediaModel;
-            return loadProvidersForPlaylist(this).then(loadedPromises => {
-                if (!loadedPromises.length) {
-                    throw new Error('Unsupported media');
-                }
+            return loadProvidersForPlaylist(this).then(() => {
                 if (mediaModelContext === this.mediaModel) {
                     syncPlayerWithMediaModel(mediaModelContext);
-                    return this.setProvider(item);
+                    // Verify that we have a provider class for this source
+                    if (this.chooseProvider(source)) {
+                        return this.setProvider(item);
+                    }
                 }
-                return resolved;
             });
         }
 
@@ -488,7 +487,16 @@ const Model = function() {
             }
             throw new Error('Playback cancelled.');
         });
-        return providerPromise.then(thenPlayPromise.async);
+        return providerPromise.catch(error => {
+            thenPlayPromise.cancel();
+            // Required provider was not loaded
+            model.trigger(ERROR, {
+                message: `Could not play video: ${error.message}`,
+                error: error
+            });
+            // Fail the playPromise to trigger "playAttemptFailed"
+            throw error;
+        }).then(thenPlayPromise.async);
     }
 
     function playWithProvider(item) {
