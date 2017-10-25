@@ -160,9 +160,13 @@
         }
     }
 
-    .jw-flag-touch & {
-        .rect(100%, 44px);
-        align-items: flex-end;
-        padding-bottom: 5px;
+    .jw-flag-touch &::before {
+        height: 44px;
+        width: 100%;
+        content: "";
+        position: absolute;
+        display: block;
+        bottom: calc(100% - 17px);
+        left: 0;
     }
 }
