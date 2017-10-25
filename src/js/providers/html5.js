@@ -62,6 +62,7 @@ function VideoProvider(_playerId, _playerConfig) {
         },
         
         timeupdate() {
+            _setPositionBeforeSeek(_videotag.currentTime);
             VideoEvents.timeupdate.call(_this);
             checkStaleStream();
             if (_this.state === STATE_PLAYING) {
@@ -115,7 +116,7 @@ function VideoProvider(_playerId, _playerConfig) {
         },
 
         seeking() {
-            var offset = _seekOffset !== null ? _seekOffset : _videotag.currentTime;
+            var offset = _seekOffset !== null ? _seekOffset : _this.getCurrentTime();
             _seekOffset = null;
             _delayedSeek = 0;
             _this.seeking = true;
@@ -123,6 +124,7 @@ function VideoProvider(_playerId, _playerConfig) {
                 position: _positionBeforeSeek,
                 offset: offset
             });
+            _setPositionBeforeSeek(offset);
         },
 
         webkitbeginfullscreen(e) {
@@ -275,6 +277,7 @@ function VideoProvider(_playerId, _playerConfig) {
     };
 
     function _checkDelayedSeek(duration) {
+        // Don't seek when _delayedSeek is set to -1 in _completeLoad
         if (_delayedSeek && _delayedSeek !== -1 && duration && duration !== Infinity) {
             _this.seek(_delayedSeek);
         }
