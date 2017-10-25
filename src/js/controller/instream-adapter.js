@@ -276,6 +276,14 @@ var InstreamAdapter = function(_controller, _model, _view) {
         }
     };
 
+    this.replacePlaylistItem = function(url) {
+        const item = _model.get('playlistItem');
+        item.sources[0].file = url;
+        item.file = url;
+
+        _model.mediaModel.set('setup', false);
+    };
+
     this.destroy = function() {
         this.off();
 
