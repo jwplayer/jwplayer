@@ -184,7 +184,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         }
     });
 
-    model.on('change:streamType', (changedModel, newStreamType) => {  
+    model.on('change:streamType', () => {  
         setupPlaybackRatesMenu(model, model.get('playbackRates'));
     });
 
