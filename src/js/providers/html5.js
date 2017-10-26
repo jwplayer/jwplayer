@@ -254,7 +254,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
     function _convertTime(position) {
         if (_this.getDuration() < 0) {
-            position = -(_getSeekableEnd() - position);
+            position -= _getSeekableEnd();
         }
         return position;
     }
