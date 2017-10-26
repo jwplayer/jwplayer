@@ -695,9 +695,14 @@ function View(_api, _model) {
     }
 
     function _stateHandler(model, newState, oldState) {
+//        console.warn('newState: ' + newState);
         if (!_model.get('viewSetup')) {
             return;
         }
+        if (newState === 'buffering') {
+            console.log('karim');
+        }
+
 
         _playerState = model.get('state');
 
