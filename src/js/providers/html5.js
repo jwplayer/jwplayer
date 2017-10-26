@@ -124,8 +124,6 @@ function VideoProvider(_playerId, _playerConfig) {
         
         timeupdate() {
             _setPositionBeforeSeek(_videotag.currentTime);
-//            _videotag.removeEventListener('waiting', () => console.log('we are waiting'));
-//            _videotag.removeEventListener('waiting', () => _this.setState(STATE_BUFFERING));
             VideoEvents.timeupdate.call(_this);
             checkStaleStream();
             if (_this.state === STATE_PLAYING) {
@@ -193,7 +191,8 @@ function VideoProvider(_playerId, _playerConfig) {
 
         seeked() {
             VideoEvents.seeked.call(_this);
-            _videotag.removeEventListener('waiting', () => _this.setState(STATE_BUFFERING));
+//            _videotag.removeEventListener('waiting', () => _this.setState(STATE_BUFFERING));
+            _videotag.removeEventListener('waiting', setBufferingState);
         },
 
         webkitbeginfullscreen(e) {
@@ -331,16 +330,13 @@ function VideoProvider(_playerId, _playerConfig) {
         }
 
         if (outOfBufferRange) {
-//            _videotag.addEventListener('waiting', () => console.log('we are waiting'));
             console.error('outOfBufferRange');
-            _videotag.addEventListener('waiting', () => _this.setState(STATE_BUFFERING));
-//            _this.setState(STATE_BUFFERING);
-//            _videotag.addEventListener('waiting', _this.setState(STATE_BUFFERING));
+            _videotag.addEventListener('waiting', setBufferingState);
         }
     }
 
     function setBufferingState() {
-        _this.setState(STATE_BUFFERING)
+        _this.setState(STATE_BUFFERING);
     }
 
     function _setPositionBeforeSeek(position) {
