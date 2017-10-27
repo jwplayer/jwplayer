@@ -142,10 +142,13 @@ export function handleColorOverrides(playerId, skin) {
             addStyle([
                 // Toggle and menu button active colors
                 '.jw-button-color.jw-toggle:not(.jw-icon-cast)',
-                '.jw-button-color:hover:not(.jw-icon-cast)',
                 '.jw-button-color:focus:not(.jw-icon-cast)',
                 '.jw-button-color.jw-toggle.jw-off:hover:not(.jw-icon-cast)'
             ], 'color', config.iconsActive);
+
+            addStyle([
+                ':not(.jw-state-buffering) .jw-button-color:hover:not(.jw-icon-cast)'
+            ], 'color', config.iconsActive, true);
 
             // Chromecast overrides
             // Can't use addStyle since it will camel case the style name
