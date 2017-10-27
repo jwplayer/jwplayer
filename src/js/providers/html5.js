@@ -55,67 +55,6 @@ function VideoProvider(_playerId, _playerConfig) {
 
     const _this = this;
 
-    // karim >
-
-    function observe(media) {
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                console.warn('mutation', mutation);
-            });
-        });
-        observer.observe(media, {
-            attributes: true
-        });
-        const load = media.load;
-        const pause = media.pause;
-        const play = media.play;
-        media.load = function() {
-            console.error('media.load()');
-            return load.call(this);
-        };
-        media.pause = function() {
-            console.error('media.pause()');
-            return pause.call(this);
-        };
-        media.play = function() {
-            console.error('media.play()');
-            return play.call(this);
-        };
-        function videoEventHandler(e) {
-            console.warn('>> "' + e.type + '"');
-        }
-        function videoEventHandlerSpecial(e) {
-            console.error('>> "' + e.type + '"');
-        }
-        media.addEventListener('loadstart', videoEventHandler);
-        media.addEventListener('progress', videoEventHandler);
-        media.addEventListener('suspend', videoEventHandler);
-        media.addEventListener('abort', videoEventHandler);
-        media.addEventListener('error', videoEventHandler);
-        media.addEventListener('emptied', videoEventHandler);
-        media.addEventListener('stalled', videoEventHandler);
-        media.addEventListener('loadedmetadata', videoEventHandler);
-        media.addEventListener('loadeddata', videoEventHandler);
-        media.addEventListener('canplay', videoEventHandler);
-        media.addEventListener('canplaythrough', videoEventHandler);
-        media.addEventListener('playing', videoEventHandler);
-        media.addEventListener('waiting', videoEventHandler);
-        media.addEventListener('seeking', videoEventHandlerSpecial);
-        media.addEventListener('seeked', videoEventHandlerSpecial);
-        media.addEventListener('ended', videoEventHandler);
-        media.addEventListener('durationchange', videoEventHandler);
-        media.addEventListener('timeupdate', videoEventHandler);
-        media.addEventListener('play', videoEventHandler);
-        media.addEventListener('pause', videoEventHandler);
-        media.addEventListener('ratechange', videoEventHandler);
-        media.addEventListener('resize', videoEventHandler);
-        media.addEventListener('volumechange', videoEventHandler);
-    }
-
-//    observe(media);
-
-    // < karim
-
     const MediaEvents = {
         progress() {
             VideoEvents.progress.call(_this);
@@ -123,6 +62,9 @@ function VideoProvider(_playerId, _playerConfig) {
         },
         
         timeupdate() {
+            if (_positionBeforeSeek === _videotag.currentTime) {
+                return;
+            }
             _setPositionBeforeSeek(_videotag.currentTime);
             VideoEvents.timeupdate.call(_this);
             checkStaleStream();
@@ -191,7 +133,6 @@ function VideoProvider(_playerId, _playerConfig) {
 
         seeked() {
             VideoEvents.seeked.call(_this);
-//            _videotag.removeEventListener('waiting', () => _this.setState(STATE_BUFFERING));
             _videotag.removeEventListener('waiting', setBufferingState);
         },
 
@@ -330,7 +271,6 @@ function VideoProvider(_playerId, _playerConfig) {
         }
 
         if (outOfBufferRange) {
-            console.error('outOfBufferRange');
             _videotag.addEventListener('waiting', setBufferingState);
         }
     }

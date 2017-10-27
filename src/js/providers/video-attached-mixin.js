@@ -49,7 +49,6 @@ const VideoAttachedMixin = {
         if (this.atEdgeOfLiveStream()) {
             this.setPlaybackRate(1);
         }
-
         this.setState(STATE_STALLED);
     },
 
