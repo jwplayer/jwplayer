@@ -110,10 +110,11 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         controlbarButton.show();
     };
 
-    const onPlaybackRatesChange = (changedModel, playbackRates) => {
+    const setupPlaybackRatesMenu = (changedModel, playbackRates) => {
         const provider = model.getVideo();
-        const showPlaybackRateControls = provider &&
-            provider.supportsPlaybackRate &&
+        const showPlaybackRateControls = 
+            provider &&
+            provider.supportsPlaybackRate && 
             model.get('streamType') !== 'LIVE' &&
             model.get('playbackRateControls') &&
             playbackRates.length > 1;
@@ -157,7 +158,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
     }, this);
 
     // Playback Rates
-    model.change('playbackRates', onPlaybackRatesChange, this);
+    model.change('playbackRates', setupPlaybackRatesMenu, this);
     model.change('playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
         if (rates) {
@@ -179,7 +180,12 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             const mediaModel = model.get('mediaModel');
             onAudiotracksChanged(mediaModel, mediaModel, mediaModel.get('audioTracks'));
             onQualitiesChanged(model, mediaModel.get('levels'));
-            onPlaybackRatesChange(model, model.get('playbackRates'));
+            setupPlaybackRatesMenu(model, model.get('playbackRates'));
         }
     });
+
+    model.on('change:streamType', () => {  
+        setupPlaybackRatesMenu(model, model.get('playbackRates'));
+    });
+
 }
