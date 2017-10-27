@@ -201,7 +201,7 @@ function VideoProvider(_playerId, _playerConfig) {
     const _videotag = _this.video = _playerConfig.mediaElement;
     const visualQuality = { level: {} };
     const _staleStreamDuration = 3 * 10 * 1000;
-    observe(_videotag);
+
     let _canSeek = false; // true on valid time event
     let _delayedSeek = 0;
     let _seekOffset = null;
