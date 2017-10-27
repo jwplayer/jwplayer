@@ -699,7 +699,6 @@ function View(_api, _model) {
             return;
         }
 
-
         _playerState = model.get('state');
 
         instreamStateUpdate(_playerState);

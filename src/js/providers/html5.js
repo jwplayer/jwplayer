@@ -258,19 +258,17 @@ function VideoProvider(_playerId, _playerConfig) {
         if (bufferedRange.length <= 0) {
             return;
         }
-        let outOfBufferRange = position > bufferedRange.end(bufferedRange.length - 1);
-        let inBuffer;
-        if (!outOfBufferRange) {
+        let withinBuffer;
+        if (position <= bufferedRange.end(bufferedRange.length - 1)) {
             for (let i = 0; i < bufferedRange.length; i++) {
-                inBuffer = position > bufferedRange.start(i) && position < bufferedRange.end(i);
-                if (inBuffer) {
-                    outOfBufferRange = false;
+                withinBuffer = position > bufferedRange.start(i) && position < bufferedRange.end(i);
+                if (withinBuffer) {
                     break;
                 }
             }
         }
 
-        if (outOfBufferRange) {
+        if (!withinBuffer) {
             _videotag.addEventListener('waiting', setBufferingState);
         }
     }
