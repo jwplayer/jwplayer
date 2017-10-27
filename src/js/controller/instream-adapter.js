@@ -276,6 +276,10 @@ var InstreamAdapter = function(_controller, _model, _view) {
         }
     };
 
+    this.replacePlaylistItem = function(item) {
+        _model.set('playlistItem', item);
+    };
+
     this.destroy = function() {
         this.off();
 
