@@ -56,17 +56,10 @@ export default class RightClick {
     }
 
     getOffset(evt) {
-        var target = evt.target;
-        // offsetX is from the W3C standard, layerX is how Firefox does it
-        var x = evt.offsetX || evt.layerX;
-        var y = evt.offsetY || evt.layerY;
-        while (target !== this.playerElement) {
-            x += target.offsetLeft;
-            y += target.offsetTop;
-
-            target = target.parentNode;
-        }
-
+        var bounds = this.playerElement.getBoundingClientRect();
+        var x = evt.clientX - bounds.left;
+        var y = evt.clientY - bounds.top;
+        
         return { x: x, y: y };
     }
 
