@@ -57,8 +57,8 @@ export default class RightClick {
 
     getOffset(evt) {
         var playerBounds = bounds(this.playerElement);
-        var x = evt.clientX - playerBounds.left;
-        var y = evt.clientY - playerBounds.top;
+        var x = evt.pageX - playerBounds.left;
+        var y = evt.pageY - playerBounds.top;
 
         return { x: x, y: y };
     }
