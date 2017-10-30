@@ -52,6 +52,9 @@ function setTextTracks(tracks) {
         this._textTracks = _.reject(this._textTracks, function(track) {
             const trackId = track._id;
             if (this.renderNatively && trackId && trackId.indexOf('nativecaptions') === 0) {
+                if (track.name.indexOf('Unknown') === 0 && this._unknownCount > 0) {
+                    this._unknownCount -= 1;
+                }
                 delete this._tracksById[trackId];
                 return true;
             }
