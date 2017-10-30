@@ -268,6 +268,7 @@ function VideoProvider(_playerId, _playerConfig) {
             }
         }
 
+        _videotag.removeEventListener('waiting', setBufferingState);
         if (!withinBuffer) {
             _videotag.addEventListener('waiting', setBufferingState);
         }
