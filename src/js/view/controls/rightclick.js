@@ -2,7 +2,7 @@ import rightclickTemplate from 'view/controls/templates/rightclick';
 import { cloneIcon } from 'view/controls/icons';
 import { version } from 'version';
 import { flashVersion } from 'utils/browser';
-import { createElement, emptyElement, addClass, removeClass } from 'utils/dom';
+import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import UI from 'utils/ui';
 
 function createDomElement(html) {
@@ -56,10 +56,10 @@ export default class RightClick {
     }
 
     getOffset(evt) {
-        var bounds = this.playerElement.getBoundingClientRect();
-        var x = evt.clientX - bounds.left;
-        var y = evt.clientY - bounds.top;
-        
+        var playerBounds = bounds(this.playerElement);
+        var x = evt.clientX - playerBounds.left;
+        var y = evt.clientY - playerBounds.top;
+
         return { x: x, y: y };
     }
 
