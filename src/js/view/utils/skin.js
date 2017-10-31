@@ -1,7 +1,10 @@
 import { prefix } from 'utils/strings';
 import { css, getRgba } from 'utils/css';
 
-export function normalizeSkin(skinConfig = {}) {
+export function normalizeSkin(skinConfig) {
+    if (!skinConfig) {
+        skinConfig = {};
+    }
 
     const active = skinConfig.active;
     const inactive = skinConfig.inactive;
@@ -105,8 +108,9 @@ export function handleColorOverrides(playerId, skin) {
     if (skin.tooltips) {
         styleTooltips(skin.tooltips);
     }
-
-    insertGlobalColorClasses(skin.menus);
+    if (skin.menus) {
+        insertGlobalColorClasses(skin.menus);
+    }
 
     function styleControlbar(config) {
 
@@ -248,15 +252,15 @@ export function handleColorOverrides(playerId, skin) {
 
     // Set global colors, used by related plugin
     // If a color is undefined simple-style-loader won't add their styles to the dom
-    function insertGlobalColorClasses(config = {}) {
+    function insertGlobalColorClasses(config) {
         if (config.textActive) {
             const activeColorSet = {
                 color: config.textActive,
                 borderColor: config.textActive,
                 stroke: config.textActive
             };
-            css('#' + playerId + ' .jw-color-active', activeColorSet, playerId);
-            css('#' + playerId + ' .jw-color-active-hover:hover', activeColorSet, playerId);
+            css(`#${playerId} .jw-color-active`, activeColorSet, playerId);
+            css(`#${playerId} .jw-color-active-hover:hover`, activeColorSet, playerId);
         }
         if (config.text) {
             const inactiveColorSet = {
@@ -264,8 +268,8 @@ export function handleColorOverrides(playerId, skin) {
                 borderColor: config.text,
                 stroke: config.text
             };
-            css('#' + playerId + ' .jw-color-inactive', inactiveColorSet, playerId);
-            css('#' + playerId + ' .jw-color-inactive-hover:hover', inactiveColorSet, playerId);
+            css(`#${playerId} .jw-color-inactive`, inactiveColorSet, playerId);
+            css(`#${playerId} .jw-color-inactive-hover:hover`, inactiveColorSet, playerId);
         }
     }
 }

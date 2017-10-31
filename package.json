@@ -19,6 +19,7 @@
     "eslint": "4.4.0",
     "eslint-plugin-no-for-of-loops": "1.0.0",
     "esprima": "4.0.0",
+    "fast-diff": "1.1.2",
     "file-loader": "0.11.2",
     "grunt": "1.0.1",
     "grunt-cli": "1.2.0",
