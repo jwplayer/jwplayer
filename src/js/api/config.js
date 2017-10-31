@@ -51,7 +51,7 @@ const Defaults = {
         settings: 'Settings',
         unmute: 'Unmute'
     },
-    renderCaptionsNatively: true,
+    renderCaptionsNatively: false,
     nextUpDisplay: true
 };
 
