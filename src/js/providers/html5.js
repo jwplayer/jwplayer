@@ -2,7 +2,7 @@ import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import { STATE_IDLE, STATE_PLAYING, MEDIA_META, MEDIA_ERROR,
-    MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, STATE_BUFFERING } from 'events/events';
+    MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, STATE_LOADING } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
@@ -133,7 +133,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
         seeked() {
             VideoEvents.seeked.call(_this);
-            _videotag.removeEventListener('waiting', setBufferingState);
+            _videotag.removeEventListener('waiting', setLoadingState);
         },
 
         webkitbeginfullscreen(e) {
@@ -268,14 +268,14 @@ function VideoProvider(_playerId, _playerConfig) {
             }
         }
 
-        _videotag.removeEventListener('waiting', setBufferingState);
+        _videotag.removeEventListener('waiting', setLoadingState);
         if (!withinBuffer) {
-            _videotag.addEventListener('waiting', setBufferingState);
+            _videotag.addEventListener('waiting', setLoadingState);
         }
     }
 
-    function setBufferingState() {
-        _this.setState(STATE_BUFFERING);
+    function setLoadingState() {
+        _this.setState(STATE_LOADING);
     }
 
     function _setPositionBeforeSeek(position) {
