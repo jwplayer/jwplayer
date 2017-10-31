@@ -128,7 +128,8 @@ function VideoProvider(_playerId, _playerConfig) {
                 offset: offset
             });
             _setPositionBeforeSeek(offset);
-            _checkForBuffering(offset);
+            _videotag.removeEventListener('waiting', setLoadingState);
+            _videotag.addEventListener('waiting', setLoadingState);
         },
 
         seeked() {
@@ -250,27 +251,6 @@ function VideoProvider(_playerId, _playerConfig) {
             level.label = _levels[_currentQuality].label;
             _this.trigger('visualQuality', visualQuality);
             visualQuality.reason = '';
-        }
-    }
-
-    function _checkForBuffering(position) {
-        const bufferedRange = _videotag.buffered;
-        if (!bufferedRange.length) {
-            return;
-        }
-        let withinBuffer;
-        if (position <= bufferedRange.end(bufferedRange.length - 1)) {
-            for (let i = 0; i < bufferedRange.length; i++) {
-                withinBuffer = position > bufferedRange.start(i) && position < bufferedRange.end(i);
-                if (withinBuffer) {
-                    break;
-                }
-            }
-        }
-
-        _videotag.removeEventListener('waiting', setLoadingState);
-        if (!withinBuffer) {
-            _videotag.addEventListener('waiting', setLoadingState);
         }
     }
 
