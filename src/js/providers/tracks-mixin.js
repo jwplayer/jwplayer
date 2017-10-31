@@ -51,12 +51,12 @@ function setTextTracks(tracks) {
         // Remove the 608 captions track that was mutated by the browser
         this._textTracks = _.reject(this._textTracks, function(track) {
             const trackId = track._id;
+            this._unknownCount = 0;
             if (this.renderNatively && trackId && trackId.indexOf('nativecaptions') === 0) {
-                if (track.name.indexOf('Unknown') === 0 && this._unknownCount > 0) {
-                    this._unknownCount -= 1;
-                }
                 delete this._tracksById[trackId];
                 return true;
+            } else if (track.name.indexOf('Unknown') === 0) {
+                this._unknownCount++;
             }
         }, this);
 
