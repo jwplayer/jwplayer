@@ -302,15 +302,21 @@ const CaptionsRenderer = function (_model) {
         this.selectCues(_captionsTrack, _timeEvent);
     }
 
-    function _itemReadyHandler() {
+    function _captionsListHandler(model, captionsList) {
+        if (captionsList.length === 1) {
+            // captionsList only contains 'off'
+            return;
+        }
+
         // don't load the polyfill or do unnecessary work if rendering natively
-        if (!_model.get('renderCaptionsNatively') && !_WebVTT) {
+        if (!model.get('renderCaptionsNatively') && !_WebVTT) {
             loadWebVttPolyfill().catch((error) => {
                 this.trigger(ERROR, {
                     message: 'Captions renderer failed to load',
                     reason: error
                 });
             });
+            model.off('change:captionsList', _captionsListHandler, this);
         }
     }
 
@@ -340,7 +346,7 @@ const CaptionsRenderer = function (_model) {
         this.selectCues(_captionsTrack, _timeEvent);
     }, this);
 
-    _model.on('itemReady', _itemReadyHandler, this);
+    _model.on('change:captionsList', _captionsListHandler, this);
 };
 
 Object.assign(CaptionsRenderer.prototype, Events);

@@ -627,7 +627,7 @@ BoxPosition.prototype.toCSSCompatValues = function (reference) {
         top: this.top - reference.top,
         bottom: reference.bottom - this.bottom,
         'padding-left': this.left - reference.left,
-        'padding-left': reference.right - this.right,
+        'padding-right': reference.right - this.right,
         height: this.height,
         width: this.width
     };
