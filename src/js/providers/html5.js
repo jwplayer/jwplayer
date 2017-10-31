@@ -255,7 +255,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
     function _checkForBuffering(position) {
         const bufferedRange = _videotag.buffered;
-        if (bufferedRange.length <= 0) {
+        if (!bufferedRange.length) {
             return;
         }
         let withinBuffer;

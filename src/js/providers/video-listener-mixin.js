@@ -108,6 +108,10 @@ const VideoListenerMixin = {
     },
 
     playing() {
+        if (this.seeking) {
+            return;
+        }
+        this.setState(STATE_PLAYING);
         this.trigger(PROVIDER_FIRST_FRAME);
     },
 
