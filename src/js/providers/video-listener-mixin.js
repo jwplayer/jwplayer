@@ -37,9 +37,6 @@ const VideoListenerMixin = {
 
     timeupdate() {
         this.stopStallCheck();
-        if (this.seeking) {
-            return;
-        }
         var height = this.video.videoHeight;
         if (height !== this._helperLastVideoHeight) {
             if (this.adaptation) {
@@ -52,6 +49,10 @@ const VideoListenerMixin = {
             }
         }
         this._helperLastVideoHeight = height;
+
+        if (this.seeking) {
+            return;
+        }
 
         const position = this.getCurrentTime();
         const duration = this.getDuration();
