@@ -132,8 +132,8 @@ function VideoProvider(_playerId, _playerConfig) {
         },
 
         seeked() {
-            VideoEvents.seeked.call(_this);
             _videotag.removeEventListener('waiting', setLoadingState);
+            VideoEvents.seeked.call(_this);
         },
 
         webkitbeginfullscreen(e) {
