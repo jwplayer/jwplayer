@@ -147,6 +147,10 @@ export function handleColorOverrides(playerId, skin) {
                 '.jw-button-color.jw-toggle.jw-off:hover:not(.jw-icon-cast)'
             ], 'color', config.iconsActive);
 
+            addStyle([
+                '.jw-svg-icon-buffer',
+            ], 'fill', config.icons);
+
             // Chromecast overrides
             // Can't use addStyle since it will camel case the style name
             css(`#${playerId} .jw-icon-cast:hover button.jw-off`, `{--disconnected-color: ${config.iconsActive}}`, playerId);
