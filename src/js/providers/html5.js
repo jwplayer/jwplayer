@@ -449,8 +449,7 @@ function VideoProvider(_playerId, _playerConfig) {
     };
 
     this.init = function(item) {
-        _levels = item.sources;
-        _currentQuality = _pickInitialQuality(item.sources);
+        _setLevels(item.sources);
         const source = _levels[_currentQuality];
         _androidHls = isAndroidHls(source);        
         if (_androidHls) {
@@ -458,14 +457,15 @@ function VideoProvider(_playerId, _playerConfig) {
             _this.supportsPlaybackRate = false;
         }
         // the loadeddata event determines the mediaType for HLS sources
-        if (item.sources.length && item.sources[0].type !== 'hls') {
-            this.sendMediaType(item.sources);
+        if (_levels.length && _levels[0].type !== 'hls') {
+            this.sendMediaType(_levels);
         }
         visualQuality.reason = '';
     };
 
     this.preload = function(item) {
-        const preload = item.sources[_currentQuality] ? item.sources[_currentQuality].preload : 'metadata';
+        _setLevels(item.sources);
+        const preload = _levels[_currentQuality] ? _levels[_currentQuality].preload : 'metadata';
         _setAttribute('preload', preload);
         _setVideotagSource(_levels[_currentQuality]);
     };
