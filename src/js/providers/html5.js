@@ -2,7 +2,7 @@ import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
 import { STATE_IDLE, STATE_PLAYING, MEDIA_META, MEDIA_ERROR,
-    MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK } from 'events/events';
+    MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, STATE_LOADING } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
@@ -62,8 +62,10 @@ function VideoProvider(_playerId, _playerConfig) {
         },
         
         timeupdate() {
-            _setPositionBeforeSeek(_videotag.currentTime);
-            VideoEvents.timeupdate.call(_this);
+            if (_positionBeforeSeek !== _videotag.currentTime) {
+                _setPositionBeforeSeek(_videotag.currentTime);
+                VideoEvents.timeupdate.call(_this);
+            }
             checkStaleStream();
             if (_this.state === STATE_PLAYING) {
                 checkVisualQuality();
@@ -125,6 +127,13 @@ function VideoProvider(_playerId, _playerConfig) {
                 offset: offset
             });
             _setPositionBeforeSeek(offset);
+            _videotag.removeEventListener('waiting', setLoadingState);
+            _videotag.addEventListener('waiting', setLoadingState);
+        },
+
+        seeked() {
+            _videotag.removeEventListener('waiting', setLoadingState);
+            VideoEvents.seeked.call(_this);
         },
 
         webkitbeginfullscreen(e) {
@@ -242,6 +251,10 @@ function VideoProvider(_playerId, _playerConfig) {
             _this.trigger('visualQuality', visualQuality);
             visualQuality.reason = '';
         }
+    }
+
+    function setLoadingState() {
+        _this.setState(STATE_LOADING);
     }
 
     function _setPositionBeforeSeek(position) {

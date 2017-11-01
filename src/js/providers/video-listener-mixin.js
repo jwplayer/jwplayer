@@ -56,7 +56,7 @@ const VideoListenerMixin = {
             return;
         }
 
-        if (!this.video.paused && (this.state === STATE_STALLED || this.state === STATE_LOADING)) {
+        if (!this.seeking && !this.video.paused && (this.state === STATE_STALLED || this.state === STATE_LOADING)) {
             this.startStallCheck();
             this.setState(STATE_PLAYING);
         }
@@ -105,7 +105,9 @@ const VideoListenerMixin = {
     },
 
     playing() {
-        this.setState(STATE_PLAYING);
+        if (!this.seeking) {
+            this.setState(STATE_PLAYING);
+        }
         this.trigger(PROVIDER_FIRST_FRAME);
     },
 
