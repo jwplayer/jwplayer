@@ -407,8 +407,8 @@ function CueStyleBox(window, cue) {
     var styles = {
         textShadow: '',
         position: 'relative',
-        left: 0,
-        right: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
         top: 0,
         bottom: 0,
         display: 'inline',
@@ -472,7 +472,7 @@ function CueStyleBox(window, cue) {
     // the right from there.
     if (cue.vertical === '') {
         this.applyStyles({
-            left: this.formatStyle(textPos, '%'),
+            paddingLeft: this.formatStyle(textPos, '%'),
             width: this.formatStyle(cue.size, '%')
         });
         // Vertical box orientation; textPos is the distance from the top edge of the
@@ -489,8 +489,8 @@ function CueStyleBox(window, cue) {
         this.applyStyles({
             top: this.formatStyle(box.top, 'px'),
             bottom: this.formatStyle(box.bottom, 'px'),
-            left: this.formatStyle(box.left, 'px'),
-            right: this.formatStyle(box.right, 'px'),
+            paddingLeft: this.formatStyle(box.left, 'px'),
+            paddingRight: this.formatStyle(box.right, 'px'),
             height: 'auto',
             width: this.formatStyle(box.width, 'px')
         });
@@ -626,8 +626,8 @@ BoxPosition.prototype.toCSSCompatValues = function (reference) {
     return {
         top: this.top - reference.top,
         bottom: reference.bottom - this.bottom,
-        left: this.left - reference.left,
-        right: reference.right - this.right,
+        paddingLeft: this.left - reference.left,
+        paddingRight: reference.right - this.right,
         height: this.height,
         width: this.width
     };
@@ -643,8 +643,8 @@ BoxPosition.getSimpleBoxPosition = function (obj) {
     obj = obj.div ? obj.div.getBoundingClientRect() :
         obj.tagName ? obj.getBoundingClientRect() : obj;
     var ret = {
-        left: obj.left,
-        right: obj.right,
+        paddingLeft: obj.left,
+        paddingRight: obj.right,
         top: obj.top || top,
         height: obj.height || height,
         bottom: obj.bottom || (top + (obj.height || height)),
@@ -781,12 +781,12 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
                 break;
             case 'rl':
                 styleBox.applyStyles({
-                    left: styleBox.formatStyle(linePos, '%')
+                    paddingLeft: styleBox.formatStyle(linePos, '%')
                 });
                 break;
             case 'lr':
                 styleBox.applyStyles({
-                    right: styleBox.formatStyle(linePos, '%')
+                    paddingRight: styleBox.formatStyle(linePos, '%')
                 });
                 break;
             default:
