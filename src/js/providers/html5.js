@@ -62,11 +62,10 @@ function VideoProvider(_playerId, _playerConfig) {
         },
         
         timeupdate() {
-            if (_positionBeforeSeek === _videotag.currentTime) {
-                return;
+            if (_positionBeforeSeek !== _videotag.currentTime) {
+                _setPositionBeforeSeek(_videotag.currentTime);
+                VideoEvents.timeupdate.call(_this);
             }
-            _setPositionBeforeSeek(_videotag.currentTime);
-            VideoEvents.timeupdate.call(_this);
             checkStaleStream();
             if (_this.state === STATE_PLAYING) {
                 checkVisualQuality();

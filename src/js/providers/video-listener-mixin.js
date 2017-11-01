@@ -50,17 +50,13 @@ const VideoListenerMixin = {
         }
         this._helperLastVideoHeight = height;
 
-        if (this.seeking) {
-            return;
-        }
-
         const position = this.getCurrentTime();
         const duration = this.getDuration();
         if (isNaN(duration)) {
             return;
         }
 
-        if (!this.video.paused && (this.state === STATE_STALLED || this.state === STATE_LOADING)) {
+        if (!this.seeking && !this.video.paused && (this.state === STATE_STALLED || this.state === STATE_LOADING)) {
             this.startStallCheck();
             this.setState(STATE_PLAYING);
         }
@@ -109,10 +105,9 @@ const VideoListenerMixin = {
     },
 
     playing() {
-        if (this.seeking) {
-            return;
+        if (!this.seeking) {
+            this.setState(STATE_PLAYING);
         }
-        this.setState(STATE_PLAYING);
         this.trigger(PROVIDER_FIRST_FRAME);
     },
 
