@@ -673,7 +673,7 @@ export default function Api(element) {
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
          */
-        play(meta = { reason: 'external' }) {
+        play(meta) {
             core.play(meta);
             return this;
         },
@@ -683,8 +683,7 @@ export default function Api(element) {
          * @param {object} [meta] - An optional argument used to specify cause.
          * @return {Api}
          */
-        pause(meta = { reason: 'external' }) {
-            // TODO: meta should no longer be accepted from the base API, it should be passed in to the controller by special wrapped interfaces
+        pause(meta) {
             core.pause(meta);
             return this;
         },
@@ -712,7 +711,7 @@ export default function Api(element) {
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
          */
-        seek(position, meta = { reason: 'external' }) {
+        seek(position, meta) {
             core.seek(position, meta);
             return this;
         },
@@ -724,7 +723,7 @@ export default function Api(element) {
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
          */
-        playlistItem(index, meta = { reason: 'external' }) {
+        playlistItem(index, meta) {
             core.playlistItem(index, meta);
             return this;
         },
@@ -735,7 +734,7 @@ export default function Api(element) {
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
          */
-        playlistNext(meta = { reason: 'external' }) {
+        playlistNext(meta) {
             core.playlistNext(meta);
             return this;
         },
@@ -746,7 +745,7 @@ export default function Api(element) {
          * @param [meta] - An optional argument used to specify cause.
          * @returns {Api}
          */
-        playlistPrev(meta = { reason: 'external' }) {
+        playlistPrev(meta) {
             core.playlistPrev(meta);
             return this;
         },
