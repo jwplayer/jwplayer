@@ -734,16 +734,15 @@ function View(_api, _model) {
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
+        _model.off('change:playlistItem', setPosterImage);
         switch (state) {
             case STATE_IDLE:
             case STATE_ERROR:
-            case STATE_COMPLETE: {
-                const playlistItem = _model.get('playlistItem');
-                _preview.setImage(playlistItem && playlistItem.image);
+            case STATE_COMPLETE:
+                _model.change('playlistItem', setPosterImage);                
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
-            }
                 break;
             default:
                 if (_captionsRenderer) {
@@ -754,6 +753,11 @@ function View(_api, _model) {
                 }
                 break;
         }
+    }
+
+    function setPosterImage(model) {
+        const playlistItem = model.get('playlistItem');
+        _preview.setImage(playlistItem && playlistItem.image);
     }
 
     const settingsMenuVisible = () => {

@@ -12,8 +12,6 @@ function validState(state) {
 Object.assign(Preview.prototype, {
     setup: function(element) {
         this.el = element;
-
-        this.model.on('change:playlistItem', this.playlistItem, this);
     },
     setImage: function(img) {
         // Remove onload function from previous image
@@ -66,13 +64,6 @@ Object.assign(Preview.prototype, {
                 backgroundSize: backgroundSize
             });
         }
-    },
-    playlistItem: function(model, item) {
-        if (!item) {
-            return;
-        }
-        
-        this.setImage(item.image);
     },
     element: function() {
         return this.el;
