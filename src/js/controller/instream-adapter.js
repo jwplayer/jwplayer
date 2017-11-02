@@ -291,8 +291,10 @@ var InstreamAdapter = function(_controller, _model, _view) {
             }
 
             // Sync player state with ad for model "change:state" events to trigger
-            const adState = _instream._adModel.get('state');
-            _model.attributes.state = adState;
+            if (_instream._adModel) {
+                const adState = _instream._adModel.get('state');
+                _model.attributes.state = adState;
+            }
 
             _model.off(null, null, _instream);
             _instream.off(null, null, _this);
