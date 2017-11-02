@@ -118,7 +118,7 @@ const InstreamHtml5 = function(_controller, _model) {
             _currentProvider.detachMedia();
             _currentProvider.off();
             if (_adModel.getVideo()) {
-                _currentProvider.destroy();
+                _currentProvider.remove();
             }
         }
 
