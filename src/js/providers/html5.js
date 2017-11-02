@@ -465,9 +465,12 @@ function VideoProvider(_playerId, _playerConfig) {
 
     this.preload = function(item) {
         _setLevels(item.sources);
-        const preload = _levels[_currentQuality] ? _levels[_currentQuality].preload : 'metadata';
-        _setAttribute('preload', preload);
-        _setVideotagSource(_levels[_currentQuality]);
+        const source = _levels[_currentQuality];
+        const preload = source.preload || 'metadata';
+        if (preload !== 'none') {
+            _setAttribute('preload', preload);
+            _setVideotagSource(source);
+        }
     };
 
     this.load = function(item) {
