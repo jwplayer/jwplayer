@@ -42,8 +42,6 @@ Object.assign(MockModel.prototype, SimpleModel, {
             id: '',
             // These are set elsewhere
             castActive: false,
-            containerWidth: 480,
-            containerHeight: 270,
             fullscreen: false,
             autostartFailed: false,
             flashBlocked: false,

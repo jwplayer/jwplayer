@@ -7,8 +7,10 @@ import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
+import CaptionsRenderer from 'view/captionsrenderer';
 import Model from 'controller/model';
 import View from 'view/view';
+import ViewModel from 'view/view-model';
 import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
 import Events from 'utils/backbone.events';
@@ -53,7 +55,13 @@ Object.assign(Controller.prototype, {
         const _eventQueuedUntilReady = [];
 
         _model.setup(config);
-        _view = this._view = new View(_api, _model);
+
+        const viewModel = new ViewModel(_model);
+
+        const _captionsRenderer = new CaptionsRenderer(viewModel, _model);
+        _captionsRenderer.on('all', _triggerAfterReady, _this);
+
+        _view = this._view = new View(_api, viewModel, _captionsRenderer);
         _view.on('all', _triggerAfterReady, _this);
         const _programController = new ProgramController(_model);
 
@@ -160,11 +168,11 @@ Object.assign(Controller.prototype, {
             });
         }
 
-        _model.on('change:viewSetup', function(model, viewSetup) {
+        viewModel.on('change:viewSetup', (changedViewModel, viewSetup) => {
             if (viewSetup) {
                 showView(this, _view.element());
             }
-        }, this);
+        });
 
         this.playerReady = function() {
             const related = _api.getPlugin('related');
@@ -593,6 +601,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _getConfig() {
+            // TODO: merge viewModel config or implement complete config in ViewModel?
             return this._model ? this._model.getConfiguration() : undefined;
         }
 

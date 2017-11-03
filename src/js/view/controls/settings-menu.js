@@ -62,7 +62,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         }
     };
 
-    const onAudiotracksChanged = (mediaModel, changedModel, audioTracks) => {
+    const onAudiotracksChanged = (changedModel, audioTracks) => {
         if (!audioTracks || audioTracks.length <= 1) {
             removeAudioTracksSubmenu(settingsMenu);
             return;
@@ -72,7 +72,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             settingsMenu,
             audioTracks,
             model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
-            mediaModel.get('currentAudioTrack'),
+            model.get('currentAudioTrack'),
             model.get('localization').audioTracks
         );
     };
@@ -87,7 +87,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             settingsMenu,
             levels,
             model.getVideo().setCurrentQuality.bind(model.getVideo()),
-            changedModel.get('currentLevel'),
+            model.get('currentLevel'),
             model.get('localization').hd
         );
     };
@@ -133,38 +133,36 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         );
     };
 
-    model.change('mediaModel', (newModel, mediaModel) => {
-        // Quality Levels
-        mediaModel.change('levels', onQualitiesChanged, this);
-        mediaModel.on('change:currentLevel', (changedModel, currentQuality) => {
-            activateSubmenuItem('quality', currentQuality);
-        }, this);
+    // Quality Levels
+    model.change('levels', onQualitiesChanged, settingsMenu);
+    model.on('change:currentLevel', (changedModel, currentQuality) => {
+        activateSubmenuItem('quality', currentQuality);
+    }, settingsMenu);
 
-        // Audio Tracks
-        mediaModel.change('audioTracks', onAudiotracksChanged.bind(this, mediaModel), this);
-        mediaModel.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
-            activateSubmenuItem('audioTracks', currentAudioTrack);
-        }, this);
-    }, this);
+    // Audio Tracks
+    model.change('audioTracks', onAudiotracksChanged, settingsMenu);
+    model.on('change:currentAudioTrack', (changedModel, currentAudioTrack) => {
+        activateSubmenuItem('audioTracks', currentAudioTrack);
+    }, settingsMenu);
 
     // Captions
-    model.change('captionsList', onCaptionsChanged, this);
+    model.change('captionsList', onCaptionsChanged, settingsMenu);
     model.change('captionsIndex', (changedModel, index) => {
         const captionsSubmenu = settingsMenu.getSubmenu('captions');
         if (captionsSubmenu) {
             captionsSubmenu.activateItem(index);
             controlbar.toggleCaptionsButtonState(!!index);
         }
-    }, this);
+    }, settingsMenu);
 
     // Playback Rates
-    model.change('playbackRates', setupPlaybackRatesMenu, this);
+    model.change('playbackRates', setupPlaybackRatesMenu, settingsMenu);
     model.change('playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
         if (rates) {
             activateSubmenuItem('playbackRates', rates.indexOf(playbackRate));
         }
-    }, this);
+    }, settingsMenu);
 
     // Remove the audio tracks, qualities, and playback rates submenus when casting
     model.on('change:castActive', (changedModel, active, previousState) => {
@@ -177,15 +175,14 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
             removeQualitiesSubmenu(settingsMenu);
             removePlaybackRatesSubmenu(settingsMenu);
         } else {
-            const mediaModel = model.get('mediaModel');
-            onAudiotracksChanged(mediaModel, mediaModel, mediaModel.get('audioTracks'));
-            onQualitiesChanged(model, mediaModel.get('levels'));
+            onAudiotracksChanged(model, model.get('audioTracks'));
+            onQualitiesChanged(model, model.get('levels'));
             setupPlaybackRatesMenu(model, model.get('playbackRates'));
         }
-    });
+    }, settingsMenu);
 
     model.on('change:streamType', () => {  
         setupPlaybackRatesMenu(model, model.get('playbackRates'));
-    });
+    }, settingsMenu);
 
 }

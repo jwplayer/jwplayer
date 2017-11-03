@@ -29,7 +29,6 @@ import _ from 'utils/underscore';
 import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
 import flagNoFocus from 'view/utils/flag-no-focus';
 import ClickHandler from 'view/utils/clickhandler';
-import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
@@ -41,33 +40,11 @@ let ControlsModule;
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
 
-function View(_api, _model) {
+function View(_api, _model, _captionsRenderer) {
     const _this = Object.assign(this, Events, {
         isSetup: false,
         api: _api,
         model: _model
-    });
-
-    // init/reset view model properties
-    Object.assign(_model.attributes, {
-        containerWidth: undefined,
-        containerHeight: undefined,
-        mediaContainer: undefined,
-        fullscreen: false,
-        inDom: undefined,
-        iFrame: undefined,
-        activeTab: undefined,
-        intersectionRatio: undefined,
-        visibility: undefined,
-        viewable: undefined,
-        viewSetup: false,
-        audioMode: undefined,
-        touchMode: undefined,
-        altText: '',
-        cues: undefined,
-        castClicked: false,
-        scrubbing: false,
-        logoWidth: 0,
     });
 
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
@@ -75,9 +52,6 @@ function View(_api, _model) {
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
-
-    let _captionsRenderer = new CaptionsRenderer(_model);
-    _captionsRenderer.on('all', _this.trigger, _this);
 
     let _logo;
 
@@ -237,14 +211,13 @@ function View(_api, _model) {
         });
 
         // Native fullscreen (coming through from the provider)
-        _model.mediaController.on('fullscreenchange', _fullscreenChangeHandler);
+        _model.on('fullscreenchange', _fullscreenChangeHandler);
 
-        _model.change('mediaModel', (model, mediaModel) => {
-            mediaModel.change('mediaType', _onMediaTypeChange, this);
-            mediaModel.on('change:visualQuality', () => {
-                _resizeMedia();
-            }, this);
-        });
+        _model.on('change:mediaType', _onMediaTypeChange, this);
+        _model.on('change:visualQuality', () => {
+            _resizeMedia();
+        }, this);
+
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
@@ -313,8 +286,7 @@ function View(_api, _model) {
         _model.change('controls', changeControls);
         // Set the title attribute of the video tag to display background media information on mobile devices
         if (_isMobile) {
-            setMediaTitleAttribute(_model.get('playlistItem'));
-            _model.on('itemReady', setMediaTitleAttribute);
+            _model.change('playlistItem', setMediaTitleAttribute);
         }
 
         // Triggering 'resize' resulting in player 'ready'
@@ -353,8 +325,8 @@ function View(_api, _model) {
         _this.addControls(controls);
     }
 
-    function setMediaTitleAttribute(item) {
-        var videotag = _videoLayer.querySelector('video, audio');
+    function setMediaTitleAttribute(model, playlistItem) {
+        var videotag = model.get('mediaElement');
         // chromecast and flash providers do no support video tags
         if (!videotag) {
             return;
@@ -362,7 +334,7 @@ function View(_api, _model) {
 
         // Writing a string to innerHTML completely decodes multiple-encoded strings
         const dummyDiv = document.createElement('div');
-        dummyDiv.innerHTML = item.title || '';
+        dummyDiv.innerHTML = playlistItem.title || '';
         videotag.setAttribute('title', dummyDiv.textContent);
     }
 
@@ -860,6 +832,7 @@ function View(_api, _model) {
     };
 
     this.destroy = function () {
+        _model.destroy();
         viewsManager.unobserve(_playerElement);
         viewsManager.remove(this);
         this.isSetup = false;
@@ -873,9 +846,6 @@ function View(_api, _model) {
         if (fullscreenHelpers) {
             fullscreenHelpers.destroy();
             fullscreenHelpers = null;
-        }
-        if (_model.mediaController) {
-            _model.mediaController.off('fullscreenchange', _fullscreenChangeHandler);
         }
         if (_controls) {
             _controls.disable(_model);

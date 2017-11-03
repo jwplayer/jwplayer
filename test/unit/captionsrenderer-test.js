@@ -1,9 +1,12 @@
 import Model from 'controller/model';
+import ViewModel from 'view/view-model';
 import CaptionsRenderer from 'view/captionsrenderer';
 import VTTCue from 'parsers/captions/vttcue';
 
-var captionsRenderer = new CaptionsRenderer(new Model());
-captionsRenderer.setup();
+const model = new Model({});
+const viewModel = new ViewModel(model);
+const captionsRenderer = new CaptionsRenderer(viewModel, model);
+captionsRenderer.setup('player', {});
 
 describe('CaptionsRenderer.getCurrentCues', function() {
 
@@ -24,25 +27,25 @@ describe('CaptionsRenderer.getCurrentCues', function() {
             expect(captionsRenderer.getCurrentCues(allCues, i).length, 'Invalid number of cues at position ' + i).to.equal(currentNumCues[i]);
         }
     });
+});
 
-    describe('CaptionsRenderer.updateCurrentCues', function() {
+describe('CaptionsRenderer.updateCurrentCues', function() {
 
-        it('should set current cues ', function() {
-            var cues = [
-                new VTTCue(0, 3, 'HG: Morning, Rob.')
-            ];
-            expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(1);
+    it('should set current cues ', function() {
+        var cues = [
+            new VTTCue(0, 3, 'HG: Morning, Rob.')
+        ];
+        expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(1);
 
-            cues = [
-                new VTTCue(12, 15, 'EG: Hey, Jo...'),
-                new VTTCue(13, 14, 'JB: Yeah?'),
-                new VTTCue(13, 14, 'JP: Yeah?')
-            ];
-            expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(3);
+        cues = [
+            new VTTCue(12, 15, 'EG: Hey, Jo...'),
+            new VTTCue(13, 14, 'JB: Yeah?'),
+            new VTTCue(13, 14, 'JP: Yeah?')
+        ];
+        expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(3);
 
-            cues = [];
-            expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(0);
-        });
+        cues = [];
+        expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(0);
     });
 });
 

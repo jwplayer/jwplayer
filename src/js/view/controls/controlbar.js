@@ -308,7 +308,7 @@ export default class Controlbar {
             }, this);
         }
 
-        this._model.mediaController.on('seeked', function () {
+        _model.on('seeked', function () {
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
 

@@ -157,6 +157,9 @@ const Model = function() {
                 break;
         }
 
+        // TODO: Events are forwarded off the model so that we can remove mediaController instances from the view
+        this.trigger(type, event);
+
         this.mediaController.trigger(type, event);
     };
 

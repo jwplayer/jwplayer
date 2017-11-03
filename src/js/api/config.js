@@ -10,7 +10,6 @@ const Defaults = {
     controls: true,
     displaytitle: true,
     displaydescription: true,
-    mobilecontrols: false,
     defaultPlaybackRate: 1,
     playbackRateControls: false,
     playbackRates: [0.5, 1, 1.25, 1.5, 2],
@@ -21,7 +20,6 @@ const Defaults = {
     volume: 90,
     width: 640,
     height: 360,
-    audioMode: false,
     localization: {
         player: 'Video Player',
         play: 'Play',
@@ -51,6 +49,7 @@ const Defaults = {
         settings: 'Settings',
         unmute: 'Unmute'
     },
+    captions: undefined,
     renderCaptionsNatively: false,
     nextUpDisplay: true
 };
