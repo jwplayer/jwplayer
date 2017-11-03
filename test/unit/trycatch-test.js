@@ -4,8 +4,8 @@ import { tryCatch, JwError } from 'utils/trycatch';
 describe('trycatch', function() {
 
     it('defines', function() {
-        expect(typeof tryCatch, 'trycatch function is defined').to.equal('function');
-        expect(typeof JwError, 'Error function is defined').to.equal('function');
+        expect(tryCatch, 'trycatch function is defined').to.be.a('function');
+        expect(JwError, 'Error function is defined').to.be.a('function');
     });
 
     it('should not throw Error for valid call', function() {
@@ -17,11 +17,13 @@ describe('trycatch', function() {
     });
 
     it('should throw custom Error on catch', function() {
-        const jwError = tryCatch(function() {
-            throw new Error('Danger, Danger, Will Robinson!');
+        const error = new Error('Danger, Danger, Will Robinson!');
+
+        const jwError = tryCatch(function () {
+            throw error;
         });
 
-        expect(jwError.name).to.equal('');
+        expect(jwError.constructor.name).to.equal('JwError');
         expect(jwError.message).to.equal('Danger, Danger, Will Robinson!');
     });
 
