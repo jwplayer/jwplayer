@@ -410,13 +410,13 @@ Object.assign(Controller.prototype, {
         }
 
         function _getReason(meta) {
-            if (!meta) {
-                if (_inInteraction(window.event)) {
-                    return 'interaction';
-                }
-                return 'external';
+            if (meta && meta.reason) {
+                return meta.reason;
             }
-            return meta.reason;
+            if (_inInteraction(window.event)) {
+                return 'interaction';
+            }
+            return 'external';
         }
 
         function _inInteraction(event) {
