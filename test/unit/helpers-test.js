@@ -13,7 +13,7 @@ describe('helpers', function() {
 
         utils.foreach(aData, fnEach);
 
-        assert.equal(tester[0], 'hello');
-        assert.equal(tester[1], 'hi');
+        expect(tester[0]).to.equal('hello');
+        expect(tester[1]).to.equal('hi');
     });
 });

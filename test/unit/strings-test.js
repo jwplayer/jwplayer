@@ -11,83 +11,83 @@ describe('strings', function() {
 
     it('pad', function() {
         var str = pad('test', 7, '1');
-        assert.equal(str, '111test', 'strings padding correctly done');
+        expect(str, 'strings padding correctly done').to.equal('111test');
 
         str = pad('test', 3, '1');
-        assert.equal(str, 'test', 'strings padding with smaller length than str should not pad anything');
+        expect(str, 'strings padding with smaller length than str should not pad anything').to.equal('test');
     });
 
     it('extension', function() {
         var ext = extension('invalid');
-        assert.strictEqual(ext, undefined, 'invalid path extension returns undefined');
+        expect(ext, 'invalid path extension returns undefined').to.equal(undefined);
 
         ext = extension(null);
-        assert.strictEqual(ext, '', 'null path extension');
+        expect(ext, 'null path extension').to.equal('');
 
         ext = extension('Manifest(format=m3u8-aapl-v3)"');
-        assert.equal(ext, 'm3u8', 'Azure file extension master');
+        expect(ext, 'Azure file extension master').to.equal('m3u8');
 
         ext = extension('/Manifest(video,format=m3u8-aapl-v3,audiotrack=audio)');
-        assert.equal(ext, 'm3u8', 'Azure file extension playlist');
+        expect(ext, 'Azure file extension playlist').to.equal('m3u8');
 
         ext = extension('hello.jpg');
-        assert.equal(ext, 'jpg', 'extension correctly received');
+        expect(ext, 'extension correctly received').to.equal('jpg');
 
         // akamai url's
         ext = extension('https://akamaihd.net/i/2013/01/20131114_56c3456df2b9b_vg01/,480_270_500,.mp4.csmil/master.m3u8?hdnea=st=145747587700~exp=645456~acl=/*~hmac=34523452345sdfggdfssd345345');
-        assert.equal(ext, 'm3u8', 'Akamai Tokenized Url\'s');
+        expect(ext, 'Akamai Tokenized Url\'s').to.equal('m3u8');
 
         ext = extension('https://domain.net/master.m3u8?dot=.');
-        assert.equal(ext, 'm3u8', 'Dot in the search param');
+        expect(ext, 'Dot in the search param').to.equal('m3u8');
 
         ext = extension('https://domain.net/master.file.m3u8?dot=.#id.1');
-        assert.equal(ext, 'm3u8', 'Dot in the search and hash portions of the url');
+        expect(ext, 'Dot in the search and hash portions of the url').to.equal('m3u8');
     });
 
     it('seconds', function() {
         var sec = seconds(5);
-        assert.equal(sec, 5, 'number input returns input');
+        expect(sec, 'number input returns input').to.equal(5);
 
         sec = seconds('5s');
-        assert.equal(sec, 5, 'seconds input returns seconds');
+        expect(sec, 'seconds input returns seconds').to.equal(5);
 
         sec = seconds('5m');
-        assert.equal(sec, 300, 'minutes input returns seconds');
+        expect(sec, 'minutes input returns seconds').to.equal(300);
 
         sec = seconds('1h');
-        assert.equal(sec, 3600, 'hours input returns seconds');
+        expect(sec, 'hours input returns seconds').to.equal(3600);
 
         sec = seconds('5');
-        assert.equal(sec, 5, 'string number input returns number');
+        expect(sec, 'string number input returns number').to.equal(5);
 
         sec = seconds('1:01');
-        assert.equal(sec, 61, 'minute seconds input returns seconds');
+        expect(sec, 'minute seconds input returns seconds').to.equal(61);
 
         sec = seconds('01:01:01.111');
-        assert.equal(sec, 3661.111, 'hours minute seconds milliseconds input returns seconds');
+        expect(sec, 'hours minute seconds milliseconds input returns seconds').to.equal(3661.111);
 
         sec = seconds('00:00:01:15');
-        assert.equal(sec, 1, 'hours minute seconds frames input without frameRate returns seconds without frames');
+        expect(sec, 'hours minute seconds frames input without frameRate returns seconds without frames').to.equal(1);
 
         sec = seconds('00:01:01:25', 50);
-        assert.equal(sec, 61.5, 'hours minute seconds frames input with frameRate returns seconds');
+        expect(sec, 'hours minute seconds frames input with frameRate returns seconds').to.equal(61.5);
     });
 
     it('hms', function() {
         var str = hms(3661);
-        assert.equal(str, '01:01:01.000', 'hms gives correct time string format');
+        expect(str, 'hms gives correct time string format').to.equal('01:01:01.000');
 
         str = hms(1.11111);
-        assert.equal(str, '00:00:01.111', 'hms gives milliseconds rounded to 3dp');
+        expect(str, 'hms gives milliseconds rounded to 3dp').to.equal('00:00:01.111');
     });
 
     it('prefix, suffix', function() {
         var pre = prefix(['1', '2'], '0');
-        assert.equal(pre[0], '01', 'prefix with 0 index correct');
-        assert.equal(pre[1], '02', 'prefix with 1 index correct');
+        expect(pre[0], 'prefix with 0 index correct').to.equal('01');
+        expect(pre[1], 'prefix with 1 index correct').to.equal('02');
 
         var suf = suffix(['1', '2'], '0');
-        assert.equal(suf[0], '10', 'prefix suffix 0 index correct');
-        assert.equal(suf[1], '20', 'prefix suffix 1 index correct');
+        expect(suf[0], 'prefix suffix 0 index correct').to.equal('10');
+        expect(suf[1], 'prefix suffix 1 index correct').to.equal('20');
     });
 });

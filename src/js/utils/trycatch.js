@@ -1,7 +1,6 @@
 import ApiSettings from 'api/api-settings';
 
 export function tryCatch(fn, ctx, args = []) {
-
     // In debug mode, allow `fn` to throw exceptions
     if (ApiSettings.debug) {
         return fn.apply(ctx || this, args);

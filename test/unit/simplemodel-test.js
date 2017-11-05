@@ -7,36 +7,36 @@ describe('SimpleModel Mixin', function() {
     const model = Object.assign({}, SimpleModel);
 
     it('returns undefined ', function() {
-        assert.isNotOk(model.get('noExisting'), 'get with no attributes');
+        expect(model.get('noExisting'), 'get with no attributes').to.be.undefined;
     });
 
     it('simplemodel', function() {
-        assert.isNotOk(model.get('noExisting'), 'get with no attributes');
+        expect(model.get('noExisting'), 'get with no attributes').to.be.undefined;
 
         model.set('attr', 'val');
-        assert.equal(model.get('attr'), 'val', 'set attribute with value');
+        expect(model.get('attr'), 'set attribute with value').to.equal('val');
 
         const clone = model.clone();
-        assert.equal(clone.attr, 'val', 'clone gets the same attributes');
+        expect(clone.attr, 'clone gets the same attributes').to.equal('val');
 
         const spy = sinon.spy();
         model.change('attr', spy);
-        assert.equal(spy.callCount, 1, 'change callback is invoked');
-        assert.equal(spy.lastCall.args[1], 'val', 'change attribute with value');
+        expect(spy.callCount, 'change callback is invoked').to.equal(1);
+        expect(spy.lastCall.args[1], 'change attribute with value').to.equal('val');
     });
 
     it('simplemodel', function() {
-        assert.isNotOk(model.get('noExisting'), 'get with no attributes');
+        expect(model.get('noExisting'), 'get with no attributes').to.be.undefined;
 
         model.set('attr', 'val');
-        assert.equal(model.get('attr'), 'val', 'set attribute with value');
+        expect(model.get('attr'), 'set attribute with value').to.equal('val');
 
         const clone = model.clone();
-        assert.equal(clone.attr, 'val', 'clone gets the same attributes');
+        expect(clone.attr, 'clone gets the same attributes').to.equal('val');
 
         const spy = sinon.spy();
         model.change('attr', spy);
-        assert.equal(spy.callCount, 1, 'change callback is invoked');
-        assert.equal(spy.lastCall.args[1], 'val', 'change attribute with value');
+        expect(spy.callCount, 'change callback is invoked').to.equal(1);
+        expect(spy.lastCall.args[1], 'change attribute with value').to.equal('val');
     });
 });

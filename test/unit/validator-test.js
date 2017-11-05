@@ -2,14 +2,14 @@ import * as validator from 'utils/validator';
 import _ from 'utils/underscore';
 
 describe('validator', function() {
-    const testerGenerator = function (assert, method) {
+    const testerGenerator = function (method) {
         return function (left, right, message) {
-            assert.strictEqual(method.apply(this, left), right, message);
+            expect(method.apply(this, left), message).to.equal(right);
         };
     };
 
     it('validator.exists test', function() {
-        const test = testerGenerator(assert, validator.exists);
+        const test = testerGenerator(validator.exists);
         test([true], true);
         test([0], true);
         test(['ok'], true);
@@ -19,7 +19,7 @@ describe('validator', function() {
     });
 
     it('validator.typeOf', function() {
-        const test = testerGenerator(assert, validator.typeOf);
+        const test = testerGenerator(validator.typeOf);
         test([0], 'number');
         test([''], 'string');
         test([false], 'boolean');
@@ -42,9 +42,9 @@ describe('validator', function() {
         ];
 
         _.each(sampleUrls, function (value) {
-            assert.equal(validator.isYouTube(value), true, 'Checking utils.isYouTube for ' + value);
+            expect(validator.isYouTube(value), 'Checking utils.isYouTube for ' + value).to.be.true;
         });
         const notYoutube = 'http://www.jwplayer.com/video.mp4';
-        assert.equal(validator.isYouTube('value'), false, 'Checking utils.isYouTube for ' + notYoutube);
+        expect(validator.isYouTube('value'), 'Checking utils.isYouTube for ' + notYoutube).to.be.false;
     });
 });

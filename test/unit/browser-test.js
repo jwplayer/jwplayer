@@ -44,7 +44,7 @@ describe('browser', function() {
     it('browser.flashVersion test', function() {
         const version = flashVersion();
 
-        assert.equal(typeof version, 'number', 'Flash version is ' + version);
+        expect(typeof version, 'Flash version is ' + version).to.equal('number');
     });
 
 });
