@@ -21,6 +21,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
     STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
+import ProgramController from 'program/program-controller';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -54,6 +55,7 @@ Object.assign(Controller.prototype, {
         _model.setup(config);
         _view = this._view = new View(_api, _model);
         _view.on('all', _triggerAfterReady, _this);
+        const _programController = new ProgramController(_model);
 
         _model.mediaController.on('all', _triggerAfterReady, _this);
         _model.mediaController.on(MEDIA_COMPLETE, () => {
@@ -147,10 +149,6 @@ Object.assign(Controller.prototype, {
         // Ensure captionsList event is raised after playlistItem
         _captions = new Captions(_model);
         _captions.on('all', _triggerAfterReady);
-
-        function _video() {
-            return _model.getVideo();
-        }
 
         function _triggerAfterReady(type, e) {
             _this.triggerAfterReady(type, e);
@@ -265,7 +263,7 @@ Object.assign(Controller.prototype, {
 
             // Only attempt to preload if this is the first player on the page or viewable
             if (instances[0] === _api || viewable === 1) {
-                model.preloadVideo();
+                _programController.preloadVideo();
             }
         }
 
@@ -406,7 +404,7 @@ Object.assign(Controller.prototype, {
                 }
             }
 
-            return _model.playVideo(playReason);
+            return _programController.playVideo(playReason);
         }
 
         function _getReason(meta) {
@@ -467,12 +465,7 @@ Object.assign(Controller.prototype, {
             }
 
             _model.set('errorEvent', undefined);
-
-            const provider = _model.getVideo();
-            _model.stopVideo();
-            if (!provider) {
-                _model.set('state', STATE_IDLE);
-            }
+            _programController.stopVideo();
         }
 
         function _pause(meta) {
@@ -497,8 +490,7 @@ Object.assign(Controller.prototype, {
                     return;
                 case STATE_PLAYING:
                 case STATE_BUFFERING: {
-
-                    _video().pause();
+                    _programController.pause();
                     break;
                 }
                 default:
@@ -520,7 +512,8 @@ Object.assign(Controller.prototype, {
             if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
                 _play(meta);
             }
-            _video().seek(pos);
+
+            _programController.position = pos;
         }
 
         function _item(index, meta) {
@@ -530,7 +523,17 @@ Object.assign(Controller.prototype, {
         }
 
         function _setItem(index) {
-            return _model.setItemIndex(index);
+            _programController.stopVideo();
+
+            const playlist = _model.get('playlist');
+            const length = playlist.length;
+
+            // If looping past the end, or before the beginning
+            index = parseInt(index, 10) || 0;
+            index = (index + length) % length;
+
+            const item = playlist[index];
+            return _programController.setActiveItem(item, index);
         }
 
         function _prev(meta) {
@@ -580,17 +583,11 @@ Object.assign(Controller.prototype, {
         }
 
         function _setCurrentQuality(index) {
-            if (_video()) {
-                index = parseInt(index, 10) || 0;
-                _video().setCurrentQuality(index);
-            }
+            _programController.quality = index;
         }
 
         function _getCurrentQuality() {
-            if (_video()) {
-                return _video().getCurrentQuality();
-            }
-            return -1;
+            return _programController.quality;
         }
 
         function _getConfig() {
@@ -621,38 +618,27 @@ Object.assign(Controller.prototype, {
         }
 
         function _getQualityLevels() {
-            if (_video()) {
-                return _video().getQualityLevels();
-            }
-            return null;
+            return _programController.qualities;
         }
 
         function _setCurrentAudioTrack(index) {
-            if (_video()) {
-                index = parseInt(index, 10) || 0;
-                _video().setCurrentAudioTrack(index);
-            }
+            _programController.audioTrack = index;
         }
 
         function _getCurrentAudioTrack() {
-            if (_video()) {
-                return _video().getCurrentAudioTrack();
-            }
-            return -1;
+            return _programController.audioTrack;
         }
 
         function _getAudioTracks() {
-            if (_video()) {
-                return _video().getAudioTracks();
-            }
-            return null;
+            return _programController.audioTracks;
         }
 
+        // TODO mediaController
         function _setCurrentCaptions(index) {
             index = parseInt(index, 10) || 0;
 
-            // update provider subtitle track
             _model.persistVideoSubtitleTrack(index);
+            _programController.subtitles = index;
 
             _this.trigger(CAPTIONS_CHANGED, {
                 tracks: _getCaptionsList(),
@@ -673,12 +659,12 @@ Object.assign(Controller.prototype, {
             if (_preplay) {
                 _interruptPlay = true;
             }
-            return _model.detachMedia();
+            _programController.attached = false;
         }
 
         function _attachMedia() {
             // Called after instream ends
-            _model.attachMedia();
+            _programController.attached = true;
 
             if (typeof _actionOnAttach === 'function') {
                 _actionOnAttach();
@@ -746,6 +732,13 @@ Object.assign(Controller.prototype, {
         this.getState = _getState;
         this.next = _nextUp;
         this.setConfig = (newConfig) => setConfig(_this, newConfig);
+        this.setItemIndex = _setItem;
+
+        // Program passthroughs
+        this.playVideo = _programController.playVideo.bind(_programController);
+        this.stopVideo = _programController.stopVideo.bind(_programController);
+        this.castVideo = _programController.castVideo.bind(_programController);
+        this.stopCast = _programController.stopCast.bind(_programController);
 
         // Model passthroughs
         this.setVolume = _model.setVolume.bind(_model);
@@ -822,11 +815,7 @@ Object.assign(Controller.prototype, {
                 mode = !_model.get('controls');
             }
             _model.set('controls', mode);
-
-            const provider = _model.getVideo();
-            if (provider) {
-                provider.setControls(mode);
-            }
+            _programController.controls = mode;
         };
 
         this.playerDestroy = function () {
@@ -880,7 +869,7 @@ Object.assign(Controller.prototype, {
             'setCurrentCaptions',
             'setCurrentQuality',
             'setFullscreen',
-        ], () => !_model.getVideo());
+        ], () => !_programController.activeProvider);
         // Add commands from CoreLoader to queue
         apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
