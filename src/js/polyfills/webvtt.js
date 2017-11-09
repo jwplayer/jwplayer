@@ -643,8 +643,8 @@ BoxPosition.getSimpleBoxPosition = function (obj) {
     obj = obj.div ? obj.div.getBoundingClientRect() :
         obj.tagName ? obj.getBoundingClientRect() : obj;
     var ret = {
-        paddingLeft: obj.left,
-        paddingRight: obj.right,
+        left: obj.left,
+        right: obj.right,
         top: obj.top || top,
         height: obj.height || height,
         bottom: obj.bottom || (top + (obj.height || height)),
