@@ -967,6 +967,14 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
     },
 
     /**
+     * Extracts the video tag in the foreground.
+     * @returns {string} videoTag - the video tag in the foreground.
+     */
+    getVideoTag() {
+        return this.getContainer().getElementsByClassName('jw-media')[0].getElementsByTagName('video')[0];
+    },
+
+    /**
      * Checks for the presence of an ad blocker. Implemented by jwplayer-commercial.
      * @returns {boolean} - Returns true when an ad blocker is detected, otherwise false.
      */
