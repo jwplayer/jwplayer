@@ -102,6 +102,7 @@ function VideoProvider(_playerId, _playerConfig) {
             VideoEvents.loadeddata.call(_this);
             _setAudioTracks(_videotag.audioTracks);
             _checkDelayedSeek(_this.getDuration());
+            checkVisualQuality();
         },
 
         canplay() {
@@ -235,8 +236,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
     function checkVisualQuality() {
         const level = visualQuality.level;
-        if (level.width !== _videotag.videoWidth ||
-            level.height !== _videotag.videoHeight) {
+        if (level.width !== _videotag.videoWidth || level.height !== _videotag.videoHeight) {
             level.width = _videotag.videoWidth;
             level.height = _videotag.videoHeight;
             _setMediaType();
