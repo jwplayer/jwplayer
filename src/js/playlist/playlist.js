@@ -47,7 +47,7 @@ function formatSources(item, model) {
     const androidhls = model.get('androidhls');
     const itemDrm = item.drm || model.get('drm');
     const withCredentials = fallbackIfUndefined(item.withCredentials, model.get('withCredentials'));
-    const hlsjsdefault = model.get('hlsjsdefault');
+    const hlsjsdefault = model.get('hlsjsdefault') !== false;
 
     return sources.map(function(originalSource) {
         if (originalSource !== Object(originalSource)) {
