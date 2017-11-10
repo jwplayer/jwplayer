@@ -968,7 +968,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
 
     /**
      * Extracts the video tag in the foreground.
-     * @returns {object|null} videoTag - the HTML <video> element in the foreground.
+     * @returns {Element|null} videoTag - the HTML <video> element in the foreground.
      */
     getVideoTag() {
         const container = this.getContainer();
