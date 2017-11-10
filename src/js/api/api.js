@@ -971,7 +971,8 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @returns {string} videoTag - the video tag in the foreground.
      */
     getVideoTag() {
-        return this.getContainer().getElementsByClassName('jw-media')[0].getElementsByTagName('video')[0];
+        const container = this.getContainer();
+        return container && container.querySelector('video');
     },
 
     /**
