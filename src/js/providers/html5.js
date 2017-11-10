@@ -327,7 +327,11 @@ function VideoProvider(_playerId, _playerConfig) {
             }
         }
         visualQuality.reason = 'initial choice';
-        visualQuality.level = {};
+
+        if (!visualQuality.level.width || !visualQuality.level.height) {
+            visualQuality.level = {};
+        }
+
         return currentQuality;
     }
 
