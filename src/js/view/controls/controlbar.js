@@ -305,7 +305,7 @@ export default class Controlbar {
 
         if (elements.cast && elements.cast.button) {
             new UI(elements.cast.element()).on('click tap enter', function(evt) {
-                if (evt.type === 'enter') {
+                if (evt.type !== 'click') {
                     elements.cast.button.click();
                 }
                 this._model.set('castClicked', true);
