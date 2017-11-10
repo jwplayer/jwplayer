@@ -305,6 +305,8 @@ export default class Controlbar {
 
         if (elements.cast && elements.cast.button) {
             new UI(elements.cast.element()).on('click tap enter', function(evt) {
+                // controlbar cast button needs to manually trigger a click
+                // on the native cast button for taps and enter key
                 if (evt.type !== 'click') {
                     elements.cast.button.click();
                 }
