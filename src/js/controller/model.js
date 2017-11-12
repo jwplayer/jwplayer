@@ -1,8 +1,6 @@
 import { Browser, OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
-import Providers from 'providers/providers';
-import { loadProvidersForPlaylist } from 'api/set-playlist';
 import getMediaElement from 'api/get-media-element';
 import initQoe from 'controller/qoe';
 import { PLAYER_STATE, STATE_IDLE, STATE_BUFFERING, STATE_PAUSED, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
@@ -15,11 +13,12 @@ import _ from 'utils/underscore';
 import Events from 'utils/backbone.events';
 import { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
+import ProviderController from 'providers/provider-controller';
 
 // Represents the state of the player
 const Model = function() {
     const _this = this;
-    let _providers;
+    let providerController;
     let _provider;
     let _beforecompleted = false;
     let _attached = true;
@@ -34,12 +33,9 @@ const Model = function() {
     this.set('mediaModel', this.mediaModel);
 
     this.setup = function(config) {
-
         Object.assign(this.attributes, config, INITIAL_PLAYER_STATE);
-
-        this.updateProviders();
+        providerController = ProviderController(this.getConfiguration());
         this.setAutoStart();
-
         return this;
     };
 
@@ -47,10 +43,6 @@ const Model = function() {
         const config = this.clone();
         delete config.mediaModel;
         return config;
-    };
-
-    this.updateProviders = function() {
-        _providers = new Providers(this.getConfiguration());
     };
 
     function _videoEventHandler(type, data) {
@@ -196,58 +188,6 @@ const Model = function() {
         _provider.setContainer(container);
     };
 
-    this.changeVideoProvider = function(Provider) {
-        this.off('change:mediaContainer', this.onMediaContainer);
-
-        if (_provider) {
-            _provider.off(null, null, this);
-            if (_provider.getContainer()) {
-                _provider.remove();
-            }
-            delete _provider.instreamMode;
-        }
-
-        if (!Provider) {
-            this.resetProvider();
-            this.set('provider', undefined);
-            return;
-        }
-
-        _provider = new Provider(_this.get('id'), _this.getConfiguration());
-
-        var container = this.get('mediaContainer');
-        if (container) {
-            _provider.setContainer(container);
-        } else {
-            this.once('change:mediaContainer', this.onMediaContainer);
-        }
-
-        if (_provider.getName().name.indexOf('flash') === -1) {
-            this.set('flashThrottle', undefined);
-            this.set('flashBlocked', false);
-        }
-
-        _provider.volume(_this.get('volume'));
-
-        // Mute the video if autostarting on mobile, except for Android SDK. Otherwise, honor the model's mute value
-        const isAndroidSdk = _this.get('sdkplatform') === 1;
-        _provider.mute((this.autoStartOnMobile() && !isAndroidSdk) || _this.get('mute'));
-
-        _provider.on('all', _videoEventHandler, this);
-
-        // Attempt setting the playback rate to be the user selected value
-        this.setPlaybackRate(this.get('defaultPlaybackRate'));
-
-        // Set playbackRate because provider support for playbackRate may have changed and not sent an update
-        this.set('playbackRate', _provider.getPlaybackRate());
-
-        if (this.get('instreamMode') === true) {
-            _provider.instreamMode = true;
-        }
-
-        this.set('renderCaptionsNatively', _provider.renderNatively);
-    };
-
     this.checkComplete = function() {
         return _beforecompleted;
     };
@@ -305,9 +245,10 @@ const Model = function() {
     };
 
     // Give the option for a provider to be forced
+    // Used by cast controller
     this.chooseProvider = function(source) {
         // if _providers.choose is null, something went wrong in filtering
-        return _providers.choose(source).provider;
+        return providerController.choose(source);
     };
 
     this.setItemIndex = function(index) {
@@ -332,55 +273,59 @@ const Model = function() {
         this.set('mediaModel', this.mediaModel);
         this.attributes.playlistItem = null;
         this.set('playlistItem', item);
-        providerPromise = this.setProvider(item);
-        return providerPromise;
-    };
 
-    function resetItem(model, item) {
-        const position = item ? seconds(item.starttime) : 0;
-        const duration = item ? seconds(item.duration) : 0;
-        const mediaModelState = model.mediaModel.attributes;
-        model.mediaModel.srcReset();
-        mediaModelState.position = position;
-        mediaModelState.duration = duration;
-
-        model.set('playRejected', false);
-        model.set('itemMeta', {});
-        model.set('position', position);
-        model.set('duration', duration);
-    }
-
-    this.setProvider = function(item) {
         const source = item && item.sources && item.sources[0];
         if (source === undefined) {
             // source is undefined when resetting index with empty playlist
             throw new Error('No media');
         }
 
-        const Provider = this.chooseProvider(source);
-        // If we are changing video providers
-        if (!Provider || !(_provider && _provider instanceof Provider)) {
-            // Replace the video tag for the next provider
+        let ProviderConstructor = providerController.choose(source);
+        providerPromise = resolved;
+
+        // We're changing providers
+        if (!ProviderConstructor || !(_provider && _provider instanceof ProviderConstructor)) {
+            // We haven't loaded the provider we need
+            if (!ProviderConstructor) {
+                providerPromise = this.loadProviderList(this.get('playlist'));
+            }
+
+            // We're switching from one piece of media to another, so reset it
             if (_provider) {
+                this.resetProvider();
                 replaceMediaElement(this);
             }
-            this.changeVideoProvider(Provider);
         }
 
-        if (!_provider) {
-            this.set(PLAYER_STATE, STATE_BUFFERING);
-            const mediaModelContext = this.mediaModel;
-            return loadProvidersForPlaylist(this).then(() => {
+        const mediaModelContext = this.mediaModel;
+        return providerPromise
+            .then(() => {
+                ProviderConstructor = providerController.choose(source);
+                // The provider we need couldn't be loaded
+                if (!ProviderConstructor) {
+                    this.resetProvider();
+                    this.set('provider', undefined);
+                    throw new Error('No providers for playlist');
+                }
+            })
+            .then(() => {
+                // Don't do anything if we've tried loading another provider while this promise was resolving
                 if (mediaModelContext === this.mediaModel) {
                     syncPlayerWithMediaModel(mediaModelContext);
-                    // Verify that we have a provider class for this source
-                    if (this.chooseProvider(source)) {
-                        return this.setProvider(item);
+                    let nextProvider = _provider;
+                    if (!nextProvider) {
+                        // We need to make a new provider
+                        nextProvider = new ProviderConstructor(this.get('id'), this.getConfiguration());
+                        return this.changeVideoProvider(nextProvider, item);
                     }
+                    return this.setProvider(nextProvider, item);
                 }
+                return resolved;
             });
-        }
+    };
 
+    this.setProvider = function (nextProvider, item) {
+        _provider = nextProvider;
         // this allows the providers to preload
         if (_provider.init) {
             _provider.init(item);
@@ -391,9 +336,32 @@ const Model = function() {
 
         // Listening for change:item won't suffice when loading the same index or file
         // We also can't listen for change:mediaModel because it triggers whether or not
-        //  an item was actually loaded
+        // an item was actually loaded
         this.trigger('itemReady', item);
         return resolved;
+    };
+
+    this.changeVideoProvider = function (nextProvider, item) {
+        this.off('change:mediaContainer', this.onMediaContainer);
+
+        const container = this.get('mediaContainer');
+        if (container) {
+            nextProvider.setContainer(container);
+        } else {
+            this.once('change:mediaContainer', this.onMediaContainer);
+        }
+
+        nextProvider.on('all', _videoEventHandler, this);
+        // Attempt setting the playback rate to be the user selected value
+        this.setPlaybackRate(this.get('defaultPlaybackRate'));
+        providerController.sync(this, nextProvider);
+
+        return this.setProvider(nextProvider, item);
+    };
+
+    this.loadProviderList = function (playlist) {
+        this.set(PLAYER_STATE, STATE_BUFFERING);
+        return providerController.loadProviders(playlist);
     };
 
     function replaceMediaElement(model) {
@@ -407,11 +375,7 @@ const Model = function() {
     }
 
     this.getProviders = function() {
-        return _providers;
-    };
-
-    this.resetProvider = function() {
-        _provider = null;
+        return providerController.allProviders();
     };
 
     this.setVolume = function(volume) {
@@ -450,6 +414,18 @@ const Model = function() {
         if (streamType === 'LIVE') {
             this.setPlaybackRate(1);
         }
+    };
+
+    this.resetProvider = function () {
+        if (_provider) {
+            _provider.off(null, null, this);
+            if (_provider.getContainer()) {
+                _provider.remove();
+            }
+            delete _provider.instreamMode;
+        }
+        _provider = null;
+        this.set('provider', undefined);
     };
 
     this.setPlaybackRate = function(playbackRate) {
@@ -671,6 +647,20 @@ const Model = function() {
         this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
     };
 };
+
+function resetItem(model, item) {
+    const position = item ? seconds(item.starttime) : 0;
+    const duration = item ? seconds(item.duration) : 0;
+    const mediaModelState = model.mediaModel.attributes;
+    model.mediaModel.srcReset();
+    mediaModelState.position = position;
+    mediaModelState.duration = duration;
+
+    model.set('playRejected', false);
+    model.set('itemMeta', {});
+    model.set('position', position);
+    model.set('duration', duration);
+}
 
 // Represents the state of the provider/media element
 const MediaModel = Model.MediaModel = function() {
