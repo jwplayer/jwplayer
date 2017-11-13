@@ -18,15 +18,15 @@ describe('Storage', function() {
 
         model.set('volume', 70);
         const data1 = storage.getAllItems();
-        assert.strictEqual(data1.volume, 70, 'storage listens for changes to model');
+        expect(data1.volume, 'storage listens for changes to model').to.equal(70);
 
         storage.clear();
         const data2 = storage.getAllItems();
-        assert.strictEqual(_.size(data2), 0, 'storage is empty after calling clear');
+        expect(_.size(data2), 'storage is empty after calling clear').to.equal(0);
 
         model.set('mute', true);
         const data3 = storage.getAllItems();
-        assert.strictEqual(_.size(data3), 1, 'storage has one item after change to model');
-        assert.strictEqual(data3.mute, true, 'boolean value stored properly');
+        expect(_.size(data3), 'storage has one item after change to model').to.equal(1);
+        expect(data3.mute, 'boolean value stored properly').to.equal(true);
     });
 });

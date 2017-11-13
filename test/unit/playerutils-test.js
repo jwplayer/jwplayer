@@ -5,12 +5,12 @@ describe('playerutils', function() {
 
     it('versionCheck with valid version', function() {
         const versionRequirementMet = versionCheck('0.5');
-        assert.isOk(versionRequirementMet);
+        expect(versionRequirementMet).to.be.true;
     });
 
     it('versionCheck with invalid version', function() {
         const versionRequirementMet = versionCheck('99.1');
-        assert.isNotOk(versionRequirementMet);
+        expect(versionRequirementMet).to.be.false;
     });
 
     it('versionCheck with higher version', function() {
@@ -18,16 +18,16 @@ describe('playerutils', function() {
         const jMajor = parseFloat(jParts[0]);
         const jMinor = parseFloat(jParts[1]);
         const versionRequirementMet = versionCheck(jMajor + ' ' + (jMinor + 1));
-        assert.isNotOk(versionRequirementMet);
+        expect(versionRequirementMet).to.be.false;
     });
 
     it('getScriptPath returns an empty string when no file name is provided', function() {
         const path = getScriptPath(null);
-        assert.equal(path, '');
+        expect(path).to.equal('');
     });
 
     it('getScriptPath returns a directory url ending with a forward slash', function() {
         const scriptPath = getScriptPath('sinon.js');
-        assert.isOk(/\S+\:\/\/.+\/$/.test(scriptPath), ' for "sinon.js" returned "' + scriptPath + '"');
+        expect(/\S+\:\/\/.+\/$/.test(scriptPath), ' for "sinon.js" returned "' + scriptPath + '"').to.be.true;
     });
 });

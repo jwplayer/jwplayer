@@ -20,21 +20,21 @@ describe('Model QoE', function() {
         // FIXME: PROVIDER_FIRST_FRAME triggers MEDIA_FIRST_FRAME : we only need one event
         model.mediaController.trigger(PROVIDER_FIRST_FRAME);
 
-        assert.isOk(!!qoeItem, 'qoeItem is defined');
+        expect(!!qoeItem, 'qoeItem is defined').to.be.true;
 
         const loadTime = qoeItem.between(MEDIA_PLAY_ATTEMPT, MEDIA_FIRST_FRAME);
-        assert.isOk(validateMeasurement(loadTime), 'time to first frame is a valid number');
+        expect(validateMeasurement(loadTime), 'time to first frame is a valid number').to.be.true;
 
         const qoeDump = qoeItem.dump();
-        assert.equal(qoeDump.counts.idle, 1, 'one idle event');
-        assert.equal(qoeDump.counts.loading, 1, 'one loading event');
-        assert.equal(qoeDump.counts.playing, 1, 'one playing event');
-        assert.isOk(validateMeasurement(qoeDump.sums.idle), 'idle sum is a valid number');
-        assert.isOk(validateMeasurement(qoeDump.sums.loading), 'loading sum is a valid number');
-        assert.isOk(validateMeasurement(qoeDump.sums.playing), 'playing sum is a valid number');
-        assert.isOk(validateMeasurement(qoeDump.events.playlistItem, startTime), 'playlistItem epoch time is ok');
-        assert.isOk(validateMeasurement(qoeDump.events.playAttempt, startTime), 'playAttempt epoch time is ok');
-        assert.isOk(validateMeasurement(qoeDump.events.firstFrame, startTime), 'firstFrame epoch time is ok');
+        expect(qoeDump.counts.idle).to.equal(1, 'one idle event');
+        expect(qoeDump.counts.loading).to.equal(1, 'one loading event');
+        expect(qoeDump.counts.playing).to.equal(1, 'one playing event');
+        expect(validateMeasurement(qoeDump.sums.idle), 'idle sum is a valid number').to.be.true;
+        expect(validateMeasurement(qoeDump.sums.loading), 'loading sum is a valid number').to.be.true;
+        expect(validateMeasurement(qoeDump.sums.playing), 'playing sum is a valid number').to.be.true;
+        expect(validateMeasurement(qoeDump.events.playlistItem, startTime), 'playlistItem epoch time is ok').to.be.true;
+        expect(validateMeasurement(qoeDump.events.playAttempt, startTime), 'playAttempt epoch time is ok').to.be.true;
+        expect(validateMeasurement(qoeDump.events.firstFrame, startTime), 'firstFrame epoch time is ok').to.be.true;
     });
 
     it('removes media controller event listeners', function() {
@@ -46,9 +46,9 @@ describe('Model QoE', function() {
         model.mediaController.trigger(PROVIDER_FIRST_FRAME);
 
         let qoeDump = qoeItem.dump();
-        assert.isOk(validateMeasurement(qoeDump.events.playAttempt, startTime), 'play attempt event was fired ' +
-            JSON.stringify(qoeDump.events) + ' startTime: ' + startTime);
-        assert.isOk(validateMeasurement(qoeDump.events.firstFrame, startTime), 'first frame event was fired');
+        expect(validateMeasurement(qoeDump.events.playAttempt, startTime), 'play attempt event was fired ' +
+            JSON.stringify(qoeDump.events) + ' startTime: ' + startTime).to.be.true;
+        expect(validateMeasurement(qoeDump.events.firstFrame, startTime), 'first frame event was fired').to.be.true;
 
         // test that listeners are removed by testing that tick events are no longer changed
         qoeItem.tick('playAttempt');
@@ -64,8 +64,8 @@ describe('Model QoE', function() {
         model.mediaController.trigger(PROVIDER_FIRST_FRAME);
 
         qoeDump = qoeItem.dump();
-        assert.equal(qoeDump.events.playAttempt, playAttemptTick, 'play attempt is unchanged after further media events');
-        assert.equal(qoeDump.events.firstFrame, firstFrameTick, 'first frame is unchanged after further media events');
+        expect(playAttemptTick).to.equal(qoeDump.events.playAttempt, 'play attempt is unchanged after further media events');
+        expect(firstFrameTick).to.equal(qoeDump.events.firstFrame, 'first frame is unchanged after further media events');
     });
 
     it('tracks stalled time', function() {
@@ -79,7 +79,7 @@ describe('Model QoE', function() {
         mediaModel.set('state', STATE_PLAYING);
 
         const qoeDump = qoeItem.dump();
-        assert.isOk(validateMeasurement(qoeDump.sums.stalled), 'stalled sum is a valid number');
+        expect(validateMeasurement(qoeDump.sums.stalled), 'stalled sum is a valid number').to.be.true;
     });
 
     it('uses one qoe item per playlist item', function() {
@@ -95,20 +95,15 @@ describe('Model QoE', function() {
         model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
         mediaModel.set('state', STATE_LOADING);
 
-        assert.isOk(firstQoeItem !== secondQoeItem, 'qoe items are unique between playlistItem changes');
+        expect(firstQoeItem !== secondQoeItem, 'qoe items are unique between playlistItem changes').to.be.true;
 
         const firstQoeDump = firstQoeItem.dump();
         const secondQoeDump = secondQoeItem.dump();
 
-        assert.isOk(firstQoeDump.events.playAttempt === undefined,
-            'play attempt is was not tracked for first unplayed item');
-        assert.isOk(secondQoeDump.events.playAttempt !== undefined,
-            'play attempt is was tracked for second item');
-        assert.isOk(firstQoeDump.counts.loading === undefined,
-            'loading was not tracked for first unplayed item');
-        assert.isOk(secondQoeDump.counts.loading === 1,
-            'loading was tracked for second item');
-
+        expect(firstQoeDump.events.playAttempt === undefined, 'play attempt is was not tracked for first unplayed item').to.be.true;
+        expect(secondQoeDump.events.playAttempt !== undefined, 'play attempt is was tracked for second item').to.be.true;
+        expect(firstQoeDump.counts.loading === undefined, 'loading was not tracked for first unplayed item').to.be.true;
+        expect(secondQoeDump.counts.loading === 1, 'loading was tracked for second item').to.be.true;
     });
 
     function validateMeasurement(value, min) {

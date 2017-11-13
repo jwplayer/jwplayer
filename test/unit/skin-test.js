@@ -1,9 +1,45 @@
 import _ from 'test/underscore';
-import sinon from 'sinon';
 import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
-import * as cssUtils from 'utils/css';
+import { clearCss } from 'utils/css';
+import diff from 'fast-diff';
+
+function getPlayerStyleText() {
+    const head = document.head;
+    return _.map(head.querySelectorAll('[data-jwplayer-id]'), styleElement => styleElement.innerHTML).join('');
+}
+
+function clearPlayerStyleSheets() {
+    // TODO: clearCss should remove empty style elements from the DOM. Then we wouldn't need to modify the DOM here.
+    // Clear styles from simple-style-loader and remove player style tags from the DOM
+    clearCss('id');
+    const head = document.head;
+    _.each(head.querySelectorAll('[data-jwplayer-id]'), styleElement => {
+        styleElement.innerHTML = '';
+    });
+}
+
+function diffString(before, after) {
+    /**
+     * fast-diff returns an array of results [fast-diff](https://github.com/jhchen/fast-diff)
+     *
+     * var result = diff('Good dog', 'Bad dog');
+     * // [[-1, "Goo"], [1, "Ba"], [0, "d dog"]]
+     *
+     * This maps the results to an object:
+     * // {-1: "Goo", 1: "Ba", 0: "d dog"}
+     */
+
+    return diff(before, after).reduce((reduced, item) => {
+        reduced[item[0]] = (reduced[item[0]] || '') + '|' + item[1];
+        return reduced;
+    }, {});
+}
 
 describe('Skin Customization', function() {
+
+    beforeEach(clearPlayerStyleSheets);
+
+    after(clearPlayerStyleSheets);
 
     describe('normalizeSkin', function() {
 
@@ -16,49 +52,49 @@ describe('Skin Customization', function() {
     });
 
     describe('handleColorOverrides', function() {
-        let cssStub;
 
-        before(function() {
-            cssStub = sinon.stub(cssUtils, 'css');
-        });
+        it('should not modify the DOM with an empty config', function() {
+            const initialState = getPlayerStyleText();
 
-        after(function() {
-            cssStub.restore();
-        });
-
-        it('should not style any element with an empty config', function() {
             handleColorOverrides('id', {});
 
-            expect(cssUtils.css.callCount).to.equal(0);
+            const currentState = getPlayerStyleText();
+            const domDiff = diffString(initialState, currentState);
+
+            expect(currentState.length).to.equal(0);
+            expect(domDiff[diff.INSERT], 'Text was inserted into the DOM').to.equal(undefined);
+            expect(domDiff[diff.DELETE], 'Text was deleted from the DOM').to.equal(undefined);
         });
 
-        it('should not style any element with an undefined config', function() {
+        it('should not modify the DOM with an undefined config', function() {
+            const initialState = getPlayerStyleText();
+
             handleColorOverrides('id');
 
-            expect(cssUtils.css.callCount).to.equal(0);
+            const currentState = getPlayerStyleText();
+            const domDiff = diffString(initialState, currentState);
+
+            expect(currentState.length).to.equal(0);
+            expect(domDiff[diff.INSERT], 'Text was inserted into the DOM').to.equal(undefined);
+            expect(domDiff[diff.DELETE], 'Text was deleted from the DOM').to.equal(undefined);
         });
 
         it('should override controlbar text color', function() {
-            cssStub.reset();
-
             handleColorOverrides('id', {
                 controlbar: {
                     text: 'green'
                 }
             });
 
-            expect(cssUtils.css.args[0]).to.eql([
-                '#id .jw-controlbar .jw-icon-inline.jw-text, ' +
-                '#id .jw-title-primary, ' +
-                '#id .jw-title-secondary',
-                { color: 'green' },
-                'id'
-            ]);
+            const cssText = getPlayerStyleText();
+
+            expect(cssText).to.contain('#id .jw-controlbar .jw-icon-inline.jw-text');
+            expect(cssText).to.contain('#id .jw-title-primary');
+            expect(cssText).to.contain('#id .jw-title-secondary');
+            expect(cssText).to.contain('color: green');
         });
 
         it('should override controlbar text and icon colors', function() {
-            cssStub.reset();
-
             handleColorOverrides('id', {
                 controlbar: {
                     text: 'green',
@@ -66,20 +102,15 @@ describe('Skin Customization', function() {
                 }
             });
 
-            expect(cssUtils.css.args[0]).to.eql([
-                '#id .jw-controlbar .jw-icon-inline.jw-text, ' +
-                '#id .jw-title-primary, ' +
-                '#id .jw-title-secondary',
-                { color: 'green' },
-                'id'
-            ]);
+            const cssText = getPlayerStyleText();
 
-            expect(cssUtils.css.args[1]).to.eql([
-                '#id .jw-button-color:not(.jw-icon-cast), ' +
-                '#id .jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)',
-                { color: 'blue' },
-                'id'
-            ]);
+            expect(cssText).to.contain('#id .jw-controlbar .jw-icon-inline.jw-text');
+            expect(cssText).to.contain('#id .jw-title-primary');
+            expect(cssText).to.contain('#id .jw-title-secondary');
+            expect(cssText).to.contain('color: green');
+            expect(cssText).to.contain('#id .jw-button-color:not(.jw-icon-cast)');
+            expect(cssText).to.contain('#id .jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)');
+            expect(cssText).to.contain('color: blue');
         });
     });
 });

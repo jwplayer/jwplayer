@@ -10,10 +10,10 @@ describe('ScriptLoader', function() {
     it('ScriptLoader.getStatus', function() {
         // check status new
         const script = new ScriptLoader('/base/test/files/global.js');
-        assert.equal(script.getStatus(), SCRIPT_LOAD_STATUS_NEW, 'newly created scriptloader has state new');
+        expect(script.getStatus(), 'newly created scriptloader has state new').to.equal(SCRIPT_LOAD_STATUS_NEW);
 
         script.load();
-        assert.notEqual(script.getStatus(), SCRIPT_LOAD_STATUS_NEW, 'loading script causes status to change');
+        expect('loading script causes status to change').to.not.equal(script.getStatus(), SCRIPT_LOAD_STATUS_NEW);
     });
 
     it('ScriptLoader load same script', function() {
@@ -28,8 +28,7 @@ describe('ScriptLoader', function() {
         const sameScript = new ScriptLoader('/base/test/files/global.js');
         sameScript.load();
 
-        assert.isOk(document.getElementsByTagName('head')[0].firstChild.src.indexOf('global.js') >= 0,
-            'adding same tag should not add the tag');
+        expect(document.getElementsByTagName('head')[0].firstChild.src.indexOf('global.js') >= 0,'adding same tag should not add the tag').to.be.true;
     });
 
     it('ScriptLoader with actual path', function() {
@@ -39,6 +38,6 @@ describe('ScriptLoader', function() {
 
         // loaded script should be added to head as first child
         const tag = document.getElementsByTagName('head')[0].firstChild;
-        assert.isOk(tag.src.indexOf('sinon.js') >= 0, 'script is loaded properly');
+        expect(tag.src.indexOf('sinon.js') >= 0, 'script is loaded properly').to.be.true;
     });
 });

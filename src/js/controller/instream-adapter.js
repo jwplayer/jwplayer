@@ -3,23 +3,9 @@ import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     ERROR, MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
 import InstreamHtml5 from 'controller/instream-html5';
-import InstreamFlash from 'controller/instream-flash';
 import utils from 'utils/helpers';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
-
-function chooseInstreamMethod(_model) {
-    var providerName = '';
-    var provider = _model.get('provider');
-    if (provider) {
-        providerName = provider.name;
-    }
-    if (providerName.indexOf('flash') >= 0) {
-        return InstreamFlash;
-    }
-
-    return InstreamHtml5;
-}
 
 var _defaultOptions = {
     skipoffset: null,
@@ -27,8 +13,7 @@ var _defaultOptions = {
 };
 
 var InstreamAdapter = function(_controller, _model, _view) {
-    var InstreamMethod = chooseInstreamMethod(_model);
-    var _instream = new InstreamMethod(_controller, _model);
+    var _instream = new InstreamHtml5(_controller, _model);
 
     var _array;
     var _arrayOptions;

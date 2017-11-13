@@ -19,7 +19,7 @@ describe('time-ranges', function() {
         var expected = 2;
         var actual = endOfRange(mockRanges);
 
-        assert.deepEqual(actual, expected);
+        expect(expected).to.deep.equal(actual);
     });
 
     it('returns the end when there are multiple ranges', function() {
@@ -27,7 +27,7 @@ describe('time-ranges', function() {
         var expected = 4;
         var actual = endOfRange(mockRanges);
 
-        assert.deepEqual(actual, expected);
+        expect(expected).to.deep.equal(actual);
     });
 
     it('returns 0 when there are no ranges', function() {
@@ -35,7 +35,7 @@ describe('time-ranges', function() {
         var expected = 0;
         var actual = endOfRange(mockRanges);
 
-        assert.deepEqual(actual, expected);
+        expect(expected).to.deep.equal(actual);
     });
 
     it('returns 0 when ranges are undefined', function() {
@@ -43,6 +43,6 @@ describe('time-ranges', function() {
         var expected = 0;
         var actual = endOfRange(mockRanges);
 
-        assert.deepEqual(actual, expected);
+        expect(expected).to.deep.equal(actual);
     });
 });

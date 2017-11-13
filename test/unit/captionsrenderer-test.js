@@ -21,7 +21,7 @@ describe('CaptionsRenderer.getCurrentCues', function() {
         var currentNumCues = [1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 2, 1, 2, 4, 4, 1, 1];
 
         for (var i = 0; i < currentNumCues.length; i += 1) {
-            assert.equal(captionsRenderer.getCurrentCues(allCues, i).length, currentNumCues[i], 'Invalid number of cues at position ' + i);
+            expect(captionsRenderer.getCurrentCues(allCues, i).length, 'Invalid number of cues at position ' + i).to.equal(currentNumCues[i]);
         }
     });
 
@@ -31,17 +31,17 @@ describe('CaptionsRenderer.getCurrentCues', function() {
             var cues = [
                 new VTTCue(0, 3, 'HG: Morning, Rob.')
             ];
-            assert.equal(captionsRenderer.updateCurrentCues(cues).length, 1, '');
+            expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(1);
 
             cues = [
                 new VTTCue(12, 15, 'EG: Hey, Jo...'),
                 new VTTCue(13, 14, 'JB: Yeah?'),
                 new VTTCue(13, 14, 'JP: Yeah?')
             ];
-            assert.equal(captionsRenderer.updateCurrentCues(cues).length, 3, '');
+            expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(3);
 
             cues = [];
-            assert.equal(captionsRenderer.updateCurrentCues(cues).length, 0, '');
+            expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(0);
         });
     });
 });

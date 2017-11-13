@@ -5,10 +5,10 @@ describe('languageUtils', function() {
     describe('getLabel from unsupported codes', function() {
 
         it('should not change value if there is no matching language code', function() {
-            assert.equal(getLabel(), undefined);
-            assert.equal(getLabel(null), null);
-            assert.equal(getLabel('po'), 'po');
-            assert.equal(getLabel('pol'), 'pol');
+            expect(getLabel()).to.equal(undefined);
+            expect(getLabel(null)).to.equal(undefined);
+            expect(getLabel('po')).to.equal('po');
+            expect(getLabel('pol')).to.equal('pol');
         });
 
         describe('getLabel from ISO 639-1 codes', function() {
@@ -16,114 +16,114 @@ describe('languageUtils', function() {
             it('should be English for its codes', function() {
                 var expected = 'English';
 
-                assert.equal(getLabel('en'), expected);
+                expect(getLabel('en')).to.equal(expected);
             });
 
             it('should be Chinese for its codes', function() {
                 var expected = 'Chinese';
 
-                assert.equal(getLabel('zh'), expected);
+                expect(getLabel('zh')).to.equal(expected);
             });
 
             it('should be Dutch for its codes', function() {
                 var expected = 'Dutch';
 
-                assert.equal(getLabel('nl'), expected);
+                expect(getLabel('nl')).to.equal(expected);
             });
 
             it('should be French for its codes', function() {
                 var expected = 'French';
 
-                assert.equal(getLabel('fr'), expected);
+                expect(getLabel('fr')).to.equal(expected);
             });
 
             it('should be German for its codes', function() {
                 var expected = 'German';
 
-                assert.equal(getLabel('de'), expected);
+                expect(getLabel('de')).to.equal(expected);
             });
 
             it('should be Japanese for its codes', function() {
                 var expected = 'Japanese';
 
-                assert.equal(getLabel('ja'), expected);
+                expect(getLabel('ja')).to.equal(expected);
             });
 
             it('should be Portuguese for its codes', function() {
                 var expected = 'Portuguese';
 
-                assert.equal(getLabel('pt'), expected);
+                expect(getLabel('pt')).to.equal(expected);
             });
 
             it('should be Italian for its codes', function() {
                 var expected = 'Italian';
 
-                assert.equal(getLabel('it'), expected);
+                expect(getLabel('it')).to.equal(expected);
             });
 
             it('should be Russian for its codes', function() {
                 var expected = 'Russian';
 
-                assert.equal(getLabel('ru'), expected);
+                expect(getLabel('ru')).to.equal(expected);
             });
 
             it('should be Spanish for its codes', function() {
                 var expected = 'Spanish';
 
-                assert.equal(getLabel('es'), expected);
+                expect(getLabel('es')).to.equal(expected);
             });
 
             it('should map based only on the first two characters', function() {
                 var expected = 'Portuguese';
-                assert.equal(getLabel('pt-br'), expected);
+                expect(getLabel('pt-br')).to.equal(expected);
             });
         });
 
         describe('getLabel from ISO 639-2 codes', function() {
 
             it('should not change for its English codes', function() {
-                assert.equal(getLabel('eng'), 'eng');
+                expect(getLabel('eng')).to.equal('eng');
             });
 
             it('should not change for its Chinese codes', function() {
-                assert.equal(getLabel('zho'), 'zho');
-                assert.equal(getLabel('chi'), 'chi');
+                expect(getLabel('zho')).to.equal('zho');
+                expect(getLabel('chi')).to.equal('chi');
             });
 
             it('should not change for its Dutch codes', function() {
-                assert.equal(getLabel('nld'), 'nld');
-                assert.equal(getLabel('dut'), 'dut');
+                expect(getLabel('nld')).to.equal('nld');
+                expect(getLabel('dut')).to.equal('dut');
             });
 
             it('should not change for its French codes', function() {
-                assert.equal(getLabel('fra'), 'fra');
-                assert.equal(getLabel('fre'), 'fre');
+                expect(getLabel('fra')).to.equal('fra');
+                expect(getLabel('fre')).to.equal('fre');
             });
 
             it('should not change for its Herman codes', function() {
-                assert.equal(getLabel('deu'), 'deu');
-                assert.equal(getLabel('ger'), 'ger');
+                expect(getLabel('deu')).to.equal('deu');
+                expect(getLabel('ger')).to.equal('ger');
             });
 
             it('should not change for its Japanese codes', function() {
-                assert.equal(getLabel('jpn'), 'jpn');
+                expect(getLabel('jpn')).to.equal('jpn');
             });
 
             it('should not change for its Portuguese codes', function() {
-                assert.equal(getLabel('por'), 'por');
+                expect(getLabel('por')).to.equal('por');
             });
 
             it('should not change for its Italian codes', function() {
-                assert.equal(getLabel('ita'), 'ita');
+                expect(getLabel('ita')).to.equal('ita');
             });
 
             it('should not change for its Russian codes', function() {
-                assert.equal(getLabel('rus'), 'rus');
+                expect(getLabel('rus')).to.equal('rus');
             });
 
             it('should not change for its Spanish codes', function() {
-                assert.equal(getLabel('esp'), 'esp');
-                assert.equal(getLabel('spa'), 'spa');
+                expect(getLabel('esp')).to.equal('esp');
+                expect(getLabel('spa')).to.equal('spa');
             });
         });
 

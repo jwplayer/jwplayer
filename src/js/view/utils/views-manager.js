@@ -91,8 +91,5 @@ export default {
             delete observed[container.id];
             intersectionObserver.unobserve(container);
         }
-    },
-    getIntersectionObserver() {
-        return intersectionObserver;
     }
 };

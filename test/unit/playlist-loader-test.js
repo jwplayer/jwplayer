@@ -13,13 +13,13 @@ describe('playlist/loader', function() {
         }];
 
         loader.on(PLAYLIST_LOADED, function (data) {
-            assert.equal(data.playlist[0].file, expectedJSON[0].file, 'JSON successfully loaded as a playlist');
-            assert.equal(data.playlist[1].file, expectedJSON[1].file, 'JSON successfully loaded as a playlist');
+            expect(data.playlist[0].file, 'JSON successfully loaded as a playlist').to.equal(expectedJSON[0].file);
+            expect(data.playlist[1].file, 'JSON successfully loaded as a playlist').to.equal(expectedJSON[1].file);
             done();
         });
 
         loader.on(ERROR, function (e) {
-            assert.isOk(false, e.message);
+            expect(false, e.message).to.be.true;
             done();
         });
 
@@ -30,14 +30,14 @@ describe('playlist/loader', function() {
         const loader = new PlaylistLoader();
         const mediaid = 'TQjoCPTk';
         loader.on(PLAYLIST_LOADED, function (data) {
-            assert.isOk(data.playlist.length > 0, 'Playlist has at least 1 item.');
-            assert.equal(data.playlist[0].mediaid, mediaid, 'Playlist item contains a mediaid.');
-            assert.isOk(data.playlist[0].sources.length > 0, 'Playlist item has at least one video source.');
+            expect(data.playlist.length > 0, 'Playlist has at least 1 item.').to.be.true;
+            expect(data.playlist[0].mediaid, 'Playlist item contains a mediaid.').to.equal(mediaid);
+            expect(data.playlist[0].sources.length > 0, 'Playlist item has at least one video source.').to.be.true;
             done();
         });
 
         loader.on(ERROR, function (e) {
-            assert.isOk(false, e.message);
+            expect(false, e.message).to.be.true;
             done();
         });
         loader.load('/base/test/files/playlist.xml');
@@ -47,12 +47,12 @@ describe('playlist/loader', function() {
         const loader = new PlaylistLoader();
 
         loader.on(PLAYLIST_LOADED, function (data) {
-            assert.isOk(false, 'No error was fired with invalid JSON feed ' + data);
+            expect(false, 'No error was fired with invalid JSON feed ' + data).to.be.true;
             done();
         });
 
         loader.on(ERROR, function() {
-            assert.isOk(true, 'Invalid JSON feed successfully fired error');
+            expect(true, 'Invalid JSON feed successfully fired error').to.be.true;
             done();
         });
 
