@@ -744,6 +744,12 @@ function View(_api, _model) {
                     _captionsRenderer.hide();
                 }
                 break;
+            case STATE_BUFFERING: {
+                if (_model.get('autostart')) {
+                    _model.change('playlistItem', setPosterImage);  
+                }
+                break;
+            }
             default:
                 if (_captionsRenderer) {
                     _captionsRenderer.show();
