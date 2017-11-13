@@ -6,7 +6,7 @@ const Preview = function(_model) {
 };
 
 function validState(state) {
-    return state === 'complete' || state === 'idle' || state === 'error' || state === 'buffering';
+    return state === 'complete' || state === 'idle' || state === 'error';
 }
 
 Object.assign(Preview.prototype, {

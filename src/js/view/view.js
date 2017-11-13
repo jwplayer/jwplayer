@@ -709,9 +709,10 @@ function View(_api, _model) {
                 errorContainer.parentNode.removeChild(errorContainer);
             }
         }
-
         cancelAnimationFrame(_stateClassRequestId);
         if (_playerState === STATE_PLAYING) {
+            _stateUpdate(_playerState);
+        } else if (_playerState === STATE_IDLE && _model.get('autostart')) {
             _stateUpdate(_playerState);
         } else {
             _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
@@ -744,12 +745,6 @@ function View(_api, _model) {
                     _captionsRenderer.hide();
                 }
                 break;
-            case STATE_BUFFERING: {
-                if (_model.get('autostart')) {
-                    _model.change('playlistItem', setPosterImage);  
-                }
-                break;
-            }
             default:
                 if (_captionsRenderer) {
                     _captionsRenderer.show();
