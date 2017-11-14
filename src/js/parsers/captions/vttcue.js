@@ -73,12 +73,11 @@ if (!VTTCue) {
         let _region = null;
         let _vertical = '';
         let _snapToLines = true;
-        let _line = 'auto';
+        let _line = autoKeyword;
         let _lineAlign = 'start';
-        let _position = 50;
-        let _positionAlign = 'middle';
-        let _size = 50;
-        let _align = 'middle';
+        let _position = autoKeyword;
+        let _size = 100;
+        let _align = 'center';
 
         Object.defineProperty(cue, 'id', {
             enumerable: true,
@@ -216,21 +215,6 @@ if (!VTTCue) {
                     throw new Error('Position must be between 0 and 100.');
                 }
                 _position = value;
-                this.hasBeenReset = true;
-            }
-        });
-
-        Object.defineProperty(cue, 'positionAlign', {
-            enumerable: true,
-            get: function () {
-                return _positionAlign;
-            },
-            set: function (value) {
-                const setting = findAlignSetting(value);
-                if (!setting) {
-                    throw new SyntaxError('An invalid or illegal string was specified.');
-                }
-                _positionAlign = setting;
                 this.hasBeenReset = true;
             }
         });
