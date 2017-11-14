@@ -711,7 +711,7 @@ function View(_api, _model) {
         }
 
         cancelAnimationFrame(_stateClassRequestId);
-        if (_playerState === STATE_PLAYING) {
+        if (_playerState === STATE_PLAYING || (_playerState === STATE_IDLE && _model.get('autostart'))) {
             _stateUpdate(_playerState);
         } else {
             _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
