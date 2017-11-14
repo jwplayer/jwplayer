@@ -77,7 +77,7 @@ if (!VTTCue) {
         let _lineAlign = 'start';
         let _position = autoKeyword;
         let _size = 100;
-        let _align = 'center';
+        let _align = 'middle';
 
         Object.defineProperty(cue, 'id', {
             enumerable: true,
