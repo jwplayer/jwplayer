@@ -453,7 +453,7 @@ function CueStyleBox(window, cue) {
             break;
         case 'middle':
         case 'center':
-            textPos = cue.position - (cue.size / 2);
+            textPos = (cue.position === 'auto' ? 50 : cue.position) - (cue.size / 2);
             break;
         case 'end':
         case 'right':
