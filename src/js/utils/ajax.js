@@ -3,8 +3,6 @@ import _ from 'utils/underscore';
 
 const noop = function() {};
 
-let useDomParser = false;
-
 // TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url)). It's used here for IE9 compatibility
 export function crossdomain(uri) {
     var a = document.createElement('a');
@@ -56,8 +54,6 @@ export function ajax(url, completeCallback, errorCallback, args) {
         if (options.mimeType) {
             xhr.overrideMimeType(options.mimeType);
         }
-    } else {
-        useDomParser = true;
     }
 
     try {
@@ -171,13 +167,6 @@ function _ajaxComplete(options) {
             }
             if (xml && firstChild) {
                 return _xmlResponse(xhr, xml, options);
-            }
-            // IE9
-            if (useDomParser && xhr.responseText && !xml) {
-                xml = parseXML(xhr.responseText);
-                if (xml && xml.firstChild) {
-                    return _xmlResponse(xhr, xml, options);
-                }
             }
             if (options.requireValidXML) {
                 options.onerror('Invalid XML', options.url, xhr);
