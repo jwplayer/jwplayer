@@ -242,7 +242,9 @@ var InstreamAdapter = function(_controller, _model, _view) {
             _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
         }
 
-        _instream.on(MEDIA_META, this.metaHandler, this);
+        if (_instream) {
+            _instream.on(MEDIA_META, this.metaHandler, this);
+        }
     };
 
     this.skipAd = function(evt) {
@@ -270,11 +272,11 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
         _model.set('adModel', null);
 
-        if (_instream) {
-            if (_view.clickHandler()) {
-                _view.clickHandler().revertAlternateClickHandlers();
-            }
+        if (_view.clickHandler()) {
+            _view.clickHandler().revertAlternateClickHandlers();
+        }
 
+        if (_instream) {
             // Sync player state with ad for model "change:state" events to trigger
             if (_instream._adModel) {
                 const adState = _instream._adModel.get('state');
