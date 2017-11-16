@@ -26,6 +26,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
         url: url,
         withCredentials: false,
         retryWithoutCredentials: false,
+        headers: null,
         timeout: 60000,
         timeoutId: -1,
         oncomplete: completeCallback || noop,
@@ -66,6 +67,12 @@ export function ajax(url, completeCallback, errorCallback, args) {
             return xhr;
         }
     }
+
+    _.each(options.headers, (key, value) => {
+        try {
+            xhr.setRequestHeader(header, value);
+        } catch (e) {/* ignore */}
+    })
 
     if (options.responseType) {
         try {
