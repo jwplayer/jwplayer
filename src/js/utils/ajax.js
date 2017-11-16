@@ -23,7 +23,6 @@ export function ajax(url, completeCallback, errorCallback, args) {
         args = url;
         url = args.url;
     }
-    var xhr;
     var options = Object.assign({
         xhr: null,
         url: url,
@@ -38,21 +37,18 @@ export function ajax(url, completeCallback, errorCallback, args) {
         responseType: (args && args.plainText) ? 'text' : '' /* xhr.responseType ex: "json" or "text" */
     }, args);
 
-    if ('XDomainRequest' in window && crossdomain(url)) {
-        // IE8 / 9
-        xhr = options.xhr = new window.XDomainRequest();
-        xhr.onload = _ajaxComplete(options);
-        xhr.ontimeout = xhr.onprogress = noop;
-        useDomParser = true;
-    } else if ('XMLHttpRequest' in window) {
+    var xhr = options.xhr;
+
+    if ('XMLHttpRequest' in window || xhr) {
         // Firefox, Chrome, Opera, Safari
-        xhr = options.xhr = new window.XMLHttpRequest();
+        xhr = options.xhr = xhr || new window.XMLHttpRequest();
         xhr.onreadystatechange = _readyStateChangeHandler(options);
     } else {
         // browser cannot make xhr requests
         options.onerror('', url);
         return;
     }
+
     var requestError = _requestError('Error loading file', options);
     xhr.onerror = requestError;
 
