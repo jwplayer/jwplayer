@@ -204,7 +204,8 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-skip .jw-skip-icon',
             '.jw-nextup-tooltip',
             '.jw-nextup-close',
-            '.jw-settings-content-item'
+            '.jw-settings-content-item',
+            '.jw-related-title'
         ], 'color', config.text);
 
         addStyle([
