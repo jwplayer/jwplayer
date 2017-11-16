@@ -56,13 +56,15 @@ export function ajax(url, completeCallback, errorCallback, args) {
         }
     }
 
-    try {
-        // remove anchors from the URL since they can't be loaded in IE
-        url = url.replace(/#.*$/, '');
-        xhr.open('GET', url, true);
-    } catch (e) {
-        requestError(e);
-        return xhr;
+    if (xhr.readyState === 0) {
+        try {
+            // remove anchors from the URL since they can't be loaded in IE
+            url = url.replace(/#.*$/, '');
+            xhr.open('GET', url, true);
+        } catch (e) {
+            requestError(e);
+            return xhr;
+        }
     }
 
     if (options.responseType) {
