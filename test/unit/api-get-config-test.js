@@ -7,7 +7,7 @@ import {
 } from 'mock/video-element-polyfill';
 import _ from 'underscore';
 
-describe('Api.getConfig', function() {
+const getConfigTest = function(modelProperties) {
 
     before(installVideoPolyfill);
 
@@ -51,7 +51,9 @@ describe('Api.getConfig', function() {
             }
         });
     });
-});
+};
+
+describe('Api.getConfig', () => getConfigTest(modelProperties));
 
 function getTypeOf(value) {
     if (value === null) {
@@ -68,3 +70,5 @@ function getTypeOf(value) {
     }
     return typeof value;
 }
+
+export default getConfigTest;
