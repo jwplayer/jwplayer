@@ -79,10 +79,26 @@ export default class ProgramController {
             // Wait for the provider to load before starting initial playback
             // Make the subsequent promise cancelable so that we can avoid playback when no longer wanted
             const thenPlayPromise = cancelable((nextMediaController) => {
-                nextMediaController.play(item, playReason);
+                // Ensure that we haven't switched items while waiting for the provider to load
+                if (this.mediaController && this.mediaController.mediaModel === nextMediaController.mediaModel) {
+                    return nextMediaController.play(item, playReason);
+                }
+                throw new Error('Playback cancelled.');
             });
             model.setThenPlayPromise(thenPlayPromise);
-            playPromise = this.providerPromise.then(thenPlayPromise.async);
+
+            playPromise = this.providerPromise
+                .catch(error => {
+                    thenPlayPromise.cancel();
+                    // Required provider was not loaded
+                    model.trigger(ERROR, {
+                        message: `Could not play video: ${error.message}`,
+                        error: error
+                    });
+                    // Fail the playPromise to trigger "playAttemptFailed"
+                    throw error;
+                })
+                .then(thenPlayPromise.async);
         }
 
         return playPromise;
@@ -179,11 +195,7 @@ export default class ProgramController {
                         model.resetProvider();
                         this.mediaController = null;
                     }
-                    const message = 'Could not load provider for playlist';
-                    model.trigger(ERROR, {
-                        message
-                    });
-                    throw Error(message);
+                    throw Error(`Failed to load media`);
                 }
                 return ProviderConstructor;
             });
