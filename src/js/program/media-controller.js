@@ -4,7 +4,7 @@ import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
 
 import { MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, PLAYER_STATE,
-    STATE_PAUSED, STATE_BUFFERING, STATE_IDLE } from 'events/events';
+    STATE_PAUSED, STATE_BUFFERING } from 'events/events';
 
 export default class MediaController {
     constructor(provider, model) {
@@ -17,7 +17,6 @@ export default class MediaController {
     init(item) {
         const { model, provider } = this;
         provider.init(item);
-        provider.setState(STATE_IDLE);
         const mediaModel = this.mediaModel = new MediaModel();
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
