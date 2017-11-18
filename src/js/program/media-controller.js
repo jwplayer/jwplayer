@@ -87,7 +87,7 @@ export default class MediaController {
         provider.off('all', model.videoEventHandler, model);
         provider.on('all', model.videoEventHandler, model);
 
-        if (model.checkComplete) {
+        if (model.checkComplete()) {
             model.playbackComplete();
         }
 
