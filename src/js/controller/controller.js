@@ -529,8 +529,10 @@ Object.assign(Controller.prototype, {
             const length = playlist.length;
 
             // If looping past the end, or before the beginning
-            index = parseInt(index, 10) || 0;
-            index = (index + length) % length;
+            index = (parseInt(index, 10) || 0) % length;
+            if (index < 0) {
+                index += length;
+            }
 
             const item = playlist[index];
             return _programController.setActiveItem(item, index);

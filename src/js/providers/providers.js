@@ -42,7 +42,7 @@ Object.assign(Providers.prototype, {
                 const item = playlist[i];
                 const source = item.sources[0];
                 if (source) {
-                    const supported = this.providerSupports(provider, item.sources[0]);
+                    const supported = this.providerSupports(provider, source);
                     if (supported) {
                         playlist.splice(i, 1);
                     }
