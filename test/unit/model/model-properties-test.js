@@ -30,9 +30,9 @@ describe('Transient Model Properties', function () {
     });
 
     it('should have the same properties as the config', function() {
-        expect(model.get('volume')).to.eq(config.volume);
-        expect(model.get('mute')).to.eq(config.mute);
-        expect(model.get('edition')).to.eq(config.edition);
+        expect(model.get('volume')).to.equal(config.volume);
+        expect(model.get('mute')).to.equal(config.mute);
+        expect(model.get('edition')).to.equal(config.edition);
     });
 
     it('should properly load playlist', function() {
