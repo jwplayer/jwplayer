@@ -679,6 +679,10 @@ function View(_api, _model) {
         // Put the preview element before the media element in order to display browser captions
         // otherwise keep it on top of the media element to display captions with the captions renderer
         _playerElement.insertBefore(_preview.el, element);
+
+        if (isAudioFile && _model.get('autostart')) {
+            setPosterImage(_model);
+        }
     }
 
     function _errorHandler(model, evt) {
@@ -711,7 +715,7 @@ function View(_api, _model) {
         }
 
         cancelAnimationFrame(_stateClassRequestId);
-        if (_playerState === STATE_PLAYING || (_playerState === STATE_IDLE && _model.get('autostart'))) {
+        if (_playerState === STATE_PLAYING) {
             _stateUpdate(_playerState);
         } else {
             _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
