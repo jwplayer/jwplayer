@@ -9,7 +9,6 @@ export default function ProviderController(initialConfig) {
             return providers.choose(source).provider;
         },
         canPlay(_provider, source) {
-            // TODO: Make new method to determine if the current provider can play a source
             const ProviderConstructor = this.choose(source);
             return ProviderConstructor && (_provider && _provider instanceof ProviderConstructor);
         },

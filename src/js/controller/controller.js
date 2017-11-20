@@ -633,7 +633,6 @@ Object.assign(Controller.prototype, {
             return _programController.audioTracks;
         }
 
-        // TODO mediaController
         function _setCurrentCaptions(index) {
             index = parseInt(index, 10) || 0;
 
