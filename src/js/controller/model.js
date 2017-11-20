@@ -84,7 +84,6 @@ const Model = function() {
                 return;
             case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
-                    // TODO: cancel promise in PC
                     thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
@@ -98,7 +97,6 @@ const Model = function() {
                 //  Instead letting the master controller do so
                 return;
             case MEDIA_ERROR:
-                // TODO: cancel promise in PC
                 thenPlayPromise.cancel();
                 mediaModel.srcReset();
                 break;

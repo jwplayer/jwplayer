@@ -169,7 +169,6 @@ export default class ProgramController {
             model.once('change:mediaContainer', model.onMediaContainer);
         }
 
-        // TODO: Split into the mediaController
         nextProvider.on('all', model.videoEventHandler, model);
         // Attempt setting the playback rate to be the user selected value
         model.setPlaybackRate(model.get('defaultPlaybackRate'));
