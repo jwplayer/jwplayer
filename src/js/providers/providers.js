@@ -40,11 +40,14 @@ Object.assign(Providers.prototype, {
             let loadProvider = false;
             for (let i = playlist.length; i--;) {
                 const item = playlist[i];
-                const supported = this.providerSupports(provider, item.sources[0]);
-                if (supported) {
-                    playlist.splice(i, 1);
+                const source = item.sources[0];
+                if (source) {
+                    const supported = this.providerSupports(provider, source);
+                    if (supported) {
+                        playlist.splice(i, 1);
+                    }
+                    loadProvider = loadProvider || supported;
                 }
-                loadProvider = loadProvider || supported;
             }
             return loadProvider;
         });
