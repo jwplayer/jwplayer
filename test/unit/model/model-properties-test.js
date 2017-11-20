@@ -50,7 +50,7 @@ describe('Transient Model Properties', function () {
         });
     });
 
-    it('should set position and position on model and mediaModel', function() {
+    it('should set position and duration on model and mediaModel', function() {
         expect(model.get('position')).to.equal(0);
         expect(model.get('duration')).to.equal(0);
         expect(model.mediaModel.get('position')).to.equal(0);
