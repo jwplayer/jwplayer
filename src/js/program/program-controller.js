@@ -73,7 +73,7 @@ export default class ProgramController {
         }
 
         // Setup means that we've already started playback on the current item; all we need to do is resume it
-        if (mediaController) {
+        if (mediaController && mediaController.setup) {
             playPromise = mediaController.play(item, playReason);
         } else {
             // Wait for the provider to load before starting initial playback

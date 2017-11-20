@@ -45,8 +45,8 @@ export default class MediaController {
         if (mediaModel.get('setup')) {
             playPromise = provider.play();
         } else {
-            playPromise = loadAndPlay(item, provider, model);
             mediaModel.set('setup', true);
+            playPromise = loadAndPlay(item, provider, model);
             if (!mediaModel.get('started')) {
                 playAttempt(playPromise, model, playReason, provider);
             }
