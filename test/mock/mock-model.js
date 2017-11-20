@@ -1,4 +1,5 @@
 import SimpleModel from 'model/simplemodel';
+import Config from 'api/config';
 import Events from 'utils/backbone.events';
 
 const MockModel = function() {};
@@ -23,62 +24,21 @@ Object.assign(MockModel.prototype, SimpleModel, {
             ]
         }, configuration.playlistItem);
 
-        /*
-        const customCaptions = {
-            back: true,
-            fontSize: 14,
-            fontFamily: 'Arial,sans-serif',
-            fontOpacity: 100,
-            color: '#FFF',
-            backgroundColor: '#000',
-            backgroundOpacity: 100,
-            edgeStyle: null,
-            windowColor: '#FFF',
-            windowOpacity: 0
-        };
-        */
 
-        this.attributes = Object.assign({}, {
-            id: '',
-            // See api/config `Defaults`:
-            state: 'idle',
-            autostart: false,
-            controls: true,
-            displaytitle: true,
-            displaydescription: true,
-            mobilecontrols: false,
-            repeat: false,
-            castAvailable: false,
-            stretching: 'uniform',
-            mute: false,
-            volume: 90,
+        const playerConfig = Config({
             width: '100%',
             height: 270,
-            aspectratio: '56.25%',
-            localization: {
-                play: 'Play',
-                playback: 'Start playback',
-                pause: 'Pause',
-                volume: 'Volume',
-                prev: 'Previous',
-                next: 'Next',
-                cast: 'Chromecast',
-                fullscreen: 'Fullscreen',
-                playlist: 'Playlist',
-                hd: 'Quality',
-                cc: 'Closed captions',
-                audioTracks: 'Audio tracks',
-                replay: 'Replay',
-                buffer: 'Loading',
-                more: 'More',
-                liveBroadcast: 'Live broadcast',
-                loadingAd: 'Loading ad',
-                rewind: 'Rewind 10 Seconds',
-                nextUp: 'Next Up',
-                nextUpClose: 'Next Up Close',
-                related: 'Related'
-            },
-            renderCaptionsNatively: false,
+            playlist: [
+                playlistItem,
+                {
+                    file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4',
+                    image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
+                }
+            ]
+        }, {});
+
+        this.attributes = Object.assign({}, playerConfig, {
+            id: '',
             // These are set elsewhere
             castActive: false,
             containerWidth: 480,
@@ -107,14 +67,6 @@ Object.assign(MockModel.prototype, SimpleModel, {
             logoWidth: 50,
             related: null,
             sharing: null,
-            playlist: [
-                playlistItem,
-                {
-                    file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4',
-                    image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
-                }
-            ],
-            config: {},
             sdkplatform: false,
             preload: 'metadata'
         }, configuration);

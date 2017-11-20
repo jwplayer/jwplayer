@@ -287,12 +287,6 @@ export default class Controlbar {
 
         // Event listeners
         // Volume sliders do not exist on mobile so don't assign listeners to them.
-        if (elements.volume) {
-            elements.volume.on('update', function (pct) {
-                var val = pct.percentage;
-                this._api.setVolume(val);
-            }, this);
-        }
         if (elements.volumetooltip) {
             elements.volumetooltip.on('update', function (pct) {
                 const val = pct.percentage;
@@ -353,9 +347,6 @@ export default class Controlbar {
         if (this.elements.mute) {
             utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
             utils.toggleClass(this.elements.mute.element(), 'jw-full', !muted);
-        }
-        if (this.elements.volume) {
-            this.elements.volume.render(muted ? 0 : vol);
         }
         if (this.elements.volumetooltip) {
             this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
