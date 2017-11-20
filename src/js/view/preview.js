@@ -23,7 +23,6 @@ Object.assign(Preview.prototype, {
         if (!validState(this.model.get('state'))) {
             return;
         }
-        this.model.off('change:state', null, this);
         var backgroundImage = '';
         if (typeof img === 'string') {
             backgroundImage = 'url("' + img + '")';
