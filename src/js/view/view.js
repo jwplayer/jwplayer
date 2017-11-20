@@ -683,8 +683,6 @@ function View(_api, _model) {
         if (isAudioFile && _model.get('autostart')) {
             setPosterImage(_model);
         }
-
-
     }
 
     function _errorHandler(model, evt) {
