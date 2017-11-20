@@ -1,4 +1,5 @@
 import Model from 'controller/model';
+import ProgramController from 'program/program-controller';
 import video from 'mock/video';
 
 const config = {
@@ -23,9 +24,11 @@ const playlist = [item];
 
 describe('Transient Model Properties', function () {
     let model;
+    let programController;
 
     before(function () {
         model = new Model().setup(config);
+        programController = new ProgramController(model);
         model.set('playlist', playlist);
     });
 
@@ -37,7 +40,7 @@ describe('Transient Model Properties', function () {
 
     it('should properly load playlist', function() {
         return new Promise(function (resolve, reject) {
-            model.setItemIndex(0)
+            programController.setActiveItem(playlist[0], 0)
                 .then(function () {
                     expect(model.get('item')).to.equal(0, 'item');
                     expect(model.get('playlistItem')).to.equal(playlist[0], 'playlistItem');
