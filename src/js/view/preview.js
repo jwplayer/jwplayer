@@ -6,7 +6,7 @@ const Preview = function(_model) {
 };
 
 function validState(state) {
-    return state === 'complete' || state === 'idle' || state === 'error';
+    return state === 'complete' || state === 'idle' || state === 'error' || state === 'buffering';
 }
 
 Object.assign(Preview.prototype, {
@@ -23,7 +23,6 @@ Object.assign(Preview.prototype, {
         if (!validState(this.model.get('state'))) {
             return;
         }
-        this.model.off('change:state', null, this);
         var backgroundImage = '';
         if (typeof img === 'string') {
             backgroundImage = 'url("' + img + '")';
