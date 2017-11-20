@@ -60,7 +60,8 @@ export default class MediaController {
     }
 
     pause() {
-        this.provider.pause();
+        const { provider } = this;
+        provider.pause();
     }
 
     preload(item) {
