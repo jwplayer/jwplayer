@@ -8,16 +8,16 @@ import { MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, PLAYER_STATE,
 
 export default class MediaController {
     constructor(provider, model) {
-        this.provider = provider;
-        this.model = model;
-        this.mediaModel = null;
         this.attached = true;
+        this.mediaModel = new MediaModel();
+        this.model = model;
+        this.provider = provider;
     }
 
     init(item) {
-        const { model, provider } = this;
+        this.reset();
+        const { model, provider, mediaModel } = this;
         provider.init(item);
-        const mediaModel = this.mediaModel = new MediaModel();
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
         const mediaModelState = mediaModel.attributes;
@@ -29,7 +29,7 @@ export default class MediaController {
     }
 
     reset() {
-        this.mediaModel = null;
+        this.mediaModel = new MediaModel();
     }
 
     play(item, playReason) {
