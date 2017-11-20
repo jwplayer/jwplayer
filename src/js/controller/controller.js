@@ -733,11 +733,11 @@ Object.assign(Controller.prototype, {
         this.setConfig = (newConfig) => setConfig(_this, newConfig);
         this.setItemIndex = _setItem;
 
-        // Program passthroughs
-        this.playVideo = _programController.playVideo.bind(_programController);
-        this.stopVideo = _programController.stopVideo.bind(_programController);
-        this.castVideo = _programController.castVideo.bind(_programController);
-        this.stopCast = _programController.stopCast.bind(_programController);
+        // Program Controller passthroughs
+        this.playVideo = (playReason) => _programController.playVideo(playReason);
+        this.stopVideo = () => _programController.stopVideo();
+        this.castVideo = (castProvider, item) => _programController.castVideo(castProvider, item);
+        this.stopCast = () => _programController.stopCast();
 
         // Model passthroughs
         this.setVolume = _model.setVolume.bind(_model);

@@ -39,9 +39,8 @@ function filterPlaylist(_model) {
         // Filter the playlist and update the model's 'playlist'
         setPlaylist(_model, _model.get('playlist'), _model.get('feedData'));
 
-        // Adaptation of { loadProvidersForPlaylist } from 'api/set-playlist'
-        // Only loads first provider, if not included in the core bundle
-        // And does not call `model.setProvider` once the provider is loaded
+        // Loads the first provider if not included in the core bundle
+        // A provider loaded this way will not be set upon completion
         const playlist = _model.get('playlist');
         const providersManager = _model.getProviders();
         const firstProviderNeeded = providersManager.required([playlist[0]]);
