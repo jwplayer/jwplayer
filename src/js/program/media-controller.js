@@ -33,7 +33,6 @@ export default class MediaController extends Eventable {
         mediaModelState.duration = duration;
         model.setProvider(provider);
         model.setMediaModel(mediaModel);
-        model.mediaController = this;
         // Initialize the provider last so it's setting properties on the (newly) active media model
         provider.init(item);
     }
