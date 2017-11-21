@@ -95,4 +95,5 @@ export default {
     itemMeta: {},
     castAvailable: false,
     mobilecontrols: false,
+    qualityLabels: undefined,
 };
