@@ -176,7 +176,6 @@ export default class ProgramController extends Eventable {
         model.setPlaybackRate(model.get('defaultPlaybackRate'));
 
         this.mediaController = new MediaController(nextProvider, model);
-        this.mediaController.attach();
         forwardEvents(this, this.mediaController);
     }
 
@@ -207,6 +206,7 @@ export default class ProgramController extends Eventable {
     _destroyActiveMedia() {
         const { model } = this;
 
+        this.attached = false;
         this.mediaController.destroy();
         this.mediaController = null;
         model.resetProvider();

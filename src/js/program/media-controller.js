@@ -18,6 +18,7 @@ export default class MediaController extends Eventable {
         this.model = model;
         this.provider = provider;
         this.providerListener = new ProviderListener(this);
+        addProviderListeners(this);
     }
 
     init(item) {
@@ -90,30 +91,27 @@ export default class MediaController extends Eventable {
 
     attach() {
         const { model, provider } = this;
-        this.attached = true;
-        model.set('attached', true);
-
-        provider.off('all', this.providerListener, this);
-        provider.on('all', this.providerListener, this);
 
         if (this.beforeComplete) {
             this._playbackComplete();
         }
 
-        provider.attachMedia();
-
         // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
         model.setPlaybackRate(model.get('defaultPlaybackRate'));
+
+        addProviderListeners(this);
+        provider.attachMedia();
+        this.attached = true;
+        model.set('attached', true);
     }
 
     detach() {
         const { model, provider } = this;
+        model.setThenPlayPromise(cancelable(() => {}));
+        removeProviderListeners(this);
+        provider.detachMedia();
         this.attached = false;
         model.set('attached', false);
-
-        model.setThenPlayPromise(cancelable(() => {}));
-        provider.off('all', this.providerListener, this);
-        provider.detachMedia();
     }
 
     // Executes the playPromise
@@ -225,3 +223,13 @@ function syncPlayerWithMediaModel(mediaModel) {
     mediaModel.trigger('change:state', mediaModel, mediaState, mediaState);
 }
 
+function addProviderListeners(mediaController) {
+    const { provider, providerListener } = mediaController;
+    removeProviderListeners(mediaController);
+    provider.on('all', providerListener, mediaController);
+}
+
+function removeProviderListeners(mediaController) {
+    const { provider, providerListener } = mediaController;
+    provider.off('all', providerListener, mediaController);
+}
