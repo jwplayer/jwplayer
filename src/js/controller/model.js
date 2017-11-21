@@ -12,7 +12,6 @@ const Model = function() {
     const _this = this;
     let providerController;
     let _provider;
-    let thenPlayPromise = cancelable(function() {});
     this.mediaModel = new MediaModel();
 
     this.set('attached', true);
@@ -235,11 +234,6 @@ const Model = function() {
         this.set('itemMeta', {});
         this.set('position', position);
         this.set('duration', duration);
-    };
-
-    this.setThenPlayPromise = function (promise) {
-        thenPlayPromise.cancel();
-        thenPlayPromise = promise;
     };
 };
 

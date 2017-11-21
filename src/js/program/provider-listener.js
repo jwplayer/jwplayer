@@ -7,7 +7,6 @@ import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     NATIVE_FULLSCREEN } from 'events/events';
 
 export default function ProviderEventListener(mediaController) {
-
     return function (type, data) {
         const { provider, mediaModel, model, attached } = mediaController;
         const event = Object.assign({}, data, {
@@ -56,7 +55,7 @@ export default function ProviderEventListener(mediaController) {
                 return;
             case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
-                    model.setThenPlayPromise(cancelable(() => {}));
+                    mediaController.thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
                 // Always fire change:state to keep player model in sync
@@ -69,7 +68,7 @@ export default function ProviderEventListener(mediaController) {
                 //  Instead letting the master controller do so
                 return;
             case MEDIA_ERROR:
-                model.setThenPlayPromise(cancelable(() => {}));
+                mediaController.thenPlayPromise.cancel();
                 mediaModel.srcReset();
                 break;
             case MEDIA_BUFFER:

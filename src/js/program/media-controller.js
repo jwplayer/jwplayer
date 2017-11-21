@@ -18,6 +18,7 @@ export default class MediaController extends Eventable {
         this.model = model;
         this.provider = provider;
         this.providerListener = new ProviderListener(this);
+        this.thenPlayPromise = cancelable(() => {});
         addProviderListeners(this);
     }
 
@@ -54,7 +55,7 @@ export default class MediaController extends Eventable {
             playPromise = provider.play();
         } else {
             mediaModel.set('setup', true);
-            playPromise = loadAndPlay(item, provider, model);
+            playPromise = loadAndPlay(item, provider);
             if (!mediaModel.get('started')) {
                 this._playAttempt(playPromise, playReason, item);
             }
@@ -107,7 +108,7 @@ export default class MediaController extends Eventable {
 
     detach() {
         const { model, provider } = this;
-        model.setThenPlayPromise(cancelable(() => {}));
+        this.thenPlayPromise.cancel();
         removeProviderListeners(this);
         provider.detachMedia();
         this.attached = false;
@@ -204,14 +205,14 @@ export default class MediaController extends Eventable {
     }
 }
 
-function loadAndPlay(item, provider, model) {
+function loadAndPlay(item, provider) {
     // Calling load() on Shaka may return a player setup promise
     const providerSetupPromise = provider.load(item);
     if (providerSetupPromise) {
         const thenPlayPromise = cancelable(() => {
             return provider.play() || resolved;
         });
-        model.setThenPlayPromise(thenPlayPromise);
+        this.thenPlayPromise = thenPlayPromise;
         return providerSetupPromise.then(thenPlayPromise.async);
     }
     return provider.play() || resolved;
@@ -224,12 +225,10 @@ function syncPlayerWithMediaModel(mediaModel) {
 }
 
 function addProviderListeners(mediaController) {
-    const { provider, providerListener } = mediaController;
     removeProviderListeners(mediaController);
-    provider.on('all', providerListener, mediaController);
+    mediaController.provider.on('all', mediaController.providerListener, mediaController);
 }
 
 function removeProviderListeners(mediaController) {
-    const { provider, providerListener } = mediaController;
-    provider.off('all', providerListener, mediaController);
+    mediaController.provider.off('all', mediaController.providerListener, mediaController);
 }
