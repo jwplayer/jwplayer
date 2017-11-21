@@ -1,17 +1,23 @@
 import cancelable from 'utils/cancelable';
+import Eventable from 'utils/eventable';
+import ProviderListener from 'program/provider-listener';
 import { resolved } from 'polyfills/promise';
 import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
+import {
+    MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, PLAYER_STATE,
+    STATE_PAUSED, STATE_BUFFERING, MEDIA_COMPLETE, STATE_COMPLETE
+} from 'events/events';
 
-import { MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, PLAYER_STATE,
-    STATE_PAUSED, STATE_BUFFERING } from 'events/events';
-
-export default class MediaController {
+export default class MediaController extends Eventable {
     constructor(provider, model) {
+        super();
         this.attached = true;
+        this.beforeComplete = false;
         this.mediaModel = new MediaModel();
         this.model = model;
         this.provider = provider;
+        this.providerListener = new ProviderListener(this);
     }
 
     init(item) {
@@ -25,6 +31,7 @@ export default class MediaController {
         mediaModelState.duration = duration;
         model.setProvider(provider);
         model.setMediaModel(mediaModel);
+        model.mediaController = this;
         // Initialize the provider last so it's setting properties on the (newly) active media model
         provider.init(item);
     }
@@ -48,7 +55,7 @@ export default class MediaController {
             mediaModel.set('setup', true);
             playPromise = loadAndPlay(item, provider, model);
             if (!mediaModel.get('started')) {
-                playAttempt(playPromise, model, playReason, provider);
+                this._playAttempt(playPromise, playReason, item);
             }
         }
         return playPromise;
@@ -86,11 +93,11 @@ export default class MediaController {
         this.attached = true;
         model.set('attached', true);
 
-        provider.off('all', model.videoEventHandler, model);
-        provider.on('all', model.videoEventHandler, model);
+        provider.off('all', this.providerListener, this);
+        provider.on('all', this.providerListener, this);
 
-        if (model.checkComplete()) {
-            model.playbackComplete();
+        if (this.beforeComplete) {
+            this._playbackComplete();
         }
 
         provider.attachMedia();
@@ -105,8 +112,51 @@ export default class MediaController {
         model.set('attached', false);
 
         model.setThenPlayPromise(cancelable(() => {}));
-        provider.off('all', model.videoEventHandler, model);
+        provider.off('all', this.providerListener, this);
         provider.detachMedia();
+    }
+
+    // Executes the playPromise
+    _playAttempt(playPromise, playReason, item) {
+        const { mediaModel, model, provider } = this;
+
+        this.trigger(MEDIA_PLAY_ATTEMPT, {
+            item,
+            playReason
+        });
+        // Immediately set player state to buffering if these conditions are met
+        if (provider && provider.video && !provider.video.paused) {
+            model.set(PLAYER_STATE, STATE_BUFFERING);
+        }
+
+        playPromise.then(() => {
+            if (!mediaModel.get('setup')) {
+                // Exit if model state was reset
+                return;
+            }
+            mediaModel.set('started', true);
+            if (mediaModel === model.mediaModel) {
+                syncPlayerWithMediaModel(mediaModel);
+            }
+        }).catch(error => {
+            model.set('playRejected', true);
+            const videoTagPaused = provider && provider.video && provider.video.paused;
+            if (videoTagPaused) {
+                mediaModel.set(PLAYER_STATE, STATE_PAUSED);
+            }
+            this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+                error,
+                item,
+                playReason
+            });
+        });
+    }
+
+    _playbackComplete() {
+        const { provider } = this;
+        this.beforeComplete = false;
+        provider.setState(STATE_COMPLETE);
+        this.trigger(MEDIA_COMPLETE, {});
     }
 
     get audioTrack() {
@@ -169,49 +219,9 @@ function loadAndPlay(item, provider, model) {
     return provider.play() || resolved;
 }
 
-// Executes the playPromise
-function playAttempt(playPromise, model, playReason, provider) {
-    const mediaModelContext = model.mediaModel;
-    const itemContext = model.get('playlistItem');
-
-    model.mediaController.trigger(MEDIA_PLAY_ATTEMPT, {
-        item: itemContext,
-        playReason: playReason
-    });
-
-    // Immediately set player state to buffering if these conditions are met
-    const videoTagUnpaused = provider && provider.video && !provider.video.paused;
-    if (videoTagUnpaused) {
-        model.set(PLAYER_STATE, STATE_BUFFERING);
-    }
-
-    playPromise.then(() => {
-        if (!mediaModelContext.get('setup')) {
-            // Exit if model state was reset
-            return;
-        }
-        mediaModelContext.set('started', true);
-        if (mediaModelContext === model.mediaModel) {
-            syncPlayerWithMediaModel(mediaModelContext);
-        }
-    }).catch(error => {
-        model.set('playRejected', true);
-        const videoTagPaused = provider && provider.video && provider.video.paused;
-        if (videoTagPaused) {
-            mediaModelContext.set(PLAYER_STATE, STATE_PAUSED);
-        }
-        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
-            error: error,
-            item: itemContext,
-            playReason: playReason
-        });
-    });
-}
-
 function syncPlayerWithMediaModel(mediaModel) {
     // Sync player state with mediaModel state
     const mediaState = mediaModel.get('state');
     mediaModel.trigger('change:state', mediaModel, mediaState, mediaState);
 }
-
 

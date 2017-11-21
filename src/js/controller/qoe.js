@@ -19,16 +19,16 @@ const onTimeIncreasesGenerator = (function(callback) {
     };
 });
 
-function unbindFirstFrameEvents(model) {
-    model.mediaController.off(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
-    model.mediaController.off(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
-    model.mediaController.off(MEDIA_TIME, model._onTime);
+function unbindFirstFrameEvents(model, programController) {
+    programController.off(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+    programController.off(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
+    programController.off(MEDIA_TIME, model._onTime);
     model.off('change:activeTab', model._onTabVisible);
 }
 
-function trackFirstFrame(model) {
+function trackFirstFrame(model, programController) {
     if (model._onTabVisible) {
-        unbindFirstFrameEvents(model);
+        unbindFirstFrameEvents(model, programController);
     }
 
     // When it occurs, send the event, and unbind all listeners
@@ -42,8 +42,8 @@ function trackFirstFrame(model) {
         qoeItem.tick(MEDIA_FIRST_FRAME);
 
         const time = qoeItem.getFirstFrame();
-        model.mediaController.trigger(MEDIA_FIRST_FRAME, { loadTime: time });
-        unbindFirstFrameEvents(model);
+        programController.trigger(MEDIA_FIRST_FRAME, { loadTime: time });
+        unbindFirstFrameEvents(model, programController);
     };
 
     model._onTime = onTimeIncreasesGenerator(model._triggerFirstFrame);
@@ -62,12 +62,12 @@ function trackFirstFrame(model) {
     };
 
     model.on('change:activeTab', model._onTabVisible);
-    model.mediaController.on(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
-    model.mediaController.once(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
-    model.mediaController.on(MEDIA_TIME, model._onTime);
+    programController.on(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
+    programController.once(PROVIDER_FIRST_FRAME, model._triggerFirstFrame);
+    programController.on(MEDIA_TIME, model._onTime);
 }
 
-const initQoe = function(initialModel) {
+const initQoe = function(initialModel, programController) {
     function onMediaModel(model, mediaModel, oldMediaModel) {
         // finish previous item
         if (model._qoeItem && oldMediaModel) {
@@ -88,7 +88,7 @@ const initQoe = function(initialModel) {
         model._qoeItem.tick(PLAYLIST_ITEM);
         model._qoeItem.start(mediaModel.get('state'));
 
-        trackFirstFrame(model);
+        trackFirstFrame(model, programController);
 
         mediaModel.on('change:state', function (changeMediaModel, newstate, oldstate) {
             if (newstate !== oldstate) {

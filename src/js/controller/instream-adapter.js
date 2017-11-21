@@ -79,10 +79,10 @@ var InstreamAdapter = function(_controller, _model, _view) {
             mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
         }
 
-        if (_controller.checkBeforePlay() || (_oldpos === 0 && !_model.checkComplete())) {
+        if (_controller.checkBeforePlay() || (_oldpos === 0 && !_controller.isBeforeComplete())) {
             // make sure video restarts after preroll
             _oldpos = 0;
-        } else if (_model.checkComplete() || _model.get('state') === STATE_COMPLETE) {
+        } else if (_controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE) {
             _oldpos = null;
         }
 

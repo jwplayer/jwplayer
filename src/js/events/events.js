@@ -399,3 +399,7 @@ export const INSTREAM_CLICK = 'instreamClick';
 */
 export const BREAKPOINT = 'breakpoint';
 
+/**
+ * Triggered when receiving a native 'fullscreenchange' event from a video tag
+*/
+export const NATIVE_FULLSCREEN = 'fullscreenchange';

@@ -22,6 +22,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE } from 'events/events';
 import ProgramController from 'program/program-controller';
+import initQoe from 'controller/qoe';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -53,16 +54,13 @@ Object.assign(Controller.prototype, {
         const _eventQueuedUntilReady = [];
 
         _model.setup(config);
-        _view = this._view = new View(_api, _model);
-        _view.on('all', _triggerAfterReady, _this);
         const _programController = new ProgramController(_model);
+        addProgramControllerListeners();
+        initQoe(_model, _programController);
 
-        _model.mediaController.on('all', _triggerAfterReady, _this);
-        _model.mediaController.on(MEDIA_COMPLETE, () => {
-            // Insert a small delay here so that other complete handlers can execute
-            resolved.then(_completeHandler);
-        });
-        _model.mediaController.on(MEDIA_ERROR, _this.triggerError, _this);
+        _view = this._view = new View(_api, _model, _programController);
+        _view.on('all', _triggerAfterReady, _this);
+
         _model.on(ERROR, _this.triggerError, _this);
 
         // If we attempt to load flash, assume it is blocked if we don't hear back within a second
@@ -707,6 +705,15 @@ Object.assign(Controller.prototype, {
             }
         }
 
+        function addProgramControllerListeners() {
+            _programController.on('all', _triggerAfterReady, _this);
+            _programController.on(MEDIA_COMPLETE, () => {
+                // Insert a small delay here so that other complete handlers can execute
+                resolved.then(_completeHandler);
+            });
+            _programController.on(MEDIA_ERROR, _this.triggerError, _this);
+        }
+
         /** Controller API / public methods **/
         this.load = _load;
         this.play = _play;
@@ -758,7 +765,7 @@ Object.assign(Controller.prototype, {
             return _model._qoeItem;
         };
         this.isBeforeComplete = function () {
-            return _model.checkComplete();
+            return _programController.beforeComplete;
         };
         this.addButton = function(img, tooltip, callback, id, btnClass) {
             let customButtons = _model.get('customButtons') || [];

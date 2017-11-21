@@ -1,13 +1,8 @@
 import { Browser, OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
-import initQoe from 'controller/qoe';
-import { PLAYER_STATE, STATE_IDLE, STATE_COMPLETE, MEDIA_VOLUME, MEDIA_MUTE,
-    MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
-    MEDIA_RATE_CHANGE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
-    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META } from 'events/events';
+import { STATE_IDLE } from 'events/events';
 import _ from 'utils/underscore';
-import Events from 'utils/backbone.events';
 import cancelable from 'utils/cancelable';
 import ProviderController from 'providers/provider-controller';
 import { seconds } from 'utils/strings';
@@ -17,13 +12,8 @@ const Model = function() {
     const _this = this;
     let providerController;
     let _provider;
-    let _beforecompleted = false;
     let thenPlayPromise = cancelable(function() {});
-
-    this.mediaController = Object.assign({}, Events);
     this.mediaModel = new MediaModel();
-
-    initQoe(this);
 
     this.set('attached', true);
     this.set('mediaModel', this.mediaModel);
@@ -39,125 +29,6 @@ const Model = function() {
         const config = this.clone();
         delete config.mediaModel;
         return config;
-    };
-
-    this.videoEventHandler = function(type, data) {
-        const event = Object.assign({}, data, {
-            type: type
-        });
-        const mediaModel = this.mediaModel;
-        switch (type) {
-            case 'flashThrottle': {
-                const throttled = (data.state !== 'resume');
-                this.set('flashThrottle', throttled);
-                this.set('flashBlocked', throttled);
-            }
-                break;
-            case 'flashBlocked':
-                this.set('flashBlocked', true);
-                return;
-            case 'flashUnblocked':
-                this.set('flashBlocked', false);
-                return;
-            case MEDIA_VOLUME:
-                this.set(type, data[type]);
-                return;
-            case MEDIA_MUTE:
-                if (!this.get('autostartMuted')) {
-                    // Don't persist mute state with muted autostart
-                    this.set(type, data[type]);
-                }
-                return;
-            case MEDIA_RATE_CHANGE: {
-                const rate = data.playbackRate;
-                // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
-                if (rate > 0) {
-                    this.set('playbackRate', rate);
-                }
-            }
-                return;
-            case MEDIA_TYPE:
-                if (mediaModel.get('mediaType') !== data.mediaType) {
-                    mediaModel.set('mediaType', data.mediaType);
-                    this.mediaController.trigger(type, event);
-                }
-                return;
-            case PLAYER_STATE: {
-                if (data.newstate === STATE_IDLE) {
-                    thenPlayPromise.cancel();
-                    mediaModel.srcReset();
-                }
-                // Always fire change:state to keep player model in sync
-                const previousState = mediaModel.attributes[PLAYER_STATE];
-                mediaModel.attributes[PLAYER_STATE] = data.newstate;
-                mediaModel.trigger('change:' + PLAYER_STATE, mediaModel, data.newstate, previousState);
-            }
-                // This "return" is important because
-                //  we are choosing to not propagate this event.
-                //  Instead letting the master controller do so
-                return;
-            case MEDIA_ERROR:
-                thenPlayPromise.cancel();
-                mediaModel.srcReset();
-                break;
-            case MEDIA_BUFFER:
-                this.set('buffer', data.bufferPercent);
-            /* falls through */
-            case MEDIA_META: {
-                const duration = data.duration;
-                if (_.isNumber(duration) && !_.isNaN(duration)) {
-                    mediaModel.set('duration', duration);
-                    this.set('duration', duration);
-                }
-                Object.assign(this.get('itemMeta'), data.metadata);
-                break;
-            }
-            case MEDIA_TIME: {
-                mediaModel.set('position', data.position);
-                this.set('position', data.position);
-                const duration = data.duration;
-                if (_.isNumber(duration) && !_.isNaN(duration)) {
-                    mediaModel.set('duration', duration);
-                    this.set('duration', duration);
-                }
-                break;
-            }
-            case PROVIDER_CHANGED:
-                this.set('provider', _provider.getName());
-                break;
-            case MEDIA_LEVELS:
-                this.setQualityLevel(data.currentQuality, data.levels);
-                mediaModel.set('levels', data.levels);
-                break;
-            case MEDIA_LEVEL_CHANGED:
-                this.setQualityLevel(data.currentQuality, data.levels);
-                this.persistQualityLevel(data.currentQuality, data.levels);
-                break;
-            case MEDIA_COMPLETE:
-                _beforecompleted = true;
-                this.mediaController.trigger(MEDIA_BEFORECOMPLETE, event);
-                if (this.get('attached')) {
-                    this.playbackComplete();
-                }
-                return;
-            case AUDIO_TRACKS:
-                this.setCurrentAudioTrack(data.currentTrack, data.tracks);
-                mediaModel.set('audioTracks', data.tracks);
-                break;
-            case AUDIO_TRACK_CHANGED:
-                this.setCurrentAudioTrack(data.currentTrack, data.tracks);
-                break;
-            case 'subtitlesTrackChanged':
-                this.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
-                break;
-            case 'visualQuality':
-                mediaModel.set('visualQuality', Object.assign({}, data));
-                break;
-            default:
-                break;
-        }
-
-        this.mediaController.trigger(type, event);
     };
 
     this.setQualityLevel = function(quality, levels) {
@@ -200,16 +71,6 @@ const Model = function() {
     this.onMediaContainer = function() {
         var container = this.get('mediaContainer');
         _provider.setContainer(container);
-    };
-
-    this.checkComplete = function() {
-        return _beforecompleted;
-    };
-
-    this.playbackComplete = function() {
-        _beforecompleted = false;
-        _provider.setState(STATE_COMPLETE);
-        this.mediaController.trigger(MEDIA_COMPLETE, {});
     };
 
     this.destroy = function() {

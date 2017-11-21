@@ -1,0 +1,149 @@
+import cancelable from 'utils/cancelable';
+import { _isNaN, _isNumber } from 'utils/underscore';
+import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
+    MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
+    MEDIA_RATE_CHANGE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
+    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META, MEDIA_SEEK, MEDIA_SEEKED,
+    NATIVE_FULLSCREEN } from 'events/events';
+
+export default function ProviderEventListener(mediaController) {
+
+    return function (type, data) {
+        const { provider, mediaModel, model, attached } = mediaController;
+        const event = Object.assign({}, data, {
+            type: type
+        });
+
+        const modelForward = () => {
+            model.trigger(type, data);
+        };
+
+        switch (type) {
+            case 'flashThrottle': {
+                const throttled = (data.state !== 'resume');
+                model.set('flashThrottle', throttled);
+                model.set('flashBlocked', throttled);
+            }
+                break;
+            case 'flashBlocked':
+                model.set('flashBlocked', true);
+                return;
+            case 'flashUnblocked':
+                model.set('flashBlocked', false);
+                return;
+            case MEDIA_VOLUME:
+                model.set(type, data[type]);
+                return;
+            case MEDIA_MUTE:
+                if (!model.get('autostartMuted')) {
+                    // Don't persist mute state with muted autostart
+                    model.set(type, data[type]);
+                }
+                return;
+            case MEDIA_RATE_CHANGE: {
+                const rate = data.playbackRate;
+                // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
+                if (rate > 0) {
+                    model.set('playbackRate', rate);
+                }
+            }
+                return;
+            case MEDIA_TYPE:
+                if (mediaModel.get('mediaType') !== data.mediaType) {
+                    mediaModel.set('mediaType', data.mediaType);
+                    mediaController.trigger(type, event);
+                }
+                return;
+            case PLAYER_STATE: {
+                if (data.newstate === STATE_IDLE) {
+                    model.setThenPlayPromise(cancelable(() => {}));
+                    mediaModel.srcReset();
+                }
+                // Always fire change:state to keep player model in sync
+                const previousState = mediaModel.attributes[PLAYER_STATE];
+                mediaModel.attributes[PLAYER_STATE] = data.newstate;
+                mediaModel.trigger('change:' + PLAYER_STATE, mediaModel, data.newstate, previousState);
+            }
+                // This "return" is important because
+                //  we are choosing to not propagate model event.
+                //  Instead letting the master controller do so
+                return;
+            case MEDIA_ERROR:
+                model.setThenPlayPromise(cancelable(() => {}));
+                mediaModel.srcReset();
+                break;
+            case MEDIA_BUFFER:
+                model.set('buffer', data.bufferPercent);
+            /* falls through */
+            case MEDIA_META: {
+                const duration = data.duration;
+                if (_isNumber(duration) && !_isNaN(duration)) {
+                    mediaModel.set('duration', duration);
+                    model.set('duration', duration);
+                }
+                Object.assign(model.get('itemMeta'), data.metadata);
+                break;
+            }
+            case MEDIA_TIME: {
+                mediaModel.set('position', data.position);
+                model.set('position', data.position);
+                const duration = data.duration;
+                if (_isNumber(duration) && !_isNaN(duration)) {
+                    mediaModel.set('duration', duration);
+                    model.set('duration', duration);
+                }
+                break;
+            }
+            case PROVIDER_CHANGED:
+                model.set('provider', provider.getName());
+                break;
+            case MEDIA_LEVELS:
+                model.setQualityLevel(data.currentQuality, data.levels);
+                mediaModel.set('levels', data.levels);
+                break;
+            case MEDIA_LEVEL_CHANGED:
+                model.setQualityLevel(data.currentQuality, data.levels);
+                model.persistQualityLevel(data.currentQuality, data.levels);
+                break;
+            case MEDIA_COMPLETE:
+                mediaController.beforeComplete = true;
+                mediaController.trigger(MEDIA_BEFORECOMPLETE, event);
+                if (attached) {
+                    mediaController._playbackComplete();
+                }
+                return;
+            case AUDIO_TRACKS:
+                model.setCurrentAudioTrack(data.currentTrack, data.tracks);
+                mediaModel.set('audioTracks', data.tracks);
+                break;
+            case AUDIO_TRACK_CHANGED:
+                model.setCurrentAudioTrack(data.currentTrack, data.tracks);
+                break;
+            case 'subtitlesTrackChanged':
+                model.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
+                break;
+            case 'visualQuality':
+                mediaModel.set('visualQuality', Object.assign({}, data));
+                break;
+            case MEDIA_SEEK:
+                modelForward();
+                break;
+            case MEDIA_SEEKED:
+                modelForward();
+                break;
+            case NATIVE_FULLSCREEN:
+                modelForward();
+                break;
+            case 'subtitlesTracks':
+                modelForward();
+                break;
+            case 'subtitlesTracksData':
+                modelForward();
+                break;
+            default:
+                break;
+        }
+
+        mediaController.trigger(type, event);
+    };
+}

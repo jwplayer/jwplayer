@@ -5,6 +5,7 @@ import { ERROR } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
 import { addClass, removeClass, empty } from 'utils/dom';
 import _ from 'utils/underscore';
+import { MEDIA_SEEK } from 'events/events';
 
 /** Component that renders the actual captions on screen. **/
 
@@ -335,13 +336,13 @@ const CaptionsRenderer = function (_model) {
         this.populate(captionsTrack);
     }, this);
 
-    _model.mediaController.on('seek', function () {
+    _model.on(MEDIA_SEEK, function () {
         _currentCues = [];
     }, this);
 
-    _model.mediaController.on('time seek', _timeChange, this);
+    _model.on('time seek', _timeChange, this);
 
-    _model.mediaController.on('subtitlesTrackData', function () {
+    _model.on('subtitlesTrackData', function () {
         // update captions after a provider's subtitle track changes
         this.selectCues(_captionsTrack, _timeEvent);
     }, this);
