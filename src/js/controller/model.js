@@ -3,7 +3,6 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
 import _ from 'utils/underscore';
-import cancelable from 'utils/cancelable';
 import ProviderController from 'providers/provider-controller';
 import { seconds } from 'utils/strings';
 

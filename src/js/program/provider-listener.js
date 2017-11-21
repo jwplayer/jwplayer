@@ -1,4 +1,3 @@
-import cancelable from 'utils/cancelable';
 import { _isNaN, _isNumber } from 'utils/underscore';
 import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
