@@ -98,7 +98,7 @@ const initQoe = function(initialModel, programController) {
         });
     }
 
-    initialModel.on('change:mediaModel', onMediaModel);
+    initialModel.change('mediaModel', onMediaModel);
 };
 
 export default initQoe;

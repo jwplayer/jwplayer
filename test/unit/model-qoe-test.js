@@ -1,24 +1,28 @@
 import Model from 'controller/model';
+import ProgramController from 'program/program-controller';
 import { STATE_IDLE, STATE_PLAYING, STATE_LOADING, STATE_STALLED, MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME,
     MEDIA_FIRST_FRAME } from 'events/events';
 import { dateTime } from 'utils/clock';
 import { now } from 'utils/date';
+import initQoe from 'controller/qoe';
 
 describe('Model QoE', function() {
 
     it('tracks first frame with provider first frame event', function() {
         const startTime = Math.min(dateTime(), now());
         const model = new Model().setup();
+        const program = new ProgramController(model);
         const mediaModel = model.mediaModel;
+        initQoe(model, program);
         const qoeItem = model._qoeItem;
 
         mediaModel.set('state', STATE_IDLE);
-        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
+        program.trigger(MEDIA_PLAY_ATTEMPT);
         mediaModel.set('state', STATE_LOADING);
         mediaModel.set('state', STATE_PLAYING);
 
         // FIXME: PROVIDER_FIRST_FRAME triggers MEDIA_FIRST_FRAME : we only need one event
-        model.mediaController.trigger(PROVIDER_FIRST_FRAME);
+        program.trigger(PROVIDER_FIRST_FRAME);
 
         expect(!!qoeItem, 'qoeItem is defined').to.be.true;
 
@@ -40,10 +44,12 @@ describe('Model QoE', function() {
     it('removes media controller event listeners', function() {
         const startTime = Math.min(dateTime(), now());
         const model = new Model().setup();
+        const program = new ProgramController(model);
+        initQoe(model, program);
         const qoeItem = model._qoeItem;
 
-        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
-        model.mediaController.trigger(PROVIDER_FIRST_FRAME);
+        program.trigger(MEDIA_PLAY_ATTEMPT);
+        program.trigger(PROVIDER_FIRST_FRAME);
 
         let qoeDump = qoeItem.dump();
         expect(validateMeasurement(qoeDump.events.playAttempt, startTime), 'play attempt event was fired ' +
@@ -57,11 +63,11 @@ describe('Model QoE', function() {
         const playAttemptTick = qoeDump.events.playAttempt;
         const firstFrameTick = qoeDump.events.firstFrame;
 
-        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
-        model.mediaController.trigger(MEDIA_TIME, {
+        program.trigger(MEDIA_PLAY_ATTEMPT);
+        program.trigger(MEDIA_TIME, {
             position: 2
         });
-        model.mediaController.trigger(PROVIDER_FIRST_FRAME);
+        program.trigger(PROVIDER_FIRST_FRAME);
 
         qoeDump = qoeItem.dump();
         expect(playAttemptTick).to.equal(qoeDump.events.playAttempt, 'play attempt is unchanged after further media events');
@@ -70,6 +76,8 @@ describe('Model QoE', function() {
 
     it('tracks stalled time', function() {
         const model = new Model().setup();
+        const program = new ProgramController(model);
+        initQoe(model, program);
         const mediaModel = model.mediaModel;
         const qoeItem = model._qoeItem;
 
@@ -85,6 +93,8 @@ describe('Model QoE', function() {
     it('uses one qoe item per playlist item', function() {
         // Test qoe model observation
         const model = new Model().setup();
+        const program = new ProgramController(model);
+        initQoe(model, program);
         const firstQoeItem = model._qoeItem;
 
         // no state changes, play attempt or first frame events
@@ -92,7 +102,7 @@ describe('Model QoE', function() {
         model.set('mediaModel', mediaModel);
         const secondQoeItem = model._qoeItem;
 
-        model.mediaController.trigger(MEDIA_PLAY_ATTEMPT);
+        program.trigger(MEDIA_PLAY_ATTEMPT);
         mediaModel.set('state', STATE_LOADING);
 
         expect(firstQoeItem !== secondQoeItem, 'qoe items are unique between playlistItem changes').to.be.true;
