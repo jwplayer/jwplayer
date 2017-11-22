@@ -47,8 +47,8 @@ export default function ProviderEventListener(mediaController) {
             }
                 return;
             case MEDIA_TYPE:
-                if (mediaModel.get('mediaType') !== data.mediaType) {
-                    mediaModel.set('mediaType', data.mediaType);
+                if (mediaModel.get(MEDIA_TYPE) !== data.mediaType) {
+                    mediaModel.set(MEDIA_TYPE, data.mediaType);
                     mediaController.trigger(type, event);
                 }
                 return;
@@ -97,7 +97,7 @@ export default function ProviderEventListener(mediaController) {
                 break;
             case MEDIA_LEVELS:
                 model.setQualityLevel(data.currentQuality, data.levels);
-                mediaModel.set('levels', data.levels);
+                mediaModel.set(MEDIA_LEVELS, data.levels);
                 break;
             case MEDIA_LEVEL_CHANGED:
                 model.setQualityLevel(data.currentQuality, data.levels);
@@ -112,7 +112,7 @@ export default function ProviderEventListener(mediaController) {
                 return;
             case AUDIO_TRACKS:
                 model.setCurrentAudioTrack(data.currentTrack, data.tracks);
-                mediaModel.set('audioTracks', data.tracks);
+                mediaModel.set(AUDIO_TRACKS, data.tracks);
                 break;
             case AUDIO_TRACK_CHANGED:
                 model.setCurrentAudioTrack(data.currentTrack, data.tracks);
