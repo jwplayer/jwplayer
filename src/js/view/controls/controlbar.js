@@ -559,21 +559,6 @@ export default class Controlbar {
         }
     }
 
-    useInstreamTime(instreamModel) {
-        // While in instream mode, the time slider needs to move according to instream time
-        const timeSlider = this.elements.time;
-        if (!timeSlider) {
-            return;
-        }
-
-        instreamModel
-            .change('position', timeSlider.onPosition, timeSlider)
-            .change('duration', timeSlider.onDuration, timeSlider)
-            .change('duration', () => {
-                timeSlider.streamType = 'VOD';
-            }, timeSlider);
-    }
-
     syncPlaybackTime(model) {
         // When resuming playback mode, trigger a change so that the slider immediately resumes it's original position
         const timeSlider = this.elements.time;

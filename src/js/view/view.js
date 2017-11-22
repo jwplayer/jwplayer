@@ -64,8 +64,6 @@ function View(_api, _model) {
     let _lastWidth;
     let _lastHeight;
 
-    let _instreamModel;
-
     let _resizeMediaTimeout = -1;
     let _resizeContainerRequestId = -1;
     let _stateClassRequestId = -1;
@@ -278,6 +276,13 @@ function View(_api, _model) {
         _model.on('change:fullscreen', updateVisibility);
         _model.on('change:intersectionRatio', updateVisibility);
         _model.on('change:visibility', redraw);
+        _model.on('change:instream', (model, instream) => {
+            if (instream) {
+                setupInstream();
+            } else {
+                destroyInstream();
+            }
+        });
 
         updateVisibility();
 
@@ -344,7 +349,7 @@ function View(_api, _model) {
 
     function redraw(model, visibility, lastVisibility) {
         if (visibility && !lastVisibility) {
-            _stateHandler(_instreamModel || model);
+            _stateHandler(model);
             _this.updateStyles();
         }
     }
@@ -373,14 +378,14 @@ function View(_api, _model) {
 
                 if (controls &&
                     ((state === STATE_IDLE || state === STATE_COMPLETE) ||
-                    (_instreamModel && _instreamModel.get('state') === STATE_PAUSED))) {
+                    (_model.get('instream') && state === STATE_PAUSED))) {
                     api.playToggle(reasonInteraction());
                 }
 
                 if (controls && state === STATE_PAUSED) {
                     // Toggle visibility of the controls when tapping the media
                     // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-                    if (_instreamModel || model.get('castActive') || (model.get('mediaType') === 'audio')) {
+                    if (_model.get('instream') || model.get('castActive') || (model.get('mediaType') === 'audio')) {
                         return;
                     }
                     toggleClass(_playerElement, 'jw-flag-controls-hidden');
@@ -429,13 +434,6 @@ function View(_api, _model) {
         }
     }
 
-    const _onChangeControls = function (model, bool) {
-        if (bool) {
-            // ignore model that triggered this event and use current state model
-            _stateHandler(_instreamModel || _model);
-        }
-    };
-
     this.addControls = function (controls) {
         _controls = controls;
 
@@ -466,8 +464,8 @@ function View(_api, _model) {
 
         controls.on('all', _this.trigger, _this);
 
-        if (_instreamModel) {
-            _controls.setupInstream(_instreamModel);
+        if (_model.get('instream')) {
+            _controls.setupInstream(_model);
         }
 
         const overlaysElement = _playerElement.querySelector('.jw-overlays');
@@ -512,10 +510,6 @@ function View(_api, _model) {
         } else if (_isIE) {
             _toggleDOMFullscreen(_playerElement, state);
         } else {
-            // else use native fullscreen
-            if (_instreamModel && _instreamModel.getVideo()) {
-                _instreamModel.getVideo().setFullscreen(state);
-            }
             provider.setFullscreen(state);
         }
         // pass fullscreen state to Flash provider
@@ -601,8 +595,7 @@ function View(_api, _model) {
             return !!(fsElement && fsElement.id === _model.get('id'));
         }
         // if player element view fullscreen not available, return video fullscreen state
-        return _instreamModel ? _instreamModel.getVideo().getFullScreen() :
-            _model.getVideo().getFullScreen();
+        return _model.getVideo().getFullScreen();
     }
 
 
@@ -635,7 +628,7 @@ function View(_api, _model) {
     }
 
     function _setLiveMode(model, streamType) {
-        if (!_instreamModel) {
+        if (!_model.get('instream')) {
             const live = (streamType === 'LIVE');
             toggleClass(_playerElement, 'jw-flag-live', live);
         }
@@ -683,8 +676,6 @@ function View(_api, _model) {
 
         _playerState = model.get('state');
 
-        instreamStateUpdate(_playerState);
-
         if (oldState === STATE_ERROR) {
             const errorContainer = _playerElement.querySelector('.jw-error-msg');
             if (errorContainer) {
@@ -697,16 +688,6 @@ function View(_api, _model) {
             _stateUpdate(_playerState);
         } else {
             _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
-        }
-    }
-
-    function instreamStateUpdate(state) {
-        let instreamState = null;
-        if (_instreamModel) {
-            instreamState = state;
-        }
-        if (_controls) {
-            _controls.instreamState = instreamState;
         }
     }
 
@@ -747,31 +728,16 @@ function View(_api, _model) {
         return !!(settingsMenu && settingsMenu.visible);
     };
 
-    this.setupInstream = function (instreamModel) {
-        this.instreamModel = _instreamModel = instreamModel;
-        _instreamModel.on('change:controls', _onChangeControls, this);
-        _instreamModel.on('change:state', _stateHandler, this);
-        _instreamModel.on('change:playRejected', function (model, val) {
-            toggleClass(_playerElement, 'jw-flag-play-rejected', val);
-        }, this);
-
+    const setupInstream = function() {
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
 
         if (_controls) {
-            _controls.setupInstream(instreamModel);
+            _controls.setupInstream(_model);
         }
     };
 
-    this.setAltText = function (text) {
-        _model.set('altText', text);
-    };
-
-    this.destroyInstream = function () {
-        if (_instreamModel) {
-            _instreamModel.off(null, null, this);
-            _instreamModel = null;
-        }
+    const destroyInstream = function() {
         if (!displayClickHandler) {
             // view was destroyed
             return;
@@ -780,16 +746,23 @@ function View(_api, _model) {
             _controls.destroyInstream(_model);
         }
 
-        this.setAltText('');
+        _this.setAltText('');
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
+
+        //
         const provider = _model.getVideo();
         if (provider) {
             provider.setContainer(_videoLayer);
         }
         _setLiveMode(_model, _model.get('streamType'));
+
         // reset display click handler
         displayClickHandler.revertAlternateClickHandlers();
+    };
+
+    this.setAltText = function (text) {
+        _model.set('altText', text);
     };
 
     this.addCues = function (cues) {
@@ -851,10 +824,6 @@ function View(_api, _model) {
         }
         if (_controls) {
             _controls.disable(_model);
-        }
-
-        if (_instreamModel) {
-            this.destroyInstream();
         }
         if (displayClickHandler) {
             displayClickHandler.destroy();

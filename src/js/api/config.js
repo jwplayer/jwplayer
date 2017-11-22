@@ -20,7 +20,6 @@ const Defaults = {
     volume: 90,
     width: 640,
     height: 360,
-    audioMode: false,
     localization: {
         player: 'Video Player',
         play: 'Play',
