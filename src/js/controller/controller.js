@@ -58,7 +58,7 @@ Object.assign(Controller.prototype, {
         addProgramControllerListeners();
         initQoe(_model, _programController);
 
-        _view = this._view = new View(_api, _model, _programController);
+        _view = this._view = new View(_api, _model);
         _view.on('all', _triggerAfterReady, _this);
 
         _model.on(ERROR, _this.triggerError, _this);
