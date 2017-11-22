@@ -53,6 +53,7 @@ Object.assign(MockModel.prototype, SimpleModel, {
             captions: {}, // customCaptions
             nextupoffset: -10,
             streamType: 'VOD', // 'DVR', 'Live'
+            supportsPlaybackRate: true,
             position: 0,
             buffer: 0,
             duration: 0,

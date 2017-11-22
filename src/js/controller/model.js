@@ -403,6 +403,7 @@ const syncProviderProperties = (model, provider) => {
         model.set('flashBlocked', false);
     }
     // Set playbackRate because provider support for playbackRate may have changed and not sent an update
+    model.set('supportsPlaybackRate', !!provider.supportsPlaybackRate);
     model.set('playbackRate', provider.getPlaybackRate());
     model.set('renderCaptionsNatively', provider.renderNatively);
 };
