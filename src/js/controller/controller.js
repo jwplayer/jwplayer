@@ -7,7 +7,6 @@ import PlaylistLoader from 'playlist/loader';
 import Playlist from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
-import CaptionsRenderer from 'view/captionsrenderer';
 import Model from 'controller/model';
 import View from 'view/view';
 import ViewModel from 'view/view-model';
@@ -58,10 +57,7 @@ Object.assign(Controller.prototype, {
 
         const viewModel = new ViewModel(_model);
 
-        const _captionsRenderer = new CaptionsRenderer(viewModel, _model);
-        _captionsRenderer.on('all', _triggerAfterReady, _this);
-
-        _view = this._view = new View(_api, viewModel, _captionsRenderer);
+        _view = this._view = new View(_api, viewModel);
         _view.on('all', _triggerAfterReady, _this);
         const _programController = new ProgramController(_model);
 
@@ -601,7 +597,6 @@ Object.assign(Controller.prototype, {
         }
 
         function _getConfig() {
-            // TODO: merge viewModel config or implement complete config in ViewModel?
             return this._model ? this._model.getConfiguration() : undefined;
         }
 

@@ -71,7 +71,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         addAudioTracksSubmenu(
             settingsMenu,
             audioTracks,
-            model.getVideo().setCurrentAudioTrack.bind(model.getVideo()),
+            (index) => api.setCurrentAudioTrack(index),
             model.get('currentAudioTrack'),
             model.get('localization').audioTracks
         );
@@ -86,7 +86,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         addQualitiesSubmenu(
             settingsMenu,
             levels,
-            model.getVideo().setCurrentQuality.bind(model.getVideo()),
+            (index) => api.setCurrentQuality(index),
             model.get('currentLevel'),
             model.get('localization').hd
         );
@@ -102,7 +102,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
 
         addCaptionsSubmenu(settingsMenu,
             captionsList,
-            api.setCurrentCaptions.bind(this),
+            (index) => api.setCurrentCaptions(index),
             model.get('captionsIndex'),
             model.get('localization').cc
         );
@@ -127,7 +127,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
         addPlaybackRatesSubmenu(
             settingsMenu,
             playbackRates,
-            model.setPlaybackRate.bind(model),
+            (playbackRate) => api.setPlaybackRate(playbackRate),
             model.get('playbackRate'),
             model.get('localization').playbackRates
         );

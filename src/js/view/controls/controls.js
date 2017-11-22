@@ -297,10 +297,6 @@ export default class Controls {
 
         if (model) {
             model.off(null, null, this);
-            const mediaModel = model.get('mediaModel');
-            if (mediaModel) {
-                mediaModel.off(null, null, this);
-            }
         }
 
         clearTimeout(this.activeTimeout);

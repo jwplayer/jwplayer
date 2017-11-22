@@ -29,6 +29,7 @@ import _ from 'utils/underscore';
 import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
 import flagNoFocus from 'view/utils/flag-no-focus';
 import ClickHandler from 'view/utils/clickhandler';
+import CaptionsRenderer from 'view/captionsrenderer';
 import Logo from 'view/logo';
 import Preview from 'view/preview';
 import Title from 'view/title';
@@ -40,7 +41,7 @@ let ControlsModule;
 const _isMobile = OS.mobile;
 const _isIE = Browser.ie;
 
-function View(_api, _model, _captionsRenderer) {
+function View(_api, _model) {
     const _this = Object.assign(this, Events, {
         isSetup: false,
         api: _api,
@@ -52,6 +53,9 @@ function View(_api, _model, _captionsRenderer) {
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
+
+    const _captionsRenderer = new CaptionsRenderer(_model);
+    _captionsRenderer.on('all', _this.trigger, _this);
 
     let _logo;
 
@@ -376,9 +380,7 @@ function View(_api, _model, _captionsRenderer) {
                 if (controls && state === STATE_PAUSED) {
                     // Toggle visibility of the controls when tapping the media
                     // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-                    if (_instreamModel ||
-                        model.get('castActive') ||
-                        (model.mediaModel && model.mediaModel.get('mediaType') === 'audio')) {
+                    if (_instreamModel || model.get('castActive') || (model.get('mediaType') === 'audio')) {
                         return;
                     }
                     toggleClass(_playerElement, 'jw-flag-controls-hidden');
@@ -858,10 +860,7 @@ function View(_api, _model, _captionsRenderer) {
             displayClickHandler.destroy();
             displayClickHandler = null;
         }
-        if (_captionsRenderer) {
-            _captionsRenderer.destroy();
-            _captionsRenderer = null;
-        }
+        _captionsRenderer.destroy();
         if (_logo) {
             _logo.destroy();
             _logo = null;

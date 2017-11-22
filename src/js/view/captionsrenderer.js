@@ -21,7 +21,7 @@ const _defaults = {
     windowOpacity: 0
 };
 
-const CaptionsRenderer = function (viewModel, playerModel) {
+const CaptionsRenderer = function (_model) {
 
     let _options;
     let _captionsTrack;
@@ -46,7 +46,7 @@ const CaptionsRenderer = function (viewModel, playerModel) {
 
     // Assign list of captions to the renderer
     this.populate = function (captions) {
-        if (playerModel.get('renderCaptionsNatively')) {
+        if (_model.get('renderCaptionsNatively')) {
             return;
         }
 
@@ -166,8 +166,8 @@ const CaptionsRenderer = function (viewModel, playerModel) {
         _captionsWindow.appendChild(_textContainer);
         _display.appendChild(_captionsWindow);
 
-        this.populate(playerModel.get('captionsTrack'));
-        playerModel.set('captions', _options);
+        this.populate(_model.get('captionsTrack'));
+        _model.set('captions', _options);
     };
 
     this.element = function () {
@@ -175,9 +175,8 @@ const CaptionsRenderer = function (viewModel, playerModel) {
     };
 
     this.destroy = function() {
+        _model.off(null, null, this);
         this.off();
-        viewModel.off(null, null, this);
-        playerModel.off(null, null, this);
     };
 
     function _setFontScale() {
@@ -185,10 +184,10 @@ const CaptionsRenderer = function (viewModel, playerModel) {
             return;
         }
 
-        const height = viewModel.get('containerHeight');
+        const height = _model.get('containerHeight');
 
         if (!height) {
-            viewModel.once('change:containerHeight', _setFontScale, this);
+            _model.once('change:containerHeight', _setFontScale, this);
             return;
         }
 
@@ -197,7 +196,7 @@ const CaptionsRenderer = function (viewModel, playerModel) {
     }
 
     function _setFontSize() {
-        const height = viewModel.get('containerHeight');
+        const height = _model.get('containerHeight');
 
         if (!height) {
             return;
@@ -205,8 +204,8 @@ const CaptionsRenderer = function (viewModel, playerModel) {
 
         const fontSize = Math.round(height * _fontScale);
 
-        if (playerModel.get('renderCaptionsNatively')) {
-            _setShadowDOMFontSize(playerModel.get('id'), fontSize);
+        if (_model.get('renderCaptionsNatively')) {
+            _setShadowDOMFontSize(_model.get('id'), fontSize);
         } else {
             style(_display, {
                 fontSize: fontSize + 'px'
@@ -295,7 +294,7 @@ const CaptionsRenderer = function (viewModel, playerModel) {
     }
 
     function _timeChange(e) {
-        if (playerModel.get('renderCaptionsNatively')) {
+        if (_model.get('renderCaptionsNatively')) {
             return;
         }
 
@@ -327,27 +326,27 @@ const CaptionsRenderer = function (viewModel, playerModel) {
         }, chunkLoadErrorHandler, 'polyfills.webvtt');
     }
 
-    playerModel.on('change:playlistItem', function () {
+    _model.on('change:playlistItem', function () {
         _timeEvent = null;
         _currentCues = [];
     }, this);
 
-    playerModel.on('change:captionsTrack', function (model, captionsTrack) {
+    _model.on('change:captionsTrack', function (model, captionsTrack) {
         this.populate(captionsTrack);
     }, this);
 
-    playerModel.on('seek', function () {
+    _model.on('seek', function () {
         _currentCues = [];
     }, this);
 
-    playerModel.on('time seek', _timeChange, this);
+    _model.on('time seek', _timeChange, this);
 
-    playerModel.on('subtitlesTrackData', function () {
+    _model.on('subtitlesTrackData', function () {
         // update captions after a provider's subtitle track changes
         this.selectCues(_captionsTrack, _timeEvent);
     }, this);
 
-    playerModel.on('change:captionsList', _captionsListHandler, this);
+    _model.on('change:captionsList', _captionsListHandler, this);
 };
 
 Object.assign(CaptionsRenderer.prototype, Events);
