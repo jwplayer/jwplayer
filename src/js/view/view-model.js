@@ -93,10 +93,8 @@ export default class ViewModel extends SimpleModelExtendable {
     getVideo() {
         const instreamModel = this._instreamModel;
         if (instreamModel && instreamModel.getVideo()) {
-            console.error('Calling instream-model.getVideo() from the view!');
             return instreamModel.getVideo();
         }
-        console.error('Calling model.getVideo() from the view!');
         return this._model.getVideo();
     }
 

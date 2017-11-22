@@ -492,9 +492,6 @@ function View(_api, _model) {
     // Perform the switch to fullscreen
     const _fullscreen = function (model, state) {
 
-        // If it supports DOM fullscreen
-        const provider = _model.getVideo();
-
         // Unmute the video so volume can be adjusted with native controls in fullscreen
         if (state && _controls && _model.get('autostartMuted')) {
             _controls.unmuteAutoplay(_api, _model);
@@ -510,11 +507,8 @@ function View(_api, _model) {
         } else if (_isIE) {
             _toggleDOMFullscreen(_playerElement, state);
         } else {
-            provider.setFullscreen(state);
-        }
-        // pass fullscreen state to Flash provider
-        // provider.getName() is the same as _api.getProvider() or _model.get('provider')
-        if (provider && provider.getName().name.indexOf('flash') === 0) {
+            // Request media element fullscreen (iOS)
+            const provider = _model.getVideo();
             provider.setFullscreen(state);
         }
     };
@@ -570,13 +564,7 @@ function View(_api, _model) {
         if (!provider) {
             return;
         }
-        const transformScale = provider.resize(containerWidth, containerHeight, _model.get('stretching'));
-
-        // poll resizing if video is transformed
-        if (transformScale) {
-            clearTimeout(_resizeMediaTimeout);
-            _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
-        }
+        provider.resize(containerWidth, containerHeight, _model.get('stretching'));
     }
 
     this.resize = function (playerWidth, playerHeight) {
@@ -595,7 +583,8 @@ function View(_api, _model) {
             return !!(fsElement && fsElement.id === _model.get('id'));
         }
         // if player element view fullscreen not available, return video fullscreen state
-        return _model.getVideo().getFullScreen();
+        const provider = _model.getVideo();
+        return provider.getFullScreen();
     }
 
 
@@ -640,8 +629,8 @@ function View(_api, _model) {
 
     function _onMediaTypeChange(model, val) {
         const isAudioFile = (val === 'audio');
-        const provider = _model.getVideo();
-        const isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+        const provider = _model.get('provider');
+        const isFlash = (provider && provider.name.indexOf('flash') === 0);
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
@@ -750,12 +739,11 @@ function View(_api, _model) {
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
 
-        //
+        // Make sure that the provider's media element is returned to the DOM after instream mode
         const provider = _model.getVideo();
         if (provider) {
             provider.setContainer(_videoLayer);
         }
-        _setLiveMode(_model, _model.get('streamType'));
 
         // reset display click handler
         displayClickHandler.revertAlternateClickHandlers();
