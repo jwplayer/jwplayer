@@ -48,12 +48,12 @@ const CoreShim = function(originalContainer) {
         'setMute',
         'setVolume',
         'setPlaybackRate',
+        'setCues',
 
         // These commands require the view instance to be available
         'resize',
         'setCaptions',
         'setControls',
-        'setCues',
     ], () => true);
 };
 

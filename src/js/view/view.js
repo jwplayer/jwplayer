@@ -760,10 +760,6 @@ function View(_api, _model) {
         _model.set('altText', text);
     };
 
-    this.addCues = function (cues) {
-        _model.set('cues', cues);
-    };
-
     this.clickHandler = function () {
         return displayClickHandler;
     };
