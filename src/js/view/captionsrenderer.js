@@ -5,7 +5,7 @@ import { ERROR } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
 import { addClass, removeClass, empty } from 'utils/dom';
 import _ from 'utils/underscore';
-import { MEDIA_SEEK } from 'events/events';
+import { MEDIA_SEEK, MEDIA_TIME } from 'events/events';
 
 /** Component that renders the actual captions on screen. **/
 
@@ -54,7 +54,6 @@ const CaptionsRenderer = function (_model) {
         _currentCues = [];
         _captionsTrack = captions;
         if (!captions) {
-            _currentCues = [];
             this.renderCues();
             return;
         }
@@ -74,7 +73,7 @@ const CaptionsRenderer = function (_model) {
     };
 
     this.selectCues = function (track, timeEvent) {
-        if (!track || !track.data || !timeEvent) {
+        if (!track || !track.data || !timeEvent || _model.get('renderCaptionsNatively')) {
             return;
         }
 
@@ -167,7 +166,10 @@ const CaptionsRenderer = function (_model) {
         _captionsWindow.appendChild(_textContainer);
         _display.appendChild(_captionsWindow);
 
-        this.populate(_model.get('captionsTrack'));
+        _model.change('captionsTrack', function (model, captionsTrack) {
+            this.populate(captionsTrack);
+        }, this);
+
         _model.set('captions', _options);
     };
 
@@ -294,14 +296,10 @@ const CaptionsRenderer = function (_model) {
         }
     }
 
-    function _timeChange(e) {
-        if (_model.get('renderCaptionsNatively')) {
-            return;
-        }
-
+    const _timeChange = (e) => {
         _timeEvent = e;
         this.selectCues(_captionsTrack, _timeEvent);
-    }
+    };
 
     function _captionsListHandler(model, captionsList) {
         if (captionsList.length === 1) {
@@ -336,11 +334,12 @@ const CaptionsRenderer = function (_model) {
         this.populate(captionsTrack);
     }, this);
 
-    _model.on(MEDIA_SEEK, function () {
+    _model.on(MEDIA_SEEK, function (e) {
         _currentCues = [];
+        _timeChange(e);
     }, this);
 
-    _model.on('time seek', _timeChange, this);
+    _model.on(MEDIA_TIME, _timeChange, this);
 
     _model.on('subtitlesTrackData', function () {
         // update captions after a provider's subtitle track changes
