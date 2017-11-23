@@ -149,7 +149,6 @@ const InstreamHtml5 = function(_controller, _model) {
         _programController.pause();
     };
 
-
     /** ***************************
      ****** Private methods ******
      *****************************/
