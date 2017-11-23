@@ -37,7 +37,6 @@ const Model = function() {
 
     this.getConfiguration = function() {
         const config = this.clone();
-        delete config.adModel;
         delete config.instream;
         delete config.mediaModel;
         return config;
