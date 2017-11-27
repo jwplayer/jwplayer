@@ -24,7 +24,6 @@ Object.assign(MockModel.prototype, SimpleModel, {
             ]
         }, configuration.playlistItem);
 
-
         const playerConfig = Config({
             width: '100%',
             height: 270,
