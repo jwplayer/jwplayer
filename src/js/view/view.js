@@ -739,7 +739,6 @@ function View(_api, _model) {
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
-        _model.off('change:playlistItem', setPosterImage);
         switch (state) {
             case STATE_IDLE:
             case STATE_ERROR:
@@ -748,7 +747,7 @@ function View(_api, _model) {
                 // or when an error is encountered. We don't get to the idle state between playlist items because of RAF
 
                 if (_model.mediaModel.get('mediaType') === 'video') {
-                    _model.change('playlistItem', setPosterImage);
+                    setPosterImage(_model);
                 }
 
                 if (_captionsRenderer) {
