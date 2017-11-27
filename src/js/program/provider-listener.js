@@ -5,7 +5,7 @@ import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META, MEDIA_SEEK, MEDIA_SEEKED,
     NATIVE_FULLSCREEN } from 'events/events';
 
-export default function ProviderEventListener(mediaController) {
+export default function ProviderListener(mediaController) {
     return function (type, data) {
         const { provider, mediaModel, model, attached } = mediaController;
         const event = Object.assign({}, data, {
