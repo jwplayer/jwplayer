@@ -46,7 +46,6 @@ Object.assign(MockModel.prototype, SimpleModel, {
             controls: true,
             displaytitle: true,
             displaydescription: true,
-            mobilecontrols: false,
             repeat: false,
             castAvailable: false,
             stretching: 'uniform',
