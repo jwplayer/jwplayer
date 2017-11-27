@@ -94,6 +94,5 @@ export default {
     buffer: 0,
     itemMeta: {},
     castAvailable: false,
-    mobilecontrols: false,
     qualityLabels: undefined,
 };

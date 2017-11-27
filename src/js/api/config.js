@@ -10,7 +10,6 @@ const Defaults = {
     controls: true,
     displaytitle: true,
     displaydescription: true,
-    mobilecontrols: false,
     defaultPlaybackRate: 1,
     playbackRateControls: false,
     playbackRates: [0.5, 1, 1.25, 1.5, 2],
