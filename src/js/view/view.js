@@ -668,10 +668,15 @@ function View(_api, _model) {
         _controls.userActive();
     }
 
-    function _onMediaTypeChange(model, val) {
+    function _onMediaTypeChange(mediaModel, val) {
         const isAudioFile = (val === 'audio');
         const provider = _model.getVideo();
         const isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+
+        // Set the poster image for each audio file encountered in a playlist
+        if (isAudioFile) {
+            setPosterImage(_model);
+        }
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
@@ -711,7 +716,7 @@ function View(_api, _model) {
         }
 
         cancelAnimationFrame(_stateClassRequestId);
-        if (_playerState === STATE_PLAYING || (_playerState === STATE_IDLE && _model.get('autostart'))) {
+        if (_playerState === STATE_PLAYING) {
             _stateUpdate(_playerState);
         } else {
             _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
@@ -734,12 +739,17 @@ function View(_api, _model) {
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
-        _model.off('change:playlistItem', setPosterImage);
         switch (state) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
-                _model.change('playlistItem', setPosterImage);                
+                // Set the poster image for videos before playback starts (idle), when the playlist ends (complete),
+                // or when an error is encountered. We don't get to the idle state between playlist items because of RAF
+
+                if (_model.mediaModel.get('mediaType') === 'video') {
+                    setPosterImage(_model);
+                }
+
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
