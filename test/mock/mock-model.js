@@ -5,7 +5,7 @@ import Events from 'utils/backbone.events';
 const MockModel = function() {};
 
 Object.assign(MockModel.prototype, SimpleModel, {
-    setup: function(configuration) {
+    setup(configuration) {
         const self = this;
         const playlistItem = Object.assign({
             file: '//playertest.longtailvideo.com/bunny.mp4',
@@ -34,7 +34,8 @@ Object.assign(MockModel.prototype, SimpleModel, {
                     file: 'http://content.bitsontherun.com/videos/q1fx20VZ-52qL9xLP.mp4',
                     image: 'http://content.bitsontherun.com/thumbs/3XnJSIm4-480.jpg'
                 }
-            ]
+            ],
+            playbackRateControls: true
         }, {});
 
         this.attributes = Object.assign({}, playerConfig, {
@@ -88,24 +89,26 @@ Object.assign(MockModel.prototype, SimpleModel, {
 
         this.attributes.provider = {
             name: 'html5',
-            getName: function() {
+            renderNatively: false,
+            supportsPlaybackRate: true,
+            getName() {
                 return {
                     name: 'html5'
                 };
             },
-            setContainer: function(/* element */) {
+            setContainer(/* element */) {
                 // element.appendChild(mediaElement[0]);
             },
-            setVisibility: function(state) {
+            setVisibility(state) {
                 mediaElement.style.visibility = state ? 'visible' : '';
                 mediaElement.style.opacity = state ? 1 : 0;
             },
-            seek: function(/* time */) {
+            seek(/* time */) {
                 // mediaElement[0].load();
                 // mediaElement[0].currentTime = time;
                 // mediaElement[0].pause();
             },
-            resize: function(width, height, stretching) {
+            resize(width, height, stretching) {
                 if (!width || !height || !mediaElement.videoWidth || !mediaElement.videoHeight) {
                     return false;
                 }
@@ -127,27 +130,32 @@ Object.assign(MockModel.prototype, SimpleModel, {
                 mediaElement.style.width = style.width;
                 mediaElement.style.height = style.height;
             },
-            setCurrentQuality: function(value) {
+            setCurrentQuality(value) {
                 self.mediaModel.set('currentLevel', value);
             },
-            setCurrentAudioTrack: function(value) {
+            setCurrentAudioTrack(value) {
                 self.mediaModel.set('currentAudioTrack', value);
             },
-            setControls: function() {}
+            setControls() {},
         };
     },
 
-    getVideo: function() {
+    getVideo() {
         return this.get('provider');
     },
 
-    autoStartOnMobile: function() {
+    autoStartOnMobile() {
         return false;
     },
 
-    setAutoStart: function() {
+    setAutoStart() {
         return false;
-    }
+    },
+
+    setPlaybackRate(rate) {
+        this.set('defaultPlaybackRate', rate);
+        this.set('playbackRate', rate);
+    },
 });
 
 // Represents the state of the provider/media element

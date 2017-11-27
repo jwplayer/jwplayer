@@ -329,7 +329,10 @@ function View(_api, _model) {
                 ControlsLoader.load()
                     .then(function (Controls) {
                         ControlsModule = Controls;
-                        addControls();
+                        // Check that controls is still true after the loader promise resolves
+                        if (model.get('controls')) {
+                            addControls();
+                        }
                     })
                     .catch(function (reason) {
                         _this.trigger(ERROR, {
@@ -694,6 +697,7 @@ function View(_api, _model) {
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }
+        _title.hide();
         _playerElement.appendChild(errorContainer.firstChild);
         toggleClass(_playerElement, 'jw-flag-audio-player', !!model.get('audioMode'));
     }

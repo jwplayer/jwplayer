@@ -1,4 +1,3 @@
-import _ from 'test/underscore';
 import Events from 'utils/backbone.events';
 import members from 'data/api-members';
 import methods from 'data/api-methods';
@@ -10,11 +9,11 @@ const MockApi = function() {
 
 const mockProto = {};
 
-_.each(methods, function(value, name) {
+Object.keys(methods).forEach(name => {
     mockProto[name] = noop;
 });
 
-_.each(chainable, function(value, name) {
+Object.keys(chainable).forEach(name => {
     mockProto[name] = noopChained;
 });
 
