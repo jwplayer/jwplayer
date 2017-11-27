@@ -35,10 +35,12 @@ export default class ProgramController extends Eventable {
                 // prime the next tag within the gesture
                 this._destroyActiveMedia();
             } else {
-                // We can reuse the current mediaController
-                // Reset it so that a play call before the providerPromise resolves doesn't cause problems
-                // Any play calls will wait for the mediaController to setup again before calling play
-                this.mediaController.reset();
+                // We can reuse the current mediaController and do so synchronously
+                // Initialize the provider and mediaModel, sync it with the Model
+                // This sets up the mediaController and allows playback to begin
+                this.mediaController.init(item);
+                this.providerPromise = Promise.resolve(this.mediaController);
+                return this.providerPromise;
             }
         }
 
@@ -47,14 +49,8 @@ export default class ProgramController extends Eventable {
             .then((ProviderConstructor) => {
                 // Don't do anything if we've tried to load another provider while this promise was resolving
                 if (mediaModelContext === model.mediaModel) {
-                    let nextProvider = mediaController && mediaController.provider;
-                    // Make a new provider if we don't already have one
-                    if (!nextProvider) {
-                        nextProvider = new ProviderConstructor(model.get('id'), model.getConfiguration());
-                        this._changeVideoProvider(nextProvider);
-                    }
-                    // Initialize the provider and mediaModel, sync it with the Model
-                    // This sets up the mediaController and allows playback to begin
+                    const nextProvider = new ProviderConstructor(model.get('id'), model.getConfiguration());
+                    this._changeVideoProvider(nextProvider);
                     this.mediaController.init(item);
                     return this.mediaController;
                 }

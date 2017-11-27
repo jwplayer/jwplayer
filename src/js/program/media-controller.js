@@ -37,10 +37,6 @@ export default class MediaController extends Eventable {
         provider.init(item);
     }
 
-    reset() {
-        this.mediaModel = new MediaModel();
-    }
-
     play(item, playReason) {
         const { model, mediaModel, provider } = this;
 
