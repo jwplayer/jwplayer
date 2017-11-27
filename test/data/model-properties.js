@@ -81,6 +81,7 @@ export default {
     width: 640,
     height: 360,
     audioMode: false,
+    instream: null,
     state: '',
     playlist: [{}],
     playlistItem: undefined,
