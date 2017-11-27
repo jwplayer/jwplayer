@@ -86,9 +86,8 @@ var InstreamAdapter = function(_controller, _model, _view) {
             _oldpos = null;
         }
 
-        // Show instream state instead of normal player state
-        _model.set('adModel', _instream._adModel);
-        _view.setupInstream(_instream._adModel);
+        // This enters the player into instream mode
+        _model.set('instream', _instream);
         _instream._adModel.set('state', STATE_BUFFERING);
 
         // don't trigger api play/pause on display click
@@ -270,8 +269,6 @@ var InstreamAdapter = function(_controller, _model, _view) {
     this.destroy = function() {
         this.off();
 
-        _model.set('adModel', null);
-
         if (_view.clickHandler()) {
             _view.clickHandler().revertAlternateClickHandlers();
         }
@@ -288,7 +285,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
             _instream.instreamDestroy();
 
             // Must happen after instream.instreamDestroy()
-            _view.destroyInstream();
+            _model.set('instream', null);
 
             _instream = null;
 

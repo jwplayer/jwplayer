@@ -308,7 +308,7 @@ export default class Controlbar {
             }, this);
         }
 
-        this._model.mediaController.on('seeked', function () {
+        _model.on('seeked', function () {
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
 
@@ -557,21 +557,6 @@ export default class Controlbar {
                 buttonContainer.removeChild(buttonElement);
             }
         }
-    }
-
-    useInstreamTime(instreamModel) {
-        // While in instream mode, the time slider needs to move according to instream time
-        const timeSlider = this.elements.time;
-        if (!timeSlider) {
-            return;
-        }
-
-        instreamModel
-            .change('position', timeSlider.onPosition, timeSlider)
-            .change('duration', timeSlider.onDuration, timeSlider)
-            .change('duration', () => {
-                timeSlider.streamType = 'VOD';
-            }, timeSlider);
     }
 
     syncPlaybackTime(model) {

@@ -43,7 +43,12 @@ export default class NextUpTooltip {
         model.change('position', this.onElapsed, this);
 
         model.change('streamType', this.onStreamType, this);
-        model.change('mediaModel', this.onMediaModel, this);
+
+        model.change('state', function(stateChangeModel, state) {
+            if (state === 'complete') {
+                this.toggle(false);
+            }
+        }, this);
 
         // Close button
         new UI(this.closeButton, { directSelect: true })
@@ -156,14 +161,6 @@ export default class NextUpTooltip {
         }
 
         this.offset = offset;
-    }
-
-    onMediaModel(model, mediaModel) {
-        mediaModel.change('state', function(stateChangeMediaModel, state) {
-            if (state === 'complete') {
-                this.toggle(false);
-            }
-        }, this);
     }
 
     onElapsed(model, val) {

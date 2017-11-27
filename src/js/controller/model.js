@@ -37,6 +37,7 @@ const Model = function() {
 
     this.getConfiguration = function() {
         const config = this.clone();
+        delete config.instream;
         delete config.mediaModel;
         return config;
     };
@@ -156,6 +157,9 @@ const Model = function() {
             default:
                 break;
         }
+
+        // TODO: Events are forwarded off the model so that we can remove mediaController instances from the view
+        this.trigger(type, event);
 
         this.mediaController.trigger(type, event);
     };
@@ -398,6 +402,7 @@ const syncProviderProperties = (model, provider) => {
         model.set('flashBlocked', false);
     }
     // Set playbackRate because provider support for playbackRate may have changed and not sent an update
+    model.set('supportsPlaybackRate', !!provider.supportsPlaybackRate);
     model.set('playbackRate', provider.getPlaybackRate());
     model.set('renderCaptionsNatively', provider.renderNatively);
 };

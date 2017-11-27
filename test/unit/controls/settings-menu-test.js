@@ -66,56 +66,58 @@ describe('SettingsMenu', function() {
 
     describe('setupSubmenuListeners', function() {
 
-        let model;
-        let mediaModel;
+        let viewModel;
 
         beforeEach(function() {
-            model = Object.assign({}, SimpleModel);
-            model.change = sinon.spy();
-            mediaModel = Object.assign({}, SimpleModel);
-            mediaModel.on = sinon.spy();
-            mediaModel.change = sinon.spy();
+            viewModel = Object.assign({}, SimpleModel);
+            viewModel.change = sinon.spy();
+            viewModel.on = sinon.spy();
+            viewModel.get = () => {
+                return {};
+            };
+            viewModel.getVideo = () => {
+                return {
+                    setCurrentQuality: sinon.spy()
+                };
+            };
 
-            SettingsMenu.setupSubmenuListeners(settingsMenu, controlbar, model);
-
-            const changeHandler = model.change.args[0][1];
-            changeHandler('', mediaModel);
+            SettingsMenu.setupSubmenuListeners(settingsMenu, controlbar, viewModel);
         });
 
         it('should setup qualities element on levels change', function() {
             controlbar.elements = { hd: { setup: sinon.spy() } };
 
-            const levelsHandler = mediaModel.on.args[0][1];
-            levelsHandler(model);
+            const levelsHandler = viewModel.on.args[0][1];
+            levelsHandler(viewModel);
 
-            expect(mediaModel.change.args[0][0]).to.equal('levels');
+            expect(viewModel.change.args[0][0]).to.equal('levels');
         });
 
         it('should update quality element on level change', function() {
             controlbar.elements = { hd: { selectItem: sinon.spy() } };
 
-            const levelHandler = mediaModel.on.args[0][1];
-            levelHandler(model);
+            const levelHandler = viewModel.on.args[0][1];
+            levelHandler(viewModel);
 
-            expect(mediaModel.on.args[0][0]).to.equal('change:currentLevel');
+            expect(viewModel.on.args[0][0]).to.equal('change:currentLevel');
         });
 
         it('should setup audio tracks element on tracks change', function() {
             controlbar.elements = { audiotracks: { setup: sinon.spy() } };
 
-            const tracksHandler = mediaModel.change.args[1][1];
-            tracksHandler(model, []);
+            const tracksHandler = viewModel.change.args[1][1];
+            tracksHandler(viewModel, []);
 
-            expect(mediaModel.change.args[1][0]).to.equal('audioTracks');
+            expect(viewModel.change.args[1][0]).to.equal('audioTracks');
         });
 
         it('should setup audio tracks element on tracks change', function() {
             controlbar.elements = { audiotracks: { selectItem: sinon.spy() } };
 
-            const tracksHandler = mediaModel.on.args[1][1];
-            tracksHandler(model);
+            const tracksHandler = viewModel.on.args[1][1];
+            tracksHandler(viewModel);
 
-            expect(mediaModel.on.args[1][0]).to.equal('change:currentAudioTrack');
+            expect(viewModel.on.args[1][0]).to.equal('change:currentAudioTrack');
         });
     });
 });

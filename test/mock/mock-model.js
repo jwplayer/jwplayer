@@ -42,8 +42,6 @@ Object.assign(MockModel.prototype, SimpleModel, {
             id: '',
             // These are set elsewhere
             castActive: false,
-            containerWidth: 480,
-            containerHeight: 270,
             fullscreen: false,
             autostartFailed: false,
             flashBlocked: false,
@@ -55,6 +53,7 @@ Object.assign(MockModel.prototype, SimpleModel, {
             captions: {}, // customCaptions
             nextupoffset: -10,
             streamType: 'VOD', // 'DVR', 'Live'
+            supportsPlaybackRate: true,
             position: 0,
             buffer: 0,
             duration: 0,

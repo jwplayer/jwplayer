@@ -175,8 +175,8 @@ const CaptionsRenderer = function (_model) {
     };
 
     this.destroy = function() {
-        this.off();
         _model.off(null, null, this);
+        this.off();
     };
 
     function _setFontScale() {
@@ -335,13 +335,13 @@ const CaptionsRenderer = function (_model) {
         this.populate(captionsTrack);
     }, this);
 
-    _model.mediaController.on('seek', function () {
+    _model.on('seek', function () {
         _currentCues = [];
     }, this);
 
-    _model.mediaController.on('time seek', _timeChange, this);
+    _model.on('time seek', _timeChange, this);
 
-    _model.mediaController.on('subtitlesTrackData', function () {
+    _model.on('subtitlesTrackData', function () {
         // update captions after a provider's subtitle track changes
         this.selectCues(_captionsTrack, _timeEvent);
     }, this);
