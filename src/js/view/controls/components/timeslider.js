@@ -136,14 +136,6 @@ class TimeSlider extends Slider {
         this.dragJustReleased = true;
     }
 
-    // Event Listeners
-    onSeeked () {
-        // When we are done scrubbing there will be a final seeked event
-        if (this._model.get('scrubbing')) {
-            this.performSeek();
-        }
-    }
-
     onBuffer(model, pct) {
         this.updateBuffer(pct);
     }
@@ -183,8 +175,6 @@ class TimeSlider extends Slider {
             return;
         }
         this.reset();
-
-        model.on('seeked', this.onSeeked, this);
 
         var tracks = playlistItem.tracks;
         _.each(tracks, function (track) {

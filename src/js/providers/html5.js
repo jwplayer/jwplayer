@@ -119,17 +119,18 @@ function VideoProvider(_playerId, _playerConfig) {
         },
 
         seeking() {
-            var offset = _seekOffset !== null ? _seekOffset : _this.getCurrentTime();
+            const offset = _seekOffset !== null ? _seekOffset : _this.getCurrentTime();
+            const position = _positionBeforeSeek;
+            _setPositionBeforeSeek(offset);
             _seekOffset = null;
             _delayedSeek = 0;
             _this.seeking = true;
-            _this.trigger(MEDIA_SEEK, {
-                position: _positionBeforeSeek,
-                offset: offset
-            });
-            _setPositionBeforeSeek(offset);
             _videotag.removeEventListener('waiting', setLoadingState);
             _videotag.addEventListener('waiting', setLoadingState);
+            _this.trigger(MEDIA_SEEK, {
+                position: position,
+                offset: offset
+            });
         },
 
         seeked() {
