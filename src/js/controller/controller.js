@@ -63,6 +63,7 @@ Object.assign(Controller.prototype, {
 
         const _programController = new ProgramController(_model);
         addProgramControllerListeners();
+        initQoe(_model, _programController);
 
         _model.on(ERROR, _this.triggerError, _this);
 
