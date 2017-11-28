@@ -164,10 +164,8 @@ Object.assign(Controller.prototype, {
             });
         }
 
-        viewModel.on('change:viewSetup', (changedViewModel, viewSetup) => {
-            if (viewSetup) {
-                showView(this, _view.element());
-            }
+        viewModel.on('viewSetup', (viewElement) => {
+            showView(this, viewElement);
         });
 
         this.playerReady = function() {

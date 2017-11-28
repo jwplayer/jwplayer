@@ -324,7 +324,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
     };
 
     this.setText = function(text) {
-        _view.setAltText(text ? text : '');
+        _view.setAltText(text || '');
     };
 
     // This method is triggered by plugins which want to hide player controls

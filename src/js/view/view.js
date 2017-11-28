@@ -255,7 +255,7 @@ function View(_api, _model) {
         viewsManager.add(this);
 
         this.isSetup = true;
-        _model.set('viewSetup', true);
+        _model.trigger('viewSetup', _playerElement);
 
         const inDOM = document.body.contains(_playerElement);
         if (inDOM) {
@@ -664,7 +664,7 @@ function View(_api, _model) {
     }
 
     function _stateHandler(model, newState, oldState) {
-        if (!_model.get('viewSetup')) {
+        if (!_this.isSetup) {
             return;
         }
 

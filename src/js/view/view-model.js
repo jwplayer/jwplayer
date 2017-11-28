@@ -20,6 +20,13 @@ export default class ViewModel extends SimpleModelExtendable {
         this._instreamModel = null;
         this._mediaModel = null;
 
+        Object.assign(playerModel.attributes, {
+            altText: '',
+            fullscreen: false,
+            logoWidth: 0,
+            scrubbing: false
+        });
+
         playerModel.on('all', (type, objectOrEvent, value, previousValue) => {
             this.trigger(type, objectOrEvent, value, previousValue);
         }, this);
