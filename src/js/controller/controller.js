@@ -58,7 +58,7 @@ Object.assign(Controller.prototype, {
 
         const viewModel = new ViewModel(_model);
 
-        _view = this._view = new View(_api, _model);
+        _view = this._view = new View(_api, viewModel);
         _view.on('all', _triggerAfterReady, _this);
 
         const _programController = new ProgramController(_model);
