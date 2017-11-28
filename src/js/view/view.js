@@ -334,7 +334,7 @@ function View(_api, _model) {
         _this.addControls(controls);
     }
 
-    function setMediaTitleAttribute(model, playlistItem) {
+    function setMediaTitleAttribute(model, playlistItem = {}) {
         var videotag = model.get('mediaElement');
         // chromecast and flash providers do no support video tags
         if (!videotag) {
