@@ -376,7 +376,7 @@ function clearTracks() {
 
 // Clear track cues to prevent duplicates
 function clearCueData(trackId) {
-    if (this._cachedVTTCues[trackId]) {
+    if (this._cachedVTTCues && this._cachedVTTCues[trackId]) {
         this._cachedVTTCues[trackId] = {};
         if (this._tracksById) {
             this._tracksById[trackId].data = [];
