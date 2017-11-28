@@ -12,9 +12,9 @@ function dispatchDiffChangeEvents(viewModel, newAttributes, oldAttributes) {
     });
 }
 
-function removeListeners(instance) {
+function removeListeners(instance, viewModel) {
     if (instance) {
-        instance.off(null, null, this);
+        instance.off(null, null, viewModel);
     }
 }
 
@@ -52,7 +52,7 @@ export default class ViewModel extends SimpleModelExtendable {
 
     set mediaModel(mediaModel) {
         const previousMediaModel = this._mediaModel;
-        removeListeners(previousMediaModel);
+        removeListeners(previousMediaModel, this);
 
         this._mediaModel = mediaModel;
 
@@ -71,7 +71,7 @@ export default class ViewModel extends SimpleModelExtendable {
 
     set instreamModel(instreamModel) {
         const previousInstream = this._instreamModel;
-        removeListeners(previousInstream);
+        removeListeners(previousInstream, this);
 
         this._instreamModel = instreamModel;
 
@@ -122,9 +122,9 @@ export default class ViewModel extends SimpleModelExtendable {
     }
 
     destroy() {
-        removeListeners(this._model);
-        removeListeners(this._mediaModel);
-        removeListeners(this._instreamModel);
+        removeListeners(this._model, this);
+        removeListeners(this._mediaModel, this);
+        removeListeners(this._instreamModel, this);
         this.off();
     }
 }
