@@ -71,8 +71,8 @@ export default class ProgramController extends Eventable {
             playReason = model.get('playReason');
         }
 
-        // Setup means that we've already started playback on the current item; all we need to do is resume it
-        if (mediaController && mediaController.setup) {
+        // Start playback immediately if we have already loaded a mediaController
+        if (mediaController) {
             playPromise = mediaController.play(item, playReason);
         } else {
             // Wait for the provider to load before starting initial playback
