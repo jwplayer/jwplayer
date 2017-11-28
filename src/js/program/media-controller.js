@@ -15,8 +15,8 @@ export default class MediaController {
     }
 
     init(item) {
-        this.reset();
-        const { model, provider, mediaModel } = this;
+        const { model, provider } = this;
+        const mediaModel = this.mediaModel = new MediaModel();
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
         const mediaModelState = mediaModel.attributes;
@@ -27,10 +27,6 @@ export default class MediaController {
         model.setMediaModel(mediaModel);
         // Initialize the provider last so it's setting properties on the (newly) active media model
         provider.init(item);
-    }
-
-    reset() {
-        this.mediaModel = new MediaModel();
     }
 
     play(item, playReason) {
