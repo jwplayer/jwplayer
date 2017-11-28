@@ -185,7 +185,7 @@ class TimeSlider extends Slider {
         }
         this.reset();
 
-        model.mediaModel.on(MEDIA_SEEKED, this.onSeeked, this);
+        model.on(MEDIA_SEEKED, this.onSeeked, this);
 
         var tracks = playlistItem.tracks;
         _.each(tracks, function (track) {

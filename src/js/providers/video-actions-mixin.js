@@ -52,8 +52,9 @@ const VideoActionsMixin = {
     remove: function() {
         this.stop();
         this.destroy();
-        if (this.container === this.video.parentNode) {
-            this.container.removeChild(this.video);
+        const container = this.container;
+        if (container && container === this.video.parentNode) {
+            container.removeChild(this.video);
         }
     }
 };

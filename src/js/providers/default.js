@@ -37,8 +37,8 @@ const DefaultProvider = {
     destroy: noop, // frees memory
 
     setVisibility: noop,
-    setFullscreen: returnFalse,
-    getFullscreen: noop,
+    setFullscreen: noop,
+    getFullscreen: returnFalse,
 
     // If setContainer has been set, this returns the element.
     //  It's value is used to determine if we should remove the <video> element when setting a new provider.

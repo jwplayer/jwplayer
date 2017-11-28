@@ -48,35 +48,13 @@ function View(_api, _model) {
         model: _model
     });
 
-    // init/reset view model properties
-    Object.assign(_model.attributes, {
-        containerWidth: undefined,
-        containerHeight: undefined,
-        mediaContainer: undefined,
-        fullscreen: false,
-        inDom: undefined,
-        iFrame: undefined,
-        activeTab: undefined,
-        intersectionRatio: undefined,
-        visibility: undefined,
-        viewable: undefined,
-        viewSetup: false,
-        audioMode: undefined,
-        touchMode: undefined,
-        altText: '',
-        cues: undefined,
-        castClicked: false,
-        scrubbing: false,
-        logoWidth: 0,
-    });
-
     const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
     const _videoLayer = _playerElement.querySelector('.jw-media');
 
     const _preview = new Preview(_model);
     const _title = new Title(_model);
 
-    let _captionsRenderer = new CaptionsRenderer(_model);
+    const _captionsRenderer = new CaptionsRenderer(_model);
     _captionsRenderer.on('all', _this.trigger, _this);
 
     let _logo;
@@ -85,8 +63,6 @@ function View(_api, _model) {
 
     let _lastWidth;
     let _lastHeight;
-
-    let _instreamModel;
 
     let _resizeMediaTimeout = -1;
     let _resizeContainerRequestId = -1;
@@ -239,12 +215,11 @@ function View(_api, _model) {
         // Native fullscreen (coming through from the provider)
         _model.on(NATIVE_FULLSCREEN, _fullscreenChangeHandler);
 
-        _model.change('mediaModel', (model, mediaModel) => {
-            mediaModel.change('mediaType', _onMediaTypeChange, this);
-            mediaModel.on('change:visualQuality', () => {
-                _resizeMedia();
-            }, this);
-        });
+        _model.on('change:mediaType', _onMediaTypeChange, this);
+        _model.on('change:visualQuality', () => {
+            _resizeMedia();
+        }, this);
+
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
@@ -280,7 +255,7 @@ function View(_api, _model) {
         viewsManager.add(this);
 
         this.isSetup = true;
-        _model.set('viewSetup', true);
+        _model.trigger('viewSetup', _playerElement);
 
         const inDOM = document.body.contains(_playerElement);
         if (inDOM) {
@@ -301,6 +276,13 @@ function View(_api, _model) {
         _model.on('change:fullscreen', updateVisibility);
         _model.on('change:intersectionRatio', updateVisibility);
         _model.on('change:visibility', redraw);
+        _model.on('change:instream', (model, instream) => {
+            if (instream) {
+                setupInstream();
+            } else {
+                destroyInstream();
+            }
+        });
 
         updateVisibility();
 
@@ -313,8 +295,7 @@ function View(_api, _model) {
         _model.change('controls', changeControls);
         // Set the title attribute of the video tag to display background media information on mobile devices
         if (_isMobile) {
-            setMediaTitleAttribute(_model.get('playlistItem'));
-            _model.on('itemReady', setMediaTitleAttribute);
+            _model.change('playlistItem', setMediaTitleAttribute);
         }
 
         // Triggering 'resize' resulting in player 'ready'
@@ -353,8 +334,8 @@ function View(_api, _model) {
         _this.addControls(controls);
     }
 
-    function setMediaTitleAttribute(item) {
-        var videotag = _videoLayer.querySelector('video, audio');
+    function setMediaTitleAttribute(model, playlistItem) {
+        var videotag = model.get('mediaElement');
         // chromecast and flash providers do no support video tags
         if (!videotag) {
             return;
@@ -362,13 +343,13 @@ function View(_api, _model) {
 
         // Writing a string to innerHTML completely decodes multiple-encoded strings
         const dummyDiv = document.createElement('div');
-        dummyDiv.innerHTML = item.title || '';
+        dummyDiv.innerHTML = playlistItem.title || '';
         videotag.setAttribute('title', dummyDiv.textContent);
     }
 
     function redraw(model, visibility, lastVisibility) {
         if (visibility && !lastVisibility) {
-            _stateHandler(_instreamModel || model);
+            _stateHandler(model);
             _this.updateStyles();
         }
     }
@@ -397,16 +378,14 @@ function View(_api, _model) {
 
                 if (controls &&
                     ((state === STATE_IDLE || state === STATE_COMPLETE) ||
-                    (_instreamModel && _instreamModel.get('state') === STATE_PAUSED))) {
+                    (_model.get('instream') && state === STATE_PAUSED))) {
                     api.playToggle(reasonInteraction());
                 }
 
                 if (controls && state === STATE_PAUSED) {
                     // Toggle visibility of the controls when tapping the media
                     // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-                    if (_instreamModel ||
-                        model.get('castActive') ||
-                        (model.mediaModel && model.mediaModel.get('mediaType') === 'audio')) {
+                    if (_model.get('instream') || model.get('castActive') || (model.get('mediaType') === 'audio')) {
                         return;
                     }
                     toggleClass(_playerElement, 'jw-flag-controls-hidden');
@@ -455,13 +434,6 @@ function View(_api, _model) {
         }
     }
 
-    const _onChangeControls = function (model, bool) {
-        if (bool) {
-            // ignore model that triggered this event and use current state model
-            _stateHandler(_instreamModel || _model);
-        }
-    };
-
     this.addControls = function (controls) {
         _controls = controls;
 
@@ -492,8 +464,8 @@ function View(_api, _model) {
 
         controls.on('all', _this.trigger, _this);
 
-        if (_instreamModel) {
-            _controls.setupInstream(_instreamModel);
+        if (_model.get('instream')) {
+            _controls.setupInstream(_model);
         }
 
         const overlaysElement = _playerElement.querySelector('.jw-overlays');
@@ -520,9 +492,6 @@ function View(_api, _model) {
     // Perform the switch to fullscreen
     const _fullscreen = function (model, state) {
 
-        // If it supports DOM fullscreen
-        const provider = _model.getVideo();
-
         // Unmute the video so volume can be adjusted with native controls in fullscreen
         if (state && _controls && _model.get('autostartMuted')) {
             _controls.unmuteAutoplay(_api, _model);
@@ -538,15 +507,8 @@ function View(_api, _model) {
         } else if (_isIE) {
             _toggleDOMFullscreen(_playerElement, state);
         } else {
-            // else use native fullscreen
-            if (_instreamModel && _instreamModel.getVideo()) {
-                _instreamModel.getVideo().setFullscreen(state);
-            }
-            provider.setFullscreen(state);
-        }
-        // pass fullscreen state to Flash provider
-        // provider.getName() is the same as _api.getProvider() or _model.get('provider')
-        if (provider && provider.getName().name.indexOf('flash') === 0) {
+            // Request media element fullscreen (iOS)
+            const provider = _model.getVideo();
             provider.setFullscreen(state);
         }
     };
@@ -602,13 +564,7 @@ function View(_api, _model) {
         if (!provider) {
             return;
         }
-        const transformScale = provider.resize(containerWidth, containerHeight, _model.get('stretching'));
-
-        // poll resizing if video is transformed
-        if (transformScale) {
-            clearTimeout(_resizeMediaTimeout);
-            _resizeMediaTimeout = setTimeout(_resizeMedia, 250);
-        }
+        provider.resize(containerWidth, containerHeight, _model.get('stretching'));
     }
 
     this.resize = function (playerWidth, playerHeight) {
@@ -627,8 +583,8 @@ function View(_api, _model) {
             return !!(fsElement && fsElement.id === _model.get('id'));
         }
         // if player element view fullscreen not available, return video fullscreen state
-        return _instreamModel ? _instreamModel.getVideo().getFullScreen() :
-            _model.getVideo().getFullScreen();
+        const provider = _model.getVideo();
+        return provider.getFullScreen();
     }
 
 
@@ -661,7 +617,7 @@ function View(_api, _model) {
     }
 
     function _setLiveMode(model, streamType) {
-        if (!_instreamModel) {
+        if (!_model.get('instream')) {
             const live = (streamType === 'LIVE');
             toggleClass(_playerElement, 'jw-flag-live', live);
         }
@@ -673,8 +629,13 @@ function View(_api, _model) {
 
     function _onMediaTypeChange(model, val) {
         const isAudioFile = (val === 'audio');
-        const provider = _model.getVideo();
-        const isFlash = (provider && provider.getName().name.indexOf('flash') === 0);
+        const provider = _model.get('provider');
+        const isFlash = (provider && provider.name.indexOf('flash') === 0);
+
+        // Set the poster image for each audio file encountered in a playlist
+        if (isAudioFile) {
+            setPosterImage(_model);
+        }
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
@@ -703,13 +664,11 @@ function View(_api, _model) {
     }
 
     function _stateHandler(model, newState, oldState) {
-        if (!_model.get('viewSetup')) {
+        if (!_this.isSetup) {
             return;
         }
 
         _playerState = model.get('state');
-
-        instreamStateUpdate(_playerState);
 
         if (oldState === STATE_ERROR) {
             const errorContainer = _playerElement.querySelector('.jw-error-msg');
@@ -726,28 +685,23 @@ function View(_api, _model) {
         }
     }
 
-    function instreamStateUpdate(state) {
-        let instreamState = null;
-        if (_instreamModel) {
-            instreamState = state;
-        }
-        if (_controls) {
-            _controls.instreamState = instreamState;
-        }
-    }
-
     function _stateUpdate(state) {
         if (_model.get('controls') && state !== STATE_PAUSED && hasClass(_playerElement, 'jw-flag-controls-hidden')) {
             removeClass(_playerElement, 'jw-flag-controls-hidden');
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
 
-        _model.off('change:playlistItem', setPosterImage);
         switch (state) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
-                _model.change('playlistItem', setPosterImage);                
+                // Set the poster image for videos before playback starts (idle), when the playlist ends (complete),
+                // or when an error is encountered. We don't get to the idle state between playlist items because of RAF
+
+                if (_model.get('mediaType') === 'video') {
+                    setPosterImage(_model);
+                }
+
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
@@ -773,31 +727,16 @@ function View(_api, _model) {
         return !!(settingsMenu && settingsMenu.visible);
     };
 
-    this.setupInstream = function (instreamModel) {
-        this.instreamModel = _instreamModel = instreamModel;
-        _instreamModel.on('change:controls', _onChangeControls, this);
-        _instreamModel.on('change:state', _stateHandler, this);
-        _instreamModel.on('change:playRejected', function (model, val) {
-            toggleClass(_playerElement, 'jw-flag-play-rejected', val);
-        }, this);
-
+    const setupInstream = function() {
         addClass(_playerElement, 'jw-flag-ads');
         removeClass(_playerElement, 'jw-flag-live');
 
         if (_controls) {
-            _controls.setupInstream(instreamModel);
+            _controls.setupInstream(_model);
         }
     };
 
-    this.setAltText = function (text) {
-        _model.set('altText', text);
-    };
-
-    this.destroyInstream = function () {
-        if (_instreamModel) {
-            _instreamModel.off(null, null, this);
-            _instreamModel = null;
-        }
+    const destroyInstream = function() {
         if (!displayClickHandler) {
             // view was destroyed
             return;
@@ -806,16 +745,22 @@ function View(_api, _model) {
             _controls.destroyInstream(_model);
         }
 
-        this.setAltText('');
+        _this.setAltText('');
         removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
         _model.set('hideAdsControls', false);
+
+        // Make sure that the provider's media element is returned to the DOM after instream mode
         const provider = _model.getVideo();
         if (provider) {
             provider.setContainer(_videoLayer);
         }
-        _setLiveMode(_model, _model.get('streamType'));
+
         // reset display click handler
         displayClickHandler.revertAlternateClickHandlers();
+    };
+
+    this.setAltText = function (text) {
+        _model.set('altText', text);
     };
 
     this.addCues = function (cues) {
@@ -860,6 +805,7 @@ function View(_api, _model) {
     };
 
     this.destroy = function () {
+        _model.destroy();
         viewsManager.unobserve(_playerElement);
         viewsManager.remove(this);
         this.isSetup = false;
@@ -874,24 +820,14 @@ function View(_api, _model) {
             fullscreenHelpers.destroy();
             fullscreenHelpers = null;
         }
-
-        _model.off(NATIVE_FULLSCREEN, _fullscreenChangeHandler);
-
         if (_controls) {
             _controls.disable(_model);
-        }
-
-        if (_instreamModel) {
-            this.destroyInstream();
         }
         if (displayClickHandler) {
             displayClickHandler.destroy();
             displayClickHandler = null;
         }
-        if (_captionsRenderer) {
-            _captionsRenderer.destroy();
-            _captionsRenderer = null;
-        }
+        _captionsRenderer.destroy();
         if (_logo) {
             _logo.destroy();
             _logo = null;

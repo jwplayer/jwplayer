@@ -577,7 +577,7 @@ function VideoProvider(_playerId, _playerConfig) {
 
     this.resize = function(width, height, stretching) {
         if (!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) {
-            return false;
+            return;
         }
         const styles = {
             objectFit: '',
@@ -619,7 +619,6 @@ function VideoProvider(_playerId, _playerConfig) {
                 'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
         }
         style(_videotag, styles);
-        return false;
     };
 
     this.setFullscreen = function(state) {

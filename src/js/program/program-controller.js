@@ -5,7 +5,7 @@ import cancelable from 'utils/cancelable';
 import MediaController from 'program/media-controller';
 import Eventable from 'utils/eventable';
 
-import { ERROR, PLAYER_STATE, STATE_BUFFERING, STATE_IDLE } from 'events/events';
+import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 
 export default class ProgramController extends Eventable {
     constructor(model) {
@@ -111,8 +111,6 @@ export default class ProgramController extends Eventable {
 
         if (mediaController) {
             mediaController.stop();
-        } else {
-            model.set(PLAYER_STATE, STATE_IDLE);
         }
     }
 

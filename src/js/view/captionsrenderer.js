@@ -176,8 +176,8 @@ const CaptionsRenderer = function (_model) {
     };
 
     this.destroy = function() {
-        this.off();
         _model.off(null, null, this);
+        this.off();
     };
 
     function _setFontScale() {
