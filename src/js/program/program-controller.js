@@ -84,7 +84,6 @@ export default class ProgramController extends Eventable {
                 }
                 throw new Error('Playback cancelled.');
             });
-            mediaController.thenPlayPromise = thenPlayPromise;
 
             playPromise = this.providerPromise
                 .catch(error => {
