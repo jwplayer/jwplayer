@@ -50,7 +50,7 @@ export default class MediaController extends Eventable {
             playPromise = provider.play();
         } else {
             mediaModel.set('setup', true);
-            playPromise = loadAndPlay(item, provider);
+            playPromise = this._loadAndPlay(item, provider);
             if (!mediaModel.get('started')) {
                 this._playAttempt(playPromise, playReason, item);
             }
@@ -153,6 +153,20 @@ export default class MediaController extends Eventable {
         this.trigger(MEDIA_COMPLETE, {});
     }
 
+    _loadAndPlay(item) {
+        const { provider } = this;
+        // Calling load() on Shaka may return a player setup promise
+        const providerSetupPromise = provider.load(item);
+        if (providerSetupPromise) {
+            const thenPlayPromise = cancelable(() => {
+                return provider.play() || resolved;
+            });
+            this.thenPlayPromise = thenPlayPromise;
+            return providerSetupPromise.then(thenPlayPromise.async);
+        }
+        return provider.play() || resolved;
+    }
+
     get audioTrack() {
         return this.provider.getCurrentAudioTrack();
     }
@@ -198,19 +212,6 @@ export default class MediaController extends Eventable {
             this.provider.setSubtitlesTrack(index);
         }
     }
-}
-
-function loadAndPlay(item, provider) {
-    // Calling load() on Shaka may return a player setup promise
-    const providerSetupPromise = provider.load(item);
-    if (providerSetupPromise) {
-        const thenPlayPromise = cancelable(() => {
-            return provider.play() || resolved;
-        });
-        this.thenPlayPromise = thenPlayPromise;
-        return providerSetupPromise.then(thenPlayPromise.async);
-    }
-    return provider.play() || resolved;
 }
 
 function syncPlayerWithMediaModel(mediaModel) {
