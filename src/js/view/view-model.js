@@ -1,14 +1,21 @@
 import SimpleModel from 'model/simplemodel';
+import { PLAYER_STATE } from 'events/events';
 
 class SimpleModelExtendable {}
 SimpleModelExtendable.prototype = Object.assign({}, SimpleModel);
 
 function dispatchDiffChangeEvents(viewModel, newAttributes, oldAttributes) {
     Object.keys(newAttributes).forEach((attr) => {
-        if (!newAttributes[attr] !== oldAttributes[attr]) {
+        if (attr in newAttributes && newAttributes[attr] !== oldAttributes[attr]) {
             viewModel.trigger(`change:${attr}`, viewModel, newAttributes[attr], oldAttributes[attr]);
         }
     });
+}
+
+function removeListeners(instance, viewModel) {
+    if (instance) {
+        instance.off(null, null, viewModel);
+    }
 }
 
 export default class ViewModel extends SimpleModelExtendable {
@@ -28,6 +35,9 @@ export default class ViewModel extends SimpleModelExtendable {
         });
 
         playerModel.on('all', (type, objectOrEvent, value, previousValue) => {
+            if (objectOrEvent === playerModel) {
+                objectOrEvent = this;
+            }
             this.trigger(type, objectOrEvent, value, previousValue);
         }, this);
 
@@ -42,13 +52,17 @@ export default class ViewModel extends SimpleModelExtendable {
 
     set mediaModel(mediaModel) {
         const previousMediaModel = this._mediaModel;
-        if (previousMediaModel) {
-            previousMediaModel.off(null, null, this);
-        }
+        removeListeners(previousMediaModel, this);
 
         this._mediaModel = mediaModel;
 
         mediaModel.on('all', (type, objectOrEvent, value, previousValue) => {
+            if (type === `change:${PLAYER_STATE}`) {
+                return;
+            }
+            if (objectOrEvent === mediaModel) {
+                objectOrEvent = this;
+            }
             this.trigger(type, objectOrEvent, value, previousValue);
         }, this);
 
@@ -57,25 +71,27 @@ export default class ViewModel extends SimpleModelExtendable {
 
     set instreamModel(instreamModel) {
         const previousInstream = this._instreamModel;
-        if (previousInstream) {
-            previousInstream.off(null, null, this);
-        }
+        removeListeners(previousInstream, this);
 
         this._instreamModel = instreamModel;
 
+        this._model.off('change:mediaModel', null, this);
+
         if (instreamModel) {
             instreamModel.on('all', (type, objectOrEvent, value, previousValue) => {
+                if (objectOrEvent === instreamModel) {
+                    objectOrEvent = this;
+                }
                 this.trigger(type, objectOrEvent, value, previousValue);
             }, this);
 
-            instreamModel.change('mediaModel', (model, mediaModel, previousMediaModel) => {
-                if (previousMediaModel) {
-                    previousMediaModel.off(null, null, this);
-                }
+            instreamModel.change('mediaModel', (model, mediaModel) => {
                 this.mediaModel = mediaModel;
             }, this);
         } else {
-            this.mediaModel = this._model.get('mediaModel');
+            this._model.change('mediaModel', (model, mediaModel) => {
+                this.mediaModel = mediaModel;
+            }, this);
         }
 
         dispatchDiffChangeEvents(this, instreamModel ? instreamModel.attributes : {}, this._model.attributes);
@@ -83,7 +99,7 @@ export default class ViewModel extends SimpleModelExtendable {
 
     get(attr) {
         const mediaModel = this._mediaModel;
-        if (mediaModel && attr in mediaModel.attributes) {
+        if (attr !== PLAYER_STATE && mediaModel && attr in mediaModel.attributes) {
             return mediaModel.get(attr);
         }
         const instreamModel = this._instreamModel;
@@ -106,13 +122,9 @@ export default class ViewModel extends SimpleModelExtendable {
     }
 
     destroy() {
-        this._model.off(null, null, this);
-        if (this._mediaModel) {
-            this._mediaModel.off(null, null, this);
-        }
-        if (this._instreamModel) {
-            this._instreamModel.off(null, null, this);
-        }
+        removeListeners(this._model, this);
+        removeListeners(this._mediaModel, this);
+        removeListeners(this._instreamModel, this);
         this.off();
     }
 }
