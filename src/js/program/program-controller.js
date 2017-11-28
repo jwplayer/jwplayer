@@ -4,7 +4,7 @@ import getMediaElement from 'api/get-media-element';
 import cancelable from 'utils/cancelable';
 import MediaController from 'program/media-controller';
 
-import { ERROR, PLAYER_STATE, STATE_BUFFERING, STATE_IDLE } from 'events/events';
+import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 
 export default class ProgramController {
     constructor(model) {
@@ -113,8 +113,6 @@ export default class ProgramController {
 
         if (mediaController) {
             mediaController.stop();
-        } else {
-            model.set(PLAYER_STATE, STATE_IDLE);
         }
     }
 
