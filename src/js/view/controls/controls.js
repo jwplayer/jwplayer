@@ -384,6 +384,7 @@ export default class Controls {
         this.controlbar.renderVolume(mute, model.get('volume'));
         this.mute.hide();
         utils.removeClass(this.playerContainer, 'jw-flag-autostart');
+        utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
     }
 
     addActiveListeners(element) {
@@ -408,6 +409,9 @@ export default class Controls {
                 timeout || ACTIVE_TIMEOUT);
         }
         if (!this.showing) {
+            if (this.mute.element().style.display === '') {
+                utils.removeClass(this.playerContainer, 'jw-flag-autostart');
+            }
             utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
             this.showing = true;
             this.trigger('userActive');
@@ -418,6 +422,10 @@ export default class Controls {
         clearTimeout(this.activeTimeout);
         if (this.settingsMenu.visible) {
             return;
+        }
+
+        if (this.mute.element().style.display === '') {
+            utils.addClass(this.playerContainer, 'jw-flag-autostart');
         }
 
         this.showing = false;
