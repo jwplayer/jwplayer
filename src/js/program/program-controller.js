@@ -3,11 +3,14 @@ import { resolved } from 'polyfills/promise';
 import getMediaElement from 'api/get-media-element';
 import cancelable from 'utils/cancelable';
 import MediaController from 'program/media-controller';
+import Eventable from 'utils/eventable';
 
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 
-export default class ProgramController {
+export default class ProgramController extends Eventable {
     constructor(model) {
+        super();
+
         this.mediaController = null;
         this.model = model;
         this.providerController = ProviderController(model.getConfiguration());
@@ -68,8 +71,8 @@ export default class ProgramController {
             playReason = model.get('playReason');
         }
 
-        // Setup means that we've already started playback on the current item; all we need to do is resume it
-        if (mediaController && mediaController.provider) {
+        // Start playback immediately if we have already loaded a mediaController
+        if (mediaController) {
             playPromise = mediaController.play(item, playReason);
         } else {
             // Wait for the provider to load before starting initial playback
@@ -81,7 +84,6 @@ export default class ProgramController {
                 }
                 throw new Error('Playback cancelled.');
             });
-            model.setThenPlayPromise(thenPlayPromise);
 
             playPromise = this.providerPromise
                 .catch(error => {
@@ -163,11 +165,11 @@ export default class ProgramController {
             model.once('change:mediaContainer', model.onMediaContainer);
         }
 
-        nextProvider.on('all', model.videoEventHandler, model);
         // Attempt setting the playback rate to be the user selected value
         model.setPlaybackRate(model.get('defaultPlaybackRate'));
 
         this.mediaController = new MediaController(nextProvider, model);
+        forwardEvents(this, this.mediaController);
     }
 
     _loadProviderConstructor(source) {
@@ -197,6 +199,7 @@ export default class ProgramController {
     _destroyActiveMedia() {
         const { model } = this;
 
+        this.attached = false;
         this.mediaController.destroy();
         this.mediaController = null;
         model.resetProvider();
@@ -228,6 +231,15 @@ export default class ProgramController {
         }
 
         return mediaController.audioTracks;
+    }
+
+    get beforeComplete() {
+        const { mediaController } = this;
+        if (!mediaController) {
+            return;
+        }
+
+        return mediaController.beforeComplete;
     }
 
     get quality() {
@@ -314,6 +326,11 @@ function replaceMediaElement(model) {
     mediaElement.volume = lastMediaElement.volume;
     mediaElement.muted = lastMediaElement.muted;
     mediaElement.load();
+}
+
+function forwardEvents(programController, mediaController) {
+    mediaController.off('all', programController.trigger, programController);
+    mediaController.on('all', programController.trigger, programController);
 }
 
 

@@ -18,7 +18,7 @@ const Captions = function(_model) {
 
     // Listen for provider subtitle tracks
     //   ignoring provider "subtitlesTrackChanged" since index should be managed here
-    _model.mediaController.on('subtitlesTracks', _subtitlesTracksHandler, this);
+    _model.on('subtitlesTracks', _subtitlesTracksHandler, this);
 
     function _subtitlesTracksHandler(e) {
         if (!e.tracks.length) {

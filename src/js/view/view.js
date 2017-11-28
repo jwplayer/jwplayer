@@ -9,8 +9,8 @@ import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
-import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
-    DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
+import {
+    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
     addClass,
@@ -58,8 +58,6 @@ function View(_api, _model) {
     _captionsRenderer.on('all', _this.trigger, _this);
 
     let _logo;
-
-    let _playerState;
 
     let _lastWidth;
     let _lastHeight;
@@ -213,7 +211,7 @@ function View(_api, _model) {
         });
 
         // Native fullscreen (coming through from the provider)
-        _model.on('fullscreenchange', _fullscreenChangeHandler);
+        _model.on(NATIVE_FULLSCREEN, _fullscreenChangeHandler);
 
         _model.on('change:mediaType', _onMediaTypeChange, this);
         _model.on('change:visualQuality', () => {
@@ -349,14 +347,14 @@ function View(_api, _model) {
 
     function redraw(model, visibility, lastVisibility) {
         if (visibility && !lastVisibility) {
-            _stateHandler(model);
+            _stateUpdate(model.get('state'));
             _this.updateStyles();
         }
     }
 
     function clickHandlerHelper(api, model, videoLayer) {
         const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });
-        const controls = _model.get('controls');
+        const controls = model.get('controls');
         clickHandler.on({
             click: () => {
                 _this.trigger(DISPLAY_CLICK);
@@ -378,14 +376,14 @@ function View(_api, _model) {
 
                 if (controls &&
                     ((state === STATE_IDLE || state === STATE_COMPLETE) ||
-                    (_model.get('instream') && state === STATE_PAUSED))) {
+                    (model.get('instream') && state === STATE_PAUSED))) {
                     api.playToggle(reasonInteraction());
                 }
 
                 if (controls && state === STATE_PAUSED) {
                     // Toggle visibility of the controls when tapping the media
                     // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-                    if (_model.get('instream') || model.get('castActive') || (model.get('mediaType') === 'audio')) {
+                    if (model.get('instream') || model.get('castActive') || (model.get('mediaType') === 'audio')) {
                         return;
                     }
                     toggleClass(_playerElement, 'jw-flag-controls-hidden');
@@ -457,7 +455,8 @@ function View(_api, _model) {
         }
 
         controls.on('userActive userInactive', function() {
-            if (_playerState === STATE_PLAYING || _playerState === STATE_BUFFERING) {
+            const state = _model.get('state');
+            if (state === STATE_PLAYING || state === STATE_BUFFERING) {
                 _captionsRenderer.renderCues(true);
             }
         });
@@ -493,8 +492,8 @@ function View(_api, _model) {
     const _fullscreen = function (model, state) {
 
         // Unmute the video so volume can be adjusted with native controls in fullscreen
-        if (state && _controls && _model.get('autostartMuted')) {
-            _controls.unmuteAutoplay(_api, _model);
+        if (state && _controls && model.get('autostartMuted')) {
+            _controls.unmuteAutoplay(_api, model);
         }
 
         if (fullscreenHelpers.supportsDomFullscreen()) {
@@ -508,7 +507,7 @@ function View(_api, _model) {
             _toggleDOMFullscreen(_playerElement, state);
         } else {
             // Request media element fullscreen (iOS)
-            const provider = _model.getVideo();
+            const provider = model.getVideo();
             provider.setFullscreen(state);
         }
     };
@@ -617,7 +616,7 @@ function View(_api, _model) {
     }
 
     function _setLiveMode(model, streamType) {
-        if (!_model.get('instream')) {
+        if (!model.get('instream')) {
             const live = (streamType === 'LIVE');
             toggleClass(_playerElement, 'jw-flag-live', live);
         }
@@ -629,12 +628,12 @@ function View(_api, _model) {
 
     function _onMediaTypeChange(model, val) {
         const isAudioFile = (val === 'audio');
-        const provider = _model.get('provider');
+        const provider = model.get('provider');
         const isFlash = (provider && provider.name.indexOf('flash') === 0);
 
         // Set the poster image for each audio file encountered in a playlist
         if (isAudioFile) {
-            setPosterImage(_model);
+            setPosterImage(model);
         }
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
@@ -644,8 +643,8 @@ function View(_api, _model) {
         // otherwise keep it on top of the media element to display captions with the captions renderer
         _playerElement.insertBefore(_preview.el, element);
 
-        if (isAudioFile && _model.get('autostart')) {
-            setPosterImage(_model);
+        if (isAudioFile && model.get('autostart')) {
+            setPosterImage(model);
         }
     }
 
@@ -654,7 +653,7 @@ function View(_api, _model) {
             _title.playlistItem(model, model.get('playlistItem'));
             return;
         }
-        const errorContainer = ErrorContainer(_model, evt.message);
+        const errorContainer = ErrorContainer(model, evt.message);
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }
@@ -668,8 +667,6 @@ function View(_api, _model) {
             return;
         }
 
-        _playerState = model.get('state');
-
         if (oldState === STATE_ERROR) {
             const errorContainer = _playerElement.querySelector('.jw-error-msg');
             if (errorContainer) {
@@ -678,10 +675,10 @@ function View(_api, _model) {
         }
 
         cancelAnimationFrame(_stateClassRequestId);
-        if (_playerState === STATE_PLAYING) {
-            _stateUpdate(_playerState);
+        if (newState === STATE_PLAYING) {
+            _stateUpdate(newState);
         } else {
-            _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(_playerState));
+            _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(newState));
         }
     }
 

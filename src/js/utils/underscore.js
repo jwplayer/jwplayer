@@ -656,7 +656,7 @@ _.isFinite = function (obj) {
 };
 
 // Is the given value `NaN`? (NaN is the only number which does not equal itself).
-_.isNaN = function (obj) {
+const _isNaN = _.isNaN = function (obj) {
     return _.isNumber(obj) && obj != +obj;
 };
 
@@ -733,4 +733,7 @@ _.result = function (object, property) {
     return _.isFunction(value) ? value.call(object) : value;
 };
 
+const _isNumber = _.isNumber;
+
+export { _isNaN, _isNumber };
 export default _;

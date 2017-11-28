@@ -6,6 +6,7 @@ import Slider from 'view/controls/components/slider';
 import Tooltip from 'view/controls/components/tooltip';
 import ChaptersMixin from 'view/controls/components/chapters.mixin';
 import ThumbnailsMixin from 'view/controls/components/thumbnails.mixin';
+import { MEDIA_SEEKED } from 'events/events';
 
 class TimeTip extends Tooltip {
 
