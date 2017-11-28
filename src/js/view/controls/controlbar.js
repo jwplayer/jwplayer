@@ -12,6 +12,7 @@ import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import { prependChild } from 'utils/dom';
+import { MEDIA_SEEKED } from 'events/events';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -308,7 +309,7 @@ export default class Controlbar {
             }, this);
         }
 
-        _model.on('seeked', function () {
+        _model.on(MEDIA_SEEKED, function () {
             _model.once('change:position', this.checkDvrLiveEdge, this);
         }, this);
 

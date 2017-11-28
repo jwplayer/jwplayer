@@ -9,8 +9,8 @@ import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
-import { STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT,
-    DISPLAY_CLICK, LOGO_CLICK, ERROR } from 'events/events';
+import {
+    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
     addClass,
@@ -211,7 +211,7 @@ function View(_api, _model) {
         });
 
         // Native fullscreen (coming through from the provider)
-        _model.on('fullscreenchange', _fullscreenChangeHandler);
+        _model.on(NATIVE_FULLSCREEN, _fullscreenChangeHandler);
 
         _model.on('change:mediaType', _onMediaTypeChange, this);
         _model.on('change:visualQuality', () => {
