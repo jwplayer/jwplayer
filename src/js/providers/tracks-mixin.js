@@ -366,6 +366,7 @@ function clearTracks() {
     this._cuesByTrackId = null;
     this._metaCuesByTextTime = null;
     this._unknownCount = 0;
+    this._currentTextTrackIndex = -1;
     this._activeCuePosition = null;
     if (this.renderNatively) {
         // Removing listener first to ensure that removing cues does not trigger it unnecessarily
