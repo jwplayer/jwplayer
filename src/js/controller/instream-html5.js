@@ -33,7 +33,7 @@ const InstreamHtml5 = function(_controller, _model) {
             mediaContext: mediaModelContext,
             mediaElement: mediaElement,
             mediaSrc: mediaElement.src,
-            mute: playerAttributes.mute || playerAttributes.autostartMuted,
+            mute: _model.getMute(),
             streamType: 'VOD',
             autostartMuted: playerAttributes.autostartMuted,
             autostart: playerAttributes.autostart,
