@@ -12,10 +12,6 @@ export default function ProviderListener(mediaController) {
             type: type
         });
 
-        const modelForward = () => {
-            model.trigger(type, data);
-        };
-
         switch (type) {
             case 'flashThrottle': {
                 const throttled = (data.state !== 'resume');
@@ -90,6 +86,7 @@ export default function ProviderListener(mediaController) {
                     mediaModel.set('duration', duration);
                     model.set('duration', duration);
                 }
+                model.trigger(type, data);
                 break;
             }
             case PROVIDER_CHANGED:
@@ -124,19 +121,11 @@ export default function ProviderListener(mediaController) {
                 mediaModel.set('visualQuality', Object.assign({}, data));
                 break;
             case MEDIA_SEEK:
-                modelForward();
-                break;
             case MEDIA_SEEKED:
-                modelForward();
-                break;
             case NATIVE_FULLSCREEN:
-                modelForward();
-                break;
             case 'subtitlesTracks':
-                modelForward();
-                break;
             case 'subtitlesTracksData':
-                modelForward();
+                model.trigger(type, data);
                 break;
             default:
                 break;
