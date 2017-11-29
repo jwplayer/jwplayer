@@ -464,7 +464,7 @@ function View(_api, _model) {
         controls.on('all', _this.trigger, _this);
 
         if (_model.get('instream')) {
-            _controls.setupInstream(_model);
+            _controls.setupInstream();
         }
 
         const overlaysElement = _playerElement.querySelector('.jw-overlays');
@@ -729,7 +729,7 @@ function View(_api, _model) {
         removeClass(_playerElement, 'jw-flag-live');
 
         if (_controls) {
-            _controls.setupInstream(_model);
+            _controls.setupInstream();
         }
     };
 

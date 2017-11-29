@@ -90,13 +90,15 @@ export default class ViewModel extends SimpleModelExtendable {
             instreamModel.change('mediaModel', (model, mediaModel) => {
                 this.mediaModel = mediaModel;
             }, this);
+
+            dispatchDiffChangeEvents(this, instreamModel.attributes, this._model.attributes);
         } else {
             this._model.change('mediaModel', (model, mediaModel) => {
                 this.mediaModel = mediaModel;
             }, this);
-        }
 
-        dispatchDiffChangeEvents(this, instreamModel ? instreamModel.attributes : {}, this._model.attributes);
+            dispatchDiffChangeEvents(this, this._model.attributes, previousInstream ? previousInstream.attributes : {});
+        }
     }
 
     get(attr) {
