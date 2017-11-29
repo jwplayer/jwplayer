@@ -128,8 +128,8 @@ function VideoProvider(_playerId, _playerConfig) {
             _videotag.removeEventListener('waiting', setLoadingState);
             _videotag.addEventListener('waiting', setLoadingState);
             _this.trigger(MEDIA_SEEK, {
-                position: position,
-                offset: offset
+                position,
+                offset
             });
         },
 
