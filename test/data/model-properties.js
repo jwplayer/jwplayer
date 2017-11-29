@@ -64,6 +64,7 @@ export const adModelProperties = {
 export const addedProperties = {
     playlistItem: {},
     provider: {},
+    instream: {},
 };
 
 export default {
@@ -88,7 +89,6 @@ export default {
     width: 640,
     height: 360,
     audioMode: false,
-    instream: null,
     state: '',
     playlist: [{}],
     item: 0,

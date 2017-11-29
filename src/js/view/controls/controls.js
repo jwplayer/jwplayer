@@ -435,12 +435,11 @@ export default class Controls {
         }
     }
 
-    setupInstream(model) {
+    setupInstream() {
         this.instreamState = true;
         // Call Controls.userActivity to display the UI temporarily for the start of the ad
         this.userActive();
         this.addBackdrop();
-        this.controlbar.syncPlaybackTime(model);
         if (this.settingsMenu) {
             this.settingsMenu.close();
         }
@@ -450,7 +449,6 @@ export default class Controls {
     destroyInstream(model) {
         this.instreamState = null;
         this.addBackdrop();
-        this.controlbar.syncPlaybackTime(model);
         if (model.get('autostartMuted')) {
             utils.addClass(this.playerContainer, 'jw-flag-autostart');
         }

@@ -91,6 +91,7 @@ class TimeSlider extends Slider {
 
         this._model
             .on('duration', this.onDuration, this)
+            .on('change:cues', this.addCues, this)
             .change('playlistItem', this.onPlaylistItem, this)
             .change('position', this.onPosition, this)
             .change('buffer', this.onBuffer, this)
@@ -175,6 +176,7 @@ class TimeSlider extends Slider {
             return;
         }
         this.reset();
+        this.addCues(model.get('cues'));
 
         var tracks = playlistItem.tracks;
         _.each(tracks, function (track) {
@@ -224,12 +226,12 @@ class TimeSlider extends Slider {
         // With touch events, we never will get the hover events on the cues that cause cues to be active.
         // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
         if (UI.getPointerType(evt.sourceEvent) === 'touch') {
-            this.activeCue = _.reduce(this.cues, function(closeCue, cue) {
+            this.activeCue = this.cues.reduce((closeCue, cue) => {
                 if (Math.abs(position - (parseInt(cue.pct) / 100 * railBounds.width)) < this.mobileHoverDistance) {
                     return cue;
                 }
                 return closeCue;
-            }.bind(this), undefined);
+            }, undefined);
         }
 
         if (this.activeCue) {
@@ -271,8 +273,18 @@ class TimeSlider extends Slider {
         utils.removeClass(this.timeTip.el, 'jw-open');
     }
 
+    addCues(model, cues) {
+        if (cues && cues.length) {
+            cues.forEach((ele) => {
+                this.addCue(ele);
+            });
+            this.drawCues();
+        } else {
+            this.resetChapters();
+        }
+    }
+
     reset() {
-        this.resetChapters();
         this.resetThumbnails();
         this.timeTip.resetWidth();
         this.textLength = 0;

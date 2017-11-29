@@ -1,4 +1,3 @@
-import _ from 'utils/underscore';
 import utils from 'utils/helpers';
 import srt from 'parsers/captions/srt';
 
@@ -33,8 +32,8 @@ const ChaptersMixin = {
 
     chaptersLoaded: function (evt) {
         const data = srt(evt.responseText);
-        if (_.isArray(data)) {
-            _.each(data, this.addCue, this);
+        if (Array.isArray(data)) {
+            data.forEach((obj) => this.addCue(obj));
             this.drawCues();
         }
     },
@@ -53,7 +52,7 @@ const ChaptersMixin = {
             return;
         }
 
-        _.each(this.cues, (cue) => {
+        this.cues.forEach((cue) => {
             cue.align(duration);
             cue.el.addEventListener('mouseover', () => {
                 this.activeCue = cue;
@@ -66,7 +65,7 @@ const ChaptersMixin = {
     },
 
     resetChapters: function() {
-        _.each(this.cues, (cue) => {
+        this.cues.forEach((cue) => {
             if (cue.el.parentNode) {
                 cue.el.parentNode.removeChild(cue.el);
             }

@@ -263,7 +263,6 @@ export default class Controlbar {
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', this.onFullscreen, this);
         _model.change('streamType', this.onStreamTypeChange, this);
-        _model.change('cues', this.addCues, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
         _model.change('state', () => {
@@ -419,21 +418,6 @@ export default class Controlbar {
         this.elements.alt.textContent = altText;
     }
 
-    addCues(model, cues) {
-        if (!this.elements.time) {
-            return;
-        }
-        if (cues && cues.length) {
-            _.each(cues, function (ele) {
-                this.elements.time.addCue(ele);
-            }, this);
-        } else {
-            this.elements.time.resetChapters();
-        }
-
-        this.elements.time.drawCues();
-    }
-
     // Close menus if it has no event.  Otherwise close all but the event's target.
     closeMenus(evt) {
         _.each(this.menus, function (ele) {
@@ -558,18 +542,6 @@ export default class Controlbar {
                 buttonContainer.removeChild(buttonElement);
             }
         }
-    }
-
-    syncPlaybackTime(model) {
-        // When resuming playback mode, trigger a change so that the slider immediately resumes it's original position
-        const timeSlider = this.elements.time;
-        if (!timeSlider) {
-            return;
-        }
-
-        timeSlider.onPosition(model, model.get('position'));
-        timeSlider.onDuration(model, model.get('duration'));
-        timeSlider.onStreamType(model, model.get('streamType'));
     }
 
     toggleCaptionsButtonState(active) {
