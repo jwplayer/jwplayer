@@ -332,6 +332,14 @@ var InstreamAdapter = function(_controller, _model, _view) {
         _model.set('hideAdsControls', true);
     };
 
+    /**
+     * Extracts the video tag in the foreground.
+     * @returns {Element|null|undefined} videoTag - the HTML <video> element in the foreground.
+     */
+    this.getMediaElement = function () {
+        const container = _controller.getContainer();
+        return container && container.querySelector('video');
+    };
 };
 
 Object.assign(InstreamAdapter.prototype, Events);
