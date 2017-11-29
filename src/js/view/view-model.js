@@ -73,9 +73,11 @@ export default class ViewModel extends SimpleModelExtendable {
         const previousInstream = this._instreamModel;
         removeListeners(previousInstream, this);
 
+        this._model.off('change:mediaModel', null, this);
+
         this._instreamModel = instreamModel;
 
-        this._model.off('change:mediaModel', null, this);
+        this.trigger('instreamMode', !!instreamModel);
 
         if (instreamModel) {
             instreamModel.on('all', (type, objectOrEvent, value, previousValue) => {

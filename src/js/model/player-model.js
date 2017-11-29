@@ -2,16 +2,14 @@ import { STATE_IDLE } from 'events/events';
 
 export const INITIAL_PLAYER_STATE = {
     audioMode: false,
+    flashBlocked: false,
     instream: null,
-    // always start on first playlist item
     item: 0,
     itemMeta: {},
     playlistItem: undefined,
-    // Initial state, upon setup
-    state: STATE_IDLE,
-    // Initially we don't assume Flash is needed
-    flashBlocked: false,
+    playRejected: false,
     provider: undefined,
+    state: STATE_IDLE,
     duration: 0,
     position: 0,
     buffer: 0
