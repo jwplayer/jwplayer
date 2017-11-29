@@ -409,7 +409,9 @@ export default class Controls {
                 timeout || ACTIVE_TIMEOUT);
         }
         if (!this.showing) {
-            if (this.mute.element().style.display === '') {
+            const mute = this.mute;
+
+            if (mute && mute.element().style.display === '') {
                 utils.removeClass(this.playerContainer, 'jw-flag-autostart');
             }
             utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
@@ -424,7 +426,9 @@ export default class Controls {
             return;
         }
 
-        if (this.mute.element().style.display === '') {
+        const mute = this.mute;
+
+        if (mute && mute.element().style.display === '') {
             utils.addClass(this.playerContainer, 'jw-flag-autostart');
         }
 
