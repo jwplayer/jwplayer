@@ -6,7 +6,6 @@ import Slider from 'view/controls/components/slider';
 import Tooltip from 'view/controls/components/tooltip';
 import ChaptersMixin from 'view/controls/components/chapters.mixin';
 import ThumbnailsMixin from 'view/controls/components/thumbnails.mixin';
-import { MEDIA_SEEKED } from 'events/events';
 
 class TimeTip extends Tooltip {
 
@@ -137,14 +136,6 @@ class TimeSlider extends Slider {
         this.dragJustReleased = true;
     }
 
-    // Event Listeners
-    onSeeked () {
-        // When we are done scrubbing there will be a final seeked event
-        if (this._model.get('scrubbing')) {
-            this.performSeek();
-        }
-    }
-
     onBuffer(model, pct) {
         this.updateBuffer(pct);
     }
@@ -184,8 +175,6 @@ class TimeSlider extends Slider {
             return;
         }
         this.reset();
-
-        model.on(MEDIA_SEEKED, this.onSeeked, this);
 
         var tracks = playlistItem.tracks;
         _.each(tracks, function (track) {
