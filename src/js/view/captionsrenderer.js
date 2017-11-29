@@ -330,10 +330,6 @@ const CaptionsRenderer = function (_model) {
         _currentCues = [];
     }, this);
 
-    _model.on('change:captionsTrack', function (model, captionsTrack) {
-        this.populate(captionsTrack);
-    }, this);
-
     _model.on(MEDIA_SEEK, function (e) {
         _currentCues = [];
         _timeChange(e);
