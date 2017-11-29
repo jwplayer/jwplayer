@@ -61,6 +61,11 @@ export const adModelProperties = {
     skipOffset: null,
 };
 
+export const addedProperties = {
+    playlistItem: {},
+    provider: {},
+};
+
 export default {
     id: '',
     autostart: false,
@@ -86,12 +91,10 @@ export default {
     instream: null,
     state: '',
     playlist: [{}],
-    playlistItem: undefined,
     item: 0,
     duration: 0,
     position: 0,
     flashBlocked: false,
-    provider: undefined,
     mediaElement: document.createElement('video'),
     buffer: 0,
     itemMeta: {},
