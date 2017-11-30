@@ -40,10 +40,12 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
         }
     };
 
-    attachToElement.addEventListener('mouseover', instance.open);
-    attachToElement.addEventListener('mouseout', instance.close);
-    attachToElement.addEventListener('touchstart', (evt) => {
-        instance.touchEvent = getPointerType(evt) === 'touch';
+    Promise.resolve().then(() => {
+        attachToElement.addEventListener('mouseover', instance.open);
+        attachToElement.addEventListener('mouseout', instance.close);
+        attachToElement.addEventListener('touchstart', (evt) => {
+            instance.touchEvent = getPointerType(evt) === 'touch';
+        });
     });
 
     return instance;

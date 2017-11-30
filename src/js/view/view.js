@@ -19,7 +19,6 @@ import {
     removeClass,
     replaceClass,
     toggleClass,
-    createElement,
     bounds,
 } from 'utils/dom';
 import {
@@ -49,7 +48,7 @@ function View(_api, _model) {
         model: _model
     });
 
-    const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
+    const _playerElement = playerTemplate(_model.get('id'), _model.get('localization').player);
     const _videoLayer = _playerElement.querySelector('.jw-media');
 
     const _preview = new Preview(_model);
@@ -347,7 +346,9 @@ function View(_api, _model) {
 
         // Writing a string to innerHTML completely decodes multiple-encoded strings
         const dummyDiv = document.createElement('div');
-        dummyDiv.innerHTML = playlistItem.title || '';
+        if (playlistItem.title) {
+            dummyDiv.innerHTML = playlistItem.title;
+        }
         videotag.setAttribute('title', dummyDiv.textContent);
     }
 

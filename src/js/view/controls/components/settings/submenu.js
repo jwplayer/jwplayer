@@ -1,11 +1,11 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
-import { createElement, emptyElement, toggleClass } from 'utils/dom';
+import { emptyElement, toggleClass } from 'utils/dom';
 
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
     let active;
     let contentItems = [];
-    const submenuElement = createElement(SubmenuTemplate(name));
+    const submenuElement = SubmenuTemplate();
     const categoryButtonElement = categoryButton.element();
 
     categoryButtonElement.setAttribute('name', name);
@@ -45,13 +45,19 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             this.addContent(items);
         },
         removeContent() {
-            contentItems[0].element().removeEventListener('keydown', onFocus);
-            contentItems[contentItems.length - 1].element().removeEventListener('keydown', onFocus);
+            if (contentItems.length) {
+                contentItems[0].element().removeEventListener('keydown', onFocus);
+                contentItems[contentItems.length - 1].element().removeEventListener('keydown', onFocus);
 
-            emptyElement(submenuElement);
-            contentItems = [];
+                emptyElement(submenuElement);
+                contentItems.length = 0;
+            }
         },
         activate() {
+            if (contentItems.length === 0) {
+                contentItems = this.contentItemsFactory();
+                this.addContent(contentItems);
+            }
             toggleClass(submenuElement, 'jw-settings-submenu-active', true);
             submenuElement.setAttribute('aria-expanded', 'true');
             categoryButtonElement.setAttribute('aria-checked', 'true');
@@ -75,9 +81,6 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             return submenuElement;
         },
         destroy() {
-            if (!contentItems) {
-                return;
-            }
             contentItems.forEach(item => {
                 item.destroy();
             });

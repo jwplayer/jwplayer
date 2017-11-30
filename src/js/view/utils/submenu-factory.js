@@ -10,10 +10,10 @@ const QUALITIES_SUBMENU = 'quality';
 const PLAYBACK_RATE_SUBMENU = 'playbackRates';
 const DEFAULT_SUBMENU = QUALITIES_SUBMENU;
 
-export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText) => {
+export const makeSubmenu = (settingsMenu, name, contentItemsFactory, icon, tooltipText) => {
     let submenu = settingsMenu.getSubmenu(name);
     if (submenu) {
-        submenu.replaceContent(contentItems);
+        submenu.removeContent();
     } else {
         const categoryButton = button(`jw-settings-${name}`, () => {
             settingsMenu.activateSubmenu(name);
@@ -25,27 +25,28 @@ export const makeSubmenu = (settingsMenu, name, contentItems, icon, tooltipText)
 
         // Qualities submenu is the default submenu
         submenu = SettingsSubmenu(name, categoryButton, name === DEFAULT_SUBMENU);
-        submenu.addContent(contentItems);
         if (!('ontouchstart' in window)) {
             SimpleTooltip(categoryButtonElement, name, tooltipText);
         }
         settingsMenu.addSubmenu(submenu);
     }
-
+    submenu.contentItemsFactory = contentItemsFactory;
     return submenu;
 };
 
 export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSelectionIndex, tooltipText) {
-    const captionsContentItems = captionsList.map((track, index) => {
-        const contentItemElement = SettingsContentItem(track.id, track.label, (evt) => {
-            action(index);
-            settingsMenu.close(evt);
+    const itemsFactory = () => {
+        return captionsList.map((track, index) => {
+            const contentItemElement = SettingsContentItem(track.id, track.label, (evt) => {
+                action(index);
+                settingsMenu.close(evt);
+            });
+
+            return contentItemElement;
         });
+    };
 
-        return contentItemElement;
-    });
-
-    const captionsSubmenu = makeSubmenu(settingsMenu, CAPTIONS_SUBMENU, captionsContentItems, cloneIcon('cc-off'), tooltipText);
+    const captionsSubmenu = makeSubmenu(settingsMenu, CAPTIONS_SUBMENU, itemsFactory, cloneIcon('cc-off'), tooltipText);
     captionsSubmenu.activateItem(initialSelectionIndex);
 }
 
@@ -54,14 +55,16 @@ export function removeCaptionsSubmenu(settingsMenu) {
 }
 
 export function addAudioTracksSubmenu(settingsMenu, audioTracksList, action, initialSelectionIndex, tooltipText) {
-    const audioTracksItems = audioTracksList.map((track, index) => {
-        return SettingsContentItem(track.name, track.name, (evt) => {
-            action(index);
-            settingsMenu.close(evt);
+    const itemsFactory = () => {
+        return audioTracksList.map((track, index) => {
+            return SettingsContentItem(track.name, track.name, (evt) => {
+                action(index);
+                settingsMenu.close(evt);
+            });
         });
-    });
+    };
 
-    const audioTracksSubmenu = makeSubmenu(settingsMenu, AUDIO_TRACKS_SUBMENU, audioTracksItems,
+    const audioTracksSubmenu = makeSubmenu(settingsMenu, AUDIO_TRACKS_SUBMENU, itemsFactory,
         cloneIcon('audio-tracks'), tooltipText);
     audioTracksSubmenu.activateItem(initialSelectionIndex);
 }
@@ -71,14 +74,16 @@ export function removeAudioTracksSubmenu(settingsMenu) {
 }
 
 export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, tooltipText) {
-    const qualitiesItems = qualitiesList.map((track, index) => {
-        return SettingsContentItem(track.label, track.label, (evt) => {
-            action(index);
-            settingsMenu.close(evt);
+    const itemsFactory = () => {
+        return qualitiesList.map((track, index) => {
+            return SettingsContentItem(track.label, track.label, (evt) => {
+                action(index);
+                settingsMenu.close(evt);
+            });
         });
-    });
+    };
 
-    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, cloneIcon('quality-100'), tooltipText);
+    const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, itemsFactory, cloneIcon('quality-100'), tooltipText);
     qualitiesSubmenu.activateItem(initialSelectionIndex);
 }
 
@@ -87,14 +92,16 @@ export function removeQualitiesSubmenu(settingsMenu) {
 }
 
 export function addPlaybackRatesSubmenu(settingsMenu, rateList, action, initialSelectionIndex, tooltipText) {
-    const rateItems = rateList.map((playbackRate) => {
-        return SettingsContentItem(playbackRate, playbackRate + 'x', (evt) => {
-            action(playbackRate);
-            settingsMenu.close(evt);
+    const itemsFactory = () => {
+        return rateList.map((playbackRate) => {
+            return SettingsContentItem(playbackRate, playbackRate + 'x', (evt) => {
+                action(playbackRate);
+                settingsMenu.close(evt);
+            });
         });
-    });
+    };
 
-    const playbackRatesSubmenu = makeSubmenu(settingsMenu, PLAYBACK_RATE_SUBMENU, rateItems, cloneIcon('playback-rate'), tooltipText);
+    const playbackRatesSubmenu = makeSubmenu(settingsMenu, PLAYBACK_RATE_SUBMENU, itemsFactory, cloneIcon('playback-rate'), tooltipText);
     playbackRatesSubmenu.activateItem(initialSelectionIndex);
 }
 

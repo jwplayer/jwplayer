@@ -1,7 +1,7 @@
 import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
-import { createElement, emptyElement, prependChild } from 'utils/dom';
+import { emptyElement, prependChild } from 'utils/dom';
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
@@ -18,7 +18,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     let active = null;
     const submenus = {};
 
-    const settingsMenuElement = createElement(SettingsMenuTemplate());
+    const settingsMenuElement = SettingsMenuTemplate();
 
     const closeOnEnter = function(evt) {
         if (evt && evt.keyCode === 27) {

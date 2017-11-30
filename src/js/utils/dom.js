@@ -10,10 +10,16 @@ export function hasClass(element, searchClass) {
 }
 
 // Given a string, convert to element and return
+let parser = new DOMParser();
+
 export function createElement(html) {
-    const newElement = document.createElement('div');
-    newElement.innerHTML = html;
-    return newElement.firstChild;
+    const doc = parser.parseFromString(html, 'text/html');
+    if (doc) {
+        return doc.body.firstChild;
+    }
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.firstChild;
 }
 
 // Used for styling dimensions in CSS
