@@ -66,7 +66,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
         _instream.on('all', _instreamForward, this);
         _instream.on(MEDIA_TIME, _instreamTime, this);
         _instream.on(MEDIA_COMPLETE, _instreamItemComplete, this);
-        _instream.init(mediaElement, _model.clone());
+        _instream.init(mediaElement);
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
@@ -129,8 +129,9 @@ var InstreamAdapter = function(_controller, _model, _view) {
     }
 
     function _instreamTime(evt) {
-        _instream._adModel.set('duration', evt.duration);
-        _instream._adModel.set('position', evt.position);
+        const mediaModel = _instream._adModel.mediaModel || _instream._adModel;
+        mediaModel.set('duration', evt.duration);
+        mediaModel.set('position', evt.position);
     }
 
     function _instreamItemComplete(e) {
@@ -217,7 +218,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
         adModel.set('skipMessage', options.skipMessage);
         adModel.set('skipText', options.skipText);
         adModel.set('skipOffset', skipoffset);
-        adModel.set('skipButton', false);
+        adModel.attributes.skipButton = false;
         adModel.set('skipButton', true);
     };
 
