@@ -2,6 +2,20 @@ import { style } from 'utils/css';
 import UI from 'utils/ui';
 import svgParse from 'utils/svgParser';
 
+let collection = {};
+
+function getCachedIcon(svg) {
+    if (!collection[svg]) {
+        const icons = Object.keys(collection);
+        if (icons.length > 10) {
+            delete collection[icons[0]];
+        }
+        const element = svgParse(svg);
+        collection[svg] = element;
+    }
+    return collection[svg].cloneNode(true);
+}
+
 export default class CustomButton {
 
     constructor(img, ariaText, callback, id, btnClass) {
@@ -16,7 +30,7 @@ export default class CustomButton {
 
         let iconElement;
         if (img && img.substring(0, 4) === '<svg') {
-            iconElement = svgParse(img);
+            iconElement = getCachedIcon(img);
         } else {
             iconElement = document.createElement('div');
             iconElement.className = 'jw-icon jw-button-image jw-button-color jw-reset';
