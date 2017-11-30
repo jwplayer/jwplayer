@@ -384,6 +384,7 @@ export default class Controls {
         this.controlbar.renderVolume(mute, model.get('volume'));
         this.mute.hide();
         utils.removeClass(this.playerContainer, 'jw-flag-autostart');
+        this.userActive();
     }
 
     addActiveListeners(element) {
@@ -419,7 +420,6 @@ export default class Controls {
         if (this.settingsMenu.visible) {
             return;
         }
-
         this.showing = false;
         utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
