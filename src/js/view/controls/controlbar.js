@@ -428,12 +428,18 @@ export default class Controlbar {
     }
 
     addCues(model, cues) {
-        if (this.elements.time) {
+        if (!this.elements.time) {
+            return;
+        }
+        if (cues && cues.length) {
             _.each(cues, function (ele) {
                 this.elements.time.addCue(ele);
             }, this);
-            this.elements.time.drawCues();
+        } else {
+            this.elements.time.resetChapters();
         }
+        
+        this.elements.time.drawCues();
     }
 
     // Close menus if it has no event.  Otherwise close all but the event's target.
