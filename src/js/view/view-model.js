@@ -96,8 +96,9 @@ export default class ViewModel extends SimpleModelExtendable {
             this._model.change('mediaModel', (model, mediaModel) => {
                 this.mediaModel = mediaModel;
             }, this);
-
-            dispatchDiffChangeEvents(this, this._model.attributes, previousInstream ? previousInstream.attributes : {});
+            
+            const mergedAttributes = Object.assign({}, previousInstream ? previousInstream.attributes : {}, this._model.attributes);
+            dispatchDiffChangeEvents(this, this._model.attributes, mergedAttributes);
         }
     }
 
