@@ -2,52 +2,53 @@ import { OS } from 'environment/environment';
 import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     ERROR, MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
-import InstreamHtml5 from 'controller/instream-html5';
 import utils from 'utils/helpers';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
+import AdProgramController from 'program/ad-program-controller';
 
 var _defaultOptions = {
     skipoffset: null,
     tag: null
 };
 
-var InstreamAdapter = function(_controller, _model, _view) {
-    var _instream = new InstreamHtml5(_controller, _model);
+var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
+    let _adProgram = new AdProgramController(_model, _mediaPool);
 
-    var _array;
-    var _arrayOptions;
-    var _arrayIndex = 0;
-    var _options = {};
-    var _oldpos;
-    var _olditem;
-    var _this = this;
-    var _skipAd = _instreamItemNext;
+    let _array;
+    let _arrayOptions;
+    let _arrayIndex = 0;
+    let _options = {};
+    let _oldpos;
+    let _this = this;
+    let _skipAd = _instreamItemNext;
 
-    var _clickHandler = _.bind(function(evt) {
+    let _clickHandler = _.bind(function(evt) {
         evt = evt || {};
         evt.hasControls = !!_model.get('controls');
 
         this.trigger(INSTREAM_CLICK, evt);
 
         // toggle playback after click event
-        if (!_instream || !_instream._adModel) {
+        if (!_adProgram) {
             return;
         }
-        if (_instream._adModel.get('state') === STATE_PAUSED) {
+
+        if (_adProgram.model.get('state') === STATE_PAUSED) {
             if (evt.hasControls) {
-                _instream.instreamPlay();
+                _adProgram.playVideo();
             }
         } else {
-            _instream.instreamPause();
+            _adProgram.pause();
         }
     }, this);
 
-    var _doubleClickHandler = _.bind(function() {
-        if (!_instream || !_instream._adModel) {
+    let _doubleClickHandler = _.bind(function() {
+        if (!_adProgram) {
             return;
         }
-        if (_instream._adModel.get('state') === STATE_PAUSED) {
+
+        if (_adProgram.model.get('state') === STATE_PAUSED) {
             if (_model.get('controls')) {
                 _controller.setFullscreen();
                 _controller.play();
@@ -59,25 +60,15 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
     this.init = function(sharedVideoTag) {
         // Keep track of the original player state
-        const mediaElement = sharedVideoTag || _model.get('mediaElement');
-        _oldpos = _controller.get('position');
-        _olditem = _model.get('playlist')[_model.get('item')];
+        _adProgram.setup(sharedVideoTag);
 
-        _instream.on('all', _instreamForward, this);
-        _instream.on(MEDIA_TIME, _instreamTime, this);
-        _instream.on(MEDIA_COMPLETE, _instreamItemComplete, this);
-        _instream.init(mediaElement);
+        _oldpos = _controller.get('position');
+        _adProgram.on('all', _instreamForward, this);
+        _adProgram.on(MEDIA_TIME, _instreamTime, this);
+        _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
-
-        // Let the element finish loading for mobile before calling pause
-        if (mediaElement) {
-            if (!mediaElement.paused) {
-                mediaElement.pause();
-            }
-            mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
-        }
 
         if (_controller.checkBeforePlay() || (_oldpos === 0 && !_controller.isBeforeComplete())) {
             // make sure video restarts after preroll
@@ -87,8 +78,8 @@ var InstreamAdapter = function(_controller, _model, _view) {
         }
 
         // This enters the player into instream mode
-        _model.set('instream', _instream);
-        _instream._adModel.set('state', STATE_BUFFERING);
+        _model.set('instream', _adProgram);
+        _adProgram.model.set('state', STATE_BUFFERING);
 
         // don't trigger api play/pause on display click
         if (_view.clickHandler()) {
@@ -129,9 +120,10 @@ var InstreamAdapter = function(_controller, _model, _view) {
     }
 
     function _instreamTime(evt) {
-        const mediaModel = _instream._adModel.mediaModel || _instream._adModel;
-        mediaModel.set('duration', evt.duration);
-        mediaModel.set('position', evt.position);
+        const { duration, position } = evt;
+        const mediaModel = _adProgram.model.mediaModel || _adProgram.model;
+        mediaModel.set('duration', duration);
+        mediaModel.set('position', position);
     }
 
     function _instreamItemComplete(e) {
@@ -158,7 +150,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
     }
 
     this.loadItem = function(item, options) {
-        if (!_instream) {
+        if (!_adProgram) {
             return;
         }
         if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
@@ -181,7 +173,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
             playlist = [item];
         }
 
-        const adModel = _instream._adModel;
+        const adModel = _adProgram.model;
         adModel.set('playlist', playlist);
 
         _model.set('hideAdsControls', false);
@@ -198,7 +190,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
 
         adModel.set('skipButton', false);
 
-        const playPromise = _instream.load(item, _arrayIndex);
+        const playPromise = _adProgram.setActiveItem(item, _arrayIndex);
 
         const skipoffset = item.skipoffset || _options.skipoffset;
         if (skipoffset) {
@@ -209,7 +201,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
     };
 
     this.setupSkipButton = function(skipoffset, options, customNext) {
-        const adModel = _instream._adModel;
+        const adModel = _adProgram.model;
         if (customNext) {
             _skipAd = customNext;
         } else {
@@ -223,17 +215,17 @@ var InstreamAdapter = function(_controller, _model, _view) {
     };
 
     this.applyProviderListeners = function(provider) {
-        _instream.applyProviderListeners(provider);
+        _adProgram.usePsuedoProvider(provider);
 
         this.addClickHandler();
     };
 
     this.play = function() {
-        _instream.instreamPlay();
+        _adProgram.playVideo();
     };
 
     this.pause = function() {
-        _instream.instreamPause();
+        _adProgram.pause();
     };
 
     this.addClickHandler = function() {
@@ -242,8 +234,8 @@ var InstreamAdapter = function(_controller, _model, _view) {
             _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
         }
 
-        if (_instream) {
-            _instream.on(MEDIA_META, this.metaHandler, this);
+        if (_adProgram) {
+            _adProgram.on(MEDIA_META, this.metaHandler, this);
         }
     };
 
@@ -274,21 +266,21 @@ var InstreamAdapter = function(_controller, _model, _view) {
             _view.clickHandler().revertAlternateClickHandlers();
         }
 
-        if (_instream) {
+        if (_adProgram) {
             // Sync player state with ad for model "change:state" events to trigger
-            if (_instream._adModel) {
-                const adState = _instream._adModel.get('state');
+            if (_adProgram.model) {
+                const adState = _adProgram.model.get('state');
                 _model.attributes.state = adState;
             }
 
-            _model.off(null, null, _instream);
-            _instream.off(null, null, _this);
-            _instream.instreamDestroy();
+            _model.off(null, null, _adProgram);
+            _adProgram.off(null, null, _this);
+            _adProgram.destroy();
 
             // Must happen after instream.instreamDestroy()
             _model.set('instream', null);
 
-            _instream = null;
+            _adProgram = null;
 
             // Player was destroyed
             if (_model.attributes._destroyed) {
@@ -296,29 +288,19 @@ var InstreamAdapter = function(_controller, _model, _view) {
             }
 
             // Re-attach the controller
-            _controller.attachMedia();
+            _controller.attachMedia(_oldpos);
 
             if (_oldpos === null) {
                 _controller.stopVideo();
             } else {
-                const mediaModelContext = _model.mediaModel;
-                const item = Object.assign({}, _olditem);
-                item.starttime = _oldpos;
-                _model.attributes.playlistItem = item;
-                _controller.playVideo().catch(function(error) {
-                    if (mediaModelContext === _model.mediaModel) {
-                        _model.mediaController.trigger('error', {
-                            message: error.message
-                        });
-                    }
-                });
+                _controller.playVideo();
             }
         }
     };
 
     this.getState = function() {
-        if (_instream && _instream._adModel) {
-            return _instream._adModel.get('state');
+        if (_adProgram && _adProgram.model) {
+            return _adProgram.model.get('state');
         }
         // api expects false to know we aren't in instreamMode
         return false;
@@ -338,8 +320,9 @@ var InstreamAdapter = function(_controller, _model, _view) {
      * @returns {Element|null|undefined} videoTag - the HTML <video> element in the foreground.
      */
     this.getMediaElement = function () {
-        const container = _controller.getContainer();
-        return container && container.querySelector('video');
+        if (_adProgram) {
+            return _adProgram.primedElement;
+        }
     };
 };
 

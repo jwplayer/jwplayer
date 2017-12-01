@@ -97,7 +97,7 @@ export default class ViewModel extends PlayerViewModel {
         this._playerViewModel = new PlayerViewModel(this._model);
 
         playerModel.on('change:instream', (model, instream) => {
-            this.instreamModel = instream ? instream._adModel : null;
+            this.instreamModel = instream ? instream.model : null;
         }, this);
     }
 

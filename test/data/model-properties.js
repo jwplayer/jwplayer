@@ -94,7 +94,6 @@ export default {
     duration: 0,
     position: 0,
     flashBlocked: false,
-    mediaElement: document.createElement('video'),
     buffer: 0,
     itemMeta: {},
     castAvailable: false,

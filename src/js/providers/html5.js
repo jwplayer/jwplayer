@@ -33,7 +33,7 @@ function _removeListeners(eventsHash, videoTag) {
     });
 }
 
-function VideoProvider(_playerId, _playerConfig) {
+function VideoProvider(_playerId, _playerConfig, mediaElement) {
     // Current media state
     this.state = STATE_IDLE;
 
@@ -202,7 +202,7 @@ function VideoProvider(_playerId, _playerConfig) {
         }
     });
 
-    const _videotag = _this.video = _playerConfig.mediaElement;
+    const _videotag = _this.video = mediaElement;
     const visualQuality = { level: {} };
     const _staleStreamDuration = 3 * 10 * 1000;
 

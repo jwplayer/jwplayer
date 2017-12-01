@@ -1,20 +1,30 @@
 import ProviderController from 'providers/provider-controller';
-import { resolved } from 'polyfills/promise';
-import getMediaElement from 'api/get-media-element';
-import cancelable from 'utils/cancelable';
 import MediaController from 'program/media-controller';
+import { resolved } from 'polyfills/promise';
+import cancelable from 'utils/cancelable';
+import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
+import {Features} from '../environment/environment';
+import mediaparser from '../parsers/mediaparser';
 
 export default class ProgramController extends Eventable {
-    constructor(model) {
+    constructor(model, mediaPool) {
         super();
 
+        this.mediaPool = mediaPool;
         this.mediaController = null;
         this.model = model;
         this.providerController = ProviderController(model.getConfiguration());
         this.providerPromise = resolved;
+        this.backgroundMedia = null;
+
+        const modelForward = MediaControllerListener(model);
+        this.mediaControllerListener = (type, data) => {
+            modelForward(type, data);
+            this.trigger(type, data);
+        };
     }
 
     setActiveItem(item, index) {
@@ -38,8 +48,9 @@ export default class ProgramController extends Eventable {
                 // We can reuse the current mediaController and do so synchronously
                 // Initialize the provider and mediaModel, sync it with the Model
                 // This sets up the mediaController and allows playback to begin
-                this.mediaController.init(item);
-                this.providerPromise = Promise.resolve(this.mediaController);
+                mediaController.activeItem = item;
+                this._setActiveMedia(mediaController);
+                this.providerPromise = Promise.resolve(mediaController);
                 return this.providerPromise;
             }
         }
@@ -49,10 +60,11 @@ export default class ProgramController extends Eventable {
             .then((ProviderConstructor) => {
                 // Don't do anything if we've tried to load another provider while this promise was resolving
                 if (mediaModelContext === model.mediaModel) {
-                    const nextProvider = new ProviderConstructor(model.get('id'), model.getConfiguration());
-                    this._changeVideoProvider(nextProvider);
-                    this.mediaController.init(item);
-                    return this.mediaController;
+                    const nextProvider = new ProviderConstructor(model.get('id'), model.getConfiguration(), this.primedElement);
+                    const nextMediaController = new MediaController(nextProvider, model);
+                    nextMediaController.activeItem = item;
+                    this._setActiveMedia(nextMediaController);
+                    return nextMediaController;
                 }
             });
         return this.providerPromise;
@@ -73,14 +85,14 @@ export default class ProgramController extends Eventable {
 
         // Start playback immediately if we have already loaded a mediaController
         if (mediaController) {
-            playPromise = mediaController.play(item, playReason);
+            playPromise = mediaController.play(playReason);
         } else {
             // Wait for the provider to load before starting initial playback
             // Make the subsequent promise cancelable so that we can avoid playback when no longer wanted
             const thenPlayPromise = cancelable((nextMediaController) => {
                 // Ensure that we haven't switched items while waiting for the provider to load
                 if (this.mediaController && this.mediaController.mediaModel === nextMediaController.mediaModel) {
-                    return nextMediaController.play(item, playReason);
+                    return nextMediaController.play(playReason);
                 }
                 throw new Error('Playback cancelled.');
             });
@@ -145,8 +157,11 @@ export default class ProgramController extends Eventable {
     }
 
     castVideo(castProvider, item) {
-        this._changeVideoProvider(castProvider);
-        this.mediaController.init(item);
+        const { model } = this;
+
+        const castMediaController = new MediaController(castProvider, model);
+        castMediaController.activeItem = item;
+        this._setActiveMedia(castMediaController);
     }
 
     stopCast() {
@@ -154,22 +169,90 @@ export default class ProgramController extends Eventable {
         this.mediaController = null;
     }
 
-    _changeVideoProvider(nextProvider) {
+    loadBackgroundItem(item) {
         const { model } = this;
-        model.off('change:mediaContainer', model.onMediaContainer);
 
-        const container = model.get('mediaContainer');
-        if (container) {
-            nextProvider.setContainer(container);
-        } else {
-            model.once('change:mediaContainer', model.onMediaContainer);
+        const source = item && item.sources && item.sources[0];
+        if (source === undefined) {
+            return;
         }
 
-        // Attempt setting the playback rate to be the user selected value
-        model.setPlaybackRate(model.get('defaultPlaybackRate'));
+        const bgProviderPromise = this._loadProviderConstructor(source)
+            .then((ProviderConstructor) => {
+                const bgProvider = new ProviderConstructor(model.get('id'), model.getConfiguration());
+                const bgMediaController = new MediaController(bgProvider, model);
+                bgMediaController.activeItem = item;
+                return bgMediaController;
+            });
 
-        this.mediaController = new MediaController(nextProvider, model);
-        forwardEvents(this, this.mediaController);
+        this.backgroundMedia[item] = bgProviderPromise;
+    }
+
+    backgroundActiveMedia() {
+        const { backgroundMedia, mediaController } = this;
+        if (!mediaController) {
+            return;
+        }
+
+        if (backgroundMedia) {
+            this._destroyBackgroundMedia();
+        }
+
+        removeEventForwarding(this, mediaController);
+        mediaController.background = true;
+        this.backgroundMedia = mediaController;
+        this.mediaController = null;
+    }
+
+    restoreBackgroundMedia() {
+        const { backgroundMedia, mediaController } = this;
+        if (mediaController) {
+            this._destroyBackgroundMedia();
+            return;
+        }
+        if (backgroundMedia) {
+            this._setActiveMedia(backgroundMedia);
+            backgroundMedia.background = false;
+            this.backgroundMedia = null;
+        }
+    }
+
+    primeMediaElements() {
+        this.mediaPool.prime();
+    }
+
+    _setActiveMedia(mediaController) {
+        const { model } = this;
+        const { mediaModel, provider } = mediaController;
+
+        assignMediaContainer(model, mediaController);
+        this.mediaController = mediaController;
+
+        model.setProvider(provider);
+        model.setMediaModel(mediaModel);
+        model.set('mediaElement', mediaController.mediaElement);
+
+        forwardEvents(this, mediaController);
+    }
+
+    _destroyActiveMedia() {
+        const { mediaPool, mediaController, model } = this;
+
+        mediaController.detach();
+        mediaPool.recycle(mediaController.mediaElement);
+        mediaController.destroy();
+
+        removeEventForwarding(this, mediaController);
+
+        model.resetProvider();
+        this.mediaController = null;
+    }
+
+    _destroyBackgroundMedia() {
+        const { backgroundMedia, mediaPool } = this;
+        mediaPool.recycle(backgroundMedia.mediaElement);
+        backgroundMedia.destroy();
+        this.backgroundMedia = null;
     }
 
     _loadProviderConstructor(source) {
@@ -196,23 +279,13 @@ export default class ProgramController extends Eventable {
             });
     }
 
-    _destroyActiveMedia() {
-        const { model } = this;
-
-        this.attached = false;
-        this.mediaController.destroy();
-        this.mediaController = null;
-        model.resetProvider();
-        replaceMediaElement(model);
-    }
-
     get activeProvider() {
-        const { mediaController } = this;
-        if (!mediaController) {
+        const { mediaController, backgroundMedia } = this;
+        if (!mediaController && !backgroundMedia) {
             return null;
         }
 
-        return mediaController.provider;
+        return mediaController ? mediaController.provider : backgroundMedia.provider;
     }
 
     get audioTrack() {
@@ -234,12 +307,16 @@ export default class ProgramController extends Eventable {
     }
 
     get beforeComplete() {
-        const { mediaController } = this;
-        if (!mediaController) {
+        const { mediaController, backgroundMedia } = this;
+        if (!mediaController && !backgroundMedia) {
             return;
         }
 
-        return mediaController.beforeComplete;
+        return mediaController ? mediaController.beforeComplete : backgroundMedia.beforeComplete;
+    }
+
+    get primedElement() {
+        return this.mediaPool.getPrimedElement();
     }
 
     get quality() {
@@ -259,13 +336,14 @@ export default class ProgramController extends Eventable {
         return mediaController.qualities;
     }
 
-    set attached(value) {
+    set attached(shouldAttach) {
         const { mediaController } = this;
+
         if (!mediaController) {
             return;
         }
 
-        if (value) {
+        if (shouldAttach) {
             mediaController.attach();
         } else {
             mediaController.detach();
@@ -290,13 +368,30 @@ export default class ProgramController extends Eventable {
         mediaController.controls = mode;
     }
 
+    set mute(mute) {
+        const { backgroundMedia, mediaController, mediaPool } = this;
+
+        if (mediaController) {
+            mediaController.mute = mute;
+        }
+        if (backgroundMedia) {
+            backgroundMedia.mute = mute;
+        }
+
+        mediaPool.syncMute(mute);
+    }
+
     set position(pos) {
         const { mediaController } = this;
         if (!mediaController) {
             return;
         }
 
-        mediaController.position = pos;
+        if (mediaController.attached) {
+            mediaController.position = pos;
+        } else {
+            mediaController.item.starttime = pos;
+        }
     }
 
     set quality(index) {
@@ -316,21 +411,37 @@ export default class ProgramController extends Eventable {
 
         mediaController.subtitles = index;
     }
+
+    set volume(volume) {
+        const { backgroundMedia, mediaController, mediaPool } = this;
+
+        if (mediaController) {
+            mediaController.volume = volume;
+        }
+        if (backgroundMedia) {
+            backgroundMedia.volume = volume;
+        }
+
+        mediaPool.syncVolume(volume);
+    }
 }
 
-function replaceMediaElement(model) {
-    // Replace click-to-play media element, and call .load() to unblock user-gesture to play requirement
-    const lastMediaElement = model.attributes.mediaElement;
-    const mediaElement =
-        model.attributes.mediaElement = getMediaElement();
-    mediaElement.volume = lastMediaElement.volume;
-    mediaElement.muted = lastMediaElement.muted;
-    mediaElement.load();
+function assignMediaContainer(model, mediaController) {
+    const container = model.get('mediaContainer');
+    if (container) {
+        mediaController.container = container;
+    } else {
+        model.once('change:mediaContainer', (changedModel, changedContainer) => {
+            mediaController.container = changedContainer;
+        });
+    }
+}
+
+function removeEventForwarding(programController, mediaController) {
+    mediaController.off('all', programController.mediaControllerListener, programController);
 }
 
 function forwardEvents(programController, mediaController) {
-    mediaController.off('all', programController.trigger, programController);
-    mediaController.on('all', programController.trigger, programController);
+    mediaController.off('all', programController.mediaControllerListener, programController);
+    mediaController.on('all', programController.mediaControllerListener, programController);
 }
-
-

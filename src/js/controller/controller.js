@@ -13,7 +13,7 @@ import ViewModel from 'view/view-model';
 import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
 import Events from 'utils/backbone.events';
-import { OS } from 'environment/environment';
+import { OS, Features } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
@@ -37,7 +37,7 @@ function normalizeState(newstate) {
 const Controller = function() {};
 
 Object.assign(Controller.prototype, {
-    setup(config, _api, originalContainer, eventListeners, commandQueue) {
+    setup(config, _api, originalContainer, eventListeners, commandQueue, mediaPool) {
         const _this = this;
         const _model = _this._model = new Model();
 
@@ -62,7 +62,7 @@ Object.assign(Controller.prototype, {
         _view = this._view = new View(_api, viewModel);
         _view.on('all', _triggerAfterReady, _this);
 
-        const _programController = new ProgramController(_model);
+        const _programController = new ProgramController(_model, mediaPool);
         addProgramControllerListeners();
         initQoe(_model, _programController);
 
@@ -293,7 +293,7 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable = cancelable(_checkAutoStart);
             updatePlaylistCancelable.cancel();
 
-            _primeMediaElementForPlayback();
+            _programController.primeMediaElements();
 
             let loadPromise;
 
@@ -399,7 +399,7 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
-                    _primeMediaElementForPlayback();
+                    _programController.primeMediaElements();
                     return resolved;
                 }
             }
@@ -415,20 +415,6 @@ Object.assign(Controller.prototype, {
                 return 'interaction';
             }
             return 'external';
-        }
-
-        function _inInteraction(event) {
-            return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
-        }
-
-        function _primeMediaElementForPlayback() {
-            // If we're in a user-gesture event call load() on video to allow async playback
-            if (_inInteraction(window.event)) {
-                const mediaElement = _model.get('mediaElement');
-                if (!mediaElement.src) {
-                    mediaElement.load();
-                }
-            }
         }
 
         function _autoStart() {
@@ -645,12 +631,24 @@ Object.assign(Controller.prototype, {
             if (_preplay) {
                 _interruptPlay = true;
             }
-            _programController.attached = false;
+
+            if (Features.backgroundLoading) {
+                _programController.backgroundActiveMedia();
+            } else {
+                _programController.attached = false;
+            }
         }
 
-        function _attachMedia() {
+        function _attachMedia(position) {
             // Called after instream ends
-            _programController.attached = true;
+
+            if (Features.backgroundLoading) {
+                _programController.restoreBackgroundMedia();
+            } else {
+                // Set the position before attaching so that we resume at the expected time
+                _programController.position = position || 0;
+                _programController.attached = true;
+            }
 
             if (typeof _actionOnAttach === 'function') {
                 _actionOnAttach();
@@ -710,6 +708,18 @@ Object.assign(Controller.prototype, {
             _programController.on(MEDIA_ERROR, _this.triggerError, _this);
         }
 
+        function _setVolume(volume) {
+            _model.setVolume(volume);
+            _programController.volume = _model.get('volume');
+            _programController.mute = _model.get('mute');
+        }
+
+        function _setMute(mute) {
+            _model.setMute(mute);
+            _programController.mute = _model.get('mute');
+            _programController.volume = _model.get('volume');
+        }
+
         /** Controller API / public methods **/
         this.load = _load;
         this.play = _play;
@@ -743,10 +753,12 @@ Object.assign(Controller.prototype, {
         this.stopVideo = () => _programController.stopVideo();
         this.castVideo = (castProvider, item) => _programController.castVideo(castProvider, item);
         this.stopCast = () => _programController.stopCast();
+        this.backgroundActiveMedia = () => _programController.backgroundActiveMedia();
+        this.restoreBackgroundMedia = () => _programController.restoreBackgroundMedia();
 
         // Model passthroughs
-        this.setVolume = _model.setVolume.bind(_model);
-        this.setMute = _model.setMute.bind(_model);
+        this.setVolume = _setVolume;
+        this.setMute = _setMute;
         this.setPlaybackRate = _model.setPlaybackRate.bind(_model);
         this.getProvider = function() {
             return _model.get('provider');
@@ -850,7 +862,7 @@ Object.assign(Controller.prototype, {
 
         this.createInstream = function() {
             this.instreamDestroy();
-            this._instreamAdapter = new InstreamAdapter(this, _model, _view);
+            this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
             return this._instreamAdapter;
         };
 
@@ -908,5 +920,10 @@ Object.assign(Controller.prototype, {
         this.trigger(ERROR, evt);
     }
 });
+
+
+function _inInteraction(event) {
+    return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
+}
 
 export default Controller;

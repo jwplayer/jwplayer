@@ -986,5 +986,5 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * Pauses or toggles ad playback. Implemented by ad plugins.
      * @param {boolean} toggle - Specifies whether ad playback should be paused or resumed.
      */
-    pauseAd(toggle) {}, // eslint-disable-line
+    pauseAd(toggle) {}, // eslint-disable-line,
 });
