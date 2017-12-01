@@ -20,12 +20,13 @@ function removeListeners(instance, viewModel) {
 
 export default class ViewModel extends SimpleModelExtendable {
 
-    constructor(playerModel) {
+    constructor(playerModel, playerOnly) {
         super();
 
         this._model = playerModel;
         this._instreamModel = null;
         this._mediaModel = null;
+        this._playerViewModel = null;
 
         Object.assign(playerModel.attributes, {
             altText: '',
@@ -45,9 +46,17 @@ export default class ViewModel extends SimpleModelExtendable {
             this.mediaModel = mediaModel;
         }, this);
 
-        playerModel.on('change:instream', (model, instream) => {
-            this.instreamModel = instream ? instream._adModel : null;
-        });
+        if (!playerOnly) {
+            this._playerViewModel = new ViewModel(this._model, true);
+            
+            playerModel.on('change:instream', (model, instream) => {
+                this.instreamModel = instream ? instream._adModel : null;
+            }, this);
+        }
+    }
+
+    get player() {
+        return this._playerViewModel;
     }
 
     set mediaModel(mediaModel) {
@@ -66,7 +75,9 @@ export default class ViewModel extends SimpleModelExtendable {
             this.trigger(type, objectOrEvent, value, previousValue);
         }, this);
 
-        dispatchDiffChangeEvents(this, mediaModel.attributes, previousMediaModel ? previousMediaModel.attributes : {});
+        if (previousMediaModel) {
+            dispatchDiffChangeEvents(this, mediaModel.attributes, previousMediaModel);
+        }
     }
 
     set instreamModel(instreamModel) {
@@ -92,12 +103,12 @@ export default class ViewModel extends SimpleModelExtendable {
             }, this);
 
             dispatchDiffChangeEvents(this, instreamModel.attributes, this._model.attributes);
-        } else {
+        } else if (previousInstream) {
             this._model.change('mediaModel', (model, mediaModel) => {
                 this.mediaModel = mediaModel;
             }, this);
             
-            const mergedAttributes = Object.assign({}, previousInstream ? previousInstream.attributes : {}, this._model.attributes);
+            const mergedAttributes = Object.assign({}, previousInstream.attributes, this._model.attributes);
             dispatchDiffChangeEvents(this, this._model.attributes, mergedAttributes);
         }
     }

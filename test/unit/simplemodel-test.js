@@ -1,4 +1,3 @@
-import _ from 'utils/underscore';
 import sinon from 'sinon';
 import SimpleModel from 'model/simplemodel';
 

@@ -1,7 +1,7 @@
 import { style } from 'utils/css';
 
 const Title = function(_model) {
-    this.model = _model;
+    this.model = _model.player;
 };
 
 Object.assign(Title.prototype, {

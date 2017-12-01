@@ -81,7 +81,9 @@ describe('SettingsMenu', function() {
                 };
             };
 
-            SettingsMenu.setupSubmenuListeners(settingsMenu, controlbar, viewModel);
+            SettingsMenu.setupSubmenuListeners(settingsMenu, controlbar, {
+                player: viewModel
+            });
         });
 
         it('should setup qualities element on levels change', function() {

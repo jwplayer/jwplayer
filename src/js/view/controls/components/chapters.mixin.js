@@ -48,7 +48,7 @@ const ChaptersMixin = {
         // We won't want to draw them until we have a duration
         const duration = this._model.get('duration');
         if (!duration || duration <= 0) {
-            this._model.once('change:duration', this.drawCues, this);
+            this._model.player.once('change:duration', this.drawCues, this);
             return;
         }
 

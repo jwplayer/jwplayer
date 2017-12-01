@@ -22,7 +22,9 @@ const _defaults = {
     windowOpacity: 0
 };
 
-const CaptionsRenderer = function (_model) {
+const CaptionsRenderer = function (viewModel) {
+
+    const _model = viewModel.player;
 
     let _options;
     let _captionsTrack;

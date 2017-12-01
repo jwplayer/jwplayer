@@ -30,21 +30,22 @@ export default class NextUpTooltip {
         this.closeButton.setAttribute('aria-label', this.nextUpClose);
         this.tooltip = this.content.querySelector('.jw-nextup-tooltip');
 
-        const model = this._model;
+        const viewModel = this._model;
+        const playerViewModel = viewModel.player;
         // Next Up is hidden until we get a valid NextUp item from the nextUp event
         this.enabled = false;
 
         // Events
-        model.on('change:nextUp', this.onNextUp, this);
+        viewModel.on('change:nextUp', this.onNextUp, this);
 
         // Listen for duration changes to determine the offset from the end for when next up should be shown
-        model.change('duration', this.onDuration, this);
+        playerViewModel.change('duration', this.onDuration, this);
         // Listen for position changes so we can show the tooltip when the offset has been crossed
-        model.change('position', this.onElapsed, this);
+        playerViewModel.change('position', this.onElapsed, this);
 
-        model.change('streamType', this.onStreamType, this);
+        playerViewModel.change('streamType', this.onStreamType, this);
 
-        model.change('state', function(stateChangeModel, state) {
+        playerViewModel.change('state', function(stateChangeModel, state) {
             if (state === 'complete') {
                 this.toggle(false);
             }
