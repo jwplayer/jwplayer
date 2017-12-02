@@ -175,9 +175,9 @@ const InstreamHtml5 = function(_controller, _model) {
 
         const adMediaModelContext = _adModel.mediaModel;
         provider.on(PLAYER_STATE, (event) => {
-            adMediaModelContext.set(PLAYER_STATE, event.newstate);
+            adMediaModelContext.set('mediaState', event.newstate);
         });
-        adMediaModelContext.on('change:' + PLAYER_STATE, (changeAdModel, state) => {
+        adMediaModelContext.on('change:mediaState', (changeAdModel, state) => {
             stateHandler(state);
         });
         provider.attachMedia();

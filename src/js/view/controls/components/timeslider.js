@@ -90,7 +90,7 @@ class TimeSlider extends Slider {
         super.setup.apply(this, arguments);
 
         this._model
-            .on('duration', this.onDuration, this)
+            .on('change:duration', this.onDuration, this)
             .on('change:cues', this.addCues, this)
             .change('playlistItem', this.onPlaylistItem, this)
             .change('position', this.onPosition, this)
@@ -134,7 +134,6 @@ class TimeSlider extends Slider {
     dragEnd() {
         super.dragEnd.apply(this, arguments);
         this._model.set('scrubbing', false);
-        this.dragJustReleased = true;
     }
 
     onBuffer(model, pct) {
@@ -142,11 +141,6 @@ class TimeSlider extends Slider {
     }
 
     onPosition(model, position) {
-        if (this.dragJustReleased) {
-            // prevents firing an outdated position and causing the timeslider to jump back and forth
-            this.dragJustReleased = false;
-            return;
-        }
         this.updateTime(position, model.get('duration'));
     }
 

@@ -136,7 +136,7 @@ export default class MediaController extends Eventable {
             model.set('playRejected', true);
             const videoTagPaused = provider && provider.video && provider.video.paused;
             if (videoTagPaused) {
-                mediaModel.set(PLAYER_STATE, STATE_PAUSED);
+                mediaModel.set('mediaState', STATE_PAUSED);
             }
             this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
                 error,
@@ -216,8 +216,8 @@ export default class MediaController extends Eventable {
 
 function syncPlayerWithMediaModel(mediaModel) {
     // Sync player state with mediaModel state
-    const mediaState = mediaModel.get('state');
-    mediaModel.trigger('change:state', mediaModel, mediaState, mediaState);
+    const mediaState = mediaModel.get('mediaState');
+    mediaModel.trigger('change:mediaState', mediaModel, mediaState, mediaState);
 }
 
 function addProviderListeners(mediaController) {

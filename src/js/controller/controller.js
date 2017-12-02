@@ -87,12 +87,6 @@ Object.assign(Controller.prototype, {
 
         _model.on('change:state', changeStateEvent, this);
 
-        _model.on('change:duration', function(model, duration) {
-            const minDvrWindow = model.get('minDvrWindow');
-            const type = streamType(duration, minDvrWindow);
-            model.setStreamType(type);
-        });
-
         _model.on('change:castState', function(model, evt) {
             _this.trigger(CAST_SESSION, evt);
         });
@@ -139,12 +133,17 @@ Object.assign(Controller.prototype, {
             });
         });
 
-        _model.on('change:mediaModel', function(model) {
+        _model.on('change:mediaModel', function(model, mediaModel) {
             model.set('errorEvent', undefined);
-            model.mediaModel.change(PLAYER_STATE, function(mediaModel, state) {
+            mediaModel.change('mediaState', function(changedMediaModel, state) {
                 if (!model.get('errorEvent')) {
                     model.set(PLAYER_STATE, normalizeState(state));
                 }
+            });
+            mediaModel.on('change:duration', function(changedMediaModel, duration) {
+                const minDvrWindow = model.get('minDvrWindow');
+                const type = streamType(duration, minDvrWindow);
+                model.setStreamType(type);
             });
         });
 

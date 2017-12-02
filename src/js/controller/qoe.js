@@ -71,7 +71,7 @@ const initQoe = function(initialModel, programController) {
     function onMediaModel(model, mediaModel, oldMediaModel) {
         // finish previous item
         if (model._qoeItem && oldMediaModel) {
-            model._qoeItem.end(oldMediaModel.get('state'));
+            model._qoeItem.end(oldMediaModel.get('mediaState'));
         }
         // reset item level qoe
         model._qoeItem = new Timer();
@@ -86,11 +86,11 @@ const initQoe = function(initialModel, programController) {
             return time;
         };
         model._qoeItem.tick(PLAYLIST_ITEM);
-        model._qoeItem.start(mediaModel.get('state'));
+        model._qoeItem.start(mediaModel.get('mediaState'));
 
         trackFirstFrame(model, programController);
 
-        mediaModel.on('change:state', function (changeMediaModel, newstate, oldstate) {
+        mediaModel.on('change:mediaState', function (changeMediaModel, newstate, oldstate) {
             if (newstate !== oldstate) {
                 model._qoeItem.end(oldstate);
                 model._qoeItem.start(newstate);
