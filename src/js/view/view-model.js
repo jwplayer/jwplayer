@@ -18,13 +18,12 @@ function removeListeners(instance, viewModel) {
     }
 }
 
-export default class ViewModel extends SimpleModelExtendable {
+class PlayerViewModel extends SimpleModelExtendable {
 
     constructor(playerModel) {
         super();
 
         this._model = playerModel;
-        this._instreamModel = null;
         this._mediaModel = null;
 
         Object.assign(playerModel.attributes, {
@@ -44,10 +43,6 @@ export default class ViewModel extends SimpleModelExtendable {
         playerModel.on('change:mediaModel', (model, mediaModel) => {
             this.mediaModel = mediaModel;
         }, this);
-
-        playerModel.on('change:instream', (model, instream) => {
-            this.instreamModel = instream ? instream._adModel : null;
-        });
     }
 
     set mediaModel(mediaModel) {
@@ -66,7 +61,48 @@ export default class ViewModel extends SimpleModelExtendable {
             this.trigger(type, objectOrEvent, value, previousValue);
         }, this);
 
-        dispatchDiffChangeEvents(this, mediaModel.attributes, previousMediaModel ? previousMediaModel.attributes : {});
+        if (previousMediaModel) {
+            dispatchDiffChangeEvents(this, mediaModel.attributes, previousMediaModel);
+        }
+    }
+
+    get(attr) {
+        const mediaModel = this._mediaModel;
+        if (attr !== PLAYER_STATE && mediaModel && attr in mediaModel.attributes) {
+            return mediaModel.get(attr);
+        }
+        return this._model.get(attr);
+    }
+
+    set(attr, val) {
+        return this._model.set(attr, val);
+    }
+
+    getVideo() {
+        return this._model.getVideo();
+    }
+
+    destroy() {
+        removeListeners(this._model, this);
+        removeListeners(this._mediaModel, this);
+        this.off();
+    }
+}
+
+export default class ViewModel extends PlayerViewModel {
+    constructor(playerModel) {
+        super(playerModel);
+
+        this._instreamModel = null;
+        this._playerViewModel = new PlayerViewModel(this._model);
+
+        playerModel.on('change:instream', (model, instream) => {
+            this.instreamModel = instream ? instream._adModel : null;
+        }, this);
+    }
+
+    get player() {
+        return this._playerViewModel;
     }
 
     set instreamModel(instreamModel) {
@@ -92,12 +128,12 @@ export default class ViewModel extends SimpleModelExtendable {
             }, this);
 
             dispatchDiffChangeEvents(this, instreamModel.attributes, this._model.attributes);
-        } else {
+        } else if (previousInstream) {
             this._model.change('mediaModel', (model, mediaModel) => {
                 this.mediaModel = mediaModel;
             }, this);
-            
-            const mergedAttributes = Object.assign({}, previousInstream ? previousInstream.attributes : {}, this._model.attributes);
+
+            const mergedAttributes = Object.assign({}, previousInstream.attributes, this._model.attributes);
             dispatchDiffChangeEvents(this, this._model.attributes, mergedAttributes);
         }
     }
@@ -114,22 +150,16 @@ export default class ViewModel extends SimpleModelExtendable {
         return this._model.get(attr);
     }
 
-    set(attr, val) {
-        return this._model.set(attr, val);
-    }
-
     getVideo() {
         const instreamModel = this._instreamModel;
         if (instreamModel && instreamModel.getVideo()) {
             return instreamModel.getVideo();
         }
-        return this._model.getVideo();
+        return super.getVideo();
     }
 
     destroy() {
-        removeListeners(this._model, this);
-        removeListeners(this._mediaModel, this);
+        super.destroy();
         removeListeners(this._instreamModel, this);
-        this.off();
     }
 }

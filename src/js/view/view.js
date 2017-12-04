@@ -199,7 +199,6 @@ function View(_api, _model) {
         focusHelper = flagNoFocus(_playerElement);
         fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
 
-        _model.on('change:errorEvent', _errorHandler);
         _model.on('change:hideAdsControls', function (model, val) {
             toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
         });
@@ -213,10 +212,13 @@ function View(_api, _model) {
         // Native fullscreen (coming through from the provider)
         _model.on(NATIVE_FULLSCREEN, _fullscreenChangeHandler);
 
-        _model.on('change:mediaType', _onMediaTypeChange, this);
         _model.on('change:visualQuality', () => {
             _resizeMedia();
-        }, this);
+        });
+
+        const playerViewModel = _model.player;
+        playerViewModel.on('change:errorEvent', _errorHandler);
+        playerViewModel.on('change:mediaType', _onMediaTypeChange);
 
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
@@ -289,11 +291,14 @@ function View(_api, _model) {
             redraw(_model, 1, 0);
         }
 
+        const playerViewModel = _model.player;
+
         _model.change('state', _stateHandler);
-        _model.change('controls', changeControls);
+        playerViewModel.change('controls', changeControls);
+        playerViewModel.change('streamType', _setLiveMode);
         // Set the title attribute of the video tag to display background media information on mobile devices
         if (_isMobile) {
-            _model.change('playlistItem', setMediaTitleAttribute);
+            playerViewModel.change('playlistItem', setMediaTitleAttribute);
         }
 
         // Triggering 'resize' resulting in player 'ready'
@@ -436,8 +441,6 @@ function View(_api, _model) {
         _controls = controls;
 
         removeClass(_playerElement, 'jw-flag-controls-hidden');
-
-        _model.change('streamType', _setLiveMode, this);
 
         controls.enable(_api, _model);
         controls.addActiveListeners(_logo.element());
@@ -616,10 +619,8 @@ function View(_api, _model) {
     }
 
     function _setLiveMode(model, streamType) {
-        if (!model.get('instream')) {
-            const live = (streamType === 'LIVE');
-            toggleClass(_playerElement, 'jw-flag-live', live);
-        }
+        const live = (streamType === 'LIVE');
+        toggleClass(_playerElement, 'jw-flag-live', live);
     }
 
     function _userActivityCallback(/* event */) {
@@ -629,7 +630,6 @@ function View(_api, _model) {
     function _onMediaTypeChange(model, val) {
         const isAudioFile = (val === 'audio');
         const provider = model.get('provider');
-        const isFlash = (provider && provider.name.indexOf('flash') === 0);
 
         // Set the poster image for each audio file encountered in a playlist
         if (isAudioFile) {
@@ -638,14 +638,11 @@ function View(_api, _model) {
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
+        const isFlash = (provider && provider.name.indexOf('flash') === 0);
         const element = (isAudioFile && !isFlash) ? _videoLayer : _videoLayer.nextSibling;
         // Put the preview element before the media element in order to display browser captions
         // otherwise keep it on top of the media element to display captions with the captions renderer
         _playerElement.insertBefore(_preview.el, element);
-
-        if (isAudioFile && model.get('autostart')) {
-            setPosterImage(model);
-        }
     }
 
     function _errorHandler(model, evt) {

@@ -54,7 +54,9 @@ export function createSettingsMenu(controlbar, onVisibility) {
 }
 
 
-export function setupSubmenuListeners(settingsMenu, controlbar, model, api) {
+export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) {
+    const model = viewModel.player;
+
     const activateSubmenuItem = (submenuName, itemIndex) => {
         const submenu = settingsMenu.getSubmenu(submenuName);
         if (submenu) {
