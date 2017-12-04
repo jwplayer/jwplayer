@@ -189,9 +189,7 @@ describe('ViewModel', function() {
         instreamMediaModel.set('d', 30);
 
         viewModel.trigger('viewModelEvent');
-
-        expect(playerViewModel).to.be.an.instanceof(ViewModel);
-
+        
         assert(modelSpy.calledOnce, 'Player-model listeners called');
         assert(mediaModelSpy.calledOnce, 'Player media-model listeners called');
 
