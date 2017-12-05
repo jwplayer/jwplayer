@@ -6,7 +6,7 @@ import loadPlugins from 'plugins/plugins';
 import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
-import { INITIAL_PLAYER_STATE } from 'model/player-model';
+import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
@@ -74,11 +74,7 @@ Object.assign(CoreShim.prototype, {
         const persisted = storage && storage.getAllItems();
         model.attributes = model.attributes || {};
 
-        this.mediaShim = {
-            position: 0,
-            duration: 0,
-            buffer: 0,
-        };
+        Object.assign(this.mediaShim, INITIAL_MEDIA_STATE);
 
         // Assigning config properties to the model needs to be synchronous for chained get API methods
         const configuration = Config(options, persisted);

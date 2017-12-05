@@ -1,6 +1,6 @@
 import { Browser, OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
-import { INITIAL_PLAYER_STATE } from 'model/player-model';
+import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
 import _ from 'utils/underscore';
 import ProviderController from 'providers/provider-controller';
@@ -26,9 +26,9 @@ const Model = function() {
     this.getConfiguration = function() {
         const config = this.clone();
         const mediaModelAttributes = config.mediaModel.attributes;
-        config.position = mediaModelAttributes.position;
-        config.duration = mediaModelAttributes.duration;
-        config.buffer = mediaModelAttributes.buffer;
+        Object.keys(INITIAL_MEDIA_STATE).forEach(key => {
+            config[key] = mediaModelAttributes[key];
+        });
         delete config.instream;
         delete config.mediaModel;
         return config;
@@ -278,14 +278,12 @@ const MediaModel = Model.MediaModel = function() {
 
 Object.assign(MediaModel.prototype, SimpleModel, {
     srcReset() {
-        const attributes = this.attributes;
-        attributes.position = 0;
-        attributes.duration = 0;
-        attributes.buffer = 0;
-        attributes.setup = false;
-        attributes.started = false;
-        attributes.preloaded = false;
-        attributes.visualQuality = null;
+        Object.assign(this.attributes, INITIAL_MEDIA_STATE, {
+            setup: false,
+            started: false,
+            preloaded: false,
+            visualQuality: null,
+        });
     }
 });
 
