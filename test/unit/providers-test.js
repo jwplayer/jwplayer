@@ -39,7 +39,7 @@ describe('Providers', function() {
 
     it('should not choose a provider for hls and dash streams', function() {
         if (!Loaders || (Loaders.hlsjs || Loaders.shaka)) {
-            // Exit if Loaders where extended with hls and dash providers or is not exported in this project
+            // Exit if Loaders were extended with hls and dash providers or is not exported in this project
             return;
         }
         const unsupportedSources = {
