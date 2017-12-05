@@ -109,6 +109,21 @@
             transition-delay: @tooltip-popup-delay, 0s, @tooltip-popup-delay;
             visibility: visible;
         }
+
+        &.jw-tooltip-fullscreen {
+            left: auto;
+            right: 0;
+            transform: translate(0, 0);
+
+            &.jw-open {
+                transform: translate(0, -10px);
+            }
+
+            &::after {
+                left: auto;
+                right: 9px;
+            }
+        }
     }
 
     .jw-icon:focus > .jw-tooltip {
@@ -134,7 +149,7 @@
 .jw-tooltip {
     bottom: @controlbar-height;
     display: none;
-    position: absolute;
+    position: relative;
 
     .jw-text {
         height: 100%;
