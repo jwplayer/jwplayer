@@ -70,6 +70,10 @@ export function isMobile() {
     return isIOS() || isAndroid();
 }
 
+export function isTouchScreen() {
+    return 'ontouchstart' in window || navigator.msMaxTouchPoints;
+}
+
 export function isIframe() {
     try {
         return window.self !== window.top;
