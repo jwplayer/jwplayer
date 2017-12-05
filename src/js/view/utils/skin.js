@@ -179,8 +179,7 @@ export function handleColorOverrides(playerId, skin) {
 
         addStyle([
             '.jw-progress',
-            '.jw-knob',
-            'jw-related-autoplay-progress'
+            '.jw-knob'
         ], 'background-color', config.progress);
 
         addStyle([
