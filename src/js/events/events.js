@@ -310,6 +310,11 @@ export const MEDIA_LEVELS = 'levels';
 export const MEDIA_LEVEL_CHANGED = 'levelsChanged';
 
 /**
+ * Fired when the visual quality of media is updated.
+ */
+export const MEDIA_VISUAL_QUALITY = 'visualQuality';
+
+/**
  * Fired when controls are enabled or disabled by a script.
 */
 export const CONTROLS = 'controls';

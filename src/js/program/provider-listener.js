@@ -2,7 +2,7 @@ import { _isNaN, _isNumber } from 'utils/underscore';
 import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, PROVIDER_CHANGED, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_RATE_CHANGE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
-    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META, MEDIA_SEEK, MEDIA_SEEKED,
+    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META, MEDIA_SEEK, MEDIA_SEEKED, MEDIA_VISUAL_QUALITY,
     NATIVE_FULLSCREEN } from 'events/events';
 
 export default function ProviderListener(mediaController) {
@@ -47,6 +47,9 @@ export default function ProviderListener(mediaController) {
                     mediaModel.set(MEDIA_TYPE, data.mediaType);
                     mediaController.trigger(type, event);
                 }
+                return;
+            case MEDIA_VISUAL_QUALITY:
+                mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
                 return;
             case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
@@ -113,9 +116,6 @@ export default function ProviderListener(mediaController) {
                 break;
             case 'subtitlesTrackChanged':
                 model.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
-                break;
-            case 'visualQuality':
-                mediaModel.set('visualQuality', Object.assign({}, data));
                 break;
             case MEDIA_SEEK:
             case MEDIA_SEEKED:
