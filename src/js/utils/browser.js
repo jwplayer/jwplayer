@@ -71,7 +71,8 @@ export function isMobile() {
 }
 
 export function isTouchScreen() {
-    return 'ontouchstart' in window || navigator.msMaxTouchPoints;
+    // Note: does not work for FireFox on Surface.
+    return isMobile() || 'ontouchstart' in window || navigator.msMaxTouchPoints || navigator.maxTouchPoints;
 }
 
 export function isIframe() {
