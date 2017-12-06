@@ -46,6 +46,12 @@ export function addCaptionsSubmenu(settingsMenu, captionsList, action, initialSe
     });
 
     const captionsSubmenu = makeSubmenu(settingsMenu, CAPTIONS_SUBMENU, captionsContentItems, cloneIcon('cc-off'), tooltipText);
+
+    // Set the current captions track if the initial index isn't 'Off'
+    if (initialSelectionIndex > 0) {
+        action(initialSelectionIndex);
+    }
+
     captionsSubmenu.activateItem(initialSelectionIndex);
 }
 
