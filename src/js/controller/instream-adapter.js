@@ -60,7 +60,7 @@ var InstreamAdapter = function(_controller, _model, _view) {
     this.init = function(sharedVideoTag) {
         // Keep track of the original player state
         const mediaElement = sharedVideoTag || _model.get('mediaElement');
-        _oldpos = _model.get('position');
+        _oldpos = _controller.get('position');
         _olditem = _model.get('playlist')[_model.get('item')];
 
         _instream.on('all', _instreamForward, this);
