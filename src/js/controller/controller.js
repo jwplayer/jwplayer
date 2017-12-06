@@ -694,6 +694,15 @@ Object.assign(Controller.prototype, {
 
         function addProgramControllerListeners() {
             _programController.on('all', _triggerAfterReady, _this);
+            _programController.on('subtitlesTracks', (e) => {
+                _captions.setSubtitlesTracks(e.tracks);
+                const defaultCaptionsIndex = _captions.getCurrentIndex();
+
+                // set the current captions if the default index isn't 0 or "Off"
+                if (defaultCaptionsIndex > 0) {
+                    _setCurrentCaptions(defaultCaptionsIndex);
+                }
+            });
             _programController.on(MEDIA_COMPLETE, () => {
                 // Insert a small delay here so that other complete handlers can execute
                 resolved.then(_completeHandler);
