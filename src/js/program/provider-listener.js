@@ -7,7 +7,7 @@ import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
 
 export default function ProviderListener(mediaController) {
     return function (type, data) {
-        const { provider, mediaModel, model, attached } = mediaController;
+        const { provider, mediaModel, model } = mediaController;
         const event = Object.assign({}, data, {
             type: type
         });
@@ -100,7 +100,7 @@ export default function ProviderListener(mediaController) {
             case MEDIA_COMPLETE:
                 mediaController.beforeComplete = true;
                 mediaController.trigger(MEDIA_BEFORECOMPLETE, event);
-                if (attached) {
+                if (mediaController.attached) {
                     mediaController._playbackComplete();
                 }
                 return;
