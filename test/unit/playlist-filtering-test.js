@@ -34,7 +34,7 @@ function testSource(sourceName, desiredType, isAndroidHls) {
     const pl = Playlist(Playlists[sourceName]);
     const filtered = filterPlaylist(pl, model);
 
-    expect(sourcesMatch(filtered)).to.be.true;
+    expect(sourcesMatch(filtered), `Comparing ${sourceName} ${desiredType}`).to.equal(true);
 }
 
 describe('playlist.filterSources', function() {

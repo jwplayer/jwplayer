@@ -1,7 +1,5 @@
-import Providers from 'providers/providers';
-import ProvidersSupported from 'providers/providers-supported';
+import Providers, { Loaders } from 'providers/providers';
 import Source from 'playlist/source';
-import { Features } from 'environment/environment';
 import _ from 'underscore/underscore';
 
 const getName = function getName(provider) {
@@ -15,13 +13,6 @@ const getName = function getName(provider) {
 };
 
 describe('Providers', function() {
-
-    it('should be prioritized', function() {
-        const providerMap = ProvidersSupported.reduce(function(providers, provider, index) {
-            providers[getName(provider)] = index;
-            return providers;
-        }, {});
-    });
 
     it('should choose html5 by default', function() {
         const htmlSources = {
@@ -47,6 +38,10 @@ describe('Providers', function() {
     });
 
     it('should not choose a provider for hls and dash streams', function() {
+        if (!Loaders || (Loaders.hlsjs || Loaders.shaka)) {
+            // Exit if Loaders were extended with hls and dash providers or is not exported in this project
+            return;
+        }
         const unsupportedSources = {
             hls: {
                 file: 'http://playertest.longtailvideo.com/adaptive/bipbop/bipbopall.hls',
