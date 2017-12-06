@@ -1,6 +1,6 @@
 import { Browser, OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
-import { INITIAL_PLAYER_STATE } from 'model/player-model';
+import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
 import _ from 'utils/underscore';
 import ProviderController from 'providers/provider-controller';
@@ -25,6 +25,10 @@ const Model = function() {
 
     this.getConfiguration = function() {
         const config = this.clone();
+        const mediaModelAttributes = config.mediaModel.attributes;
+        Object.keys(INITIAL_MEDIA_STATE).forEach(key => {
+            config[key] = mediaModelAttributes[key];
+        });
         delete config.instream;
         delete config.mediaModel;
         return config;
@@ -230,10 +234,11 @@ const Model = function() {
     this.resetItem = function (item) {
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
+        const mediaModel = this.mediaModel;
         this.set('playRejected', false);
         this.set('itemMeta', {});
-        this.set('position', position);
-        this.set('duration', duration);
+        mediaModel.set('position', position);
+        mediaModel.set('duration', duration);
     };
 };
 
@@ -260,24 +265,25 @@ const syncProviderProperties = (model, provider) => {
 
 function syncPlayerWithMediaModel(mediaModel) {
     // Sync player state with mediaModel state
-    const mediaState = mediaModel.get('state');
-    mediaModel.trigger('change:state', mediaModel, mediaState, mediaState);
+    const mediaState = mediaModel.get('mediaState');
+    mediaModel.trigger('change:mediaState', mediaModel, mediaState, mediaState);
 }
 
 // Represents the state of the provider/media element
 const MediaModel = Model.MediaModel = function() {
     this.attributes = {
-        state: STATE_IDLE
+        mediaState: STATE_IDLE
     };
 };
 
 Object.assign(MediaModel.prototype, SimpleModel, {
     srcReset() {
-        const attributes = this.attributes;
-        attributes.setup = false;
-        attributes.started = false;
-        attributes.preloaded = false;
-        attributes.visualQuality = null;
+        Object.assign(this.attributes, INITIAL_MEDIA_STATE, {
+            setup: false,
+            started: false,
+            preloaded: false,
+            visualQuality: null,
+        });
     }
 });
 

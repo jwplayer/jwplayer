@@ -21,7 +21,7 @@ export default function ChangeStateEvent(model, newstate, oldstate) {
             type: eventType,
             newstate: newstate,
             oldstate: oldstate,
-            reason: model.mediaModel.get('state')
+            reason: model.mediaModel.get('mediaState')
         };
         // add reason for play/pause events
         if (eventType === 'play') {

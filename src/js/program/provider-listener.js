@@ -53,10 +53,10 @@ export default function ProviderListener(mediaController) {
                     mediaController.thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
-                // Always fire change:state to keep player model in sync
-                const previousState = mediaModel.attributes[PLAYER_STATE];
-                mediaModel.attributes[PLAYER_STATE] = data.newstate;
-                mediaModel.trigger('change:' + PLAYER_STATE, mediaModel, data.newstate, previousState);
+                // Always fire change:mediaState to keep player model in sync
+                const previousState = mediaModel.attributes.mediaState;
+                mediaModel.attributes.mediaState = data.newstate;
+                mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
             }
                 // This "return" is important because
                 //  we are choosing to not propagate model event.
@@ -67,24 +67,21 @@ export default function ProviderListener(mediaController) {
                 mediaModel.srcReset();
                 break;
             case MEDIA_BUFFER:
-                model.set('buffer', data.bufferPercent);
+                mediaModel.set('buffer', data.bufferPercent);
             /* falls through */
             case MEDIA_META: {
                 const duration = data.duration;
                 if (_isNumber(duration) && !_isNaN(duration)) {
                     mediaModel.set('duration', duration);
-                    model.set('duration', duration);
                 }
                 Object.assign(model.get('itemMeta'), data.metadata);
                 break;
             }
             case MEDIA_TIME: {
                 mediaModel.set('position', data.position);
-                model.set('position', data.position);
                 const duration = data.duration;
                 if (_isNumber(duration) && !_isNaN(duration)) {
                     mediaModel.set('duration', duration);
-                    model.set('duration', duration);
                 }
                 model.trigger(type, data);
                 break;

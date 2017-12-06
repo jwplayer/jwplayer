@@ -12,7 +12,6 @@ import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import { prependChild } from 'utils/dom';
-import { MEDIA_SEEKED } from 'events/events';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -263,12 +262,12 @@ export default class Controlbar {
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', this.onFullscreen, this);
         _model.change('streamType', this.onStreamTypeChange, this);
+        _model.change('dvrLive', (model, dvrLive) => {
+            // update live icon and displayed time when DVR stream enters or exits live edge
+            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive);
+        });
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
-        _model.change('state', () => {
-            // Check for change of position to counter race condition where state is updated before the current position
-            _model.once('change:position', this.checkDvrLiveEdge, this);
-        }, this);
         _model.on('change:captionsIndex', onCaptionsChanged, this);
         _model.on('change:captionsList', onCaptionsChanged, this);
         _model.change('nextUp', (model, nextUp) => {
@@ -279,7 +278,7 @@ export default class Controlbar {
             nextUpTip.setText(tipText);
             elements.next.toggle(!!nextUp);
         });
-        _model.on('change:audioMode', this.onAudioMode, this);
+        _model.change('audioMode', this.onAudioMode, this);
         if (elements.cast) {
             _model.change('castAvailable', this.onCastAvailable, this);
             _model.change('castActive', this.onCastActive, this);
@@ -308,10 +307,6 @@ export default class Controlbar {
             }, this);
         }
 
-        _model.on(MEDIA_SEEKED, function () {
-            _model.once('change:position', this.checkDvrLiveEdge, this);
-        }, this);
-
         new UI(elements.duration).on('click tap enter', function () {
             if (this._model.get('streamType') === 'DVR') {
                 // Seek to "Live" position within live buffer, but not before current position
@@ -328,10 +323,6 @@ export default class Controlbar {
         _.each(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);
-
-        if (_model.get('audioMode')) {
-            this.onAudioMode(_model, true);
-        }
     }
 
     onVolume(model, pct) {
@@ -366,15 +357,17 @@ export default class Controlbar {
         }
     }
 
-    onElapsed(model, val) {
+    onElapsed(model, position) {
         let elapsedTime;
         let countdownTime;
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
-            elapsedTime = countdownTime = Math.ceil(val) >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-val);
+            const currentPosition = Math.ceil(position);
+            elapsedTime = countdownTime = currentPosition >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-position);
+            model.set('dvrLive', currentPosition >= dvrSeekLimit);
         } else {
-            elapsedTime = utils.timeFormat(val);
-            countdownTime = utils.timeFormat(duration - val);
+            elapsedTime = utils.timeFormat(position);
+            countdownTime = utils.timeFormat(duration - position);
         }
         this.elements.elapsed.textContent = elapsedTime;
         this.elements.countdown.textContent = countdownTime;
@@ -398,15 +391,6 @@ export default class Controlbar {
             );
         } else {
             prependChild(this.el, timeSlider);
-        }
-    }
-
-    checkDvrLiveEdge() {
-        if (this._model.get('streamType') === 'DVR') {
-            const currentPosition = Math.ceil(this._model.get('position'));
-            // update live icon and displayed time when DVR stream enters or exits live edge
-            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', currentPosition >= dvrSeekLimit);
-            this.onElapsed(this._model, currentPosition);
         }
     }
 
@@ -441,12 +425,12 @@ export default class Controlbar {
         this._api.seek(Math.max(rewindPosition, startPosition), reasonInteraction());
     }
 
-    onStreamTypeChange(model) {
+    onStreamTypeChange(model, streamType) {
         // Hide rewind button when in LIVE mode
-        const streamType = model.get('streamType');
         this.elements.rewind.toggle(streamType !== 'LIVE');
         this.elements.live.toggle(streamType === 'LIVE' || streamType === 'DVR');
         this.elements.duration.style.display = streamType === 'DVR' ? 'none' : '';
+        model.set('dvrLive', false);
         const duration = model.get('duration');
         this.onDuration(model, duration);
     }

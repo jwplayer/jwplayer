@@ -18,6 +18,7 @@ import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import _ from 'utils/underscore';
+import { INITIAL_MEDIA_STATE } from 'model/player-model';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
@@ -87,12 +88,6 @@ Object.assign(Controller.prototype, {
 
         _model.on('change:state', changeStateEvent, this);
 
-        _model.on('change:duration', function(model, duration) {
-            const minDvrWindow = model.get('minDvrWindow');
-            const type = streamType(duration, minDvrWindow);
-            model.setStreamType(type);
-        });
-
         _model.on('change:castState', function(model, evt) {
             _this.trigger(CAST_SESSION, evt);
         });
@@ -139,12 +134,17 @@ Object.assign(Controller.prototype, {
             });
         });
 
-        _model.on('change:mediaModel', function(model) {
+        _model.on('change:mediaModel', function(model, mediaModel) {
             model.set('errorEvent', undefined);
-            model.mediaModel.change(PLAYER_STATE, function(mediaModel, state) {
+            mediaModel.change('mediaState', function(changedMediaModel, state) {
                 if (!model.get('errorEvent')) {
                     model.set(PLAYER_STATE, normalizeState(state));
                 }
+            });
+            mediaModel.on('change:duration', function(changedMediaModel, duration) {
+                const minDvrWindow = model.get('minDvrWindow');
+                const type = streamType(duration, minDvrWindow);
+                model.setStreamType(type);
             });
         });
 
@@ -597,24 +597,9 @@ Object.assign(Controller.prototype, {
         }
 
         function _getVisualQuality() {
-            if (this._model.mediaModel) {
-                return this._model.mediaModel.get('visualQuality');
-            }
-            // if quality is not implemented in the provider,
-            // return quality info based on current level
-            const qualityLevels = _getQualityLevels();
-            if (qualityLevels) {
-                const levelIndex = _getCurrentQuality();
-                const level = qualityLevels[levelIndex];
-                if (level) {
-                    return {
-                        level: Object.assign({
-                            index: levelIndex
-                        }, level),
-                        mode: '',
-                        reason: ''
-                    };
-                }
+            const mediaModel = this._model.get('mediaModel');
+            if (mediaModel) {
+                return mediaModel.get('visualQuality');
             }
             return null;
         }
@@ -889,6 +874,13 @@ Object.assign(Controller.prototype, {
         _view.setup();
     },
     get(property) {
+        if (property in INITIAL_MEDIA_STATE) {
+            const mediaModel = this._model.get('mediaModel');
+            if (mediaModel) {
+                return mediaModel.get(property);
+            }
+            return INITIAL_MEDIA_STATE[property];
+        }
         return this._model.get(property);
     },
     getContainer() {

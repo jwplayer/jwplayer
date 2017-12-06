@@ -14,7 +14,6 @@ export const optionalProperties = {
     hideAdsControls: null,
     mediaModel: {},
     flashThrottle: null,
-    playRejected: false,
     androidhls: true,
     hlsjsdefault: true,
     drm: null,

@@ -6,7 +6,7 @@ import loadPlugins from 'plugins/plugins';
 import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
-import { INITIAL_PLAYER_STATE } from 'model/player-model';
+import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
@@ -21,6 +21,7 @@ const CoreShim = function(originalContainer) {
     this._events = {};
     this.modelShim = new ModelShim();
     this.modelShim._qoeItem = new Timer();
+    this.mediaShim = {};
     this.setup = new Setup(this.modelShim);
     this.currentContainer =
         this.originalContainer = originalContainer;
@@ -72,6 +73,8 @@ Object.assign(CoreShim.prototype, {
         ]);
         const persisted = storage && storage.getAllItems();
         model.attributes = model.attributes || {};
+
+        Object.assign(this.mediaShim, INITIAL_MEDIA_STATE);
 
         // Assigning config properties to the model needs to be synchronous for chained get API methods
         const configuration = Config(options, persisted);
@@ -147,13 +150,16 @@ Object.assign(CoreShim.prototype, {
 
     // These methods read from the model
     get(property) {
+        if (property in this.mediaShim) {
+            return this.mediaShim[property];
+        }
         return this.modelShim.get(property);
     },
     getItemQoe() {
         return this.modelShim._qoeItem;
     },
     getConfig() {
-        return Object.assign({}, this.modelShim.attributes);
+        return Object.assign({}, this.modelShim.attributes, this.mediaShim);
     },
     getCurrentCaptions() {
         return this.get('captionsIndex');
