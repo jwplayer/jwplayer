@@ -16,16 +16,11 @@ const Captions = function(_model) {
     // Listen for item ready to determine which provider is in use
     _model.on('itemReady', _itemReadyHandler, this);
 
-    // Listen for provider subtitle tracks
-    //   ignoring provider "subtitlesTrackChanged" since index should be managed here
-    _model.on('subtitlesTracks', _subtitlesTracksHandler, this);
-
-    function _subtitlesTracksHandler(e) {
-        if (!e.tracks.length) {
+    function _setSubtitlesTracks(tracks) {
+        if (!tracks.length) {
             return;
         }
 
-        const tracks = e.tracks || [];
         for (let i = 0; i < tracks.length; i++) {
             _addTrack(tracks[i]);
         }
@@ -35,7 +30,7 @@ const Captions = function(_model) {
 
         const captionsMenu = _captionsMenu();
         _selectDefaultIndex();
-        this.setCaptionsList(captionsMenu);
+        _setCaptionsList(captionsMenu);
     }
 
     let _tracks = [];
@@ -79,7 +74,7 @@ const Captions = function(_model) {
 
         const captionsMenu = _captionsMenu();
         _selectDefaultIndex();
-        this.setCaptionsList(captionsMenu);
+        _setCaptionsList(captionsMenu);
     }
 
     function _kindSupported(kind) {
@@ -162,16 +157,18 @@ const Captions = function(_model) {
         }
     }
 
+    function _setCaptionsList (captionsMenu) {
+        _model.set('captionsList', captionsMenu);
+    }
+
+    this.setSubtitlesTracks = _setSubtitlesTracks;
+
     this.getCurrentIndex = function() {
         return _model.get('captionsIndex');
     };
 
     this.getCaptionsList = function() {
         return _model.get('captionsList');
-    };
-
-    this.setCaptionsList = function(captionsMenu) {
-        _model.set('captionsList', captionsMenu);
     };
 
     this.destroy = function() {
