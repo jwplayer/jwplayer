@@ -1,7 +1,7 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
-import { STATE_IDLE, STATE_PLAYING, MEDIA_META, MEDIA_ERROR,
+import { STATE_IDLE, MEDIA_META, MEDIA_ERROR, MEDIA_VISUAL_QUALITY, MEDIA_TYPE,
     MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, STATE_LOADING } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
@@ -67,10 +67,12 @@ function VideoProvider(_playerId, _playerConfig) {
                 VideoEvents.timeupdate.call(_this);
             }
             checkStaleStream();
-            if (_this.state === STATE_PLAYING) {
+            if (Browser.ie) {
                 checkVisualQuality();
             }
         },
+
+        resize: checkVisualQuality,
 
         ended() {
             _currentQuality = -1;
@@ -89,6 +91,7 @@ function VideoProvider(_playerId, _playerConfig) {
                 width: _videotag.videoWidth
             };
             _this.trigger(MEDIA_META, metadata);
+            checkVisualQuality();
         },
 
         durationchange() {
@@ -102,7 +105,6 @@ function VideoProvider(_playerId, _playerConfig) {
             VideoEvents.loadeddata.call(_this);
             _setAudioTracks(_videotag.audioTracks);
             _checkDelayedSeek(_this.getDuration());
-            checkVisualQuality();
         },
 
         canplay() {
@@ -249,7 +251,7 @@ function VideoProvider(_playerId, _playerConfig) {
             visualQuality.bitrate = 0;
             level.index = _currentQuality;
             level.label = _levels[_currentQuality].label;
-            _this.trigger('visualQuality', visualQuality);
+            _this.trigger(MEDIA_VISUAL_QUALITY, visualQuality);
             visualQuality.reason = '';
         }
     }
@@ -767,7 +769,7 @@ function VideoProvider(_playerId, _playerConfig) {
             if (_videotag.videoHeight === 0) {
                 mediaType = 'audio';
             }
-            _this.trigger('mediaType', { mediaType: mediaType });
+            _this.trigger(MEDIA_TYPE, { mediaType: mediaType });
         }
     }
 

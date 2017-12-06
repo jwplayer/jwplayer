@@ -5,8 +5,9 @@ import { resolved } from 'polyfills/promise';
 import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
 import {
-    MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, PLAYER_STATE,
-    STATE_PAUSED, STATE_BUFFERING, MEDIA_COMPLETE, STATE_COMPLETE
+    MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_COMPLETE,
+    PLAYER_STATE, STATE_PAUSED, STATE_BUFFERING, STATE_COMPLETE,
+    MEDIA_VISUAL_QUALITY
 } from 'events/events';
 
 export default class MediaController extends Eventable {
@@ -130,6 +131,11 @@ export default class MediaController extends Eventable {
             }
             mediaModel.set('started', true);
             if (mediaModel === model.mediaModel) {
+                // Start firing visualQuality once playback has started
+                mediaModel.off(MEDIA_VISUAL_QUALITY, null, this);
+                mediaModel.change(MEDIA_VISUAL_QUALITY, (changedMediaModel, eventData) => {
+                    this.trigger(MEDIA_VISUAL_QUALITY, eventData);
+                }, this);
                 syncPlayerWithMediaModel(mediaModel);
             }
         }).catch(error => {
