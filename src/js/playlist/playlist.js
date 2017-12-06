@@ -45,6 +45,7 @@ export function filterPlaylist(playlist, model, feedData) {
 function formatSources(item, model) {
     const sources = item.sources;
     const androidhls = model.get('androidhls');
+    const safariHlsjs = model.get('safarihlsjs');
     const itemDrm = item.drm || model.get('drm');
     const withCredentials = fallbackIfUndefined(item.withCredentials, model.get('withCredentials'));
     const hlsjsdefault = model.get('hlsjsdefault') !== false;
@@ -55,6 +56,9 @@ function formatSources(item, model) {
         }
         if (androidhls !== undefined && androidhls !== null) {
             originalSource.androidhls = androidhls;
+        }
+        if (safariHlsjs !== undefined && safariHlsjs !== null) {
+            originalSource.safarihlsjs = safariHlsjs;
         }
 
         if (originalSource.drm || itemDrm) {
