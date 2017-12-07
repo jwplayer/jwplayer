@@ -20,17 +20,17 @@ export function ProviderListener(mediaController) {
                 }
                 return;
             case MEDIA_VISUAL_QUALITY:
-                mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
-                return;
+            mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
+            return;
             case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
                     mediaController.thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
-                // Always fire change:state to keep player model in sync
-                const previousState = mediaModel.attributes[PLAYER_STATE];
-                mediaModel.attributes[PLAYER_STATE] = data.newstate;
-                mediaModel.trigger('change:' + PLAYER_STATE, mediaModel, data.newstate, previousState);
+                // Always fire change:mediaState to keep player model in sync
+                const previousState = mediaModel.attributes.mediaState;
+                mediaModel.attributes.mediaState = data.newstate;
+                mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
             }
                 // This "return" is important because
                 //  we are choosing to not propagate model event.
