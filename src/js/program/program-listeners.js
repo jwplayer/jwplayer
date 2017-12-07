@@ -20,8 +20,8 @@ export function ProviderListener(mediaController) {
                 }
                 return;
             case MEDIA_VISUAL_QUALITY:
-            mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
-            return;
+                mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
+                return;
             case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
                     mediaController.thenPlayPromise.cancel();
