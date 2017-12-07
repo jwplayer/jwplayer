@@ -61,6 +61,10 @@ function formatSources(item, model) {
             originalSource.safarihlsjs = safariHlsjs;
         }
 
+        if (safariHlsjs !== undefined && safariHlsjs !== null) {
+            originalSource.safarihlsjs = safariHlsjs;
+        }
+
         if (originalSource.drm || itemDrm) {
             originalSource.drm = originalSource.drm || itemDrm;
         }
