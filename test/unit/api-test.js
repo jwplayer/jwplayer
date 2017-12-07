@@ -241,7 +241,7 @@ describe('Api', function() {
         const api = new Api(container);
 
         expect(api.qoe(), '.qoe()').to.have.keys(['setupTime', 'firstFrame', 'player', 'item']);
-        expect(api.getEnvironment(), '.getEnvironment()').to.have.keys(['Browser', 'OS', 'Features']);
+        expect(api.getEnvironment(), '.getEnvironment()').to.have.keys(['Browser', 'OS', 'Features', 'Hardware']);
         expect(api.getContainer(), '.getContainer()').to.equal(container, 'returns the player DOM element before setup');
         expect(api.getConfig(), '.getConfig()').to.eql({});
         expect(api.getAudioTracks(), '.getAudioTracks()').to.equal(null);
@@ -289,7 +289,7 @@ describe('Api', function() {
         api.setup({});
 
         expect(api.qoe(), '.qoe()').to.have.keys(['setupTime', 'firstFrame', 'player', 'item']);
-        expect(api.getEnvironment(), '.getEnvironment()').to.have.keys(['Browser', 'OS', 'Features']);
+        expect(api.getEnvironment(), '.getEnvironment()').to.have.keys(['Browser', 'OS', 'Features', 'Hardware']);
         expect(api.getContainer(), '.getContainer()').to.equal(container, 'returns the player DOM element before setup');
         expect(api.getConfig(), '.getConfig()').to.not.be.empty;
         expect(api.getAudioTracks(), '.getAudioTracks()').to.equal(null);

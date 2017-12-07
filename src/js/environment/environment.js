@@ -10,6 +10,7 @@ import {
     isAndroidNative,
     isIOS,
     isMobile,
+    isTouchScreen,
     isOSX,
     isIPad,
     isIPod,
@@ -65,6 +66,12 @@ export const OS = {};
  * @property {boolean} iframe - Is the session in an iframe?
  */
 export const Features = {};
+
+/**
+ * @typedef {object} HardwareCapabilities
+ * @property {boolean} touchScreen - Is the browser being rendered on a touch screen device?
+ */
+export const Hardware = {};
 
 const isWindows = () => {
     return userAgent.indexOf('Windows') > -1;
@@ -155,6 +162,13 @@ Object.defineProperties(Features, {
     },
     iframe: {
         get: memoize(isIframe),
+        enumerable: true
+    }
+});
+
+Object.defineProperties(Hardware, {
+    touchScreen: {
+        get: memoize(isTouchScreen),
         enumerable: true
     }
 });

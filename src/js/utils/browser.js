@@ -70,6 +70,11 @@ export function isMobile() {
     return isIOS() || isAndroid();
 }
 
+export function isTouchScreen() {
+    // Note: does not work for FireFox on Surface.
+    return isMobile() || 'ontouchstart' in window || navigator.msMaxTouchPoints || navigator.maxTouchPoints;
+}
+
 export function isIframe() {
     try {
         return window.self !== window.top;
