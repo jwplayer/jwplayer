@@ -13,12 +13,13 @@ export default class ProgramController extends Eventable {
     constructor(model, mediaPool) {
         super();
 
+        this.backgroundMedia = null;
+        this.backgroundProviderPromise = null;
         this.mediaPool = mediaPool;
         this.mediaController = null;
         this.model = model;
         this.providerController = ProviderController(model.getConfiguration());
         this.providerPromise = resolved;
-        this.backgroundMedia = null;
 
         const modelForward = MediaControllerListener(model);
         this.mediaControllerListener = (type, data) => {
@@ -28,13 +29,25 @@ export default class ProgramController extends Eventable {
     }
 
     setActiveItem(item, index) {
-        const { mediaController, model } = this;
+        const { backgroundProviderPromise, mediaController, model } = this;
 
         model.setActiveItem(item, index);
+        this._destroyBackgroundMedia();
 
         const source = item && item.sources && item.sources[0];
         if (source === undefined) {
             return Promise.reject('No media');
+        }
+
+        if (backgroundProviderPromise && backgroundProviderPromise.source === source) {
+            backgroundProviderPromise.promise.then((bgMediaController) => {
+                this._destroyActiveMedia();
+                this._destroyBackgroundMedia();
+                this._setActiveMedia(bgMediaController);
+                this.providerPromise = Promise.resolve(bgMediaController);
+                return this.providerPromise;
+            });
+            return;
         }
 
         if (mediaController) {
@@ -127,8 +140,8 @@ export default class ProgramController extends Eventable {
     }
 
     preloadVideo() {
-        const { mediaController, model } = this;
-        if (!mediaController) {
+        const { backgroundMedia, mediaController, model } = this;
+        if (!mediaController && !backgroundMedia) {
             return;
         }
 
@@ -138,12 +151,13 @@ export default class ProgramController extends Eventable {
         }
 
         // Only attempt to preload if media hasn't been loaded and we haven't started, and it's attached
+        let media = mediaController || backgroundMedia;
         if (model.get('state') === 'idle'
             && model.get('autostart') === false
-            && mediaController.attached
-            && !mediaController.setup
-            && !mediaController.preloaded) {
-            mediaController.preload(item);
+            && media.attached
+            && !media.setup
+            && !media.preloaded) {
+            media.preload(item);
         }
     }
 
@@ -169,23 +183,28 @@ export default class ProgramController extends Eventable {
         this.mediaController = null;
     }
 
-    loadBackgroundItem(item) {
+    backgroundLoadItem(index) {
         const { model } = this;
 
+        const item = model.get('playlist')[index];
         const source = item && item.sources && item.sources[0];
         if (source === undefined) {
             return;
         }
 
-        const bgProviderPromise = this._loadProviderConstructor(source)
+        const promise = this._loadProviderConstructor(source)
             .then((ProviderConstructor) => {
                 const bgProvider = new ProviderConstructor(model.get('id'), model.getConfiguration());
                 const bgMediaController = new MediaController(bgProvider, model);
                 bgMediaController.activeItem = item;
+                bgMediaController.preload();
                 return bgMediaController;
             });
 
-        this.backgroundMedia[item] = bgProviderPromise;
+        this.backgroundProviderPromise = {
+            promise,
+            index
+        };
     }
 
     backgroundActiveMedia() {
@@ -237,6 +256,9 @@ export default class ProgramController extends Eventable {
 
     _destroyActiveMedia() {
         const { mediaPool, mediaController, model } = this;
+        if (!mediaController) {
+            return;
+        }
 
         mediaController.detach();
         mediaPool.recycle(mediaController.mediaElement);
@@ -250,6 +272,9 @@ export default class ProgramController extends Eventable {
 
     _destroyBackgroundMedia() {
         const { backgroundMedia, mediaPool } = this;
+        if (!backgroundMedia) {
+            return;
+        }
         mediaPool.recycle(backgroundMedia.mediaElement);
         backgroundMedia.destroy();
         this.backgroundMedia = null;

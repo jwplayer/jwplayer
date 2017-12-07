@@ -755,6 +755,15 @@ Object.assign(Controller.prototype, {
         this.stopCast = () => _programController.stopCast();
         this.backgroundActiveMedia = () => _programController.backgroundActiveMedia();
         this.restoreBackgroundMedia = () => _programController.restoreBackgroundMedia();
+        this.backgroundLoadNextItem = () => {
+            if (_programController.backgroundMedia) {
+                // Instruct the background media to preload if it's already been loaded
+                _programController.preloadVideo();
+            } else if (!_programController.beforeComplete) {
+                // Don't background load if we've already completed the current item
+                _programController.backgroundLoadItem(_model.get('item') + 1);
+            }
+        };
 
         // Model passthroughs
         this.setVolume = _setVolume;
