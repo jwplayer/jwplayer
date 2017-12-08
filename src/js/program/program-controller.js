@@ -6,8 +6,7 @@ import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
-import {Features} from '../environment/environment';
-import mediaparser from '../parsers/mediaparser';
+import { Features } from '../environment/environment';
 
 export default class ProgramController extends Eventable {
     constructor(model, mediaPool) {
@@ -200,6 +199,13 @@ export default class ProgramController extends Eventable {
     }
 
     primeMediaElements() {
+        if (!Features.backgroundLoading) {
+            const { model } = this;
+            const mediaElement = model.get('mediaElement');
+            if (mediaElement) {
+                mediaElement.load();
+            }
+        }
         this.mediaPool.prime();
     }
 

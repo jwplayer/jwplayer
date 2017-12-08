@@ -60,9 +60,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     this.type = 'instream';
 
-    this.init = function(sharedVideoTag) {
+    this.init = function() {
         // Keep track of the original player state
-        _adProgram.setup(sharedVideoTag);
+        _adProgram.setup();
 
         _oldpos = _controller.get('position');
         _adProgram.on('all', _instreamForward, this);

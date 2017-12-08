@@ -24,7 +24,7 @@ export default class AdProgramController extends ProgramController {
         }
     }
 
-    setup(sharedTag) {
+    setup() {
         const { model, mediaPool, playerModel } = this;
         const playerAttributes = playerModel.attributes;
         const mediaModelContext = playerModel.mediaModel;
@@ -55,21 +55,13 @@ export default class AdProgramController extends ProgramController {
 
 
         if (!Features.backgroundLoading) {
-            let mediaElement;
-            if (sharedTag) {
-                mediaElement = sharedTag;
-                mediaPool.changePrimedElement(sharedTag);
-            } else {
-                mediaElement = mediaPool.getPrimedElement();
+            const mediaElement = mediaPool.getPrimedElement();
+            if (!mediaElement.paused) {
+                mediaElement.pause();
             }
-            if (mediaElement) {
-                if (!mediaElement.paused) {
-                    mediaElement.pause();
-                }
-                mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
-                model.mediaElement = mediaElement;
-                model.mediaSrc = mediaElement.src;
-            }
+            mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
+            model.mediaElement = mediaElement;
+            model.mediaSrc = mediaElement.src;
         }
     }
 
