@@ -46,7 +46,8 @@ const Model = function() {
         this.set('qualityLabel', label);
     };
 
-    this.setActiveItem = function (item, index) {
+    this.setActiveItem = function (index) {
+        const item = this.get('playlist')[index];
         this.resetItem(item);
         this.attributes.playlistItem = null;
         this.set('item', index);

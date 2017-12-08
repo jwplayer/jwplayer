@@ -65,10 +65,10 @@ export default class AdProgramController extends ProgramController {
         }
     }
 
-    setActiveItem(item, index) {
+    setActiveItem(index) {
         this.stopVideo();
         this.provider = null;
-        super.setActiveItem(item, index)
+        super.setActiveItem(index)
             .then((mediaController) => {
                 this._setProvider(mediaController.provider);
             });

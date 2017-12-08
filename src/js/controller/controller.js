@@ -524,8 +524,7 @@ Object.assign(Controller.prototype, {
                 index += length;
             }
 
-            const item = playlist[index];
-            return _programController.setActiveItem(item, index);
+            return _programController.setActiveItem(index);
         }
 
         function _prev(meta) {

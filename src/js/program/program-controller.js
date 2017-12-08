@@ -26,10 +26,11 @@ export default class ProgramController extends Eventable {
         };
     }
 
-    setActiveItem(item, index) {
+    setActiveItem(index) {
         const { mediaController, model } = this;
+        const item = model.get('playlist')[index];
 
-        model.setActiveItem(item, index);
+        model.setActiveItem(index);
         this._destroyBackgroundMedia();
         const source = getSource(item);
         if (!source) {
@@ -238,6 +239,7 @@ export default class ProgramController extends Eventable {
         model.resetProvider();
         this.mediaController = null;
     }
+
 
     _destroyBackgroundMedia() {
         const { backgroundMedia, mediaPool } = this;
