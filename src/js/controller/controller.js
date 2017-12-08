@@ -308,14 +308,14 @@ Object.assign(Controller.prototype, {
                     });
                     updatePlaylistCancelable = cancelable((data) => {
                         if (data) {
-                            return _this.updatePlaylist(data.playlist, data);
+                            return _this.updatePlaylist(Playlist(data.playlist), data);
                         }
                     });
                     loadPromise = loadPlaylistPromise.then(updatePlaylistCancelable.async);
                     break;
                 }
                 case 'object':
-                    loadPromise = _this.updatePlaylist(item, feedData);
+                    loadPromise = _this.updatePlaylist(Playlist(item), feedData);
                     break;
                 case 'number':
                     loadPromise = _setItem(item);
@@ -817,8 +817,7 @@ Object.assign(Controller.prototype, {
             }
         };
 
-        this.updatePlaylist = function(data, feedData) {
-            const playlist = Playlist(data);
+        this.updatePlaylist = function(playlist, feedData) {
             try {
                 setPlaylist(_model, playlist, feedData);
             } catch (error) {
