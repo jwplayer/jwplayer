@@ -14,7 +14,7 @@ class Cue {
         if (this.time.toString().slice(-1) === '%') {
             this.pct = this.time;
         } else {
-            const percentage = (this.time / duration) * 100;
+            const percentage = Math.floor((this.time / duration) * 100);
             this.pct = percentage + '%';
         }
 
