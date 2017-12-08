@@ -759,9 +759,6 @@ Object.assign(Controller.prototype, {
             if (_programController.backgroundMedia) {
                 // Instruct the background media to preload if it's already been loaded
                 _programController.preloadVideo();
-            } else if (!_programController.beforeComplete) {
-                // Don't background load if we've already completed the current item
-                _programController.backgroundLoadItem(_model.get('item') + 1);
             }
         };
 

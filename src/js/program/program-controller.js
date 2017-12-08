@@ -14,7 +14,6 @@ export default class ProgramController extends Eventable {
         super();
 
         this.backgroundMedia = null;
-        this.backgroundProviderPromise = null;
         this.mediaPool = mediaPool;
         this.mediaController = null;
         this.model = model;
@@ -29,25 +28,13 @@ export default class ProgramController extends Eventable {
     }
 
     setActiveItem(item, index) {
-        const { backgroundProviderPromise, mediaController, model } = this;
+        const { mediaController, model } = this;
 
         model.setActiveItem(item, index);
         this._destroyBackgroundMedia();
-
-        const source = item && item.sources && item.sources[0];
-        if (source === undefined) {
+        const source = getSource(item);
+        if (!source) {
             return Promise.reject('No media');
-        }
-
-        if (backgroundProviderPromise && backgroundProviderPromise.source === source) {
-            backgroundProviderPromise.promise.then((bgMediaController) => {
-                this._destroyActiveMedia();
-                this._destroyBackgroundMedia();
-                this._setActiveMedia(bgMediaController);
-                this.providerPromise = Promise.resolve(bgMediaController);
-                return this.providerPromise;
-            });
-            return;
         }
 
         if (mediaController) {
@@ -181,30 +168,6 @@ export default class ProgramController extends Eventable {
     stopCast() {
         this.stopVideo();
         this.mediaController = null;
-    }
-
-    backgroundLoadItem(index) {
-        const { model } = this;
-
-        const item = model.get('playlist')[index];
-        const source = item && item.sources && item.sources[0];
-        if (source === undefined) {
-            return;
-        }
-
-        const promise = this._loadProviderConstructor(source)
-            .then((ProviderConstructor) => {
-                const bgProvider = new ProviderConstructor(model.get('id'), model.getConfiguration());
-                const bgMediaController = new MediaController(bgProvider, model);
-                bgMediaController.activeItem = item;
-                bgMediaController.preload();
-                return bgMediaController;
-            });
-
-        this.backgroundProviderPromise = {
-            promise,
-            index
-        };
     }
 
     backgroundActiveMedia() {
@@ -469,4 +432,8 @@ function removeEventForwarding(programController, mediaController) {
 function forwardEvents(programController, mediaController) {
     mediaController.off('all', programController.mediaControllerListener, programController);
     mediaController.on('all', programController.mediaControllerListener, programController);
+}
+
+function getSource(item) {
+    return item && item.sources && item.sources[0];
 }

@@ -167,6 +167,6 @@ describe('Background Loading', function () {
             expect(programController._setActiveMedia.calledOnce).to.equal(false);
             expect(mediaPool.recycle.calledOnce).to.equal(true);
             expect(programController.backgroundMedia).to.equal(null);
-        })
+        });
     });
 });
