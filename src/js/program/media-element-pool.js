@@ -17,7 +17,9 @@ export default function MediaElementPool() {
             }
         },
         recycle(mediaElement) {
-            elements.push(mediaElement);
+            if (!elements.contains(mediaElement)) {
+                elements.push(mediaElement);
+            }
         },
         syncVolume: function (volume) {
             elements.forEach(e => {

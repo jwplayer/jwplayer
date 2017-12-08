@@ -72,6 +72,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
 
+        const mediaElement = _adProgram.primedElement;
+        const mediaContainer = _model.get('mediaContainer');
+        mediaContainer.appendChild(mediaElement);
+
         if (_controller.checkBeforePlay() || (_oldpos === 0 && !_controller.isBeforeComplete())) {
             // make sure video restarts after preroll
             _oldpos = 0;

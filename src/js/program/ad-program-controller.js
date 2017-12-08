@@ -10,18 +10,23 @@ export default class AdProgramController extends ProgramController {
         super(model, mediaPool);
         const adModel = this.model = new Model();
         this.playerModel = model;
+        this.playerMediaPool = this.mediaPool;
         this.provider = null;
 
-        if (!Features.backgroundLoading) {
-            const mediaElement = model.get('mediaElement');
+        let mediaElement;
+        if (Features.backgroundLoading) {
+            mediaElement = this.primedElement;
+        } else {
+            mediaElement = model.get('mediaElement');
             adModel.attributes.mediaElement = mediaElement;
             adModel.attributes.mediaSrc = mediaElement.src;
 
             // Listen to media element for events that indicate src was reset or load() was called
             mediaElement.addEventListener('abort', this.srcReset);
             mediaElement.addEventListener('emptied', this.srcReset);
-            this.mediaPool = AdMediaPool(mediaElement);
         }
+
+        this.mediaPool = AdMediaPool(mediaElement);
     }
 
     setup() {
@@ -138,9 +143,9 @@ export default class AdProgramController extends ProgramController {
         const { mediaController, model } = this;
 
         model.off();
-        if (mediaController) {
-            this._destroyActiveMedia();
-        }
+        this._destroyActiveMedia();
+
+        this.playerMediaPool.recycle(this.primedElement);
 
         if (!Features.backgroundLoading) {
             const mediaElement = model.get('mediaElement');
