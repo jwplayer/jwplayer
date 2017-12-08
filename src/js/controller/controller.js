@@ -308,14 +308,14 @@ Object.assign(Controller.prototype, {
                     });
                     updatePlaylistCancelable = cancelable((data) => {
                         if (data) {
-                            return _updatePlaylist(data.playlist, data);
+                            return _this.updatePlaylist(data.playlist, data);
                         }
                     });
                     loadPromise = loadPlaylistPromise.then(updatePlaylistCancelable.async);
                     break;
                 }
                 case 'object':
-                    loadPromise = _updatePlaylist(item, feedData);
+                    loadPromise = _this.updatePlaylist(item, feedData);
                     break;
                 case 'number':
                     loadPromise = _setItem(item);
@@ -330,18 +330,6 @@ Object.assign(Controller.prototype, {
             });
 
             loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
-        }
-
-        function _updatePlaylist(data, feedData) {
-            const playlist = Playlist(data);
-            try {
-                setPlaylist(_model, playlist, feedData);
-            } catch (error) {
-                _model.set('item', 0);
-                _model.set('playlistItem', null);
-                return Promise.reject(error);
-            }
-            return _setItem(0);
         }
 
         function _loadPlaylist(toLoad) {
@@ -827,6 +815,18 @@ Object.assign(Controller.prototype, {
             if (provider) {
                 provider.setControls(mode);
             }
+        };
+
+        this.updatePlaylist = function(data, feedData) {
+            const playlist = Playlist(data);
+            try {
+                setPlaylist(_model, playlist, feedData);
+            } catch (error) {
+                _model.set('item', 0);
+                _model.set('playlistItem', null);
+                return Promise.reject(error);
+            }
+            return _setItem(0);
         };
 
         this.playerDestroy = function () {
