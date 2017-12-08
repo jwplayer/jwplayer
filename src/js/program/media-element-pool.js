@@ -2,14 +2,14 @@ export default function MediaElementPool() {
     const maxPrimedTags = 3;
     const elements = [];
     for (let i = 0; i < maxPrimedTags; i++) {
-        elements.push(document.createElement('video'));
+        const mediaElement = document.createElement('video');
+        mediaElement.className = 'jw-video jw-reset';
+        elements.push(mediaElement);
     }
 
     return {
         prime() {
-            elements.forEach(element => {
-                primeMediaElementForPlayback(element);
-            });
+            elements.forEach(primeMediaElementForPlayback);
         },
         getPrimedElement() {
             if (elements.length) {
@@ -32,12 +32,9 @@ export default function MediaElementPool() {
     };
 }
 
-function primeMediaElementForPlayback() {
-    const mediaElement = document.createElement('video');
-    mediaElement.className = 'jw-video jw-reset';
+function primeMediaElementForPlayback(mediaElement) {
     // If we're in a user-gesture event call load() on video to allow async playback
     if (!mediaElement.src) {
         mediaElement.load();
     }
-    return mediaElement;
 }

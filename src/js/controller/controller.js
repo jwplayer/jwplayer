@@ -293,7 +293,9 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable = cancelable(_checkAutoStart);
             updatePlaylistCancelable.cancel();
 
-            _programController.primeMediaElements();
+            if (_inInteraction(window.event)) {
+                _programController.primeMediaElements();
+            }
 
             let loadPromise;
 
@@ -399,7 +401,9 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
-                    _programController.primeMediaElements();
+                    if (_inInteraction(window.event)) {
+                        _programController.primeMediaElements();
+                    }
                     return resolved;
                 }
             }
