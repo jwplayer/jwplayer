@@ -521,7 +521,6 @@ export default class ProgramController extends Eventable {
         }
     }
 
-    // TODO sync to background
     /**
      * Sets the current quality level.
      * @param {number} index
@@ -536,7 +535,6 @@ export default class ProgramController extends Eventable {
         mediaController.quality = parseInt(index, 10) || 0;
     }
 
-    // TODO sync to background
     /**
      * Sets the current subtitles track.
      * @param {number} index
