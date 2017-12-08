@@ -330,7 +330,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     /**
      * Extracts the video tag in the foreground.
-     * @returns {Element|null|undefined} videoTag - the HTML <video> element in the foreground.
+     * @returns {Element|undefined} videoTag - the HTML <video> element in the foreground.
      */
     this.getMediaElement = function () {
         if (_adProgram) {

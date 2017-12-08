@@ -8,6 +8,7 @@ import Eventable from 'utils/eventable';
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 import { Features } from '../environment/environment';
 
+
 export default class ProgramController extends Eventable {
     constructor(model, mediaPool) {
         super();
@@ -26,6 +27,12 @@ export default class ProgramController extends Eventable {
         };
     }
 
+    /**
+     * Activates a playlist item, loading it into the foreground.
+     * This method will either load a new Provider or reuse the active one.
+     * @param {number} index - The playlist index of the item
+     * @returns {Promise} - The Provider promise. Resolves with the active Media Controller
+     */
     setActiveItem(index) {
         const { mediaController, model } = this;
         const item = model.get('playlist')[index];
@@ -70,6 +77,12 @@ export default class ProgramController extends Eventable {
         return this.providerPromise;
     }
 
+    /**
+     * Plays the active item.
+     * Will wait for the Provider promise to resolve before any play attempt.
+     * @param {string} playReason - The reason playback is beginning.
+     * @returns {Promise} The Play promise. Resolves when playback begins; rejects upon failure.
+     */
     playVideo(playReason) {
         const { mediaController, model } = this;
         const item = model.get('playlistItem');
@@ -114,6 +127,10 @@ export default class ProgramController extends Eventable {
         return playPromise;
     }
 
+    /**
+     * Stops playback of the active item, and sets the player state to IDLE.
+     * @returns {undefined}
+     */
     stopVideo() {
         const { mediaController, model } = this;
 
@@ -126,6 +143,10 @@ export default class ProgramController extends Eventable {
         }
     }
 
+    /**
+     * Preloads the active item, which loads and buffers some content.
+     * @returns {undefined}
+     */
     preloadVideo() {
         const { backgroundMedia, mediaController, model } = this;
         if (!mediaController && !backgroundMedia) {
@@ -138,6 +159,7 @@ export default class ProgramController extends Eventable {
         }
 
         // Only attempt to preload if media hasn't been loaded and we haven't started, and it's attached
+        // Background media can also preload
         let media = mediaController || backgroundMedia;
         if (model.get('state') === 'idle'
             && model.get('autostart') === false
@@ -148,6 +170,10 @@ export default class ProgramController extends Eventable {
         }
     }
 
+    /**
+     * Pauses playback of the current video, and sets the player state to PAUSED.
+     * @returns {undefined}
+     */
     pause() {
         const { mediaController } = this;
         if (!mediaController) {
@@ -157,6 +183,10 @@ export default class ProgramController extends Eventable {
         mediaController.pause();
     }
 
+    /**
+     * Casts a video. The Cast Controller will control the Cast Provider.
+     * @returns {undefined}
+     */
     castVideo(castProvider, item) {
         const { model } = this;
 
@@ -165,17 +195,29 @@ export default class ProgramController extends Eventable {
         this._setActiveMedia(castMediaController);
     }
 
+    /**
+     * Stops casting. The Player is expected to restore video playback afterwards.
+     * @returns {undefined}
+     */
     stopCast() {
         this.stopVideo();
         this.mediaController = null;
     }
 
+    /**
+     * Places the currently active Media Controller into the background.
+     * The media is still attached to a media element, but is removed from the Player's container.
+     * Background media still emits events, but we stop listening to them.
+     * Background media can (and will) be updated via it's API.
+     * @returns {undefined}
+     */
     backgroundActiveMedia() {
         const { backgroundMedia, mediaController } = this;
         if (!mediaController) {
             return;
         }
 
+        // Destroy any existing background media
         if (backgroundMedia) {
             this._destroyBackgroundMedia();
         }
@@ -186,8 +228,16 @@ export default class ProgramController extends Eventable {
         this.mediaController = null;
     }
 
+    /**
+     * Restores the background media to the foreground.
+     * Its media element is reattached to the Player container.
+     * We start listening to its events again.
+     * @returns {undefined}
+     */
     restoreBackgroundMedia() {
         const { backgroundMedia, mediaController } = this;
+        // An existing media controller means that we've changed the active item
+        // The current background media is no longer relevant, so destroy it
         if (mediaController) {
             this._destroyBackgroundMedia();
             return;
@@ -199,8 +249,15 @@ export default class ProgramController extends Eventable {
         }
     }
 
+    /**
+     * Primes media elements so that they can autoplay without further user gesture.
+     * A primed element is required for media to load in the background.
+     * @returns {undefined}
+     */
     primeMediaElements() {
         if (!Features.backgroundLoading) {
+            // If background loading is supported, the model will always contain the shared media element
+            // Prime it so that playback after changing the active item does not require further gestures
             const { model } = this;
             const mediaElement = model.get('mediaElement');
             if (mediaElement) {
@@ -210,6 +267,11 @@ export default class ProgramController extends Eventable {
         this.mediaPool.prime();
     }
 
+    /**
+     * Activates the provided media controller, placing it into the foreground.
+     * @returns {undefined}
+     * @private
+     */
     _setActiveMedia(mediaController) {
         const { model } = this;
         const { mediaModel, provider } = mediaController;
@@ -224,6 +286,11 @@ export default class ProgramController extends Eventable {
         forwardEvents(this, mediaController);
     }
 
+    /**
+     * Destroys the active media controller and current playback.
+     * @returns {undefined}
+     * @private
+     */
     _destroyActiveMedia() {
         const { mediaPool, mediaController, model } = this;
         if (!mediaController) {
@@ -240,7 +307,11 @@ export default class ProgramController extends Eventable {
         this.mediaController = null;
     }
 
-
+    /**
+     * Destroys background media.
+     * @returns {undefined}
+     * @private
+     */
     _destroyBackgroundMedia() {
         const { backgroundMedia, mediaPool } = this;
         if (!backgroundMedia) {
@@ -251,8 +322,15 @@ export default class ProgramController extends Eventable {
         this.backgroundMedia = null;
     }
 
+    /**
+     * Loads the constructor required for the current source.
+     * Resolves with the required constructor, or rejects when the constructor could not be found or loaded.
+     * If rejected, current playback will be destroyed.
+     * @returns {Promise} - The Provider constructor promise.
+     * @private
+     */
     _loadProviderConstructor(source) {
-        const { model, mediaController, providerController } = this;
+        const { model, providerController } = this;
 
         let ProviderConstructor = providerController.choose(source);
         if (ProviderConstructor) {
@@ -264,17 +342,19 @@ export default class ProgramController extends Eventable {
                 ProviderConstructor = providerController.choose(source);
                 // The provider we need couldn't be loaded
                 if (!ProviderConstructor) {
-                    if (mediaController) {
-                        mediaController.destroy();
-                        model.resetProvider();
-                        this.mediaController = null;
-                    }
+                    this._destroyActiveMedia();
                     throw Error(`Failed to load media`);
                 }
                 return ProviderConstructor;
             });
     }
 
+    /**
+     * Returns the actively playing Provider object.
+     * Will return the background Provider if there is no media in the foreground, which happens when an ad
+     * is playing.
+     * @returns {object}
+     */
     get activeProvider() {
         const { mediaController, backgroundMedia } = this;
         if (!mediaController && !backgroundMedia) {
@@ -284,6 +364,10 @@ export default class ProgramController extends Eventable {
         return mediaController ? mediaController.provider : backgroundMedia.provider;
     }
 
+    /**
+     * Returns the active audio track index.
+     * @returns {number}
+     */
     get audioTrack() {
         const { mediaController } = this;
         if (!mediaController) {
@@ -293,6 +377,10 @@ export default class ProgramController extends Eventable {
         return mediaController.audioTrack;
     }
 
+    /**
+     * Returns the list of audio tracks.
+     * @returns {Array<object>}
+     */
     get audioTracks() {
         const { mediaController } = this;
         if (!mediaController) {
@@ -302,6 +390,10 @@ export default class ProgramController extends Eventable {
         return mediaController.audioTracks;
     }
 
+    /**
+     * Returns whether the current media has completed playback.
+     * @returns {boolean}
+     */
     get beforeComplete() {
         const { mediaController, backgroundMedia } = this;
         if (!mediaController && !backgroundMedia) {
@@ -311,10 +403,18 @@ export default class ProgramController extends Eventable {
         return mediaController ? mediaController.beforeComplete : backgroundMedia.beforeComplete;
     }
 
+    /**
+     * Returns a primed element from the media pool.
+     * @returns {Element|undefined}
+     */
     get primedElement() {
         return this.mediaPool.getPrimedElement();
     }
 
+    /**
+     * Returns the active quality index.
+     * @returns {number}
+     */
     get quality() {
         if (!this.mediaController) {
             return -1;
@@ -323,6 +423,10 @@ export default class ProgramController extends Eventable {
         return this.mediaController.quality;
     }
 
+    /**
+     * Returns the list of quality levels.
+     * @returns {Array<object>}
+     */
     get qualities() {
         const { mediaController } = this;
         if (!mediaController) {
@@ -332,6 +436,11 @@ export default class ProgramController extends Eventable {
         return mediaController.qualities;
     }
 
+    /**
+     * Attaches or detaches the current media
+     * @param {boolean} shouldAttach
+     * @returns {undefined}
+     */
     set attached(shouldAttach) {
         const { mediaController } = this;
 
@@ -346,6 +455,11 @@ export default class ProgramController extends Eventable {
         }
     }
 
+    /**
+     * Returns the active quality index.
+     * @param {number} index
+     * @returns {void}
+     */
     set audioTrack(index) {
         const { mediaController } = this;
         if (!mediaController) {
@@ -355,6 +469,11 @@ export default class ProgramController extends Eventable {
         mediaController.audioTrack = parseInt(index, 10) || 0;
     }
 
+    /**
+     * Activates or deactivates media controls.
+     * @param {boolean} mode
+     * @returns {void}
+     */
     set controls(mode) {
         const { mediaController } = this;
         if (!mediaController) {
@@ -364,6 +483,12 @@ export default class ProgramController extends Eventable {
         mediaController.controls = mode;
     }
 
+    /**
+     * Mutes or unmutes the activate media.
+     * Syncs across all media elements.
+     * @param {boolean} mute
+     * @returns {void}
+     */
     set mute(mute) {
         const { backgroundMedia, mediaController, mediaPool } = this;
 
@@ -377,6 +502,12 @@ export default class ProgramController extends Eventable {
         mediaPool.syncMute(mute);
     }
 
+    /**
+     * Seeks the media to the provided position.
+     * If the media is not attached, set the item's starttime, so that when reattaching, it resumes at that time.
+     * @param {number} pos
+     * @returns {void}
+     */
     set position(pos) {
         const { mediaController } = this;
         if (!mediaController) {
@@ -390,6 +521,12 @@ export default class ProgramController extends Eventable {
         }
     }
 
+    // TODO sync to background
+    /**
+     * Sets the current quality level.
+     * @param {number} index
+     * @returns {void}
+     */
     set quality(index) {
         const { mediaController } = this;
         if (!mediaController) {
@@ -399,6 +536,12 @@ export default class ProgramController extends Eventable {
         mediaController.quality = parseInt(index, 10) || 0;
     }
 
+    // TODO sync to background
+    /**
+     * Sets the current subtitles track.
+     * @param {number} index
+     * @returns {void}
+     */
     set subtitles(index) {
         const { mediaController } = this;
         if (!mediaController) {
@@ -408,6 +551,12 @@ export default class ProgramController extends Eventable {
         mediaController.subtitles = index;
     }
 
+    /**
+     * Sets the volume level.
+     * Syncs across all media elements.
+     * @param {number} volume
+     * @returns {void}
+     */
     set volume(volume) {
         const { backgroundMedia, mediaController, mediaPool } = this;
 
