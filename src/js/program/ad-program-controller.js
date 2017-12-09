@@ -140,7 +140,7 @@ export default class AdProgramController extends ProgramController {
 
 
     destroy() {
-        const { mediaController, model } = this;
+        const { model } = this;
 
         model.off();
         this._destroyActiveMedia();

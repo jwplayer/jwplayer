@@ -290,6 +290,12 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
                 _model.attributes.state = adState;
             }
 
+            const mediaElement = _adProgram.primedElement;
+            const mediaContainer = _model.get('mediaContainer');
+            if (mediaElement.parentNode === mediaContainer) {
+                mediaContainer.removeChild(mediaElement);
+            }
+
             _model.off(null, null, _adProgram);
             _adProgram.off(null, null, _this);
             _adProgram.destroy();

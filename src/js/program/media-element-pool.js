@@ -17,7 +17,7 @@ export default function MediaElementPool() {
             }
         },
         recycle(mediaElement) {
-            if (!elements.contains(mediaElement)) {
+            if (!elements.some(element => element === mediaElement)) {
                 elements.push(mediaElement);
             }
         },
