@@ -1,4 +1,6 @@
 import { style } from 'utils/css';
+import { Browser, OS } from 'environment/environment';
+import fitToBounds from '../utils/fit-to-bounds';
 
 const VideoActionsMixin = {
     container: null,
@@ -18,23 +20,28 @@ const VideoActionsMixin = {
     },
 
     resize: function(width, height, stretching) {
-        if (!width || !height || !this.video.videoWidth || !this.video.videoHeight) {
+        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;        
+        if ((!width || !height || !this.video.videoWidth || !this.video.videoHeight) && !fitVideoUsingTransforms) {
             return false;
         }
+        const styles = {
+            objectFit: '',
+            width: '',
+            height: '',
+        };
         if (stretching === 'uniform') {
             // snap video to edges when the difference in aspect ratio is less than 9%
             var playerAspectRatio = width / height;
             var videoAspectRatio = this.video.videoWidth / this.video.videoHeight;
-            var objectFit = null;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
-                objectFit = 'fill';
+                styles.objectFit = 'fill';
+                stretching = 'exactfit';
             }
-            style(this.video, {
-                objectFit,
-                width: null,
-                height: null
-            });
         }
+        if (fitVideoUsingTransforms && !this.video.videoWidth < width && !this.video.videoHeight < height) {
+            fitToBounds(this.video, width, height, stretching, styles);  
+        } 
+        style(this.video, styles);
         return false;
     },
 

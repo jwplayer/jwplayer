@@ -6,7 +6,7 @@ import { STATE_IDLE, MEDIA_META, MEDIA_ERROR, MEDIA_VISUAL_QUALITY, MEDIA_TYPE,
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
-import { style, transform } from 'utils/css';
+import { style } from 'utils/css';
 import utils from 'utils/helpers';
 import { emptyElement } from 'utils/dom';
 import _ from 'utils/underscore';
@@ -15,7 +15,7 @@ import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
-
+import fitToBounds from 'utils/fit-to-bounds';
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
 const _name = 'html5';
@@ -602,24 +602,7 @@ function VideoProvider(_playerId, _playerConfig) {
         // feature detection may work for IE but not for browsers where object-fit works for images only
         const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
         if (fitVideoUsingTransforms) {
-            // Use transforms to center and scale video in container
-            const x = -Math.floor(_videotag.videoWidth / 2 + 1);
-            const y = -Math.floor(_videotag.videoHeight / 2 + 1);
-            let scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
-            let scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
-            if (stretching === 'none') {
-                scaleX = scaleY = 1;
-            } else if (stretching === 'fill') {
-                scaleX = scaleY = Math.max(scaleX, scaleY);
-            } else if (stretching === 'uniform') {
-                scaleX = scaleY = Math.min(scaleX, scaleY);
-            }
-            styles.width = _videotag.videoWidth;
-            styles.height = _videotag.videoHeight;
-            styles.top = styles.left = '50%';
-            styles.margin = 0;
-            transform(_videotag,
-                'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
+            fitToBounds(_videotag, width, height, stretching, styles);
         }
         style(_videotag, styles);
     };
