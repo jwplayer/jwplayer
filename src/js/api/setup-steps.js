@@ -19,6 +19,7 @@ export function loadPlaylist(_model) {
                 resolve();
             });
             playlistLoader.on(ERROR, err => {
+                _model.attributes.playlist = [];
                 _model.set('feedData', {
                     error: new Error(`Error loading playlist: ${err.message}`)
                 });
