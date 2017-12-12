@@ -1,7 +1,7 @@
 import ProgramController from 'program/program-controller';
 import AdMediaPool from 'program/ad-media-pool';
 import Model from 'controller/model';
-import { Features, OS } from 'environment/environment';
+import { Features } from 'environment/environment';
 import changeStateEvent from 'events/change-state-event';
 import { ERROR, FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
 
@@ -13,24 +13,27 @@ export default class AdProgramController extends ProgramController {
         this.provider = null;
         this.mediaPool = AdMediaPool(this.mediaPool);
 
-        let mediaElement;
-        if (Features.backgroundLoading) {
-            mediaElement = this.primedElement;
-        } else {
-            mediaElement = model.get('mediaElement');
+        if (!Features.backgroundLoading) {
+            const mediaElement = model.get('mediaElement');
+
+            if (!mediaElement.paused) {
+                mediaElement.pause();
+            }
+            mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
+
             adModel.attributes.mediaElement = mediaElement;
             adModel.attributes.mediaSrc = mediaElement.src;
 
             // Listen to media element for events that indicate src was reset or load() was called
             const srcResetListener = this.srcResetListener = () => {
-                this.srcReset(); 
+                this.srcReset();
             };
             mediaElement.addEventListener('emptied', srcResetListener);
         }
     }
 
     setup() {
-        const { model, mediaPool, playerModel } = this;
+        const { model, playerModel } = this;
         const playerAttributes = playerModel.attributes;
         const mediaModelContext = playerModel.mediaModel;
         model.setup({
@@ -48,26 +51,11 @@ export default class AdProgramController extends ProgramController {
             skipButton: false
         });
 
-        if (!OS.mobile) {
-            model.set('mediaContainer', playerModel.get('mediaContainer'));
-        }
-
         model.on('fullscreenchange', this._nativeFullscreenHandler);
         model.on('change:state', changeStateEvent, this);
         model.on(ERROR, function(data) {
             this.trigger(ERROR, data);
         }, this);
-
-
-        if (!Features.backgroundLoading) {
-            const mediaElement = mediaPool.getPrimedElement();
-            if (!mediaElement.paused) {
-                mediaElement.pause();
-            }
-            mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
-            model.mediaElement = mediaElement;
-            model.mediaSrc = mediaElement.src;
-        }
     }
 
     setActiveItem(index) {
@@ -108,7 +96,7 @@ export default class AdProgramController extends ProgramController {
 
     _setProvider(provider) {
         // Clear current provider when applyProviderListeners(null) is called
-        if (!provider) {
+        if (!provider || !this.mediaPool) {
             return;
         }
 
@@ -132,7 +120,7 @@ export default class AdProgramController extends ProgramController {
         });
         provider.attachMedia();
         provider.volume(playerModel.get('volume'));
-        provider.mute(playerModel.get('mute') || playerModel.get('autostartMuted'));
+        provider.mute(playerModel.getMute());
         if (provider.setPlaybackRate) {
             provider.setPlaybackRate(1);
         }
@@ -145,6 +133,7 @@ export default class AdProgramController extends ProgramController {
         model.off();
         this.mediaPool.recycle();
         this._destroyActiveMedia();
+        this.mediaPool = null;
 
         if (!Features.backgroundLoading) {
             const mediaElement = model.get('mediaElement');
