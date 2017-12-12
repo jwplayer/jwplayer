@@ -713,14 +713,6 @@ Object.assign(Controller.prototype, {
             _programController.on(MEDIA_ERROR, _this.triggerError, _this);
         }
 
-        function _setVolume(volume) {
-            _model.setVolume(volume);
-        }
-
-        function _setMute(mute) {
-            _model.setMute(mute);
-        }
-
         function updateProgramSoundSettings() {
             _programController.mute = _model.getMute();
             _programController.volume = _model.get('volume');
@@ -751,7 +743,9 @@ Object.assign(Controller.prototype, {
         this.getConfig = _getConfig;
         this.getState = _getState;
         this.next = _nextUp;
-        this.setConfig = (newConfig) => setConfig(_this, newConfig);
+        this.setConfig = (newConfig) => {
+            setConfig(_this, newConfig); 
+        };
         this.setItemIndex = _setItem;
 
         // Program Controller passthroughs
@@ -761,35 +755,31 @@ Object.assign(Controller.prototype, {
         this.stopCast = () => _programController.stopCast();
         this.backgroundActiveMedia = () => _programController.backgroundActiveMedia();
         this.restoreBackgroundMedia = () => _programController.restoreBackgroundMedia();
-        this.backgroundLoadNextItem = () => {
+        this.preloadNextItem = () => {
             if (_programController.backgroundMedia) {
                 // Instruct the background media to preload if it's already been loaded
                 _programController.preloadVideo();
             }
         };
+        this.isBeforeComplete = () => _programController.beforeComplete;
 
         // Model passthroughs
-        this.setVolume = _setVolume;
-        this.setMute = _setMute;
-        this.setPlaybackRate = _model.setPlaybackRate.bind(_model);
-        this.getProvider = function() {
-            return _model.get('provider');
+        this.setVolume = (volume) => {
+            _model.setVolume(volume); 
         };
-        this.getWidth = function() {
-            return _model.get('containerWidth');
+        this.setMute = (mute) => {
+            _model.setMute(mute); 
         };
-        this.getHeight = function() {
-            return _model.get('containerHeight');
+        this.setPlaybackRate = (playbackRate) => {
+            _model.setPlaybackRate(playbackRate); 
         };
-        this.getItemQoe = function() {
-            return _model._qoeItem;
-        };
-        this.isBeforeComplete = function () {
-            return _programController.beforeComplete;
-        };
+        this.getProvider = () => _model.get('provider');
+        this.getWidth = () => _model.get('containerWidth');
+        this.getHeight = () => _model.get('containerHeight');
+        this.getItemQoe = () => _model._qoeItem;
         this.addButton = function(img, tooltip, callback, id, btnClass) {
             let customButtons = _model.get('customButtons') || [];
-            let added = false;
+            let replaced = false;
             const newButton = {
                 img: img,
                 tooltip: tooltip,
@@ -798,9 +788,9 @@ Object.assign(Controller.prototype, {
                 btnClass: btnClass
             };
 
-            customButtons = customButtons.reduce(function(buttons, button) {
-                if (button.id === newButton.id) {
-                    added = true;
+            customButtons = customButtons.reduce((buttons, button) => {
+                if (button.id === id) {
+                    replaced = true;
                     buttons.push(newButton);
                 } else {
                     buttons.push(button);
@@ -808,7 +798,7 @@ Object.assign(Controller.prototype, {
                 return buttons;
             }, []);
 
-            if (!added) {
+            if (!replaced) {
                 customButtons.unshift(newButton);
             }
 

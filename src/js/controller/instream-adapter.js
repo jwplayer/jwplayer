@@ -132,7 +132,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         mediaModel.set('position', position);
 
         if (!_backgroundLoadTriggered && position >= _backgroundLoadPosition) {
-            _controller.backgroundLoadNextItem();
+            _controller.preloadNextItem();
             _backgroundLoadTriggered = true;
         }
     }
