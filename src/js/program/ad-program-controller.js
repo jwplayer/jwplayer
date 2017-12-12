@@ -22,8 +22,10 @@ export default class AdProgramController extends ProgramController {
             adModel.attributes.mediaSrc = mediaElement.src;
 
             // Listen to media element for events that indicate src was reset or load() was called
-            mediaElement.addEventListener('abort', this.srcReset);
-            mediaElement.addEventListener('emptied', this.srcReset);
+            const srcResetListener = this.srcResetListener = () => {
+                this.srcReset(); 
+            };
+            mediaElement.addEventListener('emptied', srcResetListener);
         }
     }
 
@@ -147,8 +149,7 @@ export default class AdProgramController extends ProgramController {
         if (!Features.backgroundLoading) {
             const mediaElement = model.get('mediaElement');
             if (mediaElement) {
-                mediaElement.removeEventListener('abort', this.srcReset);
-                mediaElement.removeEventListener('emptied', this.srcReset);
+                mediaElement.removeEventListener('emptied', this.srcResetListener);
                 // Reset the player media model if the src was changed externally
                 if (mediaElement.src !== model.get('mediaSrc')) {
                     this.srcReset();
@@ -159,11 +160,9 @@ export default class AdProgramController extends ProgramController {
 
     srcReset() {
         const { playerModel } = this;
-        if (Features.backgroundLoading || !playerModel) {
-            return;
-        }
+        const mediaModel = playerModel.get('mediaModel');
 
-        playerModel.get('mediaModel').srcReset();
+        mediaModel.srcReset();
     }
 
     _nativeFullscreenHandler(evt) {
