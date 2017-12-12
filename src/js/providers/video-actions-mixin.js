@@ -25,8 +25,6 @@ const VideoActionsMixin = {
             return false;
         }
         const _videotag = this.video;
-        // let test = fitVideoUsingTransforms();
-        // test;
         const styles = {
             objectFit: '',
             width: '',
