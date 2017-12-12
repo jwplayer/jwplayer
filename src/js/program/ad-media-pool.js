@@ -1,15 +1,18 @@
-import MediaElementPool from 'program/media-element-pool';
-const mediaPool = MediaElementPool();
 export default function AdMediaPool(adElement) {
-    let elements = [adElement];
 
-    return Object.assign({}, mediaPool, {
+    return {
         prime() {
-            elements[0].load();
+            adElement.load();
+        },
+        getPrimedElement() {
+            return adElement;
         },
         recycle() {},
-        getPrimedElement() {
-            return elements[0];
+        syncVolume: function (volume) {
+            adElement.volume = volume / 100;
+        },
+        syncMute(mute) {
+            adElement.muted = mute;
         }
-    });
+    };
 }
