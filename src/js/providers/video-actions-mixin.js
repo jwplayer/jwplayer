@@ -1,5 +1,7 @@
 import { style } from 'utils/css';
-import fitToBounds, { fitVideoUsingTransforms } from 'utils/fit-to-bounds';
+import fitToBounds from 'utils/fit-to-bounds';
+import fitVideoUsingTransforms from 'utils/fit-to-bounds';
+
 
 const VideoActionsMixin = {
     container: null,
@@ -19,10 +21,12 @@ const VideoActionsMixin = {
     },
 
     resize: function(width, height, stretching) {
-        const _videotag = this.video; 
-        if ((!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) && !fitVideoUsingTransforms) {
+        if (!width || !height || !this.video.videoWidth || !this.video.videoHeight) {
             return false;
         }
+        const _videotag = this.video;
+        // let test = fitVideoUsingTransforms();
+        // test;
         const styles = {
             objectFit: '',
             width: '',
@@ -37,7 +41,7 @@ const VideoActionsMixin = {
                 stretching = 'exactfit';
             }
         }
-        if (fitVideoUsingTransforms && _videotag.videoWidth < width && _videotag.videoHeight < height) {
+        if (fitVideoUsingTransforms() && _videotag.videoWidth < width && _videotag.videoHeight < height) {
             fitToBounds(_videotag, width, height, stretching, styles);  
         } 
         style(_videotag, styles);
