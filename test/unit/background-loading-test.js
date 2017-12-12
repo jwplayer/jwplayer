@@ -5,22 +5,25 @@ import MockProvider from 'mock/mock-provider';
 import MediaElementPool from 'program/media-element-pool'
 import sinon from 'sinon';
 
-const config = {
+const defaultConfig = {
     volume: 20,
     mute: false,
     edition: 'enterprise'
 };
 
 describe('Background Loading', function () {
-    let model = new Model();
+
+    let model = null;
+    let config = null;
     let programController = null;
     let mediaElement = null;
     let container = null;
     let mockProvider = null;
     let mediaController = null;
     let mediaPool = null;
+
     beforeEach(function () {
-        model.destroy();
+        config = Object.assign({}, defaultConfig);
         model = new Model().setup(config);
         container = document.createElement('div');
         model.attributes.mediaContainer = container;
@@ -31,6 +34,10 @@ describe('Background Loading', function () {
         mockProvider = new MockProvider();
         mockProvider.video = mediaElement;
         mediaController = new MediaController(mockProvider, model);
+    });
+
+    afterEach(function () {
+        model.destroy();
     });
 
     describe('mediaController.container', function () {
