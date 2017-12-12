@@ -13,19 +13,19 @@ var _defaultOptions = {
 };
 
 var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
-    let _adProgram = new AdProgramController(_model, _mediaPool);
+    const _this = this;
 
+    let _adProgram = new AdProgramController(_model, _mediaPool);
     let _array;
     let _arrayOptions;
     let _arrayIndex = 0;
     let _options = {};
-    let _oldpos;
-    let _this = this;
     let _skipAd = _instreamItemNext;
     let _backgroundLoadTriggered = false;
+    let _oldpos;
     let _backgroundLoadPosition;
 
-    let _clickHandler = _.bind(function(evt) {
+    const _clickHandler = (evt) => {
         evt = evt || {};
         evt.hasControls = !!_model.get('controls');
 
@@ -43,9 +43,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         } else {
             _adProgram.pause();
         }
-    }, this);
+    };
 
-    let _doubleClickHandler = _.bind(function() {
+    const _doubleClickHandler = () => {
         if (!_adProgram) {
             return;
         }
@@ -56,7 +56,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
                 _controller.play();
             }
         }
-    }, this);
+    };
 
     this.type = 'instream';
 
