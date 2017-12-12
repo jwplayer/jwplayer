@@ -1,7 +1,9 @@
 import { transform } from 'utils/css';
 import { Browser, OS } from 'utils/browser'; 
 
-export const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;        
+export const fitVideoUsingTransforms = () => {
+    return Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
+};
 
 export default function fitToBounds(_videotag, width, height, stretching, styles) {
     // Use transforms to center and scale video in container

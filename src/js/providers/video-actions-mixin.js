@@ -19,7 +19,7 @@ const VideoActionsMixin = {
     },
 
     resize: function(width, height, stretching) {
-        let _videotag = this.video; 
+        const _videotag = this.video; 
         if ((!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) && !fitVideoUsingTransforms) {
             return false;
         }
