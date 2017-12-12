@@ -1,8 +1,10 @@
-import { Browser, OS } from 'environment/environment';
+import { Browser, OS, Features } from 'environment/environment';
 import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
+const TouchEvent = window.TouchEvent;
+const PointerEvent = window.PointerEvent;
 const _supportsPointerEvents = ('PointerEvent' in window) && !OS.android;
 const _supportsTouchEvents = ('ontouchstart' in window);
 const _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
@@ -66,7 +68,7 @@ function normalizeUIEvent(type, srcEvent, target) {
 function preventDefault(evt) {
     // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
     //  we cannot call evt.preventDefault() on them
-    if (!(evt instanceof MouseEvent) && !(evt instanceof window.TouchEvent)) {
+    if (!(evt instanceof MouseEvent) && !(evt instanceof TouchEvent)) {
         return;
     }
     if (evt.preventManipulation) {
@@ -90,10 +92,12 @@ const UI = function (elem, options) {
 
     options = options || {};
 
+    const listenerOptions = Features.passiveEvents ? { passive: !options.preventScrolling } : false;
+
     // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
     // (windows phones) still get listeners just in case they want to use them.
     if (_supportsPointerEvents) {
-        elem.addEventListener('pointerdown', interactStartHandler);
+        elem.addEventListener('pointerdown', interactStartHandler, listenerOptions);
         if (options.useHover) {
             elem.addEventListener('pointerover', overHandler);
             elem.addEventListener('pointerout', outHandler);
@@ -103,7 +107,7 @@ const UI = function (elem, options) {
         }
     } else {
         if (_useMouseEvents) {
-            elem.addEventListener('mousedown', interactStartHandler);
+            elem.addEventListener('mousedown', interactStartHandler, listenerOptions);
             if (options.useHover) {
                 elem.addEventListener('mouseover', overHandler);
                 elem.addEventListener('mouseout', outHandler);
@@ -114,7 +118,7 @@ const UI = function (elem, options) {
         }
 
         // Always add this, in case we don't properly identify the device as mobile
-        elem.addEventListener('touchstart', interactStartHandler);
+        elem.addEventListener('touchstart', interactStartHandler, listenerOptions);
     }
 
     elem.addEventListener('keydown', keyHandler);
@@ -167,7 +171,7 @@ const UI = function (elem, options) {
                     _pointerId = evt.pointerId;
                     elem.setPointerCapture(_pointerId);
                 }
-                setEventListener(elem, 'pointermove', interactDragHandler);
+                setEventListener(elem, 'pointermove', interactDragHandler, listenerOptions);
                 setEventListener(elem, 'pointercancel', interactEndHandler);
 
                 // Listen for mouseup after mouse pointer down because pointerup doesn't fire on swf objects
@@ -177,7 +181,7 @@ const UI = function (elem, options) {
                     setEventListener(elem, 'pointerup', interactEndHandler);
                 }
             } else if (evt.type === 'mousedown') {
-                setEventListener(document, 'mousemove', interactDragHandler);
+                setEventListener(document, 'mousemove', interactDragHandler, listenerOptions);
 
                 // Handle clicks in OSX Firefox over Flash 'object'
                 if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
@@ -186,12 +190,12 @@ const UI = function (elem, options) {
                     setEventListener(document, 'mouseup', interactEndHandler);
                 }
             } else if (evt.type === 'touchstart') {
-                setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler);
+                setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler, listenerOptions);
                 setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
                 setEventListener(_touchListenerTarget, 'touchend', interactEndHandler);
             }
 
-            // Prevent scrolling the screen dragging while dragging on mobile.
+            // Prevent scrolling the screen while dragging on mobile.
             if (options.preventScrolling) {
                 preventDefault(evt);
             }
@@ -319,18 +323,15 @@ const UI = function (elem, options) {
 
 // Expose what the source of the event is so that we can ensure it's handled correctly.
 // This returns only 'touch' or 'mouse'. 'pen' will be treated as a mouse.
-UI.getPointerType = function(evt) {
-    if (_supportsPointerEvents && evt instanceof window.PointerEvent) {
-        return (evt.pointerType === 'touch') ? 'touch' : 'mouse';
-    } else if (_supportsTouchEvents && evt instanceof window.TouchEvent) {
+export function getPointerType(evt) {
+    if ((_supportsTouchEvents && evt instanceof TouchEvent) ||
+        (_supportsPointerEvents && evt instanceof PointerEvent && evt.pointerType === 'touch')) {
         return 'touch';
     }
 
     return 'mouse';
-};
+}
 
 Object.assign(UI.prototype, Events);
-
-export const getPointerType = UI.getPointerType;
 
 export default UI;
