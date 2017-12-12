@@ -1,5 +1,5 @@
 import { transform } from 'utils/css';
-import { Browser, OS } from 'utils/broswer'; 
+import { Browser, OS } from 'utils/browser'; 
 
 export const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;        
 
