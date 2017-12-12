@@ -101,13 +101,15 @@ Object.assign(Controller.prototype, {
             }
         });
         _model.on('change:volume', function(model, vol) {
+            updateProgramSoundSettings();
             _this.trigger(MEDIA_VOLUME, {
                 volume: vol
             });
         });
-        _model.on('change:mute', function(model, mute) {
+        _model.on('change:mute change:autostartMuted', function(model) {
+            updateProgramSoundSettings();
             _this.trigger(MEDIA_MUTE, {
-                mute: mute
+                mute: model.getMute()
             });
         });
 
@@ -713,13 +715,14 @@ Object.assign(Controller.prototype, {
 
         function _setVolume(volume) {
             _model.setVolume(volume);
-            _programController.volume = _model.get('volume');
-            _programController.mute = _model.get('mute');
         }
 
         function _setMute(mute) {
             _model.setMute(mute);
-            _programController.mute = _model.get('mute');
+        }
+
+        function updateProgramSoundSettings() {
+            _programController.mute = _model.getMute();
             _programController.volume = _model.get('volume');
         }
 
