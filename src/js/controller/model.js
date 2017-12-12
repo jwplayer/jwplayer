@@ -140,7 +140,7 @@ const Model = function() {
     };
 
     this.setPlaybackRate = function(playbackRate) {
-        if (!this.get('attached') || !_.isNumber(playbackRate)) {
+        if (!_.isNumber(playbackRate)) {
             return;
         }
 
@@ -152,6 +152,10 @@ const Model = function() {
         }
 
         this.set('defaultPlaybackRate', playbackRate);
+
+        if (_provider && _provider.setPlaybackRate) {
+            _provider.setPlaybackRate(playbackRate);
+        }
     };
 
     this.persistCaptionsTrack = function() {
