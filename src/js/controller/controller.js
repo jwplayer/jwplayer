@@ -101,13 +101,11 @@ Object.assign(Controller.prototype, {
             }
         });
         _model.on('change:volume', function(model, vol) {
-            updateProgramSoundSettings();
             _this.trigger(MEDIA_VOLUME, {
                 volume: vol
             });
         });
         _model.on('change:mute change:autostartMuted', function(model) {
-            updateProgramSoundSettings();
             _this.trigger(MEDIA_MUTE, {
                 mute: model.getMute()
             });
@@ -765,9 +763,11 @@ Object.assign(Controller.prototype, {
 
         // Model passthroughs
         this.setVolume = (volume) => {
+            updateProgramSoundSettings();
             _model.setVolume(volume); 
         };
         this.setMute = (mute) => {
+            updateProgramSoundSettings();
             _model.setMute(mute); 
         };
         this.setPlaybackRate = (playbackRate) => {
