@@ -37,7 +37,7 @@ const VideoActionsMixin = {
                 stretching = 'exactfit';
             }
         }
-        if (fitVideoUsingTransforms && !_videotag.videoWidth < width && !_videotag.videoHeight < height) {
+        if (fitVideoUsingTransforms && _videotag.videoWidth < width && _videotag.videoHeight < height) {
             fitToBounds(_videotag, width, height, stretching, styles);  
         } 
         style(_videotag, styles);
