@@ -10,8 +10,8 @@ export default class AdProgramController extends ProgramController {
         super(model, mediaPool);
         const adModel = this.model = new Model();
         this.playerModel = model;
-        this.playerMediaPool = this.mediaPool;
         this.provider = null;
+        this.mediaPool = AdMediaPool(this.mediaPool);
 
         let mediaElement;
         if (Features.backgroundLoading) {
@@ -25,8 +25,6 @@ export default class AdProgramController extends ProgramController {
             mediaElement.addEventListener('abort', this.srcReset);
             mediaElement.addEventListener('emptied', this.srcReset);
         }
-
-        this.mediaPool = AdMediaPool(mediaElement);
     }
 
     setup() {
@@ -143,9 +141,8 @@ export default class AdProgramController extends ProgramController {
         const { model } = this;
 
         model.off();
+        this.mediaPool.recycle();
         this._destroyActiveMedia();
-
-        this.playerMediaPool.recycle(this.primedElement);
 
         if (!Features.backgroundLoading) {
             const mediaElement = model.get('mediaElement');

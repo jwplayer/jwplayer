@@ -1,4 +1,6 @@
-export default function AdMediaPool(adElement) {
+export default function AdMediaPool(mediaPool) {
+
+    const adElement = mediaPool.getPrimedElement();
 
     return {
         prime() {
@@ -7,7 +9,9 @@ export default function AdMediaPool(adElement) {
         getPrimedElement() {
             return adElement;
         },
-        recycle() {},
+        recycle() {
+            mediaPool.recycle(adElement);
+        },
         syncVolume: function (volume) {
             adElement.volume = volume / 100;
         },
