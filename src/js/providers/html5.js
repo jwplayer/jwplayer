@@ -15,7 +15,7 @@ import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
-import fitToBounds from 'utils/fit-to-bounds';
+import fitToBounds, { fitVideoUsingTransforms } from 'utils/fit-to-bounds';
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
 const _name = 'html5';
@@ -600,7 +600,6 @@ function VideoProvider(_playerId, _playerConfig) {
         // object-fit is not implemented in IE or Android Browser in 4.4 and lower
         // http://caniuse.com/#feat=object-fit
         // feature detection may work for IE but not for browsers where object-fit works for images only
-        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
         if (fitVideoUsingTransforms) {
             fitToBounds(_videotag, width, height, stretching, styles);
         }

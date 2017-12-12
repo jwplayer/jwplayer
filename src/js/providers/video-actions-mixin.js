@@ -1,6 +1,5 @@
 import { style } from 'utils/css';
-import { Browser, OS } from 'environment/environment';
-import fitToBounds from '../utils/fit-to-bounds';
+import fitToBounds, { fitVideoUsingTransforms } from 'utils/fit-to-bounds';
 
 const VideoActionsMixin = {
     container: null,
@@ -20,8 +19,8 @@ const VideoActionsMixin = {
     },
 
     resize: function(width, height, stretching) {
-        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;        
-        if ((!width || !height || !this.video.videoWidth || !this.video.videoHeight) && !fitVideoUsingTransforms) {
+        let _videotag = this.video; 
+        if ((!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) && !fitVideoUsingTransforms) {
             return false;
         }
         const styles = {
@@ -32,16 +31,16 @@ const VideoActionsMixin = {
         if (stretching === 'uniform') {
             // snap video to edges when the difference in aspect ratio is less than 9%
             var playerAspectRatio = width / height;
-            var videoAspectRatio = this.video.videoWidth / this.video.videoHeight;
+            var videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
                 styles.objectFit = 'fill';
                 stretching = 'exactfit';
             }
         }
-        if (fitVideoUsingTransforms && !this.video.videoWidth < width && !this.video.videoHeight < height) {
-            fitToBounds(this.video, width, height, stretching, styles);  
+        if (fitVideoUsingTransforms && !_videotag.videoWidth < width && !_videotag.videoHeight < height) {
+            fitToBounds(_videotag, width, height, stretching, styles);  
         } 
-        style(this.video, styles);
+        style(_videotag, styles);
         return false;
     },
 
