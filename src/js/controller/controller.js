@@ -13,7 +13,7 @@ import ViewModel from 'view/view-model';
 import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
 import Events from 'utils/backbone.events';
-import { OS } from 'environment/environment';
+import { OS, Features } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
@@ -37,7 +37,7 @@ function normalizeState(newstate) {
 const Controller = function() {};
 
 Object.assign(Controller.prototype, {
-    setup(config, _api, originalContainer, eventListeners, commandQueue) {
+    setup(config, _api, originalContainer, eventListeners, commandQueue, mediaPool) {
         const _this = this;
         const _model = _this._model = new Model();
 
@@ -62,7 +62,7 @@ Object.assign(Controller.prototype, {
         _view = this._view = new View(_api, viewModel);
         _view.on('all', _triggerAfterReady, _this);
 
-        const _programController = new ProgramController(_model);
+        const _programController = new ProgramController(_model, mediaPool);
         addProgramControllerListeners();
         initQoe(_model, _programController);
 
@@ -105,9 +105,9 @@ Object.assign(Controller.prototype, {
                 volume: vol
             });
         });
-        _model.on('change:mute', function(model, mute) {
+        _model.on('change:mute change:autostartMuted', function(model) {
             _this.trigger(MEDIA_MUTE, {
-                mute: mute
+                mute: model.getMute()
             });
         });
 
@@ -293,7 +293,9 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable = cancelable(_checkAutoStart);
             updatePlaylistCancelable.cancel();
 
-            _primeMediaElementForPlayback();
+            if (_inInteraction(window.event)) {
+                _programController.primeMediaElements();
+            }
 
             let loadPromise;
 
@@ -387,7 +389,9 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
-                    _primeMediaElementForPlayback();
+                    if (_inInteraction(window.event)) {
+                        _programController.primeMediaElements();
+                    }
                     return resolved;
                 }
             }
@@ -403,20 +407,6 @@ Object.assign(Controller.prototype, {
                 return 'interaction';
             }
             return 'external';
-        }
-
-        function _inInteraction(event) {
-            return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
-        }
-
-        function _primeMediaElementForPlayback() {
-            // If we're in a user-gesture event call load() on video to allow async playback
-            if (_inInteraction(window.event)) {
-                const mediaElement = _model.get('mediaElement');
-                if (!mediaElement.src) {
-                    mediaElement.load();
-                }
-            }
         }
 
         function _autoStart() {
@@ -522,8 +512,7 @@ Object.assign(Controller.prototype, {
                 index += length;
             }
 
-            const item = playlist[index];
-            return _programController.setActiveItem(item, index);
+            return _programController.setActiveItem(index);
         }
 
         function _prev(meta) {
@@ -633,12 +622,24 @@ Object.assign(Controller.prototype, {
             if (_preplay) {
                 _interruptPlay = true;
             }
-            _programController.attached = false;
+
+            if (Features.backgroundLoading) {
+                _programController.backgroundActiveMedia();
+            } else {
+                _programController.attached = false;
+            }
         }
 
-        function _attachMedia() {
+        function _attachMedia(position) {
             // Called after instream ends
-            _programController.attached = true;
+
+            if (Features.backgroundLoading) {
+                _programController.restoreBackgroundMedia();
+            } else {
+                // Set the position before attaching so that we resume at the expected time
+                _programController.position = position || 0;
+                _programController.attached = true;
+            }
 
             if (typeof _actionOnAttach === 'function') {
                 _actionOnAttach();
@@ -698,6 +699,11 @@ Object.assign(Controller.prototype, {
             _programController.on(MEDIA_ERROR, _this.triggerError, _this);
         }
 
+        function updateProgramSoundSettings() {
+            _programController.mute = _model.getMute();
+            _programController.volume = _model.get('volume');
+        }
+
         /** Controller API / public methods **/
         this.load = _load;
         this.play = _play;
@@ -723,7 +729,9 @@ Object.assign(Controller.prototype, {
         this.getConfig = _getConfig;
         this.getState = _getState;
         this.next = _nextUp;
-        this.setConfig = (newConfig) => setConfig(_this, newConfig);
+        this.setConfig = (newConfig) => {
+            setConfig(_this, newConfig); 
+        };
         this.setItemIndex = _setItem;
 
         // Program Controller passthroughs
@@ -731,29 +739,35 @@ Object.assign(Controller.prototype, {
         this.stopVideo = () => _programController.stopVideo();
         this.castVideo = (castProvider, item) => _programController.castVideo(castProvider, item);
         this.stopCast = () => _programController.stopCast();
+        this.backgroundActiveMedia = () => _programController.backgroundActiveMedia();
+        this.restoreBackgroundMedia = () => _programController.restoreBackgroundMedia();
+        this.preloadNextItem = () => {
+            if (_programController.backgroundMedia) {
+                // Instruct the background media to preload if it's already been loaded
+                _programController.preloadVideo();
+            }
+        };
+        this.isBeforeComplete = () => _programController.beforeComplete;
 
         // Model passthroughs
-        this.setVolume = _model.setVolume.bind(_model);
-        this.setMute = _model.setMute.bind(_model);
-        this.setPlaybackRate = _model.setPlaybackRate.bind(_model);
-        this.getProvider = function() {
-            return _model.get('provider');
+        this.setVolume = (volume) => {
+            updateProgramSoundSettings();
+            _model.setVolume(volume); 
         };
-        this.getWidth = function() {
-            return _model.get('containerWidth');
+        this.setMute = (mute) => {
+            updateProgramSoundSettings();
+            _model.setMute(mute); 
         };
-        this.getHeight = function() {
-            return _model.get('containerHeight');
+        this.setPlaybackRate = (playbackRate) => {
+            _model.setPlaybackRate(playbackRate); 
         };
-        this.getItemQoe = function() {
-            return _model._qoeItem;
-        };
-        this.isBeforeComplete = function () {
-            return _programController.beforeComplete;
-        };
+        this.getProvider = () => _model.get('provider');
+        this.getWidth = () => _model.get('containerWidth');
+        this.getHeight = () => _model.get('containerHeight');
+        this.getItemQoe = () => _model._qoeItem;
         this.addButton = function(img, tooltip, callback, id, btnClass) {
             let customButtons = _model.get('customButtons') || [];
-            let added = false;
+            let replaced = false;
             const newButton = {
                 img: img,
                 tooltip: tooltip,
@@ -762,9 +776,9 @@ Object.assign(Controller.prototype, {
                 btnClass: btnClass
             };
 
-            customButtons = customButtons.reduce(function(buttons, button) {
-                if (button.id === newButton.id) {
-                    added = true;
+            customButtons = customButtons.reduce((buttons, button) => {
+                if (button.id === id) {
+                    replaced = true;
                     buttons.push(newButton);
                 } else {
                     buttons.push(button);
@@ -772,7 +786,7 @@ Object.assign(Controller.prototype, {
                 return buttons;
             }, []);
 
-            if (!added) {
+            if (!replaced) {
                 customButtons.unshift(newButton);
             }
 
@@ -849,7 +863,7 @@ Object.assign(Controller.prototype, {
 
         this.createInstream = function() {
             this.instreamDestroy();
-            this._instreamAdapter = new InstreamAdapter(this, _model, _view);
+            this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
             return this._instreamAdapter;
         };
 
@@ -907,5 +921,10 @@ Object.assign(Controller.prototype, {
         this.trigger(ERROR, evt);
     }
 });
+
+
+function _inInteraction(event) {
+    return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
+}
 
 export default Controller;

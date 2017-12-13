@@ -1,6 +1,6 @@
 import cancelable from 'utils/cancelable';
 import Eventable from 'utils/eventable';
-import ProviderListener from 'program/provider-listener';
+import { ProviderListener } from 'program/program-listeners';
 import { resolved } from 'polyfills/promise';
 import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
@@ -15,6 +15,7 @@ export default class MediaController extends Eventable {
         super();
         this.attached = true;
         this.beforeComplete = false;
+        this.item = null;
         this.mediaModel = new MediaModel();
         this.model = model;
         this.provider = provider;
@@ -23,23 +24,8 @@ export default class MediaController extends Eventable {
         addProviderListeners(this);
     }
 
-    init(item) {
-        const { model, provider } = this;
-        const mediaModel = this.mediaModel = new MediaModel();
-        const position = item ? seconds(item.starttime) : 0;
-        const duration = item ? seconds(item.duration) : 0;
-        const mediaModelState = mediaModel.attributes;
-        mediaModel.srcReset();
-        mediaModelState.position = position;
-        mediaModelState.duration = duration;
-        model.setProvider(provider);
-        model.setMediaModel(mediaModel);
-        // Initialize the provider last so it's setting properties on the (newly) active media model
-        provider.init(item);
-    }
-
-    play(item, playReason) {
-        const { model, mediaModel, provider } = this;
+    play(playReason) {
+        const { item, model, mediaModel, provider } = this;
 
         if (!playReason) {
             playReason = model.get('playReason');
@@ -53,7 +39,7 @@ export default class MediaController extends Eventable {
             mediaModel.set('setup', true);
             playPromise = this._loadAndPlay(item, provider);
             if (!mediaModel.get('started')) {
-                this._playAttempt(playPromise, playReason, item);
+                this._playAttempt(playPromise, playReason);
             }
         }
         return playPromise;
@@ -69,8 +55,8 @@ export default class MediaController extends Eventable {
         provider.pause();
     }
 
-    preload(item) {
-        const { mediaModel, provider } = this;
+    preload() {
+        const { item, mediaModel, provider } = this;
         mediaModel.set('preloaded', true);
         provider.preload(item);
     }
@@ -79,19 +65,17 @@ export default class MediaController extends Eventable {
         const { provider, model } = this;
 
         provider.off(null, null, model);
+        this.detach();
         if (provider.getContainer()) {
             provider.remove();
         }
         delete provider.instreamMode;
         this.provider = null;
+        this.item = null;
     }
 
     attach() {
         const { model, provider } = this;
-
-        if (this.beforeComplete) {
-            this._playbackComplete();
-        }
 
         // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
         model.setPlaybackRate(model.get('defaultPlaybackRate'));
@@ -100,6 +84,10 @@ export default class MediaController extends Eventable {
         provider.attachMedia();
         this.attached = true;
         model.set('attached', true);
+
+        if (this.beforeComplete) {
+            this._playbackComplete();
+        }
     }
 
     detach() {
@@ -112,8 +100,8 @@ export default class MediaController extends Eventable {
     }
 
     // Executes the playPromise
-    _playAttempt(playPromise, playReason, item) {
-        const { mediaModel, model, provider } = this;
+    _playAttempt(playPromise, playReason) {
+        const { item, mediaModel, model, provider } = this;
 
         this.trigger(MEDIA_PLAY_ATTEMPT, {
             item,
@@ -129,6 +117,7 @@ export default class MediaController extends Eventable {
                 // Exit if model state was reset
                 return;
             }
+            delete item.starttime;
             mediaModel.set('started', true);
             if (mediaModel === model.mediaModel) {
                 // Start firing visualQuality once playback has started
@@ -159,8 +148,8 @@ export default class MediaController extends Eventable {
         this.trigger(MEDIA_COMPLETE, {});
     }
 
-    _loadAndPlay(item) {
-        const { provider } = this;
+    _loadAndPlay() {
+        const { item, provider } = this;
         // Calling load() on Shaka may return a player setup promise
         const providerSetupPromise = provider.load(item);
         if (providerSetupPromise) {
@@ -185,6 +174,19 @@ export default class MediaController extends Eventable {
         return this.provider.getAudioTracks();
     }
 
+    get background() {
+        // A backgrounded provider is attached to a video tag, but has no parent container (i.e. not in the DOM)
+        return !this.container && this.attached;
+    }
+
+    get container() {
+        return this.provider.getContainer();
+    }
+
+    get mediaElement() {
+        return this.provider.video;
+    }
+
     get preloaded() {
         return this.mediaModel.get('preloaded');
     }
@@ -197,12 +199,54 @@ export default class MediaController extends Eventable {
         return this.mediaModel && this.mediaModel.get('setup');
     }
 
+    set activeItem(item) {
+        const { provider } = this;
+        const mediaModel = this.mediaModel = new MediaModel();
+        const position = item ? seconds(item.starttime) : 0;
+        const duration = item ? seconds(item.duration) : 0;
+        const mediaModelState = mediaModel.attributes;
+        mediaModel.srcReset();
+        mediaModelState.position = position;
+        mediaModelState.duration = duration;
+
+        // Initialize the provider last so it's setting properties on the (newly) active media model
+        provider.init(item);
+        this.item = item;
+    }
+
     set audioTrack(index) {
         this.provider.setCurrentAudioTrack(index);
     }
 
+    set background(shouldBackground) {
+        const { container, provider } = this;
+        if (!container || !provider.video) {
+            return;
+        }
+
+        if (shouldBackground) {
+            if (!this.background) {
+                this.thenPlayPromise.cancel();
+                this.pause();
+                container.removeChild(provider.video);
+                this.container = null;
+            }
+        } else if (this.beforeComplete) {
+            this._playbackComplete();
+        }
+    }
+
+    set container(element) {
+        const { provider } = this;
+        provider.setContainer(element);
+    }
+
     set controls(mode) {
         this.provider.setControls(mode);
+    }
+
+    set mute(mute) {
+        this.provider.mute(mute);
     }
 
     set position(pos) {
@@ -217,6 +261,10 @@ export default class MediaController extends Eventable {
         if (this.provider.setSubtitlesTrack) {
             this.provider.setSubtitlesTrack(index);
         }
+    }
+
+    set volume(volume) {
+        this.provider.volume(volume);
     }
 }
 

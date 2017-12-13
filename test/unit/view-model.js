@@ -46,7 +46,7 @@ describe('ViewModel', function() {
         const model = new Model();
         const viewModel = new ViewModel(model);
         const instream = {
-            _adModel: new Model()
+            model: new Model()
         };
 
         const instreamChangeModeSpy = sinon.spy();
@@ -57,7 +57,7 @@ describe('ViewModel', function() {
 
         // Activate instream mode
         model.set('instream', instream);
-        instream._adModel.set('duration', 30);
+        instream.model.set('duration', 30);
 
         assert(instreamChangeModeSpy.calledOnce, '"instreamMode" event listener called when instream is added');
         assert(instreamModelSpy.calledOnce, 'Instream-model event listener called');
@@ -65,7 +65,7 @@ describe('ViewModel', function() {
 
         // Deactivate instream mode
         model.set('instream', null);
-        instream._adModel.set('duration', 60);
+        instream.model.set('duration', 60);
 
         assert(instreamChangeModeSpy.calledTwice, '"instreamMode" event listener called when instream is removed');
         assert(instreamModelSpy.calledOnce, 'Instream-model event listener not called after instream is removed');
@@ -75,7 +75,7 @@ describe('ViewModel', function() {
         const model = new Model();
         const viewModel = new ViewModel(model);
         const instream = {
-            _adModel: new Model()
+            model: new Model()
         };
 
         const instreamModelSpy = sinon.spy();
@@ -83,14 +83,14 @@ describe('ViewModel', function() {
 
         // Activate instream mode
         model.set('instream', instream);
-        instream._adModel.get('mediaModel').set('duration', 30);
+        instream.model.get('mediaModel').set('duration', 30);
 
         assert(instreamModelSpy.calledOnce, 'Instream media-model event listener called');
         assert(instreamModelSpy.firstCall.calledWith(viewModel, 30), 'Instream media-model change event listener receives correct arguments');
 
         // Deactivate instream mode
         model.set('instream', null);
-        instream._adModel.get('mediaModel').set('duration', 60);
+        instream.model.get('mediaModel').set('duration', 60);
 
         assert(instreamModelSpy.calledOnce, 'Instream media-model event listener not called after instream is removed');
     });
@@ -100,15 +100,15 @@ describe('ViewModel', function() {
         const mediaModel = model.get('mediaModel');
         const viewModel = new ViewModel(model);
         const instream = {
-            _adModel: new Model()
+            model: new Model()
         };
-        const instreamMediaModel = instream._adModel.get('mediaModel');
+        const instreamMediaModel = instream.model.get('mediaModel');
 
         model.set('attr', 'model');
         model.set('model-attr', 'model');
         mediaModel.set('attr', 'media-model');
-        instream._adModel.set('attr', 'instream-model');
-        instream._adModel.set('model-attr', 'instream-model');
+        instream.model.set('attr', 'instream-model');
+        instream.model.set('model-attr', 'instream-model');
         instreamMediaModel.set('attr', 'instream-media-model');
 
         expect(viewModel.get('attr'), 'Media-model is not active until it is changed on the model').to.equal('model');
@@ -132,9 +132,9 @@ describe('ViewModel', function() {
         const mediaModel = model.get('mediaModel');
         const viewModel = new ViewModel(model);
         const instream = {
-            _adModel: new Model()
+            model: new Model()
         };
-        const instreamMediaModel = instream._adModel.get('mediaModel');
+        const instreamMediaModel = instream.model.get('mediaModel');
 
         viewModel.set('attr', 100);
 
@@ -147,7 +147,7 @@ describe('ViewModel', function() {
 
         expect(viewModel.get('attr'), 'Attributes set on the view-model can be retrieved from the view-model in instream mode').to.equal(100);
 
-        expect(instream._adModel.get('attr'), 'Attributes set on the view-model are not set on the instream-model').to.be.an('undefined');
+        expect(instream.model.get('attr'), 'Attributes set on the view-model are not set on the instream-model').to.be.an('undefined');
         expect(instreamMediaModel.get('attr'), 'Attributes set on the view-model are not set on the instrean media-model').to.be.an('undefined');
     });
 
@@ -155,9 +155,9 @@ describe('ViewModel', function() {
         const model = new Model();
         const mediaModel = model.get('mediaModel');
         const instream = {
-            _adModel: new Model()
+            model: new Model()
         };
-        const instreamMediaModel = instream._adModel.get('mediaModel');
+        const instreamMediaModel = instream.model.get('mediaModel');
         const viewModel = new ViewModel(model);
         const playerViewModel = viewModel.player;
 
@@ -185,7 +185,7 @@ describe('ViewModel', function() {
         // Activate instream mode
         model.set('instream', instream);
 
-        instream._adModel.set('c', 30);
+        instream.model.set('c', 30);
         instreamMediaModel.set('d', 30);
 
         viewModel.trigger('viewModelEvent');
@@ -204,9 +204,9 @@ describe('ViewModel', function() {
         const mediaModel = model.get('mediaModel');
         const viewModel = new ViewModel(model);
         const instream = {
-            _adModel: new Model()
+            model: new Model()
         };
-        const instreamMediaModel = instream._adModel.get('mediaModel');
+        const instreamMediaModel = instream.model.get('mediaModel');
 
         const modelSpy = sinon.spy();
         const mediaModelSpy = sinon.spy();
@@ -231,7 +231,7 @@ describe('ViewModel', function() {
         // Activate instream mode
         model.set('instream', instream);
 
-        instream._adModel.trigger('test-instream-model');
+        instream.model.trigger('test-instream-model');
         instreamMediaModel.trigger('test-instream-media-model');
         viewModel.trigger('test-view-model');
 

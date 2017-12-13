@@ -156,5 +156,9 @@ Object.defineProperties(Features, {
     iframe: {
         get: memoize(isIframe),
         enumerable: true
+    },
+    backgroundLoading: {
+        get: memoize(() => !OS.iOS),
+        enumerable: true
     }
 });

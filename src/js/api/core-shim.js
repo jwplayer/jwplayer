@@ -12,7 +12,7 @@ import Events from 'utils/backbone.events';
 import loadCoreBundle from 'api/core-loader';
 import Promise, { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
-import getMediaElement from 'api/get-media-element';
+import MediaElementPool from 'program/media-element-pool';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -85,9 +85,9 @@ Object.assign(CoreShim.prototype, {
         model.setProvider = function() {};
 
         // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
-        const mediaElement =
-            model.attributes.mediaElement = getMediaElement(this.originalContainer);
-        mediaElement.load();
+
+        const mediaPool = MediaElementPool();
+        mediaPool.prime();
 
         return Promise.all([
             loadCoreBundle(model),
@@ -110,7 +110,7 @@ Object.assign(CoreShim.prototype, {
 
             // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
             Object.assign(this, CoreMixin.prototype);
-            this.setup(config, api, this.originalContainer, this._events, commandQueue);
+            this.setup(config, api, this.originalContainer, this._events, commandQueue, mediaPool);
 
             const coreModel = this._model;
             storage.track(coreModel);
