@@ -1,6 +1,6 @@
 import ProviderController from 'providers/provider-controller';
 import MediaController from 'program/media-controller';
-import { resolved } from 'polyfills/promise';
+import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
@@ -45,13 +45,11 @@ export default class ProgramController extends Eventable {
         }
 
         if (mediaController) {
+            const casting = model.get('castActive');
+
             // Buffer between item switches, but remain in the initial state (IDLE) while loading the first provider
             model.set(PLAYER_STATE, STATE_BUFFERING);
-            if (!this.providerController.canPlay(mediaController.provider, source)) {
-                // If we can't play the source with the current provider, reset the current one and
-                // prime the next tag within the gesture
-                this._destroyActiveMedia();
-            } else {
+            if (casting || this.providerController.canPlay(mediaController.provider, source)) {
                 // We can reuse the current mediaController and do so synchronously
                 // Initialize the provider and mediaModel, sync it with the Model
                 // This sets up the mediaController and allows playback to begin
@@ -60,6 +58,10 @@ export default class ProgramController extends Eventable {
                 this.providerPromise = Promise.resolve(mediaController);
                 return this.providerPromise;
             }
+
+            // If we can't play the source with the current provider, reset the current one and
+            // prime the next tag within the gesture
+            this._destroyActiveMedia();
         }
 
         const mediaModelContext = model.mediaModel;
