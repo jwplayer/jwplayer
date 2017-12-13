@@ -113,9 +113,9 @@ export default class AdProgramController extends ProgramController {
 
         const adMediaModelContext = model.mediaModel;
         provider.on(PLAYER_STATE, (event) => {
-            adMediaModelContext.set(PLAYER_STATE, event.newstate);
+            adMediaModelContext.set('mediaState', event.newstate);
         });
-        adMediaModelContext.on('change:' + PLAYER_STATE, (changeAdModel, state) => {
+        adMediaModelContext.on('change:mediaState', (changeAdModel, state) => {
             this._stateHandler(state);
         });
         provider.attachMedia();

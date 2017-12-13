@@ -1,5 +1,4 @@
 import SimpleModel from 'model/simplemodel';
-import { PLAYER_STATE } from 'events/events';
 
 class SimpleModelExtendable {}
 SimpleModelExtendable.prototype = Object.assign({}, SimpleModel);
@@ -52,9 +51,6 @@ class PlayerViewModel extends SimpleModelExtendable {
         this._mediaModel = mediaModel;
 
         mediaModel.on('all', (type, objectOrEvent, value, previousValue) => {
-            if (type === `change:${PLAYER_STATE}`) {
-                return;
-            }
             if (objectOrEvent === mediaModel) {
                 objectOrEvent = this;
             }
@@ -68,7 +64,7 @@ class PlayerViewModel extends SimpleModelExtendable {
 
     get(attr) {
         const mediaModel = this._mediaModel;
-        if (attr !== PLAYER_STATE && mediaModel && attr in mediaModel.attributes) {
+        if (mediaModel && attr in mediaModel.attributes) {
             return mediaModel.get(attr);
         }
         return this._model.get(attr);
@@ -140,7 +136,7 @@ export default class ViewModel extends PlayerViewModel {
 
     get(attr) {
         const mediaModel = this._mediaModel;
-        if (attr !== PLAYER_STATE && mediaModel && attr in mediaModel.attributes) {
+        if (mediaModel && attr in mediaModel.attributes) {
             return mediaModel.get(attr);
         }
         const instreamModel = this._instreamModel;

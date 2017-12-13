@@ -36,6 +36,13 @@ export function ProviderListener(mediaController) {
                 //  we are choosing to not propagate model event.
                 //  Instead letting the master controller do so
                 return;
+            case MEDIA_COMPLETE:
+                mediaController.beforeComplete = true;
+                mediaController.trigger(MEDIA_BEFORECOMPLETE, event);
+                if (mediaController.attached && !mediaController.background) {
+                    mediaController._playbackComplete();
+                }
+                return;
             case MEDIA_ERROR:
                 mediaController.thenPlayPromise.cancel();
                 mediaModel.srcReset();
@@ -47,6 +54,9 @@ export function ProviderListener(mediaController) {
                 }
                 break;
             }
+            case MEDIA_BUFFER:
+                mediaModel.set('buffer', data.bufferPercent);
+                break;
             case MEDIA_TIME: {
                 mediaModel.set('position', data.position);
                 const duration = data.duration;
@@ -58,13 +68,6 @@ export function ProviderListener(mediaController) {
             case MEDIA_LEVELS:
                 mediaModel.set(MEDIA_LEVELS, data.levels);
                 break;
-            case MEDIA_COMPLETE:
-                mediaController.beforeComplete = true;
-                mediaController.trigger(MEDIA_BEFORECOMPLETE, event);
-                if (mediaController.attached && !mediaController.background) {
-                    mediaController._playbackComplete();
-                }
-                return;
             case AUDIO_TRACKS:
                 mediaModel.set(AUDIO_TRACKS, data.tracks);
                 break;
@@ -90,19 +93,19 @@ export function MediaControllerListener(model) {
                 break;
             case 'flashBlocked':
                 model.set('flashBlocked', true);
-                return;
+                break;
             case 'flashUnblocked':
                 model.set('flashBlocked', false);
-                return;
+                break;
             case MEDIA_VOLUME:
                 model.set(type, data[type]);
-                return;
+                break;
             case MEDIA_MUTE:
                 if (!model.get('autostartMuted')) {
                     // Don't persist mute state with muted autostart
                     model.set(type, data[type]);
                 }
-                return;
+                break;
             case MEDIA_RATE_CHANGE: {
                 const rate = data.playbackRate;
                 // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
@@ -110,25 +113,9 @@ export function MediaControllerListener(model) {
                     model.set('playbackRate', rate);
                 }
             }
-                return;
-            case MEDIA_BUFFER:
-                model.set('buffer', data.bufferPercent);
-            /* falls through */
-            case MEDIA_META: {
-                const duration = data.duration;
-                if (_isNumber(duration) && !_isNaN(duration)) {
-                    model.set('duration', duration);
-                }
-                Object.assign(model.get('itemMeta'), data.metadata);
                 break;
-            }
-            case MEDIA_TIME: {
-                model.set('position', data.position);
-                const duration = data.duration;
-                if (_isNumber(duration) && !_isNaN(duration)) {
-                    model.set('duration', duration);
-                }
-                model.trigger(type, data);
+            case MEDIA_META: {
+                Object.assign(model.get('itemMeta'), data.metadata);
                 break;
             }
             case MEDIA_LEVELS:
@@ -147,6 +134,7 @@ export function MediaControllerListener(model) {
             case 'subtitlesTrackChanged':
                 model.persistVideoSubtitleTrack(data.currentTrack, data.tracks);
                 break;
+            case MEDIA_TIME:
             case MEDIA_SEEK:
             case MEDIA_SEEKED:
             case NATIVE_FULLSCREEN:
@@ -155,7 +143,6 @@ export function MediaControllerListener(model) {
                 model.trigger(type, data);
                 break;
             default:
-                break;
         }
     };
 }
