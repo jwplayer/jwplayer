@@ -526,7 +526,7 @@ export default function Api(element) {
         },
 
         getNetworkingInfo() {
-            return networkingInfo(_);
+            return networkingInfo(_, core.getProvider());
         },
 
         /**

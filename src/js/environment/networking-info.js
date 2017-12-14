@@ -8,11 +8,18 @@ const networkingDefaults = {
     onLine: false
 };
 
-const networkingInfo = function (_) {
+const networkingInfo = function (_, provider) {
     if (navigator && navigator.connection) {
         return _.extend(networkingDefaults, navigator.connection);
-        //TODO: remove onchange, might not want to support on other browsers
+        // TODO: remove onchange, might not want to support on other browsers
     }
+
+    if (provider.name === 'hlsjs') {
+        // TODO: obtain downlink from hls.js
+    } else if (provider.name === 'shaka') {
+        // TODO: obtain downlink from shaka
+    }
+
     return networkingDefaults;
 };
 
