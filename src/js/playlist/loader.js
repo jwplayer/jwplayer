@@ -17,7 +17,9 @@ const PlaylistLoader = function() {
 
     function playlistLoaded(loadedEvent) {
         try {
-            var childNodes = loadedEvent.responseXML ? loadedEvent.responseXML.childNodes : null;
+            var childNodes = loadedEvent.responseXML
+                ? loadedEvent.responseXML.childNodes
+                : null;
             var rss = '';
             var jsonObj;
             if (childNodes) {
@@ -33,7 +35,10 @@ const PlaylistLoader = function() {
                 }
                 if (localName(rss) === 'rss') {
                     var rssPlaylist = parseRss(rss);
-                    jsonObj = Object.assign({ playlist: rssPlaylist }, rssPlaylist.feedData);
+                    jsonObj = Object.assign(
+                        { playlist: rssPlaylist },
+                        rssPlaylist.feedData
+                    );
                 }
             }
 

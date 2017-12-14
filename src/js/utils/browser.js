@@ -5,7 +5,7 @@ function userAgentMatch(regex) {
 }
 
 function lazyUserAgentMatch(regex) {
-    return function () {
+    return function() {
         return userAgentMatch(regex);
     };
 }
@@ -44,7 +44,10 @@ export function isIE() {
 }
 
 export function isSafari() {
-    return userAgentMatch(/safari/i) && !userAgentMatch(/(?:Chrome|CriOS|chromium|android)/i);
+    return (
+        userAgentMatch(/safari/i) &&
+        !userAgentMatch(/(?:Chrome|CriOS|chromium|android)/i)
+    );
 }
 
 /** Matches iOS devices **/
@@ -55,7 +58,11 @@ export function isIOS() {
 /** Matches Android devices **/
 export function isAndroidNative() {
     // Android Browser appears to include a user-agent string for Chrome/18
-    if (userAgentMatch(/chrome\/[123456789]/i) && !userAgentMatch(/chrome\/18/i) && !isFF()) {
+    if (
+        userAgentMatch(/chrome\/[123456789]/i) &&
+        !userAgentMatch(/chrome\/18/i) &&
+        !isFF()
+    ) {
         return false;
     }
     return isAndroid();
@@ -92,7 +99,9 @@ export function flashVersion() {
     if (plugins) {
         flash = plugins['Shockwave Flash'];
         if (flash && flash.description) {
-            return parseFloat(flash.description.replace(/\D+(\d+\.?\d*).*/, '$1'));
+            return parseFloat(
+                flash.description.replace(/\D+(\d+\.?\d*).*/, '$1')
+            );
         }
     }
 
@@ -100,7 +109,12 @@ export function flashVersion() {
         try {
             flash = new window.ActiveXObject('ShockwaveFlash.ShockwaveFlash');
             if (flash) {
-                return parseFloat(flash.GetVariable('$version').split(' ')[1].replace(/\s*,\s*/, '.'));
+                return parseFloat(
+                    flash
+                        .GetVariable('$version')
+                        .split(' ')[1]
+                        .replace(/\s*,\s*/, '.')
+                );
             }
         } catch (e) {
             return 0;

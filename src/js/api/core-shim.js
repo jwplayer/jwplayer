@@ -23,39 +23,42 @@ const CoreShim = function(originalContainer) {
     this.modelShim._qoeItem = new Timer();
     this.mediaShim = {};
     this.setup = new Setup(this.modelShim);
-    this.currentContainer =
-        this.originalContainer = originalContainer;
-    this.apiQueue = new ApiQueueDecorator(this, [
-        // These commands require a provider instance to be available
-        'load',
-        'play',
-        'pause',
-        'seek',
-        'stop',
-        'playlistItem',
-        'playlistNext',
-        'playlistPrev',
-        'next',
+    this.currentContainer = this.originalContainer = originalContainer;
+    this.apiQueue = new ApiQueueDecorator(
+        this,
+        [
+            // These commands require a provider instance to be available
+            'load',
+            'play',
+            'pause',
+            'seek',
+            'stop',
+            'playlistItem',
+            'playlistNext',
+            'playlistPrev',
+            'next',
 
-        // These should just update state that could be acted on later, but need to be queued given v7 model
-        'setConfig',
-        'setCurrentAudioTrack',
-        'setCurrentCaptions',
-        'setCurrentQuality',
-        'setFullscreen',
-        'addButton',
-        'removeButton',
-        'castToggle',
-        'setMute',
-        'setVolume',
-        'setPlaybackRate',
-        'setCues',
+            // These should just update state that could be acted on later, but need to be queued given v7 model
+            'setConfig',
+            'setCurrentAudioTrack',
+            'setCurrentCaptions',
+            'setCurrentQuality',
+            'setFullscreen',
+            'addButton',
+            'removeButton',
+            'castToggle',
+            'setMute',
+            'setVolume',
+            'setPlaybackRate',
+            'setCues',
 
-        // These commands require the view instance to be available
-        'resize',
-        'setCaptions',
-        'setControls',
-    ], () => true);
+            // These commands require the view instance to be available
+            'resize',
+            'setCaptions',
+            'setControls'
+        ],
+        () => true
+    );
 };
 
 Object.assign(CoreShim.prototype, {
@@ -93,41 +96,51 @@ Object.assign(CoreShim.prototype, {
             loadCoreBundle(model),
             this.setup.start(),
             loadPlugins(model, api)
-        ]).then(allPromises => {
-            const CoreMixin = allPromises[0];
-            if (!this.setup) {
-                // Exit if `playerDestroy` was called on CoreLoader clearing the config
-                return;
-            }
-            const config = this.modelShim.clone();
-            // Exit if embed config encountered an error
-            if (config.error instanceof Error) {
-                throw config.error;
-            }
-            // copy queued commands
-            const commandQueue = this.apiQueue.queue.slice(0);
-            this.apiQueue.destroy();
+        ])
+            .then((allPromises) => {
+                const CoreMixin = allPromises[0];
+                if (!this.setup) {
+                    // Exit if `playerDestroy` was called on CoreLoader clearing the config
+                    return;
+                }
+                const config = this.modelShim.clone();
+                // Exit if embed config encountered an error
+                if (config.error instanceof Error) {
+                    throw config.error;
+                }
+                // copy queued commands
+                const commandQueue = this.apiQueue.queue.slice(0);
+                this.apiQueue.destroy();
 
-            // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
-            Object.assign(this, CoreMixin.prototype);
-            this.setup(config, api, this.originalContainer, this._events, commandQueue, mediaPool);
+                // Assign CoreMixin.prototype (formerly controller) properties to this instance making api.core the controller
+                Object.assign(this, CoreMixin.prototype);
+                this.setup(
+                    config,
+                    api,
+                    this.originalContainer,
+                    this._events,
+                    commandQueue,
+                    mediaPool
+                );
 
-            const coreModel = this._model;
-            storage.track(coreModel);
+                const coreModel = this._model;
+                storage.track(coreModel);
 
-            // Set the active playlist item after plugins are loaded and the view is setup
-            return this.setItemIndex(coreModel.get('item'));
-        }).then(() => {
-            if (!this.setup) {
-                return;
-            }
-            this.playerReady();
-        }).catch((error) => {
-            if (!this.setup) {
-                return;
-            }
-            setupError(this, error);
-        });
+                // Set the active playlist item after plugins are loaded and the view is setup
+                return this.setItemIndex(coreModel.get('item'));
+            })
+            .then(() => {
+                if (!this.setup) {
+                    return;
+                }
+                this.playerReady();
+            })
+            .catch((error) => {
+                if (!this.setup) {
+                    return;
+                }
+                setupError(this, error);
+            });
     },
     playerDestroy() {
         if (this.apiQueue) {
@@ -138,11 +151,7 @@ Object.assign(CoreShim.prototype, {
             this.setup.destroy();
         }
         this.off();
-        this._events =
-            this._model =
-            this.originalContainer =
-            this.apiQueue =
-            this.setup = null;
+        this._events = this._model = this.originalContainer = this.apiQueue = this.setup = null;
     },
     getContainer() {
         return this.currentContainer;
@@ -232,7 +241,9 @@ function setupError(core, error) {
         const { message, code } = error;
         const errorContainer = ErrorContainer(core, message);
         if (ErrorContainer.cloneIcon) {
-            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+            errorContainer
+                .querySelector('.jw-icon')
+                .appendChild(ErrorContainer.cloneIcon('error'));
         }
         showView(core, errorContainer);
 
@@ -256,7 +267,10 @@ export function showView(core, viewElement) {
     }
 
     if (core.currentContainer.parentElement) {
-        core.currentContainer.parentElement.replaceChild(viewElement, core.currentContainer);
+        core.currentContainer.parentElement.replaceChild(
+            viewElement,
+            core.currentContainer
+        );
     }
     core.currentContainer = viewElement;
 }

@@ -1,4 +1,10 @@
-import { PLAYLIST_ITEM, MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME, MEDIA_FIRST_FRAME } from 'events/events';
+import {
+    PLAYLIST_ITEM,
+    MEDIA_PLAY_ATTEMPT,
+    PROVIDER_FIRST_FRAME,
+    MEDIA_TIME,
+    MEDIA_FIRST_FRAME
+} from 'events/events';
 import Timer from 'api/timer';
 
 const TAB_HIDDEN = 'tabHidden';
@@ -6,9 +12,9 @@ const TAB_VISIBLE = 'tabVisible';
 
 // This is to provide a first frame event even when
 //  a provider does not give us one.
-const onTimeIncreasesGenerator = (function(callback) {
+const onTimeIncreasesGenerator = function(callback) {
     let lastVal = 0;
-    return function (evt) {
+    return function(evt) {
         const pos = evt.position;
         if (pos > lastVal) {
             callback();
@@ -17,7 +23,7 @@ const onTimeIncreasesGenerator = (function(callback) {
         //  so always update
         lastVal = pos;
     };
-});
+};
 
 function unbindFirstFrameEvents(model, programController) {
     programController.off(MEDIA_PLAY_ATTEMPT, model._onPlayAttempt);
@@ -90,7 +96,11 @@ const initQoe = function(initialModel, programController) {
 
         trackFirstFrame(model, programController);
 
-        mediaModel.on('change:mediaState', function (changeMediaModel, newstate, oldstate) {
+        mediaModel.on('change:mediaState', function(
+            changeMediaModel,
+            newstate,
+            oldstate
+        ) {
             if (newstate !== oldstate) {
                 model._qoeItem.end(oldstate);
                 model._qoeItem.start(newstate);

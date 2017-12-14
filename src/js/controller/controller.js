@@ -19,10 +19,35 @@ import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import _ from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
-import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
-    STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
-    MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
-    CAPTIONS_LIST, CONTROLS, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
+import {
+    PLAYER_STATE,
+    STATE_BUFFERING,
+    STATE_IDLE,
+    STATE_COMPLETE,
+    STATE_PAUSED,
+    STATE_PLAYING,
+    STATE_ERROR,
+    STATE_LOADING,
+    STATE_STALLED,
+    MEDIA_BEFOREPLAY,
+    PLAYLIST_LOADED,
+    ERROR,
+    PLAYLIST_COMPLETE,
+    CAPTIONS_CHANGED,
+    READY,
+    MEDIA_ERROR,
+    MEDIA_COMPLETE,
+    CAST_SESSION,
+    FULLSCREEN,
+    PLAYLIST_ITEM,
+    MEDIA_VOLUME,
+    MEDIA_MUTE,
+    PLAYBACK_RATE_CHANGED,
+    CAPTIONS_LIST,
+    CONTROLS,
+    RESIZE,
+    MEDIA_VISUAL_QUALITY
+} from 'events/events';
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 
@@ -37,9 +62,16 @@ function normalizeState(newstate) {
 const Controller = function() {};
 
 Object.assign(Controller.prototype, {
-    setup(config, _api, originalContainer, eventListeners, commandQueue, mediaPool) {
+    setup(
+        config,
+        _api,
+        originalContainer,
+        eventListeners,
+        commandQueue,
+        mediaPool
+    ) {
         const _this = this;
-        const _model = _this._model = new Model();
+        const _model = (_this._model = new Model());
 
         let _view;
         let _captions;
@@ -69,22 +101,28 @@ Object.assign(Controller.prototype, {
         _model.on(ERROR, _this.triggerError, _this);
 
         // If we attempt to load flash, assume it is blocked if we don't hear back within a second
-        _model.on('change:flashBlocked', function(model, isBlocked) {
-            if (!isBlocked) {
-                this._model.set('errorEvent', undefined);
-                return;
-            }
-            // flashThrottle indicates whether this is a throttled event or plugin blocked event
-            const throttled = !!model.get('flashThrottle');
-            const errorEvent = {
-                message: throttled ? 'Click to run Flash' : 'Flash plugin failed to load'
-            };
-            // Only dispatch an error for Flash blocked, not throttled events
-            if (!throttled) {
-                this.trigger(ERROR, errorEvent);
-            }
-            this._model.set('errorEvent', errorEvent);
-        }, this);
+        _model.on(
+            'change:flashBlocked',
+            function(model, isBlocked) {
+                if (!isBlocked) {
+                    this._model.set('errorEvent', undefined);
+                    return;
+                }
+                // flashThrottle indicates whether this is a throttled event or plugin blocked event
+                const throttled = !!model.get('flashThrottle');
+                const errorEvent = {
+                    message: throttled
+                        ? 'Click to run Flash'
+                        : 'Flash plugin failed to load'
+                };
+                // Only dispatch an error for Flash blocked, not throttled events
+                if (!throttled) {
+                    this.trigger(ERROR, errorEvent);
+                }
+                this._model.set('errorEvent', errorEvent);
+            },
+            this
+        );
 
         _model.on('change:state', changeStateEvent, this);
 
@@ -141,7 +179,10 @@ Object.assign(Controller.prototype, {
                     model.set(PLAYER_STATE, normalizeState(state));
                 }
             });
-            mediaModel.on('change:duration', function(changedMediaModel, duration) {
+            mediaModel.on('change:duration', function(
+                changedMediaModel,
+                duration
+            ) {
                 const minDvrWindow = model.get('minDvrWindow');
                 const type = streamType(duration, minDvrWindow);
                 model.setStreamType(type);
@@ -221,16 +262,19 @@ Object.assign(Controller.prototype, {
             // Send queued events
             for (let i = 0; i < _eventQueuedUntilReady.length; i++) {
                 const event = _eventQueuedUntilReady[i];
-                _preplay = (event.type === MEDIA_BEFOREPLAY);
+                _preplay = event.type === MEDIA_BEFOREPLAY;
                 _this.trigger(event.type, event.args);
                 _preplay = false;
             }
 
             _model.change('viewable', viewableChange);
             _model.change('viewable', _checkPlayOnViewable);
-            _model.once('change:autostartFailed change:autostartMuted change:mute', function(model) {
-                model.off('change:viewable', _checkPlayOnViewable);
-            });
+            _model.once(
+                'change:autostartFailed change:autostartMuted change:mute',
+                function(model) {
+                    model.off('change:viewable', _checkPlayOnViewable);
+                }
+            );
 
             // Run _checkAutoStart() last
             // 'viewable' changes can result in preload() being called on the initial provider instance
@@ -260,7 +304,6 @@ Object.assign(Controller.prototype, {
                 viewable: viewable
             });
 
-
             // Only attempt to preload if this is the first player on the page or viewable
             if (instances[0] === _api || viewable === 1) {
                 _programController.preloadVideo();
@@ -285,7 +328,6 @@ Object.assign(Controller.prototype, {
         };
 
         function _load(item, feedData) {
-
             _this.trigger('destroyPlugin', {});
             _stop(true);
 
@@ -301,21 +343,33 @@ Object.assign(Controller.prototype, {
 
             switch (typeof item) {
                 case 'string': {
-                    const loadPlaylistPromise = _loadPlaylist(item).catch(error => {
-                        _this.triggerError({
-                            message: `Error loading playlist: ${error.message}`
-                        });
-                    });
+                    const loadPlaylistPromise = _loadPlaylist(item).catch(
+                        (error) => {
+                            _this.triggerError({
+                                message: `Error loading playlist: ${
+                                    error.message
+                                }`
+                            });
+                        }
+                    );
                     updatePlaylistCancelable = cancelable((data) => {
                         if (data) {
-                            return _this.updatePlaylist(Playlist(data.playlist), data);
+                            return _this.updatePlaylist(
+                                Playlist(data.playlist),
+                                data
+                            );
                         }
                     });
-                    loadPromise = loadPlaylistPromise.then(updatePlaylistCancelable.async);
+                    loadPromise = loadPlaylistPromise.then(
+                        updatePlaylistCancelable.async
+                    );
                     break;
                 }
                 case 'object':
-                    loadPromise = _this.updatePlaylist(Playlist(item), feedData);
+                    loadPromise = _this.updatePlaylist(
+                        Playlist(item),
+                        feedData
+                    );
                     break;
                 case 'number':
                     loadPromise = _setItem(item);
@@ -323,13 +377,15 @@ Object.assign(Controller.prototype, {
                 default:
                     return;
             }
-            loadPromise.catch(error => {
+            loadPromise.catch((error) => {
                 _this.triggerError({
                     message: `Playlist error: ${error.message}`
                 });
             });
 
-            loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
+            loadPromise
+                .then(checkAutoStartCancelable.async)
+                .catch(function() {});
         }
 
         function _loadPlaylist(toLoad) {
@@ -338,12 +394,16 @@ Object.assign(Controller.prototype, {
                 loader.on(PLAYLIST_LOADED, function(data) {
                     resolve(data);
                 });
-                loader.on(ERROR, function(error) {
-                    _model.set('feedData', {
-                        error: error
-                    });
-                    reject(error);
-                }, this);
+                loader.on(
+                    ERROR,
+                    function(error) {
+                        _model.set('feedData', {
+                            error: error
+                        });
+                        reject(error);
+                    },
+                    this
+                );
                 loader.load(toLoad);
             });
         }
@@ -384,7 +444,9 @@ Object.assign(Controller.prototype, {
 
             if (!_preplay) {
                 _preplay = true;
-                _this.triggerAfterReady(MEDIA_BEFOREPLAY, { playReason: playReason });
+                _this.triggerAfterReady(MEDIA_BEFOREPLAY, {
+                    playReason: playReason
+                });
                 _preplay = false;
                 if (_interruptPlay) {
                     _interruptPlay = false;
@@ -480,14 +542,21 @@ Object.assign(Controller.prototype, {
 
         function _isIdle() {
             const state = _model.get('state');
-            return (state === STATE_IDLE || state === STATE_COMPLETE || state === STATE_ERROR);
+            return (
+                state === STATE_IDLE ||
+                state === STATE_COMPLETE ||
+                state === STATE_ERROR
+            );
         }
 
         function _seek(pos, meta) {
             if (_model.get('state') === STATE_ERROR) {
                 return;
             }
-            if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
+            if (
+                !_model.get('scrubbing') &&
+                _model.get('state') !== STATE_PLAYING
+            ) {
                 _play(meta);
             }
 
@@ -672,8 +741,8 @@ Object.assign(Controller.prototype, {
                     mode: nextUp.mode,
                     ui: 'nextup',
                     target: nextUp,
-                    itemsShown: [ nextUp ],
-                    feedData: nextUp.feedData,
+                    itemsShown: [nextUp],
+                    feedData: nextUp.feedData
                 });
             }
             if (typeof cb === 'function') {
@@ -730,17 +799,20 @@ Object.assign(Controller.prototype, {
         this.getState = _getState;
         this.next = _nextUp;
         this.setConfig = (newConfig) => {
-            setConfig(_this, newConfig); 
+            setConfig(_this, newConfig);
         };
         this.setItemIndex = _setItem;
 
         // Program Controller passthroughs
-        this.playVideo = (playReason) => _programController.playVideo(playReason);
+        this.playVideo = playReason => _programController.playVideo(playReason);
         this.stopVideo = () => _programController.stopVideo();
-        this.castVideo = (castProvider, item) => _programController.castVideo(castProvider, item);
+        this.castVideo = (castProvider, item) =>
+            _programController.castVideo(castProvider, item);
         this.stopCast = () => _programController.stopCast();
-        this.backgroundActiveMedia = () => _programController.backgroundActiveMedia();
-        this.restoreBackgroundMedia = () => _programController.restoreBackgroundMedia();
+        this.backgroundActiveMedia = () =>
+            _programController.backgroundActiveMedia();
+        this.restoreBackgroundMedia = () =>
+            _programController.restoreBackgroundMedia();
         this.preloadNextItem = () => {
             if (_programController.backgroundMedia) {
                 // Instruct the background media to preload if it's already been loaded
@@ -752,14 +824,14 @@ Object.assign(Controller.prototype, {
         // Model passthroughs
         this.setVolume = (volume) => {
             updateProgramSoundSettings();
-            _model.setVolume(volume); 
+            _model.setVolume(volume);
         };
         this.setMute = (mute) => {
             updateProgramSoundSettings();
-            _model.setMute(mute); 
+            _model.setMute(mute);
         };
         this.setPlaybackRate = (playbackRate) => {
-            _model.setPlaybackRate(playbackRate); 
+            _model.setPlaybackRate(playbackRate);
         };
         this.getProvider = () => _model.get('provider');
         this.getWidth = () => _model.get('containerWidth');
@@ -795,13 +867,13 @@ Object.assign(Controller.prototype, {
         this.removeButton = function(id) {
             const customButtons = _.filter(
                 _model.get('customButtons'),
-                (button) => button.id !== id
+                button => button.id !== id
             );
 
             _model.set('customButtons', customButtons);
         };
         // Delegate trigger so we can run a middleware function before any event is bubbled through the API
-        this.trigger = function (type, args) {
+        this.trigger = function(type, args) {
             const data = eventsMiddleware(_model, type, args);
             return Events.trigger.call(this, type, data);
         };
@@ -815,7 +887,7 @@ Object.assign(Controller.prototype, {
             return _preplay;
         };
 
-        this.setControls = function (mode) {
+        this.setControls = function(mode) {
             if (!_.isBoolean(mode)) {
                 mode = !_model.get('controls');
             }
@@ -823,7 +895,7 @@ Object.assign(Controller.prototype, {
             _programController.controls = mode;
         };
 
-        this.setCues = function (cues) {
+        this.setCues = function(cues) {
             _model.set('cues', cues);
         };
 
@@ -838,7 +910,7 @@ Object.assign(Controller.prototype, {
             return _setItem(0);
         };
 
-        this.playerDestroy = function () {
+        this.playerDestroy = function() {
             this.trigger('destroyPlugin', {});
             this.off();
             this.stop();
@@ -863,7 +935,12 @@ Object.assign(Controller.prototype, {
 
         this.createInstream = function() {
             this.instreamDestroy();
-            this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
+            this._instreamAdapter = new InstreamAdapter(
+                this,
+                _model,
+                _view,
+                mediaPool
+            );
             return this._instreamAdapter;
         };
 
@@ -881,15 +958,19 @@ Object.assign(Controller.prototype, {
         };
 
         // Setup ApiQueueDecorator after instance methods have been assigned
-        const apiQueue = new ApiQueueDecorator(this, [
-            'play',
-            'pause',
-            'seek',
-            'setCurrentAudioTrack',
-            'setCurrentCaptions',
-            'setCurrentQuality',
-            'setFullscreen',
-        ], () => !_programController.activeProvider);
+        const apiQueue = new ApiQueueDecorator(
+            this,
+            [
+                'play',
+                'pause',
+                'seek',
+                'setCurrentAudioTrack',
+                'setCurrentCaptions',
+                'setCurrentQuality',
+                'setFullscreen'
+            ],
+            () => !_programController.activeProvider
+        );
         // Add commands from CoreLoader to queue
         apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 
@@ -914,17 +995,22 @@ Object.assign(Controller.prototype, {
     triggerError(evt) {
         this._model.set('errorEvent', evt);
         this._model.set('state', STATE_ERROR);
-        this._model.once('change:state', function() {
-            this._model.set('errorEvent', undefined);
-        }, this);
+        this._model.once(
+            'change:state',
+            function() {
+                this._model.set('errorEvent', undefined);
+            },
+            this
+        );
 
         this.trigger(ERROR, evt);
     }
 });
 
-
 function _inInteraction(event) {
-    return event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type);
+    return (
+        event && /^(?:mouse|pointer|touch|gesture|click|key)/.test(event.type)
+    );
 }
 
 export default Controller;

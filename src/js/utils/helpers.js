@@ -10,7 +10,7 @@ import {
     hms,
     seconds,
     prefix,
-    suffix,
+    suffix
 } from 'utils/strings';
 import Timer from 'api/timer';
 import { tryCatch, JwError as Error } from 'utils/trycatch';
@@ -27,25 +27,22 @@ import {
     createElement,
     emptyElement,
     addStyleSheet,
-    bounds,
+    bounds
 } from 'utils/dom';
-import {
-    css,
-    clearCss,
-    style,
-    transform,
-    getRgba
-} from 'utils/css';
+import { css, clearCss, style, transform, getRgba } from 'utils/css';
 import { ajax, crossdomain } from 'utils/ajax';
 
-export const log = (typeof console.log === 'function') ? console.log.bind(console) : function() {};
+export const log =
+    typeof console.log === 'function'
+        ? console.log.bind(console)
+        : function() {};
 
-const between = function (num, min, max) {
+const between = function(num, min, max) {
     return Math.max(Math.min(num, max), min);
 };
 
 // The predicate received the arguments (key, value) instead of (value, key)
-const foreach = function (aData, fnEach) {
+const foreach = function(aData, fnEach) {
     for (let key in aData) {
         if (Object.prototype.hasOwnProperty.call(aData, key)) {
             fnEach(key, aData[key]);
@@ -55,7 +52,7 @@ const foreach = function (aData, fnEach) {
 
 const indexOf = _.indexOf;
 
-const noop = function () {};
+const noop = function() {};
 
 const helpers = Object.assign({}, parser, validator, playerutils, {
     addClass,
@@ -92,7 +89,7 @@ const helpers = Object.assign({}, parser, validator, playerutils, {
     seconds,
     prefix,
     suffix,
-    noop,
+    noop
 });
 
 export default helpers;

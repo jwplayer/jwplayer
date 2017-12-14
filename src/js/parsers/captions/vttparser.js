@@ -42,7 +42,6 @@ function StringDecoder() {
 
 // Try to parse input as a time stamp.
 function parseTimeStamp(input) {
-
     function computeSeconds(h, m, s, f) {
         return (h | 0) * 3600 + (m | 0) * 60 + (s | 0) + (f | 0) / 1000;
     }
@@ -103,7 +102,8 @@ Settings.prototype = {
     },
     // Accept a setting if its a valid (signed) integer.
     integer: function(k, v) {
-        if (integerRegex.test(v)) { // integer
+        if (integerRegex.test(v)) {
+            // integer
             this.set(k, parseInt(v, 10));
         }
     },
@@ -159,50 +159,72 @@ function parseCue(input, cue, regionList) {
     function consumeCueSettings(inputInner, cueInner) {
         var settings = new Settings();
 
-        parseOptions(inputInner, function (k, v) {
-            switch (k) {
-                case 'region':
-                    // Find the last region we parsed with the same region id.
-                    for (var i = regionList.length - 1; i >= 0; i--) {
-                        if (regionList[i].id === v) {
-                            settings.set(k, regionList[i].region);
-                            break;
+        parseOptions(
+            inputInner,
+            function(k, v) {
+                switch (k) {
+                    case 'region':
+                        // Find the last region we parsed with the same region id.
+                        for (var i = regionList.length - 1; i >= 0; i--) {
+                            if (regionList[i].id === v) {
+                                settings.set(k, regionList[i].region);
+                                break;
+                            }
                         }
+                        break;
+                    case 'vertical':
+                        settings.alt(k, v, ['rl', 'lr']);
+                        break;
+                    case 'line': {
+                        const vals = v.split(',');
+                        const vals0 = vals[0];
+                        settings.integer(k, vals0);
+                        if (settings.percent(k, vals0)) {
+                            settings.set('snapToLines', false);
+                        }
+                        settings.alt(k, vals0, ['auto']);
+                        if (vals.length === 2) {
+                            settings.alt('lineAlign', vals[1], [
+                                'start',
+                                center,
+                                'end'
+                            ]);
+                        }
+                        break;
                     }
-                    break;
-                case 'vertical':
-                    settings.alt(k, v, ['rl', 'lr']);
-                    break;
-                case 'line': {
-                    const vals = v.split(',');
-                    const vals0 = vals[0];
-                    settings.integer(k, vals0);
-                    if (settings.percent(k, vals0)) {
-                        settings.set('snapToLines', false);
+                    case 'position': {
+                        const vals = v.split(',');
+                        settings.percent(k, vals[0]);
+                        if (vals.length === 2) {
+                            settings.alt('positionAlign', vals[1], [
+                                'start',
+                                center,
+                                'end',
+                                'line-left',
+                                'line-right',
+                                'auto'
+                            ]);
+                        }
+                        break;
                     }
-                    settings.alt(k, vals0, ['auto']);
-                    if (vals.length === 2) {
-                        settings.alt('lineAlign', vals[1], ['start', center, 'end']);
-                    }
-                    break;
+                    case 'size':
+                        settings.percent(k, v);
+                        break;
+                    case 'align':
+                        settings.alt(k, v, [
+                            'start',
+                            center,
+                            'end',
+                            'left',
+                            'right'
+                        ]);
+                        break;
+                    default:
                 }
-                case 'position': {
-                    const vals = v.split(',');
-                    settings.percent(k, vals[0]);
-                    if (vals.length === 2) {
-                        settings.alt('positionAlign', vals[1], ['start', center, 'end', 'line-left', 'line-right', 'auto']);
-                    }
-                    break;
-                }
-                case 'size':
-                    settings.percent(k, v);
-                    break;
-                case 'align':
-                    settings.alt(k, v, ['start', center, 'end', 'left', 'right']);
-                    break;
-                default:
-            }
-        }, colonDelimRegex, stringDelimRegex);
+            },
+            colonDelimRegex,
+            stringDelimRegex
+        );
 
         // Apply default values for any missing fields.
         cueInner.region = settings.get('region', null);
@@ -220,7 +242,12 @@ function parseCue(input, cue, regionList) {
         var position = settings.get('position', 'auto');
         if (position === 'auto' && defaults.position === 50) {
             // set numeric position for Safari
-            position = cueInner.align === 'start' || cueInner.align === 'left' ? 0 : cueInner.align === 'end' || cueInner.align === 'right' ? 100 : 50;
+            position = 50;
+            if (cueInner.align === 'start' || cueInner.align === 'left') {
+                position = 0;
+            } else if (cueInner.align === 'end' || cueInner.align === 'right') {
+                position = 100;
+            }
         }
         cueInner.position = position;
     }
@@ -233,9 +260,12 @@ function parseCue(input, cue, regionList) {
     skipWhitespace();
     cue.startTime = consumeTimeStamp(); // (1) collect cue start time
     skipWhitespace();
-    if (input.substr(0, 3) !== '-->') { // (3) next characters must match '-->'
-        throw new Error('Malformed time stamp (time stamps must be separated by \'-->\'): ' +
-            oInput);
+    if (input.substr(0, 3) !== '-->') {
+        // (3) next characters must match '-->'
+        throw new Error(
+            'Malformed time stamp (time stamps must be separated by \'-->\'): ' +
+                oInput
+        );
     }
     input = input.substr(3);
     skipWhitespace();
@@ -247,7 +277,7 @@ function parseCue(input, cue, regionList) {
 }
 
 VTTParser.prototype = {
-    parse: function (data, flushing) {
+    parse: function(data, flushing) {
         var self = this;
 
         // If there is no data then we won't decode it, but will just try to parse
@@ -261,7 +291,11 @@ VTTParser.prototype = {
         function collectNextLine() {
             var buffer = self.buffer;
             var pos = 0;
-            while (pos < buffer.length && buffer[pos] !== '\r' && buffer[pos] !== '\n') {
+            while (
+                pos < buffer.length &&
+                buffer[pos] !== '\r' &&
+                buffer[pos] !== '\n'
+            ) {
                 ++pos;
             }
             var line = buffer.substr(0, pos);
@@ -393,7 +427,10 @@ VTTParser.prototype = {
                             // 35 - If we have the special substring '-->' then report the cue,
                             // but do not collect the line as we need to process the current
                             // one as a new cue.
-                            if (!line || hasSubstring && (alreadyCollectedLine = true)) {
+                            if (
+                                !line ||
+                                (hasSubstring && (alreadyCollectedLine = true))
+                            ) {
                                 // We are done parsing self cue.
                                 if (self.oncue) {
                                     currentCueBatch += 1;
@@ -434,7 +471,7 @@ VTTParser.prototype = {
         // Immediately process some cues
         processBuffer();
     },
-    flush: function () {
+    flush: function() {
         var self = this;
         try {
             // Finish decoding the stream.

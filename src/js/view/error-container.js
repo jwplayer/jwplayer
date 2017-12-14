@@ -4,7 +4,8 @@ import { style } from 'utils/css';
 
 export default function ErrorContainer(model, message) {
     const index = message.indexOf(':') + 1;
-    const title = (index > 0) ? message.substr(0, index) : 'Error loading player:';
+    const title =
+        index > 0 ? message.substr(0, index) : 'Error loading player:';
     const description = message.substr(index);
     const html = errorContainerTemplate(model.get('id'), title, description);
     const width = model.get('width');

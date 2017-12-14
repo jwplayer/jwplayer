@@ -32,8 +32,11 @@ export default function Dfxp(xmlDoc) {
             b.parentNode.replaceChild(xmlDoc.createTextNode('\r\n'), b);
         }
 
-        var rawText = (p.innerHTML || p.textContent || p.text || '');
-        var text = trim(rawText).replace(/>\s+</g, '><').replace(/(<\/?)tts?:/g, '$1').replace(/<br.*?\/>/g, '\r\n');
+        var rawText = p.innerHTML || p.textContent || p.text || '';
+        var text = trim(rawText)
+            .replace(/>\s+</g, '><')
+            .replace(/(<\/?)tts?:/g, '$1')
+            .replace(/<br.*?\/>/g, '\r\n');
         if (text) {
             var begin = p.getAttribute('begin');
             var dur = p.getAttribute('dur');

@@ -14,7 +14,9 @@ export function crossdomain(uri) {
         b.href = uri;
         b.href = b.href; /* IE fix for relative urls */
         return a.protocol + '//' + a.host !== b.protocol + '//' + b.host;
-    } catch (e) {/* swallow */}
+    } catch (e) {
+        /* swallow */
+    }
     return true;
 }
 
@@ -24,19 +26,25 @@ export function ajax(url, completeCallback, errorCallback, args) {
         url = args.url;
     }
     var xhr;
-    var options = Object.assign({
-        xhr: null,
-        url: url,
-        withCredentials: false,
-        retryWithoutCredentials: false,
-        timeout: 60000,
-        timeoutId: -1,
-        oncomplete: completeCallback || noop,
-        onerror: errorCallback || noop,
-        mimeType: (args && !args.responseType) ? 'text/xml' : '',
-        requireValidXML: false, /* Require responseXML */
-        responseType: (args && args.plainText) ? 'text' : '' /* xhr.responseType ex: "json" or "text" */
-    }, args);
+    var options = Object.assign(
+        {
+            xhr: null,
+            url: url,
+            withCredentials: false,
+            retryWithoutCredentials: false,
+            timeout: 60000,
+            timeoutId: -1,
+            oncomplete: completeCallback || noop,
+            onerror: errorCallback || noop,
+            mimeType: args && !args.responseType ? 'text/xml' : '',
+            requireValidXML: false /* Require responseXML */,
+            responseType:
+                args && args.plainText
+                    ? 'text'
+                    : '' /* xhr.responseType ex: "json" or "text" */
+        },
+        args
+    );
 
     if ('XDomainRequest' in window && crossdomain(url)) {
         // IE8 / 9
@@ -76,7 +84,9 @@ export function ajax(url, completeCallback, errorCallback, args) {
     if (options.responseType) {
         try {
             xhr.responseType = options.responseType;
-        } catch (e) {/* ignore */}
+        } catch (e) {
+            /* ignore */
+        }
     }
 
     if (options.timeout) {
@@ -194,8 +204,10 @@ function _ajaxComplete(options) {
 
 function _jsonResponse(xhr, options) {
     // insure that xhr.response is parsed JSON
-    if (!xhr.response ||
-        (_.isString(xhr.response) && xhr.responseText.substr(1) !== '"')) {
+    if (
+        !xhr.response ||
+        (_.isString(xhr.response) && xhr.responseText.substr(1) !== '"')
+    ) {
         try {
             xhr = Object.assign({}, xhr, {
                 response: JSON.parse(xhr.responseText)
@@ -208,12 +220,14 @@ function _jsonResponse(xhr, options) {
     return options.oncomplete(xhr);
 }
 
-
 function _xmlResponse(xhr, xml, options) {
     // Handle DOMParser 'parsererror'
     var doc = xml.documentElement;
-    if (options.requireValidXML &&
-            (doc.nodeName === 'parsererror' || doc.getElementsByTagName('parsererror').length)) {
+    if (
+        options.requireValidXML &&
+        (doc.nodeName === 'parsererror' ||
+            doc.getElementsByTagName('parsererror').length)
+    ) {
         options.onerror('Invalid XML', options.url, xhr);
         return;
     }

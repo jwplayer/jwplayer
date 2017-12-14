@@ -16,14 +16,20 @@ export function getAbsolutePath(path, base) {
     }
 
     const protocol = base.substring(0, base.indexOf('://') + 3);
-    const domain = base.substring(protocol.length, base.indexOf('/', protocol.length + 1));
+    const domain = base.substring(
+        protocol.length,
+        base.indexOf('/', protocol.length + 1)
+    );
     let patharray;
 
     if (path.indexOf('/') === 0) {
         patharray = path.split('/');
     } else {
         let basepath = base.split('?')[0];
-        basepath = basepath.substring(protocol.length + domain.length + 1, basepath.lastIndexOf('/'));
+        basepath = basepath.substring(
+            protocol.length + domain.length + 1,
+            basepath.lastIndexOf('/')
+        );
         patharray = basepath.split('/').concat(path.split('/'));
     }
     const result = [];
@@ -55,10 +61,16 @@ export function parseXML(input) {
     try {
         // Parse XML in FF/Chrome/Safari/Opera
         if ('DOMParser' in window) {
-            parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
+            parsedXML = new window.DOMParser().parseFromString(
+                input,
+                'text/xml'
+            );
             // In Firefox the XML doc may contain the parsererror, other browsers it's further down
-            if (containsParserErrors(parsedXML.childNodes) ||
-                (parsedXML.childNodes && containsParserErrors(parsedXML.childNodes[0].childNodes))) {
+            if (
+                containsParserErrors(parsedXML.childNodes) ||
+                (parsedXML.childNodes &&
+                    containsParserErrors(parsedXML.childNodes[0].childNodes))
+            ) {
                 parsedXML = null;
             }
         } else {
@@ -67,7 +79,9 @@ export function parseXML(input) {
             parsedXML.async = 'false';
             parsedXML.loadXML(input);
         }
-    } catch (e) {/* Expected when content is not XML */}
+    } catch (e) {
+        /* Expected when content is not XML */
+    }
 
     return parsedXML;
 }
@@ -117,12 +131,20 @@ export function timeFormat(sec, allowNegative) {
     }
 
     // If negative add a minus sign
-    const prefix = (sec < 0) ? '-' : '';
+    const prefix = sec < 0 ? '-' : '';
     sec = Math.abs(sec);
 
     const hrs = Math.floor(sec / 3600);
     const mins = Math.floor((sec - hrs * 3600) / 60);
     const secs = Math.floor(sec % 60);
 
-    return prefix + (hrs ? hrs + ':' : '') + (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
+    return (
+        prefix +
+        (hrs ? hrs + ':' : '') +
+        (mins < 10 ? '0' : '') +
+        mins +
+        ':' +
+        (secs < 10 ? '0' : '') +
+        secs
+    );
 }

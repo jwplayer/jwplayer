@@ -18,13 +18,19 @@ const VideoActionsMixin = {
     },
 
     resize: function(width, height, stretching) {
-        if (!width || !height || !this.video.videoWidth || !this.video.videoHeight) {
+        if (
+            !width ||
+            !height ||
+            !this.video.videoWidth ||
+            !this.video.videoHeight
+        ) {
             return false;
         }
         if (stretching === 'uniform') {
             // snap video to edges when the difference in aspect ratio is less than 9%
             var playerAspectRatio = width / height;
-            var videoAspectRatio = this.video.videoWidth / this.video.videoHeight;
+            var videoAspectRatio =
+                this.video.videoWidth / this.video.videoHeight;
             var objectFit = null;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
                 objectFit = 'fill';

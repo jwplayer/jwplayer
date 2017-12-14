@@ -9,7 +9,11 @@ const getRailBounds = function(elementRail) {
     // Partial workaround of Android 'inert-visual-viewport'
     // https://bugs.chromium.org/p/chromium/issues/detail?id=489206
     const pageXOffset = window.pageXOffset;
-    if (pageXOffset && OS.android && document.body.parentElement.getBoundingClientRect().left >= 0) {
+    if (
+        pageXOffset &&
+        OS.android &&
+        document.body.parentElement.getBoundingClientRect().left >= 0
+    ) {
         bounds.left -= pageXOffset;
         bounds.right -= pageXOffset;
     }
@@ -31,9 +35,13 @@ export default class Slider {
     }
 
     setup() {
-        this.el = utils.createElement(sliderTemplate(this.className, 'jw-slider-' + this.orientation));
+        this.el = utils.createElement(
+            sliderTemplate(this.className, 'jw-slider-' + this.orientation)
+        );
 
-        this.elementRail = this.el.getElementsByClassName('jw-slider-container')[0];
+        this.elementRail = this.el.getElementsByClassName(
+            'jw-slider-container'
+        )[0];
         this.elementBuffer = this.el.getElementsByClassName('jw-buffer')[0];
         this.elementProgress = this.el.getElementsByClassName('jw-progress')[0];
         this.elementThumb = this.el.getElementsByClassName('jw-knob')[0];
@@ -58,7 +66,9 @@ export default class Slider {
     }
 
     dragMove(evt) {
-        const bounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail);
+        const bounds = (this.railBounds = this.railBounds
+            ? this.railBounds
+            : getRailBounds(this.elementRail));
         let dimension;
         let percentage;
 
@@ -69,7 +79,12 @@ export default class Slider {
             } else if (dimension > bounds.right) {
                 percentage = 100;
             } else {
-                percentage = utils.between((dimension - bounds.left) / bounds.width, 0, 1) * 100;
+                percentage =
+                    utils.between(
+                        (dimension - bounds.left) / bounds.width,
+                        0,
+                        1
+                    ) * 100;
             }
         } else {
             dimension = evt.pageY;
@@ -78,7 +93,13 @@ export default class Slider {
             } else if (dimension <= bounds.top) {
                 percentage = 100;
             } else {
-                percentage = utils.between((bounds.height - (dimension - bounds.top)) / bounds.height, 0, 1) * 100;
+                percentage =
+                    utils.between(
+                        (bounds.height - (dimension - bounds.top)) /
+                            bounds.height,
+                        0,
+                        1
+                    ) * 100;
             }
         }
 

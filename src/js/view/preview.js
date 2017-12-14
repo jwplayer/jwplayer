@@ -6,7 +6,12 @@ const Preview = function(_model) {
 };
 
 function validState(state) {
-    return state === 'complete' || state === 'idle' || state === 'error' || state === 'buffering';
+    return (
+        state === 'complete' ||
+        state === 'idle' ||
+        state === 'error' ||
+        state === 'buffering'
+    );
 }
 
 Object.assign(Preview.prototype, {
@@ -35,9 +40,11 @@ Object.assign(Preview.prototype, {
             if (width) {
                 this.playerAspectRatio = width / height;
             }
-            if (!this.playerAspectRatio ||
+            if (
+                !this.playerAspectRatio ||
                 !this.image ||
-                !validState(this.model.get('state'))) {
+                !validState(this.model.get('state'))
+            ) {
                 return;
             }
             // snap image to edges when the difference in aspect ratio is less than 9%
@@ -52,7 +59,9 @@ Object.assign(Preview.prototype, {
                     return;
                 }
                 var imageAspectRatio = image.width / image.height;
-                if (Math.abs(this.playerAspectRatio - imageAspectRatio) < 0.09) {
+                if (
+                    Math.abs(this.playerAspectRatio - imageAspectRatio) < 0.09
+                ) {
                     backgroundSize = 'cover';
                 }
             }

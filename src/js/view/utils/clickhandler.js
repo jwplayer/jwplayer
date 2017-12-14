@@ -11,25 +11,28 @@ export default class ClickHandler {
         this.model = model;
 
         const defaultOptions = { enableDoubleTap: true, useMove: true };
-        this.ui = new UI(element, Object.assign(defaultOptions, options)).on({
-            'click tap': this.clickHandler,
-            'doubleClick doubleTap': function() {
-                if (this.alternateDoubleClickHandler) {
-                    this.alternateDoubleClickHandler();
-                    return;
+        this.ui = new UI(element, Object.assign(defaultOptions, options)).on(
+            {
+                'click tap': this.clickHandler,
+                'doubleClick doubleTap': function() {
+                    if (this.alternateDoubleClickHandler) {
+                        this.alternateDoubleClickHandler();
+                        return;
+                    }
+                    this.trigger('doubleClick');
+                },
+                move: function() {
+                    this.trigger('move');
+                },
+                over: function() {
+                    this.trigger('over');
+                },
+                out: function() {
+                    this.trigger('out');
                 }
-                this.trigger('doubleClick');
             },
-            move: function() {
-                this.trigger('move');
-            },
-            over: function() {
-                this.trigger('over');
-            },
-            out: function() {
-                this.trigger('out');
-            }
-        }, this);
+            this
+        );
     }
 
     destroy() {
@@ -48,7 +51,7 @@ export default class ClickHandler {
             this.alternateClickHandler(evt);
             return;
         }
-        this.trigger((evt.type === CLICK) ? 'click' : 'tap');
+        this.trigger(evt.type === CLICK ? 'click' : 'tap');
     }
 
     element() {

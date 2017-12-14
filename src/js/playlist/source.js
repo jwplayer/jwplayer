@@ -16,9 +16,13 @@ const Source = function(config) {
         return;
     }
 
-    const source = Object.assign({}, {
-        'default': false
-    }, config);
+    const source = Object.assign(
+        {},
+        {
+            'default': false
+        },
+        config
+    );
 
     // normalize for odd strings
     source.file = trim('' + source.file);

@@ -1,6 +1,12 @@
 import { OS } from 'environment/environment';
 import { dvrSeekLimit } from 'view/constants';
-import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
+import {
+    DISPLAY_CLICK,
+    USER_ACTION,
+    STATE_PAUSED,
+    STATE_PLAYING,
+    STATE_ERROR
+} from 'events/events';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
 import button from 'view/controls/components/button';
@@ -8,7 +14,10 @@ import Controlbar from 'view/controls/controlbar';
 import DisplayContainer from 'view/controls/display-container';
 import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
-import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/settings-menu';
+import {
+    createSettingsMenu,
+    setupSubmenuListeners
+} from 'view/controls/settings-menu';
 import { getBreakpoint } from 'view/utils/breakpoint';
 import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
@@ -19,9 +28,11 @@ require('css/controls.less');
 const ACTIVE_TIMEOUT = OS.mobile ? 4000 : 2000;
 
 ErrorContainer.cloneIcon = cloneIcon;
-instances.forEach(api => {
+instances.forEach((api) => {
     if (api.getState() === STATE_ERROR) {
-        const errorIconContainer = api.getContainer().querySelector('.jw-error-msg .jw-icon');
+        const errorIconContainer = api
+            .getContainer()
+            .querySelector('.jw-error-msg .jw-icon');
         if (errorIconContainer && !errorIconContainer.hasChildNodes()) {
             errorIconContainer.appendChild(ErrorContainer.cloneIcon('error'));
         }
@@ -94,25 +105,41 @@ export default class Controls {
             utils.addClass(this.playerContainer, 'jw-flag-touch');
         } else {
             this.rightClickMenu = new RightClick();
-            model.change('flashBlocked', (modelChanged, isBlocked) => {
-                if (isBlocked) {
-                    this.rightClickMenu.destroy();
-                } else {
-                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
-                }
-            }, this);
+            model.change(
+                'flashBlocked',
+                (modelChanged, isBlocked) => {
+                    if (isBlocked) {
+                        this.rightClickMenu.destroy();
+                    } else {
+                        this.rightClickMenu.setup(
+                            modelChanged,
+                            this.playerContainer,
+                            this.playerContainer
+                        );
+                    }
+                },
+                this
+            );
         }
 
         // Controlbar
-        const controlbar = this.controlbar = new Controlbar(api, model);
+        const controlbar = (this.controlbar = new Controlbar(api, model));
         controlbar.on(USER_ACTION, () => this.userActive());
-        controlbar.on('nextShown', function (data) {
-            this.trigger('nextShown', data);
-        }, this);
+        controlbar.on(
+            'nextShown',
+            function(data) {
+                this.trigger('nextShown', data);
+            },
+            this
+        );
 
         // Next Up Tooltip
         if (model.get('nextUpDisplay') && !controlbar.nextUpToolTip) {
-            const nextUpToolTip = new NextUpToolTip(model, api, this.playerContainer);
+            const nextUpToolTip = new NextUpToolTip(
+                model,
+                api,
+                this.playerContainer
+            );
             nextUpToolTip.on('all', this.trigger, this);
             nextUpToolTip.setup(this.context);
             controlbar.nextUpToolTip = nextUpToolTip;
@@ -129,19 +156,24 @@ export default class Controls {
         const visibilityChangeHandler = (visible, evt) => {
             const state = model.get('state');
             const settingsInteraction = { reason: 'settingsInteraction' };
-            const isKeyEvent = (evt && evt.sourceEvent || evt || {}).type === 'keydown';
+            const isKeyEvent =
+                ((evt && evt.sourceEvent) || evt || {}).type === 'keydown';
 
             utils.toggleClass(this.div, 'jw-settings-open', visible);
             if (getBreakpoint(model.get('containerWidth')) < 2) {
                 if (visible && state === STATE_PLAYING) {
                     // Pause playback on open if we're currently playing
                     api.pause(settingsInteraction);
-                } else if (!visible && state === STATE_PAUSED && lastState === STATE_PLAYING) {
+                } else if (
+                    !visible &&
+                    state === STATE_PAUSED &&
+                    lastState === STATE_PLAYING
+                ) {
                     // Resume playback on close if we are paused and were playing before
                     api.play(settingsInteraction);
                 }
             }
-            
+
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive(null, visible || isKeyEvent);
             lastState = state;
@@ -151,7 +183,10 @@ export default class Controls {
                 settingsButton.element().focus();
             }
         };
-        const settingsMenu = this.settingsMenu = createSettingsMenu(controlbar, visibilityChangeHandler);
+        const settingsMenu = (this.settingsMenu = createSettingsMenu(
+            controlbar,
+            visibilityChangeHandler
+        ));
         setupSubmenuListeners(settingsMenu, controlbar, model, api);
 
         if (OS.mobile) {
@@ -163,8 +198,12 @@ export default class Controls {
         // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
         if (model.get('autostartMuted')) {
             const unmuteCallback = () => this.unmuteAutoplay(api, model);
-            this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').unmute,
-                [cloneIcon('volume-0')]);
+            this.mute = button(
+                'jw-autostart-mute jw-off',
+                unmuteCallback,
+                model.get('localization').unmute,
+                [cloneIcon('volume-0')]
+            );
             this.mute.show();
             this.div.appendChild(this.mute.element());
             // Set mute state in the controlbar
@@ -172,7 +211,11 @@ export default class Controls {
             // Hide the controlbar until the autostart flag is removed
             utils.addClass(this.playerContainer, 'jw-flag-autostart');
 
-            model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback, this);
+            model.on(
+                'change:autostartFailed change:autostartMuted change:mute',
+                unmuteCallback,
+                this
+            );
             this.unmuteCallback = unmuteCallback;
         }
 
@@ -232,7 +275,8 @@ export default class Controls {
                         const captionsList = api.getCaptionsList();
                         const listLength = captionsList.length;
                         if (listLength) {
-                            const nextIndex = (api.getCurrentCaptions() + 1) % listLength;
+                            const nextIndex =
+                                (api.getCurrentCaptions() + 1) % listLength;
                             api.setCurrentCaptions(nextIndex);
                         }
                     }
@@ -247,7 +291,7 @@ export default class Controls {
                     if (evt.keyCode >= 48 && evt.keyCode <= 59) {
                         // if 0-9 number key, move to n/10 of the percentage of the video
                         const number = evt.keyCode - 48;
-                        const newSeek = (number / 10) * model.get('duration');
+                        const newSeek = number / 10 * model.get('duration');
                         api.seek(newSeek, reasonInteraction());
                     }
             }
@@ -266,7 +310,9 @@ export default class Controls {
             if (!this.instreamState) {
                 const isTab = evt.keyCode === 9;
                 if (isTab) {
-                    const insideContainer = this.playerContainer.contains(evt.target);
+                    const insideContainer = this.playerContainer.contains(
+                        evt.target
+                    );
                     this.userActive(null, insideContainer);
                 }
             }
@@ -276,7 +322,9 @@ export default class Controls {
 
         // Hide controls when focus leaves the player
         const blurCallback = (evt) => {
-            const insideContainer = this.playerContainer.contains(evt.relatedTarget);
+            const insideContainer = this.playerContainer.contains(
+                evt.relatedTarget
+            );
             if (!insideContainer) {
                 this.userInactive();
             }
@@ -313,11 +361,17 @@ export default class Controls {
         }
 
         if (this.keydownCallback) {
-            this.playerContainer.removeEventListener('keydown', this.keydownCallback);
+            this.playerContainer.removeEventListener(
+                'keydown',
+                this.keydownCallback
+            );
         }
 
         if (this.keyupCallback) {
-            this.playerContainer.removeEventListener('keyup', this.keyupCallback);
+            this.playerContainer.removeEventListener(
+                'keyup',
+                this.keyupCallback
+            );
         }
 
         if (this.blurCallback) {
@@ -370,7 +424,10 @@ export default class Controls {
             model.set('playOnViewable', false);
         }
         if (this.unmuteCallback) {
-            model.off('change:autostartFailed change:autostartMuted change:mute', this.unmuteCallback);
+            model.off(
+                'change:autostartFailed change:autostartMuted change:mute',
+                this.unmuteCallback
+            );
             this.unmuteCallback = null;
         }
         model.set('autostartFailed', undefined);
@@ -385,15 +442,24 @@ export default class Controls {
 
     addActiveListeners(element) {
         if (element && !OS.mobile) {
-            element.addEventListener('mousemove', this.activeListeners.mousemove);
+            element.addEventListener(
+                'mousemove',
+                this.activeListeners.mousemove
+            );
             element.addEventListener('mouseout', this.activeListeners.mouseout);
         }
     }
 
     removeActiveListeners(element) {
         if (element) {
-            element.removeEventListener('mousemove', this.activeListeners.mousemove);
-            element.removeEventListener('mouseout', this.activeListeners.mouseout);
+            element.removeEventListener(
+                'mousemove',
+                this.activeListeners.mousemove
+            );
+            element.removeEventListener(
+                'mouseout',
+                this.activeListeners.mouseout
+            );
         }
     }
 
@@ -401,8 +467,10 @@ export default class Controls {
         clearTimeout(this.activeTimeout);
 
         if (!isKeyDown) {
-            this.activeTimeout = setTimeout(() => this.userInactive(),
-                timeout || ACTIVE_TIMEOUT);
+            this.activeTimeout = setTimeout(
+                () => this.userInactive(),
+                timeout || ACTIVE_TIMEOUT
+            );
         }
         if (!this.showing) {
             utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
@@ -424,7 +492,9 @@ export default class Controls {
     addBackdrop() {
         // Put the backdrop element on top of overlays during instream mode
         // otherwise keep it behind captions and on top of preview poster
-        const element = this.instreamState ? this.div : this.playerContainer.querySelector('.jw-captions');
+        const element = this.instreamState
+            ? this.div
+            : this.playerContainer.querySelector('.jw-captions');
         this.playerContainer.insertBefore(this.backdrop, element);
     }
 

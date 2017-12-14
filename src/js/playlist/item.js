@@ -20,14 +20,20 @@ const Item = function(config) {
         delete config.tracks;
     }
 
-    var playlistItem = Object.assign({}, {
-        sources: [],
-        tracks: [],
-        minDvrWindow: 120
-    }, config);
+    var playlistItem = Object.assign(
+        {},
+        {
+            sources: [],
+            tracks: [],
+            minDvrWindow: 120
+        },
+        config
+    );
 
-
-    if ((playlistItem.sources === Object(playlistItem.sources)) && !isArray(playlistItem.sources)) {
+    if (
+        playlistItem.sources === Object(playlistItem.sources) &&
+        !isArray(playlistItem.sources)
+    ) {
         playlistItem.sources = [Source(playlistItem.sources)];
     }
 
@@ -48,7 +54,7 @@ const Item = function(config) {
 
         var def = s.default;
         if (def) {
-            s.default = (def.toString() === 'true');
+            s.default = def.toString() === 'true';
         } else {
             s.default = false;
         }
@@ -63,7 +69,6 @@ const Item = function(config) {
 
     playlistItem.sources = playlistItem.sources.filter(source => !!source);
 
-
     if (!isArray(playlistItem.tracks)) {
         playlistItem.tracks = [];
     }
@@ -73,7 +78,9 @@ const Item = function(config) {
         delete playlistItem.captions;
     }
 
-    playlistItem.tracks = playlistItem.tracks.map(Track).filter(track => !!track);
+    playlistItem.tracks = playlistItem.tracks
+        .map(Track)
+        .filter(track => !!track);
 
     return playlistItem;
 };

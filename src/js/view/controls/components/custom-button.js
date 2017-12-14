@@ -17,7 +17,6 @@ function getCachedIcon(svg) {
 }
 
 export default class CustomButton {
-
     constructor(img, ariaText, callback, id, btnClass) {
         const buttonElement = document.createElement('div');
         buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset ${btnClass}`;
@@ -33,7 +32,8 @@ export default class CustomButton {
             iconElement = getCachedIcon(img);
         } else {
             iconElement = document.createElement('div');
-            iconElement.className = 'jw-icon jw-button-image jw-button-color jw-reset';
+            iconElement.className =
+                'jw-icon jw-button-image jw-button-color jw-reset';
             if (img) {
                 style(iconElement, {
                     backgroundImage: `url(${img})`

@@ -24,7 +24,10 @@ const VideoAttachedMixin = {
 
     startStallCheck: function() {
         this.stopStallCheck();
-        this.stallCheckTimeout_ = setTimeout(this.stalledHandler.bind(this, this.video.currentTime), STALL_DELAY);
+        this.stallCheckTimeout_ = setTimeout(
+            this.stalledHandler.bind(this, this.video.currentTime),
+            STALL_DELAY
+        );
     },
 
     stalledHandler: function(checkStartTime) {
@@ -59,7 +62,10 @@ const VideoAttachedMixin = {
 
         // currentTime doesn't always get to the end of the buffered range
         const timeFudge = 2;
-        return (endOfRange(this.video.buffered) - this.video.currentTime) <= timeFudge;
+        return (
+            endOfRange(this.video.buffered) - this.video.currentTime <=
+            timeFudge
+        );
     },
 
     setAutoplayAttributes: function() {

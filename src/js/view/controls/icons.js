@@ -43,7 +43,12 @@ export function cloneIcon(name) {
 }
 
 export function cloneIcons(names) {
-    const icons = getCollection().querySelectorAll(names.split(',').map(nameToClass).join(','));
+    const icons = getCollection().querySelectorAll(
+        names
+            .split(',')
+            .map(nameToClass)
+            .join(',')
+    );
     if (__DEBUG__ && !icons.length) {
         throw new Error('Icons not found ' + names);
     }
@@ -66,30 +71,32 @@ function getCollection() {
 }
 
 function parseCollection() {
-    return svgParse('<xml>' +
-        BUFFER_ICON +
-        REPLAY_ICON +
-        ERROR_ICON +
-        PLAY_ICON +
-        PAUSE_ICON +
-        REWIND_ICON +
-        NEXT_ICON +
-        VOLUME_ICON_0 +
-        VOLUME_ICON_50 +
-        VOLUME_ICON_100 +
-        CAPTIONS_ON_ICON +
-        CAPTIONS_OFF_ICON +
-        AIRPLAY_ON_ICON +
-        AIRPLAY_OFF_ICON +
-        DVR_ICON +
-        LIVE_ICON +
-        PLAYBACK_RATE_ICON +
-        SETTINGS_ICON +
-        AUDIO_TRACKS_ICON +
-        QUALITY_ICON +
-        FULLSCREEN_EXIT_ICON +
-        FULLSCREEN_ENTER_ICON +
-        CLOSE_ICON +
-        JW_LOGO +
-        '</xml>');
+    return svgParse(
+        '<xml>' +
+            BUFFER_ICON +
+            REPLAY_ICON +
+            ERROR_ICON +
+            PLAY_ICON +
+            PAUSE_ICON +
+            REWIND_ICON +
+            NEXT_ICON +
+            VOLUME_ICON_0 +
+            VOLUME_ICON_50 +
+            VOLUME_ICON_100 +
+            CAPTIONS_ON_ICON +
+            CAPTIONS_OFF_ICON +
+            AIRPLAY_ON_ICON +
+            AIRPLAY_OFF_ICON +
+            DVR_ICON +
+            LIVE_ICON +
+            PLAYBACK_RATE_ICON +
+            SETTINGS_ICON +
+            AUDIO_TRACKS_ICON +
+            QUALITY_ICON +
+            FULLSCREEN_EXIT_ICON +
+            FULLSCREEN_ENTER_ICON +
+            CLOSE_ICON +
+            JW_LOGO +
+            '</xml>'
+    );
 }

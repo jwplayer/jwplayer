@@ -24,13 +24,13 @@ export default function loadPlugins(model, api) {
     window.jwplayerPluginJsonp = registerPlugin;
 
     const pluginLoader = getPluginLoader(playerId);
-    return pluginLoader.load(api, pluginsModel, pluginsConfig).then(events => {
+    return pluginLoader.load(api, pluginsModel, pluginsConfig).then((events) => {
         if (pluginLoader !== pluginLoaders[playerId]) {
             // Player and plugin loader was replaced
             return;
         }
         if (events) {
-            events.forEach(object => {
+            events.forEach((object) => {
                 if (object instanceof Error) {
                     log(object.message);
                 }

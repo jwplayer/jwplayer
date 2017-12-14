@@ -7,7 +7,8 @@ export default class Tooltip {
     constructor(name, ariaText, elementShown, svgIcons) {
         Object.assign(this, Events);
         this.el = document.createElement('div');
-        let className = 'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
+        let className =
+            'jw-icon jw-icon-tooltip ' + name + ' jw-button-color jw-reset';
         if (!elementShown) {
             className += ' jw-hidden';
         }
@@ -22,7 +23,7 @@ export default class Tooltip {
 
         this.el.appendChild(this.container);
         if (svgIcons && svgIcons.length > 0) {
-            Array.prototype.forEach.call(svgIcons, svgIcon => {
+            Array.prototype.forEach.call(svgIcons, (svgIcon) => {
                 if (typeof svgIcon === 'string') {
                     this.el.appendChild(svgParse(svgIcon));
                 } else {

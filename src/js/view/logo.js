@@ -22,7 +22,7 @@ export default function Logo(_model) {
     this.setup = function() {
         _settings = Object.assign({}, LogoDefaults, _model.get('logo'));
         _settings.position = _settings.position || LogoDefaults.position;
-        _settings.hide = (_settings.hide.toString() === 'true');
+        _settings.hide = _settings.hide.toString() === 'true';
 
         // We should only create a logo in the display container when
         // it is not supposed to be in the control bar, as it will
@@ -32,13 +32,15 @@ export default function Logo(_model) {
         }
 
         if (!_logo) {
-            _logo = createElement(logoTemplate(_settings.position, _settings.hide));
+            _logo = createElement(
+                logoTemplate(_settings.position, _settings.hide)
+            );
         }
 
         _model.set('logo', _settings);
 
         // apply styles onload when image width and height are known
-        _img.onload = function () {
+        _img.onload = function() {
             // update logo style
             let height = this.height;
             let width = this.width;
@@ -46,7 +48,7 @@ export default function Logo(_model) {
                 backgroundImage: 'url("' + this.src + '")'
             };
             if (_settings.margin !== LogoDefaults.margin) {
-                const positions = (/(\w+)-(\w+)/).exec(_settings.position);
+                const positions = /(\w+)-(\w+)/.exec(_settings.position);
                 if (positions.length === 3) {
                     styles['margin-' + positions[1]] = _settings.margin;
                     styles['margin-' + positions[2]] = _settings.margin;
@@ -90,17 +92,20 @@ export default function Logo(_model) {
             _logo.setAttribute('aria-label', 'Logo');
         }
 
-        logoInteractHandler.on('click tap enter', function (evt) {
-            if (evt && evt.stopPropagation) {
-                evt.stopPropagation();
-            }
+        logoInteractHandler.on(
+            'click tap enter',
+            function(evt) {
+                if (evt && evt.stopPropagation) {
+                    evt.stopPropagation();
+                }
 
-            this.trigger(LOGO_CLICK, {
-                link: _settings.link,
-                linktarget: _settings.linktarget
-            });
-
-        }, this);
+                this.trigger(LOGO_CLICK, {
+                    link: _settings.link,
+                    linktarget: _settings.linktarget
+                });
+            },
+            this
+        );
     };
 
     this.setContainer = function(container) {

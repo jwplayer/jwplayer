@@ -6,13 +6,15 @@ const DOCUMENT_FULLSCREEN_EVENTS = [
 ];
 
 export default function(elementContext, documentContext, changeCallback) {
-    const requestFullscreen = elementContext.requestFullscreen ||
+    const requestFullscreen =
+        elementContext.requestFullscreen ||
         elementContext.webkitRequestFullscreen ||
         elementContext.webkitRequestFullScreen ||
         elementContext.mozRequestFullScreen ||
         elementContext.msRequestFullscreen;
 
-    const exitFullscreen = documentContext.exitFullscreen ||
+    const exitFullscreen =
+        documentContext.exitFullscreen ||
         documentContext.webkitExitFullscreen ||
         documentContext.webkitCancelFullScreen ||
         documentContext.mozCancelFullScreen ||
@@ -21,7 +23,10 @@ export default function(elementContext, documentContext, changeCallback) {
     const supportsDomFullscreen = !!(requestFullscreen && exitFullscreen);
 
     for (let i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
-        documentContext.addEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], changeCallback);
+        documentContext.addEventListener(
+            DOCUMENT_FULLSCREEN_EVENTS[i],
+            changeCallback
+        );
     }
 
     return {
@@ -36,14 +41,19 @@ export default function(elementContext, documentContext, changeCallback) {
             exitFullscreen.apply(documentContext);
         },
         fullscreenElement: function() {
-            return documentContext.fullscreenElement ||
+            return (
+                documentContext.fullscreenElement ||
                 documentContext.webkitCurrentFullScreenElement ||
                 documentContext.mozFullScreenElement ||
-                documentContext.msFullscreenElement;
+                documentContext.msFullscreenElement
+            );
         },
         destroy: function() {
             for (let i = DOCUMENT_FULLSCREEN_EVENTS.length; i--;) {
-                documentContext.removeEventListener(DOCUMENT_FULLSCREEN_EVENTS[i], changeCallback);
+                documentContext.removeEventListener(
+                    DOCUMENT_FULLSCREEN_EVENTS[i],
+                    changeCallback
+                );
             }
         }
     };

@@ -7,15 +7,22 @@ export default class VolumeTooltip extends Tooltip {
         super(name, ariaText, true, svgIcons);
 
         this._model = _model;
-        this.volumeSlider = new Slider('jw-slider-volume jw-volume-tip', 'vertical');
+        this.volumeSlider = new Slider(
+            'jw-slider-volume jw-volume-tip',
+            'vertical'
+        );
         this.volumeSlider.setup();
         this.volumeSlider.element().classList.remove('jw-background-color');
 
         this.addContent(this.volumeSlider.element());
 
-        this.volumeSlider.on('update', function (evt) {
-            this.trigger('update', evt);
-        }, this);
+        this.volumeSlider.on(
+            'update',
+            function(evt) {
+                this.trigger('update', evt);
+            },
+            this
+        );
 
         new UI(this.el, { useHover: true, directSelect: true, useFocus: true })
             .on('click enter', this.toggleValue, this)

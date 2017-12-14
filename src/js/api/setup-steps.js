@@ -9,7 +9,7 @@ import { bundleContainsProviders } from 'api/core-loader';
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
     if (typeof playlist === 'string') {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const playlistLoader = new PlaylistLoader();
             playlistLoader.on(PLAYLIST_LOADED, function(data) {
                 const loadedPlaylist = Playlist(data.playlist);
@@ -18,7 +18,7 @@ export function loadPlaylist(_model) {
                 _model.attributes.feedData = data;
                 resolve();
             });
-            playlistLoader.on(ERROR, err => {
+            playlistLoader.on(ERROR, (err) => {
                 _model.attributes.playlist = [];
                 _model.set('feedData', {
                     error: new Error(`Error loading playlist: ${err.message}`)
@@ -46,7 +46,11 @@ function filterPlaylist(_model) {
         const providersManager = _model.getProviders();
         const firstProviderNeeded = providersManager.required([playlist[0]]);
         // Skip provider loading if included in bundle
-        if (bundleContainsProviders.html5 && firstProviderNeeded && firstProviderNeeded[0].name === 'html5') {
+        if (
+            bundleContainsProviders.html5 &&
+            firstProviderNeeded &&
+            firstProviderNeeded[0].name === 'html5'
+        ) {
             return;
         }
         return providersManager.load(firstProviderNeeded);
@@ -68,7 +72,7 @@ function loadSkin(_model) {
     if (typeof skinUrl === 'string' && !isSkinLoaded(skinUrl)) {
         const isStylesheet = true;
         const loader = new ScriptLoader(skinUrl, isStylesheet);
-        return loader.load().catch(error => {
+        return loader.load().catch((error) => {
             return error;
         });
     }
@@ -83,10 +87,7 @@ const startSetup = function(_model) {
     if (destroyed(_model)) {
         return Promise.reject();
     }
-    return Promise.all([
-        filterPlaylist(_model),
-        loadSkin(_model)
-    ]);
+    return Promise.all([filterPlaylist(_model), loadSkin(_model)]);
 };
 
 export default startSetup;

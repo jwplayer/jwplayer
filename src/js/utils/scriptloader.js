@@ -29,10 +29,9 @@ function makeScriptTag(scriptUrl) {
     return scriptTag;
 }
 
-const ScriptLoader = function (url, isStyle) {
+const ScriptLoader = function(url, isStyle) {
     const _this = this;
     let status = SCRIPT_LOAD_STATUS_NEW;
-
 
     function onError(evt) {
         status = SCRIPT_LOAD_STATUS_ERROR;
@@ -44,11 +43,11 @@ const ScriptLoader = function (url, isStyle) {
         _this.trigger(STATE_COMPLETE, evt).off();
     }
 
-    this.getStatus = function () {
+    this.getStatus = function() {
         return status;
     };
 
-    this.load = function () {
+    this.load = function() {
         // Only execute on the first run
         if (status !== SCRIPT_LOAD_STATUS_NEW) {
             return;
@@ -63,7 +62,7 @@ const ScriptLoader = function (url, isStyle) {
         status = SCRIPT_LOAD_STATUS_LOADING;
 
         promise = new Promise((resolve, reject) => {
-            const makeTag = (isStyle ? makeStyleLink : makeScriptTag);
+            const makeTag = isStyle ? makeStyleLink : makeScriptTag;
             const scriptTag = makeTag(url);
             const doneLoading = function() {
                 // Handle memory leak in IE
@@ -89,7 +88,9 @@ const ScriptLoader = function (url, isStyle) {
                 resolve(evt);
             };
 
-            const head = document.getElementsByTagName('head')[0] || document.documentElement;
+            const head =
+                document.getElementsByTagName('head')[0] ||
+                document.documentElement;
             head.insertBefore(scriptTag, head.firstChild);
         });
 

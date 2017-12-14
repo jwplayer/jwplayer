@@ -5,8 +5,13 @@ import { resolved } from 'polyfills/promise';
 import { MediaModel } from 'controller/model';
 import { seconds } from 'utils/strings';
 import {
-    MEDIA_PLAY_ATTEMPT, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_COMPLETE,
-    PLAYER_STATE, STATE_PAUSED, STATE_BUFFERING, STATE_COMPLETE,
+    MEDIA_PLAY_ATTEMPT,
+    MEDIA_PLAY_ATTEMPT_FAILED,
+    MEDIA_COMPLETE,
+    PLAYER_STATE,
+    STATE_PAUSED,
+    STATE_BUFFERING,
+    STATE_COMPLETE,
     MEDIA_VISUAL_QUALITY
 } from 'events/events';
 
@@ -112,33 +117,40 @@ export default class MediaController extends Eventable {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         }
 
-        playPromise.then(() => {
-            if (!mediaModel.get('setup')) {
-                // Exit if model state was reset
-                return;
-            }
-            delete item.starttime;
-            mediaModel.set('started', true);
-            if (mediaModel === model.mediaModel) {
-                // Start firing visualQuality once playback has started
-                mediaModel.off(MEDIA_VISUAL_QUALITY, null, this);
-                mediaModel.change(MEDIA_VISUAL_QUALITY, (changedMediaModel, eventData) => {
-                    this.trigger(MEDIA_VISUAL_QUALITY, eventData);
-                }, this);
-                syncPlayerWithMediaModel(mediaModel);
-            }
-        }).catch(error => {
-            model.set('playRejected', true);
-            const videoTagPaused = provider && provider.video && provider.video.paused;
-            if (videoTagPaused) {
-                mediaModel.set('mediaState', STATE_PAUSED);
-            }
-            this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
-                error,
-                item,
-                playReason
+        playPromise
+            .then(() => {
+                if (!mediaModel.get('setup')) {
+                    // Exit if model state was reset
+                    return;
+                }
+                delete item.starttime;
+                mediaModel.set('started', true);
+                if (mediaModel === model.mediaModel) {
+                    // Start firing visualQuality once playback has started
+                    mediaModel.off(MEDIA_VISUAL_QUALITY, null, this);
+                    mediaModel.change(
+                        MEDIA_VISUAL_QUALITY,
+                        (changedMediaModel, eventData) => {
+                            this.trigger(MEDIA_VISUAL_QUALITY, eventData);
+                        },
+                        this
+                    );
+                    syncPlayerWithMediaModel(mediaModel);
+                }
+            })
+            .catch((error) => {
+                model.set('playRejected', true);
+                const videoTagPaused =
+                    provider && provider.video && provider.video.paused;
+                if (videoTagPaused) {
+                    mediaModel.set('mediaState', STATE_PAUSED);
+                }
+                this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+                    error,
+                    item,
+                    playReason
+                });
             });
-        });
     }
 
     _playbackComplete() {
@@ -201,7 +213,7 @@ export default class MediaController extends Eventable {
 
     set activeItem(item) {
         const { provider } = this;
-        const mediaModel = this.mediaModel = new MediaModel();
+        const mediaModel = (this.mediaModel = new MediaModel());
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
         const mediaModelState = mediaModel.attributes;
@@ -276,9 +288,17 @@ function syncPlayerWithMediaModel(mediaModel) {
 
 function addProviderListeners(mediaController) {
     removeProviderListeners(mediaController);
-    mediaController.provider.on('all', mediaController.providerListener, mediaController);
+    mediaController.provider.on(
+        'all',
+        mediaController.providerListener,
+        mediaController
+    );
 }
 
 function removeProviderListeners(mediaController) {
-    mediaController.provider.off('all', mediaController.providerListener, mediaController);
+    mediaController.provider.off(
+        'all',
+        mediaController.providerListener,
+        mediaController
+    );
 }

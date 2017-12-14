@@ -1,15 +1,30 @@
 import { Browser, OS } from 'environment/environment';
-import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
+import {
+    DRAG,
+    DRAG_START,
+    DRAG_END,
+    CLICK,
+    DOUBLE_CLICK,
+    MOVE,
+    OUT,
+    TAP,
+    DOUBLE_TAP,
+    OVER,
+    ENTER
+} from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
-const _supportsPointerEvents = ('PointerEvent' in window) && !OS.android;
-const _supportsTouchEvents = ('ontouchstart' in window);
-const _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
+const _supportsPointerEvents = 'PointerEvent' in window && !OS.android;
+const _supportsTouchEvents = 'ontouchstart' in window;
+const _useMouseEvents =
+    !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
 const _isOSXFirefox = Browser.firefox && OS.mac;
 
 function getCoord(e, c) {
-    return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
+    return /touch/.test(e.type)
+        ? (e.originalEvent || e).changedTouches[0]['page' + c]
+        : e['page' + c];
 }
 
 function isRightClick(evt) {
@@ -21,10 +36,10 @@ function isRightClick(evt) {
 
     if ('which' in e) {
         // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-        return (e.which === 3);
+        return e.which === 3;
     } else if ('button' in e) {
         // IE and Opera
-        return (e.button === 2);
+        return e.button === 2;
     }
 
     return false;
@@ -33,7 +48,7 @@ function isRightClick(evt) {
 function isEnterKey(evt) {
     const e = evt || window.event;
 
-    if ((e instanceof KeyboardEvent) && e.keyCode === 13) {
+    if (e instanceof KeyboardEvent && e.keyCode === 13) {
         evt.stopPropagation();
         return true;
     }
@@ -44,7 +59,10 @@ function isEnterKey(evt) {
 function normalizeUIEvent(type, srcEvent, target) {
     let source;
 
-    if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
+    if (
+        srcEvent instanceof MouseEvent ||
+        (!srcEvent.touches && !srcEvent.changedTouches)
+    ) {
         source = srcEvent;
     } else if (srcEvent.touches && srcEvent.touches.length) {
         source = srcEvent.touches[0];
@@ -78,7 +96,7 @@ function preventDefault(evt) {
     }
 }
 
-const UI = function (elem, options) {
+const UI = function(elem, options) {
     const _elem = elem;
     let _hasMoved = false;
     let _startX = 0;
@@ -138,8 +156,12 @@ const UI = function (elem, options) {
 
     function outHandler(evt) {
         // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
-        if (_useMouseEvents || (_supportsPointerEvents && evt.pointerType !== 'touch' &&
-            !elem.contains(document.elementFromPoint(evt.x, evt.y)))) {
+        if (
+            _useMouseEvents ||
+            (_supportsPointerEvents &&
+                evt.pointerType !== 'touch' &&
+                !elem.contains(document.elementFromPoint(evt.x, evt.y)))
+        ) {
             triggerEvent(OUT, evt);
         }
     }
@@ -161,7 +183,6 @@ const UI = function (elem, options) {
         _startY = getCoord(evt, 'Y');
 
         if (!isRightClick(evt)) {
-
             if (evt.type === 'pointerdown' && evt.isPrimary) {
                 if (options.preventScrolling) {
                     _pointerId = evt.pointerId;
@@ -171,7 +192,10 @@ const UI = function (elem, options) {
                 setEventListener(elem, 'pointercancel', interactEndHandler);
 
                 // Listen for mouseup after mouse pointer down because pointerup doesn't fire on swf objects
-                if (evt.pointerType === 'mouse' && _touchListenerTarget.nodeName === 'OBJECT') {
+                if (
+                    evt.pointerType === 'mouse' &&
+                    _touchListenerTarget.nodeName === 'OBJECT'
+                ) {
                     setEventListener(document, 'mouseup', interactEndHandler);
                 } else {
                     setEventListener(elem, 'pointerup', interactEndHandler);
@@ -180,15 +204,30 @@ const UI = function (elem, options) {
                 setEventListener(document, 'mousemove', interactDragHandler);
 
                 // Handle clicks in OSX Firefox over Flash 'object'
-                if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
+                if (
+                    _isOSXFirefox &&
+                    evt.target.nodeName.toLowerCase() === 'object'
+                ) {
                     setEventListener(elem, 'click', interactEndHandler);
                 } else {
                     setEventListener(document, 'mouseup', interactEndHandler);
                 }
             } else if (evt.type === 'touchstart') {
-                setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler);
-                setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
-                setEventListener(_touchListenerTarget, 'touchend', interactEndHandler);
+                setEventListener(
+                    _touchListenerTarget,
+                    'touchmove',
+                    interactDragHandler
+                );
+                setEventListener(
+                    _touchListenerTarget,
+                    'touchcancel',
+                    interactEndHandler
+                );
+                setEventListener(
+                    _touchListenerTarget,
+                    'touchend',
+                    interactEndHandler
+                );
             }
 
             // Prevent scrolling the screen dragging while dragging on mobile.
@@ -208,7 +247,10 @@ const UI = function (elem, options) {
             const endY = getCoord(evt, 'Y');
             const moveX = endX - _startX;
             const moveY = endY - _startY;
-            if (moveX * moveX + moveY * moveY > movementThreshold * movementThreshold) {
+            if (
+                moveX * moveX + moveY * moveY >
+                movementThreshold * movementThreshold
+            ) {
                 triggerEvent(DRAG_START, evt);
                 _hasMoved = true;
                 triggerEvent(DRAG, evt);
@@ -222,7 +264,8 @@ const UI = function (elem, options) {
     }
 
     function interactEndHandler(evt) {
-        const isPointerEvent = (evt.type === 'pointerup' || evt.type === 'pointercancel');
+        const isPointerEvent =
+            evt.type === 'pointerup' || evt.type === 'pointercancel';
         if (isPointerEvent && options.preventScrolling) {
             elem.releasePointerCapture(_pointerId);
         }
@@ -232,15 +275,31 @@ const UI = function (elem, options) {
         document.removeEventListener('mousemove', interactDragHandler);
         document.removeEventListener('mouseup', interactEndHandler);
         if (_touchListenerTarget) {
-            _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
-            _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
-            _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            _touchListenerTarget.removeEventListener(
+                'touchmove',
+                interactDragHandler
+            );
+            _touchListenerTarget.removeEventListener(
+                'touchcancel',
+                interactEndHandler
+            );
+            _touchListenerTarget.removeEventListener(
+                'touchend',
+                interactEndHandler
+            );
         }
 
         if (_hasMoved) {
             triggerEvent(DRAG_END, evt);
-        } else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
-            if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
+        } else if (
+            (!options.directSelect || evt.target === elem) &&
+            evt.type.indexOf('cancel') === -1
+        ) {
+            if (
+                evt.type === 'mouseup' ||
+                evt.type === 'click' ||
+                (isPointerEvent && evt.pointerType === 'mouse')
+            ) {
                 triggerEvent(CLICK, evt);
             } else {
                 triggerEvent(TAP, evt);
@@ -260,8 +319,7 @@ const UI = function (elem, options) {
         let evt;
         if (options.enableDoubleTap && (type === CLICK || type === TAP)) {
             if (now() - _lastClickTime < _doubleClickDelay) {
-                const doubleType = (type === CLICK) ?
-                    DOUBLE_CLICK : DOUBLE_TAP;
+                const doubleType = type === CLICK ? DOUBLE_CLICK : DOUBLE_TAP;
                 evt = normalizeUIEvent(doubleType, srcEvent, _elem);
                 self.trigger(doubleType, evt);
                 _lastClickTime = 0;
@@ -282,9 +340,18 @@ const UI = function (elem, options) {
         elem.removeEventListener('keydown', keyHandler);
 
         if (_touchListenerTarget) {
-            _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
-            _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
-            _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+            _touchListenerTarget.removeEventListener(
+                'touchmove',
+                interactDragHandler
+            );
+            _touchListenerTarget.removeEventListener(
+                'touchcancel',
+                interactEndHandler
+            );
+            _touchListenerTarget.removeEventListener(
+                'touchend',
+                interactEndHandler
+            );
             _touchListenerTarget = null;
         }
 
@@ -321,7 +388,7 @@ const UI = function (elem, options) {
 // This returns only 'touch' or 'mouse'. 'pen' will be treated as a mouse.
 UI.getPointerType = function(evt) {
     if (_supportsPointerEvents && evt instanceof window.PointerEvent) {
-        return (evt.pointerType === 'touch') ? 'touch' : 'mouse';
+        return evt.pointerType === 'touch' ? 'touch' : 'mouse';
     } else if (_supportsTouchEvents && evt instanceof window.TouchEvent) {
         return 'touch';
     }

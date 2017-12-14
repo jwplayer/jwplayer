@@ -8,7 +8,6 @@ import ChaptersMixin from 'view/controls/components/chapters.mixin';
 import ThumbnailsMixin from 'view/controls/components/thumbnails.mixin';
 
 class TimeTip extends Tooltip {
-
     setup() {
         this.text = document.createElement('span');
         this.text.className = 'jw-text jw-reset';
@@ -34,7 +33,7 @@ class TimeTip extends Tooltip {
         this.text.textContent = txt;
     }
 
-    getWidth () {
+    getWidth() {
         if (!this.containerWidth) {
             this.setWidth();
         }
@@ -42,7 +41,7 @@ class TimeTip extends Tooltip {
         return this.containerWidth;
     }
 
-    setWidth (width) {
+    setWidth(width) {
         const tolerance = 16; // add a little padding so the tooltip isn't flush against the edge
 
         if (width) {
@@ -57,7 +56,7 @@ class TimeTip extends Tooltip {
         this.containerWidth = utils.bounds(this.container).width + tolerance;
     }
 
-    resetWidth () {
+    resetWidth() {
         this.containerWidth = 0;
     }
 }
@@ -111,9 +110,12 @@ class TimeSlider extends Slider {
         }
         var duration = this._model.get('duration');
         if (this.streamType === 'DVR') {
-            var position = (1 - (percent / 100)) * duration;
+            var position = (1 - percent / 100) * duration;
             var currentPosition = this._model.get('position');
-            var updatedPosition = Math.min(position, Math.max(dvrSeekLimit, currentPosition));
+            var updatedPosition = Math.min(
+                position,
+                Math.max(dvrSeekLimit, currentPosition)
+            );
             var updatedPercent = updatedPosition * 100 / duration;
             return 100 - updatedPercent;
         }
@@ -173,13 +175,25 @@ class TimeSlider extends Slider {
         this.addCues(model.get('cues'));
 
         var tracks = playlistItem.tracks;
-        _.each(tracks, function (track) {
-            if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
-                this.loadThumbnails(track.file);
-            } else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {
-                this.loadChapters(track.file);
-            }
-        }, this);
+        _.each(
+            tracks,
+            function(track) {
+                if (
+                    track &&
+                    track.kind &&
+                    track.kind.toLowerCase() === 'thumbnails'
+                ) {
+                    this.loadThumbnails(track.file);
+                } else if (
+                    track &&
+                    track.kind &&
+                    track.kind.toLowerCase() === 'chapters'
+                ) {
+                    this.loadChapters(track.file);
+                }
+            },
+            this
+        );
     }
 
     performSeek() {
@@ -193,7 +207,10 @@ class TimeSlider extends Slider {
             this._api.seek(position, reasonInteraction());
         } else {
             position = percent / 100 * duration;
-            this._api.seek(Math.min(position, duration - 0.25), reasonInteraction());
+            this._api.seek(
+                Math.min(position, duration - 0.25),
+                reasonInteraction()
+            );
         }
     }
 
@@ -205,7 +222,7 @@ class TimeSlider extends Slider {
 
         var playerWidth = this._model.get('containerWidth');
         var railBounds = utils.bounds(this.elementRail);
-        var position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
+        var position = evt.pageX ? evt.pageX - railBounds.left : evt.x;
         position = utils.between(position, 0, railBounds.width);
         var pct = position / railBounds.width;
         var time = duration * pct;
@@ -221,7 +238,11 @@ class TimeSlider extends Slider {
         // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
         if (UI.getPointerType(evt.sourceEvent) === 'touch') {
             this.activeCue = this.cues.reduce((closeCue, cue) => {
-                if (Math.abs(position - (parseInt(cue.pct) / 100 * railBounds.width)) < this.mobileHoverDistance) {
+                if (
+                    Math.abs(
+                        position - parseInt(cue.pct) / 100 * railBounds.width
+                    ) < this.mobileHoverDistance
+                ) {
                     return cue;
                 }
                 return closeCue;
@@ -259,7 +280,9 @@ class TimeSlider extends Slider {
             // timeTip may go outside the bounds of the player. Determine the % of tolerance needed
             timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
         }
-        var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
+        var safePct =
+            Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) *
+            100;
         utils.style(timeTip.el, { left: safePct + '%' });
     }
 

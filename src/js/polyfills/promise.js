@@ -10,7 +10,7 @@ function noop() {}
 
 // Polyfill for Function.prototype.bind
 function bind(fn, thisArg) {
-    return function () {
+    return function() {
         fn.apply(thisArg, arguments);
     };
 }
@@ -39,10 +39,13 @@ function handle(self, deferred) {
         return;
     }
     self._handled = true;
-    PromisePolyfill._immediateFn(function () {
+    PromisePolyfill._immediateFn(function() {
         var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
         if (cb === null) {
-            (self._state === 1 ? resolvePromise : rejectPromise)(deferred.promise, self._value);
+            (self._state === 1 ? resolvePromise : rejectPromise)(
+                deferred.promise,
+                self._value
+            );
             return;
         }
         var ret;
@@ -62,7 +65,10 @@ function resolvePromise(self, newValue) {
         if (newValue === self) {
             throw new TypeError('A promise cannot be resolved with itself.');
         }
-        if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+        if (
+            newValue &&
+            (typeof newValue === 'object' || typeof newValue === 'function')
+        ) {
             var then = newValue.then;
             if (newValue instanceof PromisePolyfill) {
                 self._state = 3;
@@ -118,19 +124,22 @@ function Handler(onFulfilled, onRejected, promise) {
 function doResolve(fn, self) {
     var done = false;
     try {
-        fn(function (value) {
-            if (done) {
-                return;
+        fn(
+            function(value) {
+                if (done) {
+                    return;
+                }
+                done = true;
+                resolvePromise(self, value);
+            },
+            function(reason) {
+                if (done) {
+                    return;
+                }
+                done = true;
+                rejectPromise(self, reason);
             }
-            done = true;
-            resolvePromise(self, value);
-        }, function (reason) {
-            if (done) {
-                return;
-            }
-            done = true;
-            rejectPromise(self, reason);
-        });
+        );
     } catch (ex) {
         if (done) {
             return;
@@ -141,21 +150,21 @@ function doResolve(fn, self) {
 }
 
 /* eslint dot-notation: 0 */
-PromisePolyfill.prototype['catch'] = function (onRejected) {
+PromisePolyfill.prototype['catch'] = function(onRejected) {
     return this.then(null, onRejected);
 };
 
-PromisePolyfill.prototype.then = function (onFulfilled, onRejected) {
-    var prom = new (this.constructor)(noop);
+PromisePolyfill.prototype.then = function(onFulfilled, onRejected) {
+    var prom = new this.constructor(noop);
 
     handle(this, new Handler(onFulfilled, onRejected, prom));
     return prom;
 };
 
-PromisePolyfill.all = function (arr) {
+PromisePolyfill.all = function(arr) {
     var args = Array.prototype.slice.call(arr);
 
-    return new PromisePolyfill(function (resolve, reject) {
+    return new PromisePolyfill(function(resolve, reject) {
         if (args.length === 0) {
             return resolve([]);
         }
@@ -163,12 +172,19 @@ PromisePolyfill.all = function (arr) {
 
         function res(i, val) {
             try {
-                if (val && (typeof val === 'object' || typeof val === 'function')) {
+                if (
+                    val &&
+                    (typeof val === 'object' || typeof val === 'function')
+                ) {
                     var then = val.then;
                     if (typeof then === 'function') {
-                        then.call(val, function (resultVal) {
-                            res(i, resultVal);
-                        }, reject);
+                        then.call(
+                            val,
+                            function(resultVal) {
+                                res(i, resultVal);
+                            },
+                            reject
+                        );
                         return;
                     }
                 }
@@ -187,24 +203,28 @@ PromisePolyfill.all = function (arr) {
     });
 };
 
-PromisePolyfill.resolve = function (value) {
-    if (value && typeof value === 'object' && value.constructor === PromisePolyfill) {
+PromisePolyfill.resolve = function(value) {
+    if (
+        value &&
+        typeof value === 'object' &&
+        value.constructor === PromisePolyfill
+    ) {
         return value;
     }
 
-    return new PromisePolyfill(function (resolve) {
+    return new PromisePolyfill(function(resolve) {
         resolve(value);
     });
 };
 
-PromisePolyfill.reject = function (value) {
-    return new PromisePolyfill(function (resolve, reject) {
+PromisePolyfill.reject = function(value) {
+    return new PromisePolyfill(function(resolve, reject) {
         reject(value);
     });
 };
 
-PromisePolyfill.race = function (values) {
-    return new PromisePolyfill(function (resolve, reject) {
+PromisePolyfill.race = function(values) {
+    return new PromisePolyfill(function(resolve, reject) {
         for (var i = 0, len = values.length; i < len; i++) {
             values[i].then(resolve, reject);
         }
@@ -212,11 +232,12 @@ PromisePolyfill.race = function (values) {
 };
 
 // Use polyfill for setImmediate for performance gains
-PromisePolyfill._immediateFn = (typeof setImmediateFunc === 'function' &&
-    function (fn) {
-        setImmediateFunc(fn);
-    }) ||
-    function (fn) {
+PromisePolyfill._immediateFn =
+    (typeof setImmediateFunc === 'function' &&
+        function(fn) {
+            setImmediateFunc(fn);
+        }) ||
+    function(fn) {
         setTimeoutFunc(fn, 0);
     };
 

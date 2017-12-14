@@ -60,7 +60,9 @@ const Timer = function() {
             // This lets `jwplayer().qoe().item.sums` return a tally of running playing/paused time
             const runningSums = Object.assign({}, sum);
             for (const methodName in startTimes) {
-                if (Object.prototype.hasOwnProperty.call(startTimes, methodName)) {
+                if (
+                    Object.prototype.hasOwnProperty.call(startTimes, methodName)
+                ) {
                     const now = dateTime();
                     const e = now - startTimes[methodName];
                     runningSums[methodName] = runningSums[methodName] + e || e;

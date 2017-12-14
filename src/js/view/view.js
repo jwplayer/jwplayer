@@ -4,14 +4,29 @@ import { isAudioMode, CONTROLBAR_ONLY_HEIGHT } from 'view/utils/audio-mode';
 import viewsManager from 'view/utils/views-manager';
 import getVisibility from 'view/utils/visibility';
 import activeTab from 'utils/active-tab';
-import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import {
+    requestAnimationFrame,
+    cancelAnimationFrame
+} from 'utils/request-animation-frame';
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
 import {
-    STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
-    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY } from 'events/events';
+    STATE_BUFFERING,
+    STATE_IDLE,
+    STATE_COMPLETE,
+    STATE_PAUSED,
+    STATE_PLAYING,
+    STATE_ERROR,
+    RESIZE,
+    BREAKPOINT,
+    DISPLAY_CLICK,
+    LOGO_CLICK,
+    ERROR,
+    NATIVE_FULLSCREEN,
+    MEDIA_VISUAL_QUALITY
+} from 'events/events';
 import Events from 'utils/backbone.events';
 import {
     addClass,
@@ -20,12 +35,9 @@ import {
     replaceClass,
     toggleClass,
     createElement,
-    bounds,
+    bounds
 } from 'utils/dom';
-import {
-    clearCss,
-    style,
-} from 'utils/css';
+import { clearCss, style } from 'utils/css';
 import _ from 'utils/underscore';
 import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
 import flagNoFocus from 'view/utils/flag-no-focus';
@@ -49,7 +61,9 @@ function View(_api, _model) {
         model: _model
     });
 
-    const _playerElement = createElement(playerTemplate(_model.get('id'), _model.get('localization').player));
+    const _playerElement = createElement(
+        playerTemplate(_model.get('id'), _model.get('localization').player)
+    );
     const _videoLayer = _playerElement.querySelector('.jw-media');
 
     const _preview = new Preview(_model);
@@ -78,7 +92,7 @@ function View(_api, _model) {
         return { reason: 'interaction' };
     }
 
-    this.updateBounds = function () {
+    this.updateBounds = function() {
         cancelAnimationFrame(_resizeContainerRequestId);
         const inDOM = document.body.contains(_playerElement);
         const rect = bounds(_playerElement);
@@ -173,13 +187,17 @@ function View(_api, _model) {
 
             const smallPlayer = breakpoint < 2;
             toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
-            toggleClass(_playerElement, 'jw-orientation-portrait', (height > width));
+            toggleClass(
+                _playerElement,
+                'jw-orientation-portrait',
+                height > width
+            );
         }
         toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
         _model.set('audioMode', audioMode);
     }
 
-    this.setup = function () {
+    this.setup = function() {
         _preview.setup(_playerElement.querySelector('.jw-preview'));
         _title.setup(_playerElement.querySelector('.jw-title'));
 
@@ -192,21 +210,28 @@ function View(_api, _model) {
         _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
         // captions should be placed behind controls, and not hidden when controls are hidden
-        _playerElement.insertBefore(_captionsRenderer.element(), _title.element());
+        _playerElement.insertBefore(
+            _captionsRenderer.element(),
+            _title.element()
+        );
 
         // Display Click and Double Click Handling
         displayClickHandler = clickHandlerHelper(_api, _model, _videoLayer);
 
         focusHelper = flagNoFocus(_playerElement);
-        fullscreenHelpers = requestFullscreenHelper(_playerElement, document, _fullscreenChangeHandler);
+        fullscreenHelpers = requestFullscreenHelper(
+            _playerElement,
+            document,
+            _fullscreenChangeHandler
+        );
 
-        _model.on('change:hideAdsControls', function (model, val) {
+        _model.on('change:hideAdsControls', function(model, val) {
             toggleClass(_playerElement, 'jw-flag-ads-hide-controls', val);
         });
-        _model.on('change:scrubbing', function (model, val) {
+        _model.on('change:scrubbing', function(model, val) {
             toggleClass(_playerElement, 'jw-flag-dragging', val);
         });
-        _model.on('change:playRejected', function (model, val) {
+        _model.on('change:playRejected', function(model, val) {
             toggleClass(_playerElement, 'jw-flag-play-rejected', val);
         });
 
@@ -251,7 +276,11 @@ function View(_api, _model) {
         _model.set('mediaContainer', _videoLayer);
         _model.set('iFrame', Features.iframe);
         _model.set('activeTab', activeTab());
-        _model.set('touchMode', _isMobile && (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT));
+        _model.set(
+            'touchMode',
+            _isMobile &&
+                (typeof height === 'string' || height >= CONTROLBAR_ONLY_HEIGHT)
+        );
 
         viewsManager.add(this);
 
@@ -312,14 +341,14 @@ function View(_api, _model) {
             ControlsModule = ControlsLoader.module.controls;
             if (!ControlsModule) {
                 ControlsLoader.load()
-                    .then(function (Controls) {
+                    .then(function(Controls) {
                         ControlsModule = Controls;
                         // Check that controls is still true after the loader promise resolves
                         if (model.get('controls')) {
                             addControls();
                         }
                     })
-                    .catch(function (reason) {
+                    .catch(function(reason) {
                         _this.trigger(ERROR, {
                             message: 'Controls failed to load',
                             reason: reason
@@ -359,7 +388,9 @@ function View(_api, _model) {
     }
 
     function clickHandlerHelper(api, model, videoLayer) {
-        const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });
+        const clickHandler = new ClickHandler(model, videoLayer, {
+            useHover: true
+        });
         const controls = model.get('controls');
         clickHandler.on({
             click: () => {
@@ -380,16 +411,23 @@ function View(_api, _model) {
                 }
                 const state = model.get('state');
 
-                if (controls &&
-                    ((state === STATE_IDLE || state === STATE_COMPLETE) ||
-                    (model.get('instream') && state === STATE_PAUSED))) {
+                if (
+                    controls &&
+                    (state === STATE_IDLE ||
+                        state === STATE_COMPLETE ||
+                        (model.get('instream') && state === STATE_PAUSED))
+                ) {
                     api.playToggle(reasonInteraction());
                 }
 
                 if (controls && state === STATE_PAUSED) {
                     // Toggle visibility of the controls when tapping the media
                     // Do not add mobile toggle "jw-flag-controls-hidden" in these cases
-                    if (model.get('instream') || model.get('castActive') || (model.get('mediaType') === 'audio')) {
+                    if (
+                        model.get('instream') ||
+                        model.get('castActive') ||
+                        model.get('mediaType') === 'audio'
+                    ) {
                         return;
                     }
                     toggleClass(_playerElement, 'jw-flag-controls-hidden');
@@ -438,7 +476,7 @@ function View(_api, _model) {
         }
     }
 
-    this.addControls = function (controls) {
+    this.addControls = function(controls) {
         _controls = controls;
 
         removeClass(_playerElement, 'jw-flag-controls-hidden');
@@ -475,7 +513,7 @@ function View(_api, _model) {
         overlaysElement.addEventListener('mousemove', _userActivityCallback);
     };
 
-    this.removeControls = function () {
+    this.removeControls = function() {
         _logo.setContainer(_playerElement);
 
         if (_controls) {
@@ -493,8 +531,7 @@ function View(_api, _model) {
     };
 
     // Perform the switch to fullscreen
-    const _fullscreen = function (model, state) {
-
+    const _fullscreen = function(model, state) {
         // Unmute the video so volume can be adjusted with native controls in fullscreen
         if (state && _controls && model.get('autostartMuted')) {
             _controls.unmuteAutoplay(_api, model);
@@ -560,17 +597,25 @@ function View(_api, _model) {
         }
 
         if (_preview) {
-            _preview.resize(containerWidth, containerHeight, _model.get('stretching'));
+            _preview.resize(
+                containerWidth,
+                containerHeight,
+                _model.get('stretching')
+            );
         }
 
         const provider = _model.getVideo();
         if (!provider) {
             return;
         }
-        provider.resize(containerWidth, containerHeight, _model.get('stretching'));
+        provider.resize(
+            containerWidth,
+            containerHeight,
+            _model.get('stretching')
+        );
     }
 
-    this.resize = function (playerWidth, playerHeight) {
+    this.resize = function(playerWidth, playerHeight) {
         const resetAspectMode = true;
         _resizePlayer(playerWidth, playerHeight, resetAspectMode);
         _responsiveUpdate();
@@ -590,10 +635,10 @@ function View(_api, _model) {
         return provider.getFullScreen();
     }
 
-
     function _fullscreenChangeHandler(event) {
         const modelState = _model.get('fullscreen');
-        const newState = (event.jwstate !== undefined) ? event.jwstate : _isNativeFullscreen();
+        const newState =
+            event.jwstate !== undefined ? event.jwstate : _isNativeFullscreen();
 
         // If fullscreen was triggered by something other than the player
         //  then we want to sync up our internal state
@@ -608,7 +653,7 @@ function View(_api, _model) {
 
     function _toggleDOMFullscreen(playerElement, fullscreenState) {
         toggleClass(playerElement, 'jw-flag-fullscreen', fullscreenState);
-        style(document.body, { overflowY: (fullscreenState) ? 'hidden' : '' });
+        style(document.body, { overflowY: fullscreenState ? 'hidden' : '' });
 
         if (fullscreenState && _controls) {
             // When going into fullscreen, we want the control bar to fade after a few seconds
@@ -620,7 +665,7 @@ function View(_api, _model) {
     }
 
     function _setLiveMode(model, streamType) {
-        const live = (streamType === 'LIVE');
+        const live = streamType === 'LIVE';
         toggleClass(_playerElement, 'jw-flag-live', live);
     }
 
@@ -629,7 +674,7 @@ function View(_api, _model) {
     }
 
     function _onMediaTypeChange(model, val) {
-        const isAudioFile = (val === 'audio');
+        const isAudioFile = val === 'audio';
         const provider = model.get('provider');
 
         // Set the poster image for each audio file encountered in a playlist
@@ -639,8 +684,9 @@ function View(_api, _model) {
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
-        const isFlash = (provider && provider.name.indexOf('flash') === 0);
-        const element = (isAudioFile && !isFlash) ? _videoLayer : _videoLayer.nextSibling;
+        const isFlash = provider && provider.name.indexOf('flash') === 0;
+        const element =
+            isAudioFile && !isFlash ? _videoLayer : _videoLayer.nextSibling;
         // Put the preview element before the media element in order to display browser captions
         // otherwise keep it on top of the media element to display captions with the captions renderer
         _playerElement.insertBefore(_preview.el, element);
@@ -653,11 +699,17 @@ function View(_api, _model) {
         }
         const errorContainer = ErrorContainer(model, evt.message);
         if (ErrorContainer.cloneIcon) {
-            errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
+            errorContainer
+                .querySelector('.jw-icon')
+                .appendChild(ErrorContainer.cloneIcon('error'));
         }
         _title.hide();
         _playerElement.appendChild(errorContainer.firstChild);
-        toggleClass(_playerElement, 'jw-flag-audio-player', !!model.get('audioMode'));
+        toggleClass(
+            _playerElement,
+            'jw-flag-audio-player',
+            !!model.get('audioMode')
+        );
     }
 
     function _stateHandler(model, newState, oldState) {
@@ -666,7 +718,9 @@ function View(_api, _model) {
         }
 
         if (oldState === STATE_ERROR) {
-            const errorContainer = _playerElement.querySelector('.jw-error-msg');
+            const errorContainer = _playerElement.querySelector(
+                '.jw-error-msg'
+            );
             if (errorContainer) {
                 errorContainer.parentNode.removeChild(errorContainer);
             }
@@ -676,12 +730,18 @@ function View(_api, _model) {
         if (newState === STATE_PLAYING) {
             _stateUpdate(newState);
         } else {
-            _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(newState));
+            _stateClassRequestId = requestAnimationFrame(() =>
+                _stateUpdate(newState)
+            );
         }
     }
 
     function _stateUpdate(state) {
-        if (_model.get('controls') && state !== STATE_PAUSED && hasClass(_playerElement, 'jw-flag-controls-hidden')) {
+        if (
+            _model.get('controls') &&
+            state !== STATE_PAUSED &&
+            hasClass(_playerElement, 'jw-flag-controls-hidden')
+        ) {
             removeClass(_playerElement, 'jw-flag-controls-hidden');
         }
         replaceClass(_playerElement, /jw-state-\S+/, 'jw-state-' + state);
@@ -704,7 +764,11 @@ function View(_api, _model) {
             default:
                 if (_captionsRenderer) {
                     _captionsRenderer.show();
-                    if (state === STATE_PAUSED && _controls && !_controls.showing) {
+                    if (
+                        state === STATE_PAUSED &&
+                        _controls &&
+                        !_controls.showing
+                    ) {
                         _captionsRenderer.renderCues(true);
                     }
                 }
@@ -741,7 +805,10 @@ function View(_api, _model) {
         }
 
         _this.setAltText('');
-        removeClass(_playerElement, ['jw-flag-ads', 'jw-flag-ads-hide-controls']);
+        removeClass(_playerElement, [
+            'jw-flag-ads',
+            'jw-flag-ads-hide-controls'
+        ]);
         _model.set('hideAdsControls', false);
 
         // Make sure that the provider's media element is returned to the DOM after instream mode
@@ -754,15 +821,15 @@ function View(_api, _model) {
         displayClickHandler.revertAlternateClickHandlers();
     };
 
-    this.setAltText = function (text) {
+    this.setAltText = function(text) {
         _model.set('altText', text);
     };
 
-    this.clickHandler = function () {
+    this.clickHandler = function() {
         return displayClickHandler;
     };
 
-    this.getContainer = this.element = function () {
+    this.getContainer = this.element = function() {
         return _playerElement;
     };
 
@@ -773,7 +840,7 @@ function View(_api, _model) {
         return null;
     };
 
-    this.getSafeRegion = function (excludeControlbar = true) {
+    this.getSafeRegion = function(excludeControlbar = true) {
         const safeRegion = {
             x: 0,
             y: 0,
@@ -789,13 +856,13 @@ function View(_api, _model) {
         return safeRegion;
     };
 
-    this.setCaptions = function (captionsStyle) {
+    this.setCaptions = function(captionsStyle) {
         _captionsRenderer.clear();
         _captionsRenderer.setup(_model.get('id'), captionsStyle);
         _captionsRenderer.resize();
     };
 
-    this.destroy = function () {
+    this.destroy = function() {
         _model.destroy();
         viewsManager.unobserve(_playerElement);
         viewsManager.remove(this);

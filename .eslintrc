@@ -27,7 +27,7 @@
     ],
     "rules": {
         "no-for-of-loops/no-for-of-loops": 2,
-        "comma-dangle": 0,
+        "comma-dangle": 2,
         "no-cond-assign": 2,
         "no-console": ["warn", { "allow": ["warn", "error"] }],
         "no-constant-condition": 2,
@@ -142,7 +142,7 @@
         "semi-spacing": [1, {"before": false, "after": true}],
         "sort-vars": 0,
         "space-before-blocks": [1, "always"],
-        "space-before-function-paren": [0, {"anonymous": "always", "named": "never"}],
+        "space-before-function-paren": [2, "never"],
         "space-in-parens": [1, "never"],
         "space-infix-ops": 1,
         "space-unary-ops": [1, {"words": true, "nonwords": false}],
@@ -153,6 +153,7 @@
         "max-params": 0,
         "max-statements": 0,
         "object-curly-spacing": ["error", "always"],
-        "keyword-spacing": 2
+        "keyword-spacing": 2,
+        "arrow-parens": [2, "as-needed", {"requireForBlockBody": true}]
     }
 }

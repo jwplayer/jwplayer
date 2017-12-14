@@ -5,8 +5,16 @@ SimpleModelExtendable.prototype = Object.assign({}, SimpleModel);
 
 function dispatchDiffChangeEvents(viewModel, newAttributes, oldAttributes) {
     Object.keys(newAttributes).forEach((attr) => {
-        if (attr in newAttributes && newAttributes[attr] !== oldAttributes[attr]) {
-            viewModel.trigger(`change:${attr}`, viewModel, newAttributes[attr], oldAttributes[attr]);
+        if (
+            attr in newAttributes &&
+            newAttributes[attr] !== oldAttributes[attr]
+        ) {
+            viewModel.trigger(
+                `change:${attr}`,
+                viewModel,
+                newAttributes[attr],
+                oldAttributes[attr]
+            );
         }
     });
 }
@@ -18,7 +26,6 @@ function removeListeners(instance, viewModel) {
 }
 
 class PlayerViewModel extends SimpleModelExtendable {
-
     constructor(playerModel) {
         super();
 
@@ -32,16 +39,24 @@ class PlayerViewModel extends SimpleModelExtendable {
             scrubbing: false
         });
 
-        playerModel.on('all', (type, objectOrEvent, value, previousValue) => {
-            if (objectOrEvent === playerModel) {
-                objectOrEvent = this;
-            }
-            this.trigger(type, objectOrEvent, value, previousValue);
-        }, this);
+        playerModel.on(
+            'all',
+            (type, objectOrEvent, value, previousValue) => {
+                if (objectOrEvent === playerModel) {
+                    objectOrEvent = this;
+                }
+                this.trigger(type, objectOrEvent, value, previousValue);
+            },
+            this
+        );
 
-        playerModel.on('change:mediaModel', (model, mediaModel) => {
-            this.mediaModel = mediaModel;
-        }, this);
+        playerModel.on(
+            'change:mediaModel',
+            (model, mediaModel) => {
+                this.mediaModel = mediaModel;
+            },
+            this
+        );
     }
 
     set mediaModel(mediaModel) {
@@ -50,15 +65,23 @@ class PlayerViewModel extends SimpleModelExtendable {
 
         this._mediaModel = mediaModel;
 
-        mediaModel.on('all', (type, objectOrEvent, value, previousValue) => {
-            if (objectOrEvent === mediaModel) {
-                objectOrEvent = this;
-            }
-            this.trigger(type, objectOrEvent, value, previousValue);
-        }, this);
+        mediaModel.on(
+            'all',
+            (type, objectOrEvent, value, previousValue) => {
+                if (objectOrEvent === mediaModel) {
+                    objectOrEvent = this;
+                }
+                this.trigger(type, objectOrEvent, value, previousValue);
+            },
+            this
+        );
 
         if (previousMediaModel) {
-            dispatchDiffChangeEvents(this, mediaModel.attributes, previousMediaModel);
+            dispatchDiffChangeEvents(
+                this,
+                mediaModel.attributes,
+                previousMediaModel
+            );
         }
     }
 
@@ -92,9 +115,13 @@ export default class ViewModel extends PlayerViewModel {
         this._instreamModel = null;
         this._playerViewModel = new PlayerViewModel(this._model);
 
-        playerModel.on('change:instream', (model, instream) => {
-            this.instreamModel = instream ? instream.model : null;
-        }, this);
+        playerModel.on(
+            'change:instream',
+            (model, instream) => {
+                this.instreamModel = instream ? instream.model : null;
+            },
+            this
+        );
     }
 
     get player() {
@@ -112,25 +139,49 @@ export default class ViewModel extends PlayerViewModel {
         this.trigger('instreamMode', !!instreamModel);
 
         if (instreamModel) {
-            instreamModel.on('all', (type, objectOrEvent, value, previousValue) => {
-                if (objectOrEvent === instreamModel) {
-                    objectOrEvent = this;
-                }
-                this.trigger(type, objectOrEvent, value, previousValue);
-            }, this);
+            instreamModel.on(
+                'all',
+                (type, objectOrEvent, value, previousValue) => {
+                    if (objectOrEvent === instreamModel) {
+                        objectOrEvent = this;
+                    }
+                    this.trigger(type, objectOrEvent, value, previousValue);
+                },
+                this
+            );
 
-            instreamModel.change('mediaModel', (model, mediaModel) => {
-                this.mediaModel = mediaModel;
-            }, this);
+            instreamModel.change(
+                'mediaModel',
+                (model, mediaModel) => {
+                    this.mediaModel = mediaModel;
+                },
+                this
+            );
 
-            dispatchDiffChangeEvents(this, instreamModel.attributes, this._model.attributes);
+            dispatchDiffChangeEvents(
+                this,
+                instreamModel.attributes,
+                this._model.attributes
+            );
         } else if (previousInstream) {
-            this._model.change('mediaModel', (model, mediaModel) => {
-                this.mediaModel = mediaModel;
-            }, this);
+            this._model.change(
+                'mediaModel',
+                (model, mediaModel) => {
+                    this.mediaModel = mediaModel;
+                },
+                this
+            );
 
-            const mergedAttributes = Object.assign({}, previousInstream.attributes, this._model.attributes);
-            dispatchDiffChangeEvents(this, this._model.attributes, mergedAttributes);
+            const mergedAttributes = Object.assign(
+                {},
+                previousInstream.attributes,
+                this._model.attributes
+            );
+            dispatchDiffChangeEvents(
+                this,
+                this._model.attributes,
+                mergedAttributes
+            );
         }
     }
 

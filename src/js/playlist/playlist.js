@@ -47,44 +47,55 @@ function formatSources(item, model) {
     const androidhls = model.get('androidhls');
     const safariHlsjs = model.get('safarihlsjs');
     const itemDrm = item.drm || model.get('drm');
-    const withCredentials = fallbackIfUndefined(item.withCredentials, model.get('withCredentials'));
+    const withCredentials = fallbackIfUndefined(
+        item.withCredentials,
+        model.get('withCredentials')
+    );
     const hlsjsdefault = model.get('hlsjsdefault') !== false;
 
-    return sources.map(function(originalSource) {
-        if (originalSource !== Object(originalSource)) {
-            return null;
-        }
-        if (androidhls !== undefined && androidhls !== null) {
-            originalSource.androidhls = androidhls;
-        }
-        if (safariHlsjs !== undefined && safariHlsjs !== null) {
-            originalSource.safarihlsjs = safariHlsjs;
-        }
+    return sources
+        .map(function(originalSource) {
+            if (originalSource !== Object(originalSource)) {
+                return null;
+            }
+            if (androidhls !== undefined && androidhls !== null) {
+                originalSource.androidhls = androidhls;
+            }
+            if (safariHlsjs !== undefined && safariHlsjs !== null) {
+                originalSource.safarihlsjs = safariHlsjs;
+            }
 
-        if (safariHlsjs !== undefined && safariHlsjs !== null) {
-            originalSource.safarihlsjs = safariHlsjs;
-        }
+            if (safariHlsjs !== undefined && safariHlsjs !== null) {
+                originalSource.safarihlsjs = safariHlsjs;
+            }
 
-        if (originalSource.drm || itemDrm) {
-            originalSource.drm = originalSource.drm || itemDrm;
-        }
+            if (originalSource.drm || itemDrm) {
+                originalSource.drm = originalSource.drm || itemDrm;
+            }
 
-        originalSource.preload = getPreload(originalSource.preload, item.preload);
+            originalSource.preload = getPreload(
+                originalSource.preload,
+                item.preload
+            );
 
-        // withCredentials is assigned in ascending priority order, source > playlist > model
-        // a false value that is a higher priority than true must result in a false withCredentials value
-        // we don't want undefined if all levels have withCredentials as undefined
-        const cascadedWithCredentials = fallbackIfUndefined(originalSource.withCredentials, withCredentials);
-        if (cascadedWithCredentials !== undefined) {
-            originalSource.withCredentials = cascadedWithCredentials;
-        }
+            // withCredentials is assigned in ascending priority order, source > playlist > model
+            // a false value that is a higher priority than true must result in a false withCredentials value
+            // we don't want undefined if all levels have withCredentials as undefined
+            const cascadedWithCredentials = fallbackIfUndefined(
+                originalSource.withCredentials,
+                withCredentials
+            );
+            if (cascadedWithCredentials !== undefined) {
+                originalSource.withCredentials = cascadedWithCredentials;
+            }
 
-        if (hlsjsdefault) {
-            originalSource.hlsjsdefault = hlsjsdefault;
-        }
+            if (hlsjsdefault) {
+                originalSource.hlsjsdefault = hlsjsdefault;
+            }
 
-        return Source(originalSource);
-    }).filter(source => !!source);
+            return Source(originalSource);
+        })
+        .filter(source => !!source);
 }
 
 // A playlist item may have multiple different sources, but we want to stick with one.
@@ -100,7 +111,10 @@ function filterSources(sources, providers) {
     const provider = chosenProviderAndType.provider;
     const bestType = chosenProviderAndType.type;
     return sources.filter(function(source) {
-        return source.type === bestType && providers.providerSupports(provider, source);
+        return (
+            source.type === bestType &&
+            providers.providerSupports(provider, source)
+        );
     });
 }
 
@@ -110,7 +124,10 @@ function chooseProviderAndType(sources, providers) {
         const source = sources[i];
         const chosenProvider = providers.choose(source);
         if (chosenProvider) {
-            return { type: source.type, provider: chosenProvider.providerToCheck };
+            return {
+                type: source.type,
+                provider: chosenProvider.providerToCheck
+            };
         }
     }
 
@@ -118,7 +135,7 @@ function chooseProviderAndType(sources, providers) {
 }
 
 function fallbackIfUndefined(value, fallback) {
-    return (value === undefined) ? fallback : value;
+    return value === undefined ? fallback : value;
 }
 
 export default Playlist;

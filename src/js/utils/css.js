@@ -73,18 +73,16 @@ function _styleValue(property, value) {
     }
     // string
     if (typeof value === 'string' && isNaN(value)) {
-        if ((/png|gif|jpe?g/i).test(value) && value.indexOf('url') < 0) {
+        if (/png|gif|jpe?g/i.test(value) && value.indexOf('url') < 0) {
             return 'url(' + value + ')';
         }
         return value;
     }
     // number
-    if (value === 0 ||
-        property === 'z-index' ||
-        property === 'opacity') {
+    if (value === 0 || property === 'z-index' || property === 'opacity') {
         return '' + value;
     }
-    if ((/color/i).test(property)) {
+    if (/color/i.test(property)) {
         return '#' + pad(value.toString(16).replace(/^0x/i, ''), 6);
     }
     return Math.ceil(value) + 'px';
@@ -104,7 +102,7 @@ let canvasColorContext;
 
 export function getRgba(color, opacity) {
     var colorFn = 'rgb';
-    var hasAlpha = (opacity !== undefined && opacity !== 100);
+    var hasAlpha = opacity !== undefined && opacity !== 100;
     if (hasAlpha) {
         colorFn += 'a';
     }
@@ -125,7 +123,7 @@ export function getRgba(color, opacity) {
     var data = canvasColorContext.getImageData(0, 0, 1, 1).data;
     colorFn += '(' + data[0] + ', ' + data[1] + ', ' + data[2];
     if (hasAlpha) {
-        colorFn += ', ' + (opacity / 100);
+        colorFn += ', ' + opacity / 100;
     }
     return colorFn + ')';
 }

@@ -1,7 +1,7 @@
 import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
 
 const noop = function() {};
-const returnFalse = (() => false);
+const returnFalse = () => false;
 
 /** Audio Track information for tracks returned by {@link Api#getAudioTracks jwplayer().getAudioTracks()}
  * @typedef {object} AudioTrackOption
@@ -83,8 +83,12 @@ const DefaultProvider = {
 
     sendMediaType: function(levels) {
         var type = levels[0].type;
-        var isAudioFile = (type === 'oga' || type === 'aac' || type === 'mp3' ||
-            type === 'mpeg' || type === 'vorbis');
+        var isAudioFile =
+            type === 'oga' ||
+            type === 'aac' ||
+            type === 'mp3' ||
+            type === 'mpeg' ||
+            type === 'vorbis';
 
         this.trigger(MEDIA_TYPE, {
             mediaType: isAudioFile ? 'audio' : 'video'

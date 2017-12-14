@@ -6,14 +6,18 @@ import srt from 'parsers/captions/srt';
 import dfxp from 'parsers/captions/dfxp';
 
 export function loadFile(track, successHandler, errorHandler) {
-    track.xhr = utils.ajax(track.file, function(xhr) {
-        xhrSuccess(xhr, track, successHandler, errorHandler);
-    }, errorHandler);
+    track.xhr = utils.ajax(
+        track.file,
+        function(xhr) {
+            xhrSuccess(xhr, track, successHandler, errorHandler);
+        },
+        errorHandler
+    );
 }
 
 export function cancelXhr(tracks) {
     if (tracks) {
-        tracks.forEach(track => {
+        tracks.forEach((track) => {
             var xhr = track.xhr;
             if (xhr) {
                 xhr.onload = null;
@@ -61,24 +65,26 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
             var responseText = xhr.responseText;
             if (responseText.indexOf('WEBVTT') >= 0) {
                 // make VTTCues from VTT track
-                loadVttParser().then(VTTParser => {
-                    var parser = new VTTParser(window);
-                    vttCues = [];
-                    parser.oncue = function(cue) {
-                        vttCues.push(cue);
-                    };
+                loadVttParser()
+                    .then((VTTParser) => {
+                        var parser = new VTTParser(window);
+                        vttCues = [];
+                        parser.oncue = function(cue) {
+                            vttCues.push(cue);
+                        };
 
-                    parser.onflush = function() {
+                        parser.onflush = function() {
+                            delete track.xhr;
+                            successHandler(vttCues);
+                        };
+
+                        // Parse calls onflush internally
+                        parser.parse(responseText);
+                    })
+                    .catch((error) => {
                         delete track.xhr;
-                        successHandler(vttCues);
-                    };
-
-                    // Parse calls onflush internally
-                    parser.parse(responseText);
-                }).catch(error => {
-                    delete track.xhr;
-                    errorHandler(error);
-                });
+                        errorHandler(error);
+                    });
             } else {
                 // make VTTCues from SRT track
                 cues = srt(responseText);
@@ -94,7 +100,12 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
 }
 
 function loadVttParser() {
-    return require.ensure(['parsers/captions/vttparser'], function (require) {
-        return require('parsers/captions/vttparser').default;
-    }, chunkLoadErrorHandler, 'vttparser');
+    return require.ensure(
+        ['parsers/captions/vttparser'],
+        function(require) {
+            return require('parsers/captions/vttparser').default;
+        },
+        chunkLoadErrorHandler,
+        'vttparser'
+    );
 }

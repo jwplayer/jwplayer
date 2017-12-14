@@ -64,12 +64,16 @@ export function off(name, callback, context) {
         name = names[i];
         const events = this._events[name];
         if (events) {
-            const retain = this._events[name] = [];
+            const retain = (this._events[name] = []);
             if (callback || context) {
                 for (let j = 0, k = events.length; j < k; j++) {
                     const ev = events[j];
-                    if ((callback && callback !== ev.callback && callback !== ev.callback._callback) ||
-                        (context && context !== ev.context)) {
+                    if (
+                        (callback &&
+                            callback !== ev.callback &&
+                            callback !== ev.callback._callback) ||
+                        (context && context !== ev.context)
+                    ) {
                         retain.push(ev);
                     }
                 }
@@ -164,7 +168,10 @@ function triggerEvents(events, args, context, catchExceptionsForName) {
                 ev.callback.apply(ev.context || context, args);
             } catch (e) {
                 /* eslint-disable no-console */
-                console.log('Error in "' + catchExceptionsForName + '" event handler:', e);
+                console.log(
+                    'Error in "' + catchExceptionsForName + '" event handler:',
+                    e
+                );
             }
         } else {
             ev.callback.apply(ev.context || context, args);
@@ -173,5 +180,8 @@ function triggerEvents(events, args, context, catchExceptionsForName) {
 }
 
 export default {
-    on, once, off, trigger
+    on,
+    once,
+    off,
+    trigger
 };
