@@ -9,7 +9,7 @@ const networkingDefaults = {
     saveData: false,
 };
 
-export function getNetworkInfo(model) {
+export default function getNetworkInfo(model) {
 
     const networkInfo = navigator.connection;
 
