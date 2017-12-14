@@ -9,11 +9,11 @@ const networkingDefaults = {
 };
 
 const networkingInfo = function (_, provider) {
-    let networkingInfo = _.extend({}, networkingDefaults);
+    let networkingState = _.extend({}, networkingDefaults);
     if (navigator) {
-        networkingInfo.onLine = navigator.onLine;
+        networkingState.onLine = navigator.onLine;
         if (navigator.connection) {
-            _.extend(networkingInfo, navigator.connection);
+            _.extend(networkingState, navigator.connection);
             // TODO: remove onchange, might not want to support on other browsers
         }
     }
@@ -24,7 +24,7 @@ const networkingInfo = function (_, provider) {
         // TODO: obtain downlink from shaka
     }
 
-    return networkingInfo;
+    return networkingState;
 };
 
 export default networkingInfo;
