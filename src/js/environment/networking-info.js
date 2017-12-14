@@ -10,15 +10,17 @@ const networkingDefaults = {
 };
 
 export default function getNetworkInfo(model) {
-
-    const networkInfo = navigator.connection;
-
     const networkingState = Object.assign({
         onLine: navigator.onLine,
         bandwidthEstimate: model.get('bandwidthEstimate')
-    }, networkingDefaults, networkInfo);
+    }, networkingDefaults);
 
-    delete networkingState.onchange;
+    // navigator.connection properties are not enumerable, so copy over default keys
+    const networkInfo = navigator.connection;
+
+    Object.keys(networkingDefaults).forEach(property => {
+        networkingState[property] = networkInfo[property];
+    })
 
     return networkingState;
 }
