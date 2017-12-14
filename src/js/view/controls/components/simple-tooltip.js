@@ -15,7 +15,6 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
     const instance = {
         open() {
             if (instance.touchEvent) {
-                delete instance.pointerType;
                 return;
             }
 
@@ -28,7 +27,6 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
         },
         close() {
             if (instance.touchEvent) {
-                delete instance.pointerType;
                 return;
             }
 
@@ -44,6 +42,8 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
     attachToElement.addEventListener('mouseout', instance.close);
     attachToElement.addEventListener('touchstart', (evt) => {
         instance.touchEvent = getPointerType(evt) === 'touch';
+    }, {
+        passive: true
     });
 
     return instance;
