@@ -9,7 +9,6 @@ import Events, { on, once, off, trigger, triggerSafe } from 'utils/backbone.even
 import { registerPlugin } from 'plugins/plugins';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
-import networkingInfo from 'environment/networking-info';
 
 let instancesCreated = 0;
 
@@ -525,8 +524,12 @@ export default function Api(element) {
             return core.getVisualQuality();
         },
 
-        getNetworkingInfo() {
-            return networkingInfo(_, core.getProvider());
+        /**
+         * Gets information about the network connection and media streaming bandwidth estimate
+         * @returns {NetworkInfo}
+         */
+        getNetworkInfo() {
+            return core.getNetworkInfo();
         },
 
         /**
