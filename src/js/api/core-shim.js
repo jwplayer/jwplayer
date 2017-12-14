@@ -193,6 +193,9 @@ Object.assign(CoreShim.prototype, {
     getVisualQuality() {
         return null;
     },
+    getNetworkInfo() {
+        return null;
+    },
     getCurrentQuality() {
         return -1;
     },
