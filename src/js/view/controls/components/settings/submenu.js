@@ -2,7 +2,6 @@ import SubmenuTemplate from 'view/controls/templates/settings/submenu';
 import { createElement, emptyElement, toggleClass } from 'utils/dom';
 
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
-
     let active;
     let contentItems = [];
     const submenuElement = createElement(SubmenuTemplate(name));
@@ -16,10 +15,11 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
     const onFocus = function(evt) {
         const focus =
             categoryButtonElement &&
-            evt.keyCode === 9 && (
-                evt.srcElement === contentItems[0].element() && evt.shiftKey ||
-                evt.srcElement === contentItems[contentItems.length - 1].element() && !evt.shiftKey
-            );
+            evt.keyCode === 9 &&
+            ((evt.srcElement === contentItems[0].element() && evt.shiftKey) ||
+                (evt.srcElement ===
+                    contentItems[contentItems.length - 1].element() &&
+                    !evt.shiftKey));
 
         if (focus) {
             categoryButtonElement.focus();
@@ -31,14 +31,16 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             if (!items) {
                 return;
             }
-            items.forEach(item => {
+            items.forEach((item) => {
                 submenuElement.appendChild(item.element());
             });
 
             contentItems = items;
 
             contentItems[0].element().addEventListener('keydown', onFocus);
-            contentItems[contentItems.length - 1].element().addEventListener('keydown', onFocus);
+            contentItems[contentItems.length - 1]
+                .element()
+                .addEventListener('keydown', onFocus);
         },
         replaceContent(items) {
             instance.removeContent();
@@ -46,7 +48,9 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
         },
         removeContent() {
             contentItems[0].element().removeEventListener('keydown', onFocus);
-            contentItems[contentItems.length - 1].element().removeEventListener('keydown', onFocus);
+            contentItems[contentItems.length - 1]
+                .element()
+                .removeEventListener('keydown', onFocus);
 
             emptyElement(submenuElement);
             contentItems = [];
@@ -78,39 +82,37 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             if (!contentItems) {
                 return;
             }
-            contentItems.forEach(item => {
+            contentItems.forEach((item) => {
                 item.destroy();
             });
             this.removeContent();
         }
     };
 
-    Object.defineProperties(instance,
-        {
-            name: {
-                enumerable: true,
-                get: () => name
-            },
-            active: {
-                enumerable: true,
-                get: () => active
-            },
-            categoryButtonElement: {
-                enumerable: true,
-                get: () => categoryButtonElement
-            },
-            isDefault: {
-                enumerable: true,
-                get: () => isDefault
-            }
+    Object.defineProperties(instance, {
+        name: {
+            enumerable: true,
+            get: () => name
+        },
+        active: {
+            enumerable: true,
+            get: () => active
+        },
+        categoryButtonElement: {
+            enumerable: true,
+            get: () => categoryButtonElement
+        },
+        isDefault: {
+            enumerable: true,
+            get: () => isDefault
         }
-    );
+    });
 
     return instance;
 }
 
 const deactivateAllItems = (items) => {
-    items.forEach(item => {
+    items.forEach((item) => {
         item.deactivate();
     });
 };

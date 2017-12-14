@@ -2,10 +2,10 @@ const Date = window.Date;
 const performance = window.performance || {
     timing: {}
 };
-const startDate = performance.timing.navigationStart || (new Date().getTime());
+const startDate = performance.timing.navigationStart || new Date().getTime();
 
 if (!('now' in performance)) {
-    performance.now = () => (new Date().getTime()) - startDate;
+    performance.now = () => new Date().getTime() - startDate;
 }
 
 export function now() {

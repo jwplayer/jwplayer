@@ -15,18 +15,19 @@ export const getScriptPath = function(scriptName) {
 };
 
 /** Gets the repository location **/
-export const repo = function () {
+export const repo = function() {
     if (__SELF_HOSTED__) {
         return getScriptPath('jwplayer.js');
     }
 
     const playerRepo = __REPO__;
-    const protocol = (playerRepo && window.location.protocol === 'file:') ? 'https:' : '';
+    const protocol =
+        playerRepo && window.location.protocol === 'file:' ? 'https:' : '';
     return `${protocol}${playerRepo}`;
 };
 
 // Is the player at least a minimum required version?
-export const versionCheck = function (target) {
+export const versionCheck = function(target) {
     const tParts = ('0' + target).split(/\W/);
     const jParts = version.split(/\W/);
     const tMajor = parseFloat(tParts[0]);
@@ -41,7 +42,7 @@ export const versionCheck = function (target) {
     return true;
 };
 
-export const loadFrom = function () {
+export const loadFrom = function() {
     if (__DEBUG__ || __SELF_HOSTED__) {
         return getScriptPath('jwplayer.js');
     }

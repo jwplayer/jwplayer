@@ -3,10 +3,8 @@ import { createId, createLabel } from 'controller/tracks-helper';
 import Events from 'utils/backbone.events';
 import { ERROR } from 'events/events';
 
-
 /** Displays closed captions or subtitles on top of the video. **/
 const Captions = function(_model) {
-
     // Reset and load external captions on playlist item
     _model.on('change:playlistItem', _itemHandler, this);
 
@@ -58,7 +56,8 @@ const Captions = function(_model) {
                 const track = tracks[i];
                 if (_kindSupported(track.kind) && !_tracksById[track._id]) {
                     _addTrack(track);
-                    loadFile(track,
+                    loadFile(
+                        track,
                         (vttCues) => {
                             _addVTTCuesToTrack(track, vttCues);
                         },
@@ -67,7 +66,8 @@ const Captions = function(_model) {
                                 message: 'Captions failed to load',
                                 reason: error
                             });
-                        });
+                        }
+                    );
                 }
             }
         }
@@ -110,10 +110,12 @@ const Captions = function(_model) {
     }
 
     function _captionsMenu() {
-        const list = [{
-            id: 'off',
-            label: 'Off'
-        }];
+        const list = [
+            {
+                id: 'off',
+                label: 'Off'
+            }
+        ];
         for (let i = 0; i < _tracks.length; i++) {
             list.push({
                 id: _tracks[i]._id,
@@ -139,7 +141,11 @@ const Captions = function(_model) {
             if (label && label === track.name) {
                 captionsMenuIndex = i + 1;
                 break;
-            } else if (track.default || track.defaulttrack || track._id === 'default') {
+            } else if (
+                track.default ||
+                track.defaulttrack ||
+                track._id === 'default'
+            ) {
                 captionsMenuIndex = i + 1;
             } else if (track.autoselect) {
                 // TODO: auto select track by comparing track.language to system lang
@@ -149,7 +155,7 @@ const Captions = function(_model) {
         _setCurrentIndex(captionsMenuIndex);
     }
 
-    function _setCurrentIndex (index) {
+    function _setCurrentIndex(index) {
         if (_tracks.length) {
             _model.setVideoSubtitleTrack(index, _tracks);
         } else {
@@ -157,7 +163,7 @@ const Captions = function(_model) {
         }
     }
 
-    function _setCaptionsList (captionsMenu) {
+    function _setCaptionsList(captionsMenu) {
         _model.set('captionsList', captionsMenu);
     }
 

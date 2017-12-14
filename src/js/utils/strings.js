@@ -16,7 +16,11 @@ export function pad(str, length, padder) {
 // Get the value of a case-insensitive attribute in an XML node
 export function xmlAttribute(xml, attribute) {
     for (var attrib = 0; attrib < xml.attributes.length; attrib++) {
-        if (xml.attributes[attrib].name && xml.attributes[attrib].name.toLowerCase() === attribute.toLowerCase()) {
+        if (
+            xml.attributes[attrib].name &&
+            xml.attributes[attrib].name.toLowerCase() ===
+                attribute.toLowerCase()
+        ) {
             return xml.attributes[attrib].value.toString();
         }
     }
@@ -25,9 +29,9 @@ export function xmlAttribute(xml, attribute) {
 
 // This does not return the file extension, instead it returns a media type extension
 function getAzureFileFormat(path) {
-    if ((/[(,]format=m3u8-/i).test(path)) {
+    if (/[(,]format=m3u8-/i.test(path)) {
         return 'm3u8';
-    } else if ((/[(,]format=mpd-/i).test(path)) {
+    } else if (/[(,]format=mpd-/i.test(path)) {
         return 'mpd';
     }
     return false;
@@ -45,7 +49,9 @@ export function extension(path) {
 
     path = path.split('?')[0].split('#')[0];
     if (path.lastIndexOf('.') > -1) {
-        return path.substr(path.lastIndexOf('.') + 1, path.length).toLowerCase();
+        return path
+            .substr(path.lastIndexOf('.') + 1, path.length)
+            .toLowerCase();
     }
 }
 
@@ -98,7 +104,6 @@ export function seconds(str, frameRate) {
     }
     return sec;
 }
-
 
 export function prefix(arr, add) {
     return _.map(arr, function(val) {

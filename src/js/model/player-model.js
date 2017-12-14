@@ -12,5 +12,5 @@ export const INITIAL_PLAYER_STATE = {
 export const INITIAL_MEDIA_STATE = {
     position: 0,
     duration: 0,
-    buffer: 0,
+    buffer: 0
 };

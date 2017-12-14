@@ -12,10 +12,14 @@ const Track = function(config) {
         return;
     }
 
-    return Object.assign({}, {
-        kind: 'captions',
-        'default': false
-    }, config);
+    return Object.assign(
+        {},
+        {
+            kind: 'captions',
+            'default': false
+        },
+        config
+    );
 };
 
 export default Track;

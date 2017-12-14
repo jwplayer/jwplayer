@@ -1,7 +1,17 @@
 import { OS } from 'environment/environment';
-import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
-    ERROR, MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
-    PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
+import {
+    STATE_BUFFERING,
+    STATE_COMPLETE,
+    STATE_PAUSED,
+    ERROR,
+    MEDIA_META,
+    MEDIA_TIME,
+    MEDIA_COMPLETE,
+    PLAYLIST_ITEM,
+    PLAYLIST_COMPLETE,
+    INSTREAM_CLICK,
+    AD_SKIPPED
+} from 'events/events';
 import utils from 'utils/helpers';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
@@ -76,10 +86,16 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const mediaContainer = _model.get('mediaContainer');
         mediaContainer.appendChild(mediaElement);
 
-        if (_controller.checkBeforePlay() || (_oldpos === 0 && !_controller.isBeforeComplete())) {
+        if (
+            _controller.checkBeforePlay() ||
+            (_oldpos === 0 && !_controller.isBeforeComplete())
+        ) {
             // make sure video restarts after preroll
             _oldpos = 0;
-        } else if (_controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE) {
+        } else if (
+            _controller.isBeforeComplete() ||
+            _model.get('state') === STATE_COMPLETE
+        ) {
             _oldpos = null;
         }
 
@@ -167,7 +183,8 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
             this.trigger({
                 type: ERROR,
-                message: 'Error loading instream: Cannot play instream on Android 2.3'
+                message:
+                    'Error loading instream: Cannot play instream on Android 2.3'
             });
             return;
         }
@@ -248,7 +265,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     this.addClickHandler = function() {
         // start listening for ad click
         if (_view.clickHandler()) {
-            _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
+            _view
+                .clickHandler()
+                .setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
         }
 
         if (_adProgram) {
@@ -265,7 +284,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     /** Handle the MEDIA_META event **/
-    this.metaHandler = function (evt) {
+    this.metaHandler = function(evt) {
         // If we're getting video dimension metadata from the provider, allow the view to resize the media
         if (evt.width && evt.height) {
             _view.resizeMedia();
@@ -342,7 +361,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * Extracts the video tag in the foreground.
      * @returns {Element|undefined} videoTag - the HTML <video> element in the foreground.
      */
-    this.getMediaElement = function () {
+    this.getMediaElement = function() {
         if (_adProgram) {
             return _adProgram.primedElement;
         }

@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 let VTTCue = window.VTTCue;
 
@@ -81,30 +81,30 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'id', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _id;
             },
-            set: function (value) {
+            set: function(value) {
                 _id = '' + value;
             }
         });
 
         Object.defineProperty(cue, 'pauseOnExit', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _pauseOnExit;
             },
-            set: function (value) {
+            set: function(value) {
                 _pauseOnExit = !!value;
             }
         });
 
         Object.defineProperty(cue, 'startTime', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _startTime;
             },
-            set: function (value) {
+            set: function(value) {
                 if (typeof value !== 'number') {
                     throw new TypeError('Start time must be set to a number.');
                 }
@@ -115,10 +115,10 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'endTime', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _endTime;
             },
-            set: function (value) {
+            set: function(value) {
                 if (typeof value !== 'number') {
                     throw new TypeError('End time must be set to a number.');
                 }
@@ -129,10 +129,10 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'text', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _text;
             },
-            set: function (value) {
+            set: function(value) {
                 _text = '' + value;
                 this.hasBeenReset = true;
             }
@@ -140,10 +140,10 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'region', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _region;
             },
-            set: function (value) {
+            set: function(value) {
                 _region = value;
                 this.hasBeenReset = true;
             }
@@ -151,14 +151,16 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'vertical', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _vertical;
             },
-            set: function (value) {
+            set: function(value) {
                 const setting = findDirectionSetting(value);
                 // Have to check for false because the setting an be an empty string.
                 if (setting === false) {
-                    throw new SyntaxError('An invalid or illegal string was specified.');
+                    throw new SyntaxError(
+                        'An invalid or illegal string was specified.'
+                    );
                 }
                 _vertical = setting;
                 this.hasBeenReset = true;
@@ -167,10 +169,10 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'snapToLines', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _snapToLines;
             },
-            set: function (value) {
+            set: function(value) {
                 _snapToLines = !!value;
                 this.hasBeenReset = true;
             }
@@ -178,12 +180,14 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'line', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _line;
             },
-            set: function (value) {
+            set: function(value) {
                 if (typeof value !== 'number' && value !== autoKeyword) {
-                    throw new SyntaxError('An invalid number or illegal string was specified.');
+                    throw new SyntaxError(
+                        'An invalid number or illegal string was specified.'
+                    );
                 }
                 _line = value;
                 this.hasBeenReset = true;
@@ -192,13 +196,15 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'lineAlign', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _lineAlign;
             },
-            set: function (value) {
+            set: function(value) {
                 const setting = findAlignSetting(value);
                 if (!setting) {
-                    throw new SyntaxError('An invalid or illegal string was specified.');
+                    throw new SyntaxError(
+                        'An invalid or illegal string was specified.'
+                    );
                 }
                 _lineAlign = setting;
                 this.hasBeenReset = true;
@@ -207,10 +213,10 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'position', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _position;
             },
-            set: function (value) {
+            set: function(value) {
                 if (value < 0 || value > 100) {
                     throw new Error('Position must be between 0 and 100.');
                 }
@@ -221,10 +227,10 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'size', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _size;
             },
-            set: function (value) {
+            set: function(value) {
                 if (value < 0 || value > 100) {
                     throw new Error('Size must be between 0 and 100.');
                 }
@@ -235,13 +241,15 @@ if (!VTTCue) {
 
         Object.defineProperty(cue, 'align', {
             enumerable: true,
-            get: function () {
+            get: function() {
                 return _align;
             },
-            set: function (value) {
+            set: function(value) {
                 const setting = findAlignSetting(value);
                 if (!setting) {
-                    throw new SyntaxError('An invalid or illegal string was specified.');
+                    throw new SyntaxError(
+                        'An invalid or illegal string was specified.'
+                    );
                 }
                 _align = setting;
                 this.hasBeenReset = true;
@@ -260,7 +268,7 @@ if (!VTTCue) {
      * VTTCue methods
      */
 
-    VTTCue.prototype.getCueAsHTML = function () {
+    VTTCue.prototype.getCueAsHTML = function() {
         // Assume WebVTT.convertCueToDOMTree is on the global.
         const WebVTT = window.WebVTT;
         return WebVTT.convertCueToDOMTree(window, this.text);

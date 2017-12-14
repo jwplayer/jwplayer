@@ -22,8 +22,7 @@ const _defaults = {
     windowOpacity: 0
 };
 
-const CaptionsRenderer = function (viewModel) {
-
+const CaptionsRenderer = function(viewModel) {
     const _model = viewModel.player;
 
     let _options;
@@ -39,16 +38,16 @@ const CaptionsRenderer = function (viewModel) {
     _display = document.createElement('div');
     _display.className = 'jw-captions jw-reset';
 
-    this.show = function () {
+    this.show = function() {
         addClass(_display, 'jw-captions-enabled');
     };
 
-    this.hide = function () {
+    this.hide = function() {
         removeClass(_display, 'jw-captions-enabled');
     };
 
     // Assign list of captions to the renderer
-    this.populate = function (captions) {
+    this.populate = function(captions) {
         if (_model.get('renderCaptionsNatively')) {
             return;
         }
@@ -62,20 +61,30 @@ const CaptionsRenderer = function (viewModel) {
         this.selectCues(captions, _timeEvent);
     };
 
-    this.resize = function () {
+    this.resize = function() {
         _setFontSize();
         this.renderCues(true);
     };
 
-    this.renderCues = function (updateBoxPosition) {
+    this.renderCues = function(updateBoxPosition) {
         updateBoxPosition = !!updateBoxPosition;
         if (_WebVTT) {
-            _WebVTT.processCues(window, _currentCues, _display, updateBoxPosition);
+            _WebVTT.processCues(
+                window,
+                _currentCues,
+                _display,
+                updateBoxPosition
+            );
         }
     };
 
-    this.selectCues = function (track, timeEvent) {
-        if (!track || !track.data || !timeEvent || _model.get('renderCaptionsNatively')) {
+    this.selectCues = function(track, timeEvent) {
+        if (
+            !track ||
+            !track.data ||
+            !timeEvent ||
+            _model.get('renderCaptionsNatively')
+        ) {
             return;
         }
 
@@ -90,13 +99,13 @@ const CaptionsRenderer = function (viewModel) {
         this.renderCues(true);
     };
 
-    this.getCurrentCues = function (allCues, pos) {
-        return _.filter(allCues, function (cue) {
-            return pos >= (cue.startTime) && (!cue.endTime || pos <= cue.endTime);
+    this.getCurrentCues = function(allCues, pos) {
+        return _.filter(allCues, function(cue) {
+            return pos >= cue.startTime && (!cue.endTime || pos <= cue.endTime);
         });
     };
 
-    this.updateCurrentCues = function (cues) {
+    this.updateCurrentCues = function(cues) {
         // Render with vtt.js if there are cues, clear if there are none
         if (!cues.length) {
             _currentCues = [];
@@ -108,7 +117,7 @@ const CaptionsRenderer = function (viewModel) {
         return _currentCues;
     };
 
-    this.getAlignmentPosition = function (track, timeEvent) {
+    this.getAlignmentPosition = function(track, timeEvent) {
         const source = track.source;
         const metadata = timeEvent.metadata;
 
@@ -127,12 +136,12 @@ const CaptionsRenderer = function (viewModel) {
         return timeEvent.position;
     };
 
-    this.clear = function () {
+    this.clear = function() {
         empty(_display);
     };
 
     /** Constructor for the renderer. **/
-    this.setup = function (playerElementId, options) {
+    this.setup = function(playerElementId, options) {
         _captionsWindow = document.createElement('div');
         _textContainer = document.createElement('span');
         _captionsWindow.className = 'jw-captions-window jw-reset';
@@ -152,7 +161,10 @@ const CaptionsRenderer = function (viewModel) {
         _addTextStyle(textStyle, _options);
 
         if (windowColor || windowOpacity !== _defaults.windowOpacity) {
-            _windowStyle.backgroundColor = getRgba(windowColor || '#000000', windowOpacity);
+            _windowStyle.backgroundColor = getRgba(
+                windowColor || '#000000',
+                windowOpacity
+            );
         }
 
         _addEdgeStyle(edgeStyle, textStyle, _options.fontOpacity);
@@ -168,14 +180,18 @@ const CaptionsRenderer = function (viewModel) {
         _captionsWindow.appendChild(_textContainer);
         _display.appendChild(_captionsWindow);
 
-        _model.change('captionsTrack', function (model, captionsTrack) {
-            this.populate(captionsTrack);
-        }, this);
+        _model.change(
+            'captionsTrack',
+            function(model, captionsTrack) {
+                this.populate(captionsTrack);
+            },
+            this
+        );
 
         _model.set('captions', _options);
     };
 
-    this.element = function () {
+    this.element = function() {
         return _display;
     };
 
@@ -197,7 +213,8 @@ const CaptionsRenderer = function (viewModel) {
         }
 
         // Adjust scale based on font size relative to the default
-        _fontScale = _defaults.fontScale * _options.fontSize / _defaults.fontSize;
+        _fontScale =
+            _defaults.fontScale * _options.fontSize / _defaults.fontSize;
     }
 
     function _setFontSize() {
@@ -233,19 +250,36 @@ const CaptionsRenderer = function (viewModel) {
     function _styleNativeCaptions(playerId, textStyle) {
         if (Browser.safari) {
             // Only Safari uses a separate element for styling text background
-            css('#' + playerId + ' .jw-video::-webkit-media-text-track-display-backdrop', {
-                backgroundColor: textStyle.backgroundColor
-            }, playerId, true);
+            css(
+                '#' +
+                    playerId +
+                    ' .jw-video::-webkit-media-text-track-display-backdrop',
+                {
+                    backgroundColor: textStyle.backgroundColor
+                },
+                playerId,
+                true
+            );
         }
 
-        css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', _windowStyle, playerId, true);
+        css(
+            '#' + playerId + ' .jw-video::-webkit-media-text-track-display',
+            _windowStyle,
+            playerId,
+            true
+        );
         css('#' + playerId + ' .jw-video::cue', textStyle, playerId, true);
     }
 
     function _setShadowDOMFontSize(playerId, fontSize) {
         // Set Shadow DOM font size (needs to be important to override browser's in line style)
         _windowStyle.fontSize = fontSize + 'px';
-        css('#' + playerId + ' .jw-video::-webkit-media-text-track-display', _windowStyle, playerId, true);
+        css(
+            '#' + playerId + ' .jw-video::-webkit-media-text-track-display',
+            _windowStyle,
+            playerId,
+            true
+        );
     }
 
     function _addTextStyle(textStyle, options) {
@@ -258,7 +292,10 @@ const CaptionsRenderer = function (viewModel) {
         if (options.back) {
             const bgColor = options.backgroundColor;
             const bgOpacity = options.backgroundOpacity;
-            if (bgColor !== _defaults.backgroundColor || bgOpacity !== _defaults.backgroundOpacity) {
+            if (
+                bgColor !== _defaults.backgroundColor ||
+                bgOpacity !== _defaults.backgroundOpacity
+            ) {
                 textStyle.backgroundColor = getRgba(bgColor, bgOpacity);
             }
         } else {
@@ -284,17 +321,40 @@ const CaptionsRenderer = function (viewModel) {
 
     function _addEdgeStyle(option, styles, fontOpacity) {
         const color = getRgba('#000000', fontOpacity);
-        if (option === 'dropshadow') { // small drop shadow
+        if (option === 'dropshadow') {
+            // small drop shadow
             styles.textShadow = '0 2px 1px ' + color;
-        } else if (option === 'raised') { // larger drop shadow
-            styles.textShadow = '0 0 5px ' + color + ', 0 1px 5px ' + color + ', 0 2px 5px ' + color;
-        } else if (option === 'depressed') { // top down shadow
+        } else if (option === 'raised') {
+            // larger drop shadow
+            styles.textShadow =
+                '0 0 5px ' +
+                color +
+                ', 0 1px 5px ' +
+                color +
+                ', 0 2px 5px ' +
+                color;
+        } else if (option === 'depressed') {
+            // top down shadow
             styles.textShadow = '0 -2px 1px ' + color;
-        } else if (option === 'uniform') { // outline
-            styles.textShadow = '-2px 0 1px ' + color + ',2px 0 1px ' + color +
-                ',0 -2px 1px ' + color + ',0 2px 1px ' + color + ',-1px 1px 1px ' +
-                color + ',1px 1px 1px ' + color + ',1px -1px 1px ' + color +
-                ',1px 1px 1px ' + color;
+        } else if (option === 'uniform') {
+            // outline
+            styles.textShadow =
+                '-2px 0 1px ' +
+                color +
+                ',2px 0 1px ' +
+                color +
+                ',0 -2px 1px ' +
+                color +
+                ',0 2px 1px ' +
+                color +
+                ',-1px 1px 1px ' +
+                color +
+                ',1px 1px 1px ' +
+                color +
+                ',1px -1px 1px ' +
+                color +
+                ',1px 1px 1px ' +
+                color;
         }
     }
 
@@ -322,27 +382,44 @@ const CaptionsRenderer = function (viewModel) {
     }
 
     function loadWebVttPolyfill() {
-        return require.ensure(['polyfills/webvtt'], function (require) {
-            _WebVTT = require('polyfills/webvtt').default;
-        }, chunkLoadErrorHandler, 'polyfills.webvtt');
+        return require.ensure(
+            ['polyfills/webvtt'],
+            function(require) {
+                _WebVTT = require('polyfills/webvtt').default;
+            },
+            chunkLoadErrorHandler,
+            'polyfills.webvtt'
+        );
     }
 
-    _model.on('change:playlistItem', function () {
-        _timeEvent = null;
-        _currentCues = [];
-    }, this);
+    _model.on(
+        'change:playlistItem',
+        function() {
+            _timeEvent = null;
+            _currentCues = [];
+        },
+        this
+    );
 
-    _model.on(MEDIA_SEEK, function (e) {
-        _currentCues = [];
-        _timeChange(e);
-    }, this);
+    _model.on(
+        MEDIA_SEEK,
+        function(e) {
+            _currentCues = [];
+            _timeChange(e);
+        },
+        this
+    );
 
     _model.on(MEDIA_TIME, _timeChange, this);
 
-    _model.on('subtitlesTrackData', function () {
-        // update captions after a provider's subtitle track changes
-        this.selectCues(_captionsTrack, _timeEvent);
-    }, this);
+    _model.on(
+        'subtitlesTrackData',
+        function() {
+            // update captions after a provider's subtitle track changes
+            this.selectCues(_captionsTrack, _timeEvent);
+        },
+        this
+    );
 
     _model.on('change:captionsList', _captionsListHandler, this);
 };

@@ -6,4 +6,3 @@ export function qualityLevel(level) {
         height: level.height
     };
 }
-

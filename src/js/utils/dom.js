@@ -5,8 +5,12 @@ import _ from 'utils/underscore';
 // jQuery v1.11.2 | (c) 2005, 2014 jQuery Foundation, Inc. | Released under the MIT license | jquery.org/license
 export function hasClass(element, searchClass) {
     const className = ' ' + searchClass + ' ';
-    return (element.nodeType === 1 && (' ' + element.className + ' ')
-        .replace(/[\t\r\n\f]/g, ' ').indexOf(className) >= 0);
+    return (
+        element.nodeType === 1 &&
+        (' ' + element.className + ' ')
+            .replace(/[\t\r\n\f]/g, ' ')
+            .indexOf(className) >= 0
+    );
 }
 
 // Given a string, convert to element and return
@@ -47,7 +51,7 @@ export function addClass(element, classes) {
     var originalClasses = classNameArray(element);
     var addClasses = _.isArray(classes) ? classes : classes.split(' ');
 
-    _.each(addClasses, function (c) {
+    _.each(addClasses, function(c) {
         if (!_.contains(originalClasses, c)) {
             originalClasses.push(c);
         }
@@ -60,11 +64,14 @@ export function removeClass(element, c) {
     var originalClasses = classNameArray(element);
     var removeClasses = _.isArray(c) ? c : c.split(' ');
 
-    setClassName(element, _.difference(originalClasses, removeClasses).join(' '));
+    setClassName(
+        element,
+        _.difference(originalClasses, removeClasses).join(' ')
+    );
 }
 
 export function replaceClass(element, pattern, replaceWith) {
-    var classes = (element.className || '');
+    var classes = element.className || '';
     if (pattern.test(classes)) {
         classes = classes.replace(pattern, replaceWith);
     } else if (replaceWith) {

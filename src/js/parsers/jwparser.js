@@ -3,10 +3,10 @@ import { xmlAttribute } from 'utils/strings';
 import utils from 'utils/helpers';
 
 /**
-* Parse a feed item for JWPlayer content.
-*/
+ * Parse a feed item for JWPlayer content.
+ */
 
-const parseEntry = function (obj, itm) {
+const parseEntry = function(obj, itm) {
     const PREFIX = 'jwplayer';
     const def = 'default';
     const label = 'label';
@@ -43,19 +43,17 @@ const parseEntry = function (obj, itm) {
                     delete itm.sources;
                 }
             }
-
         }
         if (!itm[file]) {
             itm[file] = itm.link;
         }
     }
 
-
     if (sources.length) {
         itm.sources = [];
         for (let i = 0; i < sources.length; i++) {
             if (sources[i].file.length > 0) {
-                sources[i][def] = (sources[i][def] === 'true');
+                sources[i][def] = sources[i][def] === 'true';
                 if (!sources[i].label.length) {
                     delete sources[i].label;
                 }
@@ -68,8 +66,10 @@ const parseEntry = function (obj, itm) {
         itm.tracks = [];
         for (let i = 0; i < tracks.length; i++) {
             if (tracks[i].file.length > 0) {
-                tracks[i][def] = (tracks[i][def] === 'true') ? true : false;
-                tracks[i].kind = (!tracks[i].kind.length) ? 'captions' : tracks[i].kind;
+                tracks[i][def] = tracks[i][def] === 'true' ? true : false;
+                tracks[i].kind = !tracks[i].kind.length
+                    ? 'captions'
+                    : tracks[i].kind;
                 if (!tracks[i].label.length) {
                     delete tracks[i].label;
                 }

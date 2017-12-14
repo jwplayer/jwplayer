@@ -1,4 +1,3 @@
-
 export default function ApiQueueDecorator(instance, queuedCommands, predicate) {
     const commandQueue = [];
     const undecoratedMethods = {};
@@ -24,7 +23,10 @@ export default function ApiQueueDecorator(instance, queuedCommands, predicate) {
     function executeQueuedCommands() {
         while (commandQueue.length > 0) {
             const { command, args } = commandQueue.shift();
-            (undecoratedMethods[command] || instance[command]).apply(instance, args);
+            (undecoratedMethods[command] || instance[command]).apply(
+                instance,
+                args
+            );
         }
     }
 

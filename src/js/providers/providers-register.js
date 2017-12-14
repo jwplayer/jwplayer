@@ -14,7 +14,9 @@ export default function registerProvider(provider) {
     // If there isn't a "supports" val for this guy
     if (!_.find(ProvidersSupported, _.matches({ name: name }))) {
         if (!_.isFunction(provider.supports)) {
-            throw new Error('Tried to register a provider with an invalid object');
+            throw new Error(
+                'Tried to register a provider with an invalid object'
+            );
         }
 
         // The most recent provider will be in the front of the array, and chosen first

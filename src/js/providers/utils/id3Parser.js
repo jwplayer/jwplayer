@@ -1,4 +1,3 @@
-
 const friendlyNames = {
     TIT2: 'title',
     TT2: 'title',
@@ -26,22 +25,32 @@ export function utf8ArrayToStr(array, startingIndex) {
             continue;
         }
         switch (c >> 4) {
-            case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-            // 0xxxxxxx
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                // 0xxxxxxx
                 out += String.fromCharCode(c);
                 break;
-            case 12: case 13:
-            // 110x xxxx   10xx xxxx
+            case 12:
+            case 13:
+                // 110x xxxx   10xx xxxx
                 char2 = array[i++];
-                out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                out += String.fromCharCode(((c & 0x1f) << 6) | (char2 & 0x3f));
                 break;
             case 14:
                 // 1110 xxxx  10xx xxxx  10xx xxxx
                 char2 = array[i++];
                 char3 = array[i++];
-                out += String.fromCharCode(((c & 0x0F) << 12) |
-                    ((char2 & 0x3F) << 6) |
-                    ((char3 & 0x3F) << 0));
+                out += String.fromCharCode(
+                    ((c & 0x0f) << 12) |
+                        ((char2 & 0x3f) << 6) |
+                        ((char3 & 0x3f) << 0)
+                );
                 break;
             default:
         }
@@ -63,13 +72,15 @@ function utf16BigEndianArrayToStr(array, startingIndex) {
     }
     return out;
 }
-    
+
 export function syncSafeInt(sizeArray) {
     const size = arrayToInt(sizeArray);
-    return (size & 0x0000007F) |
-        ((size & 0x00007F00) >> 1) |
-        ((size & 0x007F0000) >> 2) |
-        ((size & 0x7F000000) >> 3);
+    return (
+        (size & 0x0000007f) |
+        ((size & 0x00007f00) >> 1) |
+        ((size & 0x007f0000) >> 2) |
+        ((size & 0x7f000000) >> 3)
+    );
 }
 
 function arrayToInt(array) {
@@ -82,7 +93,7 @@ function arrayToInt(array) {
     }
     return parseInt(sizeString);
 }
-    
+
 export function parseID3(activeCues = []) {
     return activeCues.reduce(function(data, cue) {
         if (!('value' in cue)) {
@@ -126,15 +137,32 @@ export function parseID3(activeCues = []) {
                 }
 
                 if (infoDelimiterPosition > 0) {
-                    const info = utf8ArrayToStr(array.subarray(startPos, startPos += infoDelimiterPosition), 0);
+                    const info = utf8ArrayToStr(
+                        array.subarray(
+                            startPos,
+                            (startPos += infoDelimiterPosition)
+                        ),
+                        0
+                    );
                     if (cue.value.key === 'PRIV') {
-                        if (info === 'com.apple.streaming.transportStreamTimestamp') {
-                            const ptsIs33Bit = syncSafeInt(array.subarray(startPos, startPos += 4)) & 0x00000001;
-                            const transportStreamTimestamp = syncSafeInt(array.subarray(startPos, startPos += 4)) +
-                                (ptsIs33Bit ? 0x100000000 : 0);
+                        if (
+                            info ===
+                            'com.apple.streaming.transportStreamTimestamp'
+                        ) {
+                            const ptsIs33Bit =
+                                syncSafeInt(
+                                    array.subarray(startPos, (startPos += 4))
+                                ) & 0x00000001;
+                            const transportStreamTimestamp =
+                                syncSafeInt(
+                                    array.subarray(startPos, (startPos += 4))
+                                ) + (ptsIs33Bit ? 0x100000000 : 0);
                             cue.value.data = transportStreamTimestamp;
                         } else {
-                            cue.value.data = utf8ArrayToStr(array, startPos + 1);
+                            cue.value.data = utf8ArrayToStr(
+                                array,
+                                startPos + 1
+                            );
                         }
                         cue.value.info = info;
                     } else {
@@ -144,7 +172,10 @@ export function parseID3(activeCues = []) {
                 } else {
                     const encoding = array[startPos];
                     if (encoding === 1 || encoding === 2) {
-                        cue.value.data = utf16BigEndianArrayToStr(array, startPos + 1);
+                        cue.value.data = utf16BigEndianArrayToStr(
+                            array,
+                            startPos + 1
+                        );
                     } else {
                         cue.value.data = utf8ArrayToStr(array, startPos + 1);
                     }

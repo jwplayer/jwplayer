@@ -3,12 +3,19 @@ import AdMediaPool from 'program/ad-media-pool';
 import Model from 'controller/model';
 import { Features } from 'environment/environment';
 import changeStateEvent from 'events/change-state-event';
-import { ERROR, FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import {
+    ERROR,
+    FULLSCREEN,
+    MEDIA_COMPLETE,
+    PLAYER_STATE,
+    STATE_PLAYING,
+    STATE_PAUSED
+} from 'events/events';
 
 export default class AdProgramController extends ProgramController {
     constructor(model, mediaPool) {
         super(model, mediaPool);
-        const adModel = this.model = new Model();
+        const adModel = (this.model = new Model());
         this.playerModel = model;
         this.provider = null;
         this.mediaPool = AdMediaPool(this.mediaPool);
@@ -25,9 +32,9 @@ export default class AdProgramController extends ProgramController {
             adModel.attributes.mediaSrc = mediaElement.src;
 
             // Listen to media element for events that indicate src was reset or load() was called
-            const srcResetListener = this.srcResetListener = () => {
+            const srcResetListener = (this.srcResetListener = () => {
                 this.srcReset();
-            };
+            });
             mediaElement.addEventListener('emptied', srcResetListener);
         }
     }
@@ -53,18 +60,21 @@ export default class AdProgramController extends ProgramController {
 
         model.on('fullscreenchange', this._nativeFullscreenHandler);
         model.on('change:state', changeStateEvent, this);
-        model.on(ERROR, function(data) {
-            this.trigger(ERROR, data);
-        }, this);
+        model.on(
+            ERROR,
+            function(data) {
+                this.trigger(ERROR, data);
+            },
+            this
+        );
     }
 
     setActiveItem(index) {
         this.stopVideo();
         this.provider = null;
-        super.setActiveItem(index)
-            .then((mediaController) => {
-                this._setProvider(mediaController.provider);
-            });
+        super.setActiveItem(index).then((mediaController) => {
+            this._setProvider(mediaController.provider);
+        });
         return this.playVideo();
     }
 
@@ -78,20 +88,36 @@ export default class AdProgramController extends ProgramController {
 
         // Match the main player's controls state
         provider.off(ERROR);
-        provider.on(ERROR, function(data) {
-            this.trigger(ERROR, data);
-        }, this);
-        playerModel.on('change:volume', function(data, value) {
-            this.volume = value;
-        }, this);
-        playerModel.on('change:mute', function(data, value) {
-            this.mute = value;
-        }, this);
-        playerModel.on('change:autostartMuted', function(data, value) {
-            if (!value) {
-                provider.mute(playerModel.get('mute'));
-            }
-        }, this);
+        provider.on(
+            ERROR,
+            function(data) {
+                this.trigger(ERROR, data);
+            },
+            this
+        );
+        playerModel.on(
+            'change:volume',
+            function(data, value) {
+                this.volume = value;
+            },
+            this
+        );
+        playerModel.on(
+            'change:mute',
+            function(data, value) {
+                this.mute = value;
+            },
+            this
+        );
+        playerModel.on(
+            'change:autostartMuted',
+            function(data, value) {
+                if (!value) {
+                    provider.mute(playerModel.get('mute'));
+                }
+            },
+            this
+        );
     }
 
     _setProvider(provider) {
@@ -104,12 +130,16 @@ export default class AdProgramController extends ProgramController {
         const isVpaidProvider = provider.type === 'vpaid';
 
         provider.off();
-        provider.on('all', function(type, data) {
-            if (isVpaidProvider && (type === MEDIA_COMPLETE)) {
-                return;
-            }
-            this.trigger(type, Object.assign({}, data, { type: type }));
-        }, this);
+        provider.on(
+            'all',
+            function(type, data) {
+                if (isVpaidProvider && type === MEDIA_COMPLETE) {
+                    return;
+                }
+                this.trigger(type, Object.assign({}, data, { type: type }));
+            },
+            this
+        );
 
         const adMediaModelContext = model.mediaModel;
         provider.on(PLAYER_STATE, (event) => {
@@ -126,7 +156,6 @@ export default class AdProgramController extends ProgramController {
         }
     }
 
-
     destroy() {
         const { model } = this;
 
@@ -138,7 +167,10 @@ export default class AdProgramController extends ProgramController {
         if (!Features.backgroundLoading) {
             const mediaElement = model.get('mediaElement');
             if (mediaElement) {
-                mediaElement.removeEventListener('emptied', this.srcResetListener);
+                mediaElement.removeEventListener(
+                    'emptied',
+                    this.srcResetListener
+                );
                 // Reset the player media model if the src was changed externally
                 if (mediaElement.src !== model.get('mediaSrc')) {
                     this.srcReset();

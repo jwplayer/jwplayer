@@ -57,7 +57,10 @@ function computeVisibility(target) {
             parentRect = getBoundingClientRect(parent);
         }
         if (parentRect) {
-            intersectionRect = computeRectIntersection(parentRect, intersectionRect);
+            intersectionRect = computeRectIntersection(
+                parentRect,
+                intersectionRect
+            );
             if (!intersectionRect) {
                 return 0;
             }
@@ -66,13 +69,15 @@ function computeVisibility(target) {
     }
     const targetArea = targetRect.width * targetRect.height;
     const intersectionArea = intersectionRect.width * intersectionRect.height;
-    return targetArea ? (intersectionArea / targetArea) : 0;
+    return targetArea ? intersectionArea / targetArea : 0;
 }
 
 function getBoundingClientRect(el) {
     try {
         return el.getBoundingClientRect();
-    } catch (e) {/* ignore Windows 7 IE11 "Unspecified error" */}
+    } catch (e) {
+        /* ignore Windows 7 IE11 "Unspecified error" */
+    }
 }
 
 function computeRectIntersection(rect1, rect2) {
@@ -82,12 +87,15 @@ function computeRectIntersection(rect1, rect2) {
     const right = Math.min(rect1.right, rect2.right);
     const width = right - left;
     const height = bottom - top;
-    return (width >= 0 && height >= 0) && {
-        top: top,
-        bottom: bottom,
-        left: left,
-        right: right,
-        width: width,
-        height: height
-    };
+    return (
+        width >= 0 &&
+        height >= 0 && {
+            top: top,
+            bottom: bottom,
+            left: left,
+            right: right,
+            width: width,
+            height: height
+        }
+    );
 }

@@ -1,5 +1,8 @@
 import activeTab from 'utils/active-tab';
-import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import {
+    requestAnimationFrame,
+    cancelAnimationFrame
+} from 'utils/request-animation-frame';
 
 const views = [];
 const observed = {};
@@ -11,42 +14,50 @@ function lazyInitIntersectionObserver() {
     const IntersectionObserver = window.IntersectionObserver;
     if (!intersectionObserver) {
         // Fire the callback every time 25% of the player comes in/out of view
-        intersectionObserver = new IntersectionObserver((entries) => {
-            if (entries && entries.length) {
-                for (let i = entries.length; i--;) {
-                    const entry = entries[i];
-                    for (let j = views.length; j--;) {
-                        let view = views[j];
-                        if (entry.target === view.getContainer()) {
-                            view.model.set('intersectionRatio', entry.intersectionRatio);
-                            break;
+        intersectionObserver = new IntersectionObserver(
+            (entries) => {
+                if (entries && entries.length) {
+                    for (let i = entries.length; i--;) {
+                        const entry = entries[i];
+                        for (let j = views.length; j--;) {
+                            let view = views[j];
+                            if (entry.target === view.getContainer()) {
+                                view.model.set(
+                                    'intersectionRatio',
+                                    entry.intersectionRatio
+                                );
+                                break;
+                            }
                         }
                     }
                 }
-            }
-        }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+            },
+            { threshold: [0, 0.25, 0.5, 0.75, 1] }
+        );
     }
 }
 
 function scheduleResponsiveRedraw() {
     cancelAnimationFrame(responsiveRepaintRequestId);
-    responsiveRepaintRequestId = requestAnimationFrame(function responsiveRepaint() {
-        views.forEach(view => {
-            view.updateBounds();
-        });
-        views.forEach(view => {
-            if (view.model.get('visibility')) {
-                view.updateStyles();
-            }
-        });
-        views.forEach(view => {
-            view.checkResized();
-        });
-    });
+    responsiveRepaintRequestId = requestAnimationFrame(
+        function responsiveRepaint() {
+            views.forEach((view) => {
+                view.updateBounds();
+            });
+            views.forEach((view) => {
+                if (view.model.get('visibility')) {
+                    view.updateStyles();
+                }
+            });
+            views.forEach((view) => {
+                view.checkResized();
+            });
+        }
+    );
 }
 
 function onVisibilityChange() {
-    views.forEach(view => {
+    views.forEach((view) => {
         view.model.set('activeTab', activeTab());
     });
 }

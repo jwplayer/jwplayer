@@ -25,7 +25,7 @@ const MimeTypes = {
 const SupportsMatrix = [
     {
         name: 'html5',
-        supports: function (source) {
+        supports: function(source) {
             if (isAndroidHls(source) === false) {
                 return false;
             }

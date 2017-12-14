@@ -67,11 +67,20 @@ function _normalizeSize(val) {
 }
 
 const Config = function(options, persisted) {
-    let allOptions = Object.assign({}, (window.jwplayer || {}).defaults, persisted, options);
+    let allOptions = Object.assign(
+        {},
+        (window.jwplayer || {}).defaults,
+        persisted,
+        options
+    );
 
     _deserialize(allOptions);
 
-    allOptions.localization = Object.assign({}, Defaults.localization, allOptions.localization);
+    allOptions.localization = Object.assign(
+        {},
+        Defaults.localization,
+        allOptions.localization
+    );
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {
@@ -92,7 +101,8 @@ const Config = function(options, persisted) {
         if (Array.isArray(rateControls)) {
             rates = rateControls;
         }
-        rates = rates.filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
+        rates = rates
+            .filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
             .map(rate => Math.round(rate * 4) / 4);
 
         if (rates.indexOf(1) < 0) {
@@ -105,7 +115,10 @@ const Config = function(options, persisted) {
     }
 
     // Set defaultPlaybackRate to 1 if the value from storage isn't in the playbackRateControls menu
-    if (!config.playbackRateControls || config.playbackRates.indexOf(config.defaultPlaybackRate) < 0) {
+    if (
+        !config.playbackRateControls ||
+        config.playbackRates.indexOf(config.defaultPlaybackRate) < 0
+    ) {
         config.defaultPlaybackRate = 1;
     }
 
@@ -130,7 +143,7 @@ const Config = function(options, persisted) {
             'preload'
         ]);
 
-        config.playlist = [ obj ];
+        config.playlist = [obj];
     } else if (Array.isArray(configPlaylist.playlist)) {
         // The "playlist" in the config is actually a feed that contains a playlist
         config.feedData = configPlaylist;
@@ -161,7 +174,7 @@ function _evaluateAspectRatio(ar, width) {
     if (w <= 0 || h <= 0) {
         return 0;
     }
-    return (h / w * 100) + '%';
+    return h / w * 100 + '%';
 }
 
 export default Config;

@@ -15,7 +15,6 @@
  */
 
 (function() {
-
     var scrollSetting = {
         '': true,
         up: true
@@ -75,7 +74,9 @@
                 },
                 set: function(value) {
                     if (!isValidPercentValue(value)) {
-                        throw new Error('RegionAnchorX must be between 0 and 100.');
+                        throw new Error(
+                            'RegionAnchorX must be between 0 and 100.'
+                        );
                     }
                     _regionAnchorY = value;
                 }
@@ -87,7 +88,9 @@
                 },
                 set: function(value) {
                     if (!isValidPercentValue(value)) {
-                        throw new Error('RegionAnchorY must be between 0 and 100.');
+                        throw new Error(
+                            'RegionAnchorY must be between 0 and 100.'
+                        );
                     }
                     _regionAnchorX = value;
                 }
@@ -99,7 +102,9 @@
                 },
                 set: function(value) {
                     if (!isValidPercentValue(value)) {
-                        throw new Error('ViewportAnchorY must be between 0 and 100.');
+                        throw new Error(
+                            'ViewportAnchorY must be between 0 and 100.'
+                        );
                     }
                     _viewportAnchorY = value;
                 }
@@ -111,7 +116,9 @@
                 },
                 set: function(value) {
                     if (!isValidPercentValue(value)) {
-                        throw new Error('ViewportAnchorX must be between 0 and 100.');
+                        throw new Error(
+                            'ViewportAnchorX must be between 0 and 100.'
+                        );
                     }
                     _viewportAnchorX = value;
                 }
@@ -125,7 +132,9 @@
                     var setting = findScrollSetting(value);
                     // Have to check for false as an empty string is a legal value.
                     if (setting === false) {
-                        throw new SyntaxError('An invalid or illegal string was specified.');
+                        throw new SyntaxError(
+                            'An invalid or illegal string was specified.'
+                        );
                     }
                     _scroll = setting;
                 }

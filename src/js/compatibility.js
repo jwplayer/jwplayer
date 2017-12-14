@@ -92,7 +92,7 @@
             };
 
             Object.keys(callbackMap).forEach(function(key) {
-                playerInstance[key] = function (callback) {
+                playerInstance[key] = function(callback) {
                     return playerInstance.on(callbackMap[key], callback);
                 };
             });
@@ -178,7 +178,7 @@
         tempPlayer.remove();
 
         var utils = playerLibrary.utils;
-        var valueFn = function (getter) {
+        var valueFn = function(getter) {
             return function() {
                 return getter;
             };
@@ -196,7 +196,10 @@
         };
         utils.isChrome = valueFn(environment.Browser.chrome);
         utils.isEdge = function(browserVersion) {
-            if (browserVersion && environment.Browser.version.indexOf(browserVersion) !== 0) {
+            if (
+                browserVersion &&
+                environment.Browser.version.indexOf(browserVersion) !== 0
+            ) {
                 return false;
             }
             return environment.Browser.edge;
@@ -205,8 +208,11 @@
         utils.isFacebook = valueFn(environment.Browser.facebook);
         utils.isFlashSupported = valueFn(environment.Features.flash);
         utils.isIE = valueFn(environment.Browser.ie);
-        utils.isIETrident = function () {
-            return environment.Browser.ie && environment.Browser.version.major >= 11; 
+        utils.isIETrident = function() {
+            return (
+                environment.Browser.ie &&
+                environment.Browser.version.major >= 11
+            );
         };
         utils.isIOS = function(osVersion) {
             if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {

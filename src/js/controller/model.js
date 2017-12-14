@@ -26,7 +26,7 @@ const Model = function() {
     this.getConfiguration = function() {
         const config = this.clone();
         const mediaModelAttributes = config.mediaModel.attributes;
-        Object.keys(INITIAL_MEDIA_STATE).forEach(key => {
+        Object.keys(INITIAL_MEDIA_STATE).forEach((key) => {
             config[key] = mediaModelAttributes[key];
         });
         delete config.instream;
@@ -46,7 +46,7 @@ const Model = function() {
         this.set('qualityLabel', label);
     };
 
-    this.setActiveItem = function (index) {
+    this.setActiveItem = function(index) {
         const item = this.get('playlist')[index];
         this.resetItem(item);
         this.attributes.playlistItem = null;
@@ -56,7 +56,7 @@ const Model = function() {
         this.trigger('itemReady', item);
     };
 
-    this.setMediaModel = function (mediaModel) {
+    this.setMediaModel = function(mediaModel) {
         if (this.mediaModel && this.mediaModel !== mediaModel) {
             this.mediaModel.off();
         }
@@ -68,7 +68,11 @@ const Model = function() {
     };
 
     this.setCurrentAudioTrack = function(currentTrack, tracks) {
-        if (currentTrack > -1 && tracks.length > 0 && currentTrack < tracks.length) {
+        if (
+            currentTrack > -1 &&
+            tracks.length > 0 &&
+            currentTrack < tracks.length
+        ) {
             this.mediaModel.set('currentAudioTrack', parseInt(currentTrack));
         }
     };
@@ -100,8 +104,8 @@ const Model = function() {
     this.setVolume = function(volume) {
         volume = Math.round(volume);
         this.set('volume', volume);
-        var mute = (volume === 0);
-        if (mute !== (this.getMute())) {
+        var mute = volume === 0;
+        if (mute !== this.getMute()) {
             this.setMute(mute);
         }
     };
@@ -112,7 +116,7 @@ const Model = function() {
 
     this.setMute = function(mute) {
         if (mute === undefined) {
-            mute = !(this.getMute());
+            mute = !this.getMute();
         }
         this.set('mute', mute);
         if (!mute) {
@@ -129,12 +133,12 @@ const Model = function() {
         }
     };
 
-    this.setProvider = function (provider) {
+    this.setProvider = function(provider) {
         _provider = provider;
         syncProviderProperties(this, provider);
     };
 
-    this.resetProvider = function () {
+    this.resetProvider = function() {
         _provider = null;
         this.set('provider', undefined);
     };
@@ -169,14 +173,18 @@ const Model = function() {
         }
     };
 
-
     this.setVideoSubtitleTrack = function(trackIndex, tracks) {
         this.set('captionsIndex', trackIndex);
         /*
          * Tracks could have changed even if the index hasn't.
          * Need to ensure track has data for captionsrenderer.
          */
-        if (trackIndex && tracks && trackIndex <= tracks.length && tracks[trackIndex - 1].data) {
+        if (
+            trackIndex &&
+            tracks &&
+            trackIndex <= tracks.length &&
+            tracks[trackIndex - 1].data
+        ) {
             this.set('captionsTrack', tracks[trackIndex - 1]);
         }
     };
@@ -195,12 +203,22 @@ const Model = function() {
     }
 
     function platformCanAutostart() {
-        var autostartAdsIsEnabled = (!_this.get('advertising') || _this.get('advertising').autoplayadsmuted);
-        var iosBrowserIsSupported = _autoStartSupportedIOS() && (Browser.safari || Browser.chrome || Browser.facebook);
+        var autostartAdsIsEnabled =
+            !_this.get('advertising') ||
+            _this.get('advertising').autoplayadsmuted;
+        var iosBrowserIsSupported =
+            _autoStartSupportedIOS() &&
+            (Browser.safari || Browser.chrome || Browser.facebook);
         var androidBrowserIsSupported = OS.android && Browser.chrome;
-        var mobileBrowserIsSupported = (iosBrowserIsSupported || androidBrowserIsSupported);
+        var mobileBrowserIsSupported =
+            iosBrowserIsSupported || androidBrowserIsSupported;
         var isAndroidSdk = _this.get('sdkplatform') === 1;
-        return (!_this.get('sdkplatform') && autostartAdsIsEnabled && mobileBrowserIsSupported) || isAndroidSdk;
+        return (
+            (!_this.get('sdkplatform') &&
+                autostartAdsIsEnabled &&
+                mobileBrowserIsSupported) ||
+            isAndroidSdk
+        );
     }
 
     this.autoStartOnMobile = function() {
@@ -219,10 +237,13 @@ const Model = function() {
         if (autoStartOnMobile && !isAndroidSdk) {
             this.set('autostartMuted', true);
         }
-        this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
+        this.set(
+            'playOnViewable',
+            autoStartOnMobile || this.get('autostart') === 'viewable'
+        );
     };
 
-    this.resetItem = function (item) {
+    this.resetItem = function(item) {
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
         const mediaModel = this.mediaModel;
@@ -239,7 +260,9 @@ const syncProviderProperties = (model, provider) => {
     provider.volume(model.get('volume'));
     // Mute the video if autostarting on mobile, except for Android SDK. Otherwise, honor the model's mute value
     const isAndroidSdk = model.get('sdkplatform') === 1;
-    provider.mute((model.autoStartOnMobile() && !isAndroidSdk) || model.get('mute'));
+    provider.mute(
+        (model.autoStartOnMobile() && !isAndroidSdk) || model.get('mute')
+    );
     if (model.get('instreamMode') === true) {
         provider.instreamMode = true;
     }
@@ -256,7 +279,6 @@ const syncProviderProperties = (model, provider) => {
     model.set('supportsPlaybackRate', provider.supportsPlaybackRate);
     model.set('playbackRate', provider.getPlaybackRate());
     model.set('renderCaptionsNatively', provider.renderNatively);
-
 };
 
 function syncPlayerWithMediaModel(mediaModel) {
@@ -266,11 +288,11 @@ function syncPlayerWithMediaModel(mediaModel) {
 }
 
 // Represents the state of the provider/media element
-const MediaModel = Model.MediaModel = function() {
+const MediaModel = (Model.MediaModel = function() {
     this.attributes = {
         mediaState: STATE_IDLE
     };
-};
+});
 
 Object.assign(MediaModel.prototype, SimpleModel, {
     srcReset() {
@@ -278,7 +300,7 @@ Object.assign(MediaModel.prototype, SimpleModel, {
             setup: false,
             started: false,
             preloaded: false,
-            visualQuality: null,
+            visualQuality: null
         });
     }
 });

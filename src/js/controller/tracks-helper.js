@@ -4,7 +4,7 @@ export function createId(track, tracksCount) {
     if (track.default || track.defaulttrack) {
         trackId = 'default';
     } else {
-        trackId = track._id || track.file || (prefix + tracksCount);
+        trackId = track._id || track.file || prefix + tracksCount;
     }
     return trackId;
 }

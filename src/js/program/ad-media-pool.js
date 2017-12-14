@@ -1,5 +1,4 @@
 export default function AdMediaPool(mediaPool) {
-
     const adElement = mediaPool.getPrimedElement();
 
     return {
@@ -12,7 +11,7 @@ export default function AdMediaPool(mediaPool) {
         recycle() {
             mediaPool.recycle(adElement);
         },
-        syncVolume: function (volume) {
+        syncVolume: function(volume) {
             adElement.volume = volume / 100;
         },
         syncMute(mute) {

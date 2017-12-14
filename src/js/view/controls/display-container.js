@@ -7,14 +7,40 @@ import utils from 'utils/helpers';
 
 export default class DisplayContainer {
     constructor(model, api) {
-        this.el = utils.createElement(displayContainerTemplate(model.get('localization')));
+        this.el = utils.createElement(
+            displayContainerTemplate(model.get('localization'))
+        );
 
         const container = this.el.querySelector('.jw-display-controls');
         const buttons = {};
 
-        addButton('rewind', cloneIcons('rewind'), RewindDisplayIcon, container, buttons, model, api);
-        addButton('display', cloneIcons('play,pause,buffer,replay'), PlayDisplayIcon, container, buttons, model, api);
-        addButton('next', cloneIcons('next'), NextDisplayIcon, container, buttons, model, api);
+        addButton(
+            'rewind',
+            cloneIcons('rewind'),
+            RewindDisplayIcon,
+            container,
+            buttons,
+            model,
+            api
+        );
+        addButton(
+            'display',
+            cloneIcons('play,pause,buffer,replay'),
+            PlayDisplayIcon,
+            container,
+            buttons,
+            model,
+            api
+        );
+        addButton(
+            'next',
+            cloneIcons('next'),
+            NextDisplayIcon,
+            container,
+            buttons,
+            model,
+            api
+        );
 
         this.container = container;
         this.buttons = buttons;
@@ -25,11 +51,19 @@ export default class DisplayContainer {
     }
 }
 
-function addButton(name, iconElements, ButtonClass, container, buttons, model, api) {
+function addButton(
+    name,
+    iconElements,
+    ButtonClass,
+    container,
+    buttons,
+    model,
+    api
+) {
     const buttonElement = container.querySelector(`.jw-display-icon-${name}`);
     const iconContainer = container.querySelector(`.jw-icon-${name}`);
-    iconElements.forEach(icon => {
-        iconContainer.appendChild(icon); 
+    iconElements.forEach((icon) => {
+        iconContainer.appendChild(icon);
     });
     buttons[name] = new ButtonClass(model, api, buttonElement);
 }

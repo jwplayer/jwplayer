@@ -1,6 +1,22 @@
-import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING, STATE_PAUSED,
-    PROVIDER_FIRST_FRAME, CLICK, MEDIA_BUFFER_FULL, MEDIA_RATE_CHANGE, MEDIA_ERROR,
-    MEDIA_BUFFER, MEDIA_META, MEDIA_TIME, MEDIA_SEEKED, MEDIA_VOLUME, MEDIA_MUTE, MEDIA_COMPLETE
+import {
+    STATE_IDLE,
+    STATE_COMPLETE,
+    STATE_STALLED,
+    STATE_LOADING,
+    STATE_PLAYING,
+    STATE_PAUSED,
+    PROVIDER_FIRST_FRAME,
+    CLICK,
+    MEDIA_BUFFER_FULL,
+    MEDIA_RATE_CHANGE,
+    MEDIA_ERROR,
+    MEDIA_BUFFER,
+    MEDIA_META,
+    MEDIA_TIME,
+    MEDIA_SEEKED,
+    MEDIA_VOLUME,
+    MEDIA_MUTE,
+    MEDIA_COMPLETE
 } from 'events/events';
 import utils from 'utils/helpers';
 
@@ -56,7 +72,11 @@ const VideoListenerMixin = {
             return;
         }
 
-        if (!this.seeking && !this.video.paused && (this.state === STATE_STALLED || this.state === STATE_LOADING)) {
+        if (
+            !this.seeking &&
+            !this.video.paused &&
+            (this.state === STATE_STALLED || this.state === STATE_LOADING)
+        ) {
             this.startStallCheck();
             this.setState(STATE_PLAYING);
         }
@@ -148,7 +168,9 @@ const VideoListenerMixin = {
     },
 
     ratechange() {
-        this.trigger(MEDIA_RATE_CHANGE, { playbackRate: this.video.playbackRate });
+        this.trigger(MEDIA_RATE_CHANGE, {
+            playbackRate: this.video.playbackRate
+        });
     },
 
     ended() {
@@ -158,7 +180,7 @@ const VideoListenerMixin = {
             this.trigger(MEDIA_COMPLETE);
         }
     },
-    loadeddata () {
+    loadeddata() {
         // If we're not rendering natively text tracks will be provided from another source - don't duplicate them here
         if (this.renderNatively) {
             this.setTextTracks(this.video.textTracks);
@@ -166,12 +188,13 @@ const VideoListenerMixin = {
     },
     error() {
         var code = (this.video.error && this.video.error.code) || -1;
-        var message = ({
-            1: 'Unknown operation aborted',
-            2: 'Unknown network error',
-            3: 'Unknown decode error',
-            4: 'File could not be played'
-        }[code] || 'Unknown');
+        var message =
+            {
+                1: 'Unknown operation aborted',
+                2: 'Unknown network error',
+                3: 'Unknown decode error',
+                4: 'File could not be played'
+            }[code] || 'Unknown';
         this.trigger(MEDIA_ERROR, {
             code: code,
             message: 'Error loading media: ' + message

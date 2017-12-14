@@ -16,7 +16,13 @@ export default function createPlayPromise(video) {
             if (e.type === 'playing') {
                 resolve();
             } else {
-                reject(new Error('The play() request was interrupted by a "' + e.type + '" event.'));
+                reject(
+                    new Error(
+                        'The play() request was interrupted by a "' +
+                            e.type +
+                            '" event.'
+                    )
+                );
             }
         };
 

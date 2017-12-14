@@ -25,7 +25,6 @@ export default function Srt(data) {
     return _captions;
 }
 
-
 /** Parse a single captions entry. **/
 function _entry(data) {
     var entry = {};
@@ -49,5 +48,4 @@ function _entry(data) {
         }
     }
     return entry;
-
 }

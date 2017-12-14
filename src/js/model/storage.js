@@ -7,7 +7,9 @@ let storage = {
 
 try {
     storage = window.localStorage;
-} catch (e) {/* ignore */}
+} catch (e) {
+    /* ignore */
+}
 
 function Storage(namespace, persistItems) {
     this.namespace = namespace;

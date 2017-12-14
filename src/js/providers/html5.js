@@ -1,8 +1,17 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
-import { STATE_IDLE, MEDIA_META, MEDIA_ERROR, MEDIA_VISUAL_QUALITY, MEDIA_TYPE,
-    MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, STATE_LOADING } from 'events/events';
+import {
+    STATE_IDLE,
+    MEDIA_META,
+    MEDIA_ERROR,
+    MEDIA_VISUAL_QUALITY,
+    MEDIA_TYPE,
+    MEDIA_LEVELS,
+    MEDIA_LEVEL_CHANGED,
+    MEDIA_SEEK,
+    STATE_LOADING
+} from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
@@ -21,14 +30,14 @@ const MIN_DVR_DURATION = 120;
 const _name = 'html5';
 
 function _setupListeners(eventsHash, videoTag) {
-    Object.keys(eventsHash).forEach(eventName => {
+    Object.keys(eventsHash).forEach((eventName) => {
         videoTag.removeEventListener(eventName, eventsHash[eventName]);
         videoTag.addEventListener(eventName, eventsHash[eventName]);
     });
 }
 
 function _removeListeners(eventsHash, videoTag) {
-    Object.keys(eventsHash).forEach(eventName => {
+    Object.keys(eventsHash).forEach((eventName) => {
         videoTag.removeEventListener(eventName, eventsHash[eventName]);
     });
 }
@@ -46,7 +55,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     // The following issues need to be addressed before we enable native rendering in Edge:
     // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8120475/
     // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12079271/
-    function renderNatively (configRenderNatively) {
+    function renderNatively(configRenderNatively) {
         if (OS.iOS || Browser.safari) {
             return true;
         }
@@ -60,7 +69,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             VideoEvents.progress.call(_this);
             checkStaleStream();
         },
-        
+
         timeupdate() {
             if (_positionBeforeSeek !== _videotag.currentTime) {
                 _setPositionBeforeSeek(_videotag.currentTime);
@@ -121,7 +130,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         seeking() {
-            const offset = _seekOffset !== null ? _seekOffset : _this.getCurrentTime();
+            const offset =
+                _seekOffset !== null ? _seekOffset : _this.getCurrentTime();
             const position = _positionBeforeSeek;
             _setPositionBeforeSeek(offset);
             _seekOffset = null;
@@ -150,7 +160,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             _sendFullscreen(e);
         }
     };
-    Object.keys(VideoEvents).forEach(eventName => {
+    Object.keys(VideoEvents).forEach((eventName) => {
         if (!MediaEvents[eventName]) {
             const mixinEventHandler = VideoEvents[eventName];
             MediaEvents[eventName] = (e) => {
@@ -171,7 +181,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             VideoAttached.detachMedia.call(_this);
             clearTimeouts();
             // Stop listening to track changes so disabling the current track doesn't update the model
-            this.removeTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
+            this.removeTracksListener(
+                _videotag.textTracks,
+                'change',
+                this.textTrackChangeHandler
+            );
             // Prevent tracks from showing during ad playback
             this.disableTextTrack();
             return _videotag;
@@ -188,7 +202,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             if (this.renderNatively) {
                 this.setTextTracks(this.video.textTracks);
             }
-            this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
+            this.addTracksListener(
+                _videotag.textTracks,
+                'change',
+                this.textTrackChangeHandler
+            );
         },
         stalledHandler(checkStartTime) {
             // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
@@ -202,7 +220,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     });
 
-    const _videotag = _this.video = mediaElement;
+    const _videotag = (_this.video = mediaElement);
     const visualQuality = { level: {} };
     const _staleStreamDuration = 3 * 10 * 1000;
 
@@ -239,7 +257,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     function checkVisualQuality() {
         const level = visualQuality.level;
-        if (level.width !== _videotag.videoWidth || level.height !== _videotag.videoHeight) {
+        if (
+            level.width !== _videotag.videoWidth ||
+            level.height !== _videotag.videoHeight
+        ) {
             level.width = _videotag.videoWidth;
             level.height = _videotag.videoHeight;
             _setMediaType();
@@ -247,7 +268,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 return;
             }
             visualQuality.reason = visualQuality.reason || 'auto';
-            visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
+            visualQuality.mode =
+                _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
             visualQuality.bitrate = 0;
             level.index = _currentQuality;
             level.label = _levels[_currentQuality].label;
@@ -278,13 +300,20 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     _this.getDuration = function() {
         var duration = _videotag.duration;
         // Don't sent time event on Android before real duration is known
-        if (_androidHls && (duration === Infinity && _videotag.currentTime === 0) || isNaN(duration)) {
+        if (
+            (_androidHls &&
+                (duration === Infinity && _videotag.currentTime === 0)) ||
+            isNaN(duration)
+        ) {
             return 0;
         }
         var end = _getSeekableEnd();
         if (_this.isLive() && end) {
             var seekableDuration = end - _getSeekableStart();
-            if (seekableDuration !== Infinity && seekableDuration > MIN_DVR_DURATION) {
+            if (
+                seekableDuration !== Infinity &&
+                seekableDuration > MIN_DVR_DURATION
+            ) {
                 // Player interprets negative duration as DVR
                 duration = -seekableDuration;
             }
@@ -294,7 +323,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     function _checkDelayedSeek(duration) {
         // Don't seek when _delayedSeek is set to -1 in _completeLoad
-        if (_delayedSeek && _delayedSeek !== -1 && duration && duration !== Infinity) {
+        if (
+            _delayedSeek &&
+            _delayedSeek !== -1 &&
+            duration &&
+            duration !== Infinity
+        ) {
             _this.seek(_delayedSeek);
         }
     }
@@ -349,7 +383,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         const previousSource = _videotag.src;
         const sourceElement = document.createElement('source');
         sourceElement.src = _levels[_currentQuality].file;
-        const sourceChanged = (sourceElement.src !== previousSource);
+        const sourceChanged = sourceElement.src !== previousSource;
 
         if (sourceChanged) {
             _setVideotagSource(_levels[_currentQuality]);
@@ -357,7 +391,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             if (previousSource) {
                 _videotag.load();
             }
-
         } else if (startTime === 0 && _videotag.currentTime > 0) {
             // Load event is from the same video as before
             // restart video without dispatching seek event
@@ -392,7 +425,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
         var sourceElement = document.createElement('source');
         sourceElement.src = source.file;
-        var sourceChanged = (_videotag.src !== sourceElement.src);
+        var sourceChanged = _videotag.src !== sourceElement.src;
         if (sourceChanged) {
             _videotag.src = source.file;
         }
@@ -450,15 +483,23 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     this.destroy = function() {
         _beforeResumeHandler = utils.noop;
         _removeListeners(MediaEvents, _videotag);
-        this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
-        this.removeTracksListener(_videotag.textTracks, 'change', _this.textTrackChangeHandler);
+        this.removeTracksListener(
+            _videotag.audioTracks,
+            'change',
+            _audioTrackChangeHandler
+        );
+        this.removeTracksListener(
+            _videotag.textTracks,
+            'change',
+            _this.textTrackChangeHandler
+        );
         this.off();
     };
 
     this.init = function(item) {
         _setLevels(item.sources);
         const source = _levels[_currentQuality];
-        _androidHls = isAndroidHls(source);        
+        _androidHls = isAndroidHls(source);
         if (_androidHls) {
             // Playback rate is broken on Android HLS
             _this.supportsPlaybackRate = false;
@@ -483,7 +524,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     this.load = function(item) {
         _setLevels(item.sources);
         _completeLoad(item.starttime || 0, item.duration || 0);
-        this.setupSideloadedTracks(item.tracks);        
+        this.setupSideloadedTracks(item.tracks);
     };
 
     this.play = function() {
@@ -500,13 +541,16 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 var seekableDuration = end - _getSeekableStart();
                 var isLiveNotDvr = seekableDuration < MIN_DVR_DURATION;
                 var behindLiveEdge = end - _videotag.currentTime;
-                if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
+                if (
+                    isLiveNotDvr &&
+                    end &&
+                    (behindLiveEdge > 15 || behindLiveEdge < 0)
+                ) {
                     // resume playback at edge of live stream
                     _seekOffset = Math.max(end - 10, end - seekableDuration);
                     _setPositionBeforeSeek(_videotag.currentTime);
                     _videotag.currentTime = _seekOffset;
                 }
-
             }
         };
         _videotag.pause();
@@ -579,7 +623,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.resize = function(width, height, stretching) {
-        if (!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) {
+        if (
+            !width ||
+            !height ||
+            !_videotag.videoWidth ||
+            !_videotag.videoHeight
+        ) {
             return;
         }
         const styles = {
@@ -590,7 +639,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (stretching === 'uniform') {
             // snap video to edges when the difference in aspect ratio is less than 9%
             const playerAspectRatio = width / height;
-            const videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
+            const videoAspectRatio =
+                _videotag.videoWidth / _videotag.videoHeight;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
                 styles.objectFit = 'fill';
                 stretching = 'exactfit';
@@ -600,7 +650,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         // object-fit is not implemented in IE or Android Browser in 4.4 and lower
         // http://caniuse.com/#feat=object-fit
         // feature detection may work for IE but not for browsers where object-fit works for images only
-        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
+        const fitVideoUsingTransforms =
+            Browser.ie ||
+            (OS.iOS && OS.version.major < 9) ||
+            Browser.androidNative;
         if (fitVideoUsingTransforms) {
             // Use transforms to center and scale video in container
             const x = -Math.floor(_videotag.videoWidth / 2 + 1);
@@ -618,8 +671,18 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             styles.height = _videotag.videoHeight;
             styles.top = styles.left = '50%';
             styles.margin = 0;
-            transform(_videotag,
-                'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
+            transform(
+                _videotag,
+                'translate(' +
+                    x +
+                    'px, ' +
+                    y +
+                    'px) scale(' +
+                    scaleX.toFixed(2) +
+                    ', ' +
+                    scaleY.toFixed(2) +
+                    ')'
+            );
         }
         style(_videotag, styles);
     };
@@ -637,7 +700,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 if (enterFullscreen) {
                     enterFullscreen.apply(_videotag);
                 }
-
             });
 
             if (status instanceof utils.Error) {
@@ -648,8 +710,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
 
         var exitFullscreen =
-            _videotag.webkitExitFullscreen ||
-            _videotag.webkitExitFullScreen;
+            _videotag.webkitExitFullscreen || _videotag.webkitExitFullScreen;
         if (exitFullscreen) {
             exitFullscreen.apply(_videotag);
         }
@@ -739,18 +800,29 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
         _this.addTracksListener(tracks, 'change', _audioTrackChangeHandler);
         if (_audioTracks) {
-            _this.trigger('audioTracks', { currentTrack: _currentAudioTrackIndex, tracks: _audioTracks });
+            _this.trigger('audioTracks', {
+                currentTrack: _currentAudioTrackIndex,
+                tracks: _audioTracks
+            });
         }
     }
 
     function _setCurrentAudioTrack(index) {
-        if (_videotag && _videotag.audioTracks && _audioTracks &&
-            index > -1 && index < _videotag.audioTracks.length && index !== _currentAudioTrackIndex) {
+        if (
+            _videotag &&
+            _videotag.audioTracks &&
+            _audioTracks &&
+            index > -1 &&
+            index < _videotag.audioTracks.length &&
+            index !== _currentAudioTrackIndex
+        ) {
             _videotag.audioTracks[_currentAudioTrackIndex].enabled = false;
             _currentAudioTrackIndex = index;
             _videotag.audioTracks[_currentAudioTrackIndex].enabled = true;
-            _this.trigger('audioTrackChanged', { currentTrack: _currentAudioTrackIndex,
-                tracks: _audioTracks });
+            _this.trigger('audioTrackChanged', {
+                currentTrack: _currentAudioTrackIndex,
+                tracks: _audioTracks
+            });
         }
     }
 
@@ -781,7 +853,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         // Don't end if we have noting buffered yet, or cannot get any information about the buffer
         if (live && endOfBuffer && _lastEndOfBuffer === endOfBuffer) {
             if (_staleStreamTimeout === -1) {
-                _staleStreamTimeout = setTimeout(function () {
+                _staleStreamTimeout = setTimeout(function() {
                     _stale = true;
                     checkStreamEnded();
                 }, _staleStreamDuration);

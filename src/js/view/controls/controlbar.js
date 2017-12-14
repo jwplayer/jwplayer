@@ -38,13 +38,13 @@ function div(classes) {
 }
 
 function createCastButton(castToggle, localization) {
-
     if (Browser.safari) {
         const airplayButton = button(
             'jw-icon-airplay jw-off',
             castToggle,
             localization.airplay,
-            cloneIcons('airplay-off,airplay-on'));
+            cloneIcons('airplay-off,airplay-on')
+        );
 
         SimpleTooltip(airplayButton.element(), 'airplay', localization.airplay);
 
@@ -55,13 +55,13 @@ function createCastButton(castToggle, localization) {
         return;
     }
 
-
     const castButton = document.createElement('button', 'google-cast-button');
     castButton.setAttribute('type', 'button');
     castButton.setAttribute('tabindex', '-1');
 
     const element = document.createElement('div');
-    element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
+    element.className =
+        'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
     element.style.display = 'none';
     element.style.cursor = 'pointer';
     element.appendChild(castButton);
@@ -95,12 +95,18 @@ function reasonInteraction() {
 }
 
 function buttonsInFirstNotInSecond(buttonsA, buttonsB) {
-    return buttonsA.filter(a =>
-        !buttonsB.some(b => (b.id + b.btnClass === a.id + a.btnClass) && a.callback === b.callback));
+    return buttonsA.filter(
+        a =>
+            !buttonsB.some(
+                b =>
+                    b.id + b.btnClass === a.id + a.btnClass &&
+                    a.callback === b.callback
+            )
+    );
 }
 
 const appendChildren = (container, elements) => {
-    elements.forEach(e => {
+    elements.forEach((e) => {
         if (e.element) {
             e = e.element();
         }
@@ -128,42 +134,81 @@ export default class Controlbar {
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
             // Clone icons so that can be used in VolumeTooltip
             const svgIcons = cloneIcons('volume-0,volume-100');
-            muteButton = button('jw-icon-volume', () => {
-                _api.setMute();
-            }, vol, svgIcons);
+            muteButton = button(
+                'jw-icon-volume',
+                () => {
+                    _api.setMute();
+                },
+                vol,
+                svgIcons
+            );
         }
 
         // Do not initialize volume slider or tooltip on mobile
         if (!this._isMobile) {
-            volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
-                cloneIcons('volume-0,volume-50,volume-100'));
+            volumeTooltip = new VolumeTooltip(
+                _model,
+                'jw-icon-volume',
+                vol,
+                cloneIcons('volume-0,volume-50,volume-100')
+            );
         }
 
-        const nextButton = button('jw-icon-next', () => {
-            _api.next();
-        }, next, cloneIcons('next'));
+        const nextButton = button(
+            'jw-icon-next',
+            () => {
+                _api.next();
+            },
+            next,
+            cloneIcons('next')
+        );
 
-        const settingsButton = button('jw-icon-settings jw-settings-submenu-button', (event) => {
-            this.trigger('settingsInteraction', 'quality', true, event);
-        }, localization.settings, cloneIcons('settings'));
+        const settingsButton = button(
+            'jw-icon-settings jw-settings-submenu-button',
+            (event) => {
+                this.trigger('settingsInteraction', 'quality', true, event);
+            },
+            localization.settings,
+            cloneIcons('settings')
+        );
         settingsButton.element().setAttribute('aria-haspopup', 'true');
 
-        const captionsButton = button('jw-icon-cc jw-settings-submenu-button', (event) => {
-            this.trigger('settingsInteraction', 'captions', false, event);
-        }, localization.cc, cloneIcons('cc-off,cc-on'));
+        const captionsButton = button(
+            'jw-icon-cc jw-settings-submenu-button',
+            (event) => {
+                this.trigger('settingsInteraction', 'captions', false, event);
+            },
+            localization.cc,
+            cloneIcons('cc-off,cc-on')
+        );
         captionsButton.element().setAttribute('aria-haspopup', 'true');
 
-        const elements = this.elements = {
+        const elements = (this.elements = {
             alt: text('jw-text-alt', 'status'),
-            play: button('jw-icon-playback', () => {
-                _api.playToggle(reasonInteraction());
-            }, play, cloneIcons('play,pause')),
-            rewind: button('jw-icon-rewind', () => {
-                this.rewind();
-            }, rewind, cloneIcons('rewind')),
-            live: button('jw-icon-live', () => {
-                this.goToLiveEdge();
-            }, localization.liveBroadcast, cloneIcons('live,dvr')),
+            play: button(
+                'jw-icon-playback',
+                () => {
+                    _api.playToggle(reasonInteraction());
+                },
+                play,
+                cloneIcons('play,pause')
+            ),
+            rewind: button(
+                'jw-icon-rewind',
+                () => {
+                    this.rewind();
+                },
+                rewind,
+                cloneIcons('rewind')
+            ),
+            live: button(
+                'jw-icon-live',
+                () => {
+                    this.goToLiveEdge();
+                },
+                localization.liveBroadcast,
+                cloneIcons('live,dvr')
+            ),
             next: nextButton,
             elapsed: textIcon('jw-text-elapsed', 'timer'),
             countdown: textIcon('jw-text-countdown', 'timer'),
@@ -174,19 +219,30 @@ export default class Controlbar {
             cast: createCastButton(() => {
                 _api.castToggle();
             }, localization),
-            fullscreen: button('jw-icon-fullscreen', () => {
-                _api.setFullscreen();
-            }, localization.fullscreen, cloneIcons('fullscreen-off,fullscreen-on')),
+            fullscreen: button(
+                'jw-icon-fullscreen',
+                () => {
+                    _api.setFullscreen();
+                },
+                localization.fullscreen,
+                cloneIcons('fullscreen-off,fullscreen-on')
+            ),
             spacer: div('jw-spacer'),
             buttonContainer: div('jw-button-container'),
             settingsButton,
             captionsButton
-        };
+        });
 
         // Add text tooltips
-        const captionsTip = SimpleTooltip(captionsButton.element(), 'captions', localization.cc);
+        const captionsTip = SimpleTooltip(
+            captionsButton.element(),
+            'captions',
+            localization.cc
+        );
         const onCaptionsChanged = (model) => {
-            const currentCaptions = model.get('captionsList')[model.get('captionsIndex')];
+            const currentCaptions = model.get('captionsList')[
+                model.get('captionsIndex')
+            ];
             let newText = localization.cc;
             if (currentCaptions && currentCaptions.label !== 'Off') {
                 newText = currentCaptions.label;
@@ -194,20 +250,33 @@ export default class Controlbar {
             captionsTip.setText(newText);
         };
 
-        const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp, () => {
-            const nextUp = _model.get('nextUp');
+        const nextUpTip = SimpleTooltip(
+            elements.next.element(),
+            'next',
+            localization.nextUp,
+            () => {
+                const nextUp = _model.get('nextUp');
 
-            this.trigger('nextShown', {
-                mode: nextUp.mode,
-                ui: 'nextup',
-                itemsShown: [nextUp],
-                feedData: nextUp.feedData,
-                reason: 'hover'
-            });
-        });
+                this.trigger('nextShown', {
+                    mode: nextUp.mode,
+                    ui: 'nextup',
+                    itemsShown: [nextUp],
+                    feedData: nextUp.feedData,
+                    reason: 'hover'
+                });
+            }
+        );
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
-        SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
-        SimpleTooltip(elements.fullscreen.element(), 'fullscreen', localization.fullscreen);
+        SimpleTooltip(
+            elements.settingsButton.element(),
+            'settings',
+            localization.settings
+        );
+        SimpleTooltip(
+            elements.fullscreen.element(),
+            'fullscreen',
+            localization.fullscreen
+        );
 
         // Filter out undefined elements
         const buttonLayout = [
@@ -228,14 +297,9 @@ export default class Controlbar {
             elements.fullscreen
         ].filter(e => e);
 
-        const layout = [
-            elements.time,
-            elements.buttonContainer
-        ].filter(e => e);
+        const layout = [elements.time, elements.buttonContainer].filter(e => e);
 
-        const menus = this.menus = [
-            elements.volumetooltip
-        ].filter(e => e);
+        const menus = (this.menus = [elements.volumetooltip].filter(e => e));
 
         this.el = document.createElement('div');
         this.el.className = 'jw-controlbar jw-reset';
@@ -264,7 +328,11 @@ export default class Controlbar {
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
             // update live icon and displayed time when DVR stream enters or exits live edge
-            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive);
+            utils.toggleClass(
+                this.elements.live.element(),
+                'jw-dvr-live',
+                dvrLive
+            );
         });
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
@@ -273,7 +341,7 @@ export default class Controlbar {
         _model.change('nextUp', (model, nextUp) => {
             let tipText = localization.nextUp;
             if (nextUp && nextUp.title) {
-                tipText += (`: ${nextUp.title}`);
+                tipText += `: ${nextUp.title}`;
             }
             nextUpTip.setText(tipText);
             elements.next.toggle(!!nextUp);
@@ -287,42 +355,69 @@ export default class Controlbar {
         // Event listeners
         // Volume sliders do not exist on mobile so don't assign listeners to them.
         if (elements.volumetooltip) {
-            elements.volumetooltip.on('update', function (pct) {
-                const val = pct.percentage;
-                this._api.setVolume(val);
-            }, this);
-            elements.volumetooltip.on('toggleValue', function () {
-                this._api.setMute();
-            }, this);
+            elements.volumetooltip.on(
+                'update',
+                function(pct) {
+                    const val = pct.percentage;
+                    this._api.setVolume(val);
+                },
+                this
+            );
+            elements.volumetooltip.on(
+                'toggleValue',
+                function() {
+                    this._api.setMute();
+                },
+                this
+            );
         }
 
         if (elements.cast && elements.cast.button) {
-            new UI(elements.cast.element()).on('click tap enter', function(evt) {
-                // controlbar cast button needs to manually trigger a click
-                // on the native cast button for taps and enter key
-                if (evt.type !== 'click') {
-                    elements.cast.button.click();
-                }
-                this._model.set('castClicked', true);
-            }, this);
+            new UI(elements.cast.element()).on(
+                'click tap enter',
+                function(evt) {
+                    // controlbar cast button needs to manually trigger a click
+                    // on the native cast button for taps and enter key
+                    if (evt.type !== 'click') {
+                        elements.cast.button.click();
+                    }
+                    this._model.set('castClicked', true);
+                },
+                this
+            );
         }
 
-        new UI(elements.duration).on('click tap enter', function () {
-            if (this._model.get('streamType') === 'DVR') {
-                // Seek to "Live" position within live buffer, but not before current position
-                const currentPosition = this._model.get('position');
-                this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
-            }
-        }, this);
+        new UI(elements.duration).on(
+            'click tap enter',
+            function() {
+                if (this._model.get('streamType') === 'DVR') {
+                    // Seek to "Live" position within live buffer, but not before current position
+                    const currentPosition = this._model.get('position');
+                    this._api.seek(
+                        Math.max(dvrSeekLimit, currentPosition),
+                        reasonInteraction()
+                    );
+                }
+            },
+            this
+        );
 
         // When the control bar is interacted with, trigger a user action event
-        new UI(this.el).on('click tap drag', function () {
-            this.trigger('userAction');
-        }, this);
+        new UI(this.el).on(
+            'click tap drag',
+            function() {
+                this.trigger('userAction');
+            },
+            this
+        );
 
-        _.each(menus, function (ele) {
-            ele.on('open-tooltip', this.closeMenus, this);
-        }, this);
+        _.each(
+            menus,
+            function(ele) {
+                ele.on('open-tooltip', this.closeMenus, this);
+            },
+            this
+        );
     }
 
     onVolume(model, pct) {
@@ -341,8 +436,16 @@ export default class Controlbar {
         }
         if (this.elements.volumetooltip) {
             this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
-            utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
-            utils.toggleClass(this.elements.volumetooltip.element(), 'jw-full', vol >= 75 && !muted);
+            utils.toggleClass(
+                this.elements.volumetooltip.element(),
+                'jw-off',
+                muted
+            );
+            utils.toggleClass(
+                this.elements.volumetooltip.element(),
+                'jw-full',
+                vol >= 75 && !muted
+            );
         }
     }
 
@@ -363,7 +466,10 @@ export default class Controlbar {
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
             const currentPosition = Math.ceil(position);
-            elapsedTime = countdownTime = currentPosition >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-position);
+            elapsedTime = countdownTime =
+                currentPosition >= dvrSeekLimit
+                    ? ''
+                    : '-' + utils.timeFormat(-position);
             model.set('dvrLive', currentPosition >= dvrSeekLimit);
         } else {
             elapsedTime = utils.timeFormat(position);
@@ -404,7 +510,7 @@ export default class Controlbar {
 
     // Close menus if it has no event.  Otherwise close all but the event's target.
     closeMenus(evt) {
-        _.each(this.menus, function (ele) {
+        _.each(this.menus, function(ele) {
             if (!evt || evt.target !== ele.el) {
                 ele.closeTooltip(evt);
             }
@@ -422,14 +528,20 @@ export default class Controlbar {
             startPosition = duration;
         }
         // Seek 10s back. Seek value should be >= 0 in VOD mode and >= (negative) duration in DVR mode
-        this._api.seek(Math.max(rewindPosition, startPosition), reasonInteraction());
+        this._api.seek(
+            Math.max(rewindPosition, startPosition),
+            reasonInteraction()
+        );
     }
 
     onStreamTypeChange(model, streamType) {
         // Hide rewind button when in LIVE mode
         this.elements.rewind.toggle(streamType !== 'LIVE');
-        this.elements.live.toggle(streamType === 'LIVE' || streamType === 'DVR');
-        this.elements.duration.style.display = streamType === 'DVR' ? 'none' : '';
+        this.elements.live.toggle(
+            streamType === 'LIVE' || streamType === 'DVR'
+        );
+        this.elements.duration.style.display =
+            streamType === 'DVR' ? 'none' : '';
         model.set('dvrLive', false);
         const duration = model.get('duration');
         this.onDuration(model, duration);
@@ -463,7 +575,10 @@ export default class Controlbar {
         if (this._model.get('streamType') === 'DVR') {
             // Seek to "Live" position within live buffer, but not before current position
             const currentPosition = this._model.get('position');
-            this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
+            this._api.seek(
+                Math.max(dvrSeekLimit, currentPosition),
+                reasonInteraction()
+            );
         }
     }
 
@@ -481,7 +596,6 @@ export default class Controlbar {
         // On model.change these obects are the same and all buttons need to be added
         if (newButtons === oldButtons || !oldButtons) {
             addedButtons = newButtons;
-
         } else {
             addedButtons = buttonsInFirstNotInSecond(newButtons, oldButtons);
             removedButtons = buttonsInFirstNotInSecond(oldButtons, newButtons);
@@ -500,18 +614,26 @@ export default class Controlbar {
             );
 
             if (buttonProps.tooltip) {
-                SimpleTooltip(newButton.element(), buttonProps.id, buttonProps.tooltip);
+                SimpleTooltip(
+                    newButton.element(),
+                    buttonProps.id,
+                    buttonProps.tooltip
+                );
             }
 
             let firstButton;
             if (newButton.id === 'related') {
                 firstButton = this.elements.settingsButton.element();
             } else if (newButton.id === 'share') {
-                firstButton = buttonContainer.querySelector('[button="related"]') ||
+                firstButton =
+                    buttonContainer.querySelector('[button="related"]') ||
                     this.elements.settingsButton.element();
             } else {
                 firstButton = this.elements.spacer.nextSibling;
-                if (firstButton && firstButton.getAttribute('button') === 'logo') {
+                if (
+                    firstButton &&
+                    firstButton.getAttribute('button') === 'logo'
+                ) {
                     firstButton = firstButton.nextSibling;
                 }
             }
@@ -521,7 +643,9 @@ export default class Controlbar {
 
     removeButtons(buttonContainer, buttonsToRemove) {
         for (let i = buttonsToRemove.length; i--;) {
-            const buttonElement = buttonContainer.querySelector(`[button="${buttonsToRemove[i].id}"]`);
+            const buttonElement = buttonContainer.querySelector(
+                `[button="${buttonsToRemove[i].id}"]`
+            );
             if (buttonElement) {
                 buttonContainer.removeChild(buttonElement);
             }
@@ -537,4 +661,3 @@ export default class Controlbar {
         utils.toggleClass(captionsButton.element(), 'jw-off', !active);
     }
 }
-

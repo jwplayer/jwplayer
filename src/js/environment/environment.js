@@ -15,7 +15,7 @@ import {
     isIPod,
     isFlashSupported,
     flashVersion,
-    isIframe,
+    isIframe
 } from 'utils/browser';
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
@@ -147,7 +147,7 @@ Object.defineProperties(OS, {
 Object.defineProperties(Features, {
     flash: {
         get: memoize(isFlashSupported),
-        enumerable: true,
+        enumerable: true
     },
     flashVersion: {
         get: memoize(flashVersion),

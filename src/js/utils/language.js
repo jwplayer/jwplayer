@@ -14,7 +14,7 @@ const codeToLang = {
     pt: 'Portuguese',
     ru: 'Russian',
     es: 'Spanish',
-    el: 'Greek',
+    el: 'Greek'
 };
 
 const langToCode = _.invert(codeToLang);

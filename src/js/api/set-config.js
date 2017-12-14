@@ -1,11 +1,6 @@
 import _ from 'utils/underscore';
 
-const supportedFields = [
-    'repeat',
-    'volume',
-    'mute',
-    'autostart'
-];
+const supportedFields = ['repeat', 'volume', 'mute', 'autostart'];
 
 function setAutoStart(model, controller, autoStart) {
     model.setAutoStart(autoStart);
@@ -22,7 +17,7 @@ export default (controller, newConfig) => {
         return;
     }
 
-    supportedFields.forEach(field => {
+    supportedFields.forEach((field) => {
         const newValue = newConfig[field];
 
         if (_.isUndefined(newValue)) {

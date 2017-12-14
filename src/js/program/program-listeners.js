@@ -1,12 +1,29 @@
 import { _isNaN, _isNumber } from 'utils/underscore';
-import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
-    MEDIA_TYPE, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
-    MEDIA_RATE_CHANGE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
-    MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META, MEDIA_SEEK, MEDIA_SEEKED,
-    NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY } from 'events/events';
+import {
+    PLAYER_STATE,
+    STATE_IDLE,
+    MEDIA_VOLUME,
+    MEDIA_MUTE,
+    MEDIA_TYPE,
+    AUDIO_TRACKS,
+    AUDIO_TRACK_CHANGED,
+    MEDIA_RATE_CHANGE,
+    MEDIA_BUFFER,
+    MEDIA_TIME,
+    MEDIA_LEVELS,
+    MEDIA_LEVEL_CHANGED,
+    MEDIA_ERROR,
+    MEDIA_BEFORECOMPLETE,
+    MEDIA_COMPLETE,
+    MEDIA_META,
+    MEDIA_SEEK,
+    MEDIA_SEEKED,
+    NATIVE_FULLSCREEN,
+    MEDIA_VISUAL_QUALITY
+} from 'events/events';
 
 export function ProviderListener(mediaController) {
-    return function (type, data) {
+    return function(type, data) {
         const { mediaModel } = mediaController;
         const event = Object.assign({}, data, {
             type: type
@@ -22,16 +39,22 @@ export function ProviderListener(mediaController) {
             case MEDIA_VISUAL_QUALITY:
                 mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
                 return;
-            case PLAYER_STATE: {
-                if (data.newstate === STATE_IDLE) {
-                    mediaController.thenPlayPromise.cancel();
-                    mediaModel.srcReset();
+            case PLAYER_STATE:
+                {
+                    if (data.newstate === STATE_IDLE) {
+                        mediaController.thenPlayPromise.cancel();
+                        mediaModel.srcReset();
+                    }
+                    // Always fire change:mediaState to keep player model in sync
+                    const previousState = mediaModel.attributes.mediaState;
+                    mediaModel.attributes.mediaState = data.newstate;
+                    mediaModel.trigger(
+                        'change:mediaState',
+                        mediaModel,
+                        data.newstate,
+                        previousState
+                    );
                 }
-                // Always fire change:mediaState to keep player model in sync
-                const previousState = mediaModel.attributes.mediaState;
-                mediaModel.attributes.mediaState = data.newstate;
-                mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
-            }
                 // This "return" is important because
                 //  we are choosing to not propagate model event.
                 //  Instead letting the master controller do so
@@ -83,13 +106,14 @@ export function ProviderListener(mediaController) {
 }
 
 export function MediaControllerListener(model) {
-    return function (type, data) {
+    return function(type, data) {
         switch (type) {
-            case 'flashThrottle': {
-                const throttled = (data.state !== 'resume');
-                model.set('flashThrottle', throttled);
-                model.set('flashBlocked', throttled);
-            }
+            case 'flashThrottle':
+                {
+                    const throttled = data.state !== 'resume';
+                    model.set('flashThrottle', throttled);
+                    model.set('flashBlocked', throttled);
+                }
                 break;
             case 'flashBlocked':
                 model.set('flashBlocked', true);
@@ -106,13 +130,14 @@ export function MediaControllerListener(model) {
                     model.set(type, data[type]);
                 }
                 break;
-            case MEDIA_RATE_CHANGE: {
-                const rate = data.playbackRate;
-                // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
-                if (rate > 0) {
-                    model.set('playbackRate', rate);
+            case MEDIA_RATE_CHANGE:
+                {
+                    const rate = data.playbackRate;
+                    // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
+                    if (rate > 0) {
+                        model.set('playbackRate', rate);
+                    }
                 }
-            }
                 break;
             case MEDIA_META: {
                 Object.assign(model.get('itemMeta'), data.metadata);

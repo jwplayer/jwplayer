@@ -7,7 +7,7 @@ import utils from 'utils/helpers';
  * The 'content' and 'group' elements can nest other MediaRSS elements
  */
 
-const mediaparser = function (obj, item) {
+const mediaparser = function(obj, item) {
     // Prefix for the MRSS namespace
     const PREFIX = 'media';
     const tracks = 'tracks';
@@ -41,7 +41,9 @@ const mediaparser = function (obj, item) {
             switch (localName(node).toLowerCase()) {
                 case 'content':
                     if (xmlAttribute(node, 'duration')) {
-                        item.duration = utils.seconds(xmlAttribute(node, 'duration'));
+                        item.duration = utils.seconds(
+                            xmlAttribute(node, 'duration')
+                        );
                     }
                     if (xmlAttribute(node, 'url')) {
                         if (!item.sources) {
@@ -107,12 +109,15 @@ const mediaparser = function (obj, item) {
     return item;
 };
 
-function findMediaTypes (contentNode) {
+function findMediaTypes(contentNode) {
     const mediaTypes = [];
 
     for (let i = 0; i < numChildren(contentNode); i++) {
         const node = contentNode.childNodes[i];
-        if (node.prefix === 'jwplayer' && localName(node).toLowerCase() === 'mediatypes') {
+        if (
+            node.prefix === 'jwplayer' &&
+            localName(node).toLowerCase() === 'mediatypes'
+        ) {
             mediaTypes.push(textContent(node));
         }
     }

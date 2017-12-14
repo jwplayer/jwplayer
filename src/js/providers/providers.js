@@ -9,22 +9,30 @@ function Providers(config) {
 
 export const Loaders = {
     html5: function() {
-        return require.ensure(['providers/html5'], function(require) {
-            const provider = require('providers/html5').default;
-            registerProvider(provider);
-            return provider;
-        }, chunkLoadErrorHandler, 'provider.html5');
+        return require.ensure(
+            ['providers/html5'],
+            function(require) {
+                const provider = require('providers/html5').default;
+                registerProvider(provider);
+                return provider;
+            },
+            chunkLoadErrorHandler,
+            'provider.html5'
+        );
     }
 };
 
 Object.assign(Providers.prototype, {
-
     load: function(providersToLoad) {
-        return Promise.all(providersToLoad.filter(provider => !!Loaders[provider.name]).map(provider => {
-            // Resolve event for unknown registered providers
-            const providerLoaderMethod = Loaders[provider.name];
-            return providerLoaderMethod();
-        }));
+        return Promise.all(
+            providersToLoad
+                .filter(provider => !!Loaders[provider.name])
+                .map((provider) => {
+                    // Resolve event for unknown registered providers
+                    const providerLoaderMethod = Loaders[provider.name];
+                    return providerLoaderMethod();
+                })
+        );
     },
 
     providerSupports: function(provider, source) {
@@ -56,7 +64,7 @@ Object.assign(Providers.prototype, {
     // Find the name of the first provider which can support the media source-type
     choose: function(source) {
         // prevent throw on missing source
-        source = (source === Object(source)) ? source : {};
+        source = source === Object(source) ? source : {};
         const count = ProvidersSupported.length;
         for (let i = 0; i < count; i++) {
             const provider = ProvidersSupported[i];

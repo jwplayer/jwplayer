@@ -8,7 +8,6 @@ import Eventable from 'utils/eventable';
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 import { Features } from '../environment/environment';
 
-
 export default class ProgramController extends Eventable {
     constructor(model, mediaPool) {
         super();
@@ -49,7 +48,13 @@ export default class ProgramController extends Eventable {
 
             // Buffer between item switches, but remain in the initial state (IDLE) while loading the first provider
             model.set(PLAYER_STATE, STATE_BUFFERING);
-            if (casting || this.providerController.canPlay(mediaController.provider, source)) {
+            if (
+                casting ||
+                this.providerController.canPlay(
+                    mediaController.provider,
+                    source
+                )
+            ) {
                 // We can reuse the current mediaController and do so synchronously
                 // Initialize the provider and mediaModel, sync it with the Model
                 // This sets up the mediaController and allows playback to begin
@@ -65,17 +70,25 @@ export default class ProgramController extends Eventable {
         }
 
         const mediaModelContext = model.mediaModel;
-        this.providerPromise = this._loadProviderConstructor(source)
-            .then((ProviderConstructor) => {
+        this.providerPromise = this._loadProviderConstructor(source).then(
+            (ProviderConstructor) => {
                 // Don't do anything if we've tried to load another provider while this promise was resolving
                 if (mediaModelContext === model.mediaModel) {
-                    const nextProvider = new ProviderConstructor(model.get('id'), model.getConfiguration(), this.primedElement);
-                    const nextMediaController = new MediaController(nextProvider, model);
+                    const nextProvider = new ProviderConstructor(
+                        model.get('id'),
+                        model.getConfiguration(),
+                        this.primedElement
+                    );
+                    const nextMediaController = new MediaController(
+                        nextProvider,
+                        model
+                    );
                     nextMediaController.activeItem = item;
                     this._setActiveMedia(nextMediaController);
                     return nextMediaController;
                 }
-            });
+            }
+        );
         return this.providerPromise;
     }
 
@@ -106,14 +119,18 @@ export default class ProgramController extends Eventable {
             // Make the subsequent promise cancelable so that we can avoid playback when no longer wanted
             const thenPlayPromise = cancelable((nextMediaController) => {
                 // Ensure that we haven't switched items while waiting for the provider to load
-                if (this.mediaController && this.mediaController.mediaModel === nextMediaController.mediaModel) {
+                if (
+                    this.mediaController &&
+                    this.mediaController.mediaModel ===
+                        nextMediaController.mediaModel
+                ) {
                     return nextMediaController.play(playReason);
                 }
                 throw new Error('Playback cancelled.');
             });
 
             playPromise = this.providerPromise
-                .catch(error => {
+                .catch((error) => {
                     thenPlayPromise.cancel();
                     // Required provider was not loaded
                     model.trigger(ERROR, {
@@ -163,11 +180,13 @@ export default class ProgramController extends Eventable {
         // Only attempt to preload if media hasn't been loaded and we haven't started, and it's attached
         // Background media can also preload
         let media = mediaController || backgroundMedia;
-        if (model.get('state') === 'idle'
-            && model.get('autostart') === false
-            && media.attached
-            && !media.setup
-            && !media.preloaded) {
+        if (
+            model.get('state') === 'idle' &&
+            model.get('autostart') === false &&
+            media.attached &&
+            !media.setup &&
+            !media.preloaded
+        ) {
             media.preload(item);
         }
     }
@@ -339,7 +358,8 @@ export default class ProgramController extends Eventable {
             return Promise.resolve(ProviderConstructor);
         }
 
-        return providerController.loadProviders(model.get('playlist'))
+        return providerController
+            .loadProviders(model.get('playlist'))
             .then(() => {
                 ProviderConstructor = providerController.choose(source);
                 // The provider we need couldn't be loaded
@@ -363,7 +383,9 @@ export default class ProgramController extends Eventable {
             return null;
         }
 
-        return mediaController ? mediaController.provider : backgroundMedia.provider;
+        return mediaController
+            ? mediaController.provider
+            : backgroundMedia.provider;
     }
 
     /**
@@ -402,7 +424,9 @@ export default class ProgramController extends Eventable {
             return;
         }
 
-        return mediaController ? mediaController.beforeComplete : backgroundMedia.beforeComplete;
+        return mediaController
+            ? mediaController.beforeComplete
+            : backgroundMedia.beforeComplete;
     }
 
     /**
@@ -576,19 +600,34 @@ function assignMediaContainer(model, mediaController) {
     if (container) {
         mediaController.container = container;
     } else {
-        model.once('change:mediaContainer', (changedModel, changedContainer) => {
-            mediaController.container = changedContainer;
-        });
+        model.once(
+            'change:mediaContainer',
+            (changedModel, changedContainer) => {
+                mediaController.container = changedContainer;
+            }
+        );
     }
 }
 
 function removeEventForwarding(programController, mediaController) {
-    mediaController.off('all', programController.mediaControllerListener, programController);
+    mediaController.off(
+        'all',
+        programController.mediaControllerListener,
+        programController
+    );
 }
 
 function forwardEvents(programController, mediaController) {
-    mediaController.off('all', programController.mediaControllerListener, programController);
-    mediaController.on('all', programController.mediaControllerListener, programController);
+    mediaController.off(
+        'all',
+        programController.mediaControllerListener,
+        programController
+    );
+    mediaController.on(
+        'all',
+        programController.mediaControllerListener,
+        programController
+    );
 }
 
 function getSource(item) {

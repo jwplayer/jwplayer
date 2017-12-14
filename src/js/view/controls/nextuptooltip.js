@@ -23,7 +23,9 @@ export default class NextUpTooltip {
         this.container = context.createElement('div');
         this.container.className = 'jw-nextup-container jw-reset';
         const element = utils.createElement(nextUpTemplate());
-        element.querySelector('.jw-nextup-close').appendChild(cloneIcon('close'));
+        element
+            .querySelector('.jw-nextup-close')
+            .appendChild(cloneIcon('close'));
         this.addContent(element);
 
         this.closeButton = this.content.querySelector('.jw-nextup-close');
@@ -45,28 +47,34 @@ export default class NextUpTooltip {
 
         playerViewModel.change('streamType', this.onStreamType, this);
 
-        playerViewModel.change('state', function(stateChangeModel, state) {
-            if (state === 'complete') {
-                this.toggle(false);
-            }
-        }, this);
+        playerViewModel.change(
+            'state',
+            function(stateChangeModel, state) {
+                if (state === 'complete') {
+                    this.toggle(false);
+                }
+            },
+            this
+        );
 
         // Close button
-        new UI(this.closeButton, { directSelect: true })
-            .on('click tap enter', function() {
+        new UI(this.closeButton, { directSelect: true }).on(
+            'click tap enter',
+            function() {
                 this.nextUpSticky = false;
                 this.toggle(false);
-            }, this);
+            },
+            this
+        );
         // Tooltip
-        new UI(this.tooltip)
-            .on('click tap', this.click, this);
+        new UI(this.tooltip).on('click tap', this.click, this);
     }
 
     loadThumbnail(url) {
         this.nextUpImage = new Image();
-        this.nextUpImage.onload = (function() {
+        this.nextUpImage.onload = function() {
             this.nextUpImage.onload = null;
-        }).bind(this);
+        }.bind(this);
         this.nextUpImage.src = url;
 
         return {
@@ -93,9 +101,9 @@ export default class NextUpTooltip {
                 this.trigger('nextShown', {
                     mode: nextUp.mode,
                     ui: 'nextup',
-                    itemsShown: [ nextUp ],
+                    itemsShown: [nextUp],
                     feedData: nextUp.feedData,
-                    reason: reason,
+                    reason: reason
                 });
             }
         }
@@ -106,7 +114,11 @@ export default class NextUpTooltip {
         setTimeout(() => {
             // Set thumbnail
             this.thumbnail = this.content.querySelector('.jw-nextup-thumbnail');
-            toggleClass(this.content, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
+            toggleClass(
+                this.content,
+                'jw-nextup-thumbnail-visible',
+                !!nextUpItem.image
+            );
             if (nextUpItem.image) {
                 const thumbnailStyle = this.loadThumbnail(nextUpItem.image);
                 utils.style(this.thumbnail, thumbnailStyle);
@@ -119,15 +131,20 @@ export default class NextUpTooltip {
             // Set title
             this.title = this.content.querySelector('.jw-nextup-title');
             const title = nextUpItem.title;
-            this.title.innerText = title ? utils.createElement(title).textContent : '';
+            this.title.innerText = title
+                ? utils.createElement(title).textContent
+                : '';
 
             // Set duration
             if (nextUpItem.duration) {
-                this.duration = this.content.querySelector('.jw-nextup-duration');
+                this.duration = this.content.querySelector(
+                    '.jw-nextup-duration'
+                );
                 const duration = nextUpItem.duration;
-                this.duration.innerText = duration ? utils.createElement(duration).textContent : '';
+                this.duration.innerText = duration
+                    ? utils.createElement(duration).textContent
+                    : '';
             }
-
         }, 500);
     }
 
@@ -173,10 +190,12 @@ export default class NextUpTooltip {
         // - in playlist mode but not playing an ad
         // - autoplaying in related mode and autoplaytimer is set to 0
         const showUntilEnd = val >= this.offset;
-        if (showUntilEnd && nextUpSticky === undefined) { // show if nextUpSticky is unset
+        if (showUntilEnd && nextUpSticky === undefined) {
+            // show if nextUpSticky is unset
             this.nextUpSticky = showUntilEnd;
             this.toggle(showUntilEnd, 'time');
-        } else if (!showUntilEnd && nextUpSticky) { // reset if there was a backward seek
+        } else if (!showUntilEnd && nextUpSticky) {
+            // reset if there was a backward seek
             this.reset();
         }
     }

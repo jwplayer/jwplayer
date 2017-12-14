@@ -6,7 +6,9 @@ export default class PlayDisplayIcon {
         Object.assign(this, Events);
 
         const localization = _model.get('localization');
-        const iconDisplay = element.getElementsByClassName('jw-icon-display')[0];
+        const iconDisplay = element.getElementsByClassName(
+            'jw-icon-display'
+        )[0];
         element.style.cursor = 'pointer';
         this.icon = iconDisplay;
         this.el = element;

@@ -8,9 +8,11 @@ export function generateLabel(level, qualityLabels, redundant) {
     // flash provider uses bitrate instead of bandwidth
     const bandwidth = level.bitrate || level.bandwidth;
     // flash provider, in some cases, will create its own label. Prefer it over creating a new label
-    return getCustomLabel(qualityLabels, bandwidth) ||
+    return (
+        getCustomLabel(qualityLabels, bandwidth) ||
         level.label ||
-        createLabel(level.height, bandwidth, redundant);
+        createLabel(level.height, bandwidth, redundant)
+    );
 }
 
 // Prefer creating a label with height with a fallback to bandwidth. Make a label using both if redundant
@@ -41,7 +43,8 @@ export function getCustomLabel(qualityLabels, bandwidth) {
     if (bandwidth && qualityLabels && bandwidths.length) {
         const key = parseFloat(bandwidth);
         if (!isNaN(key)) {
-            label = qualityLabels[findClosestBandwidth(bandwidths, toKbps(key))];
+            label =
+                qualityLabels[findClosestBandwidth(bandwidths, toKbps(key))];
         }
     }
 
@@ -55,7 +58,7 @@ export function findClosestBandwidth(bandwidths, targetBandwidth) {
     let curDiff;
 
     if (_.isArray(bandwidths)) {
-        _.forEach(bandwidths, function (cur) {
+        _.forEach(bandwidths, function(cur) {
             curDiff = Math.abs(cur - targetBandwidth);
             if (curDiff < smallestDiff) {
                 closest = cur;
@@ -76,10 +79,14 @@ export function hasRedundantLevels(levels) {
     if (!_.isArray(levels)) {
         return false;
     }
-    return _.some(levels, function (level) {
-        const key = level.height || level.bitrate || level.bandwidth;
-        const foundDuplicate = this[key];
-        this[key] = 1;
-        return foundDuplicate;
-    }, {});
+    return _.some(
+        levels,
+        function(level) {
+            const key = level.height || level.bitrate || level.bandwidth;
+            const foundDuplicate = this[key];
+            this[key] = 1;
+            return foundDuplicate;
+        },
+        {}
+    );
 }

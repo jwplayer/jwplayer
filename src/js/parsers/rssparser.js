@@ -1,12 +1,17 @@
-import { localName, textContent, getChildNode, numChildren } from 'parsers/parsers';
+import {
+    localName,
+    textContent,
+    getChildNode,
+    numChildren
+} from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
 import mediaParser from 'parsers/mediaparser';
 import parseEntry from 'parsers/jwparser';
 import PlaylistItem from 'playlist/item';
 
 /**
-* Parse an RSS feed and translate it to playlistItems.
-*/
+ * Parse an RSS feed and translate it to playlistItems.
+ */
 
 export default function parseRss(dat) {
     const arr = [];

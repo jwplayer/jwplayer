@@ -2,7 +2,13 @@ import rightclickTemplate from 'view/controls/templates/rightclick';
 import { cloneIcon } from 'view/controls/icons';
 import { version } from 'version';
 import { flashVersion } from 'utils/browser';
-import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
+import {
+    createElement,
+    emptyElement,
+    addClass,
+    removeClass,
+    bounds
+} from 'utils/dom';
 import UI from 'utils/ui';
 
 function createDomElement(html) {
@@ -15,18 +21,22 @@ function createDomElement(html) {
 }
 
 export default class RightClick {
-
     buildArray() {
         var semverParts = version.split('+');
         var majorMinorPatchPre = semverParts[0];
 
         var menu = {
-            items: [{
-                title: 'Powered by <span class="jw-reset">JW Player ' + majorMinorPatchPre + '</span>',
-                featured: true,
-                showLogo: true,
-                link: 'https://jwplayer.com/learn-more'
-            }]
+            items: [
+                {
+                    title:
+                        'Powered by <span class="jw-reset">JW Player ' +
+                        majorMinorPatchPre +
+                        '</span>',
+                    featured: true,
+                    showLogo: true,
+                    link: 'https://jwplayer.com/learn-more'
+                }
+            ]
         };
 
         var provider = this.model.get('provider');
@@ -113,12 +123,20 @@ export default class RightClick {
 
         // Track if the mouse is above the menu or not
         this.elementUI = new UI(this.el, { useHover: true })
-            .on('over', function() {
-                this.mouseOverContext = true;
-            }, this)
-            .on('out', function() {
-                this.mouseOverContext = false;
-            }, this);
+            .on(
+                'over',
+                function() {
+                    this.mouseOverContext = true;
+                },
+                this
+            )
+            .on(
+                'out',
+                function() {
+                    this.mouseOverContext = false;
+                },
+                this
+            );
     }
 
     setup(_model, _playerElement, layer) {

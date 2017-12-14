@@ -9,7 +9,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
         // Don't close if the user has dismissed the nextup tooltip via it's close button (the tooltip overlays the menu)
         const targetClass = e.target.className;
-        if (!targetClass.match(/jw-(settings|video|nextup-close|sharing-link)/)) {
+        if (
+            !targetClass.match(/jw-(settings|video|nextup-close|sharing-link)/)
+        ) {
             instance.close();
         }
     };
@@ -28,9 +30,14 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     };
     settingsMenuElement.addEventListener('keydown', closeOnEnter);
 
-    const closeButton = button('jw-settings-close', () => {
-        instance.close();
-    }, 'Close Settings', [cloneIcon('close')]);
+    const closeButton = button(
+        'jw-settings-close',
+        () => {
+            instance.close();
+        },
+        'Close Settings',
+        [cloneIcon('close')]
+    );
 
     const closeOnButton = function(evt) {
         // Close settings menu when enter is pressed on the close button
@@ -42,7 +49,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     closeButton.show();
     closeButton.element().addEventListener('keydown', closeOnButton);
 
-    const topbarElement = settingsMenuElement.querySelector('.jw-settings-topbar');
+    const topbarElement = settingsMenuElement.querySelector(
+        '.jw-settings-topbar'
+    );
     topbarElement.appendChild(closeButton.element());
 
     const instance = {
@@ -59,7 +68,6 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             } else {
                 active.element().firstChild.focus();
             }
-
         },
         close(event) {
             visible = false;
@@ -87,15 +95,20 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
             if (submenu.isDefault) {
                 prependChild(topbarElement, submenu.categoryButtonElement);
-                submenu.categoryButtonElement.addEventListener('keydown', function(evt) {
-                    // close settings menu if you shift-tab on the first category button element
-                    if (evt.keyCode === 9 && evt.shiftKey) {
-                        instance.close(evt);
+                submenu.categoryButtonElement.addEventListener(
+                    'keydown',
+                    function(evt) {
+                        // close settings menu if you shift-tab on the first category button element
+                        if (evt.keyCode === 9 && evt.shiftKey) {
+                            instance.close(evt);
+                        }
                     }
-                });
+                );
             } else {
                 // sharing should always be the last submenu
-                const sharingButton = topbarElement.querySelector('.jw-submenu-sharing');
+                const sharingButton = topbarElement.querySelector(
+                    '.jw-submenu-sharing'
+                );
                 topbarElement.insertBefore(
                     submenu.categoryButtonElement,
                     sharingButton || closeButton.element()
@@ -111,7 +124,10 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         },
         removeSubmenu(name) {
             const submenu = submenus[name];
-            if (!submenu || submenu.element().parentNode !== settingsMenuElement) {
+            if (
+                !submenu ||
+                submenu.element().parentNode !== settingsMenuElement
+            ) {
                 return;
             }
             settingsMenuElement.removeChild(submenu.element());
@@ -157,7 +173,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         visible: {
             enumerable: true,
             get: () => visible
-        },
+        }
     });
 
     return instance;
@@ -176,7 +192,7 @@ const removeDocumentListeners = (handler) => {
 };
 
 const deactivateAllSubmenus = (submenus) => {
-    Object.keys(submenus).forEach(name => {
+    Object.keys(submenus).forEach((name) => {
         submenus[name].deactivate();
     });
 };

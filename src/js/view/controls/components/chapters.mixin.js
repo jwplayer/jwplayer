@@ -2,7 +2,7 @@ import utils from 'utils/helpers';
 import srt from 'parsers/captions/srt';
 
 class Cue {
-    constructor (time, text) {
+    constructor(time, text) {
         this.time = time;
         this.text = text;
         this.el = document.createElement('div');
@@ -14,7 +14,7 @@ class Cue {
         if (this.time.toString().slice(-1) === '%') {
             this.pct = this.time;
         } else {
-            const percentage = (this.time / duration) * 100;
+            const percentage = this.time / duration * 100;
             this.pct = percentage + '%';
         }
 
@@ -23,28 +23,27 @@ class Cue {
 }
 
 const ChaptersMixin = {
-
-    loadChapters: function (file) {
+    loadChapters: function(file) {
         utils.ajax(file, this.chaptersLoaded.bind(this), this.chaptersFailed, {
             plainText: true
         });
     },
 
-    chaptersLoaded: function (evt) {
+    chaptersLoaded: function(evt) {
         const data = srt(evt.responseText);
         if (Array.isArray(data)) {
-            data.forEach((obj) => this.addCue(obj));
+            data.forEach(obj => this.addCue(obj));
             this.drawCues();
         }
     },
 
-    chaptersFailed: function () {},
+    chaptersFailed: function() {},
 
-    addCue: function (obj) {
+    addCue: function(obj) {
         this.cues.push(new Cue(obj.begin, obj.text));
     },
 
-    drawCues: function () {
+    drawCues: function() {
         // We won't want to draw them until we have a duration
         const duration = this._model.get('duration');
         if (!duration || duration <= 0) {

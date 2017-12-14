@@ -21,13 +21,13 @@ export default function MediaElementPool() {
                 elements.push(mediaElement);
             }
         },
-        syncVolume: function (volume) {
-            elements.forEach(e => {
+        syncVolume: function(volume) {
+            elements.forEach((e) => {
                 e.volume = volume / 100;
             });
         },
         syncMute(mute) {
-            elements.forEach(e => {
+            elements.forEach((e) => {
                 e.muted = mute;
             });
         }

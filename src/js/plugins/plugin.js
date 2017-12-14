@@ -7,7 +7,7 @@ const PLUGIN_PATH_TYPE_ABSOLUTE = 0;
 const PLUGIN_PATH_TYPE_RELATIVE = 1;
 const PLUGIN_PATH_TYPE_CDN = 2;
 
-const getPluginPathType = function (path) {
+const getPluginPathType = function(path) {
     if (typeof path !== 'string') {
         return;
     }
@@ -18,7 +18,11 @@ const getPluginPathType = function (path) {
     }
     var folder = path.indexOf('/');
     var fileExtension = extension(path);
-    if (protocol < 0 && folder < 0 && (!fileExtension || !isNaN(fileExtension))) {
+    if (
+        protocol < 0 &&
+        folder < 0 &&
+        (!fileExtension || !isNaN(fileExtension))
+    ) {
         return PLUGIN_PATH_TYPE_CDN;
     }
     return PLUGIN_PATH_TYPE_RELATIVE;
@@ -60,7 +64,9 @@ Object.assign(Plugin.prototype, {
         const pluginInstance = new PluginClass(api, config, div);
 
         pluginInstance.addToPlayer = function() {
-            const overlaysElement = api.getContainer().querySelector('.jw-overlays');
+            const overlaysElement = api
+                .getContainer()
+                .querySelector('.jw-overlays');
             if (!overlaysElement) {
                 return;
             }
@@ -73,7 +79,10 @@ Object.assign(Plugin.prototype, {
         pluginInstance.resizeHandler = function() {
             const displayarea = pluginInstance.displayArea;
             if (displayarea) {
-                pluginInstance.resize(displayarea.clientWidth, displayarea.clientHeight);
+                pluginInstance.resize(
+                    displayarea.clientWidth,
+                    displayarea.clientHeight
+                );
             }
         };
 
