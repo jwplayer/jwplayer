@@ -25,6 +25,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
     CAPTIONS_LIST, CONTROLS, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
+import networkingInfo from 'environment/networking-info';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -726,6 +727,8 @@ Object.assign(Controller.prototype, {
         this.getCurrentCaptions = _getCurrentCaptions;
         this.getCaptionsList = _getCaptionsList;
         this.getVisualQuality = _getVisualQuality;
+        this.getVisualQuality = _getVisualQuality;
+        this.getNetworkInfo = () => networkingInfo(_model);
         this.getConfig = _getConfig;
         this.getState = _getState;
         this.next = _nextUp;
