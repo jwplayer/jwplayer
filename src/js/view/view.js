@@ -743,12 +743,9 @@ function View(_api, _model) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
-                // Set the poster image for videos before playback starts (idle), when the playlist ends (complete),
+                // Set the poster image before playback starts (idle), when the playlist ends (complete),
                 // or when an error is encountered. We don't get to the idle state between playlist items because of RAF
-
-                if (_model.mediaModel.get('mediaType') === 'video') {
-                    setPosterImage(_model);
-                }
+                setPosterImage(_model);
 
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
