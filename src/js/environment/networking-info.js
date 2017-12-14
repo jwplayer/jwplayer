@@ -1,3 +1,5 @@
+const navigator = window.navigator;
+
 const networkingDefaults = {
     type: undefined,
     effectiveType: undefined,
@@ -5,26 +7,18 @@ const networkingDefaults = {
     downlink: 0,
     rtt: 0,
     saveData: false,
-    onLine: false
 };
 
-const networkingInfo = function (_, provider) {
-    let networkingState = _.extend({}, networkingDefaults);
-    if (navigator) {
-        networkingState.onLine = navigator.onLine;
-        if (navigator.connection) {
-            _.extend(networkingState, navigator.connection);
-            // TODO: remove onchange, might not want to support on other browsers
-        }
-    }
+export function getNetworkInfo(model) {
 
-    if (provider && provider.name === 'hlsjs') {
-        // TODO: obtain downlink from hls.js
-    } else if (provider && provider.name === 'shaka') {
-        // TODO: obtain downlink from shaka
-    }
+    const networkInfo = navigator.connection;
+
+    const networkingState = Object.assign({
+        onLine: navigator.onLine,
+        bandwidthEstimate: model.get('bandwidthEstimate')
+    }, networkingDefaults, networkInfo);
+
+    delete networkingState.onchange;
 
     return networkingState;
-};
-
-export default networkingInfo;
+}

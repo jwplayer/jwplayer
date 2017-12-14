@@ -41,7 +41,7 @@ export default {
     getState: null,
     getStretching: null,
     getVisualQuality: null,
-    getNetworkingInfo: null,
+    getNetworkInfo: null,
     getVolume: null,
     getViewable: null,
     getWidth: null,
