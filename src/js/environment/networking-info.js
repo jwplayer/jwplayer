@@ -9,9 +9,13 @@ const networkingDefaults = {
 };
 
 const networkingInfo = function (_, provider) {
-    if (navigator && navigator.connection) {
-        return _.extend({}, networkingDefaults, navigator.connection);
-        // TODO: remove onchange, might not want to support on other browsers
+    let networkingInfo = _.extend({}, networkingDefaults);
+    if (navigator) {
+        networkingInfo.onLine = navigator.onLine;
+        if (navigator.connection) {
+            _.extend(networkingInfo, navigator.connection);
+            // TODO: remove onchange, might not want to support on other browsers
+        }
     }
 
     if (provider && provider.name === 'hlsjs') {
@@ -20,7 +24,7 @@ const networkingInfo = function (_, provider) {
         // TODO: obtain downlink from shaka
     }
 
-    return networkingDefaults;
+    return networkingInfo;
 };
 
 export default networkingInfo;
