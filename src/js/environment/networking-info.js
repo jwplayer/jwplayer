@@ -20,7 +20,7 @@ export default function getNetworkInfo(model) {
 
     Object.keys(networkingDefaults).forEach(property => {
         networkingState[property] = networkInfo[property];
-    })
+    });
 
     return networkingState;
 }
