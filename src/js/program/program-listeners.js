@@ -31,11 +31,12 @@ export function ProviderListener(mediaController) {
                 const previousState = mediaModel.attributes.mediaState;
                 mediaModel.attributes.mediaState = data.newstate;
                 mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
-            }
+
                 // This "return" is important because
                 //  we are choosing to not propagate model event.
                 //  Instead letting the master controller do so
                 return;
+            }
             case MEDIA_COMPLETE:
                 mediaController.beforeComplete = true;
                 mediaController.trigger(MEDIA_BEFORECOMPLETE, event);
@@ -85,35 +86,6 @@ export function ProviderListener(mediaController) {
 export function MediaControllerListener(model) {
     return function (type, data) {
         switch (type) {
-            case 'flashThrottle': {
-                const throttled = (data.state !== 'resume');
-                model.set('flashThrottle', throttled);
-                model.set('flashBlocked', throttled);
-            }
-                break;
-            case 'flashBlocked':
-                model.set('flashBlocked', true);
-                break;
-            case 'flashUnblocked':
-                model.set('flashBlocked', false);
-                break;
-            case MEDIA_VOLUME:
-                model.set(type, data[type]);
-                break;
-            case MEDIA_MUTE:
-                if (!model.get('autostartMuted')) {
-                    // Don't persist mute state with muted autostart
-                    model.set(type, data[type]);
-                }
-                break;
-            case MEDIA_RATE_CHANGE: {
-                const rate = data.playbackRate;
-                // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
-                if (rate > 0) {
-                    model.set('playbackRate', rate);
-                }
-            }
-                break;
             case MEDIA_META: {
                 Object.assign(model.get('itemMeta'), data.metadata);
                 break;
@@ -141,6 +113,36 @@ export function MediaControllerListener(model) {
             case 'subtitlesTracks':
             case 'subtitlesTracksData':
                 model.trigger(type, data);
+                break;
+            case MEDIA_MUTE:
+                if (!model.get('autostartMuted')) {
+                    // Don't persist mute state with muted autostart
+                    model.set(type, data[type]);
+                }
+                break;
+            case MEDIA_VOLUME:
+            case 'bandwidthEstimate':
+                model.set(type, data[type]);
+                break;
+            case MEDIA_RATE_CHANGE: {
+                const rate = data.playbackRate;
+                // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
+                if (rate > 0) {
+                    model.set('playbackRate', rate);
+                }
+                break;
+            }
+            case 'flashThrottle': {
+                const throttled = (data.state !== 'resume');
+                model.set('flashThrottle', throttled);
+                model.set('flashBlocked', throttled);
+                break;
+            }
+            case 'flashBlocked':
+                model.set('flashBlocked', true);
+                break;
+            case 'flashUnblocked':
+                model.set('flashBlocked', false);
                 break;
             default:
         }
