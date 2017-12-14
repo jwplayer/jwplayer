@@ -9,7 +9,7 @@ import Events, { on, once, off, trigger, triggerSafe } from 'utils/backbone.even
 import { registerPlugin } from 'plugins/plugins';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
-import NetworkingInfo from 'environment/networking-info';
+import networkingInfo from 'environment/networking-info';
 
 let instancesCreated = 0;
 
@@ -526,7 +526,7 @@ export default function Api(element) {
         },
 
         getNetworkingInfo() {
-            return new NetworkingInfo();
+            return networkingInfo(_);
         },
 
         /**
