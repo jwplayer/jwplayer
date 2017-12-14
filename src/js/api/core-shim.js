@@ -65,6 +65,7 @@ Object.assign(CoreShim.prototype, {
     trigger: Events.trigger,
     init(options, api) {
         const model = this.modelShim;
+        this.configBlock = options;
         const storage = new Storage('jwplayer', [
             'volume',
             'mute',
@@ -160,6 +161,9 @@ Object.assign(CoreShim.prototype, {
     },
     getConfig() {
         return Object.assign({}, this.modelShim.attributes, this.mediaShim);
+    },
+    getOriginalConfig() {
+        return this.configBlock;
     },
     getCurrentCaptions() {
         return this.get('captionsIndex');
