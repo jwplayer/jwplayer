@@ -122,6 +122,13 @@ export default class Controls {
             this.div.appendChild(nextUpToolTip.element());
         }
 
+        if (model.get('playlistItem').overlay) {
+            const overlayInterface = new OverlayInterface(model, this.playerContainer);
+            overlayInterface.setup(this.context);
+            debugger
+            this.div.appendChild(overlayInterface.element());
+        }
+
         this.addActiveListeners(controlbar.element());
         this.div.appendChild(controlbar.element());
 
