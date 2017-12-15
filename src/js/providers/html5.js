@@ -351,25 +351,21 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (!visualQuality.level.width || !visualQuality.level.height) {
             visualQuality.level = {};
         }
-        console.warn('fellback to InitialQuality: ' + levels[currentQuality]);
         return currentQuality;
     }
 
     function _pickOptimalQuality(levels) {
-        const originalLevels = levels;
         const Mbps = _playerConfig.bandwidthEstimate / Math.pow(1024, 2);
-        const { maxWidth, maxHeight} = resolutionRangeFromMbps(Mbps);
-        levels.sort((a,b) => {
-            return b.height - a.height;
-        });
-        const optimalLevel = levels.find(level => level.height <= maxHeight && level.width <= maxWidth);
-        console.warn('optimalLevel: ' + JSON.stringify(optimalLevel));
-        return optimalLevel ? originalLevels.indexOf(optimalLevel) : _pickInitialQuality(originalLevels);
+        const { maxWidth, maxHeight } = resolutionRangeFromMbps(Mbps);
+        const levelsInRange = levels.filter(level => level.height <= maxHeight && level.width <= maxWidth);
+        if (!levelsInRange || levelsInRange.length === 0) {
+            return _pickInitialQuality(levels);
+        }
+        levelsInRange.sort((a, b) => b.height - a.height);
+        return levels.indexOf(levelsInRange[0]);
     }
 
     function resolutionRangeFromMbps(Mbps) {
-        let minWidth = 0;
-        let minHeight = 0;
         let maxWidth = 640;
         let maxHeight = 360;
 
@@ -394,8 +390,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             maxWidth = 2048;
             maxHeight = 1152;
         }
-        console.warn('maxWidth: ' + maxWidth + ', maxHeight: ' + maxHeight);
-        return {maxWidth: maxWidth, maxHeight: maxHeight};
+        return { maxWidth: maxWidth, maxHeight: maxHeight };
     }
 
     function _play() {
