@@ -127,7 +127,8 @@ const Config = function(options, persisted) {
             'file',
             'sources',
             'tracks',
-            'preload'
+            'preload',
+            'overlay'
         ]);
 
         config.playlist = [ obj ];
