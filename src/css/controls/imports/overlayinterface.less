@@ -1,0 +1,111 @@
+@import "../../shared-imports/vars";
+@import "icons";
+
+.jw-interface-container {
+    .bottomleft((@mobile-touch-target * 1.5), 0);
+    background-color: transparent;
+    cursor: pointer;
+    margin: 0 auto;
+    padding: 12px;
+    pointer-events: none;
+    right: 0;
+    visibility: hidden;
+    width: 100%;
+
+    .jw-flag-small-player &,
+    .jw-settings-open & {
+        display: none;
+    }
+}
+
+.jw-interface {
+    background: @overlay-body-background;
+    border-radius: @overlay-border-radius;
+    box-shadow: 0 0 10px fade(@black, 50%);
+    color: @inactive-color;
+    display: inline-block;
+    overflow: hidden;
+    opacity: 0;
+    position: relative;
+    width: 100%;
+    pointer-events: all;
+    transform: translate(0, -5px);
+    transition: 150ms @default-timing-function;
+    transition-property: opacity, transform;
+    transition-delay: 0s;
+
+    &:hover .jw-interface-tooltip {
+        color: @active-color;
+    }
+
+    .jw-interface-thumbnail {
+        display: block;
+    }
+}
+
+.jw-interface-container-visible {
+    visibility: visible;
+
+    .jw-interface {
+        opacity: 1;
+        transform: translate(0, 0);
+        transition-delay: 0s, 0s, 150ms;
+    }
+}
+
+.jw-interface-tooltip {
+    display: flex;
+    height: 80px;
+}
+
+.jw-interface-thumbnail {
+    width: 120px;
+    max-width: 400px;
+    background-position: center;
+    background-size: cover;
+    flex: 0 0 auto;
+    display: none;
+}
+
+.jw-interface-header,
+.jw-interface-title {
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+.jw-interface-header {
+    font-weight: bold;
+}
+
+.jw-interface-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.jw-interface-duration {
+    align-self: flex-end;
+    text-align: right;
+    font-size: 12px;
+}
+
+.jw-interface-close {
+    &:extend(._topright);
+    .square(24px);
+    border: none;
+    color: @inactive-color;
+    cursor: pointer;
+    margin: 6px;
+    visibility: hidden;
+
+    &:hover {
+        color: @active-color;
+    }
+}
+
+.jw-interface-sticky {
+    .jw-interface-close {
+        visibility: visible;
+    }
+}
