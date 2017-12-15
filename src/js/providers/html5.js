@@ -244,11 +244,28 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             level.height = _videotag.videoHeight;
             _setMediaType();
             if (!level.width || !level.height || _currentQuality === -1) {
+                // Audio only or default bitrate estimate
+                _this.trigger('bandwidthEstimate', {
+                    bandwidthEstimate: 120000
+                });
                 return;
             }
             visualQuality.reason = visualQuality.reason || 'auto';
             visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
             visualQuality.bitrate = 0;
+            _this.trigger('bandwidthEstimate', {
+                // An extremely crude estimate of bandwidth based on video pixels displayed
+                // Not even close to platform served manifest bitrate values
+                /**
+                 width	height	bitrate	pixels	bit/pixel
+                 320	180	    350000	57600	6.076388889
+                 480	270	    520000	129600	4.012345679
+                 720	406	    640000	292320	2.1893815
+                 1280	720	    1420000	921600	1.540798611
+                 1920	1080	2750000	2073600	1.326195988
+                 */
+                bandwidthEstimate: level.width * level.height * 1.5
+            });
             level.index = _currentQuality;
             level.label = _levels[_currentQuality].label;
             _this.trigger(MEDIA_VISUAL_QUALITY, visualQuality);
