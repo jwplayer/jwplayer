@@ -13,7 +13,7 @@ import { getBreakpoint } from 'view/utils/breakpoint';
 import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
-import OverlayButton from 'view/controls/overlay-buttons';
+import OverlayInterface from 'view/controls/overlay-interface';
 
 require('css/controls.less');
 
