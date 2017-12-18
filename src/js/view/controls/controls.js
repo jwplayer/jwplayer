@@ -123,7 +123,7 @@ export default class Controls {
         }
 
         if (model.get('playlistItem').overlay && !controlbar.overlayInterface) {
-            const overlayInterface = new OverlayInterface(model, this.playerContainer, this.div);
+            const overlayInterface = new OverlayInterface(model, api, this.playerContainer);
             overlayInterface.setup(this.context);
             overlayInterface.on('all', this.trigger, this);
             controlbar.overlayInterface = overlayInterface;
