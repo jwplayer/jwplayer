@@ -11,6 +11,8 @@ export default class OverlayInterface {
         this._api = _api;
         this._playerElement = playerElement;
         this.overlays = null;
+        this.currentOverlay = null;
+        this.nextOverlay = null;
         this.close = _model.get('localization').close;
         this.showing = false;
     }
@@ -31,6 +33,8 @@ export default class OverlayInterface {
 
 
         viewModel.on('change:playlistItem', this.onPlaylistItem, this);
+
+        playerViewModel.change('position', this.onPosition, this);
 
         playerViewModel.change('state', function (stateChangeModel, state) {
             if (state === 'complete') {
@@ -63,6 +67,16 @@ export default class OverlayInterface {
         this.setNextOverlay(this.overlays[0]);
     }
 
+    onPosition(model, position) {
+        if (!this.showing && this.currentOverlay.showAt >= position) {
+            this.showing = true;
+            this.toggle(true);
+        } else if (this.showing && this.currentOverlay.endAt >= position) {
+            this.showing = false;
+            this.toggle = false;
+        }
+    }
+
     addContent(elem) {
         if (this.content) {
             this.removeContent();
@@ -82,7 +96,7 @@ export default class OverlayInterface {
         return this.container;
     }
 
-    toggle() {
+    toggle(show) {
 
     }
 
