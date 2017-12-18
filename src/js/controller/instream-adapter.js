@@ -98,12 +98,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     function _loadNextItem() {
         _arrayIndex++;
-        var item = _array[_arrayIndex];
-        var options;
-        if (_arrayOptions) {
-            options = _arrayOptions[_arrayIndex];
-        }
-        _this.loadItem(item, options);
+        _this.loadItem(_array);
     }
 
     function _instreamForward(type, data) {
