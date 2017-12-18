@@ -88,10 +88,8 @@ export default class OverlayInterface {
         position = Math.round(position);
 
         if (!this.showing && position === this.currentOverlay.showAt) {
-            this.showing = true;
             this.toggle(true);
         } else if (this.showing && position === this.currentOverlay.endAt) {
-            this.showing = false;
             this.toggle(false);
         }
     }
@@ -139,7 +137,7 @@ export default class OverlayInterface {
 
             // set thumbnail if its on overlay config
             this.thumbnail = this.content.querySelector('.jw-interface-thumbnail');
-            toggleClass(this.content, 'jw-interface-thumbnail-visible', !!overlay.image);
+            addClass(this.content, 'jw-interface-thumbnail-visible', !!overlay.image);
 
             if (overlay.image) {
                 const thumbnailStyle = this.loadThumbnail(overlay.image);
