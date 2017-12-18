@@ -129,7 +129,7 @@ export default class ViewModel extends PlayerViewModel {
                 this.mediaModel = mediaModel;
             }, this);
 
-            const mergedAttributes = Object.assign({}, previousInstream.attributes, this._model.attributes);
+            const mergedAttributes = Object.assign({}, this._model.attributes, previousInstream.attributes);
             dispatchDiffChangeEvents(this, this._model.attributes, mergedAttributes);
         }
     }

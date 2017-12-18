@@ -724,7 +724,6 @@ function View(_api, _model) {
 
     const setupInstream = function() {
         addClass(_playerElement, 'jw-flag-ads');
-        removeClass(_playerElement, 'jw-flag-live');
 
         if (_controls) {
             _controls.setupInstream();
