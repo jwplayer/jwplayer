@@ -101,7 +101,7 @@ export default class OverlayInterface {
             this.toggle(false);
             this.currentOverlay.action(this._api);
         } else if (typeof action === 'string') {
-            window.location.href = action;
+            window.open(action, '_blank');
         }
     }
 
