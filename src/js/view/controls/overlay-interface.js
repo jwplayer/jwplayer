@@ -121,12 +121,14 @@ export default class OverlayInterface {
     }
 
     toggle(show) {
-        if(this.showing === show){
+        if (this.showing === show) {
             return;
-        }else if(show === true){
+        } else if (show === true) {
             addClass(this.container, 'jw-interface-container-visible');
-        }else if(show === false){
+            this.showing = true;
+        } else if (show === false) {
             removeClass(this.container, 'jw-interface-container-visible');
+            this.showing = false;
         }
     }
 
