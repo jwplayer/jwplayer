@@ -77,6 +77,7 @@ export default class OverlayInterface {
         }
 
         this.overlays = playlistItem.overlay;
+        this.currentIndex = 0;
         this.setOverlay(this.overlays[this.currentIndex]);
     }   
 
