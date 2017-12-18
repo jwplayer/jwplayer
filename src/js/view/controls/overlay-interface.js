@@ -71,14 +71,16 @@ export default class OverlayInterface {
     }   
 
     onPosition(model, position) {
-        if (!position) {
+        if (!position || model.get('state') !== 'playing') {
             return;
         }
 
-        if (!this.showing && this.currentOverlay.showAt >= position) {
+        position = Math.floor(position);
+
+        if (!this.showing && this.currentOverlay.showAt === position) {
             this.showing = true;
             this.toggle(true);
-        } else if (this.showing && this.currentOverlay.endAt >= position) {
+        } else if (this.showing && this.currentOverlay.endAt === position) {
             this.showing = false;
             this.toggle = false;
         }
