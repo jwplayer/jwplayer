@@ -12,6 +12,7 @@ export default class OverlayInterface {
         this._playerElement = playerElement;
         this.overlays = null;
         this.currentOverlay = null;
+        this.currentIndex = 0;
         this.nextOverlay = null;
         this.close = _model.get('localization').close;
         this.showing = false;
@@ -30,7 +31,9 @@ export default class OverlayInterface {
 
         const viewModel = this._model;
         const playerViewModel = viewModel.player;
+        const playlistItem = viewModel.get('playlistItem');
 
+        this.overlays = playlistItem.overlay;
 
         viewModel.on('change:playlistItem', this.onPlaylistItem, this);
 
@@ -42,7 +45,6 @@ export default class OverlayInterface {
             }
         }, this);
 
-
         // Close button
         new UI(this.closeButton, { directSelect: true })
             .on('click tap enter', function () {
@@ -51,6 +53,8 @@ export default class OverlayInterface {
         // Tooltip
         new UI(this.tooltip)
             .on('click tap', this.click, this); 
+
+        this.setNextOverlay(this.overlays[this.currentIndex]);
     }
 
     onPlaylistItem(model, playlistItem) {
@@ -63,8 +67,7 @@ export default class OverlayInterface {
         console.log(playlistItem);
 
         this.overlays = playlistItem.overlay;
-
-        this.setNextOverlay(this.overlays[0]);
+        this.setNextOverlay(this.overlays[this.currentIndex]);
     }
 
     onPosition(model, position) {
@@ -96,11 +99,13 @@ export default class OverlayInterface {
         return this.container;
     }
 
-    toggle(show) {
+    toggle() {
 
     }
 
-    setNextOverlay() {
+    setNextOverlay(overlay) {
+        this.currentOverlay = overlay;
+        this.currentIndex += 1;
         
     }
 }
