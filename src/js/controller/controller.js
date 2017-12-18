@@ -838,6 +838,17 @@ Object.assign(Controller.prototype, {
             return _setItem(0);
         };
 
+        this.updatePlaylist = function(playlist, feedData) {
+            try {
+                setPlaylist(_model, playlist, feedData);
+            } catch (error) {
+                _model.set('item', 0);
+                _model.set('playlistItem', null);
+                return Promise.reject(error);
+            }
+            return _setItem(0);
+        };
+
         this.playerDestroy = function () {
             this.trigger('destroyPlugin', {});
             this.off();
