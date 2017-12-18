@@ -96,6 +96,11 @@ export default class OverlayInterface {
         }
     }
 
+    click() {
+        this.reset();
+        this.currentOverlay.action(this._api);
+    }
+
     addContent(elem) {
         if (this.content) {
             this.removeContent();
