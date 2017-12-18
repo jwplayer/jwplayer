@@ -64,8 +64,6 @@ export default class OverlayInterface {
             return;
         }
 
-        console.log(playlistItem);
-
         this.overlays = playlistItem.overlay;
         this.setNextOverlay(this.overlays[this.currentIndex]);
     }   
