@@ -170,7 +170,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         let playlist = item;
         if (_.isArray(item)) {
             _array = item;
-            _arrayOptions = options;
+            _arrayOptions = options || _arrayOptions;
             item = _array[_arrayIndex];
             if (_arrayOptions) {
                 options = _arrayOptions[_arrayIndex];
