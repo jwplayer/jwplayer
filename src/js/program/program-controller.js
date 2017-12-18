@@ -56,6 +56,8 @@ export default class ProgramController extends Eventable {
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
                 this.providerPromise = Promise.resolve(mediaController);
+                // Initialize the provider last so it's setting properties on the (newly) active media model
+                mediaController.provider.init(item);
                 return this.providerPromise;
             }
 
@@ -73,6 +75,8 @@ export default class ProgramController extends Eventable {
                     const nextMediaController = new MediaController(nextProvider, model);
                     nextMediaController.activeItem = item;
                     this._setActiveMedia(nextMediaController);
+                    // Initialize the provider last so it's setting properties on the (newly) active media model
+                    nextMediaController.provider.init(item);
                     return nextMediaController;
                 }
             });
@@ -195,6 +199,8 @@ export default class ProgramController extends Eventable {
         const castMediaController = new MediaController(castProvider, model);
         castMediaController.activeItem = item;
         this._setActiveMedia(castMediaController);
+        // Initialize the provider last so it's setting properties on the (newly) active media model
+        castMediaController.provider.init(item);
     }
 
     /**
@@ -587,7 +593,7 @@ function removeEventForwarding(programController, mediaController) {
 }
 
 function forwardEvents(programController, mediaController) {
-    mediaController.off('all', programController.mediaControllerListener, programController);
+    removeEventForwarding(programController, mediaController);
     mediaController.on('all', programController.mediaControllerListener, programController);
 }
 
