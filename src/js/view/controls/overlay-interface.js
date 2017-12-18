@@ -81,7 +81,7 @@ export default class OverlayInterface {
     }   
 
     onPosition(model, position) {
-        if (!position || model.get('state') !== 'playing') {
+        if (!this.currentOverlay || model.get('state') !== 'playing') {
             return;
         }
         position = Math.round(position);
