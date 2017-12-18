@@ -1,4 +1,5 @@
 import overlayTemplate from 'view/controls/templates/overlay-interface';
+import { toggleClass } from 'utils/dom';
 import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -13,7 +14,6 @@ export default class OverlayInterface {
         this.overlays = null;
         this.currentOverlay = null;
         this.currentIndex = 0;
-        this.nextOverlay = null;
         this.close = _model.get('localization').close;
         this.showing = false;
     }
@@ -54,18 +54,30 @@ export default class OverlayInterface {
         new UI(this.tooltip)
             .on('click tap', this.click, this); 
 
-        this.setNextOverlay(this.overlays[this.currentIndex]);
+        this.setOverlay(this.overlays[this.currentIndex]);
+    }
+
+    loadThumbnail(url) {
+        this.nextUpImage = new Image();
+        this.nextUpImage.onload = (function () {
+            this.nextUpImage.onload = null;
+        }).bind(this);
+        this.nextUpImage.src = url;
+
+        return {
+            backgroundImage: 'url("' + url + '")'
+        };
     }
 
     onPlaylistItem(model, playlistItem) {
         this.reset();
 
-        if (!playlistItem) {
+        if (!playlistItem.overlay) {
             return;
         }
 
         this.overlays = playlistItem.overlay;
-        this.setNextOverlay(this.overlays[this.currentIndex]);
+        this.setOverlay(this.overlays[this.currentIndex]);
     }   
 
     onPosition(model, position) {
@@ -107,9 +119,25 @@ export default class OverlayInterface {
 
     }
 
-    setNextOverlay(overlay) {
-        this.currentOverlay = overlay;
-        this.currentIndex += 1;
-        
+    setOverlay(overlay) {
+        setTimeout(() => {
+            this.currentOverlay = overlay;
+            this.currentIndex += 1;
+
+            // set thumbnail if its on overlay config
+            this.thumbnail = this.content.querySelector('.jw-interface-thumbnail');
+            toggleClass(this.content, 'jw-interface-thumbnail-visible', !!overlay.image);
+
+            if (overlay.image) {
+                const thumbnailStyle = this.loadThumbnail(overlay.image);
+                utils.style(this.thumbnail, thumbnailStyle);
+            }
+
+            // set description
+            this.description = this.content.querySelector('.jw-interface-description');
+            const description = overlay.description;
+            this.description.innerText = description ? utils.createElement(description).textContent : '';
+        }, 500);
     }
 }
+
