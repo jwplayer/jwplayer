@@ -18,9 +18,11 @@ export default function getNetworkInfo(model) {
     // navigator.connection properties are not enumerable, so copy over default keys
     const networkInfo = navigator.connection;
 
-    Object.keys(networkingDefaults).forEach(property => {
-        networkingState[property] = networkInfo[property];
-    });
+    if (networkInfo) {
+        Object.keys(networkingDefaults).forEach(property => {
+            networkingState[property] = networkInfo[property];
+        });
+    }
 
     return networkingState;
 }
