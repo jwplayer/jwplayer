@@ -200,7 +200,6 @@ export default class MediaController extends Eventable {
     }
 
     set activeItem(item) {
-        const { provider } = this;
         const mediaModel = this.mediaModel = new MediaModel();
         const position = item ? seconds(item.starttime) : 0;
         const duration = item ? seconds(item.duration) : 0;
@@ -209,8 +208,6 @@ export default class MediaController extends Eventable {
         mediaModelState.position = position;
         mediaModelState.duration = duration;
 
-        // Initialize the provider last so it's setting properties on the (newly) active media model
-        provider.init(item);
         this.item = item;
     }
 
