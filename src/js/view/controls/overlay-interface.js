@@ -1,5 +1,5 @@
 import overlayTemplate from 'view/controls/templates/overlay-interface';
-import { toggleClass } from 'utils/dom';
+import { addClass, removeClass } from 'utils/dom';
 import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -96,6 +96,11 @@ export default class OverlayInterface {
         }
     }
 
+    click() {
+        this.reset();
+        this.currentOverlay.action(this._api);
+    }
+
     addContent(elem) {
         if (this.content) {
             this.removeContent();
@@ -115,8 +120,14 @@ export default class OverlayInterface {
         return this.container;
     }
 
-    toggle() {
-
+    toggle(show) {
+        if(this.showing === show){
+            return;
+        }else if(show === true){
+            addClass(this.container, 'jw-interface-container-visible');
+        }else if(show === false){
+            removeClass(this.container, 'jw-interface-container-visible');
+        }
     }
 
     setOverlay(overlay) {
