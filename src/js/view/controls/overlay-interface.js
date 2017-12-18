@@ -70,7 +70,7 @@ export default class OverlayInterface {
     }
 
     onPlaylistItem(model, playlistItem) {
-        this.reset();
+        this.toggle(false);
 
         if (!playlistItem.overlay) {
             return;
@@ -94,8 +94,14 @@ export default class OverlayInterface {
     }
 
     click() {
-        this.reset();
-        this.currentOverlay.action(this._api);
+        const action = this.currentOverlay.action;
+
+        if (typeof action === 'function') {
+            this.toggle(false);
+            this.currentOverlay.action(this._api);
+        } else if (typeof action === 'string') {
+            window.location.href = action;
+        }
     }
 
     addContent(elem) {
