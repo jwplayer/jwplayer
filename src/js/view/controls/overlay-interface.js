@@ -75,14 +75,14 @@ export default class OverlayInterface {
             return;
         }
 
-        position = Math.floor(position);
+        position = Math.round(position);
 
-        if (!this.showing && this.currentOverlay.showAt === position) {
+        if (!this.showing && position === this.currentOverlay.showAt) {
             this.showing = true;
             this.toggle(true);
-        } else if (this.showing && this.currentOverlay.endAt === position) {
+        } else if (this.showing && position === this.currentOverlay.endAt) {
             this.showing = false;
-            this.toggle = false;
+            this.toggle(false);
         }
     }
 
