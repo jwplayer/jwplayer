@@ -68,9 +68,13 @@ export default class OverlayInterface {
 
         this.overlays = playlistItem.overlay;
         this.setNextOverlay(this.overlays[this.currentIndex]);
-    }
+    }   
 
     onPosition(model, position) {
+        if (!position) {
+            return;
+        }
+
         if (!this.showing && this.currentOverlay.showAt >= position) {
             this.showing = true;
             this.toggle(true);
