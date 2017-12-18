@@ -19,7 +19,7 @@ export default class NextUpTooltip {
         this.reset();
     }
 
-    setup(context) {
+    setup(context) {    
         this.container = context.createElement('div');
         this.container.className = 'jw-nextup-container jw-reset';
         const element = utils.createElement(nextUpTemplate());

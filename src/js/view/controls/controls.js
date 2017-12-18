@@ -122,11 +122,14 @@ export default class Controls {
             this.div.appendChild(nextUpToolTip.element());
         }
 
-        if (model.get('playlistItem').overlay) {
-            const overlayInterface = new OverlayInterface(model, this.playerContainer);
+        if (model.get('playlistItem').overlay && !controlbar.overlayInterface) {
+            const overlayInterface = new OverlayInterface(model, this.playerContainer, this.div);
             overlayInterface.setup(this.context);
-            debugger
-            this.div.appendChild(overlayInterface.element());
+            overlayInterface.on('all', this.trigger, this);
+            controlbar.overlayInterface = overlayInterface;
+
+            // Overlay needs to be behind the controlbar to not block other tooltips
+            this.div.appendChild(overlayInterface.element());  
         }
 
         this.addActiveListeners(controlbar.element());
