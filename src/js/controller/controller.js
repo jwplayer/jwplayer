@@ -727,7 +727,6 @@ Object.assign(Controller.prototype, {
         this.getCurrentCaptions = _getCurrentCaptions;
         this.getCaptionsList = _getCaptionsList;
         this.getVisualQuality = _getVisualQuality;
-        this.getVisualQuality = _getVisualQuality;
         this.getNetworkInfo = () => networkingInfo(_model);
         this.getConfig = _getConfig;
         this.getState = _getState;

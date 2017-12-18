@@ -330,7 +330,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     function _setLevels(levels) {
         _levels = levels;
-        _currentQuality = _pickInitialQuality(levels);
+        _currentQuality = _pickOptimalQuality(levels);
     }
 
     function _pickInitialQuality(levels) {
@@ -351,8 +351,46 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (!visualQuality.level.width || !visualQuality.level.height) {
             visualQuality.level = {};
         }
-
         return currentQuality;
+    }
+
+    function _pickOptimalQuality(levels) {
+        const Mbps = _playerConfig.bandwidthEstimate / Math.pow(1024, 2);
+        const { maxWidth, maxHeight } = resolutionRangeFromMbps(Mbps);
+        const levelsInRange = levels.filter(level => level.height <= maxHeight && level.width <= maxWidth);
+        if (!levelsInRange || levelsInRange.length === 0) {
+            return _pickInitialQuality(levels);
+        }
+        levelsInRange.sort((a, b) => b.height - a.height);
+        return levels.indexOf(levelsInRange[0]);
+    }
+
+    function resolutionRangeFromMbps(Mbps) {
+        let maxWidth = 640;
+        let maxHeight = 360;
+
+        if (Mbps > 0.5 && Mbps < 0.7) {
+            maxHeight = 480;
+        } else if (Mbps >= 0.7 && Mbps < 1) {
+            maxWidth = 800;
+            maxHeight = 480;
+        } else if (Mbps >= 1 && Mbps < 1.3) {
+            maxWidth = 800;
+            maxHeight = 600;
+        } else if (Mbps >= 1.3 && Mbps < 2) {
+            maxWidth = 1024;
+            maxHeight = 768;
+        } else if (Mbps >= 2 && Mbps < 2.3) {
+            maxWidth = 1280;
+            maxHeight = 720;
+        } else if (Mbps >= 2.3 && Mbps < 4) {
+            maxWidth = 2048;
+            maxHeight = 1024;
+        } else if (Mbps >= 4) {
+            maxWidth = 2048;
+            maxHeight = 1152;
+        }
+        return { maxWidth: maxWidth, maxHeight: maxHeight };
     }
 
     function _play() {

@@ -55,7 +55,7 @@ function setTextTracks(tracks) {
             if (this.renderNatively && trackId && trackId.indexOf('nativecaptions') === 0) {
                 delete this._tracksById[trackId];
                 return true;
-            } else if (track.name.indexOf('Unknown') === 0) {
+            } else if (track.name && track.name.indexOf('Unknown') === 0) {
                 this._unknownCount++;
             }
         }, this);

@@ -49,13 +49,14 @@ const ScriptLoader = function (url, isStyle) {
     };
 
     this.load = function () {
+        let promise = ScriptPromises[url];
+
         // Only execute on the first run
         if (status !== SCRIPT_LOAD_STATUS_NEW) {
-            return;
+            return promise;
         }
 
         // If we already have a scriptloader loading the same script, don't create a new one;
-        let promise = ScriptPromises[url];
         if (promise) {
             promise.then(onComplete).catch(onError);
         }
