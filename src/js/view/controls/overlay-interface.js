@@ -102,12 +102,15 @@ export default class OverlayInterface {
     click() {
         const action = this.currentOverlay.action;
         if (typeof action === 'function') {
-            this.toggle(false);
             this.currentOverlay.action(this._api);
         } else if (typeof action === 'string') {
-            this.toggle(false);
             this._api.pause();
             window.open(action, '_blank');
+        }
+
+        if (this.currentOverlay.closeOnCLick === true) {
+            this.toggle(false);
+            this.currentOverlay.closed = true;
         }
     }
 
