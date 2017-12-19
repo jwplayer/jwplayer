@@ -751,12 +751,12 @@ Object.assign(Controller.prototype, {
 
         // Model passthroughs
         this.setVolume = (volume) => {
+            _model.setVolume(volume);
             updateProgramSoundSettings();
-            _model.setVolume(volume); 
         };
         this.setMute = (mute) => {
+            _model.setMute(mute);
             updateProgramSoundSettings();
-            _model.setMute(mute); 
         };
         this.setPlaybackRate = (playbackRate) => {
             _model.setPlaybackRate(playbackRate); 
