@@ -48,6 +48,7 @@ export default class OverlayInterface {
         new UI(this.closeButton, { directSelect: true })
             .on('click tap enter', function () {
                 this.toggle(false);
+                this.currentOverlay.closed = true;
             }, this);
         // Tooltip
         new UI(this.tooltip)
@@ -87,8 +88,11 @@ export default class OverlayInterface {
         position = Math.round(position);
 
         if (position > this.currentOverlay.showAt && position < this.currentOverlay.endAt) {
+            if(this.currentOverlay.closed === true){
+                return;
+            }
             this.toggle(true);
-        }else if(position > this.currentOverlay.endAt){
+        } else if (position > this.currentOverlay.endAt) {
             this.toggle(false);
             this.currentOverlay = this.overlays[this.currentIndex];
             this.setOverlay(this.currentOverlay);

@@ -45,12 +45,15 @@
 }
 
 .jw-interface-container-visible {
-    visibility: visible;
-
     .jw-interface {
         opacity: 1;
         transform: translate(0, 0);
         transition-delay: 0s, 0s, 150ms;
+    }
+
+    &,
+    .jw-interface-close {
+        visibility: visible;
     }
 }
 
