@@ -803,7 +803,7 @@ Object.assign(Controller.prototype, {
         // Delegate trigger so we can run a middleware function before any event is bubbled through the API
         this.trigger = function (type, args) {
             const data = eventsMiddleware(_model, type, args);
-            return Events.trigger.call(this, type, data);
+            return Events.prototype.trigger.call(this, type, data);
         };
 
         // View passthroughs

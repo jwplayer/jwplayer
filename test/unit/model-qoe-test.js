@@ -1,4 +1,4 @@
-import Model from 'controller/model';
+import Model, { MediaModel } from 'controller/model';
 import ProgramController from 'program/program-controller';
 import { STATE_IDLE, STATE_PLAYING, STATE_LOADING, STATE_STALLED, MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME,
     MEDIA_FIRST_FRAME } from 'events/events';
@@ -98,7 +98,7 @@ describe('Model QoE', function() {
         const firstQoeItem = model._qoeItem;
 
         // no state changes, play attempt or first frame events
-        const mediaModel = new Model.MediaModel();
+        const mediaModel = new MediaModel();
         model.set('mediaModel', mediaModel);
         const secondQoeItem = model._qoeItem;
 

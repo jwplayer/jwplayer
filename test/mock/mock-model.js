@@ -2,9 +2,8 @@ import SimpleModel from 'model/simplemodel';
 import Config from 'api/config';
 import Events from 'utils/backbone.events';
 
-const MockModel = function() {};
+class MockModel extends SimpleModel {
 
-Object.assign(MockModel.prototype, SimpleModel, {
     setup(configuration) {
         const self = this;
         const playlistItem = Object.assign({
@@ -136,46 +135,47 @@ Object.assign(MockModel.prototype, SimpleModel, {
             },
             setControls() {},
         };
-    },
+    }
 
     getVideo() {
         return this.get('provider');
-    },
+    }
 
     autoStartOnMobile() {
         return false;
-    },
+    }
 
     setAutoStart() {
         return false;
-    },
+    }
 
     setPlaybackRate(rate) {
         this.set('defaultPlaybackRate', rate);
         this.set('playbackRate', rate);
-    },
-});
+    }
+}
 
 // Represents the state of the provider/media element
-const MediaModel = MockModel.MediaModel = function(parentModel) {
-    this.attributes = Object.assign({}, {
-        state: parentModel.get('state'),
-        duration: parentModel.get('duration'),
-        mediaType: 'video', // 'audio',
-        levels: [
-            { label: 'Auto' },
-            { label: '720p' },
-            { label: '480p' },
-        ],
-        currentLevel: 0,
-        audioTracks: [
-            { name: 'English' },
-            { name: 'Spanish' },
-        ],
-        currentAudioTrack: 0
-    }, parentModel.get('playlistItem'));
-};
-
-Object.assign(MediaModel.prototype, SimpleModel);
+class MediaModel extends SimpleModel {
+    constructor(parentModel) {
+        super();
+        this.attributes = Object.assign({}, {
+            state: parentModel.get('state'),
+            duration: parentModel.get('duration'),
+            mediaType: 'video', // 'audio',
+            levels: [
+                { label: 'Auto' },
+                { label: '720p' },
+                { label: '480p' },
+            ],
+            currentLevel: 0,
+            audioTracks: [
+                { name: 'English' },
+                { name: 'Spanish' },
+            ],
+            currentAudioTrack: 0
+        }, parentModel.get('playlistItem'));
+    }
+}
 
 export default MockModel;

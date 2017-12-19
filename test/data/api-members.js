@@ -5,7 +5,7 @@ export default {
     id: '',
     uniqueId: 0,
     _qoe: {},
-    _events: {},
+    // _events: {},
     Events: {},
     utils: {},
     _: _

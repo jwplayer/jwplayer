@@ -3,13 +3,13 @@ import MediaController from 'program/media-controller';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
-import Eventable from 'utils/eventable';
+import Events from 'utils/backbone.events';
 
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 import { Features } from '../environment/environment';
 
 
-export default class ProgramController extends Eventable {
+export default class ProgramController extends Events {
     constructor(model, mediaPool) {
         super();
 

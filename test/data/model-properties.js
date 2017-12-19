@@ -68,6 +68,7 @@ export const addedProperties = {
 
 export default {
     id: '',
+    attached: true,
     autostart: false,
     base: '',
     controls: true,

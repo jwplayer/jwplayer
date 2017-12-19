@@ -2,7 +2,7 @@ import ControlBar from 'view/controls/controlbar';
 import SimpleModel from 'model/simplemodel';
 import sinon from 'sinon';
 
-const model = Object.assign({}, SimpleModel);
+const model = new SimpleModel();
 model.change = sinon.stub();
 model.change.returnsThis();
 model.on = sinon.stub();

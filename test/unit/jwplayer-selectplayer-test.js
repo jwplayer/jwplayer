@@ -1,6 +1,6 @@
 import _ from 'test/underscore';
 import $ from 'jquery';
-import jwplayer from 'jwplayer';
+import jwplayer from 'jwplayer.js';
 import GlobalApi from 'api/global-api';
 
 function testInstanceOfApi(api) {

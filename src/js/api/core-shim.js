@@ -14,55 +14,49 @@ import Promise, { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 
-const ModelShim = function() {};
-Object.assign(ModelShim.prototype, SimpleModel);
+class CoreShim extends Events {
 
-const CoreShim = function(originalContainer) {
-    this._events = {};
-    this.modelShim = new ModelShim();
-    this.modelShim._qoeItem = new Timer();
-    this.mediaShim = {};
-    this.setup = new Setup(this.modelShim);
-    this.currentContainer =
-        this.originalContainer = originalContainer;
-    this.apiQueue = new ApiQueueDecorator(this, [
-        // These commands require a provider instance to be available
-        'load',
-        'play',
-        'pause',
-        'seek',
-        'stop',
-        'playlistItem',
-        'playlistNext',
-        'playlistPrev',
-        'next',
+    constructor(originalContainer) {
+        super();
+        this.modelShim = new SimpleModel();
+        this.modelShim._qoeItem = new Timer();
+        this.mediaShim = {};
+        this.setup = new Setup(this.modelShim);
+        this.currentContainer =
+            this.originalContainer = originalContainer;
+        this.apiQueue = new ApiQueueDecorator(this, [
+            // These commands require a provider instance to be available
+            'load',
+            'play',
+            'pause',
+            'seek',
+            'stop',
+            'playlistItem',
+            'playlistNext',
+            'playlistPrev',
+            'next',
 
-        // These should just update state that could be acted on later, but need to be queued given v7 model
-        'setConfig',
-        'setCurrentAudioTrack',
-        'setCurrentCaptions',
-        'setCurrentQuality',
-        'setFullscreen',
-        'addButton',
-        'removeButton',
-        'castToggle',
-        'setMute',
-        'setVolume',
-        'setPlaybackRate',
-        'setCues',
+            // These should just update state that could be acted on later, but need to be queued given v7 model
+            'setConfig',
+            'setCurrentAudioTrack',
+            'setCurrentCaptions',
+            'setCurrentQuality',
+            'setFullscreen',
+            'addButton',
+            'removeButton',
+            'castToggle',
+            'setMute',
+            'setVolume',
+            'setPlaybackRate',
+            'setCues',
 
-        // These commands require the view instance to be available
-        'resize',
-        'setCaptions',
-        'setControls',
-    ], () => true);
-};
+            // These commands require the view instance to be available
+            'resize',
+            'setCaptions',
+            'setControls',
+        ], () => true);
+    }
 
-Object.assign(CoreShim.prototype, {
-    on: Events.on,
-    once: Events.once,
-    off: Events.off,
-    trigger: Events.trigger,
     init(options, api) {
         const model = this.modelShim;
         const storage = new Storage('jwplayer', [
@@ -128,7 +122,8 @@ Object.assign(CoreShim.prototype, {
             }
             setupError(this, error);
         });
-    },
+    }
+
     playerDestroy() {
         if (this.apiQueue) {
             this.apiQueue.destroy();
@@ -143,10 +138,11 @@ Object.assign(CoreShim.prototype, {
             this.originalContainer =
             this.apiQueue =
             this.setup = null;
-    },
+    }
+
     getContainer() {
         return this.currentContainer;
-    },
+    }
 
     // These methods read from the model
     get(property) {
@@ -154,51 +150,64 @@ Object.assign(CoreShim.prototype, {
             return this.mediaShim[property];
         }
         return this.modelShim.get(property);
-    },
+    }
+
     getItemQoe() {
         return this.modelShim._qoeItem;
-    },
+    }
+
     getConfig() {
         return Object.assign({}, this.modelShim.attributes, this.mediaShim);
-    },
+    }
+
     getCurrentCaptions() {
         return this.get('captionsIndex');
-    },
+    }
+
     getWidth() {
         return this.get('containerWidth');
-    },
+    }
+
     getHeight() {
         return this.get('containerHeight');
-    },
+    }
+
     getMute() {
         return this.get('mute');
-    },
+    }
+
     getProvider() {
         return this.get('provider');
-    },
+    }
+
     getState() {
         return this.get('state');
-    },
+    }
 
     // These methods require a provider
     getAudioTracks() {
         return null;
-    },
+    }
+
     getCaptionsList() {
         return null;
-    },
+    }
+
     getQualityLevels() {
         return null;
-    },
+    }
+
     getVisualQuality() {
         return null;
-    },
+    }
+
     getCurrentQuality() {
         return -1;
-    },
+    }
+
     getCurrentAudioTrack() {
         return -1;
-    },
+    }
 
     // These methods require the view
     getSafeRegion(/* excludeControlbar */) {
@@ -208,24 +217,29 @@ Object.assign(CoreShim.prototype, {
             width: 0,
             height: 0
         };
-    },
+    }
 
     // Ads specific
     isBeforeComplete() {
         return false;
-    },
+    }
+
     isBeforePlay() {
         return false;
-    },
+    }
+
     createInstream() {
         return null;
-    },
-    skipAd() {},
-    attachMedia() {},
+    }
+
+    skipAd() {}
+
+    attachMedia() {}
+
     detachMedia() {
         return null; // video tag;
     }
-});
+}
 
 function setupError(core, error) {
     resolved.then(() => {

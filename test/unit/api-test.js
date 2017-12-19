@@ -1,4 +1,4 @@
-import jwplayer from 'jwplayer';
+import jwplayer from 'jwplayer.js';
 import instances from 'api/players';
 import Api from 'api/api';
 import ApiSettings from 'api/api-settings';

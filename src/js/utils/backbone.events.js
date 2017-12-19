@@ -16,113 +16,142 @@
 
 const slice = [].slice;
 
-// Bind an event to a `callback` function. Passing `"all"` will bind
-// the callback to all events fired.
-export function on(name, callback, context) {
-    if (!eventsApi(this, 'on', name, [callback, context]) || !callback) {
-        return this;
-    }
-    const _events = this._events || (this._events = {});
-    const events = _events[name] || (_events[name] = []);
-    events.push({ callback: callback, context: context });
-    return this;
-}
+// Combine mixins into a class which can be extended
+export default class Events {
 
-// Bind an event to only be triggered a single time. After the first time
-// the callback is invoked, it will be removed.
-export function once(name, callback, context) {
-    if (!eventsApi(this, 'once', name, [callback, context]) || !callback) {
-        return this;
-    }
-    let count = 0;
-    const self = this;
-    const onceCallback = function() {
-        if (count++) {
-            return;
+    /**
+     * Adds an event listener.
+     * @param {string} name - The event name. Passing "all" will bind the callback to all events.
+     * @param {function} callback - The event callback.
+     * @param {any} [context] - The context to apply to the callback's function invocation.
+     * @return {Api}
+     */
+    on(name, callback, context) {
+        if (!eventsApi(this, 'on', name, [callback, context]) || !callback) {
+            return this;
         }
-        self.off(name, onceCallback);
-        callback.apply(this, arguments);
-    };
-    onceCallback._callback = callback;
-    return this.on(name, onceCallback, context);
-}
+        const _events = this._events || (this._events = {});
+        const events = _events[name] || (_events[name] = []);
+        events.push({ callback: callback, context: context });
+        return this;
+    }
 
-// Remove one or many callbacks. If `context` is null, removes all
-// callbacks with that function. If `callback` is null, removes all
-// callbacks for the event. If `name` is null, removes all bound
-// callbacks for all events.
-export function off(name, callback, context) {
-    if (!this._events || !eventsApi(this, 'off', name, [callback, context])) {
-        return this;
+    /**
+     * Adds an event listener which is triggered at most once.
+     * The listener is removed after the first call.
+     * @param {string} name - The event name. Passing "all" will bind the callback to all events.
+     * @param {function} callback - The event callback.
+     * @param {any} [context] - The context to apply to the callback's function invocation.
+     * @return {Api}
+     */
+    once(name, callback, context) {
+        if (!eventsApi(this, 'once', name, [callback, context]) || !callback) {
+            return this;
+        }
+        let count = 0;
+        const self = this;
+        const onceCallback = function () {
+            if (count++) {
+                return;
+            }
+            self.off(name, onceCallback);
+            callback.apply(this, arguments);
+        };
+        onceCallback._callback = callback;
+        return this.on(name, onceCallback, context);
     }
-    if (!name && !callback && !context) {
-        delete this._events;
-        return this;
-    }
-    const names = name ? [name] : Object.keys(this._events);
-    for (let i = 0, l = names.length; i < l; i++) {
-        name = names[i];
-        const events = this._events[name];
-        if (events) {
-            const retain = this._events[name] = [];
-            if (callback || context) {
-                for (let j = 0, k = events.length; j < k; j++) {
-                    const ev = events[j];
-                    if ((callback && callback !== ev.callback && callback !== ev.callback._callback) ||
+
+    /**
+     * Removes one or more callbacks.
+     * @param {string} [name] - The event name. If null, all bound callbacks for all events will be removed.
+     * @param {function} [callback] - If null, all callbacks for the event will be removed.
+     * @param {any} [context] - If null, all callbacks with that function will be removed.
+     * @return {Api}
+     */
+    off(name, callback, context) {
+        if (!this._events || !eventsApi(this, 'off', name, [callback, context])) {
+            return this;
+        }
+        if (!name && !callback && !context) {
+            delete this._events;
+            return this;
+        }
+        const names = name ? [name] : Object.keys(this._events);
+        for (let i = 0, l = names.length; i < l; i++) {
+            name = names[i];
+            const events = this._events[name];
+            if (events) {
+                const retain = this._events[name] = [];
+                if (callback || context) {
+                    for (let j = 0, k = events.length; j < k; j++) {
+                        const ev = events[j];
+                        if ((callback && callback !== ev.callback && callback !== ev.callback._callback) ||
                         (context && context !== ev.context)) {
-                        retain.push(ev);
+                            retain.push(ev);
+                        }
                     }
                 }
-            }
-            if (!retain.length) {
-                delete this._events[name];
+                if (!retain.length) {
+                    delete this._events[name];
+                }
             }
         }
+        return this;
     }
-    return this;
+
+    // Trigger one or many events, firing all bound callbacks. Callbacks are
+    // passed the same arguments as `trigger` is, apart from the event name
+    // (unless you're listening on `"all"`, which will cause your callback to
+    // receive the true name of the event as the first argument).
+    trigger(name) {
+        if (!this._events) {
+            return this;
+        }
+        const args = slice.call(arguments, 1);
+        if (!eventsApi(this, 'trigger', name, args)) {
+            return this;
+        }
+        const events = this._events[name];
+        const allEvents = this._events.all;
+        if (events) {
+            triggerEvents(events, args, this);
+        }
+        if (allEvents) {
+            triggerEvents(allEvents, arguments, this);
+        }
+        return this;
+    }
+
+    triggerSafe(name) {
+        if (!this._events) {
+            return this;
+        }
+        const args = slice.call(arguments, 1);
+        if (!eventsApi(this, 'trigger', name, args)) {
+            return this;
+        }
+        const events = this._events[name];
+        const allEvents = this._events.all;
+        if (events) {
+            triggerEvents(events, args, this, name);
+        }
+        if (allEvents) {
+            triggerEvents(allEvents, arguments, this, name);
+        }
+        return this;
+    }
 }
 
-// Trigger one or many events, firing all bound callbacks. Callbacks are
-// passed the same arguments as `trigger` is, apart from the event name
-// (unless you're listening on `"all"`, which will cause your callback to
-// receive the true name of the event as the first argument).
-export function trigger(name) {
-    if (!this._events) {
-        return this;
-    }
-    const args = slice.call(arguments, 1);
-    if (!eventsApi(this, 'trigger', name, args)) {
-        return this;
-    }
-    const events = this._events[name];
-    const allEvents = this._events.all;
-    if (events) {
-        triggerEvents(events, args, this);
-    }
-    if (allEvents) {
-        triggerEvents(allEvents, arguments, this);
-    }
-    return this;
-}
+// Make class properties enumerable and static
+Object.defineProperty(Events.prototype, 'on', { enumerable: true });
+Object.defineProperty(Events.prototype, 'once', { enumerable: true });
+Object.defineProperty(Events.prototype, 'off', { enumerable: true });
+Object.defineProperty(Events.prototype, 'trigger', { enumerable: true });
 
-export function triggerSafe(name) {
-    if (!this._events) {
-        return this;
-    }
-    const args = slice.call(arguments, 1);
-    if (!eventsApi(this, 'trigger', name, args)) {
-        return this;
-    }
-    const events = this._events[name];
-    const allEvents = this._events.all;
-    if (events) {
-        triggerEvents(events, args, this, name);
-    }
-    if (allEvents) {
-        triggerEvents(allEvents, arguments, this, name);
-    }
-    return this;
-}
+Events.on = Events.prototype.on;
+Events.once = Events.prototype.once;
+Events.off = Events.prototype.off;
+Events.trigger = Events.prototype.trigger;
 
 // Regular expression used to split event strings.
 const eventSplitter = /\s+/;
@@ -171,7 +200,3 @@ function triggerEvents(events, args, context, catchExceptionsForName) {
         }
     }
 }
-
-export default {
-    on, once, off, trigger
-};

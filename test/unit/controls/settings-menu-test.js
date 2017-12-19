@@ -69,7 +69,7 @@ describe('SettingsMenu', function() {
         let viewModel;
 
         beforeEach(function() {
-            viewModel = Object.assign({}, SimpleModel);
+            viewModel = new SimpleModel();
             viewModel.change = sinon.spy();
             viewModel.on = sinon.spy();
             viewModel.get = () => {

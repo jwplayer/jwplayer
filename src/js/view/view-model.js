@@ -1,8 +1,5 @@
 import SimpleModel from 'model/simplemodel';
 
-class SimpleModelExtendable {}
-SimpleModelExtendable.prototype = Object.assign({}, SimpleModel);
-
 function dispatchDiffChangeEvents(viewModel, newAttributes, oldAttributes) {
     Object.keys(newAttributes).forEach((attr) => {
         if (attr in newAttributes && newAttributes[attr] !== oldAttributes[attr]) {
@@ -17,7 +14,7 @@ function removeListeners(instance, viewModel) {
     }
 }
 
-class PlayerViewModel extends SimpleModelExtendable {
+class PlayerViewModel extends SimpleModel {
 
     constructor(playerModel) {
         super();

@@ -1,24 +1,48 @@
 import Events from 'utils/backbone.events';
 
-const SimpleModel = {
-    on: Events.on,
-    once: Events.once,
-    off: Events.off,
-    trigger: Events.trigger,
-    get(attr) {
-        this.attributes = this.attributes || {};
-        return this.attributes[attr];
-    },
-    set(attr, val) {
-        this.attributes = this.attributes || {};
 
+export default class SimpleModel extends Events {
+
+    constructor() {
+        super();
+        this.attributes = Object.create(null);
+    }
+
+    addAttributes(attributes) {
+        Object.keys(attributes).forEach(attr => {
+            this.add(attr, attributes[attr]);
+        });
+    }
+
+    add(attr, value) {
+        // Add attribute with a fixed type to attributes
+        Object.defineProperty(this.attributes, attr, {
+            enumerable: true,
+            configurable: false,
+            writable: true,
+            value: value
+        });
+        // Define non-enumerable getter and setter
+        Object.defineProperty(this, attr, {
+            get: () => this.attributes[attr],
+            set: (val) => this.set(attr, val),
+            enumerable: false
+        });
+    }
+
+    get(attr) {
+        return this.attributes[attr];
+    }
+
+    set(attr, val) {
         if (this.attributes[attr] === val) {
             return;
         }
         const oldVal = this.attributes[attr];
         this.attributes[attr] = val;
         this.trigger('change:' + attr, this, val, oldVal);
-    },
+    }
+
     clone() {
         const cloned = {};
         const attributes = this.attributes;
@@ -29,7 +53,8 @@ const SimpleModel = {
             }
         }
         return cloned;
-    },
+    }
+
     change(name, callback, context) {
         // Register a change handler and immediately invoke the callback with the current value
         this.on('change:' + name, callback, context);
@@ -37,6 +62,4 @@ const SimpleModel = {
         callback.call(context, this, currentVal, currentVal);
         return this;
     }
-};
-
-export default SimpleModel;
+}

@@ -5,7 +5,6 @@ import Core from './core-shim';
 import { version } from '../version';
 import { STATE_PLAYING, STATE_BUFFERING, READY } from 'events/events';
 import Timer from 'api/timer';
-import Events, { on, once, off, trigger, triggerSafe } from 'utils/backbone.events';
 import { registerPlugin } from 'plugins/plugins';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
@@ -134,19 +133,18 @@ export default function Api(element) {
         /**
          * Returns the Events module from the player instance.
          * Used by plugins to listen to player events.
-         * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
         Events: {
             get() {
-                return Events;
+                const { on, once, off, trigger } = core;
+                return { on, once, off, trigger };
             }
         },
 
         /**
          * Returns the Utils module from the player instance.
          * Used by plugins.
-         * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
         utils: {
@@ -158,7 +156,6 @@ export default function Api(element) {
         /**
          * Returns the Underscore module from the player instance.
          * Used by plugins.
-         * @deprecated TODO: in version 8.0.0-0
          * @readonly
          */
         _: {
@@ -170,12 +167,6 @@ export default function Api(element) {
     });
 
     Object.assign(this, /** @lends Api.prototype */ {
-        /**
-         * A map of event listeners.
-         * @type object
-         * @readonly
-         */
-        _events: {},
 
         /**
          * Creates a new player on the page and asynchronously begins setup.
@@ -196,7 +187,8 @@ export default function Api(element) {
             core.init(options, this);
 
             // bind event listeners passed in to the config
-            return this.on(options.events, null, this);
+            core.on(options.events, null, this);
+            return this;
         },
 
         /** Asynchronously removes the player from the page.
@@ -872,66 +864,91 @@ export default function Api(element) {
          */
         isBeforePlay() {
             return core.isBeforePlay();
+        },
+
+        /**
+         * Adds an event listener.
+         * @param {string} name - The event name. Passing "all" will bind the callback to all events.
+         * @param {function} callback - The event callback.
+         * @param {any} [context] - The context to apply to the callback's function invocation.
+         * @return {Api}
+         */
+        on(name, callback, context) {
+            core.on.call(this, name, callback, context);
+            return this;
+        },
+
+        /**
+         * Adds an event listener which is triggered at most once.
+         * The listener is removed after the first call.
+         * @param {string} name - The event name. Passing "all" will bind the callback to all events.
+         * @param {function} callback - The event callback.
+         * @param {any} [context] - The context to apply to the callback's function invocation.
+         * @return {Api}
+         */
+        once(name, callback, context) {
+            core.once.call(this, name, callback, context);
+            return this;
+        },
+
+        /**
+         * Removes one or more callbacks.
+         * @param {string} [name] - The event name. If null, all bound callbacks for all events will be removed.
+         * @param {function} [callback] - If null, all callbacks for the event will be removed.
+         * @param {any} [context] - If null, all callbacks with that function will be removed.
+         * @return {Api}
+         */
+        off(name, callback, context) {
+            core.off.call(this, name, callback, context);
+            return this;
+        },
+
+        /**
+         * Triggers one or more events.
+         * By default, the player will invoke callbacks inside a try-catch block to prevent exceptions from breaking normal player behavior.
+         * To disable this safety measure set `jwplayer.debug` to `true`.
+         * @param {string} name - The event name.
+         * @param {object} [args] - An object containing the event properties.
+         * @return {Api}
+         */
+        trigger(name, args) {
+            if (_.isObject(args)) {
+                args = Object.assign({}, args);
+            } else {
+                args = {};
+            }
+            args.type = name;
+            if (ApiSettings.debug) {
+                core.trigger.call(this, name, args);
+            } else {
+                core.triggerSafe.call(this, name, args);
+            }
+            return this;
+        },
+
+        /**
+         * Adds a plugin instance to the player's instance.
+         * @param {string} name - The name of the plugin.
+         * @param {any} pluginInstance - The plugin instance.
+         */
+        addPlugin(name, pluginInstance) {
+            if (!pluginInstance) {
+                return;
+            }
+
+            this.plugins[name] = pluginInstance;
+
+            core.on('ready', pluginInstance.addToPlayer, this);
+
+            // A swf plugin may rely on resize events
+            if (pluginInstance.resize) {
+                core.on('resize', pluginInstance.resizeHandler, this);
+            }
         }
     });
 }
 
 Object.assign(Api.prototype, /** @lends Api.prototype */ {
-
-    /**
-     * Adds an event listener.
-     * @param {string} name - The event name. Passing "all" will bind the callback to all events.
-     * @param {function} callback - The event callback.
-     * @param {any} [context] - The context to apply to the callback's function invocation.
-     * @return {Api}
-     */
-    on(name, callback, context) {
-        return on.call(this, name, callback, context);
-    },
-
-    /**
-     * Adds an event listener which is triggered at most once.
-     * The listener is removed after the first call.
-     * @param {string} name - The event name. Passing "all" will bind the callback to all events.
-     * @param {function} callback - The event callback.
-     * @param {any} [context] - The context to apply to the callback's function invocation.
-     * @return {Api}
-     */
-    once(name, callback, context) {
-        return once.call(this, name, callback, context);
-    },
-
-    /**
-     * Removes one or more callbacks.
-     * @param {string} [name] - The event name. If null, all bound callbacks for all events will be removed.
-     * @param {function} [callback] - If null, all callbacks for the event will be removed.
-     * @param {any} [context] - If null, all callbacks with that function will be removed.
-     * @return {Api}
-     */
-    off(name, callback, context) {
-        return off.call(this, name, callback, context);
-    },
-
-    /**
-     * Triggers one or more events.
-     * By default, the player will invoke callbacks inside a try-catch block to prevent exceptions from breaking normal player behavior.
-     * To disable this safety measure set `jwplayer.debug` to `true`.
-     * @param {string} name - The event name.
-     * @param {object} [args] - An object containing the event properties.
-     * @return {Api}
-     */
-    trigger(name, args) {
-        if (_.isObject(args)) {
-            args = Object.assign({}, args);
-        } else {
-            args = {};
-        }
-        args.type = name;
-        if (ApiSettings.debug) {
-            return trigger.call(this, name, args);
-        }
-        return triggerSafe.call(this, name, args);
-    },
 
     /**
      * Gets the specified plugin instance.
@@ -940,22 +957,6 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      */
     getPlugin(name) {
         return this.plugins[name];
-    },
-
-    /**
-     * Adds a plugin instance to the player's instance.
-     * @param {string} name - The name of the plugin.
-     * @param {any} pluginInstance - The plugin instance.
-     */
-    addPlugin(name, pluginInstance) {
-        this.plugins[name] = pluginInstance;
-
-        this.on('ready', pluginInstance.addToPlayer);
-
-        // A swf plugin may rely on resize events
-        if (pluginInstance.resize) {
-            this.on('resize', pluginInstance.resizeHandler);
-        }
     },
 
     /**

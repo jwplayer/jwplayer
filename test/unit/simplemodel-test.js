@@ -3,7 +3,7 @@ import SimpleModel from 'model/simplemodel';
 
 describe('SimpleModel Mixin', function() {
 
-    const model = Object.assign({}, SimpleModel);
+    const model = new SimpleModel();
 
     it('returns undefined ', function() {
         expect(model.get('noExisting'), 'get with no attributes').to.be.undefined;

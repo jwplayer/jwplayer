@@ -1,5 +1,5 @@
 import cancelable from 'utils/cancelable';
-import Eventable from 'utils/eventable';
+import Events from 'utils/backbone.events';
 import { ProviderListener } from 'program/program-listeners';
 import { resolved } from 'polyfills/promise';
 import { MediaModel } from 'controller/model';
@@ -10,7 +10,7 @@ import {
     MEDIA_VISUAL_QUALITY
 } from 'events/events';
 
-export default class MediaController extends Eventable {
+export default class MediaController extends Events {
     constructor(provider, model) {
         super();
         this.attached = true;
