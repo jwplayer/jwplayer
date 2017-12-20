@@ -263,8 +263,10 @@ export default class Controlbar {
         _model.change('fullscreen', this.onFullscreen, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
-            // update live icon and displayed time when DVR stream enters or exits live edge
-            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive);
+            if (dvrLive !== undefined) {
+                // update live icon and displayed time when DVR stream enters or exits live edge
+                utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive);
+            }
         });
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
@@ -430,7 +432,6 @@ export default class Controlbar {
         this.elements.rewind.toggle(streamType !== 'LIVE');
         this.elements.live.toggle(streamType === 'LIVE' || streamType === 'DVR');
         this.elements.duration.style.display = streamType === 'DVR' ? 'none' : '';
-        model.set('dvrLive', false);
         const duration = model.get('duration');
         this.onDuration(model, duration);
     }

@@ -46,7 +46,8 @@ const Model = function() {
         this.set('qualityLabel', label);
     };
 
-    this.setActiveItem = function (item, index) {
+    this.setActiveItem = function (index) {
+        const item = this.get('playlist')[index];
         this.resetItem(item);
         this.attributes.playlistItem = null;
         this.set('item', index);
@@ -56,10 +57,11 @@ const Model = function() {
     };
 
     this.setMediaModel = function (mediaModel) {
-        if (this.mediaModel) {
+        if (this.mediaModel && this.mediaModel !== mediaModel) {
             this.mediaModel.off();
         }
 
+        mediaModel = mediaModel || new MediaModel();
         this.mediaModel = mediaModel;
         this.set('mediaModel', mediaModel);
         syncPlayerWithMediaModel(mediaModel);
@@ -69,11 +71,6 @@ const Model = function() {
         if (currentTrack > -1 && tracks.length > 0 && currentTrack < tracks.length) {
             this.mediaModel.set('currentAudioTrack', parseInt(currentTrack));
         }
-    };
-
-    this.onMediaContainer = function() {
-        var container = this.get('mediaContainer');
-        _provider.setContainer(container);
     };
 
     this.destroy = function() {
@@ -103,9 +100,6 @@ const Model = function() {
     this.setVolume = function(volume) {
         volume = Math.round(volume);
         this.set('volume', volume);
-        if (_provider) {
-            _provider.volume(volume);
-        }
         var mute = (volume === 0);
         if (mute !== (this.getMute())) {
             this.setMute(mute);
@@ -121,9 +115,6 @@ const Model = function() {
             mute = !(this.getMute());
         }
         this.set('mute', mute);
-        if (_provider) {
-            _provider.mute(mute);
-        }
         if (!mute) {
             var volume = Math.max(10, this.get('volume'));
             this.set('autostartMuted', false);
@@ -149,7 +140,7 @@ const Model = function() {
     };
 
     this.setPlaybackRate = function(playbackRate) {
-        if (!this.get('attached') || !_.isNumber(playbackRate)) {
+        if (!_.isNumber(playbackRate)) {
             return;
         }
 
@@ -257,10 +248,15 @@ const syncProviderProperties = (model, provider) => {
         model.set('flashThrottle', undefined);
         model.set('flashBlocked', false);
     }
+
+    // Attempt setting the playback rate to be the user selected value
+    model.setPlaybackRate(model.get('defaultPlaybackRate'));
+
     // Set playbackRate because provider support for playbackRate may have changed and not sent an update
-    model.set('supportsPlaybackRate', !!provider.supportsPlaybackRate);
+    model.set('supportsPlaybackRate', provider.supportsPlaybackRate);
     model.set('playbackRate', provider.getPlaybackRate());
     model.set('renderCaptionsNatively', provider.renderNatively);
+
 };
 
 function syncPlayerWithMediaModel(mediaModel) {

@@ -55,7 +55,7 @@ function setTextTracks(tracks) {
             if (this.renderNatively && trackId && trackId.indexOf('nativecaptions') === 0) {
                 delete this._tracksById[trackId];
                 return true;
-            } else if (track.name.indexOf('Unknown') === 0) {
+            } else if (track.name && track.name.indexOf('Unknown') === 0) {
                 this._unknownCount++;
             }
         }, this);
@@ -377,8 +377,9 @@ function clearTracks() {
 
 // Clear track cues to prevent duplicates
 function clearCueData(trackId) {
-    if (this._cachedVTTCues && this._cachedVTTCues[trackId]) {
-        this._cachedVTTCues[trackId] = {};
+    const cachedVTTCues = this._cachedVTTCues;
+    if (cachedVTTCues && cachedVTTCues[trackId]) {
+        cachedVTTCues[trackId] = {};
         if (this._tracksById) {
             this._tracksById[trackId].data = [];
         }

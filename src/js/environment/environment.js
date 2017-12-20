@@ -176,5 +176,9 @@ Object.defineProperties(Features, {
     passiveEvents: {
         get: memoize(supportsPassive),
         enumerable: true
+    },
+    backgroundLoading: {
+        get: memoize(() => !OS.iOS),
+        enumerable: true
     }
 });
