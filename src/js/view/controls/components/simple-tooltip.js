@@ -1,5 +1,6 @@
 import { addClass, removeClass } from 'utils/dom';
 import { getPointerType } from 'utils/ui';
+import { resolved } from 'polyfills/promise';
 
 export function SimpleTooltip(attachToElement, name, text, openCallback) {
     const tooltipElement = document.createElement('div');
@@ -40,7 +41,7 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
         }
     };
 
-    Promise.resolve().then(() => {
+    resolved.then(() => {
         attachToElement.addEventListener('mouseover', instance.open);
         attachToElement.addEventListener('mouseout', instance.close);
         attachToElement.addEventListener('touchstart', (evt) => {

@@ -10,7 +10,7 @@ export function hasClass(element, searchClass) {
 }
 
 // Given a string, convert to element and return
-let parser = new DOMParser();
+const parser = new DOMParser();
 
 export function createElement(html) {
     const doc = parser.parseFromString(html, 'text/html');
