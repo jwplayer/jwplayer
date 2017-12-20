@@ -359,9 +359,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         const { maxWidth, maxHeight } = resolutionRangeFromMbps(Mbps);
         const levelsInRange = levels.filter(level => level.height <= maxHeight && level.width <= maxWidth);
         if (!levelsInRange || levelsInRange.length === 0) {
+            console.log('jw - no optimal quality, falling back to default behavior');
             return _pickInitialQuality(levels);
         }
         levelsInRange.sort((a, b) => b.height - a.height);
+        console.log('jw - optimal quality at ' + Mbps + ' Mbps is ' + levelsInRange[0].label);
         return levels.indexOf(levelsInRange[0]);
     }
 
