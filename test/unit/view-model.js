@@ -90,9 +90,12 @@ describe('ViewModel', function() {
 
         // Deactivate instream mode
         model.set('instream', null);
+
+        assert(instreamModelSpy.calledTwice, 'Duration change is called after instream is removed');
+
         instream.model.mediaModel.set('duration', 60);
 
-        assert(instreamModelSpy.calledOnce, 'Instream media-model event listener not called after instream is removed');
+        assert(instreamModelSpy.calledTwice, 'Instream media-model event listener not called after instream is removed');
     });
 
     it('gets attributes from the most specific model', function() {
