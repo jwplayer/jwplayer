@@ -27,7 +27,7 @@ describe('ViewModel', function() {
 
     it('forwards events from the media model', function() {
         const model = new Model();
-        const mediaModel = model.get('mediaModel');
+        const mediaModel = model.mediaModel;
         const viewModel = new ViewModel(model);
         // Activate media-model in view-model
         model.attributes.mediaModel = null;
@@ -83,26 +83,26 @@ describe('ViewModel', function() {
 
         // Activate instream mode
         model.set('instream', instream);
-        instream.model.get('mediaModel').set('duration', 30);
+        instream.model.mediaModel.set('duration', 30);
 
         assert(instreamModelSpy.calledOnce, 'Instream media-model event listener called');
         assert(instreamModelSpy.firstCall.calledWith(viewModel, 30), 'Instream media-model change event listener receives correct arguments');
 
         // Deactivate instream mode
         model.set('instream', null);
-        instream.model.get('mediaModel').set('duration', 60);
+        instream.model.mediaModel.set('duration', 60);
 
         assert(instreamModelSpy.calledOnce, 'Instream media-model event listener not called after instream is removed');
     });
 
     it('gets attributes from the most specific model', function() {
         const model = new Model();
-        const mediaModel = model.get('mediaModel');
+        const mediaModel = model.mediaModel;
         const viewModel = new ViewModel(model);
         const instream = {
             model: new Model()
         };
-        const instreamMediaModel = instream.model.get('mediaModel');
+        const instreamMediaModel = instream.model.mediaModel;
 
         model.set('attr', 'model');
         model.set('model-attr', 'model');
@@ -129,12 +129,12 @@ describe('ViewModel', function() {
 
     it('set attributes on the player model only', function() {
         const model = new Model();
-        const mediaModel = model.get('mediaModel');
+        const mediaModel = model.mediaModel;
         const viewModel = new ViewModel(model);
         const instream = {
             model: new Model()
         };
-        const instreamMediaModel = instream.model.get('mediaModel');
+        const instreamMediaModel = instream.model.mediaModel;
 
         viewModel.set('attr', 100);
 
@@ -153,11 +153,11 @@ describe('ViewModel', function() {
 
     it('has a player only sub view-model', function() {
         const model = new Model();
-        const mediaModel = model.get('mediaModel');
+        const mediaModel = model.mediaModel;
         const instream = {
             model: new Model()
         };
-        const instreamMediaModel = instream.model.get('mediaModel');
+        const instreamMediaModel = instream.model.mediaModel;
         const viewModel = new ViewModel(model);
         const playerViewModel = viewModel.player;
 
@@ -201,12 +201,12 @@ describe('ViewModel', function() {
 
     it('removes listeners when destroyed', function() {
         const model = new Model();
-        const mediaModel = model.get('mediaModel');
+        const mediaModel = model.mediaModel;
         const viewModel = new ViewModel(model);
         const instream = {
             model: new Model()
         };
-        const instreamMediaModel = instream.model.get('mediaModel');
+        const instreamMediaModel = instream.model.mediaModel;
 
         const modelSpy = sinon.spy();
         const mediaModelSpy = sinon.spy();

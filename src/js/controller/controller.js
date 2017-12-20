@@ -12,7 +12,6 @@ import View from 'view/view';
 import ViewModel from 'view/view-model';
 import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
-import Events from 'utils/backbone.events';
 import { OS, Features } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
@@ -209,7 +208,7 @@ Object.assign(Controller.prototype, {
             _model.change('playlistItem', function(model, playlistItem) {
                 if (playlistItem) {
                     _this.trigger(PLAYLIST_ITEM, {
-                        index: _model.get('item'),
+                        index: _model.item,
                         item: playlistItem
                     });
                 }
@@ -357,13 +356,13 @@ Object.assign(Controller.prototype, {
             if (_.isString(adState)) {
                 return adState;
             }
-            return _model.get('state');
+            return _model.state;
         }
 
         function _play(meta) {
             checkAutoStartCancelable.cancel();
 
-            if (_model.get('state') === STATE_ERROR) {
+            if (_model.state === STATE_ERROR) {
                 return resolved;
             }
 
@@ -377,7 +376,7 @@ Object.assign(Controller.prototype, {
                 return resolved;
             }
 
-            if (_model.get('state') === STATE_COMPLETE) {
+            if (_model.state === STATE_COMPLETE) {
                 _stop(true);
                 _setItem(0);
             }
@@ -410,7 +409,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _autoStart() {
-            const state = _model.get('state');
+            const state = _model.state;
             if (state === STATE_IDLE || state === STATE_PAUSED) {
                 _play({ reason: 'autostart' }).catch(() => {
                     if (!_this._instreamAdapter) {
@@ -463,7 +462,7 @@ Object.assign(Controller.prototype, {
                 return;
             }
 
-            switch (_model.get('state')) {
+            switch (_model.state) {
                 case STATE_ERROR:
                     return;
                 case STATE_PLAYING:
@@ -479,15 +478,15 @@ Object.assign(Controller.prototype, {
         }
 
         function _isIdle() {
-            const state = _model.get('state');
+            const state = _model.state;
             return (state === STATE_IDLE || state === STATE_COMPLETE || state === STATE_ERROR);
         }
 
         function _seek(pos, meta) {
-            if (_model.get('state') === STATE_ERROR) {
+            if (_model.state === STATE_ERROR) {
                 return;
             }
-            if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
+            if (!_model.get('scrubbing') && _model.state !== STATE_PLAYING) {
                 _play(meta);
             }
 
@@ -516,11 +515,11 @@ Object.assign(Controller.prototype, {
         }
 
         function _prev(meta) {
-            _item(_model.get('item') - 1, meta);
+            _item(_model.item - 1, meta);
         }
 
         function _next(meta) {
-            _item(_model.get('item') + 1, meta);
+            _item(_model.item + 1, meta);
         }
 
         function _completeHandler() {
@@ -535,7 +534,7 @@ Object.assign(Controller.prototype, {
 
             _actionOnAttach = _completeHandler;
 
-            const idx = _model.get('item');
+            const idx = _model.item;
             if (idx === _model.get('playlist').length - 1) {
                 // If it's the last item in the playlist
                 if (_model.get('repeat')) {
@@ -574,7 +573,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _getVisualQuality() {
-            const mediaModel = this._model.get('mediaModel');
+            const mediaModel = this._model.mediaModel;
             if (mediaModel) {
                 return mediaModel.get(MEDIA_VISUAL_QUALITY);
             }
@@ -801,9 +800,10 @@ Object.assign(Controller.prototype, {
             _model.set('customButtons', customButtons);
         };
         // Delegate trigger so we can run a middleware function before any event is bubbled through the API
+        const coreTrigger = this.trigger;
         this.trigger = function (type, args) {
             const data = eventsMiddleware(_model, type, args);
-            return Events.prototype.trigger.call(this, type, data);
+            return coreTrigger.call(this, type, data);
         };
 
         // View passthroughs
@@ -908,7 +908,7 @@ Object.assign(Controller.prototype, {
     },
     get(property) {
         if (property in INITIAL_MEDIA_STATE) {
-            const mediaModel = this._model.get('mediaModel');
+            const mediaModel = this._model.mediaModel;
             if (mediaModel) {
                 return mediaModel.get(property);
             }

@@ -149,7 +149,7 @@ export default class AdProgramController extends ProgramController {
 
     srcReset() {
         const { playerModel } = this;
-        const mediaModel = playerModel.get('mediaModel');
+        const mediaModel = playerModel.mediaModel;
 
         mediaModel.srcReset();
     }

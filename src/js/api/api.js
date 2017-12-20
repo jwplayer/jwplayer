@@ -73,6 +73,8 @@ export default function Api(element) {
 
     let core = coreFactory(this, element);
 
+    const { on, once, off, trigger, triggerSafe } = core;
+
     qoeTimer.tick('init');
     element.setAttribute('data-jwplayer-id', playerId);
 
@@ -137,7 +139,6 @@ export default function Api(element) {
          */
         Events: {
             get() {
-                const { on, once, off, trigger } = core;
                 return { on, once, off, trigger };
             }
         },
@@ -187,7 +188,7 @@ export default function Api(element) {
             core.init(options, this);
 
             // bind event listeners passed in to the config
-            core.on(options.events, null, this);
+            this.on(options.events, null, this);
             return this;
         },
 
@@ -874,7 +875,7 @@ export default function Api(element) {
          * @return {Api}
          */
         on(name, callback, context) {
-            core.on.call(this, name, callback, context);
+            on.call(this, name, callback, context);
             return this;
         },
 
@@ -887,7 +888,7 @@ export default function Api(element) {
          * @return {Api}
          */
         once(name, callback, context) {
-            core.once.call(this, name, callback, context);
+            once.call(this, name, callback, context);
             return this;
         },
 
@@ -899,7 +900,7 @@ export default function Api(element) {
          * @return {Api}
          */
         off(name, callback, context) {
-            core.off.call(this, name, callback, context);
+            off.call(this, name, callback, context);
             return this;
         },
 
@@ -919,9 +920,9 @@ export default function Api(element) {
             }
             args.type = name;
             if (ApiSettings.debug) {
-                core.trigger.call(this, name, args);
+                trigger.call(this, name, args);
             } else {
-                core.triggerSafe.call(this, name, args);
+                triggerSafe.call(this, name, args);
             }
             return this;
         },

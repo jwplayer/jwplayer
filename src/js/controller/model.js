@@ -274,6 +274,7 @@ class MediaModel extends SimpleModel {
         this.addAttributes({
             mediaState: STATE_IDLE
         });
+        this.addAttributes(INITIAL_MEDIA_STATE);
     }
 
     srcReset() {

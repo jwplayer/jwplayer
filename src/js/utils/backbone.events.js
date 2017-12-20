@@ -142,12 +142,7 @@ export default class Events {
     }
 }
 
-// Make class properties enumerable and static
-Object.defineProperty(Events.prototype, 'on', { enumerable: true });
-Object.defineProperty(Events.prototype, 'once', { enumerable: true });
-Object.defineProperty(Events.prototype, 'off', { enumerable: true });
-Object.defineProperty(Events.prototype, 'trigger', { enumerable: true });
-
+// Add static methods to class for legacy use - Object.assign(this, Events)
 Events.on = Events.prototype.on;
 Events.once = Events.prototype.once;
 Events.off = Events.prototype.off;

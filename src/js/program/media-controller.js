@@ -31,7 +31,7 @@ export default class MediaController extends Events {
             playReason = model.get('playReason');
         }
 
-        model.set('playRejected', false);
+        model.playRejected = false;
         let playPromise = resolved;
         if (mediaModel.get('setup')) {
             playPromise = provider.play();
@@ -83,7 +83,7 @@ export default class MediaController extends Events {
         addProviderListeners(this);
         provider.attachMedia();
         this.attached = true;
-        model.set('attached', true);
+        model.attached = true;
 
         if (this.beforeComplete) {
             this._playbackComplete();
@@ -96,7 +96,7 @@ export default class MediaController extends Events {
         removeProviderListeners(this);
         provider.detachMedia();
         this.attached = false;
-        model.set('attached', false);
+        model.attached = false;
     }
 
     // Executes the playPromise
@@ -128,7 +128,7 @@ export default class MediaController extends Events {
                 syncPlayerWithMediaModel(mediaModel);
             }
         }).catch(error => {
-            model.set('playRejected', true);
+            model.playRejected = true;
             const videoTagPaused = provider && provider.video && provider.video.paused;
             if (videoTagPaused) {
                 mediaModel.set('mediaState', STATE_PAUSED);

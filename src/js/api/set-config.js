@@ -10,7 +10,7 @@ const supportedFields = [
 function setAutoStart(model, controller, autoStart) {
     model.setAutoStart(autoStart);
 
-    if (model.get('state') === 'idle' && autoStart === true) {
+    if (model.state === 'idle' && autoStart === true) {
         controller.play({ reason: 'autostart' });
     }
 }

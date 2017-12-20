@@ -2,15 +2,13 @@ import ApiQueueDecorator from 'api/api-queue';
 import Config from 'api/config';
 import Setup from 'api/Setup';
 import Providers from 'providers/providers';
-import loadPlugins from 'plugins/plugins';
 import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import loadCoreBundle from 'api/core-loader';
-import Promise, { resolved } from 'polyfills/promise';
+import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 
@@ -21,7 +19,6 @@ class CoreShim extends Events {
         this.modelShim = new SimpleModel();
         this.modelShim._qoeItem = new Timer();
         this.mediaShim = {};
-        this.setup = new Setup(this.modelShim);
         this.currentContainer =
             this.originalContainer = originalContainer;
         this.apiQueue = new ApiQueueDecorator(this, [
@@ -83,13 +80,10 @@ class CoreShim extends Events {
         const mediaPool = MediaElementPool();
         mediaPool.prime();
 
-        return Promise.all([
-            loadCoreBundle(model),
-            this.setup.start(),
-            loadPlugins(model, api)
-        ]).then(allPromises => {
-            const CoreMixin = allPromises[0];
-            if (!this.setup) {
+        this.setupSteps = new Setup(model, api);
+
+        return this.setupSteps.start().then(CoreMixin => {
+            if (!this.setupSteps) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;
             }
@@ -112,12 +106,12 @@ class CoreShim extends Events {
             // Set the active playlist item after plugins are loaded and the view is setup
             return this.setItemIndex(coreModel.get('item'));
         }).then(() => {
-            if (!this.setup) {
+            if (!this.setupSteps) {
                 return;
             }
             this.playerReady();
         }).catch((error) => {
-            if (!this.setup) {
+            if (!this.setupSteps) {
                 return;
             }
             setupError(this, error);
@@ -129,15 +123,15 @@ class CoreShim extends Events {
             this.apiQueue.destroy();
         }
 
-        if (this.setup) {
-            this.setup.destroy();
+        if (this.setupSteps) {
+            this.setupSteps.destroy();
         }
         this.off();
         this._events =
             this._model =
             this.originalContainer =
             this.apiQueue =
-            this.setup = null;
+            this.setupSteps = null;
     }
 
     getContainer() {

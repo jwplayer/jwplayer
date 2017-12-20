@@ -36,7 +36,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             return;
         }
 
-        if (_adProgram.model.get('state') === STATE_PAUSED) {
+        if (_adProgram.model.state === STATE_PAUSED) {
             if (evt.hasControls) {
                 _adProgram.playVideo();
             }
@@ -50,7 +50,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             return;
         }
 
-        if (_adProgram.model.get('state') === STATE_PAUSED) {
+        if (_adProgram.model.state === STATE_PAUSED) {
             if (_model.get('controls')) {
                 _controller.setFullscreen();
                 _controller.play();
@@ -79,7 +79,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_controller.checkBeforePlay() || (_oldpos === 0 && !_controller.isBeforeComplete())) {
             // make sure video restarts after preroll
             _oldpos = 0;
-        } else if (_controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE) {
+        } else if (_controller.isBeforeComplete() || _model.state === STATE_COMPLETE) {
             _oldpos = null;
         }
 
@@ -281,7 +281,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_adProgram) {
             // Sync player state with ad for model "change:state" events to trigger
             if (_adProgram.model) {
-                const adState = _adProgram.model.get('state');
+                const adState = _adProgram.model.state;
                 _model.attributes.state = adState;
             }
 
@@ -318,7 +318,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     this.getState = function() {
         if (_adProgram && _adProgram.model) {
-            return _adProgram.model.get('state');
+            return _adProgram.model.state;
         }
         // api expects false to know we aren't in instreamMode
         return false;

@@ -115,7 +115,7 @@ export function MediaControllerListener(model) {
             }
                 break;
             case MEDIA_META: {
-                Object.assign(model.get('itemMeta'), data.metadata);
+                Object.assign(model.itemMeta, data.metadata);
                 break;
             }
             case MEDIA_LEVELS:

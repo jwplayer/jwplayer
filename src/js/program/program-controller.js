@@ -140,7 +140,7 @@ export default class ProgramController extends Events {
     stopVideo() {
         const { mediaController, model } = this;
 
-        const item = model.get('playlist')[model.get('item')];
+        const item = model.get('playlist')[model.item];
         model.attributes.playlistItem = item;
         model.resetItem(item);
 
@@ -167,7 +167,7 @@ export default class ProgramController extends Events {
         // Only attempt to preload if media hasn't been loaded and we haven't started, and it's attached
         // Background media can also preload
         let media = mediaController || backgroundMedia;
-        if (model.get('state') === 'idle'
+        if (model.state === 'idle'
             && model.get('autostart') === false
             && media.attached
             && !media.setup

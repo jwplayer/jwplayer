@@ -1,6 +1,7 @@
 import { filterPlaylist } from 'playlist/playlist';
 
-const setPlaylist = function(model, playlist, feedData = {}) {
+const setPlaylist = function(model, playlist, feedData) {
+    feedData = feedData || {};
 
     model.set('feedData', feedData);
     if (feedData.error instanceof Error) {
