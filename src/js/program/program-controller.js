@@ -50,14 +50,15 @@ export default class ProgramController extends Eventable {
             // Buffer between item switches, but remain in the initial state (IDLE) while loading the first provider
             model.set(PLAYER_STATE, STATE_BUFFERING);
             if (casting || this.providerController.canPlay(mediaController.provider, source)) {
+                this.providerPromise = Promise.resolve(mediaController);
                 // We can reuse the current mediaController and do so synchronously
                 // Initialize the provider and mediaModel, sync it with the Model
                 // This sets up the mediaController and allows playback to begin
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
-                this.providerPromise = Promise.resolve(mediaController);
                 // Initialize the provider last so it's setting properties on the (newly) active media model
                 mediaController.provider.init(item);
+                model.trigger('itemReady', item);
                 return this.providerPromise;
             }
 
@@ -77,6 +78,7 @@ export default class ProgramController extends Eventable {
                     this._setActiveMedia(nextMediaController);
                     // Initialize the provider last so it's setting properties on the (newly) active media model
                     nextMediaController.provider.init(item);
+                    model.trigger('itemReady', item);
                     return nextMediaController;
                 }
             });
@@ -201,6 +203,7 @@ export default class ProgramController extends Eventable {
         this._setActiveMedia(castMediaController);
         // Initialize the provider last so it's setting properties on the (newly) active media model
         castMediaController.provider.init(item);
+        model.trigger('itemReady', item);
     }
 
     /**
