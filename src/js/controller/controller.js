@@ -662,6 +662,10 @@ Object.assign(Controller.prototype, {
             triggerAdvanceEvent(related, 'nextClick', () => related.next());
         }
 
+        function _forwardEvent(data) {
+            this.trigger(data.type, data);
+        }
+
         function triggerAdvanceEvent(related, evt, cb) {
             if (!related) {
                 return;
@@ -875,6 +879,8 @@ Object.assign(Controller.prototype, {
         this.createInstream = function() {
             this.instreamDestroy();
             this._instreamAdapter = new InstreamAdapter(this, _model, _view, mediaPool);
+            this._instreamAdapter.on('adBreakStart', _forwardEvent, this);
+            this._instreamAdapter.on('adBreakEnd', _forwardEvent, this);
             return this._instreamAdapter;
         };
 
@@ -887,6 +893,7 @@ Object.assign(Controller.prototype, {
         this.instreamDestroy = function() {
             if (_this._instreamAdapter) {
                 _this._instreamAdapter.destroy();
+                _this._instreamAdapter.off(null, null, _this);
                 _this._instreamAdapter = null;
             }
         };

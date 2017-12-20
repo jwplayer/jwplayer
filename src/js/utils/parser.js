@@ -39,6 +39,22 @@ export function getAbsolutePath(path, base) {
     return protocol + domain + '/' + result.join('/');
 }
 
+export function getAdClient(client) {
+    if (client.indexOf('vast') >= 0) {
+        return 'vast';
+    }
+    if (client.indexOf('googima') >= 0) {
+        return 'googima';
+    }
+    if (client.indexOf('freewheel') >= 0) {
+        return 'freewheel';
+    }
+    if (client.indexOf('dai') >= 0) {
+        return 'dai';
+    }
+    return 'unknown';
+}
+
 export function isAbsolutePath(path) {
     return /^(?:(?:https?|file):)?\/\//.test(path);
 }

@@ -24,6 +24,8 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _backgroundLoadTriggered = false;
     let _oldpos;
     let _backgroundLoadPosition;
+    const _advertisingBlock = _controller.getConfig().advertising || {};
+    const _adclient = utils.getAdClient(_advertisingBlock.client);
 
     const _clickHandler = (evt) => {
         evt = evt || {};
@@ -72,6 +74,8 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
 
+        this.trigger('adBreakStart', _getAdBreakData('adBreakStart'));
+
         const mediaElement = _adProgram.primedElement;
         const mediaContainer = _model.get('mediaContainer');
         mediaContainer.appendChild(mediaElement);
@@ -95,6 +99,24 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         this.setText(_model.get('localization').loadingAd);
         return this;
     };
+
+    function _getAdBreakData(type) {
+        let adposition;
+        if (_controller.checkBeforePlay()) {
+            adposition = 'pre';
+        }
+        if (_controller.isBeforeComplete()) {
+            adposition = 'post';
+        }
+        adposition = adposition || 'mid';
+
+        return {
+            adposition,
+            type,
+            client: _adclient,
+            viewable: _controller.get('viewable'),
+        };
+    }
 
     function _loadNextItem() {
         _arrayIndex++;
@@ -146,7 +168,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             _loadNextItem();
         } else {
             // notify vast of breakEnd
-            this.trigger('adBreakEnd', {});
+            this.trigger('vastAdBreakEnd', {});
             if (e.type === MEDIA_COMPLETE) {
                 // Dispatch playlist complete event for ad pods
                 this.trigger(PLAYLIST_COMPLETE, {});
@@ -272,6 +294,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     this.destroy = function() {
+        if (_adProgram) {
+            this.trigger('adBreakEnd', _getAdBreakData('adBreakEnd'));
+        }
         this.off();
 
         if (_view.clickHandler()) {
