@@ -1,5 +1,5 @@
 import overlayTemplate from 'view/controls/templates/overlay-interface';
-import { addClass, removeClass } from 'utils/dom';
+import { toggleClass } from 'utils/dom';
 import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -88,7 +88,7 @@ export default class OverlayInterface {
         position = Math.round(position);
 
         if (position > this.currentOverlay.showAt && position < this.currentOverlay.endAt) {
-            if(this.currentOverlay.closed === true){
+            if (this.currentOverlay.closed === true) {
                 return;
             }
             this.toggle(true);
@@ -136,11 +136,11 @@ export default class OverlayInterface {
     toggle(show) {
         if (this.showing === show) {
             return;
-        } else if (show === true) {
-            addClass(this.container, 'jw-interface-container-visible');
+        } else if (show) {
+            toggleClass(this.container, 'jw-interface-container-visible');
             this.showing = true;
-        } else if (show === false) {
-            removeClass(this.container, 'jw-interface-container-visible');
+        } else if (!show) {
+            toggleClass(this.container, 'jw-interface-container-visible');
             this.showing = false;
         }
     }
@@ -152,7 +152,7 @@ export default class OverlayInterface {
 
             // set thumbnail if its on overlay config
             this.thumbnail = this.content.querySelector('.jw-interface-thumbnail');
-            addClass(this.content, 'jw-interface-thumbnail-visible', !!overlay.image);
+            toggleClass(this.content, 'jw-interface-thumbnail-visible', !!overlay.image);
 
             if (overlay.image) {
                 const thumbnailStyle = this.loadThumbnail(overlay.image);
