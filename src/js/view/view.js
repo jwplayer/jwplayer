@@ -353,7 +353,7 @@ function View(_api, _model) {
 
     function redraw(model, visibility, lastVisibility) {
         if (visibility && !lastVisibility) {
-            _stateUpdate(model.get('state'));
+            _stateHandler(model, model.get('state'));
             _this.updateStyles();
         }
     }
