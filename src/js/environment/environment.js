@@ -24,6 +24,22 @@ import _ from 'utils/underscore';
 const memoize = _.memoize;
 const userAgent = navigator.userAgent;
 
+function supportsPassive() {
+    let passiveOptionRead = false;
+
+    try {
+        const opts = Object.defineProperty({}, 'passive', {
+            get: function() {
+                passiveOptionRead = true;
+            }
+        });
+        window.addEventListener('testPassive', null, opts);
+        window.removeEventListener('testPassive', null, opts);
+    } catch (e) {/* noop */}
+
+    return passiveOptionRead;
+}
+
 /**
  * @typedef {object} EnvironmentVersion
  * @property {string} version - The full version string.
@@ -155,6 +171,10 @@ Object.defineProperties(Features, {
     },
     iframe: {
         get: memoize(isIframe),
+        enumerable: true
+    },
+    passiveEvents: {
+        get: memoize(supportsPassive),
         enumerable: true
     },
     backgroundLoading: {

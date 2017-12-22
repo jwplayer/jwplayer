@@ -1,7 +1,7 @@
 import { dvrSeekLimit } from 'view/constants';
 import _ from 'utils/underscore';
 import utils from 'utils/helpers';
-import UI from 'utils/ui';
+import UI, { getPointerType } from 'utils/ui';
 import Slider from 'view/controls/components/slider';
 import Tooltip from 'view/controls/components/tooltip';
 import ChaptersMixin from 'view/controls/components/chapters.mixin';
@@ -219,7 +219,7 @@ class TimeSlider extends Slider {
 
         // With touch events, we never will get the hover events on the cues that cause cues to be active.
         // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
-        if (UI.getPointerType(evt.sourceEvent) === 'touch') {
+        if (getPointerType(evt.sourceEvent) === 'touch') {
             this.activeCue = this.cues.reduce((closeCue, cue) => {
                 if (Math.abs(position - (parseInt(cue.pct) / 100 * railBounds.width)) < this.mobileHoverDistance) {
                     return cue;
