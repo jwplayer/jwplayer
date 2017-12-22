@@ -353,7 +353,7 @@ function View(_api, _model) {
 
     function redraw(model, visibility, lastVisibility) {
         if (visibility && !lastVisibility) {
-            _stateHandler(model);
+            _stateHandler(model, model.get('state'));
             _this.updateStyles();
         }
     }
@@ -664,8 +664,6 @@ function View(_api, _model) {
         if (!_this.isSetup) {
             return;
         }
-
-        newState = newState || model.get('state');
 
         if (oldState === STATE_ERROR) {
             const errorContainer = _playerElement.querySelector('.jw-error-msg');
