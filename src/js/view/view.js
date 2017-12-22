@@ -353,7 +353,7 @@ function View(_api, _model) {
 
     function redraw(model, visibility, lastVisibility) {
         if (visibility && !lastVisibility) {
-            _stateUpdate(model.get('state'));
+            _stateHandler(model);
             _this.updateStyles();
         }
     }
@@ -665,6 +665,8 @@ function View(_api, _model) {
             return;
         }
 
+        newState = newState || model.get('state');
+
         if (oldState === STATE_ERROR) {
             const errorContainer = _playerElement.querySelector('.jw-error-msg');
             if (errorContainer) {
@@ -688,10 +690,6 @@ function View(_api, _model) {
 
         switch (state) {
             case STATE_IDLE:
-                if (_model.get('autostart')) {
-                    break;
-                }
-                // falls through
             case STATE_ERROR:
             case STATE_COMPLETE:
                 // Set the poster image before playback starts (idle), when the playlist ends (complete),
