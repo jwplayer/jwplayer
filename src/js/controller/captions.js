@@ -65,8 +65,8 @@ const Captions = function(_model) {
                                     });
                                 });
                         }
-                        _updateMenu();
                     }
+                    _updateMenu();
                 }
             }, this);
 
