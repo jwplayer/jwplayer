@@ -568,8 +568,6 @@ export default class Controlbar {
             const isSmallPlayer = getBreakpoint(model.get('containerWidth')) < 2;
             const isAddMore = isRecsUpDisplay(model.get('ab')) && buttonProps.btnClass === 'jw-related-btn';
 
-            console.log('Related', model.get('related'), isAddMore);
-
             buttonProps.img = isAddMore ? cloneIcons('more-videos')[0] : buttonProps.img;
             if (isAddMore && !isSmallPlayer) {
                 this.addMoreVideos(buttonProps);
