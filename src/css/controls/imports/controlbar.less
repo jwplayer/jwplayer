@@ -108,6 +108,27 @@
     }
 }
 
+.jw-more-videos {
+    position: absolute;
+    top: (@mobile-touch-target * -1);
+    left: 0;
+    margin: 0;
+    width: auto;
+    padding: 0 12px;
+
+    .jw-text {
+        height: @mobile-touch-target;
+        line-height: @mobile-touch-target;
+        padding-left: 6px;
+        color: @inactive-color;
+    }
+
+    &:hover .jw-text,
+    &:focus .jw-text {
+        color: @active-color;
+    }
+}
+
 .jw-icon-inline.jw-icon-volume {
     display: none;
 }

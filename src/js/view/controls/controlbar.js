@@ -12,6 +12,7 @@ import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
 import { prependChild } from 'utils/dom';
+import { getBreakpoint } from 'view/utils/breakpoint';
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -35,6 +36,21 @@ function div(classes) {
     const element = document.createElement('div');
     element.className = `jw-reset ${classes}`;
     return element;
+}
+
+function isRecsUpDisplay(abConfig) {
+    const tests = abConfig ? abConfig.tests : null;
+
+    if (tests && tests.discoverIcon && tests.discoverIcon) {
+        for (let i = 0; i < tests.discoverIcon.length; i++) {
+            const test = tests.discoverIcon[i];
+            if (test.type === 'discoverIcon') {
+                return test.selection === `${test.id}_moreVideos`;
+            }
+        }
+    }
+
+    return false;
 }
 
 function createCastButton(castToggle, localization) {
@@ -438,7 +454,7 @@ export default class Controlbar {
         } else {
             this.elements.time.resetChapters();
         }
-        
+
         this.elements.time.drawCues();
     }
 
@@ -507,6 +523,24 @@ export default class Controlbar {
         }
     }
 
+    addMoreVideos(buttonProps) {
+        const recsButton = button(
+            'jw-more-videos',
+            buttonProps.callback,
+            buttonProps.tooltip,
+            [ buttonProps.img ]
+        );
+        recsButton.show();
+
+        const recsText = document.createElement('div');
+        recsText.className += 'jw-text';
+        recsText.textContent = buttonProps.tooltip;
+
+        recsButton.element().appendChild(recsText);
+
+        this.el.appendChild(recsButton.element());
+    }
+
     updateButtons(model, newButtons, oldButtons) {
         // If buttons are undefined exit, buttons are only removed if newButtons is an array
         if (!newButtons) {
@@ -530,7 +564,18 @@ export default class Controlbar {
         }
 
         for (let i = addedButtons.length - 1; i >= 0; i--) {
-            let buttonProps = addedButtons[i];
+            const buttonProps = addedButtons[i];
+            const isSmallPlayer = getBreakpoint(model.get('containerWidth')) < 2;
+            const isAddMore = isRecsUpDisplay(model.get('ab')) && buttonProps.btnClass === 'jw-related-btn';
+
+            console.log('Related', model.get('related'), isAddMore);
+
+            buttonProps.img = isAddMore ? cloneIcons('more-videos')[0] : buttonProps.img;
+            if (isAddMore && !isSmallPlayer) {
+                this.addMoreVideos(buttonProps);
+                break;
+            }
+
             const newButton = new CustomButton(
                 buttonProps.img,
                 buttonProps.tooltip,
@@ -564,6 +609,11 @@ export default class Controlbar {
             const buttonElement = buttonContainer.querySelector(`[button="${buttonsToRemove[i].id}"]`);
             if (buttonElement) {
                 buttonContainer.removeChild(buttonElement);
+            } else if (buttonsToRemove[i].id === 'related') {
+                const moreVideosButton = this.el.querySelector('.jw-more-videos');
+                if (moreVideosButton) {
+                    this.el.removeChild(moreVideosButton);
+                }
             }
         }
     }

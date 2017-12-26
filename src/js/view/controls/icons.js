@@ -5,7 +5,6 @@ import PLAY_ICON from 'assets/SVG/play.svg';
 import PAUSE_ICON from 'assets/SVG/pause.svg';
 import REWIND_ICON from 'assets/SVG/rewind-10.svg';
 import NEXT_ICON from 'assets/SVG/next.svg';
-// import STOP_ICON from 'assets/SVG/stop.svg';
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 import VOLUME_ICON_50 from 'assets/SVG/volume-50.svg';
 import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
@@ -18,14 +17,11 @@ import LIVE_ICON from 'assets/SVG/live.svg';
 import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
 import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
-// import QUALITY_ICON_25 from 'assets/SVG/quality-25.svg';
-// import QUALITY_ICON_50 from 'assets/SVG/quality-50.svg';
-// import QUALITY_ICON_75 from 'assets/SVG/quality-75.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import CLOSE_ICON from 'assets/SVG/close.svg';
-// import ARROW_ICON from 'assets/SVG/arror.svg';
+import MORE_VIDEOS_ICON from 'assets/SVG/more-videos.svg';
 import JW_LOGO from 'assets/SVG/jw-logo.svg';
 import svgParse from 'utils/svgParser';
 
@@ -91,5 +87,6 @@ function parseCollection() {
         FULLSCREEN_ENTER_ICON +
         CLOSE_ICON +
         JW_LOGO +
+        MORE_VIDEOS_ICON +
         '</xml>');
 }
