@@ -122,6 +122,7 @@ export function handleColorOverrides(playerId, skin) {
                 // controlbar button colors
                 '.jw-button-color:not(.jw-icon-cast)',
                 '.jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast)',
+                '.jw-more-videos .jw-text',
             ], 'color', config.icons);
 
             addStyle([
@@ -144,7 +145,9 @@ export function handleColorOverrides(playerId, skin) {
                 '.jw-button-color.jw-toggle:not(.jw-icon-cast)',
                 '.jw-button-color:hover:not(.jw-icon-cast)',
                 '.jw-button-color:focus:not(.jw-icon-cast)',
-                '.jw-button-color.jw-toggle.jw-off:hover:not(.jw-icon-cast)'
+                '.jw-button-color.jw-toggle.jw-off:hover:not(.jw-icon-cast)',
+                '.jw-more-videos:hover .jw-text',
+                '.jw-more-videos:focus .jw-text',
             ], 'color', config.iconsActive);
 
             addStyle([
