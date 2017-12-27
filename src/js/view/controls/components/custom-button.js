@@ -15,7 +15,7 @@ export default class CustomButton {
         }
 
         let iconElement;
-        if (img instanceof SVGSVGElement) {
+        if (img instanceof SVGElement) {
             iconElement = img;
         } else if (img && img.substring(0, 4) === '<svg') {
             iconElement = svgParse(img);

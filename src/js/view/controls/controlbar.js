@@ -39,9 +39,8 @@ function div(classes) {
 }
 
 function isRecsUpDisplay(abConfig) {
-    const tests = abConfig ? abConfig.tests : null;
-
-    if (tests && tests.discoverIcon && tests.discoverIcon) {
+    if (abConfig && abConfig.tests && abConfig.tests.discoverIcon) {
+        const tests = abConfig.tests;
         for (let i = 0; i < tests.discoverIcon.length; i++) {
             const test = tests.discoverIcon[i];
             if (test.type === 'discoverIcon') {
@@ -49,7 +48,6 @@ function isRecsUpDisplay(abConfig) {
             }
         }
     }
-
     return false;
 }
 
