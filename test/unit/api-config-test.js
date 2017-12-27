@@ -1,9 +1,17 @@
-import _ from 'underscore';
 import Config from 'api/config';
 
 describe('API Config', function() {
 
-    const props = ['width', 'height', 'base'];
+    const props = [
+        'autostart',
+        'base',
+        'controls',
+        'playlist',
+        'playbackRate',
+        'qualityLabels',
+        'width',
+        'height',
+    ];
 
     describe('init', function() {
 
@@ -15,25 +23,22 @@ describe('API Config', function() {
             expect(new Config(true), 'options=true').to.deep.equal(defaultConfig);
             expect(new Config(false), 'options=false').to.deep.equal(defaultConfig);
         });
+
+        it('should deserialize string properties, except for "id"', function() {
+            expect(new Config({ volume: '42' })).to.have.property('volume').which.is.a('number').which.equals(42);
+            expect(new Config({ controls: 'true' })).to.have.property('controls').which.equals(true);
+            expect(new Config({ id: 'abc' })).to.have.property('id').which.is.a('string').which.equals('abc');
+            expect(new Config({ id: '123' })).to.have.property('id').which.is.a('string').which.equals('123');
+        });
     });
 
     describe('aspect ratio/width', function() {
 
-        function isNumber(val) {
-            if (val.slice && val.slice(-1) === '%') {
-                val = val.slice(0, -1);
-            }
-
-            return !_.isNaN(val);
-        }
-
         function testConfig(obj) {
             const x = new Config(obj);
 
-            expect(isNumber(x.width), 'width is a number ' + x.width).to.be.true;
-            expect(isNumber(x.height), 'height is a number ' + x.height).to.be.true;
-            _.each(props, function (a) {
-                expect(_.has(x, a), 'Config has ' + a + ' attribute').to.be.true;
+            props.forEach(function (key) {
+                expect(x, `Config has ${key} attribute`).to.have.property(key);
             });
             return x;
         }
@@ -71,17 +76,20 @@ describe('API Config', function() {
             expect(x.aspectratio).to.equal('75%');
 
             x = testConfig({ width: '200', aspectratio: '4:3' });
-            expect(x.aspectratio).to.be.undefined;
+            expect(x, 'with fixed widths, aspectratio is ignored')
+                .to.not.have.property('aspectratio');
+            expect(x, 'with fixed widths, aspectratio is ignored, and default height is used')
+                .to.have.property('height').which.equals(360);
 
             // aspectratio could be a string too since we "deserialize" numbers and bools < 6 chars in length
             x = testConfig({ width: '100%', aspectratio: 1.2 });
-            expect(x.aspectratio).to.be.undefined;
+            expect(x).to.not.have.property('aspectratio');
 
             x = testConfig({ width: '100%', aspectratio: 'foo' });
-            expect(x.aspectratio).to.be.undefined;
+            expect(x).to.not.have.property('aspectratio');
 
             x = testConfig({ width: '100%', aspectratio: ':0' });
-            expect(x.aspectratio).to.be.undefined;
+            expect(x).to.not.have.property('aspectratio');
         });
     });
 
@@ -103,10 +111,10 @@ describe('API Config', function() {
             let apiConfig;
 
             apiConfig = new Config({});
-            expect(/.*\//.test(apiConfig.base)).to.be.true;
+            expect(/.*\//.test(apiConfig.base)).to.equal(true);
 
             apiConfig = new Config({ base: '.' });
-            expect(/.*\//.test(apiConfig.base)).to.be.true;
+            expect(/.*\//.test(apiConfig.base)).to.equal(true);
 
             apiConfig = new Config({ base: CUSTOM_BASE });
             expect(apiConfig.base).to.equal(CUSTOM_BASE);
