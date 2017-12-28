@@ -77,7 +77,7 @@ describe('Skin Customization', function() {
             expect(cssUtils.css.args[1]).to.eql([
                 '#id .jw-button-color:not(.jw-icon-cast), ' +
                 '#id .jw-button-color.jw-toggle.jw-off:not(.jw-icon-cast), ' +
-                '#id .jw-more-videos .jw-text',
+                '#id .jw-related-more-btn .jw-text',
                 { color: 'blue' },
                 'id'
             ]);
