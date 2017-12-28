@@ -82,7 +82,7 @@ export function ProviderListener(mediaController) {
     };
 }
 
-export function MediaControllerListener(model) {
+export function MediaControllerListener(model, programController) {
     return function (type, data) {
         switch (type) {
             case 'flashThrottle': {
@@ -99,13 +99,13 @@ export function MediaControllerListener(model) {
                 break;
             case MEDIA_VOLUME:
                 model.set(type, data[type]);
-                break;
+                return;
             case MEDIA_MUTE:
                 if (!model.get('autostartMuted')) {
                     // Don't persist mute state with muted autostart
                     model.set(type, data[type]);
                 }
-                break;
+                return;
             case MEDIA_RATE_CHANGE: {
                 const rate = data.playbackRate;
                 // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
@@ -144,5 +144,7 @@ export function MediaControllerListener(model) {
                 break;
             default:
         }
+
+        programController.trigger(type, data);
     };
 }

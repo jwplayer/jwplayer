@@ -704,7 +704,6 @@ Object.assign(Controller.prototype, {
 
         function updateProgramSoundSettings() {
             _programController.mute = _model.getMute();
-            _programController.volume = _model.get('volume');
         }
 
         /** Controller API / public methods **/
@@ -759,7 +758,7 @@ Object.assign(Controller.prototype, {
         };
         this.setMute = (mute) => {
             _model.setMute(mute);
-            // updateProgramSoundSettings();
+            updateProgramSoundSettings();
         };
         this.setPlaybackRate = (playbackRate) => {
             _model.setPlaybackRate(playbackRate); 

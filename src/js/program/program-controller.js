@@ -16,15 +16,10 @@ export default class ProgramController extends Eventable {
         this.backgroundMedia = null;
         this.mediaPool = mediaPool;
         this.mediaController = null;
+        this.mediaControllerListener = MediaControllerListener(model, this);
         this.model = model;
         this.providerController = ProviderController(model.getConfiguration());
         this.providerPromise = resolved;
-
-        const modelForward = MediaControllerListener(model);
-        this.mediaControllerListener = (type, data) => {
-            modelForward(type, data);
-            this.trigger(type, data);
-        };
     }
 
     /**
@@ -450,7 +445,7 @@ export default class ProgramController extends Eventable {
     /**
      * Attaches or detaches the current media
      * @param {boolean} shouldAttach
-     * @returns {undefined}
+     * @returns {void}
      */
     set attached(shouldAttach) {
         const { mediaController } = this;
@@ -496,12 +491,12 @@ export default class ProgramController extends Eventable {
 
     /**
      * Mutes or unmutes the activate media.
-     * Syncs across all media elements.
+     * Syncs both background and foreground media controllers.
      * @param {boolean} mute
      * @returns {void}
      */
     set mute(mute) {
-        const { backgroundMedia, mediaController, mediaPool } = this;
+        const { backgroundMedia, mediaController } = this;
 
         if (mediaController) {
             mediaController.mute = mute;
@@ -509,8 +504,6 @@ export default class ProgramController extends Eventable {
         if (backgroundMedia) {
             backgroundMedia.mute = mute;
         }
-
-        mediaPool.syncMute(mute);
     }
 
     /**
@@ -562,12 +555,12 @@ export default class ProgramController extends Eventable {
 
     /**
      * Sets the volume level.
-     * Syncs across all media elements.
+     * Syncs both background and foreground media controllers.
      * @param {number} volume
      * @returns {void}
      */
     set volume(volume) {
-        const { backgroundMedia, mediaController, mediaPool } = this;
+        const { backgroundMedia, mediaController } = this;
 
         if (mediaController) {
             mediaController.volume = volume;
@@ -575,8 +568,6 @@ export default class ProgramController extends Eventable {
         if (backgroundMedia) {
             backgroundMedia.volume = volume;
         }
-
-        mediaPool.syncVolume(volume);
     }
 }
 
