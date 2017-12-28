@@ -150,6 +150,10 @@ export default class MediaController extends Eventable {
 
     _loadAndPlay() {
         const { item, provider } = this;
+        // If hlsjs preloaded, reset state
+        if (provider.resetPreload) {
+            provider.resetPreload();
+        }
         // Calling load() on Shaka may return a player setup promise
         const providerSetupPromise = provider.load(item);
         if (providerSetupPromise) {
