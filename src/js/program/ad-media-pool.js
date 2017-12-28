@@ -11,12 +11,6 @@ export default function AdMediaPool(mediaPool) {
         },
         recycle() {
             mediaPool.recycle(adElement);
-        },
-        syncVolume: function (volume) {
-            adElement.volume = volume / 100;
-        },
-        syncMute(mute) {
-            adElement.muted = mute;
         }
     };
 }
