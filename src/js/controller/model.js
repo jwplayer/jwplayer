@@ -53,7 +53,6 @@ const Model = function() {
         this.set('item', index);
         this.set('minDvrWindow', item.minDvrWindow);
         this.set('playlistItem', item);
-        this.trigger('itemReady', item);
     };
 
     this.setMediaModel = function (mediaModel) {
@@ -256,7 +255,6 @@ const syncProviderProperties = (model, provider) => {
     model.set('supportsPlaybackRate', provider.supportsPlaybackRate);
     model.set('playbackRate', provider.getPlaybackRate());
     model.set('renderCaptionsNatively', provider.renderNatively);
-
 };
 
 function syncPlayerWithMediaModel(mediaModel) {

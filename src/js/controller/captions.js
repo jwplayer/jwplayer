@@ -13,9 +13,6 @@ const Captions = function(_model) {
     // Listen for captions menu index changes from the view
     _model.on('change:captionsIndex', _captionsIndexHandler, this);
 
-    // Listen for item ready to determine which provider is in use
-    _model.on('itemReady', _itemReadyHandler, this);
-
     function _setSubtitlesTracks(tracks) {
         if (!tracks.length) {
             return;
@@ -42,36 +39,41 @@ const Captions = function(_model) {
         _tracks = [];
         _tracksById = {};
         _unknownCount = 0;
-    }
 
-    function _itemReadyHandler(item) {
-        // Clean up in case we're replaying
-        _itemHandler(_model, item);
-
+        const item = _model.get('playlistItem');
         const tracks = item.tracks;
         const len = tracks && tracks.length;
 
-        // Sideload tracks when not rendering natively
-        if (!_model.get('renderCaptionsNatively') && len) {
-            for (let i = 0; i < len; i++) {
-                /* eslint-disable no-loop-func */
-                const track = tracks[i];
-                if (_kindSupported(track.kind) && !_tracksById[track._id]) {
-                    _addTrack(track);
-                    loadFile(track,
-                        (vttCues) => {
-                            _addVTTCuesToTrack(track, vttCues);
-                        },
-                        (error) => {
-                            this.trigger(ERROR, {
-                                message: 'Captions failed to load',
-                                reason: error
-                            });
-                        });
+        // Update tracks once we know "renderCaptionsNatively" based on provider
+        _model.off('itemReady', null, this)
+            .once('itemReady', () => {
+                // Sideload tracks when not rendering natively
+                if (len && !_model.get('renderCaptionsNatively')) {
+                    for (let i = 0; i < len; i++) {
+                        /* eslint-disable no-loop-func */
+                        const track = tracks[i];
+                        if (_kindSupported(track.kind) && !_tracksById[track._id]) {
+                            _addTrack(track);
+                            loadFile(track,
+                                (vttCues) => {
+                                    _addVTTCuesToTrack(track, vttCues);
+                                },
+                                (error) => {
+                                    this.trigger(ERROR, {
+                                        message: 'Captions failed to load',
+                                        reason: error
+                                    });
+                                });
+                        }
+                    }
+                    _updateMenu();
                 }
-            }
-        }
+            }, this);
 
+        _updateMenu();
+    }
+
+    function _updateMenu() {
         const captionsMenu = _captionsMenu();
         _selectDefaultIndex();
         _setCaptionsList(captionsMenu);
