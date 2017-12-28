@@ -150,8 +150,14 @@ export default class AdProgramController extends ProgramController {
     srcReset() {
         const { playerModel } = this;
         const mediaModel = playerModel.get('mediaModel');
+        const provider = playerModel.getVideo();
 
         mediaModel.srcReset();
+
+        // Set hlsjs.src to null so that it reloads it's item source
+        if (provider) {
+            provider.src = null;
+        }
     }
 
     _nativeFullscreenHandler(evt) {
