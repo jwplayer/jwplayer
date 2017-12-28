@@ -175,8 +175,13 @@ export default class MediaController extends Eventable {
     }
 
     get background() {
-        // A backgrounded provider is attached to a video tag, but has no parent container (i.e. not in the DOM)
-        return !this.container && this.attached;
+        const { container, provider } = this;
+        // A backgrounded provider is attached to a video tag
+        if (!this.attached) {
+            return false;
+        }
+        // A backgrounded provider does not have a parent container, or has one, but without the media tag as a child
+        return !container || (container && !container.contains(provider.video));
     }
 
     get container() {
