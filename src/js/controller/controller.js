@@ -91,6 +91,7 @@ Object.assign(Controller.prototype, {
         _model.on('change:castState', function(model, evt) {
             _this.trigger(CAST_SESSION, evt);
         });
+
         _model.on('change:fullscreen', function(model, bool) {
             _this.trigger(FULLSCREEN, {
                 fullscreen: bool
@@ -100,12 +101,14 @@ Object.assign(Controller.prototype, {
                 model.set('playOnViewable', false);
             }
         });
+
         _model.on('change:volume', function(model, vol) {
             _this.trigger(MEDIA_VOLUME, {
                 volume: vol
             });
         });
-        _model.on('change:mute change:autostartMuted', function(model) {
+
+        _model.on('change:mute', function(model) {
             _this.trigger(MEDIA_MUTE, {
                 mute: model.getMute()
             });
@@ -756,7 +759,7 @@ Object.assign(Controller.prototype, {
         };
         this.setMute = (mute) => {
             _model.setMute(mute);
-            updateProgramSoundSettings();
+            // updateProgramSoundSettings();
         };
         this.setPlaybackRate = (playbackRate) => {
             _model.setPlaybackRate(playbackRate); 
