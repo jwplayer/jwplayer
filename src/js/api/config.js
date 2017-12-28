@@ -2,7 +2,7 @@ import _ from 'utils/underscore';
 import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
 
-/* global __webpack_public_path__:true*/
+/* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
 // Defaults
 const Defaults = {
@@ -54,8 +54,11 @@ const Defaults = {
 };
 
 function _deserialize(options) {
-    _.each(options, function(val, key) {
-        options[key] = serialize(val);
+    Object.keys(options).forEach((key) => {
+        if (key === 'id') {
+            return;
+        }
+        options[key] = serialize(options[key]);
     });
 }
 

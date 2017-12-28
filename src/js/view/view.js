@@ -583,7 +583,7 @@ function View(_api, _model) {
     function _isNativeFullscreen() {
         if (fullscreenHelpers.supportsDomFullscreen()) {
             const fsElement = fullscreenHelpers.fullscreenElement();
-            return !!(fsElement && fsElement.id === _model.get('id'));
+            return (fsElement && fsElement === _playerElement);
         }
         // if player element view fullscreen not available, return video fullscreen state
         const provider = _model.getVideo();
