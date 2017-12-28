@@ -150,7 +150,6 @@ export function handleColorOverrides(playerId, skin) {
                 '.jw-related-more-btn:focus .jw-text',
             ], 'color', config.iconsActive);
 
-
             addStyle([
                 '.jw-svg-icon-buffer',
             ], 'fill', config.icons);
