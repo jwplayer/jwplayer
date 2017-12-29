@@ -20,6 +20,16 @@ export default function MediaElementPool() {
             if (mediaElement && !elements.some(element => element === mediaElement)) {
                 elements.push(mediaElement);
             }
+        },
+        syncVolume: function (volume) {
+            elements.forEach(e => {
+                e.volume = volume / 100;
+            });
+        },
+        syncMute(mute) {
+            elements.forEach(e => {
+                e.muted = mute;
+            });
         }
     };
 }

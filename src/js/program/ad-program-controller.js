@@ -84,8 +84,11 @@ export default class AdProgramController extends ProgramController {
         playerModel.on('change:volume', function(data, value) {
             this.volume = value;
         }, this);
-        playerModel.on('change:mute', function(data, value) {
-            this.mute = value;
+        playerModel.on('change:mute', function(data, mute) {
+            this.mute = mute;
+            if (!mute) {
+                this.volume = playerModel.get('volume');
+            }
         }, this);
         playerModel.on('change:autostartMuted', function(data, value) {
             if (!value) {
