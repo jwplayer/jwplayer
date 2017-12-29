@@ -491,12 +491,12 @@ export default class ProgramController extends Eventable {
 
     /**
      * Mutes or unmutes the activate media.
-     * Syncs both background and foreground media controllers.
+     * Syncs across all media elements.
      * @param {boolean} mute
      * @returns {void}
      */
     set mute(mute) {
-        const { backgroundMedia, mediaController } = this;
+        const { backgroundMedia, mediaController, mediaPool } = this;
 
         if (mediaController) {
             mediaController.mute = mute;
@@ -504,6 +504,8 @@ export default class ProgramController extends Eventable {
         if (backgroundMedia) {
             backgroundMedia.mute = mute;
         }
+
+        mediaPool.syncMute(mute);
     }
 
     /**
@@ -555,12 +557,12 @@ export default class ProgramController extends Eventable {
 
     /**
      * Sets the volume level.
-     * Syncs both background and foreground media controllers.
+     * Syncs across all media elements.
      * @param {number} volume
      * @returns {void}
      */
     set volume(volume) {
-        const { backgroundMedia, mediaController } = this;
+        const { backgroundMedia, mediaController, mediaPool } = this;
 
         if (mediaController) {
             mediaController.volume = volume;
@@ -568,6 +570,8 @@ export default class ProgramController extends Eventable {
         if (backgroundMedia) {
             backgroundMedia.volume = volume;
         }
+
+        mediaPool.syncVolume(volume);
     }
 }
 
