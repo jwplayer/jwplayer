@@ -20,6 +20,11 @@ export default class ProgramController extends Eventable {
         this.model = model;
         this.providerController = ProviderController(model.getConfiguration());
         this.providerPromise = resolved;
+
+        if (!Features.backgroundLoading) {
+            // If background loading is not supported, set the shared media element
+            model.set('mediaElement', this.mediaPool.getPrimedElement());
+        }
     }
 
     /**
@@ -262,13 +267,11 @@ export default class ProgramController extends Eventable {
      */
     primeMediaElements() {
         if (!Features.backgroundLoading) {
-            // If background loading is supported, the model will always contain the shared media element
+            // If background loading is not supported, the model will always contain the shared media element
             // Prime it so that playback after changing the active item does not require further gestures
             const { model } = this;
             const mediaElement = model.get('mediaElement');
-            if (mediaElement) {
-                mediaElement.load();
-            }
+            mediaElement.load();
         }
         this.mediaPool.prime();
     }
@@ -414,6 +417,12 @@ export default class ProgramController extends Eventable {
      * @returns {Element|undefined}
      */
     get primedElement() {
+        if (!Features.backgroundLoading) {
+            // If background loading is not supported, the model will always contain the shared media element
+            // Prime it so that playback after changing the active item does not require further gestures
+            const { model } = this;
+            return model.get('mediaElement');
+        }
         return this.mediaPool.getPrimedElement();
     }
 
