@@ -42,7 +42,7 @@ export default class AdProgramController extends ProgramController {
             instreamMode: true,
             edition: playerAttributes.edition,
             mediaContext: mediaModelContext,
-            mute: playerModel.getMute(),
+            mute: playerAttributes.mute,
             streamType: 'VOD',
             autostartMuted: playerAttributes.autostartMuted,
             autostart: playerAttributes.autostart,
