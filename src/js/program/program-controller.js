@@ -221,13 +221,12 @@ export default class ProgramController extends Eventable {
 
         item.starttime = model.mediaModel.get('position');
         model.attributes.playlistItem = item;
+        model.resetItem(item);
 
         if (mediaController) {
             mediaController.stop();
             this.mediaController = null;
         }
-
-        model.setActiveItem(index);
     }
 
     /**
