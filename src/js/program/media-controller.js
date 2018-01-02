@@ -62,9 +62,9 @@ export default class MediaController extends Eventable {
     }
 
     destroy() {
-        const { provider, model } = this;
-
-        provider.off(null, null, model);
+        const { provider, mediaModel } = this;
+        mediaModel.off();
+        provider.off();
         this.detach();
         if (provider.getContainer()) {
             provider.remove();

@@ -269,6 +269,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     this.replacePlaylistItem = function(item) {
         _model.set('playlistItem', item);
+        if (_adProgram) {
+            _adProgram.srcReset();
+        }
     };
 
     this.destroy = function() {
