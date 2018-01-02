@@ -2,9 +2,10 @@ import utils from 'utils/helpers';
 import srt from 'parsers/captions/srt';
 
 class Cue {
-    constructor (time, text) {
+    constructor (time, text, playerWidth) {
         this.time = time;
         this.text = text;
+        this.playerWidth = playerWidth;
         this.el = document.createElement('div');
         this.el.className = 'jw-cue jw-reset';
     }
@@ -14,7 +15,8 @@ class Cue {
         if (this.time.toString().slice(-1) === '%') {
             this.pct = this.time;
         } else {
-            const percentage = Math.floor((this.time / duration) * 100);
+            let markerWidth = 6;
+            const percentage = (100 * this.time / duration) - (100 * markerWidth / this.playerWidth);
             this.pct = percentage + '%';
         }
 
@@ -32,16 +34,17 @@ const ChaptersMixin = {
 
     chaptersLoaded: function (evt) {
         const data = srt(evt.responseText);
+        const playerWidth = this._model.get('containerWidth');
         if (Array.isArray(data)) {
-            data.forEach((obj) => this.addCue(obj));
+            data.forEach((obj) => this.addCue(obj, playerWidth));
             this.drawCues();
         }
     },
 
     chaptersFailed: function () {},
 
-    addCue: function (obj) {
-        this.cues.push(new Cue(obj.begin, obj.text));
+    addCue: function (obj, playerWidth) {
+        this.cues.push(new Cue(obj.begin, obj.text, playerWidth));
     },
 
     drawCues: function () {
