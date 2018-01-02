@@ -13,8 +13,9 @@ export default function MediaElementPool() {
         },
         getPrimedElement() {
             if (elements.length) {
-                return elements.pop();
+                return elements.shift();
             }
+            return null;
         },
         recycle(mediaElement) {
             if (mediaElement && !elements.some(element => element === mediaElement)) {
@@ -27,9 +28,9 @@ export default function MediaElementPool() {
                 e.volume = volume / 100;
             });
         },
-        syncMute(mute) {
+        syncMute(muted) {
             elements.forEach(e => {
-                e.muted = mute;
+                e.muted = muted;
             });
         }
     };
