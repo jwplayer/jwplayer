@@ -227,6 +227,8 @@ export default class ProgramController extends Eventable {
             mediaController.stop();
             this.mediaController = null;
         }
+
+        this.setActiveItem(index);
     }
 
     /**
