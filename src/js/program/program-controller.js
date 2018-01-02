@@ -220,7 +220,6 @@ export default class ProgramController extends Eventable {
         const item = model.get('playlist')[index];
 
         item.starttime = model.mediaModel.get('position');
-        model.attributes.playlistItem = item;
         model.resetItem(item);
 
         if (mediaController) {
