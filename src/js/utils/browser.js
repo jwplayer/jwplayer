@@ -65,9 +65,13 @@ export function isAndroid() {
     return userAgentMatch(/Android/i);
 }
 
-/** Matches iOS and Android devices **/
+export function isWindowsMobile() {
+    return userAgentMatch(/Windows Phone/i);
+}
+
+/** Matches iOS, Android and Windows Phone devices **/
 export function isMobile() {
-    return isIOS() || isAndroid();
+    return isIOS() || isAndroid() || isWindowsMobile();
 }
 
 export function isIframe() {
