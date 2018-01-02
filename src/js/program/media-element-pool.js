@@ -13,6 +13,7 @@ export default function MediaElementPool() {
         },
         getPrimedElement() {
             if (elements.length) {
+                // Shift over pop so that we cycle through elements instead of reusing the same one
                 return elements.shift();
             }
             return null;
