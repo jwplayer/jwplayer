@@ -11,7 +11,8 @@ describe('Media Element Pool', function () {
             const element = mediaPool.getPrimedElement();
             expect(element).to.not.equal(null);
             expect(element.nodeName).to.equal('VIDEO');
-            expect(element.src).to.equal('');
+            // src is undefined when running in PhantomJS
+            expect(element.src || '').to.equal('');
             expect(element.className).to.equal('jw-video jw-reset');
         }
         expect(mediaPool.getPrimedElement()).to.equal(null);
