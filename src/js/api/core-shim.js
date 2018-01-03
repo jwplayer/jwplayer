@@ -13,6 +13,8 @@ import loadCoreBundle from 'api/core-loader';
 import Promise, { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
+import SharedMediaPool from 'program/shared-media-pool';
+import { Features } from 'environment/environment';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -86,7 +88,7 @@ Object.assign(CoreShim.prototype, {
 
         // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
 
-        const mediaPool = MediaElementPool();
+        const mediaPool = Features.backgroundLoading ? MediaElementPool() : SharedMediaPool();
         mediaPool.prime();
 
         return Promise.all([
