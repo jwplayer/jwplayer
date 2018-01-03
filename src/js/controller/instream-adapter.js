@@ -145,8 +145,6 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_array && _arrayIndex + 1 < _array.length) {
             _loadNextItem();
         } else {
-            // notify vast of breakEnd
-            this.trigger('adBreakEnd', {});
             if (e.type === MEDIA_COMPLETE) {
                 // Dispatch playlist complete event for ad pods
                 this.trigger(PLAYLIST_COMPLETE, {});
@@ -275,6 +273,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     this.destroy = function() {
+        this.trigger('destroyed');
         this.off();
 
         if (_view.clickHandler()) {
