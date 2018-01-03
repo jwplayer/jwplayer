@@ -250,7 +250,7 @@ export default class ProgramController extends Eventable {
         const { backgroundMedia, mediaController } = this;
         // An existing media controller means that we've changed the active item
         // The current background media is no longer relevant, so destroy it
-        if (mediaController) {
+        if (mediaController && mediaController.item !== backgroundMedia.item) {
             this._destroyBackgroundMedia();
             return;
         }
