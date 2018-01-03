@@ -37,7 +37,6 @@ export default class ProgramController extends Eventable {
         const { mediaController, model } = this;
         const item = model.get('playlist')[index];
 
-        model.setActiveItem(index);
         this._destroyBackgroundMedia();
         const source = getSource(item);
         if (!source) {
@@ -51,6 +50,7 @@ export default class ProgramController extends Eventable {
             model.set(PLAYER_STATE, STATE_BUFFERING);
             if (casting || this.providerController.canPlay(mediaController.provider, source)) {
                 this.providerPromise = Promise.resolve(mediaController);
+                model.setActiveItem(index);
                 // We can reuse the current mediaController and do so synchronously
                 // Initialize the provider and mediaModel, sync it with the Model
                 // This sets up the mediaController and allows playback to begin
@@ -82,6 +82,7 @@ export default class ProgramController extends Eventable {
                     return nextMediaController;
                 }
             });
+        model.setActiveItem(index);
         return this.providerPromise;
     }
 
@@ -105,7 +106,7 @@ export default class ProgramController extends Eventable {
         }
 
         // Start playback immediately if we have already loaded a mediaController
-        if (mediaController) {
+        if (mediaController && mediaController.item === item) {
             playPromise = mediaController.play(playReason);
         } else {
             // Wait for the provider to load before starting initial playback

@@ -333,6 +333,7 @@ Object.assign(Controller.prototype, {
             });
 
             loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
+
         }
 
         function _loadPlaylist(toLoad) {
