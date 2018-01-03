@@ -6,7 +6,7 @@ import { STATE_IDLE, MEDIA_META, MEDIA_ERROR, MEDIA_VISUAL_QUALITY, MEDIA_TYPE,
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
-import { style, transform } from 'utils/css';
+import { style } from 'utils/css';
 import utils from 'utils/helpers';
 import { emptyElement } from 'utils/dom';
 import _ from 'utils/underscore';
