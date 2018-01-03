@@ -11,6 +11,9 @@ export default function MediaElementPool() {
         prime() {
             elements.forEach(primeMediaElementForPlayback);
         },
+        getFirstElement() {
+            return elements[0];
+        },
         getPrimedElement() {
             if (elements.length) {
                 // Shift over pop so that we cycle through elements instead of reusing the same one

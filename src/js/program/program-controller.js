@@ -23,7 +23,7 @@ export default class ProgramController extends Eventable {
 
         if (!Features.backgroundLoading) {
             // If background loading is not supported, set the shared media element
-            model.set('mediaElement', this.mediaPool.getPrimedElement());
+            model.set('mediaElement', this.mediaPool.getFirstElement());
         }
     }
 
