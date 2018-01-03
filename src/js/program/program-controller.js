@@ -215,17 +215,13 @@ export default class ProgramController extends Eventable {
      * @returns {undefined}
      */
     stopCast() {
-        const { mediaController, model } = this;
+        const { model } = this;
         const index = model.get('item');
         const item = model.get('playlist')[index];
 
         item.starttime = model.mediaModel.get('position');
-        model.resetItem(item);
 
-        if (mediaController) {
-            mediaController.stop();
-            this.mediaController = null;
-        }
+        this.stopVideo();
 
         this.setActiveItem(index);
     }
