@@ -11,7 +11,7 @@ export default function AdMediaPool(mediaPool) {
         recycle() {
             mediaPool.recycle(adElement);
         },
-        syncVolume: function (volume) {
+        syncVolume(volume) {
             adElement.volume = volume / 100;
         },
         syncMute(mute) {

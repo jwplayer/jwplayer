@@ -11,9 +11,10 @@ export default class AdProgramController extends ProgramController {
         const adModel = this.model = new Model();
         this.playerModel = model;
         this.provider = null;
-        this.mediaPool = AdMediaPool(this.mediaPool);
 
-        if (!Features.backgroundLoading) {
+        if (Features.backgroundLoading) {
+            this.mediaPool = AdMediaPool(mediaPool);
+        } else {
             const mediaElement = model.get('mediaElement');
 
             if (!mediaElement.paused) {
