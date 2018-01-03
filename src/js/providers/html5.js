@@ -15,6 +15,8 @@ import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
+import { fitToBounds, fitVideoUsingTransforms } from 'utils/video-fit';
+
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
@@ -590,26 +592,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         // object-fit is not implemented in IE or Android Browser in 4.4 and lower
         // http://caniuse.com/#feat=object-fit
         // feature detection may work for IE but not for browsers where object-fit works for images only
-        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
         if (fitVideoUsingTransforms) {
-            // Use transforms to center and scale video in container
-            const x = -Math.floor(_videotag.videoWidth / 2 + 1);
-            const y = -Math.floor(_videotag.videoHeight / 2 + 1);
-            let scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
-            let scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
-            if (stretching === 'none') {
-                scaleX = scaleY = 1;
-            } else if (stretching === 'fill') {
-                scaleX = scaleY = Math.max(scaleX, scaleY);
-            } else if (stretching === 'uniform') {
-                scaleX = scaleY = Math.min(scaleX, scaleY);
-            }
-            styles.width = _videotag.videoWidth;
-            styles.height = _videotag.videoHeight;
-            styles.top = styles.left = '50%';
-            styles.margin = 0;
-            transform(_videotag,
-                'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
+            fitToBounds(_videotag, width, height, stretching, styles);
         }
         style(_videotag, styles);
     };

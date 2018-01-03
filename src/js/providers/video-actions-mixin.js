@@ -1,4 +1,5 @@
 import { style } from 'utils/css';
+import { fitToBounds, fitVideoUsingTransforms } from 'utils/video-fit';
 
 const VideoActionsMixin = {
     container: null,
@@ -21,20 +22,24 @@ const VideoActionsMixin = {
         if (!width || !height || !this.video.videoWidth || !this.video.videoHeight) {
             return false;
         }
+        const _videotag = this.video;
+        const styles = {
+            objectFit: '',
+            width: '',
+            height: '',
+        };
         if (stretching === 'uniform') {
             // snap video to edges when the difference in aspect ratio is less than 9%
             var playerAspectRatio = width / height;
-            var videoAspectRatio = this.video.videoWidth / this.video.videoHeight;
-            var objectFit = null;
+            var videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
-                objectFit = 'fill';
+                styles.objectFit = 'fill';
             }
-            style(this.video, {
-                objectFit,
-                width: null,
-                height: null
-            });
         }
+        if (fitVideoUsingTransforms) {
+            fitToBounds(_videotag, width, height, stretching, styles);  
+        } 
+        style(_videotag, styles);
         return false;
     },
 
