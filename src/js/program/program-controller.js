@@ -198,12 +198,16 @@ export default class ProgramController extends Eventable {
     castVideo(castProvider, item) {
         const { model } = this;
 
+        const playlistItem = Object.assign({}, item);
+        playlistItem.starttime = model.mediaModel.get('position');
+
         const castMediaController = new MediaController(castProvider, model);
-        castMediaController.activeItem = item;
+        castMediaController.activeItem = playlistItem;
         this._setActiveMedia(castMediaController);
         // Initialize the provider last so it's setting properties on the (newly) active media model
-        castMediaController.provider.init(item);
-        model.trigger('itemReady', item);
+        castMediaController.provider.init(playlistItem);
+        model.trigger('itemReady', playlistItem);
+
     }
 
     /**
@@ -211,8 +215,15 @@ export default class ProgramController extends Eventable {
      * @returns {undefined}
      */
     stopCast() {
+        const { model } = this;
+        const index = model.get('item');
+        const item = model.get('playlist')[index];
+
+        item.starttime = model.mediaModel.get('position');
+
         this.stopVideo();
-        this.mediaController = null;
+
+        this.setActiveItem(index);
     }
 
     /**
