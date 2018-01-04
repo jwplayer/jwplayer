@@ -24,18 +24,19 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _backgroundLoadTriggered = false;
     let _oldpos;
     let _backgroundLoadPosition;
+    let _destroyed = false;
+    let _inited = false;
 
     const _clickHandler = (evt) => {
+        if (_destroyed) {
+            return;
+        }
         evt = evt || {};
         evt.hasControls = !!_model.get('controls');
 
         this.trigger(INSTREAM_CLICK, evt);
 
         // toggle playback after click event
-        if (!_adProgram) {
-            return;
-        }
-
         if (_adProgram.model.get('state') === STATE_PAUSED) {
             if (evt.hasControls) {
                 _adProgram.playVideo();
@@ -46,7 +47,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     const _doubleClickHandler = () => {
-        if (!_adProgram) {
+        if (_destroyed) {
             return;
         }
 
@@ -61,6 +62,11 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     this.type = 'instream';
 
     this.init = function() {
+        if (_inited || _destroyed) {
+            return;
+        }
+        _inited = true;
+
         // Keep track of the original player state
         _adProgram.setup();
 
@@ -68,6 +74,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.on('all', _instreamForward, this);
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
         _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
+        _adProgram.on(MEDIA_META, _instreamMeta, this);
 
         // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
         _controller.detachMedia();
@@ -154,7 +161,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     }
 
     this.loadItem = function(item, options) {
-        if (!_adProgram) {
+        if (_destroyed || !_inited) {
             return;
         }
         if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
@@ -239,13 +246,12 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     this.addClickHandler = function() {
+        if (_destroyed) {
+            return;
+        }
         // start listening for ad click
         if (_view.clickHandler()) {
             _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
-        }
-
-        if (_adProgram) {
-            _adProgram.on(MEDIA_META, this.metaHandler, this);
         }
     };
 
@@ -258,21 +264,26 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     /** Handle the MEDIA_META event **/
-    this.metaHandler = function (evt) {
+    function _instreamMeta(evt) {
         // If we're getting video dimension metadata from the provider, allow the view to resize the media
         if (evt.width && evt.height) {
             _view.resizeMedia();
         }
-    };
+    }
 
     this.replacePlaylistItem = function(item) {
-        _model.set('playlistItem', item);
-        if (_adProgram) {
-            _adProgram.srcReset();
+        if (_destroyed) {
+            return;
         }
+        _model.set('playlistItem', item);
+        _adProgram.srcReset();
     };
 
     this.destroy = function() {
+        if (_destroyed) {
+            return;
+        }
+        _destroyed = true;
         this.trigger('destroyed');
         this.off();
 
@@ -280,58 +291,61 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             _view.clickHandler().revertAlternateClickHandlers();
         }
 
-        if (_adProgram) {
-            // Sync player state with ad for model "change:state" events to trigger
-            if (_adProgram.model) {
-                const adState = _adProgram.model.get('state');
-                _model.attributes.state = adState;
-            }
+        const mediaElement = _adProgram.primedElement;
+        const mediaContainer = _model.get('mediaContainer');
+        if (mediaElement.parentNode === mediaContainer) {
+            mediaContainer.removeChild(mediaElement);
+        }
 
-            const mediaElement = _adProgram.primedElement;
-            const mediaContainer = _model.get('mediaContainer');
-            if (mediaElement.parentNode === mediaContainer) {
-                mediaContainer.removeChild(mediaElement);
-            }
+        _model.off(null, null, _adProgram);
+        _adProgram.off(null, null, _this);
+        _adProgram.destroy();
 
-            _model.off(null, null, _adProgram);
-            _adProgram.off(null, null, _this);
-            _adProgram.destroy();
+        // Sync player state with ad for model "change:state" events to trigger
+        if (_inited && _adProgram.model) {
+            const adState = _adProgram.model.get('state');
+            _model.attributes.state = adState;
+        }
 
-            // Must happen after instream.instreamDestroy()
-            _model.set('instream', null);
+        _model.set('instream', null);
 
-            _adProgram = null;
+        _adProgram = null;
 
-            // Player was destroyed
-            if (_model.attributes._destroyed) {
-                return;
-            }
+        if (!_inited || _model.attributes._destroyed) {
+            return;
+        }
 
-            // Re-attach the controller
-            _controller.attachMedia(_oldpos);
+        // Re-attach the controller & resume playback
+        // when instream was inited and the player was not destroyed\
+        _controller.attachMedia(_oldpos);
 
-            if (_oldpos === null) {
-                _controller.stopVideo();
-            } else {
-                _controller.playVideo();
-            }
+        if (_oldpos === null) {
+            _controller.stopVideo();
+        } else {
+            _controller.playVideo();
         }
     };
 
     this.getState = function() {
-        if (_adProgram && _adProgram.model) {
-            return _adProgram.model.get('state');
+        if (_destroyed) {
+            // api expects false to know we aren't in instreamMode
+            return false;
         }
-        // api expects false to know we aren't in instreamMode
-        return false;
+        return _adProgram.model.get('state');
     };
 
     this.setText = function(text) {
+        if (_destroyed) {
+            return;
+        }
         _view.setAltText(text || '');
     };
 
     // This method is triggered by plugins which want to hide player controls
     this.hide = function() {
+        if (_destroyed) {
+            return;
+        }
         _model.set('hideAdsControls', true);
     };
 
@@ -340,9 +354,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * @returns {Element|undefined} videoTag - the HTML <video> element in the foreground.
      */
     this.getMediaElement = function () {
-        if (_adProgram) {
-            return _adProgram.primedElement;
+        if (_destroyed) {
+            return null;
         }
+        return _adProgram.primedElement;
     };
 };
 
