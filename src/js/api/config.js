@@ -130,7 +130,8 @@ const Config = function(options, persisted) {
             'file',
             'sources',
             'tracks',
-            'preload'
+            'preload',
+            'duration'
         ]);
 
         config.playlist = [ obj ];
@@ -141,6 +142,7 @@ const Config = function(options, persisted) {
     }
 
     config.qualityLabels = config.qualityLabels || config.hlslabels;
+    delete config.duration;
 
     return config;
 };
