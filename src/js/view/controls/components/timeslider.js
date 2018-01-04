@@ -146,6 +146,7 @@ class TimeSlider extends Slider {
 
     onDuration(model, duration) {
         this.updateTime(model.get('position'), duration);
+        this.drawCues();
     }
 
     onStreamType(model, streamType) {
