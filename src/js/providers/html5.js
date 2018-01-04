@@ -221,21 +221,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     let _lastEndOfBuffer = null;
     let _androidHls = false;
 
-    function _setAttribute(name, value) {
-        _videotag.setAttribute(name, value || '');
-    }
-
-    _videotag.className = 'jw-video jw-reset';
-
     this.isSDK = !!_playerConfig.sdkplatform;
     this.video = _videotag;
     this.supportsPlaybackRate = true;
 
     _setupListeners(MediaEvents, _videotag);
-
-    _setAttribute('disableRemotePlayback', '');
-    _setAttribute('webkit-playsinline');
-    _setAttribute('playsinline');
 
     function checkVisualQuality() {
         const level = visualQuality.level;
@@ -475,7 +465,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         const source = _levels[_currentQuality];
         const preload = source.preload || 'metadata';
         if (preload !== 'none') {
-            _setAttribute('preload', preload);
+            _videotag.setAttribute('preload', preload);
             _setVideotagSource(source);
         }
     };
