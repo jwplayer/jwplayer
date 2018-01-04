@@ -8,7 +8,6 @@ import {
     isSafari,
     isAndroid,
     isAndroidNative,
-    isWindowsMobile,
     isIOS,
     isMobile,
     isOSX,
@@ -71,7 +70,6 @@ export const Browser = {};
  * @property {boolean} iPad - Is the device an iPad?
  * @property {boolean} iPhone - Is the device an iPhone?
  * @property {boolean} windows - Is the operating system Windows?
- * @property {boolean} windowsMobile - Is the operating system Windows Mobile?
  * @property {EnvironmentVersion} version - The operating system version.
  */
 export const OS = {};
@@ -154,10 +152,6 @@ Object.defineProperties(OS, {
     },
     windows: {
         get: memoize(isWindows),
-        enumerable: true
-    },
-    windowsMobile: {
-        get: memoize(isWindowsMobile),
         enumerable: true
     },
     version: {
