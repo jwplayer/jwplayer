@@ -202,7 +202,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (skipoffset) {
             // Start background loading once the skip button is clickable
             _this.setupSkipButton(skipoffset, _options);
-            _backgroundLoadPosition = skipoffset;
+            _backgroundLoadPosition = typeof skipoffset === 'string' ? utils.seconds(skipoffset) : skipoffset;
         } else {
             // If no skipoffset is set, default to background loading 5 seconds before the end
             _backgroundLoadPosition = item.duration - BACKGROUND_LOAD_OFFSET;
