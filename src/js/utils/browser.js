@@ -65,9 +65,9 @@ export function isAndroid() {
     return userAgentMatch(/Android/i);
 }
 
-/** Matches iOS and Android devices **/
+/** Matches iOS, Android and Windows Phone devices **/
 export function isMobile() {
-    return isIOS() || isAndroid();
+    return isIOS() || isAndroid() || userAgentMatch(/Windows Phone/i);
 }
 
 export function isIframe() {
