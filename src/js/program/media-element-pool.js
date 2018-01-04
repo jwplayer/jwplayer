@@ -1,10 +1,12 @@
 export default function MediaElementPool() {
     const maxPrimedTags = 3;
     const elements = [];
+    const pool = [];
     for (let i = 0; i < maxPrimedTags; i++) {
         const mediaElement = document.createElement('video');
         mediaElement.className = 'jw-video jw-reset';
         elements.push(mediaElement);
+        pool.push(mediaElement);
     }
 
     return {
@@ -12,16 +14,16 @@ export default function MediaElementPool() {
             elements.forEach(primeMediaElementForPlayback);
         },
         getPrimedElement() {
-            if (elements.length) {
+            if (pool.length) {
                 // Shift over pop so that we cycle through elements instead of reusing the same one
-                return elements.shift();
+                return pool.shift();
             }
             return null;
         },
         recycle(mediaElement) {
-            if (mediaElement && !elements.some(element => element === mediaElement)) {
+            if (mediaElement && !pool.some(element => element === mediaElement)) {
                 clean(mediaElement);
-                elements.push(mediaElement);
+                pool.push(mediaElement);
             }
         },
         syncVolume: function (volume) {
