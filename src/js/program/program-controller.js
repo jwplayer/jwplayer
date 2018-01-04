@@ -62,9 +62,9 @@ class ProgramController extends Eventable {
                 // This sets up the mediaController and allows playback to begin
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
+                model.setActiveItem(index);
                 // Initialize the provider last so it's setting properties on the (newly) active media model
                 mediaController.provider.init(item);
-                model.setActiveItem(index);
                 model.trigger('itemReady', item);
                 return this.providerPromise;
             }
