@@ -5,9 +5,7 @@ import { Browser } from 'environment/environment';
 import { ERROR } from 'events/events';
 import _ from 'utils/underscore';
 
-/**
- * Used across all providers for loading tracks and handling browser track-related events
- */
+// Used across all providers for loading tracks and handling browser track-related events
 const Tracks = {
     _itemTracks: null,
     _textTracks: null,

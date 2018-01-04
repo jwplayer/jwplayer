@@ -13,6 +13,7 @@ import _ from 'utils/underscore';
 let instancesCreated = 0;
 
 /**
+ * @private
  * Factory method which creates controllers before calling `jwplayer().setup()`.
  * @param {Api} api
  * @param {HTMLElement} element
@@ -33,6 +34,7 @@ function coreFactory(api, element) {
 }
 
 /**
+ * @private
  * Detaches Api event listeners and destroys the controller.
  * @param {Api} api
  * @param {Core} core
@@ -44,6 +46,7 @@ function resetPlayer(api, core) {
 }
 
 /**
+ * @private
  * Removes the Api instance from the list of active players.
  * The instance will no longer be queryable via `jwplayer()`
  * @param {Api} api

@@ -52,6 +52,7 @@
     "less-loader": "4.0.5",
     "load-grunt-tasks": "3.5.2",
     "loader-utils": "1.1.0",
+    "marked": "^0.3.9",
     "mocha": "4.1.0",
     "node-libs-browser": "2.1.0",
     "phantomjs-polyfill": "0.0.2",

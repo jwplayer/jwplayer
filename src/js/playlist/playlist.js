@@ -8,7 +8,7 @@ const Playlist = function(playlist) {
     return (Array.isArray(playlist) ? playlist : [playlist]).map(PlaylistItem);
 };
 
-/** Go through the playlist and choose a single playable type to play; remove sources of a different type **/
+// Go through the playlist and choose a single playable type to play; remove sources of a different type
 export function filterPlaylist(playlist, model, feedData) {
     const list = [];
     const providers = model.getProviders();

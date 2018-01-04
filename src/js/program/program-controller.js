@@ -8,8 +8,14 @@ import Eventable from 'utils/eventable';
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 import { Features } from '../environment/environment';
 
+/** @private Do not include in JSDocs */
 
-export default class ProgramController extends Eventable {
+class ProgramController extends Eventable {
+    /**
+     * ProgramController constructor
+     * @param model
+     * @param mediaPool
+     */
     constructor(model, mediaPool) {
         super();
 
@@ -32,6 +38,7 @@ export default class ProgramController extends Eventable {
      * This method will either load a new Provider or reuse the active one.
      * @param {number} index - The playlist index of the item
      * @returns {Promise} - The Provider promise. Resolves with the active Media Controller
+     * @memberOf ProgramController
      */
     setActiveItem(index) {
         const { mediaController, model } = this;
@@ -618,3 +625,5 @@ function forwardEvents(programController, mediaController) {
 function getSource(item) {
     return item && item.sources && item.sources[0];
 }
+
+export default ProgramController;

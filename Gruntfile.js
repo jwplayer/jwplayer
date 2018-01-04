@@ -93,6 +93,7 @@ module.exports = function(grunt) {
                 },
                 files: ['src/js/**/*.js'],
                 tasks: [
+                    'docs',
                     'webpack:debug',
                     'lint:player',
                     'karma:local'
