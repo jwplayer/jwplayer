@@ -5,6 +5,9 @@ export default function MediaElementPool() {
     for (let i = 0; i < maxPrimedTags; i++) {
         const mediaElement = document.createElement('video');
         mediaElement.className = 'jw-video jw-reset';
+        mediaElement.setAttribute('disableRemotePlayback', '');
+        mediaElement.setAttribute('webkit-playsinline', '');
+        mediaElement.setAttribute('playsinline', '');
         elements.push(mediaElement);
         pool.push(mediaElement);
     }
