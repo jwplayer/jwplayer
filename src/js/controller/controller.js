@@ -149,11 +149,25 @@ Object.assign(Controller.prototype, {
                 const type = streamType(duration, minDvrWindow);
                 model.setStreamType(type);
             });
+
+            const mediaController = _programController.mediaController;
+            mediaController.off('subtitlesTracks', _onSubtitleTracks);
+            mediaController.on('subtitlesTracks', _onSubtitleTracks);
         });
 
         // Ensure captionsList event is raised after playlistItem
         _captions = new Captions(_model);
         _captions.on('all', _triggerAfterReady);
+
+        function _onSubtitleTracks(e) {
+            _captions.setSubtitlesTracks(e.tracks);
+            const defaultCaptionsIndex = _captions.getCurrentIndex();
+
+            // set the current captions if the default index isn't 0 or "Off"
+            if (defaultCaptionsIndex > 0) {
+                _setCurrentCaptions(defaultCaptionsIndex);
+            }
+        }
 
         function _triggerAfterReady(type, e) {
             _this.triggerAfterReady(type, e);
@@ -686,15 +700,6 @@ Object.assign(Controller.prototype, {
 
         function addProgramControllerListeners() {
             _programController.on('all', _triggerAfterReady, _this);
-            _programController.on('subtitlesTracks', (e) => {
-                _captions.setSubtitlesTracks(e.tracks);
-                const defaultCaptionsIndex = _captions.getCurrentIndex();
-
-                // set the current captions if the default index isn't 0 or "Off"
-                if (defaultCaptionsIndex > 0) {
-                    _setCurrentCaptions(defaultCaptionsIndex);
-                }
-            });
             _programController.on(MEDIA_COMPLETE, () => {
                 // Insert a small delay here so that other complete handlers can execute
                 resolved.then(_completeHandler);
