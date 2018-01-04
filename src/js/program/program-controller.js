@@ -112,7 +112,7 @@ class ProgramController extends Eventable {
         }
 
         // Start playback immediately if we have already loaded a mediaController
-        if (mediaController) {
+        if (mediaController && mediaController.item === item) {
             playPromise = mediaController.play(playReason);
         } else {
             // Wait for the provider to load before starting initial playback
