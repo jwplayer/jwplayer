@@ -63,6 +63,7 @@ Object.assign(Controller.prototype, {
         _view.on('all', _triggerAfterReady, _this);
 
         const _programController = new ProgramController(_model, mediaPool);
+        syncInitialModelState();
         addProgramControllerListeners();
         initQoe(_model, _programController);
 
@@ -700,6 +701,12 @@ Object.assign(Controller.prototype, {
                 resolved.then(_completeHandler);
             });
             _programController.on(MEDIA_ERROR, _this.triggerError, _this);
+        }
+
+        function syncInitialModelState() {
+            // Mute the video if autostarting on mobile, except for Android SDK. Otherwise, honor the model's mute value
+            _programController.mute = (_model.autoStartOnMobile() && !_model.get('sdkplatform')) || _model.get('mute');
+            _programController.volume = _model.get('volume');
         }
 
         function updateProgramSoundSettings() {
