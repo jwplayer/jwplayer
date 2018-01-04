@@ -234,11 +234,6 @@ const Model = function() {
 
 const syncProviderProperties = (model, provider) => {
     model.set('provider', provider.getName());
-
-    provider.volume(model.get('volume'));
-    // Mute the video if autostarting on mobile, except for Android SDK. Otherwise, honor the model's mute value
-    const isAndroidSdk = model.get('sdkplatform') === 1;
-    provider.mute((model.autoStartOnMobile() && !isAndroidSdk) || model.get('mute'));
     if (model.get('instreamMode') === true) {
         provider.instreamMode = true;
     }
