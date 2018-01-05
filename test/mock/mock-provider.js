@@ -5,7 +5,7 @@ import BackboneEvents from 'utils/backbone.events';
 import ProviderDefaults from 'providers/default';
 
 
-class MockDefault {};
+class MockDefault {}
 MockDefault.prototype = Object.assign({}, ProviderDefaults, BackboneEvents, VideoAction, VideoAttached, Tracks);
 
 export default class MockProvider extends MockDefault {

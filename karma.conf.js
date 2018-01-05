@@ -44,7 +44,7 @@ module.exports = function(config) {
     const packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
     config.set({
-        frameworks: ['mocha', 'chai', 'sinon'],
+        frameworks: ['mocha', 'sinon-chai'],
         reporters: testReporters,
         port: serverPort, // web server port
         colors: true, // colors in the output (reporters and logs)

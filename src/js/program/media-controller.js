@@ -99,6 +99,11 @@ export default class MediaController extends Eventable {
         model.set('attached', false);
     }
 
+    trigger(type, event) {
+        // TODO: queue events when backgrounded or detached, trigger all when foregrounded or reattached
+        super.trigger(type, event);
+    }
+
     // Executes the playPromise
     _playAttempt(playPromise, playReason) {
         const { item, mediaModel, model, provider } = this;

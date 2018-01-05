@@ -1,4 +1,5 @@
 import MediaPool from 'program/media-element-pool';
+import sinon from 'sinon';
 
 describe('Media Element Pool', function () {
     let mediaPool = null;
@@ -36,10 +37,10 @@ describe('Media Element Pool', function () {
     });
 
     it('synchronizes volume across the pool', function () {
-       mediaPool.syncVolume(50);
-       for (let i = 0; i < 3; i++) {
-           expect(mediaPool.getPrimedElement().volume).to.equal(0.5);
-       }
+        mediaPool.syncVolume(50);
+        for (let i = 0; i < 3; i++) {
+            expect(mediaPool.getPrimedElement().volume).to.equal(0.5);
+        }
     });
 
     it('synchronizes mute across the pool', function () {

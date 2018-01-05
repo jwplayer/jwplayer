@@ -16,9 +16,8 @@ export function ProviderListener(mediaController) {
             case MEDIA_TYPE:
                 if (mediaModel.get(MEDIA_TYPE) !== data.mediaType) {
                     mediaModel.set(MEDIA_TYPE, data.mediaType);
-                    mediaController.trigger(type, event);
                 }
-                return;
+                break;
             case MEDIA_VISUAL_QUALITY:
                 mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
                 return;
@@ -31,11 +30,11 @@ export function ProviderListener(mediaController) {
                 const previousState = mediaModel.attributes.mediaState;
                 mediaModel.attributes.mediaState = data.newstate;
                 mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
-            }
                 // This "return" is important because
                 //  we are choosing to not propagate model event.
                 //  Instead letting the master controller do so
                 return;
+            }
             case MEDIA_COMPLETE:
                 mediaController.beforeComplete = true;
                 mediaController.trigger(MEDIA_BEFORECOMPLETE, event);
@@ -56,7 +55,7 @@ export function ProviderListener(mediaController) {
             }
             case MEDIA_BUFFER:
                 mediaModel.set('buffer', data.bufferPercent);
-                break;
+            /* falls through to update duration while media is loaded */
             case MEDIA_TIME: {
                 mediaModel.set('position', data.position);
                 const duration = data.duration;
@@ -93,10 +92,10 @@ export function MediaControllerListener(model, programController) {
                 break;
             case 'flashBlocked':
                 model.set('flashBlocked', true);
-                break;
+                return;
             case 'flashUnblocked':
                 model.set('flashBlocked', false);
-                break;
+                return;
             case MEDIA_VOLUME:
                 model.set(type, data[type]);
                 return;
@@ -112,8 +111,8 @@ export function MediaControllerListener(model, programController) {
                 if (rate > 0) {
                     model.set('playbackRate', rate);
                 }
+                return;
             }
-                break;
             case MEDIA_META: {
                 Object.assign(model.get('itemMeta'), data.metadata);
                 break;
