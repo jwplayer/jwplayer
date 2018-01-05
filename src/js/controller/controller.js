@@ -686,21 +686,22 @@ Object.assign(Controller.prototype, {
         }
 
         function addProgramControllerListeners() {
-            _programController.on('all', _triggerAfterReady, _this);
-            _programController.on('subtitlesTracks', (e) => {
-                _captions.setSubtitlesTracks(e.tracks);
-                const defaultCaptionsIndex = _captions.getCurrentIndex();
+            _programController
+                .on('all', _triggerAfterReady, _this)
+                .on('subtitlesTracks', (e) => {
+                    _captions.setSubtitlesTracks(e.tracks);
+                    const defaultCaptionsIndex = _captions.getCurrentIndex();
 
-                // set the current captions if the default index isn't 0 or "Off"
-                if (defaultCaptionsIndex > 0) {
-                    _setCurrentCaptions(defaultCaptionsIndex);
-                }
-            });
-            _programController.on(MEDIA_COMPLETE, () => {
-                // Insert a small delay here so that other complete handlers can execute
-                resolved.then(_completeHandler);
-            });
-            _programController.on(MEDIA_ERROR, _this.triggerError, _this);
+                    // set the current captions if the default index isn't 0 or "Off"
+                    if (defaultCaptionsIndex > 0) {
+                        _setCurrentCaptions(defaultCaptionsIndex);
+                    }
+                }, _this)
+                .on(MEDIA_COMPLETE, () => {
+                    // Insert a small delay here so that other complete handlers can execute
+                    resolved.then(_completeHandler);
+                }, _this)
+                .on(MEDIA_ERROR, _this.triggerError, _this);
         }
 
         function syncInitialModelState() {
@@ -875,6 +876,9 @@ Object.assign(Controller.prototype, {
             if (_captions) {
                 _captions.destroy();
                 _captions = null;
+            }
+            if (_programController) {
+                _programController.destroy();
             }
             this.instreamDestroy();
         };

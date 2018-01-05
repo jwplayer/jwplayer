@@ -295,6 +295,16 @@ class ProgramController extends Eventable {
     }
 
     /**
+     * Removes all event listeners and destroys all media.
+     * @returns {undefined}
+     */
+    destroy() {
+        this.off();
+        this._destroyBackgroundMedia();
+        this._destroyActiveMedia();
+    }
+
+    /**
      * Activates the provided media controller, placing it into the foreground.
      * @returns {undefined}
      * @private

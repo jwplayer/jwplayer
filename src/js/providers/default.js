@@ -2,6 +2,8 @@ import { PLAYER_STATE, MEDIA_TYPE } from 'events/events';
 
 const noop = function() {};
 const returnFalse = (() => false);
+const getNameResult = { name: 'default' };
+const returnName = (() => getNameResult);
 
 /** Audio Track information for tracks returned by {@link Api#getAudioTracks jwplayer().getAudioTracks()}
  * @typedef {object} AudioTrackOption
@@ -50,7 +52,7 @@ const DefaultProvider = {
     // Sets the parent element, causing provider to append <video> into it
     setContainer: returnFalse,
 
-    getName: noop,
+    getName: returnName,
 
     getQualityLevels: noop,
     getCurrentQuality: noop,

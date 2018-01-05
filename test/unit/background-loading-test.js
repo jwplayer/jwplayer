@@ -2,7 +2,7 @@ import Model from 'controller/model';
 import ProgramController from 'program/program-controller';
 import MediaController from 'program/media-controller';
 import MockProvider from 'mock/mock-provider';
-import MediaElementPool from 'program/media-element-pool'
+import MediaElementPool from 'program/media-element-pool';
 import sinon from 'sinon';
 
 const defaultConfig = {

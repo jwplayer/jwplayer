@@ -1,5 +1,6 @@
 import cancelable from 'utils/cancelable';
 import Eventable from 'utils/eventable';
+import ApiQueueDecorator from 'api/api-queue';
 import { ProviderListener } from 'program/program-listeners';
 import { resolved } from 'polyfills/promise';
 import { MediaModel } from 'controller/model';
@@ -22,6 +23,8 @@ export default class MediaController extends Eventable {
         this.providerListener = new ProviderListener(this);
         this.thenPlayPromise = cancelable(() => {});
         addProviderListeners(this);
+        this.eventQueue = new ApiQueueDecorator(this, ['trigger'],
+            () => !this.attached || this.background);
     }
 
     play(playReason) {
@@ -65,6 +68,7 @@ export default class MediaController extends Eventable {
         const { provider, mediaModel } = this;
         mediaModel.off();
         provider.off();
+        this.eventQueue.destroy();
         this.detach();
         if (provider.getContainer()) {
             provider.remove();
@@ -79,8 +83,7 @@ export default class MediaController extends Eventable {
 
         // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
         model.setPlaybackRate(model.get('defaultPlaybackRate'));
-
-        addProviderListeners(this);
+        this.eventQueue.flush();
         provider.attachMedia();
         this.attached = true;
         model.set('attached', true);
@@ -93,7 +96,6 @@ export default class MediaController extends Eventable {
     detach() {
         const { model, provider } = this;
         this.thenPlayPromise.cancel();
-        removeProviderListeners(this);
         provider.detachMedia();
         this.attached = false;
         model.set('attached', false);
@@ -233,8 +235,11 @@ export default class MediaController extends Eventable {
                 container.removeChild(provider.video);
                 this.container = null;
             }
-        } else if (this.beforeComplete) {
-            this._playbackComplete();
+        } else {
+            this.eventQueue.flush();
+            if (this.beforeComplete) {
+                this._playbackComplete();
+            }
         }
     }
 
@@ -277,10 +282,5 @@ function syncPlayerWithMediaModel(mediaModel) {
 }
 
 function addProviderListeners(mediaController) {
-    removeProviderListeners(mediaController);
     mediaController.provider.on('all', mediaController.providerListener, mediaController);
-}
-
-function removeProviderListeners(mediaController) {
-    mediaController.provider.off('all', mediaController.providerListener, mediaController);
 }
