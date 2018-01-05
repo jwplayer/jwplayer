@@ -2,6 +2,7 @@ import {
     pad,
     extension,
     seconds,
+    offsetToSeconds,
     hms,
     prefix,
     suffix
@@ -45,33 +46,66 @@ describe('strings', function() {
     });
 
     it('seconds', function() {
-        var sec = seconds(5);
+        timeConversionTest(seconds);
+    });
+
+    it('offsetToSeconds', function () {
+        timeConversionTest(offsetToSeconds);
+
+        let sec = offsetToSeconds('50%', 100);
+        expect(sec, 'percentage and duration inputs return seconds').to.equal(50);
+
+        sec = offsetToSeconds('25%');
+        expect(sec, 'percentage without duration returns 0').to.equal(0);
+
+        sec = offsetToSeconds('50', 100);
+        expect(sec, 'non-percentage numeric string with duration inputs return seconds').to.equal(50);
+
+        sec = offsetToSeconds(null, 100);
+        expect(sec, 'null and duration inputs return 0').to.equal(0);
+
+        sec = offsetToSeconds(undefined, 100);
+        expect(sec, 'undefined and duration inputs return 0').to.equal(0);
+
+        sec = offsetToSeconds('', 100);
+        expect(sec, 'empty string and duration inputs return 0').to.equal(0);
+
+        sec = offsetToSeconds('abc', 100);
+        expect(sec, 'alpha only strings and duration inputs return 0').to.equal(0);
+    });
+
+    function timeConversionTest(converter) {
+        let sec = converter(5);
         expect(sec, 'number input returns input').to.equal(5);
 
-        sec = seconds('5s');
+        sec = converter('5s');
         expect(sec, 'seconds input returns seconds').to.equal(5);
 
-        sec = seconds('5m');
+        sec = converter('5m');
         expect(sec, 'minutes input returns seconds').to.equal(300);
 
-        sec = seconds('1h');
+        sec = converter('1h');
         expect(sec, 'hours input returns seconds').to.equal(3600);
 
-        sec = seconds('5');
+        sec = converter('5');
         expect(sec, 'string number input returns number').to.equal(5);
 
-        sec = seconds('1:01');
+        sec = converter('1:01');
         expect(sec, 'minute seconds input returns seconds').to.equal(61);
 
-        sec = seconds('01:01:01.111');
+        sec = converter('01:01:01.111');
         expect(sec, 'hours minute seconds milliseconds input returns seconds').to.equal(3661.111);
 
-        sec = seconds('00:00:01:15');
+        sec = converter('00:00:01:15');
         expect(sec, 'hours minute seconds frames input without frameRate returns seconds without frames').to.equal(1);
 
-        sec = seconds('00:01:01:25', 50);
+        if (converter === offsetToSeconds) {
+            sec = converter('00:01:01:25', null, 50);
+        } else {
+            sec = converter('00:01:01:25', 50);
+        }
         expect(sec, 'hours minute seconds frames input with frameRate returns seconds').to.equal(61.5);
-    });
+    }
 
     it('hms', function() {
         var str = hms(3661);
