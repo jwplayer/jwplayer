@@ -107,8 +107,6 @@ export function offsetToSeconds(offset, duration, frameRate) {
             return duration * percent / 100;
         }
         return 0;
-    } else if (!isNaN(Number(offset))) {
-        return Number(offset);
     }
     return seconds(offset, frameRate);
 }
