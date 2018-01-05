@@ -204,7 +204,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             _backgroundLoadPosition = skipoffset;
         } else {
             // If no skipoffset is set, default to background loading 5 seconds before the end
-            _backgroundLoadPosition = item.duration - 5;
+            _backgroundLoadPosition = item.duration - BACKGROUND_LOAD_OFFSET;
         }
 
         return playPromise;

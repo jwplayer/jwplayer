@@ -1,5 +1,4 @@
 import ProgramController from 'program/program-controller';
-import AdMediaPool from 'program/ad-media-pool';
 import Model from 'controller/model';
 import { Features } from 'environment/environment';
 import changeStateEvent from 'events/change-state-event';
@@ -12,10 +11,14 @@ export default class AdProgramController extends ProgramController {
         this.playerModel = model;
         this.provider = null;
 
+        // Ad plugins must use only one element, and must use the same element during playback of an item
+        // (i.e. prerolls, midrolls, and postrolls must use the same tag)
         if (Features.backgroundLoading) {
-            this.mediaPool = AdMediaPool(mediaPool);
+            // The media pool has reserves an element for ads to use. It is reserved on setup and is not used by other media
+            this.mediaElement = mediaPool.getAdElement();
         } else {
-            const mediaElement = model.get('mediaElement');
+            // Take the tag that we're using to play the current item. The tag has been freed before reaching this point
+            const mediaElement = this.mediaElement = model.get('mediaElement');
 
             if (!mediaElement.paused) {
                 mediaElement.pause();
@@ -132,15 +135,12 @@ export default class AdProgramController extends ProgramController {
 
 
     destroy() {
-        const { model } = this;
+        const { model, mediaElement, mediaPool } = this;
 
         model.off();
-        this.mediaPool.recycle();
         this._destroyActiveMedia();
-        this.mediaPool = null;
 
         if (!Features.backgroundLoading) {
-            const mediaElement = model.get('mediaElement');
             if (mediaElement) {
                 mediaElement.removeEventListener('emptied', this.srcResetListener);
                 // Reset the player media model if the src was changed externally
@@ -148,6 +148,8 @@ export default class AdProgramController extends ProgramController {
                     this.srcReset();
                 }
             }
+        } else {
+            mediaPool.clean(this.mediaElement);
         }
     }
 
@@ -182,6 +184,10 @@ export default class AdProgramController extends ProgramController {
             default:
                 break;
         }
+    }
+
+    get primedElement() {
+        return this.mediaElement;
     }
 
     set mute(mute) {

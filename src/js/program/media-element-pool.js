@@ -1,16 +1,17 @@
+import { MEDIA_POOL_SIZE } from 'program/program-constants';
+
 export default function MediaElementPool() {
-    const maxPrimedTags = 3;
+    const maxPrimedTags = MEDIA_POOL_SIZE;
     const elements = [];
     const pool = [];
     for (let i = 0; i < maxPrimedTags; i++) {
-        const mediaElement = document.createElement('video');
-        mediaElement.className = 'jw-video jw-reset';
-        mediaElement.setAttribute('disableRemotePlayback', '');
-        mediaElement.setAttribute('webkit-playsinline', '');
-        mediaElement.setAttribute('playsinline', '');
+        const mediaElement = createMediaElement();
         elements.push(mediaElement);
         pool.push(mediaElement);
     }
+
+    // Reserve an element exclusively for ads
+    const adElement = pool.shift();
 
     return {
         prime() {
@@ -23,9 +24,26 @@ export default function MediaElementPool() {
             }
             return null;
         },
+        getAdElement() {
+            return adElement;
+        },
+        clean(mediaElement) {
+            // Try to clean the media element so that we don't see frames of the previous video when reusing a tag
+            // We don't want to call load again if the media element is already clean
+            if (!mediaElement.src) {
+                return;
+            }
+
+            mediaElement.removeAttribute('src');
+            try {
+                mediaElement.load();
+            } catch (e) {
+                // Calling load may throw an exception, but does not result in an error state
+            }
+        },
         recycle(mediaElement) {
             if (mediaElement && !pool.some(element => element === mediaElement)) {
-                clean(mediaElement);
+                this.clean(mediaElement);
                 pool.push(mediaElement);
             }
         },
@@ -49,17 +67,13 @@ function primeMediaElementForPlayback(mediaElement) {
     }
 }
 
-// Try to clean the media element so that we don't see frames of the previous video when reusing a tag
-function clean(mediaElement) {
-    // We don't want to call load again if the media element is already clean
-    if (!mediaElement.src) {
-        return;
-    }
+function createMediaElement() {
+    const mediaElement = document.createElement('video');
 
-    mediaElement.removeAttribute('src');
-    try {
-        mediaElement.load();
-    } catch (e) {
-        // Calling load may throw an exception, but does not result in an error state
-    }
+    mediaElement.className = 'jw-video jw-reset';
+    mediaElement.setAttribute('disableRemotePlayback', '');
+    mediaElement.setAttribute('webkit-playsinline', '');
+    mediaElement.setAttribute('playsinline', '');
+
+    return mediaElement;
 }
