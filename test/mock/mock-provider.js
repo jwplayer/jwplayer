@@ -9,11 +9,23 @@ class MockDefault {}
 MockDefault.prototype = Object.assign({}, ProviderDefaults, BackboneEvents, VideoAction, VideoAttached, Tracks);
 
 export default class MockProvider extends MockDefault {
-    constructor() {
+    constructor(playerId, playerConfig, mediaElement) {
         super();
+        this.video = mediaElement;
     }
 
     getName() {
         return { name: 'mock' };
+    }
+
+    getContainer() {
+        return this.container;
+    }
+
+    setContainer(element) {
+        this.container = element;
+        if (this.video && this.video.parentNode !== element) {
+            element.appendChild(this.video);
+        }
     }
 }

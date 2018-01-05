@@ -1,8 +1,7 @@
 import Model from 'controller/model';
 import ProgramController from 'program/program-controller';
 import MediaElementPool from 'program/media-element-pool';
-import Events from 'utils/backbone.events';
-import DefaultProvider from 'providers/default';
+import MockProvider from 'mock/mock-provider';
 import sinon from 'sinon';
 
 const defaultConfig = {
@@ -42,10 +41,6 @@ const providerEvents = [
     }
 ];
 
-const Provider = function() {};
-Object.assign(Provider.prototype, DefaultProvider, Events);
-
-
 describe('ProgramController', function () {
 
     let model = null;
@@ -60,21 +55,23 @@ describe('ProgramController', function () {
         programController = new ProgramController(model, new MediaElementPool());
         programController.providerController = {
             choose() {
-                return Provider;
+                return MockProvider;
             }
         };
         programController.toString = (() => '[ProgramController]');
-        sinon.spy(programController, 'trigger');
     });
 
     afterEach(function () {
-        programController.off();
+        programController.destroy();
         model.destroy();
         model = null;
         programController = null;
     });
 
     it('forwards provider events', function() {
+        const callback = sinon.spy();
+        const context = {};
+        programController.on('all', callback, context);
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
@@ -83,12 +80,14 @@ describe('ProgramController', function () {
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
-                expect(programController.trigger).to.have.always.have.been.calledOn(programController);
-                expectAllEventsTriggered(programController.trigger);
+                expect(callback).to.have.always.have.been.calledOn(context);
+                expectAllEventsTriggered(callback);
             });
     });
 
     it('does not forward provider events when provider is backgrounded', function() {
+        const callback = sinon.spy();
+        programController.on('all', callback, {});
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
@@ -98,11 +97,13 @@ describe('ProgramController', function () {
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
-                expect(programController.trigger).to.have.callCount(0);
+                expect(callback).to.have.callCount(0);
             });
     });
 
     it('does not forward provider events when provider is detached', function() {
+        const callback = sinon.spy();
+        programController.on('all', callback, {});
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
@@ -112,11 +113,29 @@ describe('ProgramController', function () {
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
-                expect(programController.trigger).to.have.callCount(0);
+                expect(callback).to.have.callCount(0);
             });
     });
 
+    it('does not forward provider events when program-controller is destroyed', function() {
+        const callback = sinon.spy();
+        programController.on('all', callback, {});
+        programController.stopVideo();
+        const itemPromise = programController.setActiveItem(0)
+            .then(function () {
+                const provider = programController.activeProvider;
+                providerEvents.forEach(event => {
+                    provider.trigger(event.type, event);
+                });
+                expect(callback).to.have.callCount(0);
+            });
+        programController.destroy();
+        return itemPromise;
+    });
+
     it('forwards queued provider events when provider is foregrounded', function() {
+        const callback = sinon.spy();
+        programController.on('all', callback, {});
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
@@ -126,13 +145,15 @@ describe('ProgramController', function () {
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
-                expect(programController.trigger).to.have.callCount(0);
+                expect(callback).to.have.callCount(0);
                 programController.restoreBackgroundMedia();
-                // expectAllEventsTriggered(programController.trigger);
+                expectAllEventsTriggered(callback);
             });
     });
 
     it('forwards queued provider events when provider is reattached', function() {
+        const callback = sinon.spy();
+        programController.on('all', callback, {});
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
@@ -142,16 +163,16 @@ describe('ProgramController', function () {
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
-                expect(programController.trigger).to.have.callCount(0);
+                expect(callback).to.have.callCount(0);
                 programController.attached = true;
-                // expectAllEventsTriggered(programController.trigger);
+                expectAllEventsTriggered(callback);
             });
     });
 });
 
-function expectAllEventsTriggered(triggerSpy) {
-    expect(triggerSpy).to.have.callCount(providerEvents.length);
+function expectAllEventsTriggered(callbackSpy) {
+    expect(callbackSpy).to.have.callCount(providerEvents.length);
     providerEvents.forEach((event, i) => {
-        expect(triggerSpy.getCall(i)).to.have.been.calledWith(event.type, event);
+        expect(callbackSpy.getCall(i)).to.have.been.calledWith(event.type, event);
     });
 }
