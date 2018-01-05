@@ -4,7 +4,7 @@ import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
 import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
 import Promise from 'polyfills/promise';
-import { offsetSeconds } from 'utils/strings';
+import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
 import AdProgramController from 'program/ad-program-controller';
@@ -139,7 +139,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // Start background loading once the skip button is clickable
         // If no skipoffset is set, default to background loading 5 seconds before the end
         if (!_backgroundLoadPosition) {
-            _backgroundLoadPosition = offsetSeconds(_skipOffset, duration) || duration - BACKGROUND_LOAD_OFFSET;
+            _backgroundLoadPosition = offsetToSeconds(_skipOffset, duration) || duration - BACKGROUND_LOAD_OFFSET;
         }
         if (!_backgroundLoadTriggered && position >= _backgroundLoadPosition) {
             _controller.preloadNextItem();
