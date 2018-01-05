@@ -2,6 +2,7 @@ import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
+import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
 import Promise from 'polyfills/promise';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
