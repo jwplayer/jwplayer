@@ -1,8 +1,8 @@
-import { OS } from 'environment/environment';
 import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
-    ERROR, MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
-    PLAYLIST_ITEM, PLAYLIST_COMPLETE, INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
-import utils from 'utils/helpers';
+    MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
+    PLAYLIST_ITEM, PLAYLIST_COMPLETE,
+    INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
+import Promise from 'polyfills/promise';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
 import AdProgramController from 'program/ad-program-controller';
@@ -96,7 +96,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         // don't trigger api play/pause on display click
         if (_view.clickHandler()) {
-            _view.clickHandler().setAlternateClickHandlers(utils.noop, null);
+            _view.clickHandler().setAlternateClickHandlers(() => {}, null);
         }
 
         this.setText(_model.get('localization').loadingAd);
@@ -162,14 +162,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     this.loadItem = function(item, options) {
         if (_destroyed || !_inited) {
-            return;
-        }
-        if (OS.android && OS.version.major === 2 && OS.version.minor === 3) {
-            this.trigger({
-                type: ERROR,
-                message: 'Error loading instream: Cannot play instream on Android 2.3'
-            });
-            return;
+            return Promise.reject(new Error('Instream not setup'));
         }
         // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
         let playlist = item;
