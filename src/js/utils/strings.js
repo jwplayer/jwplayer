@@ -103,10 +103,10 @@ export function seconds(str, frameRate) {
 export function offsetToSeconds(offset, duration, frameRate) {
     if (_.isString(offset) && offset.slice(-1) === '%') {
         const percent = parseFloat(offset);
-        if (duration && !isNaN(percent)) {
-            return duration * percent / 100;
+        if (isNaN(duration) || isNaN(percent)) {
+            return null;
         }
-        return 0;
+        return duration * percent / 100;
     }
     return seconds(offset, frameRate);
 }
