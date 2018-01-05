@@ -1,8 +1,9 @@
+import { Features } from 'environment/environment';
+import { ERROR, FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import ProgramController from 'program/program-controller';
 import Model from 'controller/model';
-import { Features } from 'environment/environment';
 import changeStateEvent from 'events/change-state-event';
-import { ERROR, FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
+import SharedMediaPool from 'program/shared-media-pool';
 
 export default class AdProgramController extends ProgramController {
     constructor(model, mediaPool) {
@@ -13,17 +14,17 @@ export default class AdProgramController extends ProgramController {
 
         // Ad plugins must use only one element, and must use the same element during playback of an item
         // (i.e. prerolls, midrolls, and postrolls must use the same tag)
+        let mediaElement;
         if (Features.backgroundLoading) {
             // The media pool has reserves an element for ads to use. It is reserved on setup and is not used by other media
-            this.mediaElement = mediaPool.getAdElement();
+            mediaElement = mediaPool.getAdElement();
         } else {
             // Take the tag that we're using to play the current item. The tag has been freed before reaching this point
-            const mediaElement = this.mediaElement = model.get('mediaElement');
+            mediaElement = model.get('mediaElement');
 
             if (!mediaElement.paused) {
                 mediaElement.pause();
             }
-            mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
 
             adModel.attributes.mediaElement = mediaElement;
             adModel.attributes.mediaSrc = mediaElement.src;
@@ -33,7 +34,10 @@ export default class AdProgramController extends ProgramController {
                 this.srcReset();
             };
             mediaElement.addEventListener('emptied', srcResetListener);
+            mediaElement.playbackRate = mediaElement.defaultPlaybackRate = 1;
         }
+
+        this.mediaPool = SharedMediaPool(mediaElement, mediaPool);
     }
 
     setup() {
@@ -136,9 +140,7 @@ export default class AdProgramController extends ProgramController {
 
     destroy() {
         const { model, mediaElement, mediaPool } = this;
-
         model.off();
-        this._destroyActiveMedia();
 
         if (!Features.backgroundLoading) {
             if (mediaElement) {
@@ -149,7 +151,7 @@ export default class AdProgramController extends ProgramController {
                 }
             }
         } else {
-            mediaPool.clean(this.mediaElement);
+            mediaPool.clean();
         }
     }
 
@@ -184,10 +186,6 @@ export default class AdProgramController extends ProgramController {
             default:
                 break;
         }
-    }
-
-    get primedElement() {
-        return this.mediaElement;
     }
 
     set mute(mute) {

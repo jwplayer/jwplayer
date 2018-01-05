@@ -89,7 +89,7 @@ Object.assign(CoreShim.prototype, {
         // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
         let mediaPool = MediaElementPool();
         if (!Features.backgroundLoading) {
-            mediaPool = SharedMediaPool(mediaPool);
+            mediaPool = SharedMediaPool(mediaPool.getPrimedElement(), mediaPool);
         }
         mediaPool.prime();
 
