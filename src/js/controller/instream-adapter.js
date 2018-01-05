@@ -26,6 +26,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _backgroundLoadTriggered = false;
     let _oldpos;
     let _skipOffset;
+    let _backgroundLoadPosition;
     let _destroyed = false;
     let _inited = false;
 
@@ -137,7 +138,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         // Start background loading once the skip button is clickable
         // If no skipoffset is set, default to background loading 5 seconds before the end
-        if (!_backgroundLoadTriggered && position >= (offsetSeconds(_skipOffset, duration) || duration - BACKGROUND_LOAD_OFFSET)) {
+        if (!_backgroundLoadPosition) {
+            _backgroundLoadPosition = offsetSeconds(_skipOffset, duration) || duration - BACKGROUND_LOAD_OFFSET;
+        }
+        if (!_backgroundLoadTriggered && position >= _backgroundLoadPosition) {
             _controller.preloadNextItem();
             _backgroundLoadTriggered = true;
         }
@@ -201,10 +205,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const playPromise = _adProgram.setActiveItem(_arrayIndex);
 
         _backgroundLoadTriggered = false;
-        const skipoffset = item.skipoffset || _options.skipoffset;
-        if (skipoffset) {
-            _skipOffset = skipoffset;
-            _this.setupSkipButton(skipoffset, _options);
+        _skipOffset = item.skipoffset || _options.skipoffset;
+        if (_skipOffset) {
+            _this.setupSkipButton(_skipOffset, _options);
         }
         return playPromise;
     };
