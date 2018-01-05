@@ -1,14 +1,16 @@
 import MediaPool from 'program/media-element-pool';
+import { MEDIA_POOL_SIZE } from 'program/program-constants';
 import sinon from 'sinon';
 
 describe('Media Element Pool', function () {
+    const numTags = MEDIA_POOL_SIZE - 1;
     let mediaPool = null;
     beforeEach(function () {
         mediaPool = new MediaPool();
     });
 
-    it('starts with 3 empty media elements', function () {
-        for (let i = 0; i < 3; i++) {
+    it(`starts with ${numTags} empty media elements`, function () {
+        for (let i = 0; i < numTags; i++) {
             const element = mediaPool.getPrimedElement();
             expect(element).to.not.equal(null);
             expect(element.nodeName).to.equal('VIDEO');
@@ -19,34 +21,25 @@ describe('Media Element Pool', function () {
         expect(mediaPool.getPrimedElement()).to.equal(null);
     });
 
-    it('primes elements by calling load', function () {
-        const spies = [];
-        for (let i = 0; i < 3; i++) {
-            const element = mediaPool.getPrimedElement();
-            mediaPool.recycle(element);
-            const spy = sinon.spy();
-            element.load = spy;
-            spies.push(spy);
-        }
-
-        mediaPool.prime();
-        expect(spies.length).to.equal(3);
-        spies.forEach(s => {
-            expect(s.calledOnce).to.equal(true);
-        });
-    });
-
     it('synchronizes volume across the pool', function () {
         mediaPool.syncVolume(50);
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < numTags; i++) {
             expect(mediaPool.getPrimedElement().volume).to.equal(0.5);
         }
     });
 
     it('synchronizes mute across the pool', function () {
         mediaPool.syncMute(true);
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < numTags; i++) {
             expect(mediaPool.getPrimedElement().muted).to.equal(true);
+        }
+    });
+
+    it('provides an exclusive element to ad pools', function () {
+        const adElement = mediaPool.getAdElement();
+        expect(adElement).to.not.equal(null);
+        for (let i = 0; i < numTags; i++) {
+            expect(mediaPool.getPrimedElement()).to.not.equal(adElement);
         }
     });
 });

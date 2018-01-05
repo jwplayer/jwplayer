@@ -87,8 +87,10 @@ Object.assign(CoreShim.prototype, {
         model.setProvider = function() {};
 
         // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
-
-        const mediaPool = Features.backgroundLoading ? MediaElementPool() : SharedMediaPool();
+        let mediaPool = MediaElementPool();
+        if (!Features.backgroundLoading) {
+            mediaPool = SharedMediaPool(mediaPool.getPrimedElement(), mediaPool);
+        }
         mediaPool.prime();
 
         return Promise.all([

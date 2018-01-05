@@ -1,14 +1,16 @@
-export default function SharedMediaPool() {
-    const mediaElement = document.createElement('video');
-    mediaElement.className = 'jw-video jw-reset';
+export default function SharedMediaPool(sharedElement, mediaPool) {
     return {
         prime() {
-            mediaElement.load();
+            sharedElement.load();
         },
         getPrimedElement() {
-            return mediaElement;
+            return sharedElement;
+        },
+        clean() {
+            mediaPool.clean(sharedElement);
         },
         recycle() {
+            mediaPool.clean(sharedElement);
         },
         syncVolume() {
         },
