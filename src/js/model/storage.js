@@ -6,7 +6,7 @@ let storage = {
 };
 
 try {
-    storage = window.localStorage;
+    storage = window.localStorage || storage;
 } catch (e) {/* ignore */}
 
 function Storage(namespace, persistItems) {
