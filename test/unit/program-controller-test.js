@@ -34,7 +34,8 @@ const providerEvents = [
         type: 'subtitleTracks'
     },
     {
-        type: 'mediaType'
+        type: 'mediaType',
+        mediaType: 'video'
     },
     {
         type: 'bufferChange'

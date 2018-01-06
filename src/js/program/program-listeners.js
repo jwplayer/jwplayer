@@ -14,9 +14,10 @@ export function ProviderListener(mediaController) {
 
         switch (type) {
             case MEDIA_TYPE:
-                if (mediaModel.get(MEDIA_TYPE) !== data.mediaType) {
-                    mediaModel.set(MEDIA_TYPE, data.mediaType);
+                if (mediaModel.get(MEDIA_TYPE) === data.mediaType) {
+                    return;
                 }
+                mediaModel.set(MEDIA_TYPE, data.mediaType);
                 break;
             case MEDIA_VISUAL_QUALITY:
                 mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
