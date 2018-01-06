@@ -7,11 +7,60 @@ import { ERROR } from 'events/events';
 /** Displays closed captions or subtitles on top of the video. **/
 const Captions = function(_model) {
 
+    let _tracks = [];
+    let _tracksById = {};
+    let _unknownCount = 0;
+
     // Reset and load external captions on playlist item
-    _model.on('change:playlistItem', _itemHandler, this);
+    _model.on('change:playlistItem', (model) => {
+        _tracks = [];
+        _tracksById = {};
+        _unknownCount = 0;
+
+        // Update model without dispatching events _updateMenu()
+        const captionsMenu = _captionsMenu();
+        const attributes = model.attributes;
+        attributes.captionsIndex = 0;
+        attributes.captionsList = captionsMenu;
+        model.set('captionsTrack', null);
+    }, this);
+
+    // Update tracks once we know "renderCaptionsNatively" based on provider
+    _model.on('itemReady', () => {
+        // Sideload tracks when not rendering natively
+        const item = _model.get('playlistItem');
+        const tracks = item.tracks;
+        const len = tracks && tracks.length;
+        if (len && !_model.get('renderCaptionsNatively')) {
+            for (let i = 0; i < len; i++) {
+                /* eslint-disable no-loop-func */
+                const track = tracks[i];
+                if (_kindSupported(track.kind) && !_tracksById[track._id]) {
+                    _addTrack(track);
+                    loadFile(track, (vttCues) => {
+                        _addVTTCuesToTrack(track, vttCues);
+                    }, (error) => {
+                        this.trigger(ERROR, {
+                            message: 'Captions failed to load',
+                            reason: error
+                        });
+                    });
+                }
+            }
+        }
+        const captionsMenu = _captionsMenu();
+        _selectDefaultIndex();
+        _setCaptionsList(captionsMenu);
+    }, this);
 
     // Listen for captions menu index changes from the view
-    _model.on('change:captionsIndex', _captionsIndexHandler, this);
+    _model.on('change:captionsIndex', (model, captionsMenuIndex) => {
+        let track = null;
+        if (captionsMenuIndex !== 0) {
+            track = _tracks[captionsMenuIndex - 1];
+        }
+        model.set('captionsTrack', track);
+    }, this);
 
     function _setSubtitlesTracks(tracks) {
         if (!tracks.length) {
@@ -30,77 +79,12 @@ const Captions = function(_model) {
         _setCaptionsList(captionsMenu);
     }
 
-    let _tracks = [];
-    let _tracksById = {};
-    let _unknownCount = 0;
-
-    /** Listen to playlist item updates. **/
-    function _itemHandler() {
-        _tracks = [];
-        _tracksById = {};
-        _unknownCount = 0;
-
-        const item = _model.get('playlistItem');
-        const tracks = item.tracks;
-        const len = tracks && tracks.length;
-
-        // Update tracks once we know "renderCaptionsNatively" based on provider
-        _model.off('itemReady', null, this)
-            .once('itemReady', () => {
-                // Sideload tracks when not rendering natively
-                if (len && !_model.get('renderCaptionsNatively')) {
-                    for (let i = 0; i < len; i++) {
-                        /* eslint-disable no-loop-func */
-                        const track = tracks[i];
-                        if (_kindSupported(track.kind) && !_tracksById[track._id]) {
-                            _addTrack(track);
-                            loadFile(track,
-                                (vttCues) => {
-                                    _addVTTCuesToTrack(track, vttCues);
-                                },
-                                (error) => {
-                                    this.trigger(ERROR, {
-                                        message: 'Captions failed to load',
-                                        reason: error
-                                    });
-                                });
-                        }
-                    }
-                }
-                _updateMenu();
-            }, this);
-
-        _resetMenu();
-    }
-
-    function _resetMenu() {
-        // Update model without dispatching events _updateMenu()
-        const captionsMenu = _captionsMenu();
-        const attributes = _model.attributes;
-        attributes.captionsIndex = 0;
-        attributes.captionsList = captionsMenu;
-    }
-
-    function _updateMenu() {
-        const captionsMenu = _captionsMenu();
-        _selectDefaultIndex();
-        _setCaptionsList(captionsMenu);
-    }
-
     function _kindSupported(kind) {
         return kind === 'subtitles' || kind === 'captions';
     }
 
     function _addVTTCuesToTrack(track, vttCues) {
         track.data = vttCues;
-    }
-
-    function _captionsIndexHandler(model, captionsMenuIndex) {
-        let track = null;
-        if (captionsMenuIndex !== 0) {
-            track = _tracks[captionsMenuIndex - 1];
-        }
-        model.set('captionsTrack', track);
     }
 
     function _addTrack(track) {
