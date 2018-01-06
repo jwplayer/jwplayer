@@ -66,11 +66,19 @@ const Captions = function(_model) {
                                 });
                         }
                     }
-                    _updateMenu();
                 }
+                _updateMenu();
             }, this);
 
-        _updateMenu();
+        _resetMenu();
+    }
+
+    function _resetMenu() {
+        // Update model without dispatching events _updateMenu()
+        const captionsMenu = _captionsMenu();
+        const attributes = _model.attributes;
+        attributes.captionsIndex = 0;
+        attributes.captionsList = captionsMenu;
     }
 
     function _updateMenu() {
