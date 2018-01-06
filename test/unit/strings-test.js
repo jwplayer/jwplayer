@@ -56,7 +56,13 @@ describe('strings', function() {
         expect(sec, 'percentage and duration inputs return seconds').to.equal(50);
 
         sec = offsetToSeconds('25%');
-        expect(sec, 'percentage without duration returns 0').to.equal(null);
+        expect(sec, 'percentage without duration returns null').to.equal(null);
+
+        sec = offsetToSeconds('25%', 0);
+        expect(sec, 'percentage with duration of 0 returns null').to.equal(null);
+
+        sec = offsetToSeconds('25%', 'abc');
+        expect(sec, 'percentage with NaN duration returns null').to.equal(null);
 
         sec = offsetToSeconds('50', 100);
         expect(sec, 'non-percentage numeric string with duration inputs return seconds').to.equal(50);
