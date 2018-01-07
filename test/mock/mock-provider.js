@@ -3,6 +3,7 @@ import VideoAttached from 'providers/video-attached-mixin';
 import Tracks from 'providers/tracks-mixin';
 import BackboneEvents from 'utils/backbone.events';
 import ProviderDefaults from 'providers/default';
+import sinon from 'sinon';
 
 
 class MockDefault {}
@@ -12,6 +13,10 @@ export default class MockProvider extends MockDefault {
     constructor(playerId, playerConfig, mediaElement) {
         super();
         this.video = mediaElement;
+        sinon.spy(this, 'init');
+        sinon.spy(this, 'load');
+        sinon.spy(this, 'play');
+        sinon.spy(this, 'pause');
     }
 
     getName() {

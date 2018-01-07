@@ -5,6 +5,7 @@ export const INITIAL_PLAYER_STATE = {
     flashBlocked: false,
     item: 0,
     itemMeta: {},
+    playbackRate: 1,
     playRejected: false,
     state: STATE_IDLE
 };
