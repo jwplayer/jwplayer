@@ -395,6 +395,13 @@ export default function Api(element) {
             return core.getMute();
         },
 
+         /**
+         * Gets the configuration block originally passed in to the player.
+         * @returns {object}.
+         */
+        getOriginalConfig() {
+            return core.getOriginalConfig();
+        },
         /**
          * Gets the rate at which playback should occur while media is playing.
          * @default 1.0
