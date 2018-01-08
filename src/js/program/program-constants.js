@@ -2,3 +2,5 @@
 export const MEDIA_POOL_SIZE = 3;
 // The default number of seconds from the end of a video from which we should start background loading
 export const BACKGROUND_LOAD_OFFSET = 5;
+// The earliest time (in seconds) from the start of an ad background loading can begin
+export const BACKGROUND_LOAD_MIN_OFFSET = 1;
