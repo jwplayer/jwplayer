@@ -6,6 +6,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const webpackConfig = require('./webpack.config.js')({ release: true });
+const puppeteer = require('puppeteer');
 
 const aliases = {
     'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
@@ -43,6 +44,8 @@ module.exports = function(config) {
     }
     const packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
+    process.env.CHROME_BIN = puppeteer.executablePath();
+
     config.set({
         frameworks: ['mocha', 'sinon-chai'],
         reporters: testReporters,
@@ -60,7 +63,7 @@ module.exports = function(config) {
         logLevel: config.LOG_INFO,
 
         browsers: [
-            'PhantomJS',
+            'ChromeHeadless',
             'Chrome',
             // 'Safari', // experiencing issues with safari-launcher@1.0.0 and Safari 9.1.1
             'Firefox'

@@ -11,15 +11,10 @@ import apiMethodsChainable from 'data/api-methods-chainable';
 import apiMethodsDeprecated from 'data/api-methods-deprecated';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
-import {
-    install as installVideoPolyfill,
-    uninstall as uninstallVideoPolyfill
-} from 'mock/video-element-polyfill';
 
 describe('Api', function() {
 
     beforeEach(function() {
-        installVideoPolyfill();
         utils.log = sinon.stub();
     });
 
@@ -30,7 +25,6 @@ describe('Api', function() {
             instances[i].remove();
         }
         utils.log.reset();
-        uninstallVideoPolyfill();
     });
 
     it('instances has a uniqueIds greater than 0', function() {

@@ -1,17 +1,9 @@
 import instances from 'api/players';
 import Api from 'api/api';
 import modelProperties from 'data/model-properties';
-import {
-    install as installVideoPolyfill,
-    uninstall as uninstallVideoPolyfill
-} from 'mock/video-element-polyfill';
 import _ from 'underscore';
 
 describe('Api.getConfig', function() {
-
-    before(installVideoPolyfill);
-
-    after(uninstallVideoPolyfill);
 
     beforeEach(() => {
         const container = document.createElement('div');
