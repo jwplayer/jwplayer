@@ -12,7 +12,6 @@ const Model = function() {
     let providerController;
     let _provider;
     this.mediaModel = new MediaModel();
-    this.itemReady = false;
 
 
     this.set('attached', true);

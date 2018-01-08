@@ -45,7 +45,7 @@ class ProgramController extends Eventable {
         const item = model.get('playlist')[index];
 
         model.setActiveItem(index);
-        model.itemReady = false;
+        model.set('itemReady', false);
         this._destroyBackgroundMedia();
         const source = getSource(item);
         if (!source) {
@@ -63,10 +63,9 @@ class ProgramController extends Eventable {
                 // This sets up the mediaController and allows playback to begin
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
-                model.itemReady = true;
                 // Initialize the provider last so it's setting properties on the (newly) active media model
                 mediaController.provider.init(item);
-                model.trigger('itemReady', item);
+                model.set('itemReady', true);
                 return this.providerPromise;
             }
 
@@ -86,11 +85,10 @@ class ProgramController extends Eventable {
                     this._setActiveMedia(nextMediaController);
                     // Initialize the provider last so it's setting properties on the (newly) active media model
                     nextMediaController.provider.init(item);
-                    model.trigger('itemReady', item);
+                    model.set('itemReady', true);
                     return nextMediaController;
                 }
             });
-        model.itemReady = true;
         return this.providerPromise;
     }
 
@@ -201,8 +199,7 @@ class ProgramController extends Eventable {
         this._setActiveMedia(castMediaController);
         // Initialize the provider last so it's setting properties on the (newly) active media model
         castMediaController.provider.init(playlistItem);
-        model.trigger('itemReady', playlistItem);
-
+        model.set('itemReady', true);
     }
 
     /**

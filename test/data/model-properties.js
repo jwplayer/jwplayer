@@ -98,4 +98,5 @@ export default {
     itemMeta: {},
     castAvailable: false,
     qualityLabels: undefined,
+    itemReady: false,
 };
