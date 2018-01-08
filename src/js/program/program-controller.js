@@ -44,6 +44,8 @@ class ProgramController extends Eventable {
         const { mediaController, model } = this;
         const item = model.get('playlist')[index];
 
+        model.setActiveItem(index);
+        model.itemReady = false;
         this._destroyBackgroundMedia();
         const source = getSource(item);
         if (!source) {
@@ -52,7 +54,6 @@ class ProgramController extends Eventable {
 
         if (mediaController) {
             const casting = model.get('castActive');
-
             // Buffer between item switches, but remain in the initial state (IDLE) while loading the first provider
             model.set(PLAYER_STATE, STATE_BUFFERING);
             if (casting || this.providerController.canPlay(mediaController.provider, source)) {
@@ -62,7 +63,7 @@ class ProgramController extends Eventable {
                 // This sets up the mediaController and allows playback to begin
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
-                model.setActiveItem(index);
+                model.itemReady = true;
                 // Initialize the provider last so it's setting properties on the (newly) active media model
                 mediaController.provider.init(item);
                 model.trigger('itemReady', item);
@@ -89,7 +90,7 @@ class ProgramController extends Eventable {
                     return nextMediaController;
                 }
             });
-        model.setActiveItem(index);
+        model.itemReady = true;
         return this.providerPromise;
     }
 
