@@ -15,8 +15,6 @@ import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
-import { fitToBounds, fitVideoUsingTransforms } from 'utils/video-fit';
-
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
@@ -568,34 +566,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 opacity: 0
             });
         }
-    };
-
-    this.resize = function(width, height, stretching) {
-        if (!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) {
-            return;
-        }
-        const styles = {
-            objectFit: '',
-            width: '',
-            height: ''
-        };
-        if (stretching === 'uniform') {
-            // snap video to edges when the difference in aspect ratio is less than 9%
-            const playerAspectRatio = width / height;
-            const videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
-            if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
-                styles.objectFit = 'fill';
-                stretching = 'exactfit';
-            }
-        }
-        // Prior to iOS 9, object-fit worked poorly
-        // object-fit is not implemented in IE or Android Browser in 4.4 and lower
-        // http://caniuse.com/#feat=object-fit
-        // feature detection may work for IE but not for browsers where object-fit works for images only
-        if (fitVideoUsingTransforms) {
-            fitToBounds(_videotag, width, height, stretching, styles);
-        }
-        style(_videotag, styles);
     };
 
     this.setFullscreen = function(state) {
