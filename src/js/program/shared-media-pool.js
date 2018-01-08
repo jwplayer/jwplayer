@@ -1,5 +1,5 @@
 export default function SharedMediaPool(sharedElement, mediaPool) {
-    return {
+    return Object.assign({}, mediaPool, {
         prime() {
             sharedElement.load();
         },
@@ -11,10 +11,6 @@ export default function SharedMediaPool(sharedElement, mediaPool) {
         },
         recycle() {
             mediaPool.clean(sharedElement);
-        },
-        syncVolume() {
-        },
-        syncMute() {
         }
-    };
+    });
 }
