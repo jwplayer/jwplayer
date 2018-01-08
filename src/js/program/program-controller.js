@@ -163,26 +163,12 @@ class ProgramController extends Eventable {
      * @returns {undefined}
      */
     preloadVideo() {
-        const { backgroundMedia, mediaController, model } = this;
-        if (!mediaController && !backgroundMedia) {
+        const { backgroundMedia, mediaController } = this;
+        const media = mediaController || backgroundMedia;
+        if (!media) {
             return;
         }
-
-        const item = model.get('playlistItem');
-        if (!item || (item && item.preload === 'none')) {
-            return;
-        }
-
-        // Only attempt to preload if media hasn't been loaded and we haven't started, and it's attached
-        // Background media can also preload
-        let media = mediaController || backgroundMedia;
-        if (model.get('state') === 'idle'
-            && model.get('autostart') === false
-            && media.attached
-            && !media.setup
-            && !media.preloaded) {
-            media.preload(item);
-        }
+        media.preload();
     }
 
     /**
