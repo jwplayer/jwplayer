@@ -23,7 +23,7 @@ export default class CustomButton {
         if (btnClass) {
             buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset ${btnClass}`;
         } else {
-            buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset`;
+            buttonElement.className = 'jw-icon jw-icon-inline jw-button-color jw-reset';
         }
         buttonElement.setAttribute('button', id);
         buttonElement.setAttribute('role', 'button');
