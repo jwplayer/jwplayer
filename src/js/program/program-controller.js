@@ -316,9 +316,9 @@ class ProgramController extends Eventable {
         assignMediaContainer(model, mediaController);
         this.mediaController = mediaController;
 
-        model.setProvider(provider);
-        model.setMediaModel(mediaModel);
         model.set('mediaElement', mediaController.mediaElement);
+        model.setMediaModel(mediaModel);
+        model.setProvider(provider);
 
         forwardEvents(this, mediaController);
     }

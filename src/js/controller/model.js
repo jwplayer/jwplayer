@@ -226,7 +226,7 @@ const Model = function() {
         const duration = item ? seconds(item.duration) : 0;
         const mediaModel = this.mediaModel;
         this.set('playRejected', false);
-        this.set('itemMeta', {});
+        this.attributes.itemMeta = {};
         mediaModel.set('position', position);
         mediaModel.set('duration', duration);
     };

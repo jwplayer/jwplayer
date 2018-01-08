@@ -55,10 +55,10 @@ describe('ProgramController', function () {
         model = new Model().setup(config);
         programController = new ProgramController(model, new MediaElementPool());
         programController.providerController = {
-            choose() {
-                return MockProvider;
-            }
+            choose: () => MockProvider,
+            canPlay: () => true
         };
+        model.toString = (() => '[Model]');
         programController.toString = (() => '[ProgramController]');
     });
 
@@ -168,6 +168,39 @@ describe('ProgramController', function () {
                 programController.attached = true;
                 expectAllEventsTriggered(callback);
             });
+    });
+
+    it('triggers events off the model when the active item is set', function() {
+        sinon.spy(model, 'trigger');
+        const itemPromise = programController.setActiveItem(0)
+            .then(function () {
+                const provider = programController.activeProvider;
+                expect(model.trigger).to.have.callCount(6);
+                expect(model.trigger.firstCall).to.have.been.calledWith('change:playlistItem');
+                expect(model.trigger.getCall(1)).to.have.been.calledWith('change:mediaElement');
+                expect(model.trigger.getCall(2)).to.have.been.calledWith('change:mediaModel');
+                expect(model.trigger.getCall(3)).to.have.been.calledWith('change:provider');
+                expect(model.trigger.getCall(4)).to.have.been.calledWith('change:renderCaptionsNatively');
+                expect(model.trigger.lastCall).to.have.been.calledWith('itemReady');
+                expect(model.trigger.lastCall).to.have.been.calledImmediatelyAfter(provider.init.firstCall);
+                expect(provider.init).to.have.callCount(1);
+                expect(provider.load).to.have.callCount(0);
+            })
+            .then(() => programController.setActiveItem(1))
+            .then(function () {
+                const provider = programController.activeProvider;
+                expect(model.trigger).to.have.callCount(12);
+                expect(model.trigger.getCall(6)).to.have.been.calledWith('change:item');
+                expect(model.trigger.getCall(7)).to.have.been.calledWith('change:playlistItem');
+                expect(model.trigger.getCall(8)).to.have.been.calledWith('change:state', model, 'buffering', 'idle');
+                expect(model.trigger.getCall(9)).to.have.been.calledWith('change:mediaModel');
+                expect(model.trigger.getCall(10)).to.have.been.calledWith('change:provider');
+                expect(model.trigger.lastCall).to.have.been.calledWith('itemReady');
+                expect(model.trigger.lastCall).to.have.been.calledImmediatelyAfter(provider.init.secondCall);
+                expect(provider.init).to.have.callCount(2);
+                expect(provider.load).to.have.callCount(0);
+            });
+        return itemPromise;
     });
 });
 
