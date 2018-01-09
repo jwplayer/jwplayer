@@ -404,7 +404,11 @@ function View(_api, _model) {
             },
             doubleClick: () => _controls && api.setFullscreen(),
             move: () => _controls && _controls.userActive(),
-            over: () => _controls && _controls.userActive()
+            over: (evt) => {
+                if (_controls && (evt.sourceEvent.fromElement.classList.length === 0 || evt.sourceEvent.fromElement.classList[0].indexOf('jw-nextup') === -1)) {
+                    _controls.userActive();
+                }
+            }
         });
 
         return clickHandler;

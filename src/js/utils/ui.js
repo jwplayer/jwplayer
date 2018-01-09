@@ -129,7 +129,7 @@ const UI = function (elem, options) {
 
     // overHandler and outHandler not assigned in touch situations
     function overHandler(evt) {
-        if (evt.pointerType !== 'touch' && evt.fromElement.classList[0].indexOf('jw-nextup') === -1) {
+        if (evt.pointerType !== 'touch') {
             triggerEvent(OVER, evt);
         }
     }
