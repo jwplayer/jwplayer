@@ -31,7 +31,7 @@ const providerEvents = [
         type: 'meta'
     },
     {
-        type: 'subtitleTracks'
+        type: 'subtitlesTracks'
     },
     {
         type: 'mediaType',
@@ -39,6 +39,30 @@ const providerEvents = [
     },
     {
         type: 'bufferChange'
+    }
+];
+
+const providerPlayerModelEvents = [
+    {
+        type: 'volume',
+        volume: 10
+    },
+    {
+        type: 'levelsChanged',
+        currentQuality: 1,
+        levels: [ { label: 'level1' }, { label: 'level2' } ]
+    },
+    {
+        type: 'subtitlesTrackChanged',
+        currentTrack: 0,
+        tracks: []
+    },
+    {
+        type: 'subtitlesTracks'
+    },
+    {
+        type: 'meta',
+        data: 'metadata'
     }
 ];
 
@@ -172,7 +196,7 @@ describe('ProgramController', function () {
 
     it('triggers events off the model when the active item is set', function() {
         sinon.spy(model, 'trigger');
-        const itemPromise = programController.setActiveItem(0)
+        return programController.setActiveItem(0)
             .then(function () {
                 const provider = programController.activeProvider;
                 expect(model.trigger).to.have.callCount(6);
@@ -200,7 +224,129 @@ describe('ProgramController', function () {
                 expect(provider.init).to.have.callCount(2);
                 expect(provider.load).to.have.callCount(0);
             });
-        return itemPromise;
+    });
+
+    it('updates the model', function() {
+        return programController.setActiveItem(0)
+            .then(function () {
+                const provider = programController.activeProvider;
+
+                sinon.spy(model, 'set');
+                sinon.spy(model, 'trigger');
+                sinon.spy(model, 'persistQualityLevel');
+                sinon.spy(model, 'persistVideoSubtitleTrack');
+                providerPlayerModelEvents.forEach(event => {
+                    provider.trigger(event.type, event);
+                });
+                expect(model.set).to.have.callCount(4);
+                expect(model.set.firstCall).to.have.been.calledWith('volume', 10);
+                expect(model.set.getCall(1)).to.have.been.calledWith('qualityLabel', 'level2');
+                expect(model.set.getCall(2)).to.have.been.calledWith('captionsIndex', 0);
+                expect(model.set.getCall(3)).to.have.been.calledWith('captionLabel', 'Off');
+                expect(model.trigger).to.have.callCount(5);
+                expect(model.trigger.firstCall).to.have.been.calledWith('change:volume');
+                expect(model.trigger.getCall(1)).to.have.been.calledWith('change:qualityLabel');
+                expect(model.trigger.getCall(2)).to.have.been.calledWith('change:captionsIndex');
+                expect(model.trigger.getCall(3)).to.have.been.calledWith('change:captionLabel');
+                expect(model.trigger.getCall(4)).to.have.been.calledWith('subtitlesTracks');
+                expect(model.persistQualityLevel).to.have.callCount(1);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(1);
+            });
+    });
+
+    it('does not updates the model when provider is backgrounded', function() {
+        return programController.setActiveItem(0)
+            .then(function () {
+                const provider = programController.activeProvider;
+
+                programController.backgroundActiveMedia();
+                sinon.spy(model, 'set');
+                sinon.spy(model, 'trigger');
+                sinon.spy(model, 'persistQualityLevel');
+                sinon.spy(model, 'persistVideoSubtitleTrack');
+                providerPlayerModelEvents.forEach(event => {
+                    provider.trigger(event.type, event);
+                });
+                expect(model.set).to.have.callCount(0);
+                expect(model.trigger).to.have.callCount(0);
+                expect(model.persistQualityLevel).to.have.callCount(0);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
+            });
+    });
+
+    it('does not updates the model when provider is detached', function() {
+        return programController.setActiveItem(0)
+            .then(function () {
+                const provider = programController.activeProvider;
+
+                programController.attached = false;
+                sinon.spy(model, 'set');
+                sinon.spy(model, 'trigger');
+                sinon.spy(model, 'persistQualityLevel');
+                sinon.spy(model, 'persistVideoSubtitleTrack');
+                providerPlayerModelEvents.forEach(event => {
+                    provider.trigger(event.type, event);
+                });
+                expect(model.set).to.have.callCount(0);
+                expect(model.trigger).to.have.callCount(0);
+                expect(model.persistQualityLevel).to.have.callCount(0);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
+            });
+    });
+
+    it('updates the model when provider is foregrounded', function() {
+        return programController.setActiveItem(0)
+            .then(function () {
+                const provider = programController.activeProvider;
+
+                programController.backgroundActiveMedia();
+                sinon.spy(model, 'set');
+                sinon.spy(model, 'trigger');
+                sinon.spy(model, 'persistQualityLevel');
+                sinon.spy(model, 'persistVideoSubtitleTrack');
+                providerPlayerModelEvents.forEach(event => {
+                    provider.trigger(event.type, event);
+                });
+                expect(model.set).to.have.callCount(0);
+                expect(model.trigger).to.have.callCount(0);
+                expect(model.persistQualityLevel).to.have.callCount(0);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
+                programController.restoreBackgroundMedia();
+                expect(model.set).to.have.callCount(12);
+                expect(model.set.firstCall).to.have.been.calledWith('mediaElement');
+                expect(model.set.getCall(1)).to.have.been.calledWith('mediaModel');
+                expect(model.set.getCall(2)).to.have.been.calledWith('provider');
+                expect(model.trigger).to.have.callCount(6);
+                expect(model.persistQualityLevel).to.have.callCount(1);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(1);
+            });
+    });
+
+    it('updates the model when provider is reattached', function() {
+        return programController.setActiveItem(0)
+            .then(function () {
+                const provider = programController.activeProvider;
+
+                programController.attached = false;
+                sinon.spy(model, 'set');
+                sinon.spy(model, 'trigger');
+                sinon.spy(model, 'persistQualityLevel');
+                sinon.spy(model, 'persistVideoSubtitleTrack');
+                providerPlayerModelEvents.forEach(event => {
+                    provider.trigger(event.type, event);
+                });
+                expect(model.set).to.have.callCount(0);
+                expect(model.trigger).to.have.callCount(0);
+                expect(model.persistQualityLevel).to.have.callCount(0);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
+                programController.attached = true;
+                expect(model.set).to.have.callCount(5);
+                expect(model.set.firstCall).to.have.been.calledWith('attached', true);
+                expect(model.trigger).to.have.callCount(6);
+                expect(model.trigger.firstCall).to.have.been.calledWith('change:attached');
+                expect(model.persistQualityLevel).to.have.callCount(1);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(1);
+            });
     });
 });
 

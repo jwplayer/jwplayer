@@ -237,7 +237,6 @@ class ProgramController extends Eventable {
             this._destroyBackgroundMedia();
         }
 
-        removeEventForwarding(this, mediaController);
         mediaController.background = true;
         this.backgroundMedia = mediaController;
         this.mediaController = null;
@@ -323,8 +322,6 @@ class ProgramController extends Eventable {
         mediaController.detach();
         mediaPool.recycle(mediaController.mediaElement);
         mediaController.destroy();
-
-        removeEventForwarding(this, mediaController);
 
         model.resetProvider();
         this.mediaController = null;
@@ -609,12 +606,8 @@ function assignMediaContainer(model, mediaController) {
     }
 }
 
-function removeEventForwarding(programController, mediaController) {
-    mediaController.off('all', programController.mediaControllerListener, programController);
-}
-
 function forwardEvents(programController, mediaController) {
-    removeEventForwarding(programController, mediaController);
+    mediaController.off('all', programController.mediaControllerListener, programController);
     mediaController.on('all', programController.mediaControllerListener, programController);
 }
 
