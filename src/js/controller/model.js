@@ -34,12 +34,6 @@ const Model = function() {
         return config;
     };
 
-    this.setQualityLevel = function(quality, levels) {
-        if (quality > -1 && levels.length > 1) {
-            this.mediaModel.set('currentLevel', parseInt(quality));
-        }
-    };
-
     this.persistQualityLevel = function(quality, levels) {
         var currentLevel = levels[quality] || {};
         var label = currentLevel.label;
@@ -64,12 +58,6 @@ const Model = function() {
         this.mediaModel = mediaModel;
         this.set('mediaModel', mediaModel);
         syncPlayerWithMediaModel(mediaModel);
-    };
-
-    this.setCurrentAudioTrack = function(currentTrack, tracks) {
-        if (currentTrack > -1 && tracks.length > 0 && currentTrack < tracks.length) {
-            this.mediaModel.set('currentAudioTrack', parseInt(currentTrack));
-        }
     };
 
     this.destroy = function() {

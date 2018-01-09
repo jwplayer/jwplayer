@@ -56,7 +56,7 @@ export function ProviderListener(mediaController) {
             }
             case MEDIA_BUFFER:
                 mediaModel.set('buffer', data.bufferPercent);
-            /* falls through to update duration while media is loaded */
+                /* falls through to update duration while media is loaded */
             case MEDIA_TIME: {
                 mediaModel.set('position', data.position);
                 const duration = data.duration;
@@ -67,10 +67,25 @@ export function ProviderListener(mediaController) {
             }
             case MEDIA_LEVELS:
                 mediaModel.set(MEDIA_LEVELS, data.levels);
+                /* falls through to update current level */
+            case MEDIA_LEVEL_CHANGED: {
+                const { currentQuality, levels } = data;
+                if (currentQuality > -1 && levels.length > 1) {
+                    mediaModel.set('currentLevel', parseInt(currentQuality));
+                }
                 break;
+            }
             case AUDIO_TRACKS:
                 mediaModel.set(AUDIO_TRACKS, data.tracks);
+                /* falls through to update current track */
+            case AUDIO_TRACK_CHANGED: {
+                const { currentTrack, tracks } = data;
+
+                if (currentTrack > -1 && tracks.length > 0 && currentTrack < tracks.length) {
+                    mediaModel.set('currentAudioTrack', parseInt(currentTrack));
+                }
                 break;
+            }
             case 'visualQuality':
                 mediaModel.set('visualQuality', Object.assign({}, data));
                 break;
@@ -118,18 +133,8 @@ export function MediaControllerListener(model, programController) {
                 Object.assign(model.get('itemMeta'), data.metadata);
                 break;
             }
-            case MEDIA_LEVELS:
-                model.setQualityLevel(data.currentQuality, data.levels);
-                break;
             case MEDIA_LEVEL_CHANGED:
-                model.setQualityLevel(data.currentQuality, data.levels);
                 model.persistQualityLevel(data.currentQuality, data.levels);
-                break;
-            case AUDIO_TRACKS:
-                model.setCurrentAudioTrack(data.currentTrack, data.tracks);
-                break;
-            case AUDIO_TRACK_CHANGED:
-                model.setCurrentAudioTrack(data.currentTrack, data.tracks);
                 break;
             case 'subtitlesTrackChanged':
                 model.persistVideoSubtitleTrack(data.currentTrack, data.tracks);

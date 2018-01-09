@@ -66,6 +66,7 @@ export default class MediaController extends Eventable {
 
     destroy() {
         const { provider, mediaModel } = this;
+        this.off();
         mediaModel.off();
         provider.off();
         this.eventQueue.destroy();
@@ -83,10 +84,10 @@ export default class MediaController extends Eventable {
 
         // Restore the playback rate to the provider in case it changed while detached and we reused a video tag.
         model.setPlaybackRate(model.get('defaultPlaybackRate'));
-        this.eventQueue.flush();
         provider.attachMedia();
         this.attached = true;
         model.set('attached', true);
+        this.eventQueue.flush();
 
         if (this.beforeComplete) {
             this._playbackComplete();
