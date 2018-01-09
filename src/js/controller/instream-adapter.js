@@ -2,7 +2,7 @@ import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
-import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
+import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
 import Promise from 'polyfills/promise';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
@@ -207,6 +207,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             // If no skipoffset is set, default to background loading 5 seconds before the end
             _backgroundLoadPosition = item.duration - BACKGROUND_LOAD_OFFSET;
         }
+
+        // Ensure background loading doesn't degrade ad performance by starting too early
+        _backgroundLoadPosition = Math.max(_backgroundLoadPosition, BACKGROUND_LOAD_MIN_OFFSET);
 
         return playPromise;
     };
