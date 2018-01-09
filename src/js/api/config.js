@@ -50,8 +50,7 @@ const Defaults = {
         unmute: 'Unmute'
     },
     renderCaptionsNatively: false,
-    nextUpDisplay: true,
-    itemReady: false
+    nextUpDisplay: true
 };
 
 function _deserialize(options) {

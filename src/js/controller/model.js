@@ -13,7 +13,6 @@ const Model = function() {
     let _provider;
     this.mediaModel = new MediaModel();
 
-
     this.set('attached', true);
     this.set('mediaModel', this.mediaModel);
 

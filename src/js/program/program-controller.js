@@ -44,8 +44,8 @@ class ProgramController extends Eventable {
         const { mediaController, model } = this;
         const item = model.get('playlist')[index];
 
+        model.attributes.itemReady = false;
         model.setActiveItem(index);
-        model.set('itemReady', false);
         this._destroyBackgroundMedia();
         const source = getSource(item);
         if (!source) {
@@ -196,6 +196,7 @@ class ProgramController extends Eventable {
 
         const castMediaController = new MediaController(castProvider, model);
         castMediaController.activeItem = playlistItem;
+        model.attributes.set('itemReady', false);
         this._setActiveMedia(castMediaController);
         // Initialize the provider last so it's setting properties on the (newly) active media model
         castMediaController.provider.init(playlistItem);
