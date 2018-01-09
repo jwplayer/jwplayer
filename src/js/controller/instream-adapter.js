@@ -26,7 +26,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _backgroundLoadTriggered = false;
     let _oldpos;
     let _skipOffset;
-    let _backgroundLoadPosition;
+    let _backgroundLoadStart;
     let _destroyed = false;
     let _inited = false;
 
@@ -138,10 +138,11 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         // Start background loading once the skip button is clickable
         // If no skipoffset is set, default to background loading 5 seconds before the end
-        if (!_backgroundLoadPosition) {
-            _backgroundLoadPosition = offsetToSeconds(_skipOffset, duration) || duration - BACKGROUND_LOAD_OFFSET;
+        if (!_backgroundLoadStart) {
+            // Ensure background loading doesn't degrade ad performance by starting too early
+            _backgroundLoadStart = offsetToSeconds(_skipOffset, duration) || duration - BACKGROUND_LOAD_OFFSET;
         }
-        if (!_backgroundLoadTriggered && position >= _backgroundLoadPosition) {
+        if (!_backgroundLoadTriggered && position >= Math.max(_backgroundLoadStart, BACKGROUND_LOAD_MIN_OFFSET)) {
             _controller.preloadNextItem();
             _backgroundLoadTriggered = true;
         }
