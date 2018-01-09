@@ -20,11 +20,7 @@ export default class CustomButton {
 
     constructor(img, ariaText, callback, id, btnClass) {
         const buttonElement = document.createElement('div');
-        if (btnClass) {
-            buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset ${btnClass}`;
-        } else {
-            buttonElement.className = 'jw-icon jw-icon-inline jw-button-color jw-reset';
-        }
+        buttonElement.className = `jw-icon jw-icon-inline jw-button-color jw-reset ${btnClass || ''}`;
         buttonElement.setAttribute('button', id);
         buttonElement.setAttribute('role', 'button');
         buttonElement.setAttribute('tabindex', '0');
