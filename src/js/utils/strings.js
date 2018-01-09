@@ -99,6 +99,17 @@ export function seconds(str, frameRate) {
     return sec;
 }
 
+// Convert an offset string to a number; supports conversion of percentage offsets
+export function offsetToSeconds(offset, duration, frameRate) {
+    if (_.isString(offset) && offset.slice(-1) === '%') {
+        const percent = parseFloat(offset);
+        if (!duration || isNaN(duration) || isNaN(percent)) {
+            return null;
+        }
+        return duration * percent / 100;
+    }
+    return seconds(offset, frameRate);
+}
 
 export function prefix(arr, add) {
     return _.map(arr, function(val) {

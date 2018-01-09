@@ -7,7 +7,8 @@ export const INITIAL_PLAYER_STATE = {
     itemMeta: {},
     playbackRate: 1,
     playRejected: false,
-    state: STATE_IDLE
+    state: STATE_IDLE,
+    itemReady: false
 };
 
 export const INITIAL_MEDIA_STATE = {
