@@ -190,13 +190,13 @@ class ProgramController extends Eventable {
      */
     castVideo(castProvider, item) {
         const { model } = this;
-
+        model.attributes.itemReady = false;
+        
         const playlistItem = Object.assign({}, item);
         playlistItem.starttime = model.mediaModel.get('position');
-
+        
         const castMediaController = new MediaController(castProvider, model);
         castMediaController.activeItem = playlistItem;
-        model.attributes.set('itemReady', false);
         this._setActiveMedia(castMediaController);
         // Initialize the provider last so it's setting properties on the (newly) active media model
         castMediaController.provider.init(playlistItem);
