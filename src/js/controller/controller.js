@@ -264,9 +264,11 @@ Object.assign(Controller.prototype, {
                 viewable: viewable
             });
 
-
             // Only attempt to preload if this is the first player on the page or viewable
-            if (instances[0] === _api || viewable === 1) {
+            if (instances[0] !== _api && viewable !== 1) {
+                return;
+            }
+            if (_model.get('state') === 'idle' && _model.get('autostart') === false) {
                 _programController.preloadVideo();
             }
         }
