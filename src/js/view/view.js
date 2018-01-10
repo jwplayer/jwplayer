@@ -359,7 +359,7 @@ function View(_api, _model) {
     }
 
     function clickHandlerHelper(api, model, videoLayer) {
-        const clickHandler = new ClickHandler(model, videoLayer, { useHover: true });
+        const clickHandler = new ClickHandler(model, videoLayer);
         const controls = model.get('controls');
         clickHandler.on({
             click: () => {
@@ -403,8 +403,7 @@ function View(_api, _model) {
                 }
             },
             doubleClick: () => _controls && api.setFullscreen(),
-            move: () => _controls && _controls.userActive(),
-            over: () => _controls && _controls.userActive()
+            move: () => _controls && _controls.userActive()
         });
 
         return clickHandler;
