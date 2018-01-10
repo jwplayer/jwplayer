@@ -117,6 +117,8 @@ export default class Controls {
             nextUpToolTip.setup(this.context);
             controlbar.nextUpToolTip = nextUpToolTip;
 
+            this.addActiveListeners(nextUpToolTip.element());
+
             // NextUp needs to be behind the controlbar to not block other tooltips
             this.div.appendChild(nextUpToolTip.element());
         }
@@ -141,7 +143,7 @@ export default class Controls {
                     api.play(settingsInteraction);
                 }
             }
-            
+
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
             this.userActive(null, visible || isKeyEvent);
             lastState = state;
