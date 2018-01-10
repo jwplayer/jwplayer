@@ -23,8 +23,8 @@ export default class ClickHandler {
             move: function() {
                 this.trigger('move');
             },
-            over: function() {
-                this.trigger('over');
+            over: function(evt) {
+                this.trigger('over', evt);
             },
             out: function() {
                 this.trigger('out');
