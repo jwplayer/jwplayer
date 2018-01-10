@@ -140,8 +140,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // If no skipoffset is set, default to background loading 5 seconds before the end
         if (!_backgroundLoadStart) {
             // Ensure background loading doesn't degrade ad performance by starting too early
-            const backgroundLoadOffset = duration - BACKGROUND_LOAD_OFFSET;
-            _backgroundLoadStart = offsetToSeconds(_skipOffset, backgroundLoadOffset) || backgroundLoadOffset;
+            _backgroundLoadStart = offsetToSeconds(_skipOffset, duration) - BACKGROUND_LOAD_OFFSET || duration - BACKGROUND_LOAD_OFFSET;
         }
         if (!_backgroundLoadTriggered && position >= Math.max(_backgroundLoadStart, BACKGROUND_LOAD_MIN_OFFSET)) {
             _controller.preloadNextItem();
