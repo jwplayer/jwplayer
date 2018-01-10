@@ -2,7 +2,7 @@ import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
-import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
+import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
 import Promise from 'polyfills/promise';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
@@ -204,12 +204,12 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             _this.setupSkipButton(skipoffset, _options);
             _backgroundLoadPosition = skipoffset - BACKGROUND_LOAD_OFFSET;
         } else {
-            // If no skipoffset is set, reckon the BGL start from the end of the current video
+            // If no skipoffset is set, calculate BGL start from the end of the current video
             _backgroundLoadPosition = item.duration - BACKGROUND_LOAD_OFFSET;
         }
 
         // Ensure background loading doesn't degrade ad performance by starting too early
-        _backgroundLoadPosition = Math.max(_backgroundLoadPosition, BACKGROUND_LOAD_OFFSET);
+        _backgroundLoadPosition = Math.max(_backgroundLoadPosition, BACKGROUND_LOAD_MIN_OFFSET);
 
         return playPromise;
     };
