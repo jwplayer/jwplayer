@@ -62,7 +62,7 @@ export function isAndroidNative() {
 }
 
 export function isAndroid() {
-    return userAgentMatch(/Android/i);
+    return userAgentMatch(/Android/i) && !userAgentMatch(/Windows Phone/i);
 }
 
 /** Matches iOS, Android and Windows Phone devices **/
