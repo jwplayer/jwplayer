@@ -4,6 +4,7 @@ import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
 import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
 import Promise from 'polyfills/promise';
+import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
 import _ from 'utils/underscore';
 import AdProgramController from 'program/ad-program-controller';
@@ -24,7 +25,8 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _skipAd = _instreamItemNext;
     let _backgroundLoadTriggered = false;
     let _oldpos;
-    let _backgroundLoadPosition;
+    let _skipOffset;
+    let _backgroundLoadStart;
     let _destroyed = false;
     let _inited = false;
 
@@ -134,7 +136,14 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         mediaModel.set('duration', duration);
         mediaModel.set('position', position);
 
-        if (!_backgroundLoadTriggered && position >= _backgroundLoadPosition) {
+        // Start background loading once the skip button is clickable
+        // If no skipoffset is set, default to background loading 5 seconds before the end
+        if (!_backgroundLoadStart) {
+            // Ensure background loading doesn't degrade ad performance by starting too early
+            const backgroundLoadOffset = duration - BACKGROUND_LOAD_OFFSET;
+            _backgroundLoadStart = offsetToSeconds(_skipOffset, backgroundLoadOffset) || backgroundLoadOffset;
+        }
+        if (!_backgroundLoadTriggered && position >= Math.max(_backgroundLoadStart, BACKGROUND_LOAD_MIN_OFFSET)) {
             _controller.preloadNextItem();
             _backgroundLoadTriggered = true;
         }
@@ -198,19 +207,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const playPromise = _adProgram.setActiveItem(_arrayIndex);
 
         _backgroundLoadTriggered = false;
-        const skipoffset = item.skipoffset || _options.skipoffset;
-        if (skipoffset) {
-            // Start background loading shortly before the skip button is clickable
-            _this.setupSkipButton(skipoffset, _options);
-            _backgroundLoadPosition = skipoffset - BACKGROUND_LOAD_OFFSET;
-        } else {
-            // If no skipoffset is set, calculate BGL start from the end of the current video
-            _backgroundLoadPosition = item.duration - BACKGROUND_LOAD_OFFSET;
+        _skipOffset = item.skipoffset || _options.skipoffset;
+        if (_skipOffset) {
+            _this.setupSkipButton(_skipOffset, _options);
         }
-
-        // Ensure background loading doesn't degrade ad performance by starting too early
-        _backgroundLoadPosition = Math.max(_backgroundLoadPosition, BACKGROUND_LOAD_MIN_OFFSET);
-
         return playPromise;
     };
 

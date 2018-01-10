@@ -205,7 +205,7 @@ describe('ProgramController', function () {
                 expect(model.trigger.getCall(2)).to.have.been.calledWith('change:mediaModel');
                 expect(model.trigger.getCall(3)).to.have.been.calledWith('change:provider');
                 expect(model.trigger.getCall(4)).to.have.been.calledWith('change:renderCaptionsNatively');
-                expect(model.trigger.lastCall).to.have.been.calledWith('itemReady');
+                expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
                 expect(model.trigger.lastCall).to.have.been.calledImmediatelyAfter(provider.init.firstCall);
                 expect(provider.init).to.have.callCount(1);
                 expect(provider.load).to.have.callCount(0);
@@ -219,7 +219,7 @@ describe('ProgramController', function () {
                 expect(model.trigger.getCall(8)).to.have.been.calledWith('change:state', model, 'buffering', 'idle');
                 expect(model.trigger.getCall(9)).to.have.been.calledWith('change:mediaModel');
                 expect(model.trigger.getCall(10)).to.have.been.calledWith('change:provider');
-                expect(model.trigger.lastCall).to.have.been.calledWith('itemReady');
+                expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
                 expect(model.trigger.lastCall).to.have.been.calledImmediatelyAfter(provider.init.secondCall);
                 expect(provider.init).to.have.callCount(2);
                 expect(provider.load).to.have.callCount(0);
