@@ -58,8 +58,7 @@ export default class Controls {
         this.div = null;
         this.right = null;
         this.activeListeners = {
-            mousemove: () => clearTimeout(this.activeTimeout),
-            mouseout: () => this.userActive()
+            mousemove: () => clearTimeout(this.activeTimeout)
         };
         this.dimensions = {};
     }
@@ -388,14 +387,12 @@ export default class Controls {
     addActiveListeners(element) {
         if (element && !OS.mobile) {
             element.addEventListener('mousemove', this.activeListeners.mousemove);
-            element.addEventListener('mouseout', this.activeListeners.mouseout);
         }
     }
 
     removeActiveListeners(element) {
         if (element) {
             element.removeEventListener('mousemove', this.activeListeners.mousemove);
-            element.removeEventListener('mouseout', this.activeListeners.mouseout);
         }
     }
 
