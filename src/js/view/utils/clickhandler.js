@@ -3,15 +3,14 @@ import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 
 export default class ClickHandler {
-    constructor(model, element, options) {
+    constructor(model, element) {
         Object.assign(this, Events);
 
         this.revertAlternateClickHandlers();
         this.domElement = element;
         this.model = model;
 
-        const defaultOptions = { enableDoubleTap: true, useMove: true };
-        this.ui = new UI(element, Object.assign(defaultOptions, options)).on({
+        this.ui = new UI(element, { enableDoubleTap: true, useMove: true }).on({
             'click tap': this.clickHandler,
             'doubleClick doubleTap': function() {
                 if (this.alternateDoubleClickHandler) {
@@ -22,12 +21,6 @@ export default class ClickHandler {
             },
             move: function() {
                 this.trigger('move');
-            },
-            over: function() {
-                this.trigger('over');
-            },
-            out: function() {
-                this.trigger('out');
             }
         }, this);
     }
