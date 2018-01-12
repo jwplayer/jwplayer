@@ -98,7 +98,7 @@ webpack-dev-server -w --env.debug --port 8888 --output-public-path /bin-debug/
 ````bash
 # All browsers
 grunt test
-# Individual browsers - chrome, firefox, ie11, ie10, ie9
+# Individual browsers - chrome, firefox, safari
 grunt karma:{BROWSER} e.g. grunt karma:chrome
 ````
  

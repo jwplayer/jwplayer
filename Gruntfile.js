@@ -148,7 +148,7 @@ module.exports = function(grunt) {
                 browsers: ['Safari']
             },
             browserstack: {
-                browsers: ['chrome', 'firefox', 'ie11_windows']
+                browsers: ['chrome', 'firefox', 'edge', 'ie11_windows']
             },
             browserstack_chrome: {
                 browsers: ['chrome']
@@ -161,12 +161,6 @@ module.exports = function(grunt) {
             },
             browserstack_ie11: {
                 browsers: ['ie11_windows']
-            },
-            browserstack_ie10: {
-                browsers: ['ie10_windows']
-            },
-            browserstack_ie9: {
-                browsers: ['ie9_windows']
             }
         },
 
@@ -247,13 +241,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('karma:local', 'karma:phantomjs');
 
-    grunt.registerTask('karma:remote', [
-        'karma:browserstack',
-        'karma:browserstack_firefox',
-        'karma:browserstack_ie11',
-        'karma:browserstack_ie10',
-        'karma:browserstack_ie9'
-    ]);
+    grunt.registerTask('karma:remote', 'karma:browserstack');
 
     grunt.registerTask('test', [
         'karma'
