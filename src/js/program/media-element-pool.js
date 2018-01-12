@@ -65,12 +65,10 @@ function primeMediaElementForPlayback(mediaElement) {
     // If we're in a user-gesture event call load() on video to allow async playback
     if (!mediaElement.src) {
         mediaElement.load();
-    } else if (OS.android && !mediaElement.parentNode) {
+    } else if (OS.android && !mediaElement.parentNode && !mediaElement.played.length) {
         // If the player sets up without a gesture and preloads, the background tag may not be primed for playback.
         // We need to load again on Android in order to play without another gesture
-        if (!mediaElement.played.length) {
-            mediaElement.load();
-        }
+        mediaElement.load();
     }
 }
 
