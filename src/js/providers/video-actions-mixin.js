@@ -23,21 +23,21 @@ const VideoActionsMixin = {
             return false;
         }
         const _videotag = this.video;
-        const styles = {
-            objectFit: '',
-            width: '',
-            height: '',
+        let styles = {
+            objectFit: null,
+            width: null,
+            height: null,
         };
         if (stretching === 'uniform') {
             // snap video to edges when the difference in aspect ratio is less than 9%
-            var playerAspectRatio = width / height;
-            var videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
+            let playerAspectRatio = width / height;
+            let videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
                 styles.objectFit = 'fill';
             }
         }
         if (fitVideoUsingTransforms) {
-            fitToBounds(_videotag, width, height, stretching, styles);  
+            styles = fitToBounds(_videotag, width, height, stretching, styles);  
         } 
         style(_videotag, styles);
         return false;
