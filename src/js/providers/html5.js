@@ -202,7 +202,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
     });
 
-    const _videotag = _this.video = mediaElement;
+    const _videotag = mediaElement;
     const visualQuality = { level: {} };
     const _staleStreamDuration = 3 * 10 * 1000;
 
