@@ -355,6 +355,11 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
         return _adProgram.primedElement;
     };
+
+    this.setSkipOffset = function(skipOffset) {
+        // IMA will pass -1 if it doesn't know the skipoffset, or if the ad is unskippable
+        _skipOffset = skipOffset > 0 ? skipOffset : null;
+    };
 };
 
 Object.assign(InstreamAdapter.prototype, Events);
