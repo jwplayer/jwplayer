@@ -355,6 +355,19 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
         return _adProgram.primedElement;
     };
+
+    /**
+     * Sets the internal skip offset. Does not set the skip button.
+     * @param {Number} skipOffset - The number of seconds from the start where the ad becomes skippable.
+     * @returns void
+     */
+    this.setSkipOffset = function(skipOffset) {
+        // IMA will pass -1 if it doesn't know the skipoffset, or if the ad is unskippable
+        _skipOffset = skipOffset > 0 ? skipOffset : null;
+        if (_adProgram) {
+            _adProgram.model.set('skipOffset', _skipOffset);
+        }
+    };
 };
 
 Object.assign(InstreamAdapter.prototype, Events);
