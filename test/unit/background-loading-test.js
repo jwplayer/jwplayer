@@ -58,7 +58,7 @@ describe('Background Loading', function () {
             expect(mockProvider.getContainer()).to.equal(container);
 
             mediaController.background = true;
-            expect(container.querySelector('video')).to.equal(null)
+            expect(container.querySelector('video')).to.equal(null);
             expect(mediaController.container).to.equal(null);
             expect(mediaController.pause.calledOnce).to.equal(true);
         });
@@ -116,7 +116,7 @@ describe('Background Loading', function () {
             programController.backgroundActiveMedia();
 
             programController.on('time', () => {
-                throw 'Should not have forwarded a background event';
+                throw new Error('Should not have forwarded a background event');
             });
             mediaController.trigger('time');
         });
@@ -132,7 +132,6 @@ describe('Background Loading', function () {
             mediaController.destroy = sinon.spy();
             mediaPool.recycle = sinon.spy();
 
-            const newMockProvider = new MockProvider();
             mockProvider.video = document.createElement('video');
             const newMediaController = new MediaController(mockProvider, model);
             programController._setActiveMedia(newMediaController);

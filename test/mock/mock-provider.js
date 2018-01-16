@@ -34,3 +34,14 @@ export default class MockProvider extends MockDefault {
         }
     }
 }
+
+export class MockVideolessProvider extends MockProvider {
+    constructor() {
+        super();
+        this.video = undefined;
+    }
+
+    remove() {
+        this.destroy();
+    }
+}

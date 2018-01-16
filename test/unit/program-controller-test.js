@@ -1,7 +1,7 @@
 import Model from 'controller/model';
 import ProgramController from 'program/program-controller';
 import MediaElementPool from 'program/media-element-pool';
-import MockProvider from 'mock/mock-provider';
+import MockProvider, { MockVideolessProvider } from 'mock/mock-provider';
 import sinon from 'sinon';
 
 const defaultConfig = {
@@ -344,6 +344,35 @@ describe('ProgramController', function () {
                 expect(model.set.firstCall).to.have.been.calledWith('attached', true);
                 expect(model.trigger).to.have.callCount(6);
                 expect(model.trigger.firstCall).to.have.been.calledWith('change:attached');
+                expect(model.persistQualityLevel).to.have.callCount(1);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(1);
+            });
+    });
+
+    it('videoless providers are detached instead of backgrounded', function() {
+        programController.providerController.choose = () => MockVideolessProvider;
+        return programController.setActiveItem(0)
+            .then(function () {
+                const provider = programController.activeProvider;
+
+                programController.backgroundActiveMedia();
+                sinon.spy(model, 'set');
+                sinon.spy(model, 'trigger');
+                sinon.spy(model, 'persistQualityLevel');
+                sinon.spy(model, 'persistVideoSubtitleTrack');
+                providerPlayerModelEvents.forEach(event => {
+                    provider.trigger(event.type, event);
+                });
+                expect(model.set).to.have.callCount(0);
+                expect(model.trigger).to.have.callCount(0);
+                expect(model.persistQualityLevel).to.have.callCount(0);
+                expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
+                programController.restoreBackgroundMedia();
+                expect(model.set).to.have.callCount(13);
+                expect(model.set.firstCall).to.have.been.calledWith('mediaElement');
+                expect(model.set.getCall(1)).to.have.been.calledWith('mediaModel');
+                expect(model.set.getCall(2)).to.have.been.calledWith('provider');
+                expect(model.trigger).to.have.callCount(7);
                 expect(model.persistQualityLevel).to.have.callCount(1);
                 expect(model.persistVideoSubtitleTrack).to.have.callCount(1);
             });
