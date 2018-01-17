@@ -22,13 +22,13 @@ const VideoActionsMixin = {
         if (!width || !height || !this.video.videoWidth || !this.video.videoHeight) {
             return false;
         }
-        const _videotag = this.video;
+        let _videotag = this.video;
         let styles = {
             objectFit: null,
             width: null,
             height: null,
         };
-        if (stretching === 'uniform') {
+        if (stretching === 'uniform' && !fitVideoUsingTransforms) {
             // snap video to edges when the difference in aspect ratio is less than 9%
             let playerAspectRatio = width / height;
             let videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
@@ -37,8 +37,8 @@ const VideoActionsMixin = {
             }
         }
         if (fitVideoUsingTransforms) {
-            styles = fitToBounds(_videotag, width, height, stretching, styles);  
-        } 
+            styles = fitToBounds(_videotag, width, height, stretching, styles);
+        }
         style(_videotag, styles);
         return false;
     },
