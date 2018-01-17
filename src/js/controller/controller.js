@@ -867,7 +867,6 @@ Object.assign(Controller.prototype, {
             }
             if (_captions) {
                 _captions.destroy();
-                _captions = null;
             }
             if (_programController) {
                 _programController.destroy();
