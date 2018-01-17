@@ -2,15 +2,13 @@ import ApiQueueDecorator from 'api/api-queue';
 import Config from 'api/config';
 import Setup from 'api/Setup';
 import Providers from 'providers/providers';
-import loadPlugins from 'plugins/plugins';
 import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import loadCoreBundle from 'api/core-loader';
-import Promise, { resolved } from 'polyfills/promise';
+import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
@@ -93,11 +91,7 @@ Object.assign(CoreShim.prototype, {
         }
         mediaPool.prime();
 
-        return Promise.all([
-            loadCoreBundle(model),
-            this.setup.start(),
-            loadPlugins(model, api)
-        ]).then(allPromises => {
+        return this.setup.start(api).then(allPromises => {
             const CoreMixin = allPromises[0];
             if (!this.setup) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
