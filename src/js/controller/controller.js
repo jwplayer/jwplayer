@@ -307,6 +307,7 @@ Object.assign(Controller.prototype, {
 
             switch (typeof item) {
                 case 'string': {
+                    _model.attributes.itemReady = false;
                     const loadPlaylistPromise = _loadPlaylist(item).catch(error => {
                         _this.triggerError({
                             message: `Error loading playlist: ${error.message}`
