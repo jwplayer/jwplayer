@@ -53,14 +53,26 @@ Object.assign(Controller.prototype, {
         _this.originalContainer = _this.currentContainer = originalContainer;
         _this._events = eventListeners;
 
-        const _eventQueuedUntilReady = [];
+        // Delegate trigger so we can run a middleware function before any event is bubbled through the API
+        _this.trigger = function (type, args) {
+            const data = eventsMiddleware(_model, type, args);
+            return Events.trigger.call(this, type, data);
+        };
+
+        const eventsReadyQueue = new ApiQueueDecorator(_this, [
+            'trigger',
+        ], () => true);
+
+        const _trigger = (type, event) => {
+            _this.trigger(type, event);
+        };
 
         _model.setup(config);
 
         const viewModel = new ViewModel(_model);
 
         _view = this._view = new View(_api, viewModel);
-        _view.on('all', _triggerAfterReady, _this);
+        _view.on('all', _trigger, _this);
 
         const _programController = new ProgramController(_model, mediaPool);
         syncInitialModelState();
@@ -132,7 +144,7 @@ Object.assign(Controller.prototype, {
 
         // For onCaptionsList and onCaptionsChange
         _model.on('change:captionsList', function(model, captionsList) {
-            _this.triggerAfterReady(CAPTIONS_LIST, {
+            _this.trigger(CAPTIONS_LIST, {
                 tracks: captionsList,
                 track: _model.get('captionsIndex') || 0
             });
@@ -154,11 +166,7 @@ Object.assign(Controller.prototype, {
 
         // Ensure captionsList event is raised after playlistItem
         _captions = new Captions(_model);
-        _captions.on('all', _triggerAfterReady);
-
-        function _triggerAfterReady(type, e) {
-            _this.triggerAfterReady(type, e);
-        }
+        _captions.on('all', _trigger, _this);
 
         function triggerControls(model, enable) {
             _this.trigger(CONTROLS, {
@@ -188,6 +196,8 @@ Object.assign(Controller.prototype, {
         function _playerReadyNotify() {
             _model.change('visibility', _updateViewable);
             _model.on('change:controls', triggerControls);
+
+            eventsReadyQueue.off();
 
             // Tell the api that we are loaded
             _this.trigger(READY, {
@@ -219,16 +229,8 @@ Object.assign(Controller.prototype, {
                 }
             });
 
-            // Stop queueing certain events
-            _this.triggerAfterReady = _this.trigger;
-
-            // Send queued events
-            for (let i = 0; i < _eventQueuedUntilReady.length; i++) {
-                const event = _eventQueuedUntilReady[i];
-                _preplay = (event.type === MEDIA_BEFOREPLAY);
-                _this.trigger(event.type, event.args);
-                _preplay = false;
-            }
+            eventsReadyQueue.flush();
+            eventsReadyQueue.destroy();
 
             _model.change('viewable', viewableChange);
             _model.change('viewable', _checkPlayOnViewable);
@@ -282,13 +284,6 @@ Object.assign(Controller.prototype, {
                 }
             }
         }
-
-        this.triggerAfterReady = function(type, args) {
-            _eventQueuedUntilReady.push({
-                type: type,
-                args: args
-            });
-        };
 
         function _load(item, feedData) {
 
@@ -397,7 +392,7 @@ Object.assign(Controller.prototype, {
 
             if (!_preplay) {
                 _preplay = true;
-                _this.triggerAfterReady(MEDIA_BEFOREPLAY, { playReason: playReason });
+                _this.trigger(MEDIA_BEFOREPLAY, { playReason: playReason });
                 _preplay = false;
                 if (_interruptPlay) {
                     _interruptPlay = false;
@@ -696,7 +691,7 @@ Object.assign(Controller.prototype, {
 
         function addProgramControllerListeners() {
             _programController
-                .on('all', _triggerAfterReady, _this)
+                .on('all', _trigger, _this)
                 .on('subtitlesTracks', (e) => {
                     _captions.setSubtitlesTracks(e.tracks);
                     const defaultCaptionsIndex = _captions.getCurrentIndex();
@@ -819,11 +814,6 @@ Object.assign(Controller.prototype, {
             );
 
             _model.set('customButtons', customButtons);
-        };
-        // Delegate trigger so we can run a middleware function before any event is bubbled through the API
-        this.trigger = function (type, args) {
-            const data = eventsMiddleware(_model, type, args);
-            return Events.trigger.call(this, type, data);
         };
 
         // View passthroughs
