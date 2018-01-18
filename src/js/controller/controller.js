@@ -307,6 +307,7 @@ Object.assign(Controller.prototype, {
 
             switch (typeof item) {
                 case 'string': {
+                    _model.attributes.item = 0;
                     _model.attributes.itemReady = false;
                     const loadPlaylistPromise = _loadPlaylist(item).catch(error => {
                         _this.triggerError({
@@ -322,6 +323,7 @@ Object.assign(Controller.prototype, {
                     break;
                 }
                 case 'object':
+                    _model.attributes.item = 0;
                     loadPromise = _this.updatePlaylist(Playlist(item), feedData);
                     break;
                 case 'number':
@@ -849,7 +851,7 @@ Object.assign(Controller.prototype, {
                 _model.set('playlistItem', null);
                 return Promise.reject(error);
             }
-            return _setItem(0);
+            return _setItem(_model.get('item'));
         };
 
         this.playerDestroy = function () {

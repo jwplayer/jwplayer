@@ -114,7 +114,7 @@ Object.assign(CoreShim.prototype, {
             storage.track(coreModel);
 
             // Set the active playlist item after plugins are loaded and the view is setup
-            return this.setItemIndex(coreModel.get('item'));
+            return this.updatePlaylist(coreModel.get('playlist'), coreModel.get('feedData'));
         }).then(() => {
             if (!this.setup) {
                 return;
