@@ -315,6 +315,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // when instream was inited and the player was not destroyed\
         _controller.attachMedia(_oldpos);
 
+        if (this.noResume) {
+            return;
+        }
+
         if (_oldpos === null) {
             _controller.stopVideo();
         } else {
