@@ -292,6 +292,10 @@ Object.assign(Controller.prototype, {
 
         function _load(item, feedData) {
 
+            const instream = _this._instreamAdapter;
+            if (instream) {
+                instream.noResume = true;
+            }
             _this.trigger('destroyPlugin', {});
             _stop(true);
 
@@ -847,8 +851,6 @@ Object.assign(Controller.prototype, {
             try {
                 setPlaylist(_model, playlist, feedData);
             } catch (error) {
-                _model.set('item', 0);
-                _model.set('playlistItem', null);
                 return Promise.reject(error);
             }
             return _setItem(_model.get('item'));
