@@ -15,7 +15,7 @@ const VideoAttachedMixin = {
         this.stopStallCheck();
         this.eventsOff_();
 
-        if (this.video && !this.video.paused) {
+        if (this.video && !this.video.paused && this.video.pause) {
             this.video.pause();
         }
 
