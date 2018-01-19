@@ -22,10 +22,6 @@ export default class AdProgramController extends ProgramController {
             // Take the tag that we're using to play the current item. The tag has been freed before reaching this point
             mediaElement = model.get('mediaElement');
 
-            if (!mediaElement.paused) {
-                mediaElement.pause();
-            }
-
             adModel.attributes.mediaElement = mediaElement;
             adModel.attributes.mediaSrc = mediaElement.src;
 
@@ -41,7 +37,7 @@ export default class AdProgramController extends ProgramController {
     }
 
     setup() {
-        const { model, playerModel } = this;
+        const { model, playerModel, primedElement } = this;
         const playerAttributes = playerModel.attributes;
         const mediaModelContext = playerModel.mediaModel;
         model.setup({
@@ -64,6 +60,10 @@ export default class AdProgramController extends ProgramController {
         model.on(ERROR, function(data) {
             this.trigger(ERROR, data);
         }, this);
+
+        if (!primedElement.paused) {
+            primedElement.pause();
+        }
     }
 
     setActiveItem(index) {
@@ -139,9 +139,11 @@ export default class AdProgramController extends ProgramController {
 
 
     destroy() {
-        const { model, mediaElement, mediaPool } = this;
+        const { model, mediaPool } = this;
         model.off();
 
+        // We only use one media element from ads; getPrimedElement will return it
+        const mediaElement = mediaPool.getPrimedElement();
         if (!Features.backgroundLoading) {
             if (mediaElement) {
                 mediaElement.removeEventListener('emptied', this.srcResetListener);
@@ -152,6 +154,10 @@ export default class AdProgramController extends ProgramController {
             }
         } else {
             mediaPool.clean();
+            const mediaContainer = model.get('mediaContainer');
+            if (mediaElement.parentNode === mediaContainer) {
+                mediaContainer.removeChild(mediaElement);
+            }
         }
     }
 
