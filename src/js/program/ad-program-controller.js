@@ -22,10 +22,6 @@ export default class AdProgramController extends ProgramController {
             // Take the tag that we're using to play the current item. The tag has been freed before reaching this point
             mediaElement = model.get('mediaElement');
 
-            if (!mediaElement.paused) {
-                mediaElement.pause();
-            }
-
             adModel.attributes.mediaElement = mediaElement;
             adModel.attributes.mediaSrc = mediaElement.src;
 
