@@ -1,5 +1,5 @@
 import { css, clearCss, style, getRgba } from 'utils/css';
-import { transform } from 'providers/video-actions-mixin';
+import { transform } from 'utils/video-fit';
 
 describe('css', function() {
 
