@@ -17,11 +17,10 @@ const Captions = function(_model) {
         _tracksById = {};
         _unknownCount = 0;
 
-        // Update model without dispatching events _updateMenu()
-        const captionsMenu = _captionsMenu();
+        // Update model without dispatching events
         const attributes = model.attributes;
         attributes.captionsIndex = 0;
-        attributes.captionsList = captionsMenu;
+        attributes.captionsList = _captionsMenu();
         model.set('captionsTrack', null);
     }, this);
 
@@ -48,9 +47,7 @@ const Captions = function(_model) {
                 }
             }
         }
-        const captionsMenu = _captionsMenu();
-        _selectDefaultIndex();
-        _setCaptionsList(captionsMenu);
+        _setCaptionsList();
     }, this);
 
     // Listen for captions menu index changes from the view
@@ -74,9 +71,7 @@ const Captions = function(_model) {
         // To avoid duplicate tracks in the menu when we reuse an _id, regenerate the tracks array
         _tracks = Object.keys(_tracksById).map(id => _tracksById[id]);
 
-        const captionsMenu = _captionsMenu();
-        _selectDefaultIndex();
-        _setCaptionsList(captionsMenu);
+        _setCaptionsList();
     }
 
     function _kindSupported(kind) {
@@ -143,7 +138,7 @@ const Captions = function(_model) {
         _setCurrentIndex(captionsMenuIndex);
     }
 
-    function _setCurrentIndex (index) {
+    function _setCurrentIndex(index) {
         if (_tracks.length) {
             _model.setVideoSubtitleTrack(index, _tracks);
         } else {
@@ -151,8 +146,16 @@ const Captions = function(_model) {
         }
     }
 
-    function _setCaptionsList (captionsMenu) {
-        _model.set('captionsList', captionsMenu);
+    function _setCaptionsList() {
+        const captionsList = _captionsMenu();
+        if (listIdentity(captionsList) !== listIdentity(_model.get('captionsList'))) {
+            _selectDefaultIndex();
+            _model.set('captionsList', captionsList);
+        }
+    }
+
+    function listIdentity(list) {
+        return list.map(item => `${item.id}-${item.label},`);
     }
 
     this.setSubtitlesTracks = _setSubtitlesTracks;

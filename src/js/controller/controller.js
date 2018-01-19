@@ -43,7 +43,7 @@ Object.assign(Controller.prototype, {
 
         let _view;
         let _captions;
-        let _preplay = false;
+        let _beforePlay = false;
         let _actionOnAttach;
         let _stopPlaylist = false;
         let _interruptPlay;
@@ -59,7 +59,7 @@ Object.assign(Controller.prototype, {
             return Events.trigger.call(this, type, data);
         };
 
-        const eventsReadyQueue = new ApiQueueDecorator(_this, [
+        let eventsReadyQueue = new ApiQueueDecorator(_this, [
             'trigger',
         ], () => true);
 
@@ -231,6 +231,7 @@ Object.assign(Controller.prototype, {
 
             eventsReadyQueue.flush();
             eventsReadyQueue.destroy();
+            eventsReadyQueue = null;
 
             _model.change('viewable', viewableChange);
             _model.change('viewable', _checkPlayOnViewable);
@@ -390,10 +391,10 @@ Object.assign(Controller.prototype, {
                 _setItem(0);
             }
 
-            if (!_preplay) {
-                _preplay = true;
+            if (!_beforePlay) {
+                _beforePlay = true;
                 _this.trigger(MEDIA_BEFOREPLAY, { playReason: playReason });
-                _preplay = false;
+                _beforePlay = false;
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
@@ -446,7 +447,7 @@ Object.assign(Controller.prototype, {
                 _stopPlaylist = true;
             }
 
-            if (_preplay) {
+            if (_beforePlay) {
                 _interruptPlay = true;
             }
 
@@ -480,7 +481,7 @@ Object.assign(Controller.prototype, {
                     break;
                 }
                 default:
-                    if (_preplay) {
+                    if (_beforePlay) {
                         _interruptPlay = true;
                     }
             }
@@ -627,7 +628,7 @@ Object.assign(Controller.prototype, {
 
         /** Used for the InStream API **/
         function _detachMedia() {
-            if (_preplay) {
+            if (_beforePlay) {
                 _interruptPlay = true;
             }
 
@@ -822,7 +823,7 @@ Object.assign(Controller.prototype, {
         this.setCaptions = _view.setCaptions;
 
         this.checkBeforePlay = function() {
-            return _preplay;
+            return _beforePlay;
         };
 
         this.setControls = function (mode) {
@@ -899,7 +900,7 @@ Object.assign(Controller.prototype, {
             'setCurrentCaptions',
             'setCurrentQuality',
             'setFullscreen',
-        ], () => !this._model.get('itemReady'));
+        ], () => !this._model.get('itemReady') || eventsReadyQueue);
         // Add commands from CoreLoader to queue
         apiQueue.queue.push.apply(apiQueue.queue, commandQueue);
 

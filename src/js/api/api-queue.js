@@ -42,7 +42,7 @@ export default function ApiQueueDecorator(instance, queuedCommands, predicate) {
     };
 
     this.off = function() {
-        commandQueue.forEach(({ command }) => {
+        queuedCommands.forEach((command) => {
             const method = undecoratedMethods[command];
             if (method) {
                 instance[command] = method;
