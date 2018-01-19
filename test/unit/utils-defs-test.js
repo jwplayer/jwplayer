@@ -42,7 +42,6 @@ describe('utils definitions', function() {
         expect(typeof utils.css, 'css function is defined').to.equal('function');
         expect(typeof utils.style, 'style function is defined').to.equal('function');
         expect(typeof utils.clearCss, 'clearCss function is defined').to.equal('function');
-        expect(typeof utils.transform, 'transform function is defined').to.equal('function');
         expect(typeof utils.getRgba, 'getRgba function is defined').to.equal('function');
 
         // inherit from playerutils

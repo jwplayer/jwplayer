@@ -1,4 +1,5 @@
-import { css, clearCss, style, transform, getRgba } from 'utils/css';
+import { css, clearCss, style, getRgba } from 'utils/css';
+import { transform } from 'providers/video-actions-mixin';
 
 describe('css', function() {
 

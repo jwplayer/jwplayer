@@ -33,7 +33,6 @@ import {
     css,
     clearCss,
     style,
-    transform,
     getRgba
 } from 'utils/css';
 import { ajax, crossdomain } from 'utils/ajax';
@@ -72,7 +71,6 @@ const helpers = Object.assign({}, parser, validator, playerutils, {
     css,
     clearCss,
     style,
-    transform,
     getRgba,
     ajax,
     crossdomain,
