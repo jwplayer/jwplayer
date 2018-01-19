@@ -142,7 +142,7 @@ export default class AdProgramController extends ProgramController {
         const { model, mediaPool } = this;
         model.off();
 
-        // We only use one media element from ads; getPrimedElement will return it;
+        // We only use one media element from ads; getPrimedElement will return it
         const mediaElement = mediaPool.getPrimedElement();
         if (!Features.backgroundLoading) {
             if (mediaElement) {
