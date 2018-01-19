@@ -1,8 +1,9 @@
 import { Browser, OS } from 'environment/environment'; 
+import { style } from 'utils/css';
 
 export const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
 
-export function fitToBounds(_videotag, width, height, stretching, styles, transform) {
+export function fitToBounds(_videotag, width, height, stretching, styles) {
     // Use transforms to center and scale video in container
     const x = -Math.floor(_videotag.videoWidth / 2 + 1);
     const y = -Math.floor(_videotag.videoHeight / 2 + 1);
@@ -21,4 +22,15 @@ export function fitToBounds(_videotag, width, height, stretching, styles, transf
     styles.margin = 0;
     transform(_videotag,
         'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
+    return styles;
+}
+
+export function transform(element, value) {
+    style(element, {
+        transform: value,
+        webkitTransform: value,
+        msTransform: value,
+        mozTransform: value,
+        oTransform: value
+    });
 }

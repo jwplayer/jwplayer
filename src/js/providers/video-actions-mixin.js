@@ -37,7 +37,7 @@ const VideoActionsMixin = {
             }
         }
         if (fitVideoUsingTransforms) {
-            fitToBounds(_videotag, width, height, stretching, styles, transform);
+            styles = fitToBounds(_videotag, width, height, stretching, styles);
         } 
         style(_videotag, styles);
         return false;
@@ -63,17 +63,5 @@ const VideoActionsMixin = {
         }
     }
 };
-
-
-export function transform(element, value) {
-    style(element, {
-        transform: value,
-        webkitTransform: value,
-        msTransform: value,
-        mozTransform: value,
-        oTransform: value
-    });
-}
-
 
 export default VideoActionsMixin;
