@@ -1,4 +1,4 @@
-import setPlaylist from 'api/set-playlist';
+import filterPlaylist from 'playlist/playlist';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import Promise, { resolved } from 'polyfills/promise';
 import PlaylistLoader from 'playlist/loader';
@@ -32,17 +32,15 @@ export function loadPlaylist(_model) {
     return resolved;
 }
 
-function filterPlaylist(_model) {
+function loadProvider(_model) {
     return loadPlaylist(_model).then(() => {
         if (destroyed(_model)) {
             return;
         }
-        // Filter the playlist and update the model's 'playlist'
-        setPlaylist(_model, _model.get('playlist'), _model.get('feedData'));
 
         // Loads the first provider if not included in the core bundle
         // A provider loaded this way will not be set upon completion
-        const playlist = _model.get('playlist');
+        const playlist = filterPlaylist(_model.get('playlist'), _model);
         const providersManager = _model.getProviders();
         const firstProviderNeeded = providersManager.required([playlist[0]]);
         // Skip provider loading if included in bundle
@@ -84,7 +82,7 @@ const startSetup = function(_model) {
         return Promise.reject();
     }
     return Promise.all([
-        filterPlaylist(_model),
+        loadProvider(_model),
         loadSkin(_model)
     ]);
 };
