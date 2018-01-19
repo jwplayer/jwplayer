@@ -147,9 +147,9 @@ const Captions = function(_model) {
     }
 
     function _setCaptionsList() {
-        _selectDefaultIndex();
         const captionsList = _captionsMenu();
         if (listIdentity(captionsList) !== listIdentity(_model.get('captionsList'))) {
+            _selectDefaultIndex();
             _model.set('captionsList', captionsList);
         }
     }
