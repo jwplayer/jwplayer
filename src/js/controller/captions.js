@@ -155,7 +155,7 @@ const Captions = function(_model) {
     }
 
     function listIdentity(list) {
-        return list.map(item => `${item.id}-${item.label},`);
+        return list.map(item => `${item.id}-${item.label}`).join(',');
     }
 
     this.setSubtitlesTracks = _setSubtitlesTracks;
