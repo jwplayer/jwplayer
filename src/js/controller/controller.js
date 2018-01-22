@@ -1,10 +1,9 @@
 import instances from 'api/players';
 import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
-import setPlaylist from 'api/set-playlist';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -348,9 +347,6 @@ Object.assign(Controller.prototype, {
                     resolve(data);
                 });
                 loader.on(ERROR, function(error) {
-                    _model.set('feedData', {
-                        error: error
-                    });
                     reject(error);
                 }, this);
                 loader.load(toLoad);
@@ -840,7 +836,13 @@ Object.assign(Controller.prototype, {
 
         this.updatePlaylist = function(playlist, feedData) {
             try {
-                setPlaylist(_model, playlist, feedData);
+                const filteredPlaylist = filterPlaylist(playlist, _model, feedData);
+
+                // Throw exception if playlist is empty
+                validatePlaylist(filteredPlaylist);
+
+                _model.set('feedData', feedData);
+                _model.set('playlist', filteredPlaylist);
             } catch (error) {
                 return Promise.reject(error);
             }

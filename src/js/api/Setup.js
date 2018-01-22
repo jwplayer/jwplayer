@@ -21,10 +21,11 @@ const Setup = function(_model) {
             _setupFailureTimeout = setTimeout(() => {
                 reject(new Error(`Setup Timeout Error: Setup took longer than ${SETUP_TIMEOUT_SECONDS} seconds to complete.`));
             }, SETUP_TIMEOUT_SECONDS * 1000);
-            setup.then(() => {
+            const timeoutCancelled = () => {
                 clearTimeout(_setupFailureTimeout);
                 resolve();
-            });
+            };
+            setup.then(timeoutCancelled).catch(timeoutCancelled);
         });
 
         return Promise.race([setup, timeout]);

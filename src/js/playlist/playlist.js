@@ -42,6 +42,12 @@ export function filterPlaylist(playlist, model, feedData) {
     return list;
 }
 
+export function validatePlaylist(playlist) {
+    if (!Array.isArray(playlist) || playlist.length === 0) {
+        throw new Error('No playable sources found');
+    }
+}
+
 function formatSources(item, model) {
     const sources = item.sources;
     const androidhls = model.get('androidhls');
