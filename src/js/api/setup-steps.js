@@ -1,15 +1,14 @@
-import filterPlaylist from 'playlist/playlist';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import Promise, { resolved } from 'polyfills/promise';
 import PlaylistLoader from 'playlist/loader';
-import Playlist from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
     if (typeof playlist === 'string') {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             const playlistLoader = new PlaylistLoader();
             playlistLoader.on(PLAYLIST_LOADED, function(data) {
                 const loadedPlaylist = Playlist(data.playlist);
@@ -20,10 +19,8 @@ export function loadPlaylist(_model) {
             });
             playlistLoader.on(ERROR, err => {
                 _model.attributes.playlist = [];
-                _model.set('feedData', {
-                    error: new Error(`Error loading playlist: ${err.message}`)
-                });
-                resolve();
+                _model.attributes.feedData = {};
+                reject(new Error(`Error loading playlist: ${err.message}`));
             });
             playlistLoader.load(playlist);
         });
@@ -41,6 +38,10 @@ function loadProvider(_model) {
         // Loads the first provider if not included in the core bundle
         // A provider loaded this way will not be set upon completion
         const playlist = filterPlaylist(_model.get('playlist'), _model);
+
+        // Throw exception if playlist is empty
+        validatePlaylist(playlist);
+
         const providersManager = _model.getProviders();
         const firstProviderNeeded = providersManager.required([playlist[0]]);
         // Skip provider loading if included in bundle

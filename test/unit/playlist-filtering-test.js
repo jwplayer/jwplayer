@@ -1,6 +1,6 @@
 import _ from 'test/underscore';
 import Playlists from 'data/playlists';
-import Playlist, { filterPlaylist } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import Providers from 'providers/providers';
 
 function sourcesMatch(playlistItems) {
@@ -172,4 +172,29 @@ describe('playlist.filterPlaylist', function() {
         expect(pl.length).to.equal(1);
         expect(pl[0].allSources[0].withCredentials).to.equal(undefined);
     });
+});
+
+describe('playlist.validatePlaylist', function() {
+
+    it('checks that playlist is an array and has content', function() {
+        const validateGoodPlaylist = function() {
+            validatePlaylist([{}]);
+        };
+
+        expect(validateGoodPlaylist).to.not.throw();
+
+        const validateEmptyPlaylist = function() {
+            validatePlaylist([]);
+        };
+
+        expect(validateEmptyPlaylist).to.throw('No playable sources found');
+
+        const validateInvalidPlaylist = function() {
+            validatePlaylist(null);
+        };
+
+        expect(validateInvalidPlaylist).to.throw('No playable sources found');
+    });
+
+
 });
