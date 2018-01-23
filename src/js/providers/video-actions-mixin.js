@@ -22,7 +22,7 @@ const VideoActionsMixin = {
         if (!width || !height || !this.video.videoWidth || !this.video.videoHeight) {
             return false;
         }
-        let _videotag = this.video;
+        const videotag = this.video;
         const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
         let styles = {
             objectFit: null,
@@ -31,17 +31,17 @@ const VideoActionsMixin = {
         };
         if (stretching === 'uniform' && !fitVideoUsingTransforms) {
             // snap video to edges when the difference in aspect ratio is less than 9%
-            let playerAspectRatio = width / height;
-            let videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
+            const playerAspectRatio = width / height;
+            const videoAspectRatio = videotag.videoWidth / videotag.videoHeight;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
                 styles.objectFit = 'fill';
             }
         }
         if (fitVideoUsingTransforms) {
-            const x = -Math.floor(_videotag.videoWidth / 2 + 1);
-            const y = -Math.floor(_videotag.videoHeight / 2 + 1);
-            let scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
-            let scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
+            const x = -Math.floor(videotag.videoWidth / 2 + 1);
+            const y = -Math.floor(videotag.videoHeight / 2 + 1);
+            let scaleX = Math.ceil(width * 100 / videotag.videoWidth) / 100;
+            let scaleY = Math.ceil(height * 100 / videotag.videoHeight) / 100;
             if (stretching === 'none') {
                 scaleX = scaleY = 1;
             } else if (stretching === 'fill') {
@@ -49,14 +49,14 @@ const VideoActionsMixin = {
             } else if (stretching === 'uniform') {
                 scaleX = scaleY = Math.min(scaleX, scaleY);
             }
-            styles.width = _videotag.videoWidth;
-            styles.height = _videotag.videoHeight;
+            styles.width = videotag.videoWidth;
+            styles.height = videotag.videoHeight;
             styles.top = styles.left = '50%';
             styles.margin = 0;
-            transform(_videotag,
+            transform(videotag,
                 'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
         } 
-        style(_videotag, styles);
+        style(videotag, styles);
     },
 
     getContainer: function() {
