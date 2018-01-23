@@ -1,4 +1,5 @@
-import { style } from 'utils/css';
+import { style, transform } from 'utils/css';
+import { Browser, OS } from 'environment/environment'; 
 
 const VideoActionsMixin = {
     container: null,
@@ -21,21 +22,41 @@ const VideoActionsMixin = {
         if (!width || !height || !this.video.videoWidth || !this.video.videoHeight) {
             return false;
         }
-        if (stretching === 'uniform') {
+        let _videotag = this.video;
+        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
+        let styles = {
+            objectFit: null,
+            width: null,
+            height: null,
+        };
+        if (stretching === 'uniform' && !fitVideoUsingTransforms) {
             // snap video to edges when the difference in aspect ratio is less than 9%
-            var playerAspectRatio = width / height;
-            var videoAspectRatio = this.video.videoWidth / this.video.videoHeight;
-            var objectFit = null;
+            let playerAspectRatio = width / height;
+            let videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
             if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
-                objectFit = 'fill';
+                styles.objectFit = 'fill';
             }
-            style(this.video, {
-                objectFit,
-                width: null,
-                height: null
-            });
         }
-        return false;
+        if (fitVideoUsingTransforms) {
+            const x = -Math.floor(_videotag.videoWidth / 2 + 1);
+            const y = -Math.floor(_videotag.videoHeight / 2 + 1);
+            let scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
+            let scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
+            if (stretching === 'none') {
+                scaleX = scaleY = 1;
+            } else if (stretching === 'fill') {
+                scaleX = scaleY = Math.max(scaleX, scaleY);
+            } else if (stretching === 'uniform') {
+                scaleX = scaleY = Math.min(scaleX, scaleY);
+            }
+            styles.width = _videotag.videoWidth;
+            styles.height = _videotag.videoHeight;
+            styles.top = styles.left = '50%';
+            styles.margin = 0;
+            transform(_videotag,
+                'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
+        } 
+        style(_videotag, styles);
     },
 
     getContainer: function() {
@@ -60,3 +81,4 @@ const VideoActionsMixin = {
 };
 
 export default VideoActionsMixin;
+
