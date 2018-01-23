@@ -1,14 +1,15 @@
 import { style } from 'utils/css';
+import endOfRange from 'utils/time-ranges';
 
 const VideoActionsMixin = {
     container: null,
 
-    volume: function(vol) {
+    volume(vol) {
         vol = Math.max(Math.min(vol / 100, 1), 0);
         this.video.volume = vol;
     },
 
-    mute: function(state) {
+    mute(state) {
         this.video.muted = !!state;
         if (!this.video.muted) {
             // Remove muted attribute once user unmutes so the video element doesn't get
@@ -17,7 +18,7 @@ const VideoActionsMixin = {
         }
     },
 
-    resize: function(width, height, stretching) {
+    resize(width, height, stretching) {
         if (!width || !height || !this.video.videoWidth || !this.video.videoHeight) {
             return false;
         }
@@ -38,24 +39,34 @@ const VideoActionsMixin = {
         return false;
     },
 
-    getContainer: function() {
+    getContainer() {
         return this.container;
     },
 
-    setContainer: function(element) {
+    setContainer(element) {
         this.container = element;
         if (this.video.parentNode !== element) {
             element.appendChild(this.video);
         }
     },
 
-    remove: function() {
+    remove() {
         this.stop();
         this.destroy();
         const container = this.container;
         if (container && container === this.video.parentNode) {
             container.removeChild(this.video);
         }
+    },
+
+    atEdgeOfLiveStream() {
+        if (!this.isLive()) {
+            return false;
+        }
+
+        // currentTime doesn't always get to the end of the buffered range
+        const timeFudge = 2;
+        return (endOfRange(this.video.buffered) - this.video.currentTime) <= timeFudge;
     }
 };
 

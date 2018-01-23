@@ -17,6 +17,7 @@ const VideoListenerMixin = {
     },
 
     play() {
+        this.stallTime = -1;
         if (!this.video.paused && this.state !== STATE_PLAYING) {
             this.setState(STATE_LOADING);
         }
@@ -36,7 +37,6 @@ const VideoListenerMixin = {
     },
 
     timeupdate() {
-        this.stopStallCheck();
         var height = this.video.videoHeight;
         if (height !== this._helperLastVideoHeight) {
             if (this.adaptation) {
@@ -56,8 +56,10 @@ const VideoListenerMixin = {
             return;
         }
 
-        if (!this.seeking && !this.video.paused && (this.state === STATE_STALLED || this.state === STATE_LOADING)) {
-            this.startStallCheck();
+        if (!this.seeking && !this.video.paused &&
+            (this.state === STATE_STALLED || this.state === STATE_LOADING) &&
+            this.stallTime !== this.getCurrentTime()) {
+            this.stallTime = -1;
             this.setState(STATE_PLAYING);
         }
 
@@ -105,7 +107,10 @@ const VideoListenerMixin = {
     },
 
     playing() {
-        if (!this.seeking) {
+        // When stalling, STATE_PLAYING is only set on timeupdate
+        // because Safari and Firefox will fire "playing" before playback recovers from stalling
+        if (this.stallTime === -1) {
+            // Here setting STATE_PLAYING ensures a quick recovery from STATE_LOADING after seeking
             this.setState(STATE_PLAYING);
         }
         this.trigger(PROVIDER_FIRST_FRAME);
@@ -152,7 +157,6 @@ const VideoListenerMixin = {
     },
 
     ended() {
-        this.stopStallCheck();
         this._helperLastVideoHeight = 0;
         if (this.state !== STATE_IDLE && this.state !== STATE_COMPLETE) {
             this.trigger(MEDIA_COMPLETE);

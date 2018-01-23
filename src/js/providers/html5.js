@@ -1,7 +1,7 @@
 import { qualityLevel } from 'providers/data-normalizer';
 import { Browser, OS } from 'environment/environment';
 import { isAndroidHls } from 'providers/html5-android-hls';
-import { STATE_IDLE, MEDIA_META, MEDIA_ERROR, MEDIA_VISUAL_QUALITY, MEDIA_TYPE,
+import { STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META, MEDIA_ERROR, MEDIA_VISUAL_QUALITY, MEDIA_TYPE,
     MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_SEEK, STATE_LOADING } from 'events/events';
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
@@ -140,6 +140,16 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             VideoEvents.seeked.call(_this);
         },
 
+        waiting() {
+            if (!_this.seeking && _this.state === STATE_PLAYING) {
+                if (_this.atEdgeOfLiveStream()) {
+                    _this.setPlaybackRate(1);
+                }
+                _this.stallTime = _this.getCurrentTime();
+                _this.setState(STATE_STALLED);
+            }
+        },
+
         webkitbeginfullscreen(e) {
             _fullscreenState = true;
             _sendFullscreen(e);
@@ -190,13 +200,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             }
             this.addTracksListener(_videotag.textTracks, 'change', this.textTrackChangeHandler);
         },
-        stalledHandler(checkStartTime) {
-            // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
-            if (_androidHls) {
-                return;
-            }
-            VideoAttached.stalledHandler.call(_this, checkStartTime);
-        },
         isLive() {
             return _videotag.duration === Infinity;
         }
@@ -224,8 +227,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     this.isSDK = !!_playerConfig.sdkplatform;
     this.video = _videotag;
     this.supportsPlaybackRate = true;
-
-    _setupListeners(MediaEvents, _videotag);
 
     function checkVisualQuality() {
         const level = visualQuality.level;
@@ -452,7 +453,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (_androidHls) {
             // Playback rate is broken on Android HLS
             _this.supportsPlaybackRate = false;
+            // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
+            MediaEvents.waiting = utils.noop;
         }
+        _this.eventsOn_();
         // the loadeddata event determines the mediaType for HLS sources
         if (_levels.length && _levels[0].type !== 'hls') {
             this.sendMediaType(_levels);
