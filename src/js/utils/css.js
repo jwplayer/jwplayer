@@ -90,6 +90,16 @@ function _styleValue(property, value) {
     return Math.ceil(value) + 'px';
 }
 
+export function transform(element, value) {
+    style(element, {
+        transform: value,
+        webkitTransform: value,
+        msTransform: value,
+        mozTransform: value,
+        oTransform: value
+    });
+}
+
 let canvasColorContext;
 
 export function getRgba(color, opacity) {

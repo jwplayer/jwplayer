@@ -1,5 +1,4 @@
-import { css, clearCss, style, getRgba } from 'utils/css';
-import { transform } from 'utils/video-fit';
+import { css, clearCss, style, getRgba, transform } from 'utils/css';
 
 describe('css', function() {
 
