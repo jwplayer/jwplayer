@@ -139,7 +139,7 @@ export default class AdProgramController extends ProgramController {
 
 
     destroy() {
-        const { model, mediaPool } = this;
+        const { model, mediaPool, playerModel } = this;
         model.off();
 
         // We only use one media element from ads; getPrimedElement will return it
@@ -154,7 +154,7 @@ export default class AdProgramController extends ProgramController {
             }
         } else {
             mediaPool.clean();
-            const mediaContainer = model.get('mediaContainer');
+            const mediaContainer = playerModel.get('mediaContainer');
             if (mediaElement.parentNode === mediaContainer) {
                 mediaContainer.removeChild(mediaElement);
             }
