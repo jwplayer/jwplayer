@@ -1,5 +1,5 @@
 import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
-    MEDIA_META, MEDIA_TIME, MEDIA_COMPLETE,
+    MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
     INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
 import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
@@ -94,6 +94,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         _oldpos = _controller.get('position');
         _adProgram.on('all', _instreamForward, this);
+        _adProgram.on(MEDIA_PLAY_ATTEMPT_FAILED, triggerPlayRejected, this);
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
         _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
         _adProgram.on(MEDIA_META, _instreamMeta, this);
@@ -125,6 +126,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         this.setText(_model.get('localization').loadingAd);
         return this;
     };
+
+    function triggerPlayRejected() { 
+        _model.set('playRejected', true);
+    }
 
     function _loadNextItem() {
         _arrayIndex++;
