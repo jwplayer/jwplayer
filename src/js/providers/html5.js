@@ -127,8 +127,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             _seekOffset = null;
             _delayedSeek = 0;
             _this.seeking = true;
-            _videotag.removeEventListener('waiting', setLoadingState);
-            _videotag.addEventListener('waiting', setLoadingState);
             _this.trigger(MEDIA_SEEK, {
                 position,
                 offset
@@ -136,12 +134,13 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         },
 
         seeked() {
-            _videotag.removeEventListener('waiting', setLoadingState);
             VideoEvents.seeked.call(_this);
         },
 
         waiting() {
-            if (!_this.seeking && _this.state === STATE_PLAYING) {
+            if (_this.seeking) {
+                _this.setState(STATE_LOADING);
+            } else if (_this.state === STATE_PLAYING) {
                 if (_this.atEdgeOfLiveStream()) {
                     _this.setPlaybackRate(1);
                 }
@@ -245,10 +244,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             _this.trigger(MEDIA_VISUAL_QUALITY, visualQuality);
             visualQuality.reason = '';
         }
-    }
-
-    function setLoadingState() {
-        _this.setState(STATE_LOADING);
     }
 
     function _setPositionBeforeSeek(position) {
