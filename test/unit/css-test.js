@@ -1,4 +1,4 @@
-import { css, clearCss, style, getRgba, transform } from 'utils/css';
+import { css, clearCss, style, transform, getRgba } from 'utils/css';
 
 describe('css', function() {
 
