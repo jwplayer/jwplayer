@@ -81,7 +81,7 @@ export default class AdProgramController extends ProgramController {
         if (!provider) {
             return;
         }
-        const { model, playerModel } = this;
+        const { playerModel } = this;
         this._setProvider(provider);
 
         // Match the main player's controls state
