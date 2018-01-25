@@ -757,6 +757,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (_levels[0].type === 'hls') {
             var mediaType = 'video';
             if (_videotag.videoHeight === 0) {
+                // Safari will report videoHeight as 0 for HLS streams until readyState indicates that the browser has data
+                if ((OS.iOS || Browser.safari) && _videotag.readyState < 2) {
+                    return;
+                }
                 mediaType = 'audio';
             }
             _this.trigger(MEDIA_TYPE, { mediaType: mediaType });
