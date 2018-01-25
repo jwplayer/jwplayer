@@ -219,8 +219,8 @@ function View(_api, _model) {
 
         const playerViewModel = _model.player;
         playerViewModel.on('change:errorEvent', _errorHandler);
-        playerViewModel.on('change:mediaType', _onMediaTypeChange);
-
+        
+        _model.on('change:mediaType', _onMediaTypeChange);
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
