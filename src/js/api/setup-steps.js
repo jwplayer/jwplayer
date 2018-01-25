@@ -23,7 +23,8 @@ export function loadPlaylist(_model) {
             playlistLoader.load(playlist);
         });
     }
-    setPlaylistAttributes(_model, playlist, {});
+    const feedData = _model.get('feedData') || {};
+    setPlaylistAttributes(_model, playlist, feedData);
     return resolved;
 }
 
