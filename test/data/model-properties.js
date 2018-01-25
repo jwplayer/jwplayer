@@ -1,7 +1,6 @@
 export const optionalProperties = {
     aspectratio: 1.0,
     fullscreen: false,
-    feedData: {},
     errorEvent: null,
     _destroyed: null,
     playOnViewable: false,
@@ -90,6 +89,7 @@ export default {
     audioMode: false,
     state: '',
     playlist: [{}],
+    feedData: {},
     item: 0,
     duration: 0,
     position: 0,

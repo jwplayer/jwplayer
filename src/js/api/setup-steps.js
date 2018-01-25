@@ -11,22 +11,26 @@ export function loadPlaylist(_model) {
         return new Promise((resolve, reject) => {
             const playlistLoader = new PlaylistLoader();
             playlistLoader.on(PLAYLIST_LOADED, function(data) {
-                const loadedPlaylist = Playlist(data.playlist);
+                const loadedPlaylist = data.playlist;
                 delete data.playlist;
-                _model.attributes.playlist = loadedPlaylist;
-                _model.attributes.feedData = data;
+                setPlaylistAttributes(_model, loadedPlaylist, data);
                 resolve();
             });
             playlistLoader.on(ERROR, err => {
-                _model.attributes.playlist = [];
-                _model.attributes.feedData = {};
+                setPlaylistAttributes(_model, [], {});
                 reject(new Error(`Error loading playlist: ${err.message}`));
             });
             playlistLoader.load(playlist);
         });
     }
-    _model.attributes.playlist = Playlist(playlist);
+    setPlaylistAttributes(_model, playlist, {});
     return resolved;
+}
+
+function setPlaylistAttributes(model, playlist, feedData) {
+    const attributes = model.attributes;
+    attributes.playlist = Playlist(playlist);
+    attributes.feedData = feedData;
 }
 
 function loadProvider(_model) {
