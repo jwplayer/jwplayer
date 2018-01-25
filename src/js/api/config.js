@@ -44,7 +44,7 @@ const Defaults = {
         rewind: 'Rewind 10 Seconds',
         nextUp: 'Next Up',
         nextUpClose: 'Next Up Close',
-        related: 'Discover',
+        related: 'More Videos',
         close: 'Close',
         settings: 'Settings',
         unmute: 'Unmute',
