@@ -15,13 +15,11 @@ describe('Model', function() {
     });
 
     describe('return value', function() {
-        it.only('should return an object on setup', function() {
+        it('should return an object on setup', function() {
             expect(model).to.be.an('object');
         });
-    });
 
-    describe('state', function() {
-        it.only('should return an idle state', function() {
+        it('should return an idle state', function() {
             expect(model.get('state')).to.equal('idle');
         });
     });
