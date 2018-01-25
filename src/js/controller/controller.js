@@ -323,7 +323,7 @@ Object.assign(Controller.prototype, {
                 }
                 case 'object':
                     _model.attributes.item = 0;
-                    loadPromise = _this.updatePlaylist(Playlist(item), feedData);
+                    loadPromise = _this.updatePlaylist(Playlist(item), feedData || {});
                     break;
                 case 'number':
                     loadPromise = _setItem(item);
