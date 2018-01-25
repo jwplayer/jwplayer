@@ -12,6 +12,8 @@ export default class AdProgramController extends ProgramController {
         this.playerModel = model;
         this.provider = null;
 
+        adModel.mediaModel.attributes.mediaType = 'video';
+
         // Ad plugins must use only one element, and must use the same element during playback of an item
         // (i.e. prerolls, midrolls, and postrolls must use the same tag)
         let mediaElement;

@@ -58,7 +58,7 @@ class PlayerViewModel extends SimpleModelExtendable {
         }, this);
 
         if (previousMediaModel) {
-            dispatchDiffChangeEvents(this, mediaModel.attributes, previousMediaModel);
+            dispatchDiffChangeEvents(this, mediaModel.attributes, previousMediaModel.attributes);
         }
     }
 
