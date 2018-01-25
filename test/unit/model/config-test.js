@@ -14,7 +14,7 @@ describe('Model', function() {
         model.setup(config);
     });
 
-    describe('return value', function() {
+    describe('Setup', function() {
         it('should return an object on setup', function() {
             expect(model).to.be.an('object');
         });
