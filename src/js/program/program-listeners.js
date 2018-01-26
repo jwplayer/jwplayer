@@ -121,14 +121,9 @@ export function MediaControllerListener(model, programController) {
                     model.set(type, data[type]);
                 }
                 return;
-            case MEDIA_RATE_CHANGE: {
-                const rate = data.playbackRate;
-                // Check if its a generally usable rate.  Shaka changes rate to 0 when pause or buffering.
-                if (rate > 0) {
-                    model.set('playbackRate', rate);
-                }
+            case MEDIA_RATE_CHANGE:
+                model.set('playbackRate', data.playbackRate);
                 return;
-            }
             case MEDIA_META: {
                 Object.assign(model.get('itemMeta'), data.metadata);
                 break;
