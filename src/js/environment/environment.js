@@ -178,7 +178,7 @@ Object.defineProperties(Features, {
         enumerable: true
     },
     backgroundLoading: {
-        get: memoize(() => !OS.iOS),
+        get: memoize(() => !(OS.iOS || Browser.safari)),
         enumerable: true
     }
 });
