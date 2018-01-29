@@ -44,7 +44,7 @@ export function isIE() {
 }
 
 export function isSafari() {
-    return userAgentMatch(/safari/i) && !userAgentMatch(/(?:Chrome|CriOS|chromium|android)/i);
+    return userAgentMatch(/safari/i) && !userAgentMatch(/(?:Chrome|CriOS|chromium|android|phantom)/i);
 }
 
 /** Matches iOS devices **/
