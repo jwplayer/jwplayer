@@ -4,11 +4,12 @@ import { ajax } from 'utils/ajax';
 describe('ajax', function() {
     this.timeout(5000);
 
-    function validXHR(xhr) {
-        if ('XDomainRequest' in window && xhr instanceof window.XDomainRequest) {
-            return true;
+    function validateXHR(xhr) {
+        if ('XDomainRequest' in window) {
+            expect(xhr).to.be.an.instanceof(window.XDomainRequest);
+        } else {
+            expect(xhr).to.be.an.instanceof(window.XMLHttpRequest);
         }
-        return xhr instanceof window.XMLHttpRequest;
     }
 
     it('legacy params', function (done) {
@@ -26,7 +27,7 @@ describe('ajax', function() {
             },
             true
         );
-        expect(validXHR(xhr), 'ajax returns an XMLHttpRequest instance').to.be.true;
+        validateXHR(xhr);
     });
 
     it('responseType "text"', function (done) {
@@ -42,7 +43,7 @@ describe('ajax', function() {
             },
             responseType: 'text'
         });
-        expect(validXHR(xhr), 'ajax returns an XMLHttpRequest instance').to.be.true;
+        validateXHR(xhr);
     });
 
     it('responseType "json"', function (done) {
@@ -58,7 +59,7 @@ describe('ajax', function() {
             },
             responseType: 'json'
         });
-        expect(validXHR(xhr), 'ajax returns an XMLHttpRequest instance').to.be.true;
+        validateXHR(xhr);
     });
 
     it('timeout', function (done) {
