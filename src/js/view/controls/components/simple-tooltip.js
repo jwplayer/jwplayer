@@ -40,6 +40,7 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
 
     attachToElement.addEventListener('mouseover', instance.open);
     attachToElement.addEventListener('focus', instance.open);
+    attachToElement.addEventListener('blur', instance.close);
     attachToElement.addEventListener('mouseout', instance.close);
     attachToElement.addEventListener('touchstart', (evt) => {
         instance.touchEvent = getPointerType(evt) === 'touch';
