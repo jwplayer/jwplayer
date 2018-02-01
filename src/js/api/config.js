@@ -47,7 +47,8 @@ const Defaults = {
         related: 'Discover',
         close: 'Close',
         settings: 'Settings',
-        unmute: 'Unmute'
+        unmute: 'Unmute',
+        copied: 'Copied'
     },
     renderCaptionsNatively: false,
     nextUpDisplay: true
