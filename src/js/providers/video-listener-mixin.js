@@ -64,15 +64,16 @@ const VideoListenerMixin = {
         }
 
         var timeEventObject = {
-            position: position,
-            duration: duration
+            position,
+            duration,
+            metdata: {
+                currentTime: this.video.currentTime
+            }
         };
         if (this.getPtsOffset) {
             var ptsOffset = this.getPtsOffset();
             if (ptsOffset >= 0) {
-                timeEventObject.metadata = {
-                    mpegts: ptsOffset + position
-                };
+                timeEventObject.metadata.mpegts = ptsOffset + position;
             }
         }
 
