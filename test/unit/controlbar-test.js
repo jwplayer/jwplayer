@@ -1,6 +1,7 @@
 import ControlBar from 'view/controls/controlbar';
 import SimpleModel from 'model/simplemodel';
 import sinon from 'sinon';
+import utils from 'utils/helpers';
 
 const model = Object.assign({}, SimpleModel);
 model.change = sinon.stub();
@@ -104,6 +105,28 @@ describe('Control Bar', function() {
             expect(children.length).to.equal(3);
             expect(children[2].getAttribute('button')).to.equal('3');
         });
+    });
+
+    describe('toggleCaptionsButtonState', function() {
+
+        it('should do nothing if there is no captions button', function() {
+            const toggledReturn = controlBar.toggleCaptionsButtonState();
+            utils.toggleClass = sinon.spy();
+
+            expect(utils.toggleClass.notCalled).to.be.true;
+            expect(toggledReturn).to.be.undefined;
+        });
+
+        it('should toggle the captions button when the button is present', function() {
+            const captionsElement = {element: () => {}}
+            controlBar.elements.captionsButton = captionsElement;
+            utils.toggleClass = sinon.spy();
+
+            controlBar.toggleCaptionsButtonState();
+            expect(utils.toggleClass.called).to.be.true;
+            expect(utils.toggleClass.calledWith(captionsElement));
+        });
+
     });
 
     describe('addLogo', function() {
