@@ -66,7 +66,7 @@ const VideoListenerMixin = {
         var timeEventObject = {
             position,
             duration,
-            metdata: {
+            metadata: {
                 currentTime: this.video.currentTime
             }
         };
