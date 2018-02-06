@@ -41,7 +41,7 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
     attachToElement.addEventListener('focus', instance.open);
     attachToElement.addEventListener('blur', instance.close);
     attachToElement.addEventListener('mouseout', instance.close);
-    attachToElement.addEventListener('touchstart', (evt) => {
+    attachToElement.addEventListener('touchstart', () => {
         instance.touchEvent = true;
     }, {
         passive: true
