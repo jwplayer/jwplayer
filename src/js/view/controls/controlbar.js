@@ -153,6 +153,11 @@ export default class Controlbar {
         }, localization.cc, cloneIcons('cc-off,cc-on'));
         captionsButton.element().setAttribute('aria-haspopup', 'true');
 
+        const liveButton = button('jw-text-live', () => {
+            this.goToLiveEdge();
+        });
+        liveButton.element().textContent = localization.liveBroadcast;
+
         const elements = this.elements = {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
@@ -161,9 +166,7 @@ export default class Controlbar {
             rewind: button('jw-icon-rewind', () => {
                 this.rewind();
             }, rewind, cloneIcons('rewind')),
-            live: button('jw-icon-live', () => {
-                this.goToLiveEdge();
-            }, localization.liveBroadcast, cloneIcons('live,dvr')),
+            live: liveButton,
             next: nextButton,
             elapsed: textIcon('jw-text-elapsed', 'timer'),
             countdown: textIcon('jw-text-countdown', 'timer'),
@@ -263,11 +266,8 @@ export default class Controlbar {
         _model.change('fullscreen', this.onFullscreen, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
-            if (dvrLive !== undefined) {
-                // update live icon and displayed time when DVR stream enters or exits live edge
-                utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive);
-            }
-        });
+            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive === false);
+        }, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
         _model.on('change:captionsIndex', onCaptionsChanged, this);
