@@ -1,78 +1,89 @@
-import _ from 'test/underscore';
 import { ajax } from 'utils/ajax';
 
-describe('ajax', function() {
+describe('utils.ajax', function() {
     this.timeout(5000);
 
-    function validXHR(xhr) {
-        if ('XDomainRequest' in window && xhr instanceof window.XDomainRequest) {
-            return true;
+    function validateXHR(xhr) {
+        if ('XDomainRequest' in window) {
+            expect(xhr).to.be.instanceOf(window.XDomainRequest);
+        } else {
+            expect(xhr).to.be.instanceOf(window.XMLHttpRequest);
         }
-        return xhr instanceof window.XMLHttpRequest;
     }
 
-    it('legacy params', function (done) {
-        var xhr = ajax('/base/test/files/playlist.xml',
+    it('uses default mimetype "text/xml" with legacy boolean argument', function (done) {
+        const xhr = ajax('/base/test/files/playlist.xml',
             function success(xhrResult) {
-                expect(xhrResult, 'success callback expects the result be the xhr instance').to.equal(xhr);
-                expect(!!xhrResult.responseText, 'success callback expects the result to have responseText').to.be.true;
-                expect(!!xhrResult.responseXML, 'success callback expects the result to have responseXML for XML content').to.be.true;
-                expect(xhrResult.status, 'success callback expects that the result status was 200').to.equal(200);
+                expect(xhrResult)
+                    .to.equal(xhr);
+                expect(xhrResult.responseText)
+                    .to.be.a('string')
+                    .and.have.lengthOf(2401);
+                expect(xhrResult)
+                    .to.have.property('responseXML')
+                    .that.does.not.equal(undefined);
+                expect(xhrResult.status)
+                    .to.equal(200);
                 done();
             },
             function error(message, requestUrl, xhrResult) {
-                expect(false, message, requestUrl, xhrResult).to.be.true;
+                assert.fail(xhrResult.status, 200, message, requestUrl);
                 done();
             },
             true
         );
-        expect(validXHR(xhr), 'ajax returns an XMLHttpRequest instance').to.be.true;
+        validateXHR(xhr);
     });
 
-    it('responseType "text"', function (done) {
-        var xhr = ajax({
+    it('supports responseType "text" argument', function (done) {
+        const xhr = ajax({
             url: '/base/test/files/playlist.json',
             oncomplete: function (xhrResult) {
-                expect(!!xhrResult.responseText, 'success callback expects the the result to have responseText').to.be.true;
+                expect(xhrResult.responseText)
+                    .to.be.a('string')
+                    .and.have.lengthOf(161);
+                expect(xhrResult.status)
+                    .to.equal(200);
                 done();
             },
             onerror: function (message, requestUrl, xhrResult) {
-                expect(false, message, requestUrl, xhrResult).to.be.true;
+                assert.fail(xhrResult.status, 200, message, requestUrl);
                 done();
             },
             responseType: 'text'
         });
-        expect(validXHR(xhr), 'ajax returns an XMLHttpRequest instance').to.be.true;
+        validateXHR(xhr);
     });
 
-    it('responseType "json"', function (done) {
-        var xhr = ajax({
+    it('supports responseType "json" argument', function (done) {
+        const xhr = ajax({
             url: '/base/test/files/playlist.json',
             oncomplete: function (xhrResult) {
-                expect(_.isArray(xhrResult.response) && xhrResult.response[0].file, 'xhr.response is parsed JSON').to.equal('http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4');
+                expect(xhrResult.response).to.be.an('array');
+                expect(xhrResult.response[0].file).to.equal('http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4');
                 done();
             },
             onerror: function (message, requestUrl, xhrResult) {
-                expect(false, message, requestUrl, xhrResult).to.be.true;
+                assert.fail(xhrResult.status, 200, message, requestUrl);
                 done();
             },
             responseType: 'json'
         });
-        expect(validXHR(xhr), 'ajax returns an XMLHttpRequest instance').to.be.true;
+        validateXHR(xhr);
     });
 
-    it('timeout', function (done) {
-        var nonce = Math.random().toFixed(20).substr(2);
+    it('supports timeout argument', function (done) {
+        const nonce = Math.random().toFixed(20).substr(2);
 
         ajax({
             url: '//playertest.longtailvideo.com/vast/preroll.xml?n=' + nonce,
-            oncomplete: function (xhrResult) {
-                expect(xhrResult.responseText, 'This XHR request did not time out and triggered ajax().on("complete") unexpectedly.').to.be.false;
-                expect(false, 'expected request to timeout immediately').to.be.true;
+            oncomplete: function () {
+                assert.fail('XHR request completed', 'XHR request should have timed out');
                 done();
             },
-            onerror: function (message) {
-                expect(message, '"Timeout" error message').to.equal('Timeout');
+            onerror: function (message, requestUrl, xhrResult) {
+                expect(xhrResult.status).to.equal(0);
+                expect(message).to.equal('Timeout');
                 done();
             },
             timeout: 0.0001,
@@ -80,19 +91,19 @@ describe('ajax', function() {
         });
     });
 
-    it('withCredentials', function (done) {
+    it('supports withCredentials argument', function (done) {
         ajax({
             url: '/base/test/files/playlist.json',
             oncomplete: function (xhrResult) {
                 if ('withCredentials' in xhrResult) {
-                    expect(xhrResult.withCredentials, 'xhr result has withCredentials set to true').to.be.true;
+                    expect(xhrResult).to.have.property('withCredentials').that.equals(true);
                 } else {
-                    expect(true, 'withCredentials is not available in this browser').to.be.true;
+                    assert.isOk(true, 'withCredentials is not available in this browser');
                 }
                 done();
             },
-            onerror: function() {
-                expect(false, 'request failed withCredentials').to.be.true;
+            onerror: function(message, requestUrl, xhrResult) {
+                assert.fail(xhrResult.status, 200, message, requestUrl);
                 done();
             },
             withCredentials: true,
@@ -100,20 +111,27 @@ describe('ajax', function() {
         });
     });
 
-    it('withCredentials crossdomain', function (done) {
-        ajax({
-            url: '/base/test/files/playlist.xml',
+    it('supports retryWithoutCredentials argument', function (done) {
+        const xhr = ajax({
+            url: 'https://cdn.jwplayer.com/v2/playlists/r1AALLcN?format=mrss',
             oncomplete: function (xhrResult) {
-                if (xhrResult.withCredentials === false) {
-                    expect(true, 'a second crossdomain requests without credentials is made').to.be.true;
-                } else {
-                    expect(true, 'the first crossdomain request with credentials succeeded').to.be.true;
-                }
-                expect(!!xhrResult.responseXML.firstChild, 'xml was returned').to.be.true;
+                expect(xhrResult, 'A second XHR instance is created to re-request without credentials')
+                    .to.not.equal(xhr);
+                expect(xhrResult)
+                    .to.have.property('withCredentials')
+                    .that.is.a('boolean')
+                    .that.equals(false);
+                expect(xhrResult.responseText)
+                    .to.be.a('string');
+                expect(xhrResult.status)
+                    .to.equal(200);
+                expect(xhrResult.responseXML)
+                    .to.have.property('firstChild')
+                    .that.does.not.equal(undefined);
                 done();
             },
-            onerror: function() {
-                expect(false, 'crossdomain request failed withCredentials and retryWithoutCredentials').to.be.true;
+            onerror: function(message, requestUrl, xhrResult) {
+                assert.fail(xhrResult.status, 200, message, requestUrl);
                 done();
             },
             withCredentials: true,
@@ -124,8 +142,13 @@ describe('ajax', function() {
 
     it('error "Error loading file" (bad request)', function (done) {
         ajax({
-            onerror: function() {
-                expect(true, 'missing url param results in  "Error loading file" error').to.be.true;
+            oncomplete: function () {
+                assert.fail('XHR request completed', '"Error loading file" Error');
+                done();
+            },
+            onerror: function(message, requestUrl, xhrResult) {
+                expect(xhrResult.status).to.equal(0);
+                expect(message).to.equal('Error loading file');
                 done();
             }
         });
@@ -134,13 +157,13 @@ describe('ajax', function() {
     it('error "Invalid XML"', function (done) {
         ajax({
             url: '/base/test/files/invalid.xml',
-            oncomplete: function (xhrResult) {
-                expect(xhrResult.responseXML, 'What?').to.be.false;
-                expect(false, 'expected error callback with invalid "Invalid XML"').to.be.true;
+            oncomplete: function () {
+                assert.fail('XHR request completed', '"Invalid XML" Error');
                 done();
             },
-            onerror: function (message) {
-                expect(message, '"Invalid XML" error message').to.equal('Invalid XML');
+            onerror: function (message, requestUrl, xhrResult) {
+                expect(xhrResult.status).to.equal(200);
+                expect(message).to.equal('Invalid XML');
                 done();
             },
             requireValidXML: true
@@ -151,11 +174,12 @@ describe('ajax', function() {
         ajax({
             url: '/base/test/files/invalid.xml',
             oncomplete: function() {
-                expect(false, 'expected error callback with invalid "Invalid JSON"').to.be.true;
+                assert.fail('XHR request completed', '"Invalid JSON" Error');
                 done();
             },
-            onerror: function (message) {
-                expect(message, '"Invalid JSON" error message').to.equal('Invalid JSON');
+            onerror: function (message, requestUrl, xhrResult) {
+                expect(xhrResult.status).to.equal(200);
+                expect(message).to.equal('Invalid JSON');
                 done();
             },
             responseType: 'json'
@@ -166,11 +190,12 @@ describe('ajax', function() {
         ajax({
             url: 'foobar',
             oncomplete: function() {
-                expect(false, 'expected error callback with invalid "File not found"').to.be.true;
+                assert.fail('XHR request completed', '"File not found" Error');
                 done();
             },
-            onerror: function (message) {
-                expect(message, '"File not found" error message').to.equal('File not found');
+            onerror: function (message, requestUrl, xhrResult) {
+                expect(xhrResult.status).to.equal(404);
+                expect(message).to.equal('File not found');
                 done();
             }
         });
