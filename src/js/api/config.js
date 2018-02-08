@@ -39,7 +39,7 @@ const Defaults = {
         replay: 'Replay',
         buffer: 'Loading',
         more: 'More',
-        liveBroadcast: 'Live broadcast',
+        liveBroadcast: 'Live',
         loadingAd: 'Loading ad',
         rewind: 'Rewind 10 Seconds',
         nextUp: 'Next Up',
