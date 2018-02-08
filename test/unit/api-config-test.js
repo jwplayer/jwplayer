@@ -32,6 +32,41 @@ describe('API Config', function() {
         });
     });
 
+    describe('ab tests', function() {
+        it('should add ab tests to appropriate locations', function() {
+            const abTest = {
+                tests: {
+                    recommendations: [
+                        {
+                            addConfig: function(config, abtest) {
+                                config.related.test = true;
+                            }
+                        }
+                    ]
+                }
+            };
+
+            let tc = new Config({ ab: abTest, related: {} });
+            expect(tc.related.test).to.equal(true);
+
+        });
+        it('should undefined callback should not raise error', function() {
+            const abTest = {
+                tests: {
+                    recommendations: [
+                        {
+                        }
+                    ]
+                }
+            };
+
+            let tc = new Config({ ab: abTest, related: {} });
+            expect(tc).to.be.a('object');
+
+        });
+
+    });
+
     describe('aspect ratio/width', function() {
 
         function testConfig(obj) {
