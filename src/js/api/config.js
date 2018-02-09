@@ -5,21 +5,16 @@ import { serialize } from 'utils/parser';
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
 // Defaults
+// Alphabetical order
 const Defaults = {
     autostart: false,
-    controls: true,
-    displaytitle: true,
-    displaydescription: true,
-    defaultPlaybackRate: 1,
-    playbackRateControls: false,
-    playbackRates: [0.5, 1, 1.25, 1.5, 2],
-    repeat: false,
     castAvailable: false,
-    stretching: 'uniform',
-    mute: false,
-    volume: 90,
-    width: 640,
+    controls: true,
+    defaultPlaybackRate: 1,
+    displaydescription: true,
+    displaytitle: true,
     height: 360,
+    liveTimeout: null,
     localization: {
         player: 'Video Player',
         play: 'Play',
@@ -50,8 +45,15 @@ const Defaults = {
         unmute: 'Unmute',
         copied: 'Copied'
     },
+    mute: false,
+    nextUpDisplay: true,
+    playbackRateControls: false,
+    playbackRates: [0.5, 1, 1.25, 1.5, 2],
     renderCaptionsNatively: false,
-    nextUpDisplay: true
+    repeat: false,
+    stretching: 'uniform',
+    volume: 90,
+    width: 640
 };
 
 function _deserialize(options) {
@@ -144,6 +146,12 @@ const Config = function(options, persisted) {
 
     config.qualityLabels = config.qualityLabels || config.hlslabels;
     delete config.duration;
+
+    if (config.liveTimeout !== null) {
+        if (config.liveTimeout !== 0) {
+            config.liveTimeout = Math.max(30, config.liveTimeout);
+        }
+    }
 
     return config;
 };
