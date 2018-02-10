@@ -55,11 +55,8 @@ export default class Controls {
         this.settingsMenu = null;
         this.showing = false;
         this.unmuteCallback = null;
+        this.logo = null;
         this.div = null;
-        this.right = null;
-        this.activeListeners = {
-            mousemove: () => clearTimeout(this.activeTimeout)
-        };
         this.dimensions = {};
     }
 
@@ -71,6 +68,8 @@ export default class Controls {
         const backdrop = this.context.createElement('div');
         backdrop.className = 'jw-controls-backdrop jw-reset';
         this.backdrop = backdrop;
+
+        this.logo = this.playerContainer.querySelector('.jw-logo');
 
         const touchMode = model.get('touchMode');
 
@@ -116,13 +115,10 @@ export default class Controls {
             nextUpToolTip.setup(this.context);
             controlbar.nextUpToolTip = nextUpToolTip;
 
-            this.addActiveListeners(nextUpToolTip.element());
-
             // NextUp needs to be behind the controlbar to not block other tooltips
             this.div.appendChild(nextUpToolTip.element());
         }
 
-        this.addActiveListeners(controlbar.element());
         this.div.appendChild(controlbar.element());
 
         // Settings Menu
@@ -144,7 +140,8 @@ export default class Controls {
             }
 
             // Trigger userActive so that a dismissive click outside the player can hide the controlbar
-            this.userActive(null, visible || isKeyEvent);
+            const activeTimeout = (visible || isKeyEvent) ? 0 : ACTIVE_TIMEOUT;
+            this.userActive(activeTimeout);
             lastState = state;
 
             const settingsButton = this.controlbar.elements.settingsButton;
@@ -272,7 +269,8 @@ export default class Controls {
                 const isTab = evt.keyCode === 9;
                 if (isTab) {
                     const insideContainer = this.playerContainer.contains(evt.target);
-                    this.userActive(null, insideContainer);
+                    const activeTimeout = insideContainer ? 0 : ACTIVE_TIMEOUT;
+                    this.userActive(activeTimeout);
                 }
             }
         };
@@ -309,9 +307,6 @@ export default class Controls {
         if (this.div.parentNode) {
             utils.removeClass(this.playerContainer, 'jw-flag-touch');
             this.playerContainer.removeChild(this.div);
-        }
-        if (this.controlbar) {
-            this.removeActiveListeners(this.controlbar.element());
         }
         if (this.rightClickMenu) {
             this.rightClickMenu.destroy();
@@ -354,10 +349,6 @@ export default class Controls {
         return this.div;
     }
 
-    logoContainer() {
-        return this.right;
-    }
-
     resize() {
         this.dimensions = {};
     }
@@ -388,24 +379,20 @@ export default class Controls {
         this.userActive();
     }
 
-    addActiveListeners(element) {
-        if (element && !OS.mobile) {
-            element.addEventListener('mousemove', this.activeListeners.mousemove);
-        }
+    mouseMove(event) {
+        const insideControlbar = this.controlbar.element().contains(event.target);
+        const insideNextUp = this.controlbar.nextUpToolTip &&
+            this.controlbar.nextUpToolTip.element().contains(event.target);
+        const insideLogo = this.logo && this.logo.contains(event.target);
+        const activeTimeout = (insideControlbar || insideNextUp || insideLogo) ? 0 : ACTIVE_TIMEOUT;
+
+        this.userActive(activeTimeout);
     }
 
-    removeActiveListeners(element) {
-        if (element) {
-            element.removeEventListener('mousemove', this.activeListeners.mousemove);
-        }
-    }
-
-    userActive(timeout, isKeyDown) {
+    userActive(timeout = ACTIVE_TIMEOUT) {
         clearTimeout(this.activeTimeout);
-
-        if (!isKeyDown) {
-            this.activeTimeout = setTimeout(() => this.userInactive(),
-                timeout || ACTIVE_TIMEOUT);
+        if (timeout) {
+            this.activeTimeout = setTimeout(() => this.userInactive(), timeout);
         }
         if (!this.showing) {
             utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');

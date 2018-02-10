@@ -141,7 +141,7 @@ const UI = function (elem, options) {
     }
 
     function pointerOutHandler(evt) {
-        if (evt.pointerType !== 'touch') {
+        if (evt.pointerType !== 'touch' && 'x' in evt) {
             // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
             const { x, y } = evt;
             const overElement = document.elementFromPoint(x, y);
