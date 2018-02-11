@@ -94,7 +94,7 @@ module.exports = function(grunt) {
                 files: ['src/js/**/*.js'],
                 tasks: [
                     'webpack:debug',
-                    'lint:player',
+                    'lint:js',
                     'karma:local'
                 ]
             },
@@ -222,8 +222,11 @@ module.exports = function(grunt) {
 
     grunt.registerTask('lint', 'ESLints JavaScript & Stylelints LESS', function(target) {
         var command = 'npm run lint';
+        if (target === 'js') {
+            command = command + ':js';
+        }
         if (target === 'test') {
-            command = command + '-tests';
+            command = command + ':tests';
         }
         execSync(command, {
             cwd: '.',
@@ -249,7 +252,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build-js', [
         'webpack',
-        'lint:player',
+        'lint',
         'less',
         'postcss'
     ]);

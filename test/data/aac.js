@@ -1,6 +1,6 @@
 export default {
-    tagged : {
-        file : 'sample',
-        type : 'aac'
+    tagged: {
+        file: 'sample',
+        type: 'aac'
     }
 };

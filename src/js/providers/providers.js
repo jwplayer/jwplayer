@@ -2,6 +2,7 @@ import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import ProvidersLoaded from 'providers/providers-loaded';
 import { chunkLoadErrorHandler } from '../api/core-loader';
+import Promise from 'polyfills/promise';
 
 function Providers(config) {
     this.config = config || {};

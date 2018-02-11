@@ -2,21 +2,16 @@
     "root": true,
     "env": {
         "browser": true,
-        "amd": true,
         "es6": true,
-        "mocha": true
+        "commonjs": true
     },
     "globals": {
-        "__webpack_public_path__": true,
-        "Promise": true,
-        "Uint8Array": true,
-        "__FLASH_VERSION__": true,
-        "__REPO__": true,
-        "__SELF_HOSTED__": true,
-        "__DEBUG__": true,
-        "__BUILD_VERSION__": true,
-        "assert": true,
-        "expect": true
+        "__webpack_public_path__": false,
+        "__FLASH_VERSION__": false,
+        "__REPO__": false,
+        "__SELF_HOSTED__": false,
+        "__DEBUG__": false,
+        "__BUILD_VERSION__": false
     },
     "parserOptions": {
         "sourceType": "module"
@@ -26,6 +21,18 @@
         "no-for-of-loops"
     ],
     "rules": {
+        "valid-jsdoc": 2,
+        "no-restricted-globals": [
+            "error",
+            {
+                "name": "Promise",
+                "message": "import Promise from 'polyfills/promise'"
+            },
+            {
+                "name": "VTTCue",
+                "message": "import VTTCue from 'parsers/captions/vttcue'"
+            }
+        ],
         "no-for-of-loops/no-for-of-loops": 2,
         "comma-dangle": 0,
         "no-cond-assign": 2,

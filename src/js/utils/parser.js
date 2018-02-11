@@ -1,7 +1,7 @@
 import { exists } from 'utils/validator';
 import _ from 'utils/underscore';
 
-// Gets an absolute file path based on a relative filepath
+// Returns the absolute file path based on a relative filepath, and optional base path
 export function getAbsolutePath(path, base) {
     if (!exists(base)) {
         base = document.location.href;
@@ -49,7 +49,7 @@ function containsParserErrors(childNodes) {
     });
 }
 
-/** Takes an XML string and returns an XML object **/
+// Returns an XML object for the given XML string, or null if the input cannot be parsed.
 export function parseXML(input) {
     let parsedXML = null;
     try {
@@ -72,10 +72,10 @@ export function parseXML(input) {
     return parsedXML;
 }
 
-/**
- * String representations of booleans and numbers that are 5 characters in length or less
- * are returned typed
- */
+// Returns the `val` argument:
+// as null if undefined
+// as a boolean for string values 'true' and 'false'
+// as a number for numeric strings with a character length of 5 or less
 export function serialize(val) {
     if (val === undefined) {
         return null;
@@ -95,9 +95,7 @@ export function serialize(val) {
     return val;
 }
 
-/**
- * Cleans up a css dimension (e.g. '420px') and returns an integer.
- */
+// Returns the integer value a of css string (e.g. '420px')
 export function parseDimension(dimension) {
     if (typeof dimension === 'string') {
         if (dimension === '') {
@@ -110,7 +108,7 @@ export function parseDimension(dimension) {
     return dimension;
 }
 
-/** Format the elapsed / remaining text. **/
+// Returns a formatted time string from "mm:ss" to "hh:mm:ss" for the given number of seconds
 export function timeFormat(sec, allowNegative) {
     if ((sec <= 0 && !allowNegative) || _.isNaN(parseInt(sec))) {
         return '00:00';

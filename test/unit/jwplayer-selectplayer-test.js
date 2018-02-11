@@ -20,7 +20,9 @@ describe('jwplayer function', function() {
         // remove all test players
         for (let i = 10; i--;) {
             let player = jwplayer();
-            if (player.remove) { player.remove(); }
+            if (player.remove) {
+                player.remove(); 
+            }
         }
         // remove fixture
         $('#test-container').remove();
@@ -36,7 +38,7 @@ describe('jwplayer function', function() {
 
         // It might be preferable to always return an API instance
         // even one not set to replace an element
-        expect(typeof(x), 'jwplayer({dom id}) returned an object').to.be.equal('object');
+        expect(typeof (x), 'jwplayer({dom id}) returned an object').to.be.equal('object');
         expect(x.registerPlugin, 'object.registerPlugin is a function').to.equal(GlobalApi.registerPlugin);
         expect(x.setup, 'object.setup is not defined').to.equal(undefined);
     });
@@ -49,7 +51,7 @@ describe('jwplayer function', function() {
 
         // It might be preferable to always return an API instance
         // even one not set to replace an element
-        expect(typeof(x), 'jwplayer({dom id}) returned an object').to.be.equal('object');
+        expect(typeof (x), 'jwplayer({dom id}) returned an object').to.be.equal('object');
         expect(x.registerPlugin, 'object.registerPlugin is a function').to.equal(GlobalApi.registerPlugin);
         expect(x.setup, 'object.setup is not defined').to.equal(undefined);
     });

@@ -10,10 +10,6 @@ function lazyUserAgentMatch(regex) {
     };
 }
 
-export function isInt(value) {
-    return parseFloat(value) % 1 === 0;
-}
-
 export function isFlashSupported() {
     const version = flashVersion();
     return !!(version && version >= __FLASH_VERSION__);
@@ -47,12 +43,10 @@ export function isSafari() {
     return userAgentMatch(/safari/i) && !userAgentMatch(/(?:Chrome|CriOS|chromium|android|phantom)/i);
 }
 
-/** Matches iOS devices **/
 export function isIOS() {
     return userAgentMatch(/iP(hone|ad|od)/i);
 }
 
-/** Matches Android devices **/
 export function isAndroidNative() {
     // Android Browser appears to include a user-agent string for Chrome/18
     if (userAgentMatch(/chrome\/[123456789]/i) && !userAgentMatch(/chrome\/18/i) && !isFF()) {
@@ -65,7 +59,6 @@ export function isAndroid() {
     return userAgentMatch(/Android/i) && !userAgentMatch(/Windows Phone/i);
 }
 
-/** Matches iOS, Android and Windows Phone devices **/
 export function isMobile() {
     return isIOS() || isAndroid() || userAgentMatch(/Windows Phone/i);
 }
@@ -78,9 +71,6 @@ export function isIframe() {
     }
 }
 
-/**
- * If the browser has flash capabilities, return the flash version
- */
 export function flashVersion() {
     if (isAndroid()) {
         return 0;

@@ -576,15 +576,13 @@ function View(_api, _model) {
     };
     this.resizeMedia = _resizeMedia;
 
-    /**
-     * Return whether or not we're in native fullscreen
-     */
     function _isNativeFullscreen() {
+        // Return whether or not we're in native fullscreen
         if (fullscreenHelpers.supportsDomFullscreen()) {
             const fsElement = fullscreenHelpers.fullscreenElement();
             return !!(fsElement && fsElement === _playerElement);
         }
-        // if player element view fullscreen not available, return video fullscreen state
+        // If native fullscreen is not available, return video fullscreen state
         const provider = _model.getVideo();
         return provider.getFullScreen();
     }

@@ -1,0 +1,19 @@
+{
+  "env": {
+    "node": true,
+    "browser": true,
+    "mocha": true,
+    "es6": true
+  },
+  "globals": {
+    "assert": true,
+    "expect": true
+  },
+  "rules": {
+    "camelcase": 0,
+    "no-console": 0,
+    "no-unused-expressions": 0,
+    "no-restricted-globals": ["off"],
+    "max-nested-callbacks": [1, 4]
+  }
+}

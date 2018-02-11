@@ -3,11 +3,9 @@ import { log } from 'utils/helpers';
 
 const pluginsRegistered = {};
 
-/**
- * Extracts a plugin name from a string
- */
+// Extract a plugin name from a string
 const getPluginName = function (url) {
-    /** Regex locates the characters after the last slash, until it encounters a dash. **/
+    // Regex locates the characters after the last slash, until it encounters a dash.
     return url.replace(/^(.*\/)?([^-]*)-?.*\.(js)$/, '$2');
 };
 

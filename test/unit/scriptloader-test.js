@@ -28,7 +28,7 @@ describe('ScriptLoader', function() {
         const sameScript = new ScriptLoader('/base/test/files/global.js');
         sameScript.load();
 
-        expect(document.getElementsByTagName('head')[0].firstChild.src.indexOf('global.js') >= 0,'adding same tag should not add the tag').to.be.true;
+        expect(document.getElementsByTagName('head')[0].firstChild.src.indexOf('global.js') >= 0, 'adding same tag should not add the tag').to.be.true;
     });
 
     it('ScriptLoader with actual path', function() {

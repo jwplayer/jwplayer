@@ -14,7 +14,7 @@ export const getScriptPath = function(scriptName) {
     return '';
 };
 
-/** Gets the repository location **/
+// Gets the repository location from which modules and plugins are loaded by default
 export const repo = function () {
     if (__SELF_HOSTED__) {
         return getScriptPath('jwplayer.js');
