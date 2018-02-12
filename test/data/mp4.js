@@ -1,11 +1,11 @@
 /* jshint maxlen: 1000 */
 export default {
-    tagged : {
-        file : 'sample',
-        type : 'mp4'
+    tagged: {
+        file: 'sample',
+        type: 'mp4'
     },
-    invalid : {
-        file : undefined
+    invalid: {
+        file: undefined
     },
     starscape: {
         file: 'http://playertest.longtailvideo.com/starscape.mp4',

@@ -7,8 +7,6 @@ import { addClass, removeClass, empty } from 'utils/dom';
 import _ from 'utils/underscore';
 import { MEDIA_SEEK, MEDIA_TIME } from 'events/events';
 
-/** Component that renders the actual captions on screen. **/
-
 let _WebVTT;
 
 const _defaults = {
@@ -21,6 +19,11 @@ const _defaults = {
     preprocessor: _.identity,
     windowOpacity: 0
 };
+
+/**
+ * Component that renders the actual captions on screen.
+ * param {ViewModel} viewModel - The player's ViewModel instance.
+ */
 
 const CaptionsRenderer = function (viewModel) {
 
@@ -131,7 +134,12 @@ const CaptionsRenderer = function (viewModel) {
         empty(_display);
     };
 
-    /** Constructor for the renderer. **/
+    /**
+     * Initialize the captions renderer
+     * @param {string} playerElementId - The player container's DOM id
+     * @param {object} options - The captions styling configuration
+     * @returns {void}
+     */
     this.setup = function (playerElementId, options) {
         _captionsWindow = document.createElement('div');
         _textContainer = document.createElement('span');

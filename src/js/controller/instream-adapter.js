@@ -259,7 +259,6 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         });
     };
 
-    /** Handle the MEDIA_META event **/
     function _instreamMeta(evt) {
         // If we're getting video dimension metadata from the provider, allow the view to resize the media
         if (evt.width && evt.height) {
@@ -357,7 +356,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     /**
      * Sets the internal skip offset. Does not set the skip button.
      * @param {Number} skipOffset - The number of seconds from the start where the ad becomes skippable.
-     * @returns void
+     * @returns {void}
      */
     this.setSkipOffset = function(skipOffset) {
         // IMA will pass -1 if it doesn't know the skipoffset, or if the ad is unskippable

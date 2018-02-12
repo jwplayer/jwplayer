@@ -1,11 +1,10 @@
 import _ from 'test/underscore';
 import $ from 'jquery';
 import jwplayer from 'jwplayer';
-import GlobalApi from 'api/global-api';
 
 function testInstanceOfApi(api) {
-    expect(_.isObject(api), 'jwplayer({dom id}) returned an object').to.be.true;
-    expect(_.isFunction(api.setup), 'object.setup is a function').to.be.true;
+    expect(api).to.be.an('object');
+    expect(api.setup).to.be.a('function');
     return api;
 }
 
@@ -20,7 +19,9 @@ describe('jwplayer function', function() {
         // remove all test players
         for (let i = 10; i--;) {
             let player = jwplayer();
-            if (player.remove) { player.remove(); }
+            if (player.remove) {
+                player.remove(); 
+            }
         }
         // remove fixture
         $('#test-container').remove();
@@ -28,7 +29,7 @@ describe('jwplayer function', function() {
 
     it('is defined', function() {
         // Test jwplayer module
-        expect(_.isFunction(jwplayer), 'jwplayer is a function').to.be.true;
+        expect(jwplayer).to.be.a('function');
     });
 
     it('allows plugins to register when no player is found', function() {
@@ -36,9 +37,9 @@ describe('jwplayer function', function() {
 
         // It might be preferable to always return an API instance
         // even one not set to replace an element
-        expect(typeof(x), 'jwplayer({dom id}) returned an object').to.be.equal('object');
-        expect(x.registerPlugin, 'object.registerPlugin is a function').to.equal(GlobalApi.registerPlugin);
-        expect(x.setup, 'object.setup is not defined').to.equal(undefined);
+        expect(x).to.be.an('object');
+        expect(x).to.have.property('registerPlugin').which.is.a('function');
+        expect(x).to.not.have.property('setup');
     });
 
     it('handles invalid queries by returning an object plugins can register', function() {
@@ -49,9 +50,9 @@ describe('jwplayer function', function() {
 
         // It might be preferable to always return an API instance
         // even one not set to replace an element
-        expect(typeof(x), 'jwplayer({dom id}) returned an object').to.be.equal('object');
-        expect(x.registerPlugin, 'object.registerPlugin is a function').to.equal(GlobalApi.registerPlugin);
-        expect(x.setup, 'object.setup is not defined').to.equal(undefined);
+        expect(x).to.be.an('object');
+        expect(x).to.have.property('registerPlugin').which.is.a('function');
+        expect(x).to.not.have.property('setup');
     });
 
     it('returns a new api instance when given an element id', function() {
@@ -93,6 +94,6 @@ describe('jwplayer function', function() {
         expect(jwplayer(0), 'jwplayer(0) returns the first player').to.equal(x);
         expect(jwplayer(1), 'jwplayer(1) returns the seconds player').to.equal(y);
 
-        expect(x !== y, 'first player instance does not equal second instance').to.be.true;
+        expect(x, 'first player instance does not equal second instance').to.not.equal(y);
     });
 });

@@ -29,6 +29,7 @@ const Timer = function() {
          * @memberOf Timer
          * @instance
          * @param {string} methodName - The method or player state name.
+         * @returns {void}
          */
         start: function(methodName) {
             startTimes[methodName] = dateTime();
@@ -39,6 +40,7 @@ const Timer = function() {
          * @memberOf Timer
          * @instance
          * @param {string} methodName - The method or player state name.
+         * @returns {void}
          */
         end: function(methodName) {
             if (!startTimes[methodName]) {
@@ -53,7 +55,7 @@ const Timer = function() {
          * Output the timer metrics.
          * @memberOf Timer
          * @instance
-         * @returns {TimerMetrics}
+         * @returns {TimerMetrics} The timing and count of all "tick" events tracked thus far.
          */
         dump: function() {
             // Add running sum of latest method
@@ -79,6 +81,7 @@ const Timer = function() {
          * @memberOf Timer
          * @instance
          * @param {string} event - The event name.
+         * @returns {void}
          */
         tick: function(event) {
             ticks[event] = dateTime();
@@ -89,6 +92,7 @@ const Timer = function() {
          * @memberOf Timer
          * @instance
          * @param {string} event - The event name.
+         * @returns {void}
          */
         clear: function(event) {
             delete ticks[event];
@@ -98,9 +102,9 @@ const Timer = function() {
          * Get the difference between two events.
          * @memberOf Timer
          * @instance
-         * @param left - The first event name.
-         * @param right - The second event name.
-         * @returns {number|null}
+         * @param {string} left - The first event name.
+         * @param {string} right - The second event name.
+         * @returns {number|null} The time between events, or null if not found.
          */
         between: function(left, right) {
             if (ticks[right] && ticks[left]) {

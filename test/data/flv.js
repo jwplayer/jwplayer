@@ -1,6 +1,6 @@
 export default {
-    tagged : {
-        file : 'sample',
-        type : 'flv'
+    tagged: {
+        file: 'sample',
+        type: 'flv'
     }
 };

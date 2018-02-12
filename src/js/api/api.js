@@ -15,8 +15,9 @@ let instancesCreated = 0;
 /**
  * @private
  * Factory method which creates controllers before calling `jwplayer().setup()`.
- * @param {Api} api
- * @param {HTMLElement} element
+ * @param {Api} api - The Player API instance to bind core to
+ * @param {HTMLElement} element - The element that will be replaced by the player's div container
+ * @returns {Core} The core controller instance
  */
 function coreFactory(api, element) {
     const core = new Core(element);
@@ -36,8 +37,9 @@ function coreFactory(api, element) {
 /**
  * @private
  * Detaches Api event listeners and destroys the controller.
- * @param {Api} api
- * @param {Core} core
+ * @param {Api} api - The Player API to remove listeners from
+ * @param {Core} core - The core controller to destroy
+ * @returns {void}
  */
 function resetPlayer(api, core) {
     api.off();
@@ -49,7 +51,8 @@ function resetPlayer(api, core) {
  * @private
  * Removes the Api instance from the list of active players.
  * The instance will no longer be queryable via `jwplayer()`
- * @param {Api} api
+ * @param {Api} api - The Player API to remove
+ * @returns {void}
  */
 function removePlayer(api) {
     for (let i = instances.length; i--;) {
@@ -185,7 +188,7 @@ export default function Api(element) {
          * A "ready" event is triggered on success.
          * A "setupError" event is triggered on failure.
          * @param {object} options - The player configuration options.
-         * @returns {Api}
+         * @returns {Api} The Player API instance
          */
         setup(options) {
             qoeTimer.clear('ready');
@@ -206,7 +209,7 @@ export default function Api(element) {
          * A "remove" event is fired once removal begins.
          * Playback is stopped, and the DOM used by the player is reset.
          * All event listeners attached to the player are removed.
-         * @returns {Api}
+         * @returns {Api} The Player API instance
          */
         remove() {
             // Remove from array of players
@@ -224,7 +227,7 @@ export default function Api(element) {
 
         /**
          * Gets the QoE properties of the player and current playlist item.
-         * @returns {PlayerQoE}
+         * @returns {PlayerQoE} An object containing a snapshot of QoE metrics.
          */
         qoe() {
             const qoeItem = core.getItemQoe();
@@ -250,7 +253,7 @@ export default function Api(element) {
 
         /**
          * Gets the list of available audio tracks.
-         * @returns {Array.<AudioTrackOption>}
+         * @returns {Array.<AudioTrackOption>} An array of AudioTrackOption objects representing the current media's audio tracks.
          */
         getAudioTracks() {
             return core.getAudioTracks();
@@ -266,7 +269,7 @@ export default function Api(element) {
 
         /**
          * Gets the captions style.
-         * @returns {object}
+         * @returns {object} The captions styling configuration
          */
         getCaptions() {
             return core.get('captions');
@@ -283,7 +286,7 @@ export default function Api(element) {
         /**
          * Gets the list of available captions tracks.
          * The first item in the array will always be the "off" option, regardless of whether the media contains captions.
-         * @returns {Array.<CaptionsTrackOption>}
+         * @returns {Array.<CaptionsTrackOption>} An array of CaptionsTrackOption objects.
          */
         getCaptionsList() {
             return core.getCaptionsList();
@@ -291,7 +294,7 @@ export default function Api(element) {
 
         /**
          * Gets a static representation of the player's model.
-         * @returns {object}
+         * @returns {object} A copy of the player model.
          */
         getConfig() {
             return core.getConfig();
@@ -299,7 +302,7 @@ export default function Api(element) {
 
         /**
          * Gets the player's top level DOM element.
-         * @returns {HTMLElement}
+         * @returns {HTMLElement} The player's div container.
          */
         getContainer() {
             return core.getContainer();
@@ -307,7 +310,7 @@ export default function Api(element) {
 
         /**
          * Gets whether or not controls are enabled.
-         * @returns {boolean}
+         * @returns {boolean} Are controls enabled?
          */
         getControls() {
             return core.get('controls');
@@ -331,7 +334,7 @@ export default function Api(element) {
 
         /**
          * Gets the index of the active quality selection.
-         * @returns {number}
+         * @returns {number} The index of the active quality level.
          */
         getCurrentQuality() {
             return core.getCurrentQuality();
@@ -381,7 +384,7 @@ export default function Api(element) {
 
         /**
          * Gets all metadata for the current playlist item.
-         * @returns {object}
+         * @returns {object} The merged result of the current playlist item's "meta" events.
          */
         getItemMeta() {
             return core.get('itemMeta') || {};
@@ -407,7 +410,7 @@ export default function Api(element) {
 
         /**
          * Gets the player's playlist.
-         * @returns {Array.<PlaylistItem>}
+         * @returns {Array.<PlaylistItem>} An array of PlaylistItem objects.
          */
         getPlaylist() {
             return core.get('playlist');
@@ -415,7 +418,7 @@ export default function Api(element) {
 
         /**
          * Gets the index of the current playlist item.
-         * @returns {number}
+         * @returns {number} The index of the current playlist item.
          */
         getPlaylistIndex() {
             return core.get('item');
@@ -454,7 +457,7 @@ export default function Api(element) {
 
         /**
          * Gets information about how the player is handling playback.
-         * @returns {ProviderInfo}
+         * @returns {ProviderInfo} An object containing the name of the current playback provider.
          */
         getProvider() {
             return core.getProvider();
@@ -462,7 +465,7 @@ export default function Api(element) {
 
         /**
          * Gets the list of available quality options.
-         * @returns {Array.<QualityOption>}
+         * @returns {Array.<QualityOption>} An array of QualityOption objects.
          */
         getQualityLevels() {
             return core.getQualityLevels();
@@ -480,7 +483,8 @@ export default function Api(element) {
          * Gets the area of the player not obscured by controls.
          * @param {boolean} [excludeControlbar=true] When set to false, the safe region will not exclude
          * the area used by the controlbar.
-         * @returns {SafeRegion}
+         * @returns {SafeRegion} The SafeRegion calculated using the player's current width, height
+         * and controlbar when not excluded.
          */
         getSafeRegion(excludeControlbar = true) {
             return core.getSafeRegion(excludeControlbar);
@@ -495,7 +499,7 @@ export default function Api(element) {
         },
 
         /** Gets the mode of stretching used to fit media in the player.
-         * @returns {'uniform'|'exactfit'|'fill'|'none'}
+         * @returns {'uniform'|'exactfit'|'fill'|'none'} The current stretch mode.
          */
         getStretching() {
             return core.get('stretching');
@@ -521,7 +525,7 @@ export default function Api(element) {
 
         /**
          * Gets information about the visual quality of the active media.
-         * @returns {VisualQuality}
+         * @returns {VisualQuality} The last VisualQuality object returned for the current playlist item.
          */
         getVisualQuality() {
             return core.getVisualQuality();
@@ -545,8 +549,8 @@ export default function Api(element) {
 
         /**
          * Sets captions styles.
-         * @param {object} captionsStyles
-         * @returns {Api}
+         * @param {object} captionsStyles - The captions styling configuration to apply.
+         * @returns {Api} The Player API instance.
          * @since v7.5.0
          */
         setCaptions(captionsStyles) {
@@ -556,8 +560,8 @@ export default function Api(element) {
 
         /**
          * Updates the player's config options.
-         * @param options
-         * @returns {Api}
+         * @param {object} options - The configuration options to update.
+         * @returns {Api} The Player API instance.
          * @since v7.12.0
          */
         setConfig(options) {
@@ -568,7 +572,7 @@ export default function Api(element) {
         /**
          * Toggles player controls.
          * @param {boolean} [toggle] - Specifies whether controls should be enabled or disabled.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         setControls(toggle) {
             core.setControls(toggle);
@@ -577,7 +581,8 @@ export default function Api(element) {
 
         /**
          * Sets the active audio track.
-         * @param {number} index
+         * @param {number} index - The index of the audio track to select.
+         * @returns {void}
          */
         setCurrentAudioTrack(index) {
             core.setCurrentAudioTrack(index);
@@ -586,7 +591,8 @@ export default function Api(element) {
 
         /**
          * Sets the active captions option.
-         * @param {number} index
+         * @param {number} index - The index of the captions option to select.
+         * @returns {void}
          */
         setCurrentCaptions(index) {
             core.setCurrentCaptions(index);
@@ -595,7 +601,8 @@ export default function Api(element) {
 
         /**
          * Sets the active quality option.
-         * @param {number} index
+         * @param {number} index - The index of the quality level to select.
+         * @returns {void}
          */
         setCurrentQuality(index) {
             core.setCurrentQuality(index);
@@ -605,7 +612,7 @@ export default function Api(element) {
         /**
          * Toggles fullscreen state. Most browsers require a user gesture to trigger entering fullscreen mode.
          * @param {boolean} [toggle] - Specifies whether to enter or exit fullscreen mode.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         setFullscreen(toggle) {
             core.setFullscreen(toggle);
@@ -615,7 +622,7 @@ export default function Api(element) {
         /**
          * Toggles the player's mute state.
          * @param {boolean} [toggle] - Specifies whether to mute or unmute the player.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         setMute(toggle) {
             core.setMute(toggle);
@@ -625,7 +632,7 @@ export default function Api(element) {
         /**
          * Sets the player's default playeback rate. During playback, the rate of the current media will be set immediately if supported. Not supported when streaming live.
          * @param {number} playbackRate - The desired rate of playback. Limited to numbers between 0.25-4.0.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          * @since v7.12.0
          */
         setPlaybackRate(playbackRate) {
@@ -642,7 +649,7 @@ export default function Api(element) {
         /**
          * Sets the list of cues to be displayed on the time slider.
          * @param {Array.<SliderCue>} sliderCues - The list of cues.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         setCues(sliderCues) {
             core.setCues(sliderCues);
@@ -652,7 +659,7 @@ export default function Api(element) {
         /**
          * Set the player's volume level.
          * @param {number} level - A value from 0-100.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         setVolume(level) {
             core.setVolume(level);
@@ -666,7 +673,7 @@ export default function Api(element) {
          * playlist item, or playlist item index to load.
          * @param {object} [feedData] - The feed data to associate with playlist items.
          * Only applied when passing in a playlist or playlist items.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         load(toLoad, feedData) {
             core.load(toLoad, feedData);
@@ -676,7 +683,7 @@ export default function Api(element) {
         /**
          * Starts playback.
          * @param {object} [meta] - An optional argument used to specify cause.
-         * @return {Api}
+         * @return {Api} The Player API instance.
          */
         play(meta) {
             core.play(meta);
@@ -686,7 +693,7 @@ export default function Api(element) {
         /**
          * Pauses playback.
          * @param {object} [meta] - An optional argument used to specify cause.
-         * @return {Api}
+         * @return {Api} The Player API instance.
          */
         pause(meta) {
             core.pause(meta);
@@ -696,25 +703,24 @@ export default function Api(element) {
         /**
          * Toggles playback between play and pause.
          * @param {object} [meta] - An optional argument used to specify cause.
-         * @return {Api}
+         * @return {Api} The Player API instance.
          */
 
         playToggle(meta) {
             switch (this.getState()) {
                 case STATE_PLAYING:
                 case STATE_BUFFERING:
-                    this.pause(meta);
-                    break;
+                    return this.pause(meta);
                 default:
-                    this.play(meta);
+                    return this.play(meta);
             }
         },
 
         /**
          * Seeks to a specific time within the active media. Resumes playback if the player is paused.
          * @param {number} position - The time to seek to.
-         * @param [meta] - An optional argument used to specify cause.
-         * @returns {Api}
+         * @param {object} [meta] - An optional argument used to specify cause.
+         * @returns {Api} The Player API instance.
          */
         seek(position, meta) {
             core.seek(position, meta);
@@ -725,8 +731,8 @@ export default function Api(element) {
          * Stops any active playback, and plays the item at the 0-based index in the playlist.
          * @param {number} index - If outside the range of the playlist,
          * the value will be wrapped to the playlist length.
-         * @param [meta] - An optional argument used to specify cause.
-         * @returns {Api}
+         * @param {object} [meta] - An optional argument used to specify cause.
+         * @returns {Api} The Player API instance.
          */
         playlistItem(index, meta) {
             core.playlistItem(index, meta);
@@ -736,8 +742,8 @@ export default function Api(element) {
         /**
          * Stops any active playback, and plays the next item in the playlist.
          * When the player is at the end of the playlist, this will play the first playlist item.
-         * @param [meta] - An optional argument used to specify cause.
-         * @returns {Api}
+         * @param {object} [meta] - An optional argument used to specify cause.
+         * @returns {Api} The Player API instance.
          */
         playlistNext(meta) {
             core.playlistNext(meta);
@@ -747,8 +753,8 @@ export default function Api(element) {
         /**
          * Stops any active playback, and plays the previous item in the playlist.
          * When the player is at the beginning of the playlist, this will play the last playlist item.
-         * @param [meta] - An optional argument used to specify cause.
-         * @returns {Api}
+         * @param {object} [meta] - An optional argument used to specify cause.
+         * @returns {Api} The Player API instance.
          */
         playlistPrev(meta) {
             core.playlistPrev(meta);
@@ -758,7 +764,7 @@ export default function Api(element) {
         /**
          * Stops any active playback, and plays the next up item specified by the related plugin.
          * The next up item is the next playlist item, or the first recommended video when at the end of the playlist.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          * @since v7.7.0
          */
         next() {
@@ -769,7 +775,7 @@ export default function Api(element) {
         /**
          * Toggles the presence of the Airplay button in Safari (calls `HTMLMediaElement.webkitShowPlaybackTargetPicker`).
          * Does not affect the Chromecast button in Chrome.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         castToggle() {
             core.castToggle();
@@ -778,7 +784,7 @@ export default function Api(element) {
 
         /**
          * Creates a new instance of the instream adapter. If present, the previous instance created is destroyed first.
-         * @returns {InstreamAdapter}
+         * @returns {InstreamAdapter} The instream instance.
          */
         createInstream() {
             return core.createInstream();
@@ -786,7 +792,7 @@ export default function Api(element) {
 
         /**
          * Calls `skipAd` on the active instream adapter instance if present.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         skipAd() {
             core.skipAd();
@@ -795,7 +801,7 @@ export default function Api(element) {
 
         /**
          * Stops any active playback.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         stop() {
             core.stop();
@@ -807,7 +813,7 @@ export default function Api(element) {
          * @param {number|string} width - Set the width in pixel (number) or CSS measurement units ('100%', '100em')
          * @param {number|string} [height] - Set the height in pixel (number) or CSS measurement units ('100%', '100em')
          * When specified, the "aspectratio" option included at setup is cleared.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         resize(width, height) {
             core.resize(width, height);
@@ -821,7 +827,7 @@ export default function Api(element) {
          * @param {function} callback - A callback to invoke when the button is clicked.
          * @param {string} id - The id of the button to add or update.
          * @param {string} [btnClass] - CSS classes to add to the button element.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         addButton(img, tooltip, callback, id, btnClass) {
             core.addButton(img, tooltip, callback, id, btnClass);
@@ -831,7 +837,7 @@ export default function Api(element) {
         /**
          * Removes a button from the player's control bar.
          * @param {string} id - The id of the button to remove.
-         * @returns {Api}
+         * @returns {Api} The Player API instance.
          */
         removeButton(id) {
             core.removeButton(id);
@@ -840,8 +846,8 @@ export default function Api(element) {
 
         /**
          * Reattaches a player instance to it's underlying video tag.
-         * Used after ad breaks to record state changes and resume playback.
-         * @deprecated TODO: in version 8.0.0-0
+         * @returns {Api} The Player API instance.
+         * @deprecated
          */
         attachMedia() {
             core.attachMedia();
@@ -851,7 +857,8 @@ export default function Api(element) {
         /**
          * Detaches a player instance from it's underlying video tag.
          * Used to stop recording state changes before an ad break begins.
-         * @deprecated TODO: in version 8.0.0-0
+         * @returns {Api} The Player API instance.
+         * @deprecated
          */
         detachMedia() {
             core.detachMedia();
@@ -860,18 +867,18 @@ export default function Api(element) {
 
         /**
          * Checks if the player has finished playing the current playlist item,
-         * but has not yet transitioned to the "complete" state or began the next item.
+         * but has not yet triggered the "complete" event or began the next item.
          * This state is entered when playing postroll ads.
-         * @returns {boolean}
+         * @returns {boolean} Is the "beforeComplete" event being propagated or interrupted by instream?
          */
         isBeforeComplete() {
             return core.isBeforeComplete();
         },
 
         /**
-         * Checks if playback has been requested, but the player has not begun to play.
+         * Checks if playback has been requested, but not yet attempted.
          * This state is entered when playing preroll ads.
-         * @returns {boolean}
+         * @returns {boolean} Is the "beforePlay" event being propagated or interrupted by instream?
          */
         isBeforePlay() {
             return core.isBeforePlay();
@@ -886,7 +893,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @param {string} name - The event name. Passing "all" will bind the callback to all events.
      * @param {function} callback - The event callback.
      * @param {any} [context] - The context to apply to the callback's function invocation.
-     * @return {Api}
+     * @return {Api} The Player API instance.
      */
     on(name, callback, context) {
         return on.call(this, name, callback, context);
@@ -898,7 +905,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @param {string} name - The event name. Passing "all" will bind the callback to all events.
      * @param {function} callback - The event callback.
      * @param {any} [context] - The context to apply to the callback's function invocation.
-     * @return {Api}
+     * @return {Api} The Player API instance.
      */
     once(name, callback, context) {
         return once.call(this, name, callback, context);
@@ -909,7 +916,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @param {string} [name] - The event name. If null, all bound callbacks for all events will be removed.
      * @param {function} [callback] - If null, all callbacks for the event will be removed.
      * @param {any} [context] - If null, all callbacks with that function will be removed.
-     * @return {Api}
+     * @return {Api} The Player API instance.
      */
     off(name, callback, context) {
         return off.call(this, name, callback, context);
@@ -921,7 +928,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * To disable this safety measure set `jwplayer.debug` to `true`.
      * @param {string} name - The event name.
      * @param {object} [args] - An object containing the event properties.
-     * @return {Api}
+     * @return {Api} The Player API instance.
      */
     trigger(name, args) {
         if (_.isObject(args)) {
@@ -949,6 +956,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * Adds a plugin instance to the player's instance.
      * @param {string} name - The name of the plugin.
      * @param {any} pluginInstance - The plugin instance.
+     * @returns {void}
      */
     addPlugin(name, pluginInstance) {
         this.plugins[name] = pluginInstance;
@@ -966,6 +974,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @param {string} name - The name of the plugin.
      * @param {string} minimumVersion - The minimum player version required by the plugin.
      * @param {function} pluginClass - The plugin function or class to instantiate with new player instances.
+     * @returns {void}
      */
     registerPlugin(name, minimumVersion, pluginClass) {
         registerPlugin(name, minimumVersion, pluginClass);
@@ -973,7 +982,7 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
 
     /**
      * Checks for the presence of an ad blocker. Implemented by jwplayer-commercial.
-     * @returns {boolean} - Returns true when an ad blocker is detected, otherwise false.
+     * @returns {boolean} Was an ad blocker is detected?
      */
     getAdBlock() {
         return false;
@@ -982,12 +991,14 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
     /**
      * Plays an ad. Implemented by ad plugins.
      * @param {string|Array} adBreak - The ad tag or waterfall array.
+     * @returns {void}
      */
     playAd(adBreak) {}, // eslint-disable-line
 
     /**
      * Pauses or toggles ad playback. Implemented by ad plugins.
      * @param {boolean} toggle - Specifies whether ad playback should be paused or resumed.
+     * @returns {void}
      */
     pauseAd(toggle) {}, // eslint-disable-line
 });

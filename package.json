@@ -74,7 +74,7 @@
   },
   "scripts": {
     "docs": "jsdoc -c docs/jsdoc.conf.json",
-    "lint": "npm run lint:js && npm run lint:styles",
+    "lint": "npm run lint:js && npm run lint:tests && npm run lint:styles",
     "lint:js": "eslint './src/js'",
     "lint:styles": "stylelint './src/css/**/*.less'",
     "lint:tests": "eslint './test/*.js'",

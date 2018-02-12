@@ -1,5 +1,6 @@
 import Model from 'controller/model';
 import ProgramController from 'program/program-controller';
+import MediaElementPool from 'program/media-element-pool';
 import { STATE_IDLE, STATE_PLAYING, STATE_LOADING, STATE_STALLED, MEDIA_PLAY_ATTEMPT, PROVIDER_FIRST_FRAME, MEDIA_TIME,
     MEDIA_FIRST_FRAME } from 'events/events';
 import { dateTime } from 'utils/clock';
@@ -11,7 +12,8 @@ describe('Model QoE', function() {
     it('tracks first frame with provider first frame event', function() {
         const startTime = Math.min(dateTime(), now());
         const model = new Model().setup();
-        const program = new ProgramController(model);
+        const mediaPool = new MediaElementPool();
+        const program = new ProgramController(model, mediaPool);
         const mediaModel = model.mediaModel;
         initQoe(model, program);
         const qoeItem = model._qoeItem;
@@ -44,7 +46,8 @@ describe('Model QoE', function() {
     it('removes media controller event listeners', function() {
         const startTime = Math.min(dateTime(), now());
         const model = new Model().setup();
-        const program = new ProgramController(model);
+        const mediaPool = new MediaElementPool();
+        const program = new ProgramController(model, mediaPool);
         initQoe(model, program);
         const qoeItem = model._qoeItem;
 
@@ -76,7 +79,8 @@ describe('Model QoE', function() {
 
     it('tracks stalled time', function() {
         const model = new Model().setup();
-        const program = new ProgramController(model);
+        const mediaPool = new MediaElementPool();
+        const program = new ProgramController(model, mediaPool);
         initQoe(model, program);
         const mediaModel = model.mediaModel;
         const qoeItem = model._qoeItem;
@@ -93,7 +97,8 @@ describe('Model QoE', function() {
     it('uses one qoe item per playlist item', function() {
         // Test qoe model observation
         const model = new Model().setup();
-        const program = new ProgramController(model);
+        const mediaPool = new MediaElementPool();
+        const program = new ProgramController(model, mediaPool);
         initQoe(model, program);
         const firstQoeItem = model._qoeItem;
 

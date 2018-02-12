@@ -1,5 +1,8 @@
 
-// Returns true if the value of the object is null, undefined or the empty string
+/**
+ * @param {any} item - The variable to test.
+ * @returns {boolean} Is the value of `item` null, undefined or an empty string?
+ */
 export function exists(item) {
     switch (typeof (item)) {
         case 'string':
@@ -13,26 +16,35 @@ export function exists(item) {
     }
 }
 
-/** Determines if the current page is HTTPS **/
+/**
+ * @returns {boolean} Is the current page hosted over HTTPS?
+ */
 export function isHTTPS() {
     return (window.location.protocol === 'https:');
 }
 
 /**
- * Determines if a URL is an RTMP link
+ * @param {string} file - The path or url to a media file
+ * @param {string} type - The type of the media parsed from a feed or the file extension.
+ * @returns {boolean} Is `file` an RTMP link or does `type` equal 'rtmp'?
  */
 export function isRtmp(file, type) {
     return (file.indexOf('rtmp:') === 0 || type === 'rtmp');
 }
 
 /**
- * Determines if a URL is a YouTube link
+ * @param {string} path - The path or url to a media file
+ * @param {string} type - The type of the media parsed from a feed or the media url.
+ * @returns {boolean} Is `path` a YouTube link or does `type` equal 'youtube'?
  */
 export function isYouTube(path, type) {
     return (type === 'youtube') || (/^(http|\/\/).*(youtube\.com|youtu\.be)\/.+/).test(path);
 }
 
-/** Returns the true type of an object * */
+/**
+ * @param {string} value - The variable to test.
+ * @returns {string} The typeof object, 'array' or 'null'.
+ */
 export function typeOf(value) {
     if (value === null) {
         return 'null';

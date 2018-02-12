@@ -13,8 +13,8 @@ import { Features } from '../environment/environment';
 class ProgramController extends Eventable {
     /**
      * ProgramController constructor
-     * @param model
-     * @param mediaPool
+     * @param {Model} model - The player's model
+     * @param {MediaElementPool} mediaPool - The player's media element pool
      */
     constructor(model, mediaPool) {
         super();
@@ -37,7 +37,7 @@ class ProgramController extends Eventable {
      * Activates a playlist item, loading it into the foreground.
      * This method will either load a new Provider or reuse the active one.
      * @param {number} index - The playlist index of the item
-     * @returns {Promise} - The Provider promise. Resolves with the active Media Controller
+     * @returns {Promise} The Provider promise. Resolves with the active Media Controller
      * @memberOf ProgramController
      */
     setActiveItem(index) {
@@ -144,7 +144,7 @@ class ProgramController extends Eventable {
 
     /**
      * Stops playback of the active item, and sets the player state to IDLE.
-     * @returns {undefined}
+     * @returns {void}
      */
     stopVideo() {
         const { mediaController, model } = this;
@@ -160,7 +160,7 @@ class ProgramController extends Eventable {
 
     /**
      * Preloads the active item, which loads and buffers some content.
-     * @returns {undefined}
+     * @returns {void}
      */
     preloadVideo() {
         const { backgroundMedia, mediaController } = this;
@@ -173,7 +173,7 @@ class ProgramController extends Eventable {
 
     /**
      * Pauses playback of the current video, and sets the player state to PAUSED.
-     * @returns {undefined}
+     * @returns {void}
      */
     pause() {
         const { mediaController } = this;
@@ -186,7 +186,9 @@ class ProgramController extends Eventable {
 
     /**
      * Casts a video. The Cast Controller will control the Cast Provider.
-     * @returns {undefined}
+     * @param {CastProvider} castProvider - The playback provider instance (Casting is implemented in jwplayer-commercial).
+     * @param {Item} item - The playlist Item instance to cast.
+     * @returns {void}
      */
     castVideo(castProvider, item) {
         const { model } = this;
@@ -205,7 +207,7 @@ class ProgramController extends Eventable {
 
     /**
      * Stops casting. The Player is expected to restore video playback afterwards.
-     * @returns {undefined}
+     * @returns {void}
      */
     stopCast() {
         const { model } = this;
@@ -224,7 +226,7 @@ class ProgramController extends Eventable {
      * The media is still attached to a media element, but is removed from the Player's container.
      * Background media still emits events, but we stop listening to them.
      * Background media can (and will) be updated via it's API.
-     * @returns {undefined}
+     * @returns {void}
      */
     backgroundActiveMedia() {
         const { backgroundMedia, mediaController } = this;
@@ -246,7 +248,7 @@ class ProgramController extends Eventable {
      * Restores the background media to the foreground.
      * Its media element is reattached to the Player container.
      * We start listening to its events again.
-     * @returns {undefined}
+     * @returns {void}
      */
     restoreBackgroundMedia() {
         const { backgroundMedia, mediaController } = this;
@@ -266,7 +268,7 @@ class ProgramController extends Eventable {
     /**
      * Primes media elements so that they can autoplay without further user gesture.
      * A primed element is required for media to load in the background.
-     * @returns {undefined}
+     * @returns {void}
      */
     primeMediaElements() {
         if (!Features.backgroundLoading) {
@@ -281,7 +283,7 @@ class ProgramController extends Eventable {
 
     /**
      * Removes all event listeners and destroys all media.
-     * @returns {undefined}
+     * @returns {void}
      */
     destroy() {
         this.off();
@@ -291,7 +293,8 @@ class ProgramController extends Eventable {
 
     /**
      * Activates the provided media controller, placing it into the foreground.
-     * @returns {undefined}
+     * @param {MediaController} mediaController - The media controller to activate.
+     * @returns {void}
      * @private
      */
     _setActiveMedia(mediaController) {
@@ -310,7 +313,7 @@ class ProgramController extends Eventable {
 
     /**
      * Destroys the active media controller and current playback.
-     * @returns {undefined}
+     * @returns {void}
      * @private
      */
     _destroyActiveMedia() {
@@ -329,7 +332,7 @@ class ProgramController extends Eventable {
 
     /**
      * Destroys background media.
-     * @returns {undefined}
+     * @returns {void}
      * @private
      */
     _destroyBackgroundMedia() {
@@ -346,7 +349,8 @@ class ProgramController extends Eventable {
      * Loads the constructor required for the current source.
      * Resolves with the required constructor, or rejects when the constructor could not be found or loaded.
      * If rejected, current playback will be destroyed.
-     * @returns {Promise} - The Provider constructor promise.
+     * @param {Source} source - The playlist item Source for which a provider is needed.
+     * @returns {Promise} The Provider constructor promise.
      * @private
      */
     _loadProviderConstructor(source) {
@@ -373,7 +377,7 @@ class ProgramController extends Eventable {
      * Returns the actively playing Provider object.
      * Will return the background Provider if there is no media in the foreground, which happens when an ad
      * is playing.
-     * @returns {object}
+     * @returns {VideoProvider|DefaultProvider|object} The active playback provider instance.
      */
     get activeProvider() {
         const { mediaController, backgroundMedia } = this;
@@ -386,7 +390,7 @@ class ProgramController extends Eventable {
 
     /**
      * Returns the active audio track index.
-     * @returns {number}
+     * @returns {number} The active audio track index.
      */
     get audioTrack() {
         const { mediaController } = this;
@@ -399,7 +403,7 @@ class ProgramController extends Eventable {
 
     /**
      * Returns the list of audio tracks.
-     * @returns {Array<object>}
+     * @returns {Array<AudioTrackOption>} An array of AudioTrackOption instances.
      */
     get audioTracks() {
         const { mediaController } = this;
@@ -412,12 +416,13 @@ class ProgramController extends Eventable {
 
     /**
      * Returns whether the current media has completed playback.
-     * @returns {boolean}
+     * @returns {boolean} Is the "beforeComplete" event being propagated
+     * or did it result in the media being detached or backgrounded?
      */
     get beforeComplete() {
         const { mediaController, backgroundMedia } = this;
         if (!mediaController && !backgroundMedia) {
-            return;
+            return false;
         }
 
         return mediaController ? mediaController.beforeComplete : backgroundMedia.beforeComplete;
@@ -425,7 +430,7 @@ class ProgramController extends Eventable {
 
     /**
      * Returns a primed element from the media pool.
-     * @returns {Element|undefined}
+     * @returns {HTMLVideoElement|null} The first video element in the pool, or null if the pool is empty.
      */
     get primedElement() {
         if (!Features.backgroundLoading) {
@@ -439,7 +444,7 @@ class ProgramController extends Eventable {
 
     /**
      * Returns the active quality index.
-     * @returns {number}
+     * @returns {number} The active quality level index.
      */
     get quality() {
         if (!this.mediaController) {
@@ -451,7 +456,7 @@ class ProgramController extends Eventable {
 
     /**
      * Returns the list of quality levels.
-     * @returns {Array<object>}
+     * @returns {Array<QualityOption>} An array of QualityOption objects.
      */
     get qualities() {
         const { mediaController } = this;
@@ -464,7 +469,7 @@ class ProgramController extends Eventable {
 
     /**
      * Attaches or detaches the current media
-     * @param {boolean} shouldAttach
+     * @param {boolean} shouldAttach - Attach or detach?
      * @returns {void}
      */
     set attached(shouldAttach) {
@@ -482,8 +487,8 @@ class ProgramController extends Eventable {
     }
 
     /**
-     * Returns the active quality index.
-     * @param {number} index
+     * Sets the active audio index.
+     * @param {number} index - The index of the audio track to select.
      * @returns {void}
      */
     set audioTrack(index) {
@@ -497,8 +502,9 @@ class ProgramController extends Eventable {
 
     /**
      * Activates or deactivates media controls.
-     * @param {boolean} mode
+     * @param {boolean} mode - Activate or deactivate media controls?
      * @returns {void}
+     * TODO: deprecate - only used by jwplayer-commercial flash provider
      */
     set controls(mode) {
         const { mediaController } = this;
@@ -512,7 +518,7 @@ class ProgramController extends Eventable {
     /**
      * Mutes or unmutes the activate media.
      * Syncs across all media elements.
-     * @param {boolean} mute
+     * @param {boolean} mute - Mute or unmute media?
      * @returns {void}
      */
     set mute(mute) {
@@ -531,7 +537,7 @@ class ProgramController extends Eventable {
     /**
      * Seeks the media to the provided position.
      * If the media is not attached, set the item's starttime, so that when reattaching, it resumes at that time.
-     * @param {number} pos
+     * @param {number} pos - The position to start at or seek to.
      * @returns {void}
      */
     set position(pos) {
@@ -549,7 +555,7 @@ class ProgramController extends Eventable {
 
     /**
      * Sets the current quality level.
-     * @param {number} index
+     * @param {number} index - The index of the quality level to select.
      * @returns {void}
      */
     set quality(index) {
@@ -563,7 +569,7 @@ class ProgramController extends Eventable {
 
     /**
      * Sets the current subtitles track.
-     * @param {number} index
+     * @param {number} index - The index of the subtitle track to select.
      * @returns {void}
      */
     set subtitles(index) {
@@ -578,7 +584,7 @@ class ProgramController extends Eventable {
     /**
      * Sets the volume level.
      * Syncs across all media elements.
-     * @param {number} volume
+     * @param {number} volume - A number from 0 to 1.
      * @returns {void}
      */
     set volume(volume) {

@@ -3,8 +3,7 @@ import { createId, createLabel } from 'controller/tracks-helper';
 import Events from 'utils/backbone.events';
 import { ERROR } from 'events/events';
 
-
-/** Displays closed captions or subtitles on top of the video. **/
+/* Displays closed captions or subtitles on top of the video */
 const Captions = function(_model) {
 
     let _tracks = [];

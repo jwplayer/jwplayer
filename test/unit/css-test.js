@@ -24,12 +24,12 @@ describe('css', function() {
 
         // check that style sheet is correctly included to the end of head
         var styleSheet = document.getElementsByTagName('head')[0].lastChild;
-        expect(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),'css object correctly included').to.be.true;
+        expect(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML), 'css object correctly included').to.be.true;
 
         // check that css() accepts a style object and css will be replaced
         css(testSelector, stylesRed, playerId);
-        expect(!/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),'css object correctly replaced').to.be.true;
-        expect(/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML),'css object correctly replaced').to.be.true;
+        expect(!/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML), 'css object correctly replaced').to.be.true;
+        expect(/test-selector{background-color: ?red;?}/.test(styleSheet.innerHTML), 'css object correctly replaced').to.be.true;
 
         clearCss(playerId);
 
@@ -38,7 +38,7 @@ describe('css', function() {
 
         // check that css() accepts css style as a string
         css(testSelector, '{test-selector{background-color: blue}', playerId);
-        expect(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML),'css text correctly inserted').to.be.true;
+        expect(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML), 'css text correctly inserted').to.be.true;
     });
 
     it('style', function() {

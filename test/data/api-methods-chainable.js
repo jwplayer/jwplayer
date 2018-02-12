@@ -15,6 +15,7 @@ export default {
     load: [{}],
     play: undefined,
     pause: undefined,
+    playToggle: undefined,
     setControls: [true],
     setFullscreen: [false],
     setVolume: [100],

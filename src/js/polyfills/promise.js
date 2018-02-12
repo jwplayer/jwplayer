@@ -109,7 +109,7 @@ function Handler(onFulfilled, onRejected, promise) {
     this.promise = promise;
 }
 
-/**
+/*
  * Take a potentially misbehaving resolver function and make sure
  * onFulfilled and onRejected are only called once.
  *

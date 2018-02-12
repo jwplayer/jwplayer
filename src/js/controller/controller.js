@@ -622,7 +622,7 @@ Object.assign(Controller.prototype, {
             return _captions.getCaptionsList();
         }
 
-        /** Used for the InStream API **/
+        /* Used for the InStream API */
         function _detachMedia() {
             if (_beforePlay) {
                 _interruptPlay = true;

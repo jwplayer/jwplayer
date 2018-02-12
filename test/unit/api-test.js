@@ -86,7 +86,7 @@ describe('Api', function() {
 
         const api = createApi('player');
         const validEvent = sinon.stub();
-        const invalidEvent = sinon.stub().throws("TypeError");
+        const invalidEvent = sinon.stub().throws('TypeError');
 
         api.on('x', invalidEvent);
         api.on('x', validEvent);
