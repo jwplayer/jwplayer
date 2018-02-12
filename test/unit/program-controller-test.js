@@ -1,6 +1,7 @@
 import Model from 'controller/model';
 import ProgramController from 'program/program-controller';
 import MediaElementPool from 'program/media-element-pool';
+import { Features } from 'environment/environment';
 import MockProvider, { MockVideolessProvider } from 'mock/mock-provider';
 import sinon from 'sinon';
 
@@ -195,16 +196,23 @@ describe('ProgramController', function () {
     });
 
     it('triggers events off the model when the active item is set', function() {
+        // If background loading is not supported, mediaElement does not change
+        const { backgroundLoading } = Features;
+        let call = 1;
+
         sinon.spy(model, 'trigger');
         return programController.setActiveItem(0)
             .then(function () {
                 const provider = programController.activeProvider;
-                expect(model.trigger).to.have.callCount(6);
+                expect(model.trigger).to.have.callCount(backgroundLoading ? 6 : 5);
                 expect(model.trigger.firstCall).to.have.been.calledWith('change:playlistItem');
-                expect(model.trigger.getCall(1)).to.have.been.calledWith('change:mediaElement');
-                expect(model.trigger.getCall(2)).to.have.been.calledWith('change:mediaModel');
-                expect(model.trigger.getCall(3)).to.have.been.calledWith('change:provider');
-                expect(model.trigger.getCall(4)).to.have.been.calledWith('change:renderCaptionsNatively');
+                if (backgroundLoading) {
+                    expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:mediaElement');
+                }
+                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:mediaModel');
+                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:provider');
+                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:renderCaptionsNatively');
+                call++;
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
                 expect(model.trigger.lastCall).to.have.been.calledImmediatelyAfter(provider.init.firstCall);
                 expect(provider.init).to.have.callCount(1);
@@ -213,12 +221,12 @@ describe('ProgramController', function () {
             .then(() => programController.setActiveItem(1))
             .then(function () {
                 const provider = programController.activeProvider;
-                expect(model.trigger).to.have.callCount(12);
-                expect(model.trigger.getCall(6)).to.have.been.calledWith('change:item');
-                expect(model.trigger.getCall(7)).to.have.been.calledWith('change:playlistItem');
-                expect(model.trigger.getCall(8)).to.have.been.calledWith('change:state', model, 'buffering', 'idle');
-                expect(model.trigger.getCall(9)).to.have.been.calledWith('change:mediaModel');
-                expect(model.trigger.getCall(10)).to.have.been.calledWith('change:provider');
+                expect(model.trigger).to.have.callCount(backgroundLoading ? 12 : 11);
+                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:item');
+                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:playlistItem');
+                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:state', model, 'buffering', 'idle');
+                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:mediaModel');
+                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:provider');
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
                 expect(model.trigger.lastCall).to.have.been.calledImmediatelyAfter(provider.init.secondCall);
                 expect(provider.init).to.have.callCount(2);
