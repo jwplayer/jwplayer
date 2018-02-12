@@ -404,6 +404,12 @@ function CueStyleBox(window, cue) {
     this.cueDiv = parseContent(window, cue.text);
     // Added on 6/21/2016 by Evol Greaves: evol@jwplayer.com for styling captions with CSS
     this.cueDiv.className = 'jw-text-track-cue jw-reset';
+    let writingMode = 'horizontal-tb';
+
+    if (/^(lr|rl)$/.test(cue.vertical)) {
+        writingMode = 'vertical-' + cue.vertical;
+    }
+
     var styles = {
         textShadow: '',
         position: 'relative',
@@ -412,7 +418,7 @@ function CueStyleBox(window, cue) {
         top: 0,
         bottom: 0,
         display: 'inline',
-        writingMode: cue.vertical === '' ? 'horizontal-tb' : cue.vertical === 'lr' ? 'vertical-lr' : 'vertical-rl',
+        writingMode,
         unicodeBidi: 'plaintext',
     };
 
@@ -427,7 +433,7 @@ function CueStyleBox(window, cue) {
         whiteSpace: 'pre-line',
         position: 'absolute',
         direction: determineBidi(this.cueDiv),
-        writingMode: cue.vertical === '' ? 'horizontal-tb' : cue.vertical === 'lr' ? 'vertical-lr' : 'vertical-rl',
+        writingMode,
         unicodeBidi: 'plaintext',
     };
 
@@ -470,7 +476,7 @@ function CueStyleBox(window, cue) {
     // Horizontal box orientation; textPos is the distance from the left edge of the
     // area to the left edge of the box and cue.size is the distance extending to
     // the right from there.
-    if (cue.vertical === '') {
+    if (!cue.vertical) {
         this.applyStyles({
             paddingLeft: this.formatStyle(textPos, '%'),
             width: this.formatStyle(cue.size, '%')
@@ -743,7 +749,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
         // need to increase our initial position by the length or width of the
         // video, depending on the writing direction, and reverse our axis directions.
         if (linePos < 0) {
-            position += cue.vertical === '' ? containerBox.height : containerBox.width;
+            position += cue.vertical ? containerBox.width : containerBox.height;
             // textHeight added on 8/04/2016 by Evol Greaves: evol@jwplayer.com
             // Account for lines of text when determining position based on a negative line value
             var textHeight = numLinesOfText * step;
