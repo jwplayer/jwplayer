@@ -3,6 +3,8 @@ import SimpleModel from 'model/simplemodel';
 class SimpleModelExtendable {}
 SimpleModelExtendable.prototype = Object.assign({}, SimpleModel);
 
+const changeEventRegEx = /^change:(.+)$/;
+
 function dispatchDiffChangeEvents(viewModel, newAttributes, oldAttributes) {
     Object.keys(newAttributes).forEach((attr) => {
         if (attr in newAttributes && newAttributes[attr] !== oldAttributes[attr]) {
@@ -19,7 +21,7 @@ function removeListeners(instance, viewModel) {
 
 class PlayerViewModel extends SimpleModelExtendable {
 
-    constructor(playerModel) {
+    constructor(playerModel, eventFilter) {
         super();
 
         this._model = playerModel;
@@ -36,7 +38,9 @@ class PlayerViewModel extends SimpleModelExtendable {
             if (objectOrEvent === playerModel) {
                 objectOrEvent = this;
             }
-            this.trigger(type, objectOrEvent, value, previousValue);
+            if (!eventFilter || eventFilter(type, objectOrEvent, value, previousValue)) {
+                this.trigger(type, objectOrEvent, value, previousValue);
+            }
         }, this);
 
         playerModel.on('change:mediaModel', (model, mediaModel) => {
@@ -87,7 +91,20 @@ class PlayerViewModel extends SimpleModelExtendable {
 
 export default class ViewModel extends PlayerViewModel {
     constructor(playerModel) {
-        super(playerModel);
+        super(playerModel, (type) => {
+            // Do not propagate attribute changes from the player model for attributes present in instream
+            const instreamModel = this._instreamModel;
+            if (instreamModel) {
+                const match = changeEventRegEx.exec(type);
+                if (match) {
+                    const attr = match[1];
+                    if (attr in instreamModel.attributes) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
 
         this._instreamModel = null;
         this._playerViewModel = new PlayerViewModel(this._model);
