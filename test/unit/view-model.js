@@ -1,6 +1,11 @@
 import sinon from 'sinon';
 import ViewModel from 'view/view-model';
-import Model from 'controller/model';
+import Model, { MediaModel } from 'controller/model';
+
+function toString(instance, label) {
+    instance.toString = (() => label);
+    return instance;
+}
 
 describe('ViewModel', function() {
 
@@ -125,6 +130,64 @@ describe('ViewModel', function() {
 
         expect(viewModel.get('attr'), 'Instream media-model attribute is returned').to.equal('instream-media-model');
         expect(viewModel.get('model-attr'), 'Attributes only on instream are returned').to.equal('instream-model');
+
+        // Deactivate instream mode
+        model.set('instream', null);
+
+        expect(viewModel.get('attr'), 'Media-model attribute is returned').to.equal('media-model');
+        expect(viewModel.get('model-attr'), 'Attributes only on the model are returned').to.equal('model');
+    });
+
+    it('forwards "change:" events from the most specific model', function() {
+        const model = toString(new Model(), '[Model]');
+        const mediaModelOne = toString(model.get('mediaModel'), '[MediaModel-1]');
+        const instream = toString({
+            model: new Model()
+        }, '[InstreamAdapter]');
+        const instreamMediaModel = toString(instream.model.get('mediaModel'), '[MediaModel-Instream]');
+        const viewModel = toString(new ViewModel(model), '[ViewModel]');
+
+        const viewModelEventSpy = sinon.spy();
+        viewModel.on('all', viewModelEventSpy);
+
+        model.set('state', 'idle');
+        instream.model.set('state', 'buffering');
+
+        expect(viewModelEventSpy).to.have.callCount(1);
+        expect(viewModelEventSpy.firstCall).calledWith('change:state', viewModel, 'idle', undefined);
+
+        // Activate instream mode. mediaModel and state change to instream's.
+        model.set('instream', instream);
+        expect(viewModelEventSpy).to.have.callCount(5);
+        expect(viewModelEventSpy.getCall(1)).calledWith('instreamMode', true);
+        expect(viewModelEventSpy.getCall(2)).calledWith('change:mediaModel', viewModel, instreamMediaModel, mediaModelOne);
+        expect(viewModelEventSpy.getCall(3)).calledWith('change:state', viewModel, 'buffering', 'idle');
+        expect(viewModelEventSpy.getCall(4)).calledWith('change:instream', viewModel, instream, undefined);
+
+        // Change properties on the model that are shadowed by instream
+        model.set('state', null);
+
+        const mediaModelTwo = toString(new MediaModel(), '[MediaModel-2]');
+
+        model.set('mediaModel', mediaModelTwo);
+        model.set('state', 'idle');
+
+        // Confirm that model change events were not forwarded by view-model
+        expect(viewModelEventSpy).to.have.callCount(5);
+
+        // Confirm that instream model change events are forwarded by view-model
+        instream.model.set('state', 'playing');
+
+        expect(viewModelEventSpy).to.have.callCount(6);
+        expect(viewModelEventSpy.getCall(5)).calledWith('change:state', viewModel, 'playing', 'buffering');
+
+        // Deactivate instream mode. mediaModel and state change to the player's.
+        model.set('instream', null);
+        expect(viewModelEventSpy).to.have.callCount(10);
+        expect(viewModelEventSpy.getCall(6)).calledWith('instreamMode', false);
+        expect(viewModelEventSpy.getCall(7)).calledWith('change:mediaModel', viewModel, mediaModelTwo, instreamMediaModel);
+        expect(viewModelEventSpy.getCall(8)).calledWith('change:state', viewModel, 'idle', 'playing');
+        expect(viewModelEventSpy.getCall(9)).calledWith('change:instream', viewModel, null, instream);
     });
 
     it('set attributes on the player model only', function() {
