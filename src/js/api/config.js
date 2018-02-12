@@ -90,6 +90,16 @@ const Config = function(options, persisted) {
 
     let rateControls = config.playbackRateControls;
 
+    if (config.ab) {
+        _.each(config.ab.tests, function(ab_test_type) {
+            _.each(ab_test_type, function(ab_test) {
+                if (_.isFunction(ab_test.addConfig)) {
+                    ab_test.addConfig(config, ab_test.selection);
+                }
+            });
+        });
+    }
+
     if (rateControls) {
         let rates = config.playbackRates;
 
