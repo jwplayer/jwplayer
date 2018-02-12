@@ -1,6 +1,7 @@
 import { loadFrom } from './utils/playerutils';
 import instances from './api/players';
 import GlobalApi from 'api/global-api';
+import { registerPlugin } from 'plugins/plugins';
 import { version } from './version';
 import Api from 'api/api';
 import ApiSettings from 'api/api-settings';
@@ -47,7 +48,7 @@ const jwplayer = function(query) {
     }
     // invalid query
     return {
-        registerPlugin: GlobalApi.registerPlugin
+        registerPlugin: registerPlugin
     };
 };
 
