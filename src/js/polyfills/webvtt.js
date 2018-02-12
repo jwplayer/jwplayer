@@ -418,7 +418,7 @@ function CueStyleBox(window, cue) {
         top: 0,
         bottom: 0,
         display: 'inline',
-        writingMode: writingMode,
+        writingMode,
         unicodeBidi: 'plaintext',
     };
 
@@ -433,7 +433,7 @@ function CueStyleBox(window, cue) {
         whiteSpace: 'pre-line',
         position: 'absolute',
         direction: determineBidi(this.cueDiv),
-        writingMode: writingMode,
+        writingMode,
         unicodeBidi: 'plaintext',
     };
 
@@ -749,7 +749,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
         // need to increase our initial position by the length or width of the
         // video, depending on the writing direction, and reverse our axis directions.
         if (linePos < 0) {
-            position += !cue.vertical ? containerBox.height : containerBox.width;
+            position += cue.vertical ? containerBox.width : containerBox.height;
             // textHeight added on 8/04/2016 by Evol Greaves: evol@jwplayer.com
             // Account for lines of text when determining position based on a negative line value
             var textHeight = numLinesOfText * step;
