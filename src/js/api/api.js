@@ -338,6 +338,14 @@ export default function Api(element) {
         },
 
         /**
+         * Gets the current value for video.currentTime
+         * @returns {number} The value for video.currentTime in seconds
+         */
+        getCurrentTime() {
+            return core.get('currentTime');
+        },
+
+        /**
          * Gets the duration of the current playlist item.
          * @returns {number} The duration in seconds.
          * Live streams always return `Infinity`.

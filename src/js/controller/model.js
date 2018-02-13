@@ -211,11 +211,13 @@ const Model = function() {
 
     this.resetItem = function (item) {
         const position = item ? seconds(item.starttime) : 0;
+        const currentTime = item ? seconds(item.currentTime) : 0;
         const duration = item ? seconds(item.duration) : 0;
         const mediaModel = this.mediaModel;
         this.set('playRejected', false);
         this.attributes.itemMeta = {};
         mediaModel.set('position', position);
+        mediaModel.set('currentTime', currentTime);
         mediaModel.set('duration', duration);
     };
 };
