@@ -20,12 +20,6 @@
         .jw-overlay:after {
             display: none;
         }
-
-        .jw-icon-live {
-            .jw-svg-icon-dvr {
-                display: none;
-            }
-        }
     }
 
     .jw-nextup-container {
@@ -35,5 +29,43 @@
     .jw-text-elapsed,
     .jw-text-duration {
         display: none;
+    }
+}
+
+.jw-text-live {
+    .rect(auto, @icon-size);
+    align-items: center;
+    border-radius: 1px;
+    color: @inactive-color;
+    display: flex;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 10px;
+    padding: 0 1ch;
+    text-rendering: geometricPrecision;
+    text-transform: uppercase;
+    transition: @default-transition;
+    transition-property: box-shadow, color;
+
+    &::before {
+        &:extend(._pseudo);
+        .square(8px);
+        background-color: currentColor;
+        border-radius: 50%;
+        margin-right: 6px;
+        opacity: 1;
+        transition: opacity @default-transition;
+    }
+
+    &.jw-dvr-live {
+        box-shadow: inset 0 0 0 2px currentColor;
+
+        &::before {
+            opacity: 0.5;
+        }
+
+        &:hover {
+            color: @active-color;
+        }
     }
 }

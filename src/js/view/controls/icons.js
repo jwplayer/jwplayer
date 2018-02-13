@@ -13,8 +13,6 @@ import CAPTIONS_ON_ICON from 'assets/SVG/captions-on.svg';
 import CAPTIONS_OFF_ICON from 'assets/SVG/captions-off.svg';
 import AIRPLAY_ON_ICON from 'assets/SVG/airplay-on.svg';
 import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
-import DVR_ICON from 'assets/SVG/dvr.svg';
-import LIVE_ICON from 'assets/SVG/live.svg';
 import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
 import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
@@ -81,8 +79,6 @@ function parseCollection() {
         CAPTIONS_OFF_ICON +
         AIRPLAY_ON_ICON +
         AIRPLAY_OFF_ICON +
-        DVR_ICON +
-        LIVE_ICON +
         PLAYBACK_RATE_ICON +
         SETTINGS_ICON +
         AUDIO_TRACKS_ICON +
