@@ -34,53 +34,39 @@ import createPlayPromise from '../providers/utils/play-promise';
  */
 const VIDEO = 'data:video/mp4;base64,AAAAHGZ0eXBpc29tAAACAGlzb21pc28ybXA0MQAAAAhmcmVlAAAC721kYXQhEAUgpBv/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA3pwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcCEQBSCkG//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADengAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAAAsJtb292AAAAbG12aGQAAAAAAAAAAAAAAAAAAAPoAAAALwABAAABAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAB7HRyYWsAAABcdGtoZAAAAAMAAAAAAAAAAAAAAAIAAAAAAAAALwAAAAAAAAAAAAAAAQEAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAACRlZHRzAAAAHGVsc3QAAAAAAAAAAQAAAC8AAAAAAAEAAAAAAWRtZGlhAAAAIG1kaGQAAAAAAAAAAAAAAAAAAKxEAAAIAFXEAAAAAAAtaGRscgAAAAAAAAAAc291bgAAAAAAAAAAAAAAAFNvdW5kSGFuZGxlcgAAAAEPbWluZgAAABBzbWhkAAAAAAAAAAAAAAAkZGluZgAAABxkcmVmAAAAAAAAAAEAAAAMdXJsIAAAAAEAAADTc3RibAAAAGdzdHNkAAAAAAAAAAEAAABXbXA0YQAAAAAAAAABAAAAAAAAAAAAAgAQAAAAAKxEAAAAAAAzZXNkcwAAAAADgICAIgACAASAgIAUQBUAAAAAAfQAAAHz+QWAgIACEhAGgICAAQIAAAAYc3R0cwAAAAAAAAABAAAAAgAABAAAAAAcc3RzYwAAAAAAAAABAAAAAQAAAAIAAAABAAAAHHN0c3oAAAAAAAAAAAAAAAIAAAFzAAABdAAAABRzdGNvAAAAAAAAAAEAAAAsAAAAYnVkdGEAAABabWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAtaWxzdAAAACWpdG9vAAAAHWRhdGEAAAABAAAAAExhdmY1Ni40MC4xMDE=';
 
-function startPlayback (element, { timeout }) {
+function startPlayback (element, { muted }) {
+    // Configure element.
+    element.muted = muted;
     element.src = VIDEO;
 
-    return new Promise((resolve, reject) => {
-        const playResult = element.play() || createPlayPromise(element);
-        const timeoutId = setTimeout(() => {
-            reject(new Error(`Timeout ${timeout} ms has been reached`));
-        }, timeout);
-        const sendOutput = (result) => {
-            clearTimeout(timeoutId);
-            resolve(result);
-        };
-
-        playResult
-            .then(() => sendOutput(true))
-            .catch(() => sendOutput(false));
-    });
+    // Start playback and return promise.
+    const promise = element.play() || createPlayPromise(element);
+    return promise
+        .then(() => true)
+        .catch(() => false);
 }
 
 export const AUTOPLAY_ENABLED = 'autoplayEnabled';
 export const AUTOPLAY_MUTED = 'autoplayMuted';
 export const AUTOPLAY_DISABLED = 'autoplayDisabled';
 
-export function canAutoplay (controller, { muted = false, allowMuted = false, timeout = 250 }) {
-    // Set-up.
-    const mediaPool = controller.mediaPool;
-    const element = mediaPool.getPrimedElement();
-    const initialMute = element.muted;
-    const reset = () => {
-        mediaPool.syncMute(initialMute);
-        mediaPool.recycle(element);
-        controller.attached = true; // Re-attach.
-    };
-    controller.attached = false; // Detach.
+export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted = false }) {
+    const element = mediaPool.getTestElement();
 
     // Run the first test: autoplay with specified muted setting.
-    mediaPool.syncMute(muted);
-    return startPlayback(element, { timeout }).then(result => {
+    return startPlayback(element, { muted }).then(result => {
+        if (cancelable.cancelled()) {
+            throw new Error('Autoplay test was cancelled');
+        }
+
         // Second optional test: autoplay muted.
         if (result === false && muted === false && allowMuted) {
             muted = true;
-            mediaPool.syncMute(muted);
-            return startPlayback(element, { timeout });
+            return startPlayback(element, { muted });
         }
         return result;
     }).then(result => {
-        reset();
+        mediaPool.cleanTestElement();
 
         // Return autoplay flag.
         if (result === true) {
@@ -88,7 +74,7 @@ export function canAutoplay (controller, { muted = false, allowMuted = false, ti
         }
         return AUTOPLAY_DISABLED;
     }).catch(err => {
-        reset();
+        mediaPool.cleanTestElement();
         throw err;
     });
 }

@@ -14,6 +14,9 @@ export default function MediaElementPool() {
     // Reserve an element exclusively for ads
     const adElement = pool.shift();
 
+    // Reserve an element exclusively for feature testing.
+    const testElement = pool.shift();
+
     return {
         prime() {
             elements.forEach(primeMediaElementForPlayback);
@@ -28,19 +31,12 @@ export default function MediaElementPool() {
         getAdElement() {
             return adElement;
         },
-        clean(mediaElement) {
-            // Try to clean the media element so that we don't see frames of the previous video when reusing a tag
-            // We don't want to call load again if the media element is already clean
-            if (!mediaElement.src) {
-                return;
-            }
-
-            mediaElement.removeAttribute('src');
-            try {
-                mediaElement.load();
-            } catch (e) {
-                // Calling load may throw an exception, but does not result in an error state
-            }
+        getTestElement() {
+            return testElement;
+        },
+        clean,
+        cleanTestElement() {
+            clean(testElement);
         },
         recycle(mediaElement) {
             if (mediaElement && !pool.some(element => element === mediaElement)) {
@@ -59,6 +55,21 @@ export default function MediaElementPool() {
             });
         }
     };
+}
+
+function clean(mediaElement) {
+    // Try to clean the media element so that we don't see frames of the previous video when reusing a tag
+    // We don't want to call load again if the media element is already clean
+    if (!mediaElement.src) {
+        return;
+    }
+
+    mediaElement.removeAttribute('src');
+    try {
+        mediaElement.load();
+    } catch (e) {
+        // Calling load may throw an exception, but does not result in an error state
+    }
 }
 
 function primeMediaElementForPlayback(mediaElement) {
