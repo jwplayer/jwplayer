@@ -23,6 +23,10 @@ export default class VolumeTooltip extends Tooltip {
             .on('over', this.openTooltip, this)
             .on('out', this.closeTooltip, this);
 
+        this.el.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+        });
+
         this._model.on('change:volume', this.onVolume, this);
     }
 
