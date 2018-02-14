@@ -91,15 +91,6 @@ export default class AdProgramController extends ProgramController {
         provider.on(ERROR, function(data) {
             this.trigger(ERROR, data);
         }, this);
-        playerModel.on('change:volume', function(data, value) {
-            this.volume = value;
-        }, this);
-        playerModel.on('change:mute', function(data, mute) {
-            this.mute = mute;
-            if (!mute) {
-                this.volume = playerModel.get('volume');
-            }
-        }, this);
         playerModel.on('change:autostartMuted', function(data, value) {
             if (!value) {
                 provider.mute(playerModel.get('mute'));
@@ -137,8 +128,16 @@ export default class AdProgramController extends ProgramController {
         if (provider.setPlaybackRate) {
             provider.setPlaybackRate(1);
         }
+        playerModel.change('volume', function(data, value) {
+            this.volume = value;
+        }, this);
+        playerModel.change('mute', function(data, mute) {
+            this.mute = mute;
+            if (!mute) {
+                this.volume = playerModel.get('volume');
+            }
+        }, this);
     }
-
 
     destroy() {
         const { model, mediaPool, playerModel } = this;
