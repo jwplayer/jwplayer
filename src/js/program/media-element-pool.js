@@ -34,9 +34,19 @@ export default function MediaElementPool() {
         getTestElement() {
             return testElement;
         },
-        clean,
-        cleanTestElement() {
-            clean(testElement);
+        clean(mediaElement) {
+            // Try to clean the media element so that we don't see frames of the previous video when reusing a tag
+            // We don't want to call load again if the media element is already clean
+            if (!mediaElement.src) {
+                return;
+            }
+
+            mediaElement.removeAttribute('src');
+            try {
+                mediaElement.load();
+            } catch (e) {
+                // Calling load may throw an exception, but does not result in an error state
+            }
         },
         recycle(mediaElement) {
             if (mediaElement && !pool.some(element => element === mediaElement)) {
@@ -55,21 +65,6 @@ export default function MediaElementPool() {
             });
         }
     };
-}
-
-function clean(mediaElement) {
-    // Try to clean the media element so that we don't see frames of the previous video when reusing a tag
-    // We don't want to call load again if the media element is already clean
-    if (!mediaElement.src) {
-        return;
-    }
-
-    mediaElement.removeAttribute('src');
-    try {
-        mediaElement.load();
-    } catch (e) {
-        // Calling load may throw an exception, but does not result in an error state
-    }
 }
 
 function primeMediaElementForPlayback(mediaElement) {

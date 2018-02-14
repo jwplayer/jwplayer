@@ -72,15 +72,10 @@ export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted 
         }
         return result;
     }).then(result => {
-        mediaPool.cleanTestElement();
-
         // Return autoplay flag.
         if (result === true) {
             return muted ? AUTOPLAY_MUTED : AUTOPLAY_ENABLED;
         }
         return AUTOPLAY_DISABLED;
-    }).catch(err => {
-        mediaPool.cleanTestElement();
-        throw err;
     });
 }
