@@ -214,7 +214,11 @@ export default class MediaController extends Eventable {
     }
 
     get setup() {
-        return this.mediaModel && this.mediaModel.get('setup');
+        return this.mediaModel.get('setup');
+    }
+
+    get started() {
+        return this.mediaModel.get('started');
     }
 
     set activeItem(item) {

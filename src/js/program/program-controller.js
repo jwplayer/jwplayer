@@ -546,7 +546,9 @@ class ProgramController extends Eventable {
             return;
         }
 
-        if (mediaController.attached) {
+        if (!mediaController.started) {
+            mediaController.item.starttime = pos;
+        } else if (mediaController.attached) {
             mediaController.position = pos;
         } else {
             mediaController.item.starttime = pos;
