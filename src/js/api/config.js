@@ -1,6 +1,7 @@
 import _ from 'utils/underscore';
 import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
+import { _isNumber, _isNaN } from 'utils/underscore';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -147,11 +148,15 @@ const Config = function(options, persisted) {
     config.qualityLabels = config.qualityLabels || config.hlslabels;
     delete config.duration;
 
+    let liveTimeout = config.liveTimeout;
     if (config.liveTimeout !== null) {
-        if (config.liveTimeout !== 0) {
-            config.liveTimeout = Math.max(30, config.liveTimeout);
+        if (_isNaN(liveTimeout) || !_isNumber(liveTimeout)) {
+            liveTimeout = null;
+        } else if (config.liveTimeout !== 0) {
+            liveTimeout = Math.max(30, liveTimeout);
         }
     }
+    config.liveTimeout = liveTimeout;
 
     return config;
 };

@@ -45,6 +45,19 @@ describe('API Config', function() {
             it('should not change a config value of null', function () {
                 expect(new Config({ liveTimeout: null })).to.have.property('liveTimeout').which.equals(null);
             });
+
+            it('should change NaN to null', function () {
+                expect(new Config({ liveTimeout: NaN })).to.have.property('liveTimeout').which.equals(null);
+            });
+
+            it('should change undefined to null', function () {
+                expect(new Config({ liveTimeout: undefined })).to.have.property('liveTimeout').which.equals(null);
+            });
+
+            it('should change a non-number to to null', function () {
+                expect(new Config({ liveTimeout: 'z' })).to.have.property('liveTimeout').which.equals(null);
+                expect(new Config({ liveTimeout: {} })).to.have.property('liveTimeout').which.equals(null);
+            });
         });
     });
 
