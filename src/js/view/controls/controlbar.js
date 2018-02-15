@@ -155,7 +155,7 @@ export default class Controlbar {
 
         const liveButton = button('jw-text-live', () => {
             this.goToLiveEdge();
-        });
+        }, localization.liveBroadcast);
         liveButton.element().textContent = localization.liveBroadcast;
 
         const elements = this.elements = {
