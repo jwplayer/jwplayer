@@ -152,11 +152,11 @@ const Config = function(options, persisted) {
     if (config.liveTimeout !== null) {
         if (_isNaN(liveTimeout) || !_isNumber(liveTimeout)) {
             liveTimeout = null;
-        } else if (config.liveTimeout !== 0) {
+        } else if (liveTimeout !== 0) {
             liveTimeout = Math.max(30, liveTimeout);
         }
+        config.liveTimeout = liveTimeout;
     }
-    config.liveTimeout = liveTimeout;
 
     return config;
 };
