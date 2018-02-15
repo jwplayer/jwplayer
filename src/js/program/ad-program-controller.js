@@ -134,6 +134,7 @@ export default class AdProgramController extends ProgramController {
         playerModel.on('change:autostartMuted', function(data, value) {
             if (!value) {
                 model.set('autostartMuted', value);
+                this.mute = playerModel.get('mute');
             }
         }, this);
     }
