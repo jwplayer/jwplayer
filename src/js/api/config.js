@@ -149,7 +149,7 @@ const Config = function(options, persisted) {
     delete config.duration;
 
     let liveTimeout = config.liveTimeout;
-    if (config.liveTimeout !== null) {
+    if (liveTimeout !== null) {
         if (_isNaN(liveTimeout) || !_isNumber(liveTimeout)) {
             liveTimeout = null;
         } else if (liveTimeout !== 0) {
