@@ -30,6 +30,35 @@ describe('API Config', function() {
             expect(new Config({ id: 'abc' })).to.have.property('id').which.is.a('string').which.equals('abc');
             expect(new Config({ id: '123' })).to.have.property('id').which.is.a('string').which.equals('123');
         });
+
+        describe('liveTimeout', function () {
+            it('should default liveTimeout to 30 if between 1 and 30', function () {
+                expect(new Config({ liveTimeout: 1 })).to.have.property('liveTimeout').which.equals(30);
+                expect(new Config({ liveTimeout: 29 })).to.have.property('liveTimeout').which.equals(30);
+                expect(new Config({ liveTimeout: -1 })).to.have.property('liveTimeout').which.equals(30);
+            });
+
+            it('should not change a config value of 0', function () {
+                expect(new Config({ liveTimeout: 0 })).to.have.property('liveTimeout').which.equals(0);
+            });
+
+            it('should not change a config value of null', function () {
+                expect(new Config({ liveTimeout: null })).to.have.property('liveTimeout').which.equals(null);
+            });
+
+            it('should change NaN to null', function () {
+                expect(new Config({ liveTimeout: NaN })).to.have.property('liveTimeout').which.equals(null);
+            });
+
+            it('should change undefined to null', function () {
+                expect(new Config({ liveTimeout: undefined })).to.have.property('liveTimeout').which.equals(null);
+            });
+
+            it('should change a non-number to to null', function () {
+                expect(new Config({ liveTimeout: 'z' })).to.have.property('liveTimeout').which.equals(null);
+                expect(new Config({ liveTimeout: {} })).to.have.property('liveTimeout').which.equals(null);
+            });
+        });
     });
 
     describe('aspect ratio/width', function() {
