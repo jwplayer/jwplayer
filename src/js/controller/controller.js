@@ -12,7 +12,7 @@ import ViewModel from 'view/view-model';
 import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
 import Events from 'utils/backbone.events';
-import { canAutoplay } from 'utils/can-autoplay';
+import { AUTOPLAY_DISABLED, AUTOPLAY_MUTED, canAutoplay } from 'utils/can-autoplay';
 import { OS, Features } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
@@ -20,7 +20,7 @@ import cancelable from 'utils/cancelable';
 import _ from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
-    STATE_STALLED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
+    STATE_STALLED, AUTOSTART_NOT_ALLOWED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
     CAPTIONS_LIST, CONTROLS, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
 import ProgramController from 'program/program-controller';
@@ -75,7 +75,7 @@ Object.assign(Controller.prototype, {
         _view.on('all', _trigger, _this);
 
         const _programController = new ProgramController(_model, mediaPool);
-        syncInitialModelState();
+        updateProgramSoundSettings();
         addProgramControllerListeners();
         initQoe(_model, _programController);
 
@@ -234,9 +234,11 @@ Object.assign(Controller.prototype, {
             eventsReadyQueue = null;
 
             _model.change('viewable', viewableChange);
-            _model.change('viewable', _checkPlayOnViewable);
-            _model.once('change:autostartFailed change:autostartMuted change:mute', function(model) {
-                model.off('change:viewable', _checkPlayOnViewable);
+            _model.once('change:canAutoplay', function(model) {
+                model.once('change:autostartFailed change:autostartMuted change:mute', function() {
+                    model.off('change:viewable', _checkPlayOnViewable);
+                });
+                model.change('viewable', _checkPlayOnViewable);
             });
 
             // Run _checkAutoStart() last
@@ -256,19 +258,21 @@ Object.assign(Controller.prototype, {
                 return;
             }
 
-            // Detect and store browser autoplay setting in the model.
-            const adConfig = _this._model.get('advertising');
-            canAutoplay(mediaPool, {
-                cancelable: checkAutoStartCancelable,
-                muted: _this.getMute(),
-                allowMuted: adConfig ? adConfig.autoplayadsmuted : false
-            })
-                .then(result => _model.set('canAutoplay', result))
-                .catch(function() {});
+            if (_model.get('autostart')) {
+                // Detect and store browser autoplay setting in the model.
+                const adConfig = _this._model.get('advertising');
+                canAutoplay(mediaPool, {
+                    cancelable: checkAutoStartCancelable,
+                    muted: _this.getMute(),
+                    allowMuted: adConfig ? adConfig.autoplayadsmuted : true
+                }).then(result => {
+                    _model.set('canAutoplay', result);
 
-            if (!OS.mobile && _model.get('autostart') === true) {
-                // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
-                _autoStart();
+                    // Autostart immediately if we're not waiting for the player to become viewable first.
+                    if (!_model.get('playOnViewable')) {
+                        _autoStart();
+                    }
+                }).catch(function() { });
             }
             apiQueue.flush();
         }
@@ -428,7 +432,19 @@ Object.assign(Controller.prototype, {
 
         function _autoStart() {
             const state = _model.get('state');
-            if (state === STATE_IDLE || state === STATE_PAUSED) {
+            if (!checkAutoStartCancelable.cancelled() && (state === STATE_IDLE || state === STATE_PAUSED)) {
+                const mode = _model.get('canAutoplay');
+
+                if (mode === AUTOPLAY_DISABLED) {
+                    return _this.trigger(AUTOSTART_NOT_ALLOWED);
+                }
+
+                // Only apply autostartMuted on un-muted autostart attempt.
+                if (mode === AUTOPLAY_MUTED && !_this.getMute()) {
+                    _model.set('autostartMuted', true);
+                    updateProgramSoundSettings();
+                }
+
                 _play({ reason: 'autostart' }).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
@@ -714,12 +730,6 @@ Object.assign(Controller.prototype, {
                     resolved.then(_completeHandler);
                 }, _this)
                 .on(MEDIA_ERROR, _this.triggerError, _this);
-        }
-
-        function syncInitialModelState() {
-            // Mute the video if autostarting on mobile, except for Android SDK. Otherwise, honor the model's mute value
-            _programController.mute = (_model.autoStartOnMobile() && !_model.get('sdkplatform')) || _model.get('mute');
-            _programController.volume = _model.get('volume');
         }
 
         function updateProgramSoundSettings() {
