@@ -209,7 +209,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     // Prefer the config timeout, which is allowed to be 0 and null by default
     const _staleStreamDuration =
         _playerConfig.liveTimeout !== null
-            ? this.jwConfig.liveTimeout
+            ? _playerConfig.liveTimeout
             : 3 * 10 * 1000;
 
     let _canSeek = false; // true on valid time event
