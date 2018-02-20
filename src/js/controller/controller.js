@@ -272,7 +272,10 @@ Object.assign(Controller.prototype, {
                     if (!_model.get('playOnViewable')) {
                         _autoStart();
                     }
-                }).catch(function() { });
+                }).catch(function() {
+                    // If the test failed, we will never autostart.
+                    _model.set('autostart', false);
+                });
             }
             apiQueue.flush();
         }
@@ -436,6 +439,7 @@ Object.assign(Controller.prototype, {
                 const mode = _model.get('canAutoplay');
 
                 if (mode === AUTOPLAY_DISABLED) {
+                    _model.set('autostart', false);
                     return _this.trigger(AUTOSTART_NOT_ALLOWED);
                 }
 
