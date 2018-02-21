@@ -206,7 +206,11 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     const _videotag = mediaElement;
     const visualQuality = { level: {} };
-    const _staleStreamDuration = 3 * 10 * 1000;
+    // Prefer the config timeout, which is allowed to be 0 and null by default
+    const _staleStreamDuration =
+        _playerConfig.liveTimeout !== null
+            ? _playerConfig.liveTimeout
+            : 3 * 10 * 1000;
 
     let _canSeek = false; // true on valid time event
     let _delayedSeek = 0;
@@ -768,6 +772,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     // If we're live and the buffer end has remained the same for some time, mark the stream as stale and check if the stream is over
     function checkStaleStream() {
+        // Never kill a stale live stream if the timeout was configured to 0
+        if (_staleStreamDuration === 0) {
+            return;
+        }
         var endOfBuffer = endOfRange(_videotag.buffered);
         var live = _this.isLive();
 
