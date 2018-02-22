@@ -128,7 +128,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     function triggerPlayRejected() { 
-        _model.set('playRejected', true);
+        _adProgram.model.set('playRejected', true);
     }
 
     function _loadNextItem() {
