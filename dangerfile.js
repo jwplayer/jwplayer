@@ -1,4 +1,4 @@
-import { danger, message } from 'danger';
+import { danger, error, message, schedule, warn } from 'danger';
 
 const modifiedFiles = danger.git.modified_files;
 const newFiles = danger.git.created_files;
@@ -15,16 +15,26 @@ const pr = danger.github.pr;
 
 if (touchedSrcFiles) {
     if (!touchedTestFiles) {
-        warn(`There are modified src files, but no test changes. Please add tests if you're able to.`);
+        warn(`🛠 There are modified src files, but no test changes. Add tests if you're able to.`);
     }
 }
 
 if (!pr.assignees.length && !pr.requested_reviewers.length) {
-    warn(`Please assign some reviewers or assignees.`);
+    warn(`🔎 Assign some reviewers or assignees.`);
 }
 
 if (!pr.milestone) {
-    warn(`Please set a milestone. It should be the ticket's fix version in JIRA.`);
+    warn(`🗿 Set a milestone. It should be the ticket's fix version in JIRA.`);
 }
 
+schedule(async () => {
+    await checkExactPackageVersion();
+});
+
+async function checkExactPackageVersion() {
+    const diff = await danger.git.diffForFile('package.json');
+    if (diff && diff.added && diff.added.match(/([\^~])/)) {
+        error(`🥕 Only save exact versions of a dependency, without a ~ or ^.`);
+    }
+}
 
