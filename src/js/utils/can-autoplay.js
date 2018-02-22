@@ -56,11 +56,18 @@ export const AUTOPLAY_ENABLED = 'autoplayEnabled';
 export const AUTOPLAY_MUTED = 'autoplayMuted';
 export const AUTOPLAY_DISABLED = 'autoplayDisabled';
 
+let autoplayPagePromises = {};
+
 export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted = false, timeout = 250 }) {
     const element = mediaPool.getTestElement();
+    const key = `${muted}-${allowMuted}`;
+
+    if (autoplayPagePromises[key]) {
+        return autoplayPagePromises[key];
+    }
 
     // Run the first test: autoplay with specified muted setting.
-    return startPlayback(element, { muted, timeout }).then(result => {
+    autoplayPagePromises[key] = startPlayback(element, { muted, timeout }).then(result => {
         if (cancelable.cancelled()) {
             throw new Error('Autoplay test was cancelled');
         }
@@ -74,8 +81,16 @@ export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted 
     }).then(result => {
         // Return autoplay flag.
         if (result === true) {
-            return muted ? AUTOPLAY_MUTED : AUTOPLAY_ENABLED;
+            if (muted) {
+                autoplayPagePromises[key] = null;
+                return AUTOPLAY_MUTED;
+            } else {
+                return AUTOPLAY_ENABLED;
+            }
         }
+        autoplayPagePromises[key] = null;
         return AUTOPLAY_DISABLED;
     });
+
+    return autoplayPagePromises[key];
 }
