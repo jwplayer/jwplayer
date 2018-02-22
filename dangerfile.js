@@ -20,11 +20,11 @@ if (touchedSrcFiles) {
 }
 
 if (!pr.assignees.length && !pr.requested_reviewers.length) {
-    warn(`You didn't request any assignees or reviewers. Please ask someone to review this PR.`);
+    warn(`Please assign some reviewers or assignees.`);
 }
 
 if (!pr.milestone) {
-    warn(`You didn't set a milestone. Please check the fix version in Jira and set it as the milestone; add a new milestone if it doesn't already exist.`);
+    warn(`Please set a milestone. It should be the ticket's fix version in JIRA.`);
 }
 
 
