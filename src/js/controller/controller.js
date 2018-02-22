@@ -504,11 +504,10 @@ Object.assign(Controller.prototype, {
             if (_model.get('state') === STATE_ERROR) {
                 return;
             }
+            _programController.position = pos;
             if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
                 _play(meta);
             }
-
-            _programController.position = pos;
         }
 
         function _item(index, meta) {
@@ -909,7 +908,6 @@ Object.assign(Controller.prototype, {
         const apiQueue = new ApiQueueDecorator(this, [
             'play',
             'pause',
-            'seek',
             'setCurrentAudioTrack',
             'setCurrentCaptions',
             'setCurrentQuality',

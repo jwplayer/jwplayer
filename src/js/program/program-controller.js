@@ -5,7 +5,7 @@ import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 
-import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
+import { ERROR, PLAYER_STATE, STATE_BUFFERING, STATE_IDLE } from 'events/events';
 import { Features } from '../environment/environment';
 
 /** @private Do not include in JSDocs */
@@ -536,17 +536,20 @@ class ProgramController extends Eventable {
 
     /**
      * Seeks the media to the provided position.
-     * If the media is not attached, set the item's starttime, so that when reattaching, it resumes at that time.
+     * If the media is not attached, set the item's starttime so that when reattaching, it resumes at that time.
+     * If we seek before an item loads, set the item's starttime so that when playback begins, we buffer at that time.
      * @param {number} pos - The position to start at or seek to.
      * @returns {void}
      */
     set position(pos) {
-        const { mediaController } = this;
+        const { mediaController, model } = this;
         if (!mediaController) {
             return;
         }
 
-        if (mediaController.attached) {
+        if (!mediaController.started && !mediaController.preloaded && model.get(PLAYER_STATE) === STATE_IDLE) {
+            mediaController.item.starttime = pos;
+        } else if (mediaController.attached) {
             mediaController.position = pos;
         } else {
             mediaController.item.starttime = pos;
