@@ -3,7 +3,7 @@ import { MEDIA_POOL_SIZE } from 'program/program-constants';
 import sinon from 'sinon';
 
 describe('Media Element Pool', function () {
-    const numTags = MEDIA_POOL_SIZE - 1;
+    const numTags = MEDIA_POOL_SIZE - 2; // Subtract preallocated ad & test elements.
     let mediaPool = null;
     beforeEach(function () {
         mediaPool = new MediaPool();
