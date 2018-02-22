@@ -151,6 +151,10 @@ const UI = function (elem, options) {
         }
     }
 
+    function blurHandler(evt) {
+        triggerEvent(OUT, evt);
+    }
+
     function keyHandler(evt) {
         if (isEnterKey(evt)) {
             triggerEvent(ENTER, evt);
@@ -317,7 +321,7 @@ const UI = function (elem, options) {
 
         if (options.useFocus) {
             elem.removeEventListener('focus', overHandler);
-            elem.removeEventListener('blur', outHandler);
+            elem.removeEventListener('blur', blurHandler);
         }
     };
 
