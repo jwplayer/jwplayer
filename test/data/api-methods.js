@@ -24,6 +24,7 @@ export default {
     getCurrentAudioTrack: null,
     getCurrentCaptions: null,
     getCurrentQuality: null,
+    getCurrentTime: null,
     getDuration: null,
     getEnvironment: null,
     getFullscreen: null,

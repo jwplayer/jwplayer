@@ -216,6 +216,7 @@ const Model = function() {
         this.set('playRejected', false);
         this.attributes.itemMeta = {};
         mediaModel.set('position', position);
+        mediaModel.set('currentTime', 0);
         mediaModel.set('duration', duration);
     };
 };

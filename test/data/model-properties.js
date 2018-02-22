@@ -93,6 +93,7 @@ export default {
     item: 0,
     duration: 0,
     position: 0,
+    currentTime: 0,
     flashBlocked: false,
     buffer: 0,
     itemMeta: {},
