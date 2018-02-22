@@ -14,6 +14,9 @@ export default function MediaElementPool() {
     // Reserve an element exclusively for ads
     const adElement = pool.shift();
 
+    // Reserve an element exclusively for feature testing.
+    const testElement = pool.shift();
+
     return {
         prime() {
             elements.forEach(primeMediaElementForPlayback);
@@ -27,6 +30,9 @@ export default function MediaElementPool() {
         },
         getAdElement() {
             return adElement;
+        },
+        getTestElement() {
+            return testElement;
         },
         clean(mediaElement) {
             // Try to clean the media element so that we don't see frames of the previous video when reusing a tag

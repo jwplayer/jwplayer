@@ -12,6 +12,7 @@ import ViewModel from 'view/view-model';
 import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
 import Events from 'utils/backbone.events';
+import { canAutoplay } from 'utils/can-autoplay';
 import { OS, Features } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
@@ -254,6 +255,17 @@ Object.assign(Controller.prototype, {
                 // this player has been destroyed
                 return;
             }
+
+            // Detect and store browser autoplay setting in the model.
+            const adConfig = _this._model.get('advertising');
+            canAutoplay(mediaPool, {
+                cancelable: checkAutoStartCancelable,
+                muted: _this.getMute(),
+                allowMuted: adConfig ? adConfig.autoplayadsmuted : false
+            })
+                .then(result => _model.set('canAutoplay', result))
+                .catch(function() {});
+
             if (!OS.mobile && _model.get('autostart') === true) {
                 // Autostart immediately if we're not mobile and not waiting for the player to become viewable first
                 _autoStart();
@@ -742,7 +754,7 @@ Object.assign(Controller.prototype, {
         this.getState = _getState;
         this.next = _nextUp;
         this.setConfig = (newConfig) => {
-            setConfig(_this, newConfig); 
+            setConfig(_this, newConfig);
         };
         this.setItemIndex = _setItem;
 
@@ -771,7 +783,7 @@ Object.assign(Controller.prototype, {
             updateProgramSoundSettings();
         };
         this.setPlaybackRate = (playbackRate) => {
-            _model.setPlaybackRate(playbackRate); 
+            _model.setPlaybackRate(playbackRate);
         };
         this.getProvider = () => _model.get('provider');
         this.getWidth = () => _model.get('containerWidth');
