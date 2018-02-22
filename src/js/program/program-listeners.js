@@ -59,9 +59,7 @@ export function ProviderListener(mediaController) {
                 /* falls through to update duration while media is loaded */
             case MEDIA_TIME: {
                 mediaModel.set('position', data.position);
-                if (data.metadata && data.metadata.currentTime) {
-                    mediaModel.set('currentTime', data.metadata.currentTime);
-                }
+                mediaModel.set('currentTime', data.currentTime);
                 const duration = data.duration;
                 if (_isNumber(duration) && !_isNaN(duration)) {
                     mediaModel.set('duration', duration);
