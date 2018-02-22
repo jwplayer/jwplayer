@@ -273,8 +273,11 @@ Object.assign(Controller.prototype, {
                         _autoStart();
                     }
                 }).catch(function() {
-                    // If the test failed, we will never autostart.
+                    // Never autostart if the test fails. Emit event unless test was explicitly canceled.
                     _model.set('autostart', false);
+                    if (!checkAutoStartCancelable.cancelled()) {
+                        _this.trigger(AUTOSTART_NOT_ALLOWED, { reason: 'autoplayTestFailed' });
+                    }
                 });
             }
             apiQueue.flush();
@@ -440,7 +443,7 @@ Object.assign(Controller.prototype, {
 
                 if (mode === AUTOPLAY_DISABLED) {
                     _model.set('autostart', false);
-                    return _this.trigger(AUTOSTART_NOT_ALLOWED);
+                    return _this.trigger(AUTOSTART_NOT_ALLOWED, { reason: mode });
                 }
 
                 // Only apply autostartMuted on un-muted autostart attempt.
