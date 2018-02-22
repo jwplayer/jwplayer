@@ -5,7 +5,8 @@ node_js:
 cache: yarn
 
 before_script:
-  - npm install -g grunt-cli
+  - yarn global add grunt-cli
+  - yarn danger ci
 
 script:
   - grunt
