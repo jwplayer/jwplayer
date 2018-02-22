@@ -142,11 +142,8 @@ const UI = function (elem, options) {
 
     function outHandler(evt) {
         // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
-        if (_useMouseEvents ||
-            (_supportsPointerEvents && evt.pointerType !== 'touch' && (
-                (evt.x === undefined && evt.y === undefined) ||
-                !elem.contains(document.elementFromPoint(evt.x, evt.y)))
-            )) {
+        if (_useMouseEvents || (_supportsPointerEvents && evt.pointerType !== 'touch' &&
+                !elem.contains(document.elementFromPoint(evt.x, evt.y)))) {
             triggerEvent(OUT, evt);
         }
     }
