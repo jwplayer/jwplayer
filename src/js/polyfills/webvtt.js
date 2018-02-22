@@ -415,6 +415,7 @@ function CueStyleBox(window, cue) {
         position: 'relative',
         paddingLeft: 0,
         paddingRight: 0,
+        left: 0,
         top: 0,
         bottom: 0,
         display: 'inline',
@@ -478,7 +479,7 @@ function CueStyleBox(window, cue) {
     // the right from there.
     if (!cue.vertical) {
         this.applyStyles({
-            paddingLeft: this.formatStyle(textPos, '%'),
+            left: this.formatStyle(textPos, '%'),
             width: this.formatStyle(cue.size, '%')
         });
         // Vertical box orientation; textPos is the distance from the top edge of the
@@ -495,7 +496,7 @@ function CueStyleBox(window, cue) {
         this.applyStyles({
             top: this.formatStyle(box.top, 'px'),
             bottom: this.formatStyle(box.bottom, 'px'),
-            paddingLeft: this.formatStyle(box.left, 'px'),
+            left: this.formatStyle(box.left, 'px'),
             paddingRight: this.formatStyle(box.right, 'px'),
             height: 'auto',
             width: this.formatStyle(box.width, 'px')
@@ -632,7 +633,7 @@ BoxPosition.prototype.toCSSCompatValues = function (reference) {
     return {
         top: this.top - reference.top,
         bottom: reference.bottom - this.bottom,
-        paddingLeft: this.left - reference.left,
+        left: this.left - reference.left,
         paddingRight: reference.right - this.right,
         height: this.height,
         width: this.width
@@ -787,7 +788,7 @@ function moveBoxToLinePosition(window, styleBox, containerBox, boxPositions, num
                 break;
             case 'rl':
                 styleBox.applyStyles({
-                    paddingLeft: styleBox.formatStyle(linePos, '%')
+                    left: styleBox.formatStyle(linePos, '%')
                 });
                 break;
             case 'lr':
