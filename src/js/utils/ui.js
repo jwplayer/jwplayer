@@ -100,7 +100,7 @@ const UI = function (elem, options) {
         elem.addEventListener('pointerdown', interactStartHandler, listenerOptions);
         if (options.useHover) {
             elem.addEventListener('pointerover', overHandler);
-            elem.addEventListener('pointerout', outHandler);
+            elem.addEventListener('pointerout', pointerOutHandler);
         }
         if (options.useMove) {
             elem.addEventListener('pointermove', moveHandler);
@@ -140,15 +140,18 @@ const UI = function (elem, options) {
         }
     }
 
-    function outHandler(evt) {
-        // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
-        if (_useMouseEvents || (_supportsPointerEvents && evt.pointerType !== 'touch' &&
-                !elem.contains(document.elementFromPoint(evt.x, evt.y)))) {
-            triggerEvent(OUT, evt);
+    function pointerOutHandler(evt) {
+        if (evt.pointerType !== 'touch') {
+            // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
+            const { x, y } = evt;
+            const overElement = document.elementFromPoint(x, y);
+            if (!elem.contains(overElement)) {
+                triggerEvent(OUT, evt);
+            }
         }
     }
 
-    function blurHandler(evt) {
+    function outHandler(evt) {
         triggerEvent(OUT, evt);
     }
 
@@ -305,7 +308,7 @@ const UI = function (elem, options) {
             elem.removeEventListener('pointermove', interactDragHandler);
             elem.removeEventListener('pointermove', moveHandler);
             elem.removeEventListener('pointercancel', interactEndHandler);
-            elem.removeEventListener('pointerout', outHandler);
+            elem.removeEventListener('pointerout', pointerOutHandler);
             elem.removeEventListener('pointerup', interactEndHandler);
         }
 
@@ -318,7 +321,7 @@ const UI = function (elem, options) {
 
         if (options.useFocus) {
             elem.removeEventListener('focus', overHandler);
-            elem.removeEventListener('blur', blurHandler);
+            elem.removeEventListener('blur', outHandler);
         }
     };
 
