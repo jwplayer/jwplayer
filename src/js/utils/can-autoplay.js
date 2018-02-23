@@ -54,10 +54,11 @@ export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted 
     const element = mediaPool.getTestElement();
     const key = muted ? 'muted' : `${allowMuted}`;
 
-    // Run tests only if test is not currently running, or browser setting is AUTOPLAY_ENABLED.
+    // Run test only if it is not currently running, or test previously evaluated to AUTOPLAY_ENABLED.
     if (!autoplayPagePromises[key]) {
         // Run the first test: autoplay with specified muted setting.
         autoplayPagePromises[key] = startPlayback(element, { muted }).catch((e) => {
+            // Second optional test: autoplay muted.
             if (!cancelable.cancelled() && muted === false && allowMuted) {
                 muted = true;
                 return startPlayback(element, { muted });
@@ -75,7 +76,6 @@ export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted 
         });
     }
 
-    // Run the first test: autoplay with specified muted setting.
     // If the cancelable was canceled, abort the test.
     const promise = autoplayPagePromises[key].then(result => {
         if (cancelable.cancelled()) {
