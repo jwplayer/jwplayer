@@ -221,9 +221,14 @@ export default class Controls {
 
             switch (evt.keyCode) {
                 case 27: // Esc
-                    api.setFullscreen(false);
-                    this.playerContainer.blur();
-                    this.userInactive();
+                    const related = api.getPlugin('related');
+                    if (model.get('fullscreen')) {
+                        api.setFullscreen(false);
+                        this.playerContainer.blur();
+                        this.userInactive();
+                    } else if (related) {
+                        related.close({ type: 'escape' });
+                    }
                     break;
                 case 13: // enter
                 case 32: // space
