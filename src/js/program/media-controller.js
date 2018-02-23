@@ -228,7 +228,6 @@ export default class MediaController extends Eventable {
         const mediaModelState = mediaModel.attributes;
         mediaModel.srcReset();
         mediaModelState.position = position;
-        mediaModelState.currentTime = 0;
         mediaModelState.duration = duration;
 
         this.item = item;
