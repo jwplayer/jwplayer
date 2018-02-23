@@ -256,11 +256,13 @@ const MediaModel = Model.MediaModel = function() {
 
 Object.assign(MediaModel.prototype, SimpleModel, {
     srcReset() {
-        Object.assign(this.attributes, INITIAL_MEDIA_STATE, {
+        Object.assign(this.attributes, {
             setup: false,
             started: false,
             preloaded: false,
             visualQuality: null,
+            buffer: 0,
+            currentTime: 0
         });
     }
 });
