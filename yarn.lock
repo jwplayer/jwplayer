@@ -1637,9 +1637,13 @@ commander@2.11.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
 
-commander@^2.13.0, commander@^2.9.0:
-  version "2.15.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.15.0.tgz#ad2a23a1c3b036e392469b8012cec6b33b4c1322"
+commander@^2.13.0:
+  version "2.14.1"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.14.1.tgz#2235123e37af8ca3c65df45b026dbd357b01b9aa"
+
+commander@^2.9.0:
+  version "2.12.2"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.12.2.tgz#0f5946c427ed9ec0d91a46bb9def53e54650e555"
 
 commondir@^1.0.1:
   version "1.0.1"
@@ -5375,8 +5379,8 @@ parse-asn1@^5.0.0:
     pbkdf2 "^3.0.3"
 
 parse-diff@^0.4.0:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/parse-diff/-/parse-diff-0.4.2.tgz#b173390e916564e8c70ccd37756047941e5b3ef2"
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/parse-diff/-/parse-diff-0.4.1.tgz#647687636d6bbd1028a83aee1a77c2804c810357"
 
 parse-entities@^1.0.2:
   version "1.1.1"
@@ -7287,7 +7291,13 @@ supports-color@^4.2.1, supports-color@^4.4.0:
   dependencies:
     has-flag "^2.0.0"
 
-supports-color@^5.0.0, supports-color@^5.2.0, supports-color@^5.3.0:
+supports-color@^5.0.0:
+  version "5.2.0"
+  resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-5.2.0.tgz#b0d5333b1184dd3666cbe5aa0b45c5ac7ac17a4a"
+  dependencies:
+    has-flag "^3.0.0"
+
+supports-color@^5.2.0, supports-color@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-5.3.0.tgz#5b24ac15db80fa927cf5227a4a33fd3c4c7676c0"
   dependencies:
@@ -7811,7 +7821,7 @@ vm-browserify@0.0.4, vm-browserify@~0.0.1:
   dependencies:
     indexof "0.0.1"
 
-"vm2@github:patriksimek/vm2#custom_files":
+vm2@patriksimek/vm2#custom_files:
   version "3.5.0"
   resolved "https://codeload.github.com/patriksimek/vm2/tar.gz/7e82f90ac705fc44fad044147cb0df09b4c79a57"
 
