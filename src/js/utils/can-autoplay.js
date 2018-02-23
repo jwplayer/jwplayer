@@ -84,9 +84,8 @@ export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted 
             if (muted) {
                 autoplayPagePromises[key] = null;
                 return AUTOPLAY_MUTED;
-            } else {
-                return AUTOPLAY_ENABLED;
             }
+            return AUTOPLAY_ENABLED;
         }
         autoplayPagePromises[key] = null;
         return AUTOPLAY_DISABLED;
