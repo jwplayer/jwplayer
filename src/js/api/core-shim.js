@@ -78,7 +78,8 @@ Object.assign(CoreShim.prototype, {
 
         // Assigning config properties to the model needs to be synchronous for chained get API methods
         const configuration = Config(options, persisted);
-        Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE);
+        const setupConfig = { setupConfig: Object.assign({}, options) };
+        Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE, setupConfig);
         model.getProviders = function() {
             return new Providers(configuration);
         };
