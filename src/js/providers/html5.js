@@ -351,9 +351,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             // Load event is from the same video as before
             // restart video without dispatching seek event
             _delayedSeek = -1;
+            _this.seek(startTime);
         }
 
-        if (startTime >= 0) {
+        if (startTime > 0) {
             _this.seek(startTime);
         }
 
