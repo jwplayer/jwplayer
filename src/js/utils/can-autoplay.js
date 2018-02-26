@@ -48,7 +48,7 @@ export const AUTOPLAY_ENABLED = 'autoplayEnabled';
 export const AUTOPLAY_MUTED = 'autoplayMuted';
 export const AUTOPLAY_DISABLED = 'autoplayDisabled';
 
-let autoplayPagePromises = {};
+const autoplayPagePromises = {};
 
 export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted = false, timeout = 250 }) {
     const element = mediaPool.getTestElement();
