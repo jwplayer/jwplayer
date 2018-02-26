@@ -5,30 +5,51 @@
 
 const webpack = require('webpack');
 const path = require('path');
-const webpackConfig = require('./webpack.config.js')({ release: true });
+const webpackConfig = require('./webpack.config.js')({ debug: true });
 
-const aliases = {
-    'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
-    'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
-    jquery: path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
-    sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
-    data: path.resolve(__dirname + '/test/data'),
-    mock: path.resolve(__dirname + '/test/mock')
-};
-const rules = [{
-    enforce: 'post',
-    test: /\.js$/,
-    include: /(src)\/(js)\//,
-    loader: 'istanbul-instrumenter-loader'
-}];
-const noParse = [
-    /node_modules\/sinon\//,
-    /node_modules\/jquery\//
-];
+const webpackKarmaConfig = Object.assign({}, webpackConfig, {
+    plugins: [
+        new webpack.DefinePlugin({
+            __SELF_HOSTED__: true,
+            __REPO__: '\'\'',
+            __DEBUG__: false,
+            __BUILD_VERSION__: '\'' + '7.12.0' + '\'',
+            __FLASH_VERSION__: 18.0
+        }),
+    ],
+    externals: {
+        $: {
+            commonjs: 'jquery',
+            amd: 'jquery',
+            root: '$'
+        },
+        sinon: 'sinon'
+    },
+    resolve: Object.assign({}, webpackConfig.resolve, {
+        alias: Object.assign({}, webpackConfig.resolve.alias || {}, {
+            'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
+            'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
+            jquery: path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
+            sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
+            data: path.resolve(__dirname + '/test/data'),
+            mock: path.resolve(__dirname + '/test/mock')
+        })
+    }),
+    module: Object.assign({}, webpackConfig.module, {
+        rules: [{
+            enforce: 'post',
+            test: /\.js$/,
+            include: /(src)\/(js)\//,
+            loader: 'istanbul-instrumenter-loader'
+        }].concat(webpackConfig.module.rules || []),
+        noParse: [
+            /node_modules\/sinon\//,
+            /node_modules\/jquery\//
+        ].concat(webpackConfig.module.noParse || [])
+    })
+});
 
-webpackConfig.resolve.alias = Object.assign(webpackConfig.resolve.alias || {}, aliases);
-webpackConfig.module.rules = rules.concat(webpackConfig.module.rules || []);
-webpackConfig.module.noParse = noParse.concat(webpackConfig.module.noParse || []);
+console.log(webpackKarmaConfig);
 
 module.exports = function(config) {
     const env = process.env;
@@ -86,8 +107,8 @@ module.exports = function(config) {
         captureTimeout: 120 * 1000, // default 60000
 
         files: [
-            { pattern: 'test-context.js' },
-            { pattern: 'test/files/*', included: false }
+            {pattern: 'test-context.js'},
+            {pattern: 'test/files/*', included: false}
         ],
 
         // preprocess matching files before serving them to the browser
@@ -97,32 +118,13 @@ module.exports = function(config) {
         },
 
         coverageIstanbulReporter: {
-            reports: [ 'text-summary', 'html' ],
+            reports: ['text-summary', 'html'],
             dir: 'reports/coverage',
             fixWebpackSourcePaths: true
         },
 
-        webpack: {
-            resolve: webpackConfig.resolve,
-            module: webpackConfig.module,
-            plugins: [
-                new webpack.DefinePlugin({
-                    __SELF_HOSTED__: true,
-                    __REPO__: '\'\'',
-                    __DEBUG__: false,
-                    __BUILD_VERSION__: '\'' + '7.12.0' + '\'',
-                    __FLASH_VERSION__: 18.0
-                }),
-            ],
-            externals: {
-                $: {
-                    commonjs: 'jquery',
-                    amd: 'jquery',
-                    root: '$'
-                },
-                sinon: 'sinon'
-            }
-        },
+        webpack: webpackKarmaConfig,
+
         // number of browsers to run at once
         concurrency: Infinity
     });

@@ -2,13 +2,13 @@ import { chunkLoadErrorHandler } from '../api/core-loader';
 
 let controlsPromise = null;
 
-export const module = {};
+export const ControlsLoader = {};
 
-export function load() {
+export function loadControls() {
     if (!controlsPromise) {
         controlsPromise = require.ensure(['view/controls/controls'], function (require) {
             const ControlsModule = require('view/controls/controls').default;
-            module.controls = ControlsModule;
+            ControlsLoader.controls = ControlsModule;
             return ControlsModule;
         }, function() {
             controlsPromise = null;

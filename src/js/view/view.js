@@ -8,7 +8,7 @@ import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-anima
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
-import * as ControlsLoader from 'controller/controls-loader';
+import { ControlsLoader, loadControls } from 'controller/controls-loader';
 import {
     STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
     RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY } from 'events/events';
@@ -309,10 +309,9 @@ function View(_api, _model) {
 
     function changeControls(model, enable) {
         if (enable) {
-            ControlsModule = ControlsLoader.module.controls;
+            ControlsModule = ControlsLoader.controls;
             if (!ControlsModule) {
-                ControlsLoader.load()
-                    .then(function (Controls) {
+                loadControls().then(function (Controls) {
                         ControlsModule = Controls;
                         // Check that controls is still true after the loader promise resolves
                         if (model.get('controls')) {

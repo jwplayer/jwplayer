@@ -1,7 +1,7 @@
-@import "vars";
-@import (reference) "mixins/rect";
-@import (reference) "mixins/position";
-@import (reference) "mixins/pseudo";
+@import "vars.less";
+@import (reference) "mixins/rect.less";
+@import (reference) "mixins/position.less";
+@import (reference) "mixins/pseudo.less";
 
 .inset-controlbar() {
     &:not(.jw-flag-audio-player) {
@@ -80,7 +80,7 @@
 /* Mixin for common skin styles with variable colors */
 /* stylelint-disable selector-max-id */
 #namespace() {
-    @import "vars";
+    @import "vars.less";
     .basic-skin-styles() {
         .jw-background-color {
             background: @controlbar-background;
