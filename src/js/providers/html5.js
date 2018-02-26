@@ -347,15 +347,13 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             if (previousSource) {
                 _videotag.load();
             }
-
         } else if (startTime === 0 && _videotag.currentTime > 0) {
             // Load event is from the same video as before
             // restart video without dispatching seek event
             _delayedSeek = -1;
-            _this.seek(startTime);
         }
 
-        if (startTime > 0) {
+        if (startTime >= 0) {
             _this.seek(startTime);
         }
 
@@ -475,7 +473,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     this.load = function(item) {
         _setLevels(item.sources);
-        _completeLoad(item.starttime || 0, item.duration || 0);
+        _completeLoad(item.starttime, item.duration || 0);
         this.setupSideloadedTracks(item.tracks);        
     };
 
