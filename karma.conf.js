@@ -8,6 +8,9 @@ const path = require('path');
 const webpackConfig = require('./webpack.config.js')({ debug: true });
 
 const webpackKarmaConfig = Object.assign({}, webpackConfig, {
+    entry: {
+        test: './test-context.js'
+    },
     plugins: [
         new webpack.DefinePlugin({
             __SELF_HOSTED__: true,
@@ -15,6 +18,9 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
             __DEBUG__: false,
             __BUILD_VERSION__: '\'' + '7.12.0' + '\'',
             __FLASH_VERSION__: 18.0
+        }),
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1,
         }),
     ],
     externals: {
@@ -48,8 +54,6 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
         ].concat(webpackConfig.module.noParse || [])
     })
 });
-
-console.log(webpackKarmaConfig);
 
 module.exports = function(config) {
     const env = process.env;
@@ -107,8 +111,8 @@ module.exports = function(config) {
         captureTimeout: 120 * 1000, // default 60000
 
         files: [
-            {pattern: 'test-context.js'},
-            {pattern: 'test/files/*', included: false}
+            { pattern: 'test-context.js' },
+            { pattern: 'test/files/*', included: false }
         ],
 
         // preprocess matching files before serving them to the browser
