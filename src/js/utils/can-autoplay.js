@@ -1,4 +1,4 @@
-// https://github.com/video-dev/can-autoplay/ (modified)
+// https://github.com/video-dev/can-autoplay/tree/v2.2.1 (modified)
 //
 // MIT License
 
