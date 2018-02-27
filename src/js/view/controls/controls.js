@@ -161,21 +161,25 @@ export default class Controls {
             this.div.insertBefore(settingsMenu.element(), controlbar.element());
         }
 
-        // Unmute Autoplay Button. Ignore iOS9. Muted autoplay is supported in iOS 10+
-        if (model.get('autostartMuted')) {
-            const unmuteCallback = () => this.unmuteAutoplay(api, model);
-            this.mute = button('jw-autostart-mute jw-off', unmuteCallback, model.get('localization').unmute,
-                [cloneIcon('volume-0')]);
-            this.mute.show();
-            this.div.appendChild(this.mute.element());
-            // Set mute state in the controlbar
-            controlbar.renderVolume(true, model.get('volume'));
-            // Hide the controlbar until the autostart flag is removed
-            utils.addClass(this.playerContainer, 'jw-flag-autostart');
+        // Unmute Autoplay Button.
+        const setupUnmuteAutoplayButton = (_model) => {
+            if (_model.get('autostartMuted')) {
+                const unmuteCallback = () => this.unmuteAutoplay(api, _model);
+                this.mute = button('jw-autostart-mute jw-off', unmuteCallback, _model.get('localization').unmute,
+                    [cloneIcon('volume-0')]);
+                this.mute.show();
+                this.div.appendChild(this.mute.element());
+                // Set mute state in the controlbar
+                controlbar.renderVolume(true, _model.get('volume'));
+                // Hide the controlbar until the autostart flag is removed
+                utils.addClass(this.playerContainer, 'jw-flag-autostart');
 
-            model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback, this);
-            this.unmuteCallback = unmuteCallback;
-        }
+                _model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback, this);
+                this.unmuteCallback = unmuteCallback;
+            }
+        };
+        model.once('change:autostartMuted', setupUnmuteAutoplayButton);
+        setupUnmuteAutoplayButton(model);
 
         // Keyboard Commands
         function adjustSeek(amount) {
