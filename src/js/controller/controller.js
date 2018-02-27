@@ -25,6 +25,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
     CAPTIONS_LIST, CONTROLS, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
+import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -161,6 +162,12 @@ Object.assign(Controller.prototype, {
                 const minDvrWindow = model.get('minDvrWindow');
                 const type = streamType(duration, minDvrWindow);
                 model.setStreamType(type);
+            });
+            mediaModel.on('change:position', function (changedMediaModel, position) {
+                if (!_programController.backgroundLoading
+                    && (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET)) {
+                    _programController.backgroundLoad(_model.get('item') + 1);
+                }
             });
         });
 

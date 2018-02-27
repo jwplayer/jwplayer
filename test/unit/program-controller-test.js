@@ -101,7 +101,7 @@ describe('ProgramController', function () {
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
@@ -117,7 +117,7 @@ describe('ProgramController', function () {
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.backgroundActiveMedia();
                 providerEvents.forEach(event => {
@@ -133,7 +133,7 @@ describe('ProgramController', function () {
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.attached = false;
                 providerEvents.forEach(event => {
@@ -149,7 +149,7 @@ describe('ProgramController', function () {
         programController.stopVideo();
         const itemPromise = programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
                 providerEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
@@ -165,7 +165,7 @@ describe('ProgramController', function () {
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.backgroundActiveMedia();
                 providerEvents.forEach(event => {
@@ -183,7 +183,7 @@ describe('ProgramController', function () {
         programController.stopVideo();
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.attached = false;
                 providerEvents.forEach(event => {
@@ -203,7 +203,7 @@ describe('ProgramController', function () {
         sinon.spy(model, 'trigger');
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
                 expect(model.trigger).to.have.callCount(backgroundLoading ? 6 : 5);
                 expect(model.trigger.firstCall).to.have.been.calledWith('change:playlistItem');
                 if (backgroundLoading) {
@@ -214,13 +214,13 @@ describe('ProgramController', function () {
                 expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:renderCaptionsNatively');
                 call++;
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
-                expect(model.trigger.lastCall).to.have.been.calledImmediatelyAfter(provider.init.firstCall);
+                expect(model.trigger.lastCall).to.have.been.calledAfter(provider.setContainer.firstCall);
                 expect(provider.init).to.have.callCount(1);
                 expect(provider.load).to.have.callCount(0);
             })
             .then(() => programController.setActiveItem(1))
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
                 expect(model.trigger).to.have.callCount(backgroundLoading ? 12 : 11);
                 expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:item');
                 expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:playlistItem');
@@ -228,7 +228,7 @@ describe('ProgramController', function () {
                 expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:mediaModel');
                 expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:provider');
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
-                expect(model.trigger.lastCall).to.have.been.calledImmediatelyAfter(provider.init.secondCall);
+                expect(model.trigger.lastCall).to.have.been.calledAfter(provider.init.secondCall);
                 expect(provider.init).to.have.callCount(2);
                 expect(provider.load).to.have.callCount(0);
             });
@@ -237,7 +237,7 @@ describe('ProgramController', function () {
     it('updates the model', function() {
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 sinon.spy(model, 'set');
                 sinon.spy(model, 'trigger');
@@ -265,7 +265,7 @@ describe('ProgramController', function () {
     it('does not updates the model when provider is backgrounded', function() {
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.backgroundActiveMedia();
                 sinon.spy(model, 'set');
@@ -285,7 +285,7 @@ describe('ProgramController', function () {
     it('does not updates the model when provider is detached', function() {
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.attached = false;
                 sinon.spy(model, 'set');
@@ -305,7 +305,7 @@ describe('ProgramController', function () {
     it('updates the model when provider is foregrounded', function() {
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.backgroundActiveMedia();
                 sinon.spy(model, 'set');
@@ -333,7 +333,7 @@ describe('ProgramController', function () {
     it('updates the model when provider is reattached', function() {
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.attached = false;
                 sinon.spy(model, 'set');
@@ -361,7 +361,7 @@ describe('ProgramController', function () {
         programController.providerController.choose = () => MockVideolessProvider;
         return programController.setActiveItem(0)
             .then(function () {
-                const provider = programController.activeProvider;
+                const provider = programController.mediaController.provider;
 
                 programController.backgroundActiveMedia();
                 sinon.spy(model, 'set');

@@ -3,6 +3,7 @@ import ProgramController from 'program/program-controller';
 import MediaController from 'program/media-controller';
 import MockProvider from 'mock/mock-provider';
 import MediaElementPool from 'program/media-element-pool';
+import Config from 'api/config';
 import sinon from 'sinon';
 
 const defaultConfig = {
@@ -23,7 +24,7 @@ describe('Background Loading', function () {
     let mediaPool = null;
 
     beforeEach(function () {
-        config = Object.assign({}, defaultConfig);
+        config = Config(Object.assign({}, defaultConfig));
         model = new Model().setup(config);
         container = document.createElement('div');
         model.attributes.mediaContainer = container;
@@ -107,7 +108,7 @@ describe('Background Loading', function () {
 
             programController.backgroundActiveMedia();
             expect(programController.mediaController).to.equal(null);
-            expect(programController.backgroundMedia).to.equal(mediaController);
+            expect(programController.background.loadedMedia).to.equal(mediaController);
             expect(mediaController.background).to.equal(true);
         });
 
@@ -123,7 +124,7 @@ describe('Background Loading', function () {
 
         it('should do nothing if there is no active media', function () {
             programController.backgroundActiveMedia();
-            expect(programController.backgroundMedia).to.equal(null);
+            expect(programController.background.loadedMedia).to.equal(null);
         });
 
         it('should replace existing background media if already present', function () {
@@ -138,7 +139,7 @@ describe('Background Loading', function () {
             programController.backgroundActiveMedia();
 
             expect(programController.mediaController).to.equal(null);
-            expect(programController.backgroundMedia).to.equal(newMediaController);
+            expect(programController.background.loadedMedia).to.equal(newMediaController);
             expect(mediaController.destroy.calledOnce).to.equal(true);
             expect(mediaPool.recycle.calledOnce).to.equal(true);
         });
@@ -172,7 +173,11 @@ describe('Background Loading', function () {
             programController.restoreBackgroundMedia();
             expect(programController._setActiveMedia.calledOnce).to.equal(false);
             expect(mediaPool.recycle.calledOnce).to.equal(true);
-            expect(programController.backgroundMedia).to.equal(null);
+            expect(programController.background.loadedMedia).to.equal(null);
         });
+    });
+
+    describe('programController.backgroundLoad()', function () {
+
     });
 });

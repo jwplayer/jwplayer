@@ -663,11 +663,11 @@ function View(_api, _model) {
             }
         }
 
-        cancelAnimationFrame(_stateClassRequestId);
+        clearTimeout(_stateClassRequestId);
         if (newState === STATE_PLAYING) {
             _stateUpdate(newState);
         } else {
-            _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(newState));
+            _stateClassRequestId = setTimeout(() => _stateUpdate(newState), 16 * 5);
         }
     }
 

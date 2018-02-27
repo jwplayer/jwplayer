@@ -17,6 +17,7 @@ export default class MockProvider extends MockDefault {
         sinon.spy(this, 'load');
         sinon.spy(this, 'play');
         sinon.spy(this, 'pause');
+        sinon.spy(this, 'setContainer');
     }
 
     getName() {
