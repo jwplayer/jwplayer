@@ -92,7 +92,7 @@ export function canAutoplay(mediaPool, { cancelable, muted = false, allowMuted =
     // Return playback promise, or timeout.
     let timeoutId;
     const timer = new Promise((resolve, reject) => {
-        timeout = setTimeout(() => {
+        timeoutId = setTimeout(() => {
             autoplayPagePromises[key] = null; // Clear cache.
             const error = new Error('Autoplay test timed out');
             error.reason = 'timeout';

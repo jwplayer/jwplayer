@@ -234,13 +234,6 @@ Object.assign(Controller.prototype, {
             eventsReadyQueue = null;
 
             _model.change('viewable', viewableChange);
-            _model.once('change:canAutoplay', function(model) {
-                model.once('change:autostartFailed change:autostartMuted change:mute', function() {
-                    model.off('change:viewable', _checkPlayOnViewable);
-                });
-                model.change('viewable', _checkPlayOnViewable);
-            });
-
             _model.change('viewable', _checkPlayOnViewable);
             _model.once('change:autostartFailed change:autostartMuted change:mute', function(model) {
                 model.off('change:viewable', _checkPlayOnViewable);
@@ -441,24 +434,22 @@ Object.assign(Controller.prototype, {
                 // Only apply autostartMuted on un-muted autostart attempt.
                 if (_model.get('canAutoplay') === AUTOPLAY_MUTED && !_this.getMute()) {
                     _model.set('autostartMuted', true);
-                    updateProgramSoundSettings();
                 }
 
-                return _play({ reason: 'autostart' }).catch(error => {
+                return _play({ reason: 'autostart' }).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
                     }
                     _actionOnAttach = null;
-                    error.reason = 'playAttemptFailed';
-                    throw error;
                 });
 
             }).catch(error => {
-                const { reason } = error;
                 _model.set('canAutoplay', AUTOPLAY_DISABLED);
-                // Never autostart if the test fails. Emit event unless test was explicitly canceled.
                 _model.set('autostart', false);
+
+                // Emit event unless test was explicitly canceled.
                 if (!checkAutoStartCancelable.cancelled()) {
+                    const { reason } = error;
                     _this.trigger(AUTOSTART_NOT_ALLOWED, {
                         reason,
                         error
