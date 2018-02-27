@@ -20,7 +20,9 @@ const Setup = function(_model) {
 
         const timeout = new Promise((resolve, reject) => {
             _setupFailureTimeout = setTimeout(() => {
-                reject(SetupError(Code.SETUP_TIMEOUT));
+                const error = SetupError(Code.SETUP_TIMEOUT);
+                error.developerMessage = `Setup took longer than ${SETUP_TIMEOUT_SECONDS} seconds to complete.`;
+                reject(error);
             }, SETUP_TIMEOUT_SECONDS * 1000);
             const timeoutCancelled = () => {
                 clearTimeout(_setupFailureTimeout);
