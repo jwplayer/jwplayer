@@ -423,7 +423,7 @@ Object.assign(Controller.prototype, {
             }
 
             // Detect and store browser autoplay setting in the model.
-            const adConfig = _this._model.get('advertising');
+            const adConfig = _model.get('advertising');
             canAutoplay(mediaPool, {
                 cancelable: checkAutoStartCancelable,
                 muted: _this.getMute(),
@@ -442,7 +442,6 @@ Object.assign(Controller.prototype, {
                     }
                     _actionOnAttach = null;
                 });
-
             }).catch(error => {
                 _model.set('canAutoplay', AUTOPLAY_DISABLED);
                 _model.set('autostart', false);
