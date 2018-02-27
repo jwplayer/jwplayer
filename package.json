@@ -5,9 +5,7 @@
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
   "license": "CC-BY-NC-SA-3.0",
-  "dependencies": {
-    "jwplayer-errors": "^2.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "async": "2.6.0",
     "autoprefixer": "7.2.4",
@@ -37,6 +35,7 @@
     "istanbul-instrumenter-loader": "3.0.0",
     "jquery": "3.2.1",
     "jsdoc": "3.5.5",
+    "jwplayer-errors": "^2.0.0",
     "karma": "2.0.0",
     "karma-browserstack-launcher": "1.3.0",
     "karma-chai": "0.1.0",

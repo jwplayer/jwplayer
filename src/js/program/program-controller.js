@@ -7,6 +7,7 @@ import Eventable from 'utils/eventable';
 
 import { ERROR, PLAYER_STATE, STATE_BUFFERING, STATE_IDLE } from 'events/events';
 import { Features } from '../environment/environment';
+import { SetupError, Code } from 'jwplayer-errors';
 
 /** @private Do not include in JSDocs */
 
@@ -49,7 +50,7 @@ class ProgramController extends Eventable {
         this._destroyBackgroundMedia();
         const source = getSource(item);
         if (!source) {
-            return Promise.reject('No media');
+            return Promise.reject(SetupError(Code.NO_MEDIA));
         }
 
         if (mediaController) {
@@ -367,7 +368,7 @@ class ProgramController extends Eventable {
                 // The provider we need couldn't be loaded
                 if (!ProviderConstructor) {
                     this._destroyActiveMedia();
-                    throw Error(`Failed to load media`);
+                    throw SetupError(Code.MEDIA_LOAD_FAILED);
                 }
                 return ProviderConstructor;
             });
