@@ -212,6 +212,17 @@ export default class Controls {
             api.setVolume(newVol);
         }
 
+        function onEscape() {
+            const related = api.getPlugin('related');
+            if (model.get('fullscreen')) {
+                api.setFullscreen(false);
+                this.playerContainer.blur();
+                this.userInactive();
+            } else if (related) {
+                related.close({ type: 'escape' });
+            }
+        }
+
         const handleKeydown = (evt) => {
             // If Meta keys return
             if (evt.ctrlKey || evt.metaKey) {
@@ -221,14 +232,7 @@ export default class Controls {
 
             switch (evt.keyCode) {
                 case 27: // Esc
-                    const related = api.getPlugin('related');
-                    if (model.get('fullscreen')) {
-                        api.setFullscreen(false);
-                        this.playerContainer.blur();
-                        this.userInactive();
-                    } else if (related) {
-                        related.close({ type: 'escape' });
-                    }
+                    onEscape();
                     break;
                 case 13: // enter
                 case 32: // space
