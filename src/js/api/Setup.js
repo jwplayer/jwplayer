@@ -2,6 +2,7 @@ import loadCoreBundle from 'api/core-loader';
 import startSetup from 'api/setup-steps';
 import loadPlugins from 'plugins/plugins';
 import Promise from 'polyfills/promise';
+import { SetupError } from 'jwplayer-errors';
 
 const SETUP_TIMEOUT_SECONDS = 30;
 

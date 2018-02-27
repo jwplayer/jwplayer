@@ -5,7 +5,9 @@
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
   "license": "CC-BY-NC-SA-3.0",
-  "dependencies": {},
+  "dependencies": {
+    "jwplayer-errors": "^2.0.0"
+  },
   "devDependencies": {
     "async": "2.6.0",
     "autoprefixer": "7.2.4",
