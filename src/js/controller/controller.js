@@ -234,11 +234,9 @@ Object.assign(Controller.prototype, {
             eventsReadyQueue = null;
 
             _model.change('viewable', viewableChange);
-            _model.once('change:canAutoplay', function(model) {
-                model.once('change:autostartFailed change:autostartMuted change:mute', function() {
-                    model.off('change:viewable', _checkPlayOnViewable);
-                });
-                model.change('viewable', _checkPlayOnViewable);
+            _model.change('viewable', _checkPlayOnViewable);
+            _model.once('change:autostartFailed change:autostartMuted change:mute', function(model) {
+                model.off('change:viewable', _checkPlayOnViewable);
             });
 
             // Run _checkAutoStart() last
@@ -258,27 +256,9 @@ Object.assign(Controller.prototype, {
                 return;
             }
 
-            if (_model.get('autostart')) {
-                // Detect and store browser autoplay setting in the model.
-                const adConfig = _this._model.get('advertising');
-                canAutoplay(mediaPool, {
-                    cancelable: checkAutoStartCancelable,
-                    muted: _this.getMute(),
-                    allowMuted: adConfig ? adConfig.autoplayadsmuted : true
-                }).then(result => {
-                    _model.set('canAutoplay', result);
-
-                    // Autostart immediately if we're not waiting for the player to become viewable first.
-                    if (!_model.get('playOnViewable')) {
-                        _autoStart();
-                    }
-                }).catch(function() {
-                    // Never autostart if the test fails. Emit event unless test was explicitly canceled.
-                    _model.set('autostart', false);
-                    if (!checkAutoStartCancelable.cancelled()) {
-                        _this.trigger(AUTOSTART_NOT_ALLOWED, { reason: 'autoplayTestFailed' });
-                    }
-                });
+            // Autostart immediately if we're not waiting for the player to become viewable first.
+            if (!_model.get('playOnViewable')) {
+                _autoStart();
             }
             apiQueue.flush();
         }
@@ -438,27 +418,44 @@ Object.assign(Controller.prototype, {
 
         function _autoStart() {
             const state = _model.get('state');
-            if (!checkAutoStartCancelable.cancelled() && (state === STATE_IDLE || state === STATE_PAUSED)) {
-                const mode = _model.get('canAutoplay');
+            if (state !== STATE_IDLE && state !== STATE_PAUSED) {
+                return;
+            }
 
-                if (mode === AUTOPLAY_DISABLED) {
-                    _model.set('autostart', false);
-                    return _this.trigger(AUTOSTART_NOT_ALLOWED, { reason: mode });
-                }
+            // Detect and store browser autoplay setting in the model.
+            const adConfig = _this._model.get('advertising');
+            canAutoplay(mediaPool, {
+                cancelable: checkAutoStartCancelable,
+                muted: _this.getMute(),
+                allowMuted: adConfig ? adConfig.autoplayadsmuted : true
+            }).then(result => {
+                _model.set('canAutoplay', result);
 
                 // Only apply autostartMuted on un-muted autostart attempt.
-                if (mode === AUTOPLAY_MUTED && !_this.getMute()) {
+                if (_model.get('canAutoplay') === AUTOPLAY_MUTED && !_this.getMute()) {
                     _model.set('autostartMuted', true);
-                    updateProgramSoundSettings();
                 }
 
-                _play({ reason: 'autostart' }).catch(() => {
+                return _play({ reason: 'autostart' }).catch(() => {
                     if (!_this._instreamAdapter) {
                         _model.set('autostartFailed', true);
                     }
                     _actionOnAttach = null;
                 });
-            }
+
+            }).catch(error => {
+                _model.set('canAutoplay', AUTOPLAY_DISABLED);
+                _model.set('autostart', false);
+
+                // Emit event unless test was explicitly canceled.
+                if (!checkAutoStartCancelable.cancelled()) {
+                    const { reason } = error;
+                    _this.trigger(AUTOSTART_NOT_ALLOWED, {
+                        reason,
+                        error
+                    });
+                }
+            });
         }
 
         function _stop(internal) {
