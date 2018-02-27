@@ -2,7 +2,7 @@ import loadCoreBundle from 'api/core-loader';
 import startSetup from 'api/setup-steps';
 import loadPlugins from 'plugins/plugins';
 import Promise from 'polyfills/promise';
-import { SetupError } from 'jwplayer-errors';
+import { SetupError, Code } from 'jwplayer-errors';
 
 const SETUP_TIMEOUT_SECONDS = 30;
 
@@ -20,7 +20,7 @@ const Setup = function(_model) {
 
         const timeout = new Promise((resolve, reject) => {
             _setupFailureTimeout = setTimeout(() => {
-                reject(new Error(`Setup Timeout Error: Setup took longer than ${SETUP_TIMEOUT_SECONDS} seconds to complete.`));
+                reject(SetupError(Code.SETUP_TIMEOUT));
             }, SETUP_TIMEOUT_SECONDS * 1000);
             const timeoutCancelled = () => {
                 clearTimeout(_setupFailureTimeout);

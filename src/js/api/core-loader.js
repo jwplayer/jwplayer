@@ -3,6 +3,7 @@ import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import { module as ControlsModule } from 'controller/controls-loader';
 import { resolved } from 'polyfills/promise';
+import { SetupError, Code } from 'jwplayer-errors';
 
 let bundlePromise = null;
 
@@ -17,7 +18,7 @@ export default function loadCoreBundle(model) {
 
 export function chunkLoadErrorHandler(/* error */) {
     // Webpack require.ensure error: "Loading chunk 3 failed"
-    throw new Error('Network error');
+    throw SetupError(Code.NETWORK_ERROR);
 }
 
 export function selectBundle(model) {
