@@ -162,8 +162,8 @@ export default class Controls {
         }
 
         // Unmute Autoplay Button.
-        model.once('change:autostartMuted', (_model, muted) => {
-            if (muted) {
+        const setupUnmuteAutoplayButton = (_model) => {
+            if (_model.get('autostartMuted')) {
                 const unmuteCallback = () => this.unmuteAutoplay(api, _model);
                 this.mute = button('jw-autostart-mute jw-off', unmuteCallback, _model.get('localization').unmute,
                     [cloneIcon('volume-0')]);
@@ -177,7 +177,9 @@ export default class Controls {
                 _model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback, this);
                 this.unmuteCallback = unmuteCallback;
             }
-        });
+        };
+        model.once('change:autostartMuted', setupUnmuteAutoplayButton);
+        setupUnmuteAutoplayButton(model);
 
         // Keyboard Commands
         function adjustSeek(amount) {
