@@ -321,7 +321,6 @@ export default class Controlbar {
         new UI(this.el).on('click tap drag', function () {
             this.trigger('userAction');
         }, this);
-
         _.each(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);
