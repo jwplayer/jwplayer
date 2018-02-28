@@ -162,6 +162,11 @@ export const AD_TIME = 'adTime';
 // Events
 
 /**
+ * Triggered when the browsers' autoplay setting prohibits autostarting playback.
+ */
+export const AUTOSTART_NOT_ALLOWED = 'autostartNotAllowed';
+
+/**
  * Event triggered when media playback ends because the last segment has been played.
 */
 export const MEDIA_COMPLETE = STATE_COMPLETE;

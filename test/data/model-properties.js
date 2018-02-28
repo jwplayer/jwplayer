@@ -100,5 +100,6 @@ export default {
     castAvailable: false,
     qualityLabels: undefined,
     itemReady: false,
-    liveTimeout: null
+    liveTimeout: null,
+    setupConfig: {},
 };

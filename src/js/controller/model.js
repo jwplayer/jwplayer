@@ -1,4 +1,4 @@
-import { Browser, OS } from 'environment/environment';
+import { OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
@@ -173,27 +173,6 @@ const Model = function() {
         this.persistCaptionsTrack();
     };
 
-    function _autoStartSupportedIOS() {
-        if (!OS.iOS) {
-            return false;
-        }
-        // Autostart only supported in iOS 10 or higher - check if the version is 9 or less
-        return OS.version.major >= 10;
-    }
-
-    function platformCanAutostart() {
-        var autostartAdsIsEnabled = (!_this.get('advertising') || _this.get('advertising').autoplayadsmuted);
-        var iosBrowserIsSupported = _autoStartSupportedIOS() && (Browser.safari || Browser.chrome || Browser.facebook);
-        var androidBrowserIsSupported = OS.android && Browser.chrome;
-        var mobileBrowserIsSupported = (iosBrowserIsSupported || androidBrowserIsSupported);
-        var isAndroidSdk = _this.get('sdkplatform') === 1;
-        return (!_this.get('sdkplatform') && autostartAdsIsEnabled && mobileBrowserIsSupported) || isAndroidSdk;
-    }
-
-    this.autoStartOnMobile = function() {
-        return this.get('autostart') && platformCanAutostart();
-    };
-
     // Mobile players always wait to become viewable.
     // Desktop players must have autostart set to viewable
     this.setAutoStart = function(autoStart) {
@@ -201,11 +180,7 @@ const Model = function() {
             this.set('autostart', autoStart);
         }
 
-        const autoStartOnMobile = this.autoStartOnMobile();
-        const isAndroidSdk = _this.get('sdkplatform') === 1;
-        if (autoStartOnMobile && !isAndroidSdk) {
-            this.set('autostartMuted', true);
-        }
+        const autoStartOnMobile = OS.mobile && this.get('autostart');
         this.set('playOnViewable', autoStartOnMobile || this.get('autostart') === 'viewable');
     };
 

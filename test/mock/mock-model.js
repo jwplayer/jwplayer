@@ -70,13 +70,6 @@ Object.assign(MockModel.prototype, SimpleModel, {
             preload: 'metadata'
         }, configuration);
 
-
-        if (configuration.autostartMobile) {
-            this.autoStartOnMobile = function() {
-                return true;
-            };
-        }
-
         this.mediaController = Object.assign({}, Events);
         this.mediaModel = new MediaModel(this);
         this.attributes.mediaModel = this.mediaModel;
@@ -140,10 +133,6 @@ Object.assign(MockModel.prototype, SimpleModel, {
 
     getVideo() {
         return this.get('provider');
-    },
-
-    autoStartOnMobile() {
-        return false;
     },
 
     setAutoStart() {
