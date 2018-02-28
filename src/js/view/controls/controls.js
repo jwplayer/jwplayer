@@ -3,7 +3,7 @@ import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
-import { now } from 'utils/clock';
+import { now } from 'utils/date';
 import button from 'view/controls/components/button';
 import Controlbar from 'view/controls/controlbar';
 import DisplayContainer from 'view/controls/display-container';
@@ -413,7 +413,7 @@ export default class Controls {
     userInactive() {
         clearTimeout(this.activeTimeout);
         this.activeTimeout = -1;
-        const remainingTime = now() - this.inactiveTime;
+        const remainingTime = this.inactiveTime - now();
         if (this.inactiveTime && remainingTime > 16) {
             this.activeTimeout = setTimeout(() => this.userInactive(), remainingTime);
             return;
