@@ -1,4 +1,4 @@
-// https://github.com/video-dev/can-autoplay/ (modified)
+// https://github.com/video-dev/can-autoplay/tree/v2.2.1 (modified)
 //
 // MIT License
 
@@ -50,7 +50,7 @@ export const AUTOPLAY_DISABLED = 'autoplayDisabled';
 
 const autoplayPagePromises = {};
 
-export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted = false, timeout = 250 }) {
+export function canAutoplay(mediaPool, { cancelable, muted = false, allowMuted = false, timeout = 10000 }) {
     const element = mediaPool.getTestElement();
     const key = muted ? 'muted' : `${allowMuted}`;
 
@@ -70,23 +70,34 @@ export function canAutoplay (mediaPool, { cancelable, muted = false, allowMuted 
                 return AUTOPLAY_MUTED;
             }
             return AUTOPLAY_ENABLED;
-        }).catch(() => {
+        }).catch(error => {
+            clearTimeout(timeoutId);
             autoplayPagePromises[key] = null; // Clear cache.
-            return AUTOPLAY_DISABLED;
+            error.reason = AUTOPLAY_DISABLED;
+            throw error;
         });
     }
 
     // If the cancelable was canceled, abort the test.
     const promise = autoplayPagePromises[key].then(result => {
+        clearTimeout(timeoutId);
         if (cancelable.cancelled()) {
-            throw new Error('Autoplay test was cancelled');
+            const error = new Error('Autoplay test was cancelled');
+            error.reason = 'cancelled';
+            throw error;
         }
         return result;
     });
 
     // Return playback promise, or timeout.
+    let timeoutId;
     const timer = new Promise((resolve, reject) => {
-        setTimeout(reject, timeout, new Error('Autoplay test timed out'));
+        timeoutId = setTimeout(() => {
+            autoplayPagePromises[key] = null; // Clear cache.
+            const error = new Error('Autoplay test timed out');
+            error.reason = 'timeout';
+            reject(error);
+        }, timeout);
     });
     return Promise.race([ promise, timer ]);
 }
