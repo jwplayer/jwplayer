@@ -19,7 +19,7 @@ export function loadPlaylist(_model) {
             });
             playlistLoader.on(ERROR, err => {
                 setPlaylistAttributes(_model, [], {});
-                const error = SetupError(PLAYLIST_LOAD_FAILED);
+                const error = SetupError(Code.PLAYLIST_LOAD_FAILED);
                 error.developerMessage = err.message;
                 reject(error);
             });
