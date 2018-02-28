@@ -3,6 +3,7 @@ import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
+import { now } from 'utils/clock';
 import button from 'view/controls/components/button';
 import Controlbar from 'view/controls/controlbar';
 import DisplayContainer from 'view/controls/display-container';
@@ -39,6 +40,7 @@ export default class Controls {
         // Alphabetic order
         // Any property on the prototype should be initialized here first
         this.activeTimeout = -1;
+        this.inactiveTime = 0;
         this.context = context;
         this.controlbar = null;
         this.displayContainer = null;
@@ -303,6 +305,7 @@ export default class Controls {
         }
 
         clearTimeout(this.activeTimeout);
+        this.activeTimeout = -1;
 
         if (this.div.parentNode) {
             utils.removeClass(this.playerContainer, 'jw-flag-touch');
@@ -390,9 +393,15 @@ export default class Controls {
     }
 
     userActive(timeout = ACTIVE_TIMEOUT) {
-        clearTimeout(this.activeTimeout);
-        if (timeout) {
-            this.activeTimeout = setTimeout(() => this.userInactive(), timeout);
+        if (timeout > 0) {
+            this.inactiveTime = now() + timeout;
+            if (this.activeTimeout === -1) {
+                this.activeTimeout = setTimeout(() => this.userInactive(), timeout);
+            }
+        } else {
+            clearTimeout(this.activeTimeout);
+            this.activeTimeout = -1;
+            this.inactiveTime = 0;
         }
         if (!this.showing) {
             utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
@@ -403,9 +412,16 @@ export default class Controls {
 
     userInactive() {
         clearTimeout(this.activeTimeout);
+        this.activeTimeout = -1;
+        const remainingTime = now() - this.inactiveTime;
+        if (this.inactiveTime && remainingTime > 16) {
+            this.activeTimeout = setTimeout(() => this.userInactive(), remainingTime);
+            return;
+        }
         if (this.settingsMenu.visible) {
             return;
         }
+        this.inactiveTime = 0;
         this.showing = false;
         utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
