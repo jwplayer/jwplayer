@@ -196,9 +196,6 @@ export default function Api(element) {
 
             resetPlayer(this, core);
             core = coreFactory(this, element);
-
-            options.id = playerId;
-
             core.init(options, this);
 
             // bind event listeners passed in to the config
