@@ -94,6 +94,8 @@ const UI = function (elem, options) {
 
     const listenerOptions = Features.passiveEvents ? { passive: !options.preventScrolling } : false;
 
+    const interactEndDelegate = (event) => interactEndHandler(event);
+
     // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
     // (windows phones) still get listeners just in case they want to use them.
     if (_supportsPointerEvents) {
@@ -183,7 +185,7 @@ const UI = function (elem, options) {
 
                 // Listen for mouseup after mouse pointer down because pointerup doesn't fire on swf objects
                 if (evt.pointerType === 'mouse' && _touchListenerTarget.nodeName === 'OBJECT') {
-                    setEventListener(document, 'mouseup', interactEndHandler);
+                    setEventListener(document, 'mouseup', interactEndDelegate);
                 } else {
                     setEventListener(elem, 'pointerup', interactEndHandler);
                 }
@@ -194,7 +196,7 @@ const UI = function (elem, options) {
                 if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
                     setEventListener(elem, 'click', interactEndHandler);
                 } else {
-                    setEventListener(document, 'mouseup', interactEndHandler);
+                    setEventListener(document, 'mouseup', interactEndDelegate);
                 }
             } else if (evt.type === 'touchstart') {
                 setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler, listenerOptions);
@@ -241,7 +243,7 @@ const UI = function (elem, options) {
         elem.removeEventListener('pointercancel', interactEndHandler);
         elem.removeEventListener('pointerup', interactEndHandler);
         document.removeEventListener('mousemove', interactDragHandler);
-        document.removeEventListener('mouseup', interactEndHandler);
+        document.removeEventListener('mouseup', interactEndDelegate);
         if (_touchListenerTarget) {
             _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
             _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
@@ -317,7 +319,7 @@ const UI = function (elem, options) {
         elem.removeEventListener('mousemove', moveHandler);
         elem.removeEventListener('mouseout', outHandler);
         document.removeEventListener('mousemove', interactDragHandler);
-        document.removeEventListener('mouseup', interactEndHandler);
+        document.removeEventListener('mouseup', interactEndDelegate);
 
         if (options.useFocus) {
             elem.removeEventListener('focus', overHandler);

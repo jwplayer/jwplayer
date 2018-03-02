@@ -290,7 +290,11 @@ export default class Controls {
 
         // Hide controls when focus leaves the player
         const blurCallback = (evt) => {
-            const insideContainer = this.playerContainer.contains(evt.relatedTarget);
+            const focusedElement = evt.relatedTarget || document.querySelector(':focus');
+            if (!focusedElement) {
+                return;
+            }
+            const insideContainer = this.playerContainer.contains(focusedElement);
             if (!insideContainer) {
                 this.userInactive();
             }
