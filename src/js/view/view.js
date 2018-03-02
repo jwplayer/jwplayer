@@ -374,6 +374,7 @@ function View(_api, _model) {
                 }
             },
             tap: () => {
+                _playerElement.removeEventListener('mousemove', moveHandler);
                 _this.trigger(DISPLAY_CLICK);
                 if (settingsMenuVisible()) {
                     _controls.settingsMenu.close();
@@ -412,12 +413,14 @@ function View(_api, _model) {
     }
 
     function moveHandler(event) {
-        _controls && _controls.mouseMove(event);
+        if (_controls) {
+            _controls.mouseMove(event);
+        }
     }
 
     function outHandler(event) {
-        if (event.relatedTarget && !_playerElement.contains(event.relatedTarget)) {
-            _controls && _controls.userActive();
+        if (_controls && event.relatedTarget && !_playerElement.contains(event.relatedTarget)) {
+            _controls.userActive();
         }
     }
 
