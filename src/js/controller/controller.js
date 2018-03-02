@@ -486,6 +486,7 @@ Object.assign(Controller.prototype, {
         function _pause(meta) {
             _actionOnAttach = null;
             checkAutoStartCancelable.cancel();
+            checkAutoStartCancelable = cancelable(_checkAutoStart);
 
             const pauseReason = _getReason(meta);
             _model.set('pauseReason', pauseReason);
