@@ -432,7 +432,7 @@ Object.assign(Controller.prototype, {
                 _model.set('canAutoplay', result);
 
                 // Only apply autostartMuted on un-muted autostart attempt.
-                if (_model.get('canAutoplay') === AUTOPLAY_MUTED && !_this.getMute()) {
+                if (result === AUTOPLAY_MUTED && !_this.getMute()) {
                     _model.set('autostartMuted', true);
                     updateProgramSoundSettings();
                 }
