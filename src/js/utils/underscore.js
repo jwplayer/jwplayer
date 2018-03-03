@@ -1,18 +1,20 @@
-import { now } from 'utils/date';
-
-/* eslint-disable no-unused-expressions,new-cap */
 //     Underscore.js 1.6.0
 //     http://underscorejs.org
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
 
-// https://github.com/jashkenas/underscore/blob/1f4bf626f23a99f7a676f5076dc1b1475554c8f7/underscore.js
+import { now } from 'utils/date';
 
+/* eslint-disable no-unused-expressions,new-cap */
 /* eslint no-eq-null: 0 */
 /* eslint eqeqeq: 0 */
 /* eslint no-void: 0 */
 /* eslint guard-for-in: 0 */
 /* eslint no-constant-condition: 0 */
+
+/*
+ * Source: https://github.com/jashkenas/underscore/blob/1f4bf62/underscore.js
+ */
 
 // Establish the object that gets returned to break out of a loop iteration.
 var breaker = {};
