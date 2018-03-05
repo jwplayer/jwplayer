@@ -18,9 +18,6 @@ export default class ClickHandler {
                     return;
                 }
                 this.trigger('doubleClick');
-            },
-            move: function() {
-                this.trigger('move');
             }
         }, this);
     }

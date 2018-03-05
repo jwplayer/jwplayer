@@ -4,6 +4,7 @@ import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
+import { USER_ACTION } from 'events/events';
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import ariaLabel from 'utils/aria';
@@ -319,9 +320,8 @@ export default class Controlbar {
 
         // When the control bar is interacted with, trigger a user action event
         new UI(this.el).on('click tap drag', function () {
-            this.trigger('userAction');
+            this.trigger(USER_ACTION);
         }, this);
-
         _.each(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);

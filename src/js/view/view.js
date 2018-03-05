@@ -374,6 +374,7 @@ function View(_api, _model) {
                 }
             },
             tap: () => {
+                _playerElement.removeEventListener('mousemove', moveHandler);
                 _this.trigger(DISPLAY_CLICK);
                 if (settingsMenuVisible()) {
                     _controls.settingsMenu.close();
@@ -402,11 +403,25 @@ function View(_api, _model) {
                     }
                 }
             },
-            doubleClick: () => _controls && api.setFullscreen(),
-            move: () => _controls && _controls.userActive()
+            doubleClick: () => _controls && api.setFullscreen()
         });
 
+        _playerElement.addEventListener('mousemove', moveHandler);
+        _playerElement.addEventListener('mouseout', outHandler);
+
         return clickHandler;
+    }
+
+    function moveHandler(event) {
+        if (_controls) {
+            _controls.mouseMove(event);
+        }
+    }
+
+    function outHandler(event) {
+        if (_controls && event.relatedTarget && !_playerElement.contains(event.relatedTarget)) {
+            _controls.userActive();
+        }
     }
 
     function onStretchChange(model, newVal) {
@@ -443,12 +458,6 @@ function View(_api, _model) {
         removeClass(_playerElement, 'jw-flag-controls-hidden');
 
         controls.enable(_api, _model);
-        controls.addActiveListeners(_logo.element());
-
-        const logoContainer = controls.logoContainer();
-        if (logoContainer) {
-            _logo.setContainer(logoContainer);
-        }
 
         // refresh breakpoint and timeslider classes
         if (_lastHeight) {
@@ -469,23 +478,12 @@ function View(_api, _model) {
         if (_model.get('instream')) {
             _controls.setupInstream();
         }
-
-        const overlaysElement = _playerElement.querySelector('.jw-overlays');
-        overlaysElement.addEventListener('mousemove', _userActivityCallback);
     };
 
     this.removeControls = function () {
-        _logo.setContainer(_playerElement);
-
         if (_controls) {
-            _controls.removeActiveListeners(_logo.element());
             _controls.disable(_model);
             _controls = null;
-        }
-
-        const overlay = document.querySelector('.jw-overlays');
-        if (overlay) {
-            overlay.removeEventListener('mousemove', _userActivityCallback);
         }
 
         addClass(_playerElement, 'jw-flag-controls-hidden');
@@ -619,10 +617,6 @@ function View(_api, _model) {
     function _setLiveMode(model, streamType) {
         const live = (streamType === 'LIVE');
         toggleClass(_playerElement, 'jw-flag-live', live);
-    }
-
-    function _userActivityCallback(/* event */) {
-        _controls.userActive();
     }
 
     function _onMediaTypeChange(model, val) {
@@ -809,6 +803,8 @@ function View(_api, _model) {
         }
         if (displayClickHandler) {
             displayClickHandler.destroy();
+            _playerElement.removeEventListener('mousemove', moveHandler);
+            _playerElement.removeEventListener('mouseout', outHandler);
             displayClickHandler = null;
         }
         _captionsRenderer.destroy();

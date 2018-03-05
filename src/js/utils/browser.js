@@ -32,7 +32,7 @@ export function isMSIE() {
 }
 
 export function isChrome() {
-    return userAgentMatch(/\s(?:Chrome|CriOS)\//i) && !isEdge();
+    return userAgentMatch(/\s(?:Chrome|CriOS)\//i) && !isEdge() && !userAgentMatch(/UCBrowser/i);
 }
 
 export function isIE() {
