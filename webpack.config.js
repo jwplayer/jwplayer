@@ -7,6 +7,13 @@ const webpack = require('webpack');
 const env = process.env;
 const packageInfo = require('./package.json');
 const flashVersion = 18;
+const licensesNotice = require('./jwplayer.license.notice.js');
+
+const bannerOptions = {
+    banner: `/*\n${licensesNotice}\n*/`,
+    raw: true,
+    include: /^.*.js$/
+};
 
 function getBuildVersion(build) {
     // Build Version: {major.minor.revision}
@@ -63,7 +70,8 @@ const multiConfig = [
         plugins: [
             new webpack.DefinePlugin(Object.assign({}, compileConstants, {
                 __DEBUG__: true
-            }))
+            })),
+            new webpack.BannerPlugin(bannerOptions)
         ]
     },
     {
@@ -80,7 +88,8 @@ const multiConfig = [
         watch: false,
         plugins: [
             new webpack.DefinePlugin(compileConstants),
-            new webpack.optimize.UglifyJsPlugin(uglifyJsOptions)
+            new webpack.optimize.UglifyJsPlugin(uglifyJsOptions),
+            new webpack.BannerPlugin(bannerOptions)
         ]
     }
 ].map(configuration =>
