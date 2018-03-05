@@ -652,6 +652,7 @@ function View(_api, _model) {
     }
 
     function _stateHandler(model, newState, oldState) {
+        console.log(newState)
         if (!_this.isSetup) {
             return;
         }
@@ -663,11 +664,11 @@ function View(_api, _model) {
             }
         }
 
-        clearTimeout(_stateClassRequestId);
+        cancelAnimationFrame(_stateClassRequestId);
         if (newState === STATE_PLAYING) {
             _stateUpdate(newState);
         } else {
-            _stateClassRequestId = setTimeout(() => _stateUpdate(newState), 16 * 5);
+            _stateClassRequestId = requestAnimationFrame(() => _stateUpdate(newState));
         }
     }
 

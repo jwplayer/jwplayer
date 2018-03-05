@@ -66,8 +66,6 @@ class ProgramController extends Eventable {
 
         if (mediaController) {
             const casting = model.get('castActive');
-            // Buffer between item switches, but remain in the initial state (IDLE) while loading the first provider
-            model.set(PLAYER_STATE, STATE_BUFFERING);
             if (casting || this.providerController.canPlay(mediaController.provider, source)) {
                 // We can synchronously reuse the current mediaController
                 this.loadPromise = Promise.resolve(mediaController);
@@ -83,6 +81,7 @@ class ProgramController extends Eventable {
             this._destroyActiveMedia();
         }
 
+        model.set(PLAYER_STATE, STATE_BUFFERING);
         const mediaModelContext = model.mediaModel;
         this.loadPromise = this._setupMediaController(source)
             .then(nextMediaController => {
@@ -443,10 +442,10 @@ class ProgramController extends Eventable {
             background.loadingMedia = null;
             if (this.adPlaying) {
                 background.loadedMedia = nextMediaController;
-                return;
+            } else {
+                this._setActiveMedia(nextMediaController);
+                nextMediaController.background = false;
             }
-            this._setActiveMedia(nextMediaController);
-            nextMediaController.background = false;
             return nextMediaController;
         });
         // The catch is chained as part of the play promise chain
