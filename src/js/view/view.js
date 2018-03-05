@@ -652,7 +652,6 @@ function View(_api, _model) {
     }
 
     function _stateHandler(model, newState, oldState) {
-        console.log(newState)
         if (!_this.isSetup) {
             return;
         }

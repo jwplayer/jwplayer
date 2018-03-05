@@ -1005,5 +1005,5 @@ Object.assign(Api.prototype, /** @lends Api.prototype */ {
      * @param {boolean} toggle - Specifies whether ad playback should be paused or resumed.
      * @returns {void}
      */
-    pauseAd(toggle) {}, // eslint-disable-line,
+    pauseAd(toggle) {}, // eslint-disable-line
 });

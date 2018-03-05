@@ -117,7 +117,7 @@ export default class MediaController extends Eventable {
             playReason
         });
         // Immediately set player state to buffering if these conditions are met
-        if (provider && provider.video && !provider.video.paused && provider.video.readyState < 3) {
+        if (provider && provider.video && !provider.video.paused) {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         }
 
