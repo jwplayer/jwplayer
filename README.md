@@ -108,7 +108,7 @@ npm run lint
 ````
 
 6. Setup git pre-push hook
-# Will lint and run unit tests on the branch before any push to remote
+This will add a `pre-push` script to the project's .git/hooks folder that will lint and run unit tests on the branch before any push.
 ````bash
 grunt hooks
 ```` 
