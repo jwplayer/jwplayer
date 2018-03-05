@@ -5,7 +5,9 @@
   "repository": "git@github.com:jwplayer/jwplayer.git",
   "homepage": "https://github.com/jwplayer/jwplayer",
   "license": "CC-BY-NC-SA-3.0",
-  "dependencies": {},
+  "dependencies": {
+    "jwplayer-errors": "git+ssh://git@github.com/jwplayer/jwplayer-errors.git#refs/heads/poc-standardize-setup-errors"
+  },
   "devDependencies": {
     "async": "2.6.0",
     "autoprefixer": "7.2.4",

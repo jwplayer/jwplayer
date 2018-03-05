@@ -4,6 +4,7 @@ import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
+import { SetupError, Code } from 'jwplayer-errors';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -18,7 +19,9 @@ export function loadPlaylist(_model) {
             });
             playlistLoader.on(ERROR, err => {
                 setPlaylistAttributes(_model, [], {});
-                reject(new Error(`Error loading playlist: ${err.message}`));
+                const error = SetupError(Code.PLAYLIST_LOAD_FAILED);
+                error.developerMessage = err.message;
+                reject(error);
             });
             playlistLoader.load(playlist);
         });

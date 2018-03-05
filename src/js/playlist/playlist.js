@@ -2,6 +2,7 @@ import { getPreload } from './preload';
 import PlaylistItem from 'playlist/item';
 import Source from 'playlist/source';
 import Providers from 'providers/providers';
+import { SetupError, Code } from 'jwplayer-errors';
 
 const Playlist = function(playlist) {
     // Can be either an array of items or a single item.
@@ -44,7 +45,7 @@ export function filterPlaylist(playlist, model, feedData) {
 
 export function validatePlaylist(playlist) {
     if (!Array.isArray(playlist) || playlist.length === 0) {
-        throw new Error('No playable sources found');
+        throw SetupError(Code.NO_PLAYABLE_SOURCES);
     }
 }
 
