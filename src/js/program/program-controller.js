@@ -691,10 +691,6 @@ class ProgramController extends Eventable {
 
         mediaPool.syncVolume(volume);
     }
-
-    set container(container) {
-
-    }
 }
 
 function assignMediaContainer(model, mediaController) {

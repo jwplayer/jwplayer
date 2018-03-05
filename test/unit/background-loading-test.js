@@ -176,8 +176,4 @@ describe('Background Loading', function () {
             expect(programController.background.loadedMedia).to.equal(null);
         });
     });
-
-    describe('programController.backgroundLoad()', function () {
-
-    });
 });
