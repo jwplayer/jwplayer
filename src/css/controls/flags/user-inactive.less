@@ -38,8 +38,10 @@
             }
         }
     }
-}
 
-.jw-state-playing.jw-flag-touch.jw-flag-user-inactive .jw-autostart-mute {
-    display: flex;
+    &.jw-flag-touch:not(.jw-flag-ads) {
+        .jw-autostart-mute {
+            display: flex;
+        }
+    }
 }
