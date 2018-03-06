@@ -61,6 +61,7 @@
     "phantomjs-prebuilt": "2.1.16",
     "postcss-loader": "2.0.9",
     "postcss-safe-parser": "3.0.1",
+    "promise-polyfill": "7.1.0",
     "raw-loader": "0.5.1",
     "requirejs": "2.3.5",
     "simple-style-loader": "0.4.3",
