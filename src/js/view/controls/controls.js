@@ -169,14 +169,19 @@ export default class Controls {
             this.div.insertBefore(settingsMenu.element(), controlbar.element());
         }
 
-        // Unmute Autoplay Button.
-        const setupUnmuteAutoplayButton = (_model) => {
+        // Unmute Autoplay behavior.
+        const setupUnmuteAutoplay = (_model) => {
             if (_model.get('autostartMuted')) {
                 const unmuteCallback = () => this.unmuteAutoplay(api, _model);
-                this.mute = button('jw-autostart-mute jw-off', unmuteCallback, _model.get('localization').unmute,
-                    [cloneIcon('volume-0')]);
-                this.mute.show();
-                this.div.appendChild(this.mute.element());
+
+                // Show unmute botton only on mobile.
+                if (OS.mobile) {
+                    this.mute = button('jw-autostart-mute jw-off', unmuteCallback, _model.get('localization').unmute,
+                        [cloneIcon('volume-0')]);
+                    this.mute.show();
+                    this.div.appendChild(this.mute.element());
+                }
+
                 // Set mute state in the controlbar
                 controlbar.renderVolume(true, _model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
@@ -186,8 +191,8 @@ export default class Controls {
                 this.unmuteCallback = unmuteCallback;
             }
         };
-        model.once('change:autostartMuted', setupUnmuteAutoplayButton);
-        setupUnmuteAutoplayButton(model);
+        model.once('change:autostartMuted', setupUnmuteAutoplay);
+        setupUnmuteAutoplay(model);
 
         // Keyboard Commands
         function adjustSeek(amount) {

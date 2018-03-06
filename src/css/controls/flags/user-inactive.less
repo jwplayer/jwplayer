@@ -25,6 +25,12 @@
                 display: table;
             }
         }
+
+        &:not(.jw-flag-ads) {
+            .jw-autostart-mute {
+                display: flex;
+            }
+        }
     }
 
     &.jw-flag-casting {
@@ -36,12 +42,6 @@
             .jw-nextup-container {
                 display: none;
             }
-        }
-    }
-
-    &.jw-flag-touch:not(.jw-flag-ads) {
-        .jw-autostart-mute {
-            display: flex;
         }
     }
 }
