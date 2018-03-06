@@ -153,23 +153,25 @@ Object.assign(Controller.prototype, {
 
         _model.on('change:mediaModel', function(model, mediaModel) {
             model.set('errorEvent', undefined);
-            mediaModel.change('mediaState', function(changedMediaModel, state) {
+            mediaModel.change('mediaState', function (changedMediaModel, state) {
                 if (!model.get('errorEvent')) {
                     model.set(PLAYER_STATE, normalizeState(state));
                 }
             });
-            mediaModel.on('change:duration', function(changedMediaModel, duration) {
+            mediaModel.on('change:duration', function (changedMediaModel, duration) {
                 const minDvrWindow = model.get('minDvrWindow');
                 const type = streamType(duration, minDvrWindow);
                 model.setStreamType(type);
             });
+
             if (Features.backgroundLoading) {
-                mediaModel.on('change:position', function (changedMediaModel, position) {
-                    if (!_programController.backgroundLoading
-                        && (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET)) {
+                const onPosition = (changedMediaModel, position) => {
+                    if (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
+                        mediaModel.off(onPosition, this);
                         _programController.backgroundLoad(_model.get('item') + 1);
                     }
-                });
+                };
+                mediaModel.on('change:position', onPosition, this);
             }
         });
 

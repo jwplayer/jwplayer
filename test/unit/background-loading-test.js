@@ -108,7 +108,7 @@ describe('Background Loading', function () {
 
             programController.backgroundActiveMedia();
             expect(programController.mediaController).to.equal(null);
-            expect(programController.background.loadedMedia).to.equal(mediaController);
+            expect(programController.background.currentMedia).to.equal(mediaController);
             expect(mediaController.background).to.equal(true);
         });
 
@@ -124,7 +124,7 @@ describe('Background Loading', function () {
 
         it('should do nothing if there is no active media', function () {
             programController.backgroundActiveMedia();
-            expect(programController.background.loadedMedia).to.equal(null);
+            expect(programController.background.currentMedia).to.equal(null);
         });
 
         it('should replace existing background media if already present', function () {
@@ -139,7 +139,7 @@ describe('Background Loading', function () {
             programController.backgroundActiveMedia();
 
             expect(programController.mediaController).to.equal(null);
-            expect(programController.background.loadedMedia).to.equal(newMediaController);
+            expect(programController.background.currentMedia).to.equal(newMediaController);
             expect(mediaController.destroy.calledOnce).to.equal(true);
             expect(mediaPool.recycle.calledOnce).to.equal(true);
         });
@@ -173,7 +173,7 @@ describe('Background Loading', function () {
             programController.restoreBackgroundMedia();
             expect(programController._setActiveMedia.calledOnce).to.equal(false);
             expect(mediaPool.recycle.calledOnce).to.equal(true);
-            expect(programController.background.loadedMedia).to.equal(null);
+            expect(programController.background.currentMedia).to.equal(null);
         });
     });
 });

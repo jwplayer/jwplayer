@@ -495,15 +495,6 @@ class ProgramController extends Eventable {
     }
 
     /**
-     * Returns whether the program controller is loading a new item in the background.
-     * The return value does not include whether we have backgrounded an item for ad playback.
-     * @returns {boolean} True if background loading, false otherwise.
-     */
-    get backgroundLoading() {
-        return !!this.background.nextItem;
-    }
-
-    /**
      * Returns whether the current media has completed playback.
      * @returns {boolean} Is the "beforeComplete" event being propagated
      * or did it result in the media being detached or backgrounded?
