@@ -167,7 +167,7 @@ Object.assign(Controller.prototype, {
             if (Features.backgroundLoading) {
                 const onPosition = (changedMediaModel, position) => {
                     if (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
-                        mediaModel.off(onPosition, this);
+                        mediaModel.off('change:position', onPosition, this);
                         _programController.backgroundLoad(_model.get('item') + 1);
                     }
                 };
