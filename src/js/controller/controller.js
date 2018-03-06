@@ -163,12 +163,14 @@ Object.assign(Controller.prototype, {
                 const type = streamType(duration, minDvrWindow);
                 model.setStreamType(type);
             });
-            mediaModel.on('change:position', function (changedMediaModel, position) {
-                if (!_programController.backgroundLoading
-                    && (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET)) {
-                    _programController.backgroundLoad(_model.get('item') + 1);
-                }
-            });
+            if (Features.backgroundLoading) {
+                mediaModel.on('change:position', function (changedMediaModel, position) {
+                    if (!_programController.backgroundLoading
+                        && (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET)) {
+                        _programController.backgroundLoad(_model.get('item') + 1);
+                    }
+                });
+            }
         });
 
         // Ensure captionsList event is raised after playlistItem
