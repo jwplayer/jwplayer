@@ -1,7 +1,7 @@
 /**
  * A simple data structure for containing both of the background loading objects.
- * loadedMedia is the currently active item which has been put into the background during ad playback.
- * loadingMedia is an item which is preloading in the background which may be selected in the future. It is usually the
+ * currentMedia is the currently active item which has been put into the background during ad playback.
+ * nextMedia is an item which is preloading in the background which may be selected in the future. It is usually the
  * next item in the playlist, or the next up item in a recommendations feed.
  * @returns {BackgroundMedia}
  */
