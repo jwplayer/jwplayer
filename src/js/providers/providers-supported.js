@@ -25,35 +25,39 @@ const MimeTypes = {
 const SupportsMatrix = [
     {
         name: 'html5',
-        supports: function (source) {
-            if (isAndroidHls(source) === false) {
-                return false;
-            }
-
-            if (!video.canPlayType) {
-                return false;
-            }
-
-            const file = source.file;
-            const type = source.type;
-
-            // Ensure RTMP files are not seen as videos
-            if (isRtmp(file, type)) {
-                return false;
-            }
-
-            const mimeType = source.mimeType || MimeTypes[type];
-
-            // Not OK to use HTML5 with no extension
-            if (!mimeType) {
-                return false;
-            }
-
-            // Last, but not least, we ask the browser
-            // (But only if it's a video with an extension known to work in HTML5)
-            return !!video.canPlayType(mimeType);
-        }
+        supports: supportsType
     }
 ];
+
+export function supportsType(source) {
+    {
+        if (isAndroidHls(source) === false) {
+            return false;
+        }
+
+        if (!video.canPlayType) {
+            return false;
+        }
+
+        const file = source.file;
+        const type = source.type;
+
+        // Ensure RTMP files are not seen as videos
+        if (isRtmp(file, type)) {
+            return false;
+        }
+
+        const mimeType = source.mimeType || MimeTypes[type];
+
+        // Not OK to use HTML5 with no extension
+        if (!mimeType) {
+            return false;
+        }
+
+        // Last, but not least, we ask the browser
+        // (But only if it's a video with an extension known to work in HTML5)
+        return !!video.canPlayType(mimeType);
+    }
+}
 
 export default SupportsMatrix;
