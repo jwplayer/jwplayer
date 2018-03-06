@@ -3,26 +3,27 @@
 /* eslint-env node */
 /* eslint no-process-env: 0 */
 
-var webpack = require('webpack');
-var webpackConfigs = require('./webpack.config');
-var webpackCompilers = {};
-var env = process.env;
-var execSync = require('child_process').execSync;
+const fs = require('fs');
+const webpack = require('webpack');
+const webpackConfigs = require('./webpack.config');
+const webpackCompilers = {};
+const env = process.env;
+const execSync = require('child_process').execSync;
 
 function getBuildVersion(packageInfo) {
     // Build Version: {major.minor.revision}
-    var metadata = '';
+    let metadata = '';
     if (env.BUILD_NUMBER) {
-        var branch = env.GIT_BRANCH;
+        const branch = env.GIT_BRANCH;
         metadata = 'opensource';
         if (branch) {
             metadata += '_' + branch.replace(/^origin\//, '').replace(/[^0-9A-Za-z-]/g, '-');
         }
         metadata += '.' + env.BUILD_NUMBER;
     } else {
-        var now = new Date();
+        const now = new Date();
         now.setTime(now.getTime()-now.getTimezoneOffset()*60000);
-        metadata = 'local.' + now.toISOString().replace(/[\.\-:T]/g, '-').replace(/Z|\.\d/g, '');
+        metadata = 'local.' + now.toISOString().replace(/[.-:T]/g, '-').replace(/Z|\.\d/g, '');
     }
     return packageInfo.version +'+'+ metadata;
 }
@@ -31,8 +32,8 @@ module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
 
-    var packageInfo = grunt.file.readJSON('package.json');
-    var buildVersion = getBuildVersion(packageInfo);
+    const packageInfo = grunt.file.readJSON('package.json');
+    const buildVersion = getBuildVersion(packageInfo);
 
     console.log('%s v%s', packageInfo.name, buildVersion);
 
@@ -201,7 +202,7 @@ module.exports = function(grunt) {
             if (err) {
                 throw err;
             }
-            var jsonStats = stats.toJson();
+            const jsonStats = stats.toJson();
             if (jsonStats.errors.length) {
                 throw jsonStats.errors;
             }
@@ -213,15 +214,26 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('hooks', 'Install Pre Push Hook', function() {
-        var command = '\\cp .github/hooks/pre-push .git/hooks/pre-push';
+        const command = '\\cp .github/hooks/pre-push .git/hooks/pre-push';
         execSync(command, {
             cwd: '.',
             stdio: [0, 1, 2]
         });
     });
+    
+    grunt.registerTask('notice', 'Create notice.txt file', function() {
+        const notice = require('./jwplayer.license.notice.js');
+        const output = './bin-release/notice.txt';
+        const done = this.async();
+        fs.writeFile(output, notice, function(err4) {
+            if (err4) { throw err4; }
+            console.log('Wrote file', output);
+            done();
+        });
+    });
 
     grunt.registerTask('lint', 'ESLints JavaScript & Stylelints LESS', function(target) {
-        var command = 'npm run lint';
+        let command = 'npm run lint';
         if (target === 'js') {
             command = command + ':js';
         }
@@ -235,7 +247,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('docs', 'Generate API documentation', function() {
-        var command = 'npm run docs';
+        const command = 'npm run docs';
         execSync(command, {
             cwd: '.',
             stdio: [0, 1, 2]
@@ -260,6 +272,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', [
         'clean:dist',
         'build-js',
+        'notice',
         'karma:local'
     ]);
 

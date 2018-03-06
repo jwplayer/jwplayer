@@ -171,7 +171,7 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     preloadVideo() {
-        const { background: { loadedMedia: backgroundMedia }, mediaController } = this;
+        const { background: { currentMedia: backgroundMedia }, mediaController } = this;
         const media = mediaController || backgroundMedia.activeMedia;
         if (!media) {
             return;
@@ -235,14 +235,14 @@ class ProgramController extends Eventable {
      */
     backgroundActiveMedia() {
         this.adPlaying = true;
-        const { background, background: { loadedMedia }, mediaController } = this;
+        const { background, background: { currentMedia }, mediaController } = this;
         if (!mediaController) {
             return;
         }
 
         // Destroy any existing background media
-        if (loadedMedia) {
-            this._destroyMediaController(loadedMedia);
+        if (currentMedia) {
+            this._destroyMediaController(currentMedia);
         }
 
         mediaController.background = true;
@@ -258,19 +258,19 @@ class ProgramController extends Eventable {
      */
     restoreBackgroundMedia() {
         this.adPlaying = false;
-        const { background, background: { loadedMedia }, mediaController } = this;
+        const { background, background: { currentMedia }, mediaController } = this;
         // An existing media controller means that we've changed the active item
         // The current background media is no longer relevant, so destroy it
-        if (!loadedMedia) {
+        if (!currentMedia) {
             return;
         } else if (mediaController) {
-            this._destroyMediaController(loadedMedia);
+            this._destroyMediaController(currentMedia);
             background.currentMedia = null;
             return;
         }
 
-        this._setActiveMedia(loadedMedia);
-        loadedMedia.background = false;
+        this._setActiveMedia(currentMedia);
+        currentMedia.background = false;
         background.currentMedia = null;
     }
 
@@ -294,7 +294,7 @@ class ProgramController extends Eventable {
                 return nextMediaController;
             });
 
-        background.nextPromise = {
+        background.nextMedia = {
             item,
             loadPromise
         };
@@ -433,13 +433,13 @@ class ProgramController extends Eventable {
      * @memberOf ProgramController
      */
     _activateBackgroundMedia() {
-        const { background, background: { loadingMedia }, model } = this;
+        const { background, background: { nextMedia }, model } = this;
         // Activating this item means that any media already loaded in the background will no longer be needed
         this._destroyMediaController(background.currentMedia);
         background.currentMedia = null;
-        return loadingMedia.then(nextMediaController => {
+        return nextMedia.then(nextMediaController => {
             model.attributes.itemReady = true;
-            background.nextPromise = null;
+            background.nextMedia = null;
             if (this.adPlaying) {
                 background.currentMedia = nextMediaController;
             } else {
@@ -452,19 +452,19 @@ class ProgramController extends Eventable {
     }
 
     /**
-     * Destroys the mediaController which was constructed and loading in the background (loadingMedia).
-     * Does not destroy the mediaController which was already playing and subsequently placed into the background (loadedMedia).
+     * Destroys the mediaController which was constructed and loading in the background (nextMedia).
+     * Does not destroy the mediaController which was already playing and subsequently placed into the background (currentMedia).
      * @returns {void}
      * @private
      */
     _destroyBackgroundLoadingMedia() {
-        const { background, background: { loadingMedia } } = this;
-        if (!loadingMedia) {
+        const { background, background: { nextMedia } } = this;
+        if (!nextMedia) {
             return;
         }
-        loadingMedia.then(nextMediaController => {
+        nextMedia.then(nextMediaController => {
             this._destroyMediaController(nextMediaController);
-            background.nextPromise = null;
+            background.nextMedia = null;
         });
     }
 
@@ -509,7 +509,7 @@ class ProgramController extends Eventable {
      * or did it result in the media being detached or backgrounded?
      */
     get beforeComplete() {
-        const { mediaController, background: { loadedMedia: backgroundMedia } } = this;
+        const { mediaController, background: { currentMedia: backgroundMedia } } = this;
         if (!mediaController && !backgroundMedia) {
             return false;
         }
@@ -611,7 +611,7 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     set mute(mute) {
-        const { background: { loadedMedia: backgroundMedia }, mediaController, mediaPool } = this;
+        const { background: { currentMedia: backgroundMedia }, mediaController, mediaPool } = this;
 
         if (mediaController) {
             mediaController.mute = mute;
@@ -680,7 +680,7 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     set volume(volume) {
-        const { background: { loadedMedia: backgroundMedia }, mediaController, mediaPool } = this;
+        const { background: { currentMedia: backgroundMedia }, mediaController, mediaPool } = this;
 
         if (mediaController) {
             mediaController.volume = volume;

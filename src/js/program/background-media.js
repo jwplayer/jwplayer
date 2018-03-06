@@ -13,29 +13,29 @@
  * @constructor
  */
 export default function BackgroundMedia() {
-    let loadedMedia = null;
-    let loadingMedia = null;
+    let currentMedia = null;
+    let nextMedia = null;
 
     return Object.defineProperties(Object.create(null), {
         nextItem: {
             get() {
-                return loadingMedia ? loadingMedia.item : null;
+                return nextMedia ? nextMedia.item : null;
             }
         },
-        nextPromise: {
+        nextMedia: {
             get() {
-                return loadingMedia ? loadingMedia.loadPromise : null;
+                return nextMedia ? nextMedia.loadPromise : null;
             },
             set(loadObject) {
-                loadingMedia = loadObject;
+                nextMedia = loadObject;
             }
         },
         currentMedia: {
             get() {
-                return loadedMedia;
+                return currentMedia;
             },
             set(mediaController) {
-                loadedMedia = mediaController;
+                currentMedia = mediaController;
             }
         }
     });
