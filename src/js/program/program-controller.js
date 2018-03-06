@@ -54,7 +54,7 @@ class ProgramController extends Eventable {
         }
 
         // Activate the background media if it's loading the item we want to play
-        if (background.loadingItem === item) {
+        if (background.nextItem === item) {
             // First destroy the active item so that the BGL provider can enter the foreground
             this._destroyActiveMedia();
             // Attach the BGL provider into the load/play chain
@@ -246,7 +246,7 @@ class ProgramController extends Eventable {
         }
 
         mediaController.background = true;
-        background.loadedMedia = mediaController;
+        background.currentMedia = mediaController;
         this.mediaController = null;
     }
 
@@ -265,13 +265,13 @@ class ProgramController extends Eventable {
             return;
         } else if (mediaController) {
             this._destroyMediaController(loadedMedia);
-            background.loadedMedia = null;
+            background.currentMedia = null;
             return;
         }
 
         this._setActiveMedia(loadedMedia);
         loadedMedia.background = false;
-        background.loadedMedia = null;
+        background.currentMedia = null;
     }
 
     /**
@@ -294,7 +294,7 @@ class ProgramController extends Eventable {
                 return nextMediaController;
             });
 
-        background.loadingMedia = {
+        background.nextPromise = {
             item,
             loadPromise
         };
@@ -371,8 +371,8 @@ class ProgramController extends Eventable {
      */
     _destroyBackgroundMedia() {
         const { background } = this;
-        this._destroyMediaController(background.loadedMedia);
-        background.loadedMedia = null;
+        this._destroyMediaController(background.currentMedia);
+        background.currentMedia = null;
         this._destroyBackgroundLoadingMedia();
     }
 
@@ -435,13 +435,13 @@ class ProgramController extends Eventable {
     _activateBackgroundMedia() {
         const { background, background: { loadingMedia }, model } = this;
         // Activating this item means that any media already loaded in the background will no longer be needed
-        this._destroyMediaController(background.loadedMedia);
-        background.loadedMedia = null;
+        this._destroyMediaController(background.currentMedia);
+        background.currentMedia = null;
         return loadingMedia.then(nextMediaController => {
             model.attributes.itemReady = true;
-            background.loadingMedia = null;
+            background.nextPromise = null;
             if (this.adPlaying) {
-                background.loadedMedia = nextMediaController;
+                background.currentMedia = nextMediaController;
             } else {
                 this._setActiveMedia(nextMediaController);
                 nextMediaController.background = false;
@@ -464,7 +464,7 @@ class ProgramController extends Eventable {
         }
         loadingMedia.then(nextMediaController => {
             this._destroyMediaController(nextMediaController);
-            background.loadingMedia = null;
+            background.nextPromise = null;
         });
     }
 
@@ -500,7 +500,7 @@ class ProgramController extends Eventable {
      * @returns {boolean} True if background loading, false otherwise.
      */
     get backgroundLoading() {
-        return !!this.background.loadingItem;
+        return !!this.background.nextItem;
     }
 
     /**

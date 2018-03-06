@@ -7,9 +7,9 @@
  */
 /**
  * @typedef {Object} BackgroundMedia
- * @property {MediaController} loadingItem - The mediaController which has been placed into the background during playback.
- * @property {Object} loadingItem - The playlist item loading in the background.
- * @property {Promise} loadingMedia - A promise representing the media loading in the background. Resolves with the mediaController.
+ * @property {MediaController} currentMedia - The mediaController which has been placed into the background during playback.
+ * @property {Item} nextItem - The playlist item loading in the background.
+ * @property {Promise} nextMedia - A promise representing the media loading in the background. Resolves with the mediaController.
  * @constructor
  */
 export default function BackgroundMedia() {
@@ -17,12 +17,12 @@ export default function BackgroundMedia() {
     let loadingMedia = null;
 
     return Object.defineProperties(Object.create(null), {
-        loadingItem: {
+        nextItem: {
             get() {
                 return loadingMedia ? loadingMedia.item : null;
             }
         },
-        loadingMedia: {
+        nextPromise: {
             get() {
                 return loadingMedia ? loadingMedia.loadPromise : null;
             },
@@ -30,7 +30,7 @@ export default function BackgroundMedia() {
                 loadingMedia = loadObject;
             }
         },
-        loadedMedia: {
+        currentMedia: {
             get() {
                 return loadedMedia;
             },
