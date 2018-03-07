@@ -10,7 +10,7 @@ const flashVersion = 18;
 const licensesNotice = require('./jwplayer.license.notice.js');
 
 const bannerOptions = {
-    banner: `/*\n${licensesNotice}\n*/`,
+    banner: `/*!\n${licensesNotice}\n*/`,
     raw: true,
     include: /^.*.js$/
 };
