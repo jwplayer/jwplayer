@@ -16,18 +16,22 @@ export default function BackgroundMedia() {
     let currentMedia = null;
     let nextMedia = null;
 
-    return Object.defineProperties(Object.create(null), {
+    return Object.defineProperties({
+        setNext(item, loadPromise) {
+            nextMedia = { item, loadPromise };
+        },
+        clearNext() {
+            nextMedia = null;
+        }
+    }, {
         nextItem: {
             get() {
                 return nextMedia ? nextMedia.item : null;
             }
         },
-        nextMedia: {
+        nextLoadPromise: {
             get() {
                 return nextMedia ? nextMedia.loadPromise : null;
-            },
-            set(loadObject) {
-                nextMedia = loadObject;
             }
         },
         currentMedia: {
