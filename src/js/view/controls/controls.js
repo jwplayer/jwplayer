@@ -213,12 +213,15 @@ export default class Controls {
         }
 
         function onEscape() {
-            const related = api.getPlugin('related');
             if (model.get('fullscreen')) {
                 api.setFullscreen(false);
                 this.playerContainer.blur();
                 this.userInactive();
-            } else if (related) {
+                return;
+            }
+
+            const related = api.getPlugin('related');
+            if (related) {
                 related.close({ type: 'escape' });
             }
         }
