@@ -258,14 +258,15 @@ class ProgramController extends Eventable {
      */
     restoreBackgroundMedia() {
         this.adPlaying = false;
-        const { background, background: { currentMedia: backgroundMediaController }, mediaController } = this;
+        const { background, mediaController } = this;
+        const backgroundMediaController = background.currentMedia;
         if (!backgroundMediaController) {
             return;
         } else if (mediaController) {
             // An existing media controller means that we've changed the active item
             // The current background media is no longer relevant, so destroy it
             this._destroyMediaController(backgroundMediaController);
-            background.backgroundMediaController = null;
+            background.currentMedia = null;
             return;
         }
 
