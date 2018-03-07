@@ -259,6 +259,10 @@ class ProgramController extends Eventable {
             return;
         }
         if (backgroundMedia) {
+            // Set the state to buffering before attaching so that we don't resume in the "paused" state
+            // If the mediaController enters the foreground quickly enough (within one animation frame), no buffering
+            // wheel will be shown
+            backgroundMedia.mediaModel.attributes.mediaState = 'buffering';
             this._setActiveMedia(backgroundMedia);
             backgroundMedia.background = false;
             this.backgroundMedia = null;
