@@ -25,6 +25,12 @@
                 display: table;
             }
         }
+
+        &:not(.jw-flag-ads) {
+            .jw-autostart-mute {
+                display: flex;
+            }
+        }
     }
 
     &.jw-flag-casting {
@@ -38,8 +44,4 @@
             }
         }
     }
-}
-
-.jw-state-playing.jw-flag-user-inactive .jw-autostart-mute {
-    display: flex;
 }
