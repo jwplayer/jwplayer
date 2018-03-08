@@ -12,15 +12,8 @@ export default function ProviderController(initialConfig) {
             const ProviderConstructor = this.choose(source);
             return ProviderConstructor && (_provider && _provider instanceof ProviderConstructor);
         },
-        make(id, source) {
-            const Provider = this.choose(source);
-            if (!Provider) {
-                return null;
-            }
-            return new Provider(id, config);
-        },
-        loadProviders(playlist) {
-            return providers.load(providers.required(playlist));
+        loadProvider(source) {
+            return providers.load(providers.required([{ sources: [source] }]));
         },
         allProviders() {
             return providers;

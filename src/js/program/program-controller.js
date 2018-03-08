@@ -405,7 +405,7 @@ class ProgramController extends Eventable {
             return Promise.resolve(makeMediaController((ProviderConstructor)));
         }
 
-        return providerController.loadProviders(model.get('playlist'))
+        return providerController.loadProvider(source)
             .then(() => {
                 ProviderConstructor = providerController.choose(source);
                 // The provider we need couldn't be loaded
