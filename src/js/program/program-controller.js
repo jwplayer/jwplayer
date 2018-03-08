@@ -1,4 +1,4 @@
-import ProviderController from 'providers/provider-controller';
+import Providers from 'providers/providers';
 import MediaController from 'program/media-controller';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
@@ -26,7 +26,7 @@ class ProgramController extends Eventable {
         this.mediaController = null;
         this.mediaControllerListener = MediaControllerListener(model, this);
         this.model = model;
-        this.providerController = ProviderController(model.getConfiguration());
+        this.providers = new Providers(model.getConfiguration());
         this.loadPromise = resolved;
 
         if (!Features.backgroundLoading) {
@@ -50,7 +50,7 @@ class ProgramController extends Eventable {
         model.setActiveItem(index);
         const source = getSource(item);
         if (!source) {
-            return Promise.reject('No media');
+            return Promise.reject(new Error('No media'));
         }
 
         // Activate the background media if it's loading the item we want to play
@@ -66,7 +66,7 @@ class ProgramController extends Eventable {
 
         if (mediaController) {
             const casting = model.get('castActive');
-            if (casting || this.providerController.canPlay(mediaController.provider, source)) {
+            if (casting || this._providerCanPlay(mediaController.provider, source)) {
                 // We can synchronously reuse the current mediaController
                 this.loadPromise = Promise.resolve(mediaController);
                 // Reinitialize the mediaController with the new item, allowing a new playback session
@@ -109,7 +109,7 @@ class ProgramController extends Eventable {
         let playPromise;
 
         if (!item) {
-            return Promise.reject('No media');
+            return Promise.reject(new Error('No media'));
         }
 
         if (!playReason) {
@@ -394,26 +394,22 @@ class ProgramController extends Eventable {
      * @private
      */
     _setupMediaController(source) {
-        const { model, providerController } = this;
+        const { model, providers } = this;
         const makeMediaController = ProviderConstructor => new MediaController(
             new ProviderConstructor(model.get('id'), model.getConfiguration(), this.primedElement),
             model
         );
 
-        let ProviderConstructor = providerController.choose(source);
-        if (ProviderConstructor) {
-            return Promise.resolve(makeMediaController((ProviderConstructor)));
+        const { provider, name } = providers.choose(source);
+        if (provider) {
+            return Promise.resolve(makeMediaController((provider)));
         }
 
-        return providerController.loadProvider(source)
-            .then(() => {
-                ProviderConstructor = providerController.choose(source);
-                // The provider we need couldn't be loaded
-                if (!ProviderConstructor) {
-                    this._destroyActiveMedia();
-                    throw Error(`Failed to load media`);
-                }
-                return makeMediaController(ProviderConstructor);
+        return providers.load(name)
+            .then(ProviderConstructor => makeMediaController(ProviderConstructor))
+            .catch(e => {
+                this._destroyActiveMedia();
+                throw e;
             });
     }
 
@@ -460,6 +456,11 @@ class ProgramController extends Eventable {
             this._destroyMediaController(nextMediaController);
             background.clearNext();
         });
+    }
+
+    _providerCanPlay(_provider, source) {
+        const { provider } = this.providers.choose(source);
+        return provider && (_provider && _provider instanceof provider);
     }
 
     /**

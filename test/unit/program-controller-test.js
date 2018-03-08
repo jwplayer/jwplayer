@@ -4,6 +4,7 @@ import MediaElementPool from 'program/media-element-pool';
 import { Features } from 'environment/environment';
 import MockProvider, { MockVideolessProvider } from 'mock/mock-provider';
 import sinon from 'sinon';
+import Config from 'api/config';
 
 const defaultConfig = {
     playlist: null,
@@ -15,7 +16,9 @@ const defaultConfig = {
 
 const mp4Item = {
     sources: [
-        {}
+        {
+            file: 'foo.mp4'
+        }
     ]
 };
 
@@ -79,8 +82,9 @@ describe('ProgramController', function () {
         });
         model = new Model().setup(config);
         programController = new ProgramController(model, new MediaElementPool());
-        programController.providerController = {
-            choose: () => MockProvider,
+        programController.providers = {
+            choose: () => ({name: 'mock', provider: MockProvider}),
+            load: () => Promise.resolve(MockProvider),
             canPlay: () => true
         };
         model.toString = (() => '[Model]');
@@ -358,7 +362,7 @@ describe('ProgramController', function () {
     });
 
     it('videoless providers are detached instead of backgrounded', function() {
-        programController.providerController.choose = () => MockVideolessProvider;
+        programController.providers.choose = () => ({ name: 'mockVideoless', provider: MockVideolessProvider });
         return programController.setActiveItem(0)
             .then(function () {
                 const provider = programController.mediaController.provider;

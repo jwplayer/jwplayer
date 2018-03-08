@@ -114,9 +114,9 @@ function filterSources(sources, providers) {
 function chooseProviderAndType(sources, providers) {
     for (let i = 0; i < sources.length; i++) {
         const source = sources[i];
-        const chosenProvider = providers.choose(source);
-        if (chosenProvider) {
-            return { type: source.type, provider: chosenProvider.providerToCheck };
+        const { providerToCheck } = providers.choose(source);
+        if (providerToCheck) {
+            return { type: source.type, provider: providerToCheck };
         }
     }
 
