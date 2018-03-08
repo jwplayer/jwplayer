@@ -48,12 +48,12 @@ function loadProvider(_model) {
         validatePlaylist(playlist);
 
         const providersManager = _model.getProviders();
-        const firstProviderNeeded = providersManager.required([playlist[0]]);
+        const { name, provider } = providersManager.choose(playlist[0].sources[0]);
         // Skip provider loading if included in bundle
-        if (bundleContainsProviders.html5 && firstProviderNeeded && firstProviderNeeded[0].name === 'html5') {
+        if (bundleContainsProviders.html5 && provider && name === 'html5') {
             return;
         }
-        return providersManager.load(firstProviderNeeded);
+        return providersManager.load(name);
     });
 }
 
