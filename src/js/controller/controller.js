@@ -164,11 +164,13 @@ Object.assign(Controller.prototype, {
                 model.setStreamType(type);
             });
 
-            if (Features.backgroundLoading) {
+            const index = model.get('item') + 1;
+            const item = model.get('playlist')[index];
+            if (Features.backgroundLoading && item) {
                 const onPosition = (changedMediaModel, position) => {
                     if (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
                         mediaModel.off('change:position', onPosition, this);
-                        _programController.backgroundLoad(_model.get('item') + 1);
+                        _programController.backgroundLoad(item);
                     }
                 };
                 mediaModel.on('change:position', onPosition, this);
