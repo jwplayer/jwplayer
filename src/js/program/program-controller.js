@@ -68,7 +68,7 @@ class ProgramController extends Eventable {
             const casting = model.get('castActive');
             if (casting || this.providerController.canPlay(mediaController.provider, source)) {
                 // We can synchronously reuse the current mediaController
-                this.loadPromise = resolved(mediaController);
+                this.loadPromise = Promise.resolve(mediaController);
                 // Reinitialize the mediaController with the new item, allowing a new playback session
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
@@ -402,7 +402,7 @@ class ProgramController extends Eventable {
 
         let ProviderConstructor = providerController.choose(source);
         if (ProviderConstructor) {
-            return resolved(makeMediaController((ProviderConstructor)));
+            return Promise.resolve(makeMediaController((ProviderConstructor)));
         }
 
         return providerController.loadProviders(model.get('playlist'))
