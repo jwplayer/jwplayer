@@ -68,7 +68,7 @@ class ProgramController extends Eventable {
             const casting = model.get('castActive');
             if (casting || this.providerController.canPlay(mediaController.provider, source)) {
                 // We can synchronously reuse the current mediaController
-                this.loadPromise = Promise.resolve(mediaController);
+                this.loadPromise = resolved(mediaController);
                 // Reinitialize the mediaController with the new item, allowing a new playback session
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
@@ -123,10 +123,6 @@ class ProgramController extends Eventable {
             // Wait for the provider to load before starting initial playback
             // Make the subsequent promise cancelable so that we can avoid playback when no longer wanted
             const thenPlayPromise = cancelable((nextMediaController) => {
-                // Ensure that we haven't switched items while waiting for the provider to load
-                if (nextMediaController.background) {
-                    this._setActiveMedia(nextMediaController);
-                }
                 if (this.mediaController && this.mediaController.mediaModel === nextMediaController.mediaModel) {
                     return nextMediaController.play(playReason);
                 }
@@ -406,7 +402,7 @@ class ProgramController extends Eventable {
 
         let ProviderConstructor = providerController.choose(source);
         if (ProviderConstructor) {
-            return Promise.resolve(makeMediaController((ProviderConstructor)));
+            return resolved(makeMediaController((ProviderConstructor)));
         }
 
         return providerController.loadProviders(model.get('playlist'))
