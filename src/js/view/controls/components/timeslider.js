@@ -141,7 +141,7 @@ class TimeSlider extends Slider {
     }
 
     onPosition(model, position) {
-        this.updateTime(position, model.get('duration'));
+        this.updateTime(position, model.get('duration'), model.get('currentTime'), model.get('seekRange'));
     }
 
     onDuration(model, duration) {
@@ -153,7 +153,7 @@ class TimeSlider extends Slider {
         this.streamType = streamType;
     }
 
-    updateTime(position, duration) {
+    updateTime(position, duration, currentTime, seekRange) {
         var pct = 0;
         if (duration) {
             if (this.streamType === 'DVR') {
