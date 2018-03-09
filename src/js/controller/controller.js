@@ -164,13 +164,16 @@ Object.assign(Controller.prototype, {
                 model.setStreamType(type);
             });
 
+            const recsAuto = (model.get('related') || {}).oncomplete === 'autoplay';
             const index = model.get('item') + 1;
-            const item = model.get('playlist')[index];
-            if (Features.backgroundLoading && item) {
+            let item = model.get('playlist')[index];
+            if ((item || recsAuto) && Features.backgroundLoading) {
                 const onPosition = (changedMediaModel, position) => {
-                    if (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
+                    if (item && position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
                         mediaModel.off('change:position', onPosition, this);
                         _programController.backgroundLoad(item);
+                    } else if (recsAuto) {
+                        item = _model.get('nextUp');
                     }
                 };
                 mediaModel.on('change:position', onPosition, this);

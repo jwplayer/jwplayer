@@ -54,7 +54,7 @@ class ProgramController extends Eventable {
         }
 
         // Activate the background media if it's loading the item we want to play
-        if (background.nextItem === item) {
+        if (background.isNext(item)) {
             // First destroy the active item so that the BGL provider can enter the foreground
             this._destroyActiveMedia();
             // Attach the BGL provider into the load/play chain

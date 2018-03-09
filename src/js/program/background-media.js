@@ -20,15 +20,13 @@ export default function BackgroundMedia() {
         setNext(item, loadPromise) {
             nextMedia = { item, loadPromise };
         },
+        isNext(item) {
+            return !!(nextMedia && JSON.stringify(nextMedia.item.sources[0]) === JSON.stringify(item.sources[0]));
+        },
         clearNext() {
             nextMedia = null;
         }
     }, {
-        nextItem: {
-            get() {
-                return nextMedia ? nextMedia.item : null;
-            }
-        },
         nextLoadPromise: {
             get() {
                 return nextMedia ? nextMedia.loadPromise : null;
