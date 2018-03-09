@@ -375,6 +375,8 @@ function View(_api, _model) {
             },
             tap: () => {
                 _playerElement.removeEventListener('mousemove', moveHandler);
+                _playerElement.removeEventListener('mouseout', outHandler);
+                _playerElement.removeEventListener('mouseover', overHandler);
                 _this.trigger(DISPLAY_CLICK);
                 if (settingsMenuVisible()) {
                     _controls.settingsMenu.close();
