@@ -1,9 +1,10 @@
-import ProviderController from 'providers/provider-controller';
+import Providers from 'providers/providers';
 import MediaController from 'program/media-controller';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
+import BackgroundMedia from 'program/background-media';
 
 import { ERROR, PLAYER_STATE, STATE_BUFFERING, STATE_IDLE } from 'events/events';
 import { Features } from '../environment/environment';
@@ -19,13 +20,14 @@ class ProgramController extends Eventable {
     constructor(model, mediaPool) {
         super();
 
-        this.backgroundMedia = null;
+        this.adPlaying = false;
+        this.background = BackgroundMedia();
         this.mediaPool = mediaPool;
         this.mediaController = null;
         this.mediaControllerListener = MediaControllerListener(model, this);
         this.model = model;
-        this.providerController = ProviderController(model.getConfiguration());
-        this.providerPromise = resolved;
+        this.providers = new Providers(model.getConfiguration());
+        this.loadPromise = resolved;
 
         if (!Features.backgroundLoading) {
             // If background loading is not supported, set the shared media element
@@ -41,32 +43,37 @@ class ProgramController extends Eventable {
      * @memberOf ProgramController
      */
     setActiveItem(index) {
-        const { mediaController, model } = this;
+        const { background, mediaController, model } = this;
         const item = model.get('playlist')[index];
 
         model.attributes.itemReady = false;
         model.setActiveItem(index);
-        this._destroyBackgroundMedia();
         const source = getSource(item);
         if (!source) {
-            return Promise.reject('No media');
+            return Promise.reject(new Error('No media'));
         }
+
+        // Activate the background media if it's loading the item we want to play
+        if (background.nextItem === item) {
+            // First destroy the active item so that the BGL provider can enter the foreground
+            this._destroyActiveMedia();
+            // Attach the BGL provider into the load/play chain
+            this.loadPromise = this._activateBackgroundMedia();
+            return this.loadPromise;
+        }
+        // Loading a new item invalidates all background loading media
+        this._destroyBackgroundMedia();
 
         if (mediaController) {
             const casting = model.get('castActive');
-            // Buffer between item switches, but remain in the initial state (IDLE) while loading the first provider
-            model.set(PLAYER_STATE, STATE_BUFFERING);
-            if (casting || this.providerController.canPlay(mediaController.provider, source)) {
-                this.providerPromise = Promise.resolve(mediaController);
-                // We can reuse the current mediaController and do so synchronously
-                // Initialize the provider and mediaModel, sync it with the Model
-                // This sets up the mediaController and allows playback to begin
+            if (casting || this._providerCanPlay(mediaController.provider, source)) {
+                // We can synchronously reuse the current mediaController
+                this.loadPromise = Promise.resolve(mediaController);
+                // Reinitialize the mediaController with the new item, allowing a new playback session
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
-                // Initialize the provider last so it's setting properties on the (newly) active media model
-                mediaController.provider.init(item);
                 model.set('itemReady', true);
-                return this.providerPromise;
+                return this.loadPromise;
             }
 
             // If we can't play the source with the current provider, reset the current one and
@@ -74,22 +81,20 @@ class ProgramController extends Eventable {
             this._destroyActiveMedia();
         }
 
+        model.set(PLAYER_STATE, STATE_BUFFERING);
         const mediaModelContext = model.mediaModel;
-        this.providerPromise = this._loadProviderConstructor(source)
-            .then((ProviderConstructor) => {
+        this.loadPromise = this._setupMediaController(source)
+            .then(nextMediaController => {
                 // Don't do anything if we've tried to load another provider while this promise was resolving
+                // We check using the mediaModel because it is unique per item, and per instance of that item
                 if (mediaModelContext === model.mediaModel) {
-                    const nextProvider = new ProviderConstructor(model.get('id'), model.getConfiguration(), this.primedElement);
-                    const nextMediaController = new MediaController(nextProvider, model);
                     nextMediaController.activeItem = item;
                     this._setActiveMedia(nextMediaController);
-                    // Initialize the provider last so it's setting properties on the (newly) active media model
-                    nextMediaController.provider.init(item);
                     model.set('itemReady', true);
                     return nextMediaController;
                 }
             });
-        return this.providerPromise;
+        return this.loadPromise;
     }
 
     /**
@@ -104,7 +109,7 @@ class ProgramController extends Eventable {
         let playPromise;
 
         if (!item) {
-            return;
+            return Promise.reject(new Error('No media'));
         }
 
         if (!playReason) {
@@ -118,14 +123,13 @@ class ProgramController extends Eventable {
             // Wait for the provider to load before starting initial playback
             // Make the subsequent promise cancelable so that we can avoid playback when no longer wanted
             const thenPlayPromise = cancelable((nextMediaController) => {
-                // Ensure that we haven't switched items while waiting for the provider to load
                 if (this.mediaController && this.mediaController.mediaModel === nextMediaController.mediaModel) {
                     return nextMediaController.play(playReason);
                 }
                 throw new Error('Playback cancelled.');
             });
 
-            playPromise = this.providerPromise
+            playPromise = this.loadPromise
                 .catch(error => {
                     thenPlayPromise.cancel();
                     // Required provider was not loaded
@@ -163,8 +167,8 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     preloadVideo() {
-        const { backgroundMedia, mediaController } = this;
-        const media = mediaController || backgroundMedia;
+        const { background, mediaController } = this;
+        const media = mediaController || background.currentMedia;
         if (!media) {
             return;
         }
@@ -200,8 +204,6 @@ class ProgramController extends Eventable {
         const castMediaController = new MediaController(castProvider, model);
         castMediaController.activeItem = playlistItem;
         this._setActiveMedia(castMediaController);
-        // Initialize the provider last so it's setting properties on the (newly) active media model
-        castMediaController.provider.init(playlistItem);
         model.set('itemReady', true);
     }
 
@@ -217,7 +219,6 @@ class ProgramController extends Eventable {
         item.starttime = model.mediaModel.get('position');
 
         this.stopVideo();
-
         this.setActiveItem(index);
     }
 
@@ -229,18 +230,19 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     backgroundActiveMedia() {
-        const { backgroundMedia, mediaController } = this;
+        this.adPlaying = true;
+        const { background, mediaController } = this;
         if (!mediaController) {
             return;
         }
 
         // Destroy any existing background media
-        if (backgroundMedia) {
-            this._destroyBackgroundMedia();
+        if (background.currentMedia) {
+            this._destroyMediaController(background.currentMedia);
         }
 
         mediaController.background = true;
-        this.backgroundMedia = mediaController;
+        background.currentMedia = mediaController;
         this.mediaController = null;
     }
 
@@ -251,22 +253,42 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     restoreBackgroundMedia() {
-        const { backgroundMedia, mediaController } = this;
-        // An existing media controller means that we've changed the active item
-        // The current background media is no longer relevant, so destroy it
-        if (mediaController) {
-            this._destroyBackgroundMedia();
+        this.adPlaying = false;
+        const { background, mediaController } = this;
+        const backgroundMediaController = background.currentMedia;
+        if (!backgroundMediaController) {
+            return;
+        } else if (mediaController) {
+            // An existing media controller means that we've changed the active item
+            // The current background media is no longer relevant, so destroy it
+            this._destroyMediaController(backgroundMediaController);
+            background.currentMedia = null;
             return;
         }
-        if (backgroundMedia) {
-            // Set the state to buffering before attaching so that we don't resume in the "paused" state
-            // If the mediaController enters the foreground quickly enough (within one animation frame), no buffering
-            // wheel will be shown
-            backgroundMedia.mediaModel.attributes.mediaState = 'buffering';
-            this._setActiveMedia(backgroundMedia);
-            backgroundMedia.background = false;
-            this.backgroundMedia = null;
-        }
+
+        backgroundMediaController.mediaModel.attributes.mediaState = 'buffering';
+        this._setActiveMedia(backgroundMediaController);
+        backgroundMediaController.background = false;
+        background.currentMedia = null;
+    }
+
+    /**
+     * Loads the next playlist item in the background.
+     * @param {Item} item - The playlist item to load.
+     *
+     * @returns {void}
+     */
+    backgroundLoad(item) {
+        const { background } = this;
+        const source = getSource(item);
+
+        background.setNext(item, this._setupMediaController(source)
+            .then(nextMediaController => {
+                nextMediaController.activeItem = item;
+                nextMediaController.preload();
+                return nextMediaController;
+            })
+        );
     }
 
     /**
@@ -297,6 +319,7 @@ class ProgramController extends Eventable {
 
     /**
      * Activates the provided media controller, placing it into the foreground.
+     * Events fired from the media controller will be forwarded through the program controller.
      * @param {MediaController} mediaController - The media controller to activate.
      * @returns {void}
      * @private
@@ -321,75 +344,120 @@ class ProgramController extends Eventable {
      * @private
      */
     _destroyActiveMedia() {
-        const { mediaPool, mediaController, model } = this;
+        const { mediaController, model } = this;
         if (!mediaController) {
             return;
         }
 
         mediaController.detach();
-        mediaPool.recycle(mediaController.mediaElement);
-        mediaController.destroy();
-
+        this._destroyMediaController(mediaController);
         model.resetProvider();
         this.mediaController = null;
     }
 
     /**
-     * Destroys background media.
+     * Destroys all background media.
      * @returns {void}
      * @private
      */
     _destroyBackgroundMedia() {
-        const { backgroundMedia, mediaPool } = this;
-        if (!backgroundMedia) {
-            return;
-        }
-        mediaPool.recycle(backgroundMedia.mediaElement);
-        backgroundMedia.destroy();
-        this.backgroundMedia = null;
+        const { background } = this;
+        this._destroyMediaController(background.currentMedia);
+        background.currentMedia = null;
+        this._destroyBackgroundLoadingMedia();
     }
 
     /**
-     * Loads the constructor required for the current source.
-     * Resolves with the required constructor, or rejects when the constructor could not be found or loaded.
-     * If rejected, current playback will be destroyed.
+     * Destroys a mediaController, and returns it's tag to the pool.
+     * @param {MediaController} mediaController - The media controller to destroy and recycle.
+     * @returns {void}
+     * @private
+     */
+    _destroyMediaController(mediaController) {
+        const { mediaPool } = this;
+        if (!mediaController) {
+            return;
+        }
+        mediaPool.recycle(mediaController.mediaElement);
+        mediaController.destroy();
+    }
+
+    /**
+     * Constructs a new media controller with the provider whose able to play the current source.
+     * Will wait and load the provider constructor if it has not already been loaded.
+     * If the required provider cannot be loaded, the subsequent promise rejection will destroy playback.
      * @param {Source} source - The playlist item Source for which a provider is needed.
      * @returns {Promise} The Provider constructor promise.
      * @private
      */
-    _loadProviderConstructor(source) {
-        const { model, providerController } = this;
+    _setupMediaController(source) {
+        const { model, providers } = this;
+        const makeMediaController = ProviderConstructor => new MediaController(
+            new ProviderConstructor(model.get('id'), model.getConfiguration(), this.primedElement),
+            model
+        );
 
-        let ProviderConstructor = providerController.choose(source);
-        if (ProviderConstructor) {
-            return Promise.resolve(ProviderConstructor);
+        const { provider, name } = providers.choose(source);
+        if (provider) {
+            return Promise.resolve(makeMediaController((provider)));
         }
 
-        return providerController.loadProviders(model.get('playlist'))
-            .then(() => {
-                ProviderConstructor = providerController.choose(source);
-                // The provider we need couldn't be loaded
-                if (!ProviderConstructor) {
-                    this._destroyActiveMedia();
-                    throw Error(`Failed to load media`);
-                }
-                return ProviderConstructor;
+        return providers.load(name)
+            .then(ProviderConstructor => makeMediaController(ProviderConstructor))
+            .catch(e => {
+                this._destroyActiveMedia();
+                throw e;
             });
     }
 
     /**
-     * Returns the actively playing Provider object.
-     * Will return the background Provider if there is no media in the foreground, which happens when an ad
-     * is playing.
-     * @returns {VideoProvider|DefaultProvider|object} The active playback provider instance.
+     * Places the background loading media into the foreground. Will wait for the provider promise to resolve.
+     * If the program controller has been placed into ads mode, the background loading media will replace the background
+     * loaded media. When the ad is over, the loaded media will be placed into the foreground via _restoreBackgroundMedia().
+     * This is done to avoid a race condition where we have activated the loading item, but switch to ads mode before the
+     * promise resovles, resulting in two tags in the foreground (since _backgroundActiveMedia "misses" the pending promise).
+     * @returns {Promise} The Provider promise. Resolves with preloaded media controller.
+     * @memberOf ProgramController
      */
-    get activeProvider() {
-        const { mediaController, backgroundMedia } = this;
-        if (!mediaController && !backgroundMedia) {
-            return null;
-        }
+    _activateBackgroundMedia() {
+        const { background, background: { nextLoadPromise }, model } = this;
+        // Activating this item means that any media already loaded in the background will no longer be needed
+        this._destroyMediaController(background.currentMedia);
+        background.currentMedia = null;
+        return nextLoadPromise.then(nextMediaController => {
+            model.attributes.itemReady = true;
+            background.clearNext();
+            if (this.adPlaying) {
+                background.currentMedia = nextMediaController;
+            } else {
+                this._setActiveMedia(nextMediaController);
+                nextMediaController.background = false;
+            }
+            return nextMediaController;
+        });
+        // The catch is chained as part of the play promise chain
+    }
 
-        return mediaController ? mediaController.provider : backgroundMedia.provider;
+    /**
+     * Destroys the mediaController which was constructed and loading in the background (nextMedia).
+     * Does not destroy the mediaController which was already playing and subsequently placed into the background (currentMedia).
+     * @returns {void}
+     * @private
+     */
+    _destroyBackgroundLoadingMedia() {
+        const { background, background: { nextLoadPromise } } = this;
+        if (!nextLoadPromise) {
+            return;
+        }
+        nextLoadPromise.then(nextMediaController => {
+            this._destroyMediaController(nextMediaController);
+            background.clearNext();
+        });
+    }
+
+    _providerCanPlay(_provider, source) {
+        const { provider } = this.providers.choose(source);
+        return provider && (_provider && _provider instanceof provider);
     }
 
     /**
@@ -424,12 +492,12 @@ class ProgramController extends Eventable {
      * or did it result in the media being detached or backgrounded?
      */
     get beforeComplete() {
-        const { mediaController, backgroundMedia } = this;
-        if (!mediaController && !backgroundMedia) {
+        const { mediaController, background: { currentMedia } } = this;
+        if (!mediaController && !currentMedia) {
             return false;
         }
 
-        return mediaController ? mediaController.beforeComplete : backgroundMedia.beforeComplete;
+        return mediaController ? mediaController.beforeComplete : currentMedia.beforeComplete;
     }
 
     /**
@@ -526,13 +594,13 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     set mute(mute) {
-        const { backgroundMedia, mediaController, mediaPool } = this;
+        const { background, mediaController, mediaPool } = this;
 
         if (mediaController) {
             mediaController.mute = mute;
         }
-        if (backgroundMedia) {
-            backgroundMedia.mute = mute;
+        if (background.currentMedia) {
+            background.currentMedia.mute = mute;
         }
 
         mediaPool.syncMute(mute);
@@ -595,13 +663,13 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     set volume(volume) {
-        const { backgroundMedia, mediaController, mediaPool } = this;
+        const { background, mediaController, mediaPool } = this;
 
         if (mediaController) {
             mediaController.volume = volume;
         }
-        if (backgroundMedia) {
-            backgroundMedia.volume = volume;
+        if (background.currentMedia) {
+            background.currentMedia.volume = volume;
         }
 
         mediaPool.syncVolume(volume);

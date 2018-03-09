@@ -20,38 +20,31 @@ export const Loaders = {
 
 Object.assign(Providers.prototype, {
 
-    load: function(providersToLoad) {
-        return Promise.all(providersToLoad.filter(provider => !!Loaders[provider.name]).map(provider => {
-            // Resolve event for unknown registered providers
-            const providerLoaderMethod = Loaders[provider.name];
-            return providerLoaderMethod();
-        }));
+    load: function(providerName) {
+        return new Promise((resolve, reject) => {
+            const providerLoaderMethod = Loaders[providerName];
+            const rejectLoad = () => {
+                reject(new Error('Failed to load media'));
+            };
+
+            if (!providerLoaderMethod) {
+                rejectLoad();
+                return;
+            }
+            providerLoaderMethod().then(() => {
+                const providerConstructor = ProvidersLoaded[providerName];
+                if (!providerConstructor) {
+                    rejectLoad();
+                    return;
+                }
+                resolve(ProvidersLoaded[providerName]);
+            });
+        });
     },
 
+    // This method is overridden by commercial in order to add an edition check
     providerSupports: function(provider, source) {
         return provider.supports(source);
-    },
-
-    required: function(playlist) {
-        playlist = playlist.slice();
-        return ProvidersSupported.filter((provider) => {
-            // remove items from copied playlist that can be played by provider
-            // remaining providers will be checked against any remaining items
-            // provider will be loaded if there are matches
-            let loadProvider = false;
-            for (let i = playlist.length; i--;) {
-                const item = playlist[i];
-                const source = item.sources[0];
-                if (source) {
-                    const supported = this.providerSupports(provider, source);
-                    if (supported) {
-                        playlist.splice(i, 1);
-                    }
-                    loadProvider = loadProvider || supported;
-                }
-            }
-            return loadProvider;
-        });
     },
 
     // Find the name of the first provider which can support the media source-type
@@ -76,7 +69,7 @@ Object.assign(Providers.prototype, {
             }
         }
 
-        return null;
+        return {};
     }
 });
 

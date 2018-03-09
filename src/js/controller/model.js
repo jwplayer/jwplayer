@@ -3,13 +3,13 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
 import _ from 'utils/underscore';
-import ProviderController from 'providers/provider-controller';
 import { seconds } from 'utils/strings';
+import Providers from 'providers/providers';
 
 // Represents the state of the player
 const Model = function() {
     const _this = this;
-    let providerController;
+    let providers;
     let _provider;
     this.mediaModel = new MediaModel();
 
@@ -18,7 +18,7 @@ const Model = function() {
 
     this.setup = function(config) {
         Object.assign(this.attributes, config, INITIAL_PLAYER_STATE);
-        providerController = ProviderController(this.getConfiguration());
+        providers = new Providers(this.getConfiguration());
         this.setAutoStart();
         return this;
     };
@@ -81,7 +81,7 @@ const Model = function() {
     };
 
     this.getProviders = function() {
-        return providerController.allProviders();
+        return providers;
     };
 
     this.setVolume = function(volume) {

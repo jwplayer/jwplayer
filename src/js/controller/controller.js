@@ -25,6 +25,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
     CAPTIONS_LIST, CONTROLS, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
+import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -152,16 +153,28 @@ Object.assign(Controller.prototype, {
 
         _model.on('change:mediaModel', function(model, mediaModel) {
             model.set('errorEvent', undefined);
-            mediaModel.change('mediaState', function(changedMediaModel, state) {
+            mediaModel.change('mediaState', function (changedMediaModel, state) {
                 if (!model.get('errorEvent')) {
                     model.set(PLAYER_STATE, normalizeState(state));
                 }
             });
-            mediaModel.on('change:duration', function(changedMediaModel, duration) {
+            mediaModel.on('change:duration', function (changedMediaModel, duration) {
                 const minDvrWindow = model.get('minDvrWindow');
                 const type = streamType(duration, minDvrWindow);
                 model.setStreamType(type);
             });
+
+            const index = model.get('item') + 1;
+            const item = model.get('playlist')[index];
+            if (Features.backgroundLoading && item) {
+                const onPosition = (changedMediaModel, position) => {
+                    if (position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
+                        mediaModel.off('change:position', onPosition, this);
+                        _programController.backgroundLoad(item);
+                    }
+                };
+                mediaModel.on('change:position', onPosition, this);
+            }
         });
 
         // Ensure captionsList event is raised after playlistItem

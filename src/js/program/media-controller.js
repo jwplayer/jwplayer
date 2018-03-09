@@ -231,6 +231,7 @@ export default class MediaController extends Eventable {
         mediaModelState.duration = duration;
 
         this.item = item;
+        this.provider.init(item);
     }
 
     set audioTrack(index) {

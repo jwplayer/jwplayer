@@ -2,16 +2,6 @@ import Providers, { Loaders } from 'providers/providers';
 import Source from 'playlist/source';
 import _ from 'underscore/underscore';
 
-const getName = function getName(provider) {
-    if (!provider) {
-        return null;
-    } else if (provider.name) {
-        return provider.name;
-    }
-
-    return provider.toString().match(/^function\s*([^\s(]+)/)[1];
-};
-
 describe('Providers', function() {
 
     it('should choose html5 by default', function() {
@@ -33,7 +23,7 @@ describe('Providers', function() {
 
         _.each(htmlSources, (src, type) => {
             provider = providers.choose(Source(src));
-            expect(getName(provider), type).to.equal('html5');
+            expect(provider.name, type).to.equal('html5');
         });
     });
 
@@ -64,7 +54,7 @@ describe('Providers', function() {
 
         _.each(unsupportedSources, (src, type) => {
             provider = providers.choose(Source(src));
-            expect(getName(provider), type).to.be.null;
+            expect(provider.name).to.be.undefined;
         });
     });
 
