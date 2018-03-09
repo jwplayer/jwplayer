@@ -67,6 +67,7 @@ const VideoListenerMixin = {
             position,
             duration,
             currentTime: this.video.currentTime,
+            seekRange: this.getSeekRange(),
             metadata: {
                 currentTime: this.video.currentTime
             }
