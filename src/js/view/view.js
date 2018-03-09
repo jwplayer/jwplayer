@@ -375,6 +375,8 @@ function View(_api, _model) {
             },
             tap: () => {
                 _playerElement.removeEventListener('mousemove', moveHandler);
+                _playerElement.removeEventListener('mouseout', outHandler);
+                _playerElement.removeEventListener('mouseover', overHandler);
                 _this.trigger(DISPLAY_CLICK);
                 if (settingsMenuVisible()) {
                     _controls.settingsMenu.close();
@@ -407,6 +409,7 @@ function View(_api, _model) {
         });
 
         _playerElement.addEventListener('mousemove', moveHandler);
+        _playerElement.addEventListener('mouseover', overHandler);
         _playerElement.addEventListener('mouseout', outHandler);
 
         return clickHandler;
@@ -418,8 +421,14 @@ function View(_api, _model) {
         }
     }
 
+    function overHandler(event) {
+        if (_controls && !_controls.showing && event.target.nodeName === 'IFRAME') {
+            _controls.userActive();
+        }
+    }
+
     function outHandler(event) {
-        if (_controls && event.relatedTarget && !_playerElement.contains(event.relatedTarget)) {
+        if (_controls && _controls.showing && event.relatedTarget && !_playerElement.contains(event.relatedTarget)) {
             _controls.userActive();
         }
     }
@@ -805,6 +814,7 @@ function View(_api, _model) {
             displayClickHandler.destroy();
             _playerElement.removeEventListener('mousemove', moveHandler);
             _playerElement.removeEventListener('mouseout', outHandler);
+            _playerElement.removeEventListener('mouseover', overHandler);
             displayClickHandler = null;
         }
         _captionsRenderer.destroy();
