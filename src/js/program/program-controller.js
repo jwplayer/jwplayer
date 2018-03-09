@@ -281,9 +281,6 @@ class ProgramController extends Eventable {
         const { background, model } = this;
         const item = model.get('playlist')[index];
         const source = getSource(item);
-        if (!source) {
-            return;
-        }
 
         background.setNext(item, this._setupMediaController(source)
             .then(nextMediaController => {
