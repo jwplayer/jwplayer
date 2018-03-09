@@ -273,13 +273,13 @@ class ProgramController extends Eventable {
     }
 
     /**
-     * Loads the playlist item at the chosen index in the background.
-     * @param {number} index - The index of the playlist item to load.
+     * Loads the next playlist item in the background.
+     * @param {Item} item - The playlist item to load.
+     *
      * @returns {void}
      */
-    backgroundLoad(index) {
-        const { background, model } = this;
-        const item = model.get('playlist')[index];
+    backgroundLoad(item) {
+        const { background } = this;
         const source = getSource(item);
 
         background.setNext(item, this._setupMediaController(source)
