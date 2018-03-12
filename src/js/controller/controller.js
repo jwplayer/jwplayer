@@ -553,7 +553,7 @@ Object.assign(Controller.prototype, {
             }
             _programController.position = pos;
             if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
-                _play(meta);
+                this.play(meta);
             }
         }
 
