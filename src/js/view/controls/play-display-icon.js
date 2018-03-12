@@ -8,7 +8,7 @@ export default class PlayDisplayIcon {
 
         const localization = _model.get('localization');
         const iconDisplay = element.getElementsByClassName('jw-icon-display')[0];
-        const idleClass = _model.get('idleClass');
+        const idleButton = _model.get('idleButton');
         element.style.cursor = 'pointer';
         this.icon = iconDisplay;
         this.el = element;
@@ -45,25 +45,25 @@ export default class PlayDisplayIcon {
                 iconDisplay.setAttribute('aria-label', newStateLabel);
             }
 
-            this.toggleIdleClass(oldState, newState, idleClass);
+            this.toggleIdleClass(oldState, newState, idleButton);
         });
 
-        this.toggleIdleClass('', 'idle', idleClass);
+        this.toggleIdleClass('', 'idle', idleButton);
     }
 
     element() {
         return this.el;
     }
 
-    toggleIdleClass(oldState, newState, idleClass) {
-        if (idleClass !== 'stroke' && idleClass !== 'fill') {
+    toggleIdleClass(oldState, newState, idleButton) {
+        if (idleButton !== 'stroke' && idleButton !== 'fill') {
             return;
         }
 
         if (oldState === 'idle') {
-            removeClass(this.icon, 'jw-ab-idle-' + idleClass);
+            removeClass(this.icon, 'jw-ab-idle-' + idleButton);
         } else if (newState === 'idle') {
-            addClass(this.icon, 'jw-ab-idle-' + idleClass);
+            addClass(this.icon, 'jw-ab-idle-' + idleButton);
         }
     }
 }
