@@ -47,6 +47,7 @@ export function validatePlaylist(playlist) {
         throw new Error('No playable sources found');
     }
 }
+export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
 
 function formatSources(item, model) {
     const sources = item.sources;
