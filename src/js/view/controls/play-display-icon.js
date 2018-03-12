@@ -1,5 +1,6 @@
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
+import { addClass, removeClass } from 'utils/dom';
 
 export default class PlayDisplayIcon {
     constructor(_model, api, element) {
@@ -7,6 +8,7 @@ export default class PlayDisplayIcon {
 
         const localization = _model.get('localization');
         const iconDisplay = element.getElementsByClassName('jw-icon-display')[0];
+        const idleClass = _model.get('idleClass');
         element.style.cursor = 'pointer';
         this.icon = iconDisplay;
         this.el = element;
@@ -15,34 +17,53 @@ export default class PlayDisplayIcon {
             this.trigger(evt.type);
         });
 
-        _model.on('change:state', (model, newstate) => {
-            let newstateLabel;
-            switch (newstate) {
+        _model.on('change:state', (model, newState, oldState) => {
+            let newStateLabel;
+            switch (newState) {
                 case 'buffering':
-                    newstateLabel = localization.buffer;
+                    newStateLabel = localization.buffer;
                     break;
                 case 'playing':
-                    newstateLabel = localization.pause;
+                    newStateLabel = localization.pause;
                     break;
                 case 'paused':
-                    newstateLabel = localization.playback;
+                    newStateLabel = localization.playback;
                     break;
                 case 'complete':
-                    newstateLabel = localization.replay;
+                    newStateLabel = localization.replay;
+                    break;
+                case 'idle':
+                    newStateLabel = localization.playback;
                     break;
                 default:
-                    newstateLabel = '';
+                    newStateLabel = '';
                     break;
             }
-            if (newstateLabel === '') {
+            if (newStateLabel === '') {
                 iconDisplay.removeAttribute('aria-label');
             } else {
-                iconDisplay.setAttribute('aria-label', newstateLabel);
+                iconDisplay.setAttribute('aria-label', newStateLabel);
             }
+
+            this.toggleIdleClass(oldState, newState, idleClass);
         });
+
+        this.toggleIdleClass('', 'idle', idleClass);
     }
 
     element() {
         return this.el;
     }
+
+    toggleIdleClass(oldState, newState, idleClass) {
+        if (idleClass !== 'stroke' && idleClass !== 'fill') {
+            return;
+        }
+
+        if (oldState === 'idle') {
+            removeClass(this.icon, 'jw-ab-idle-' + idleClass);
+        } else if (newState === 'idle') {
+            addClass(this.icon, 'jw-ab-idle-' + idleClass);
+        }
+    };
 }
