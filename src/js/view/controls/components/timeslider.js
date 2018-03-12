@@ -221,7 +221,7 @@ class TimeSlider extends Slider {
             timetipText = utils.timeFormat(time, allowNegativeTime);
 
             // If DVR and within live buffer
-            if (duration < 0 && time > dvrSeekLimit) {
+            if (duration < 0 && time > -1) {
                 timetipText = 'Live';
             }
         }
