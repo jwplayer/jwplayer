@@ -3,7 +3,7 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist, fixSources } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -26,6 +26,7 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
+import Item from 'playlist/item';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -198,7 +199,10 @@ Object.assign(Controller.prototype, {
             const related = _api.getPlugin('related');
             if (related) {
                 related.on('nextUp', (nextUp) => {
-                    _model.set('nextUp', nextUp);
+                    // Format the item from the nextUp feed into a valid PlaylistItem
+                    const item = Item(nextUp);
+                    item.sources = fixSources(item, _model);
+                    _model.set('nextUp', item);
                 });
             }
 

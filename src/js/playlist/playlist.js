@@ -47,9 +47,10 @@ export function validatePlaylist(playlist) {
         throw new Error('No playable sources found');
     }
 }
+export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
 
 function formatSources(item, model) {
-    const sources = item.sources;
+    const sources = item.sources || [];
     const androidhls = model.get('androidhls');
     const safariHlsjs = model.get('safarihlsjs');
     const itemDrm = item.drm || model.get('drm');
