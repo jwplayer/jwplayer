@@ -21,24 +21,20 @@ export const Loaders = {
 Object.assign(Providers.prototype, {
 
     load: function(providerName) {
-        return new Promise((resolve, reject) => {
-            const providerLoaderMethod = Loaders[providerName];
-            const rejectLoad = () => {
-                reject(new Error('Failed to load media'));
-            };
+        const providerLoaderMethod = Loaders[providerName];
+        const rejectLoad = () => {
+            return Promise.reject(new Error('Failed to load media'));
+        };
 
-            if (!providerLoaderMethod) {
-                rejectLoad();
-                return;
+        if (!providerLoaderMethod) {
+            return rejectLoad();
+        }
+        return providerLoaderMethod().then(() => {
+            const providerConstructor = ProvidersLoaded[providerName];
+            if (!providerConstructor) {
+                return rejectLoad();
             }
-            providerLoaderMethod().then(() => {
-                const providerConstructor = ProvidersLoaded[providerName];
-                if (!providerConstructor) {
-                    rejectLoad();
-                    return;
-                }
-                resolve(ProvidersLoaded[providerName]);
-            });
+            return providerConstructor;
         });
     },
 
