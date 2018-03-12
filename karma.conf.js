@@ -41,10 +41,9 @@ module.exports = function(config) {
     ];
     if (isJenkins) {
         testReporters.push('junit');
+        process.env.CHROME_BIN = puppeteer.executablePath();
     }
     const packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
-
-    process.env.CHROME_BIN = puppeteer.executablePath();
 
     config.set({
         frameworks: ['mocha', 'sinon-chai'],
