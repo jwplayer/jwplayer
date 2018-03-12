@@ -31,7 +31,7 @@ describe('PlayDisplayIcon', function() {
         });
 
         it('should not add class if config is default', function() {
-            model.set('idleClass', 'default');
+            model.set('idleButton', 'default');
 
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
@@ -39,7 +39,7 @@ describe('PlayDisplayIcon', function() {
         });
 
         it('should not add class if config is invalid', function() {
-            model.set('idleClass', 'invalid');
+            model.set('idleButton', 'invalid');
 
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
@@ -47,7 +47,7 @@ describe('PlayDisplayIcon', function() {
         });
 
         it('should add class if config is stroke', function() {
-            model.set('idleClass', 'stroke');
+            model.set('idleButton', 'stroke');
 
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
@@ -55,7 +55,7 @@ describe('PlayDisplayIcon', function() {
         });
 
         it('should add class if config is fill', function() {
-            model.set('idleClass', 'fill');
+            model.set('idleButton', 'fill');
 
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
@@ -67,7 +67,7 @@ describe('PlayDisplayIcon', function() {
 
         it('should add class if new state is idle (stop playback)', function() {
             model.set('state', 'playing');
-            model.set('idleClass', 'stroke');
+            model.set('idleButton', 'stroke');
 
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
@@ -78,7 +78,7 @@ describe('PlayDisplayIcon', function() {
 
         it('should remove class if old state is idle (start playback)', function() {
             model.set('state', 'idle');
-            model.set('idleClass', 'stroke');
+            model.set('idleButton', 'stroke');
 
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
