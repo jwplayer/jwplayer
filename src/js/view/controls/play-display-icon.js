@@ -65,5 +65,5 @@ export default class PlayDisplayIcon {
         } else if (newState === 'idle') {
             addClass(this.icon, 'jw-ab-idle-' + idleClass);
         }
-    };
+    }
 }
