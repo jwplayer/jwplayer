@@ -478,7 +478,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     this.load = function(item) {
         _setLevels(item.sources);
-        _completeLoad(item.starttime || 0, item.duration || 0);
+        _completeLoad(item.starttime, item.duration || 0);
         this.setupSideloadedTracks(item.tracks);
     };
 

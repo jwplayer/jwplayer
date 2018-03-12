@@ -78,14 +78,13 @@ describe('playlist.filterPlaylist', function() {
                 }
             }
         };
-
         pl = filterPlaylist(Playlists.webm_mp4, model);
         expect(pl[0].sources[0].type).to.equal('webm');
         expect(pl[1].sources[0].type).to.equal('mp4');
 
         pl = filterPlaylist(Playlists.mp4_webm, model);
-        expect(pl[0].sources[0].type, 'mp4 first & webm second').to.equal('mp4');
-        expect(pl[1].sources[0].type, 'mp4 first & webm second').to.equal('webm');
+        expect(pl[0].sources[0].type).to.equal('mp4');
+        expect(pl[1].sources[0].type).to.equal('webm');
 
         pl = filterPlaylist(Playlists.mp4_webm, model);
         expect(pl[0].sources[0].androidhls).to.equal(androidhls);
