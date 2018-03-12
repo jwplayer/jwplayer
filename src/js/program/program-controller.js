@@ -93,6 +93,10 @@ class ProgramController extends Eventable {
                     model.set('itemReady', true);
                     return nextMediaController;
                 }
+            })
+            .catch(err => {
+                this._destroyActiveMedia();
+                throw err;
             });
         return this.loadPromise;
     }
@@ -288,6 +292,9 @@ class ProgramController extends Eventable {
                 nextMediaController.preload();
                 return nextMediaController;
             })
+            .catch(() => {
+                background.clearNext();
+            })
         );
     }
 
@@ -403,11 +410,7 @@ class ProgramController extends Eventable {
         }
 
         return providers.load(name)
-            .then(ProviderConstructor => makeMediaController(ProviderConstructor))
-            .catch(e => {
-                this._destroyActiveMedia();
-                throw e;
-            });
+            .then(ProviderConstructor => makeMediaController(ProviderConstructor));
     }
 
     /**
@@ -425,6 +428,9 @@ class ProgramController extends Eventable {
         this._destroyMediaController(background.currentMedia);
         background.currentMedia = null;
         return nextLoadPromise.then(nextMediaController => {
+            if (!nextMediaController) {
+                return;
+            }
             model.attributes.itemReady = true;
             background.clearNext();
             if (this.adPlaying) {
