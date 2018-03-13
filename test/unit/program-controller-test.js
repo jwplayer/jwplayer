@@ -208,9 +208,8 @@ describe('ProgramController', function () {
         return programController.setActiveItem(0)
             .then(function () {
                 const provider = programController.mediaController.provider;
-                expect(model.trigger).to.have.callCount(backgroundLoading ? 7 : 6);
+                expect(model.trigger).to.have.callCount(backgroundLoading ? 6 : 5);
                 expect(model.trigger.firstCall).to.have.been.calledWith('change:playlistItem');
-                expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:state', model, 'buffering', 'idle');
                 if (backgroundLoading) {
                     expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:mediaElement');
                 }
@@ -226,7 +225,7 @@ describe('ProgramController', function () {
             .then(() => programController.setActiveItem(1))
             .then(function () {
                 const provider = programController.mediaController.provider;
-                expect(model.trigger).to.have.callCount(backgroundLoading ? 12 : 11);
+                expect(model.trigger).to.have.callCount(backgroundLoading ? 11 : 10);
                 expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:item');
                 expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:playlistItem');
                 expect(model.trigger.getCall(call++)).to.have.been.calledWith('change:mediaModel');
