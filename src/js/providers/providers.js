@@ -45,26 +45,25 @@ Object.assign(Providers.prototype, {
 
     // Find the name of the first provider which can support the media source-type
     choose: function(source) {
-        // prevent throw on missing source
-        source = (source === Object(source)) ? source : {};
-        const count = ProvidersSupported.length;
-        for (let i = 0; i < count; i++) {
-            const provider = ProvidersSupported[i];
-            if (this.providerSupports(provider, source)) {
-                // prefer earlier providers
-                const priority = count - i - 1;
+        if (source === Object(source)) {
+            const count = ProvidersSupported.length;
+            for (let i = 0; i < count; i++) {
+                const provider = ProvidersSupported[i];
+                if (this.providerSupports(provider, source)) {
+                    // prefer earlier providers
+                    const priority = count - i - 1;
 
-                return {
-                    priority: priority,
-                    name: provider.name,
-                    type: source.type,
-                    providerToCheck: provider,
-                    // If provider isn't loaded, this will be undefined
-                    provider: ProvidersLoaded[provider.name]
-                };
+                    return {
+                        priority: priority,
+                        name: provider.name,
+                        type: source.type,
+                        providerToCheck: provider,
+                        // If provider isn't loaded, this will be undefined
+                        provider: ProvidersLoaded[provider.name]
+                    };
+                }
             }
         }
-
         return {};
     }
 });
