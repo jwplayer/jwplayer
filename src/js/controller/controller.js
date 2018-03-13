@@ -560,6 +560,8 @@ Object.assign(Controller.prototype, {
             }
             _programController.position = pos;
             if (!_model.get('scrubbing') && _model.get('state') !== STATE_PLAYING) {
+                meta = meta || {};
+                meta.playTrigger = 'seek';
                 this.play(meta);
             }
         }
