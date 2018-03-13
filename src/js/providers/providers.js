@@ -92,6 +92,28 @@ Object.assign(Providers.prototype, {
         });
     },
 
+    loadKarim: function(providerName) {
+        return new Promise((resolve, reject) => {
+            const providerLoaderMethod = LoadersKarim[providerName];
+            const rejectLoad = () => {
+                reject(new Error('Failed to load media'));
+            };
+
+            if (!providerLoaderMethod) {
+                rejectLoad();
+                return;
+            }
+            providerLoaderMethod().then(() => {
+                const providerConstructor = ProvidersLoaded[providerName];
+                if (providerConstructor) {
+                    rejectLoad();
+                    return;
+                }
+                resolve(ProvidersLoaded[providerName]);
+            });
+        });
+    },
+
     // This method is overridden by commercial in order to add an edition check
     providerSupports: function(provider, source) {
         return provider.supports(source);
