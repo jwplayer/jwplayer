@@ -564,7 +564,9 @@ Object.assign(Controller.prototype, {
         function _item(index, meta) {
             _stop(true);
             _setItem(index);
-            _play(meta);
+            _play(meta).catch(() => {
+                // Suppress "Uncaught (in promise) Error"
+            });
         }
 
         function _setItem(index) {
