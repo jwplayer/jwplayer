@@ -766,7 +766,7 @@ Object.assign(Controller.prototype, {
                 }, _this)
                 .on(MEDIA_ERROR, _this.triggerError, _this)
                 .on(MEDIA_TYPE, (event) => {
-                    // Re-trigger mediaType
+                    // Re-set mediaType so that it triggers change listeners even if queued
                     _model.set('mediaType', event.mediaType);
                 });
         }
