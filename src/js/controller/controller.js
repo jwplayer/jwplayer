@@ -22,7 +22,7 @@ import { INITIAL_MEDIA_STATE } from 'model/player-model';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, AUTOSTART_NOT_ALLOWED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
     MEDIA_ERROR, MEDIA_COMPLETE, CAST_SESSION, FULLSCREEN, PLAYLIST_ITEM, MEDIA_VOLUME, MEDIA_MUTE, PLAYBACK_RATE_CHANGED,
-    CAPTIONS_LIST, CONTROLS, RESIZE, MEDIA_VISUAL_QUALITY, MEDIA_TYPE } from 'events/events';
+    CAPTIONS_LIST, CONTROLS, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
@@ -764,11 +764,7 @@ Object.assign(Controller.prototype, {
                     // Insert a small delay here so that other complete handlers can execute
                     resolved.then(_completeHandler);
                 }, _this)
-                .on(MEDIA_ERROR, _this.triggerError, _this)
-                .on(MEDIA_TYPE, (event) => {
-                    // Re-set mediaType so that it triggers change listeners even if queued
-                    _model.set('mediaType', event.mediaType);
-                });
+                .on(MEDIA_ERROR, _this.triggerError, _this);
         }
 
         function updateProgramSoundSettings() {
