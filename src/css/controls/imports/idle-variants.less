@@ -1,14 +1,16 @@
 @import "../../shared-imports/vars";
 
 .jw-state-idle {
-    .jw-icon-display[class*="jw-ab-idle"] {
-        color: @white;
-        border-radius: 50%;
-        transition: background-color 150ms ease-in-out;
-        transition-property: background-color, filter;
+    .jw-icon-display {
+        &[class*="jw-ab-idle"] {
+            border-radius: 50%;
+            color: @white;
+            transition: background-color @default-transition;
+            transition-property: background-color, filter;
 
-        .jw-svg-icon-play {
-            transform: scale(0.7, 0.7);
+            .jw-svg-icon-play {
+                transform: scale(0.7, 0.7);
+            }
         }
 
         &.jw-ab-idle-stroke {
@@ -20,12 +22,12 @@
 
             &,
             & .jw-svg-icon-play {
-                filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.4));
+                filter: drop-shadow(1px 1px 2px fade(@black, 40%));
             }
         }
 
         &.jw-ab-idle-fill {
-            filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.4));
+            filter: drop-shadow(0 0 10px fade(@black, 40%));
             background-color: fade(@black, 30%);
 
             .jw-svg-icon-play {
@@ -38,3 +40,4 @@
         }
     }
 }
+
