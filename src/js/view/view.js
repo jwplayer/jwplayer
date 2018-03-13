@@ -220,7 +220,6 @@ function View(_api, _model) {
         const playerViewModel = _model.player;
         playerViewModel.on('change:errorEvent', _errorHandler);
         
-        _model.on('change:mediaType', _onMediaTypeChange);
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
@@ -297,6 +296,7 @@ function View(_api, _model) {
         _model.change('state', _stateHandler);
         playerViewModel.change('controls', changeControls);
         playerViewModel.change('streamType', _setLiveMode);
+        _model.change('mediaType', _onMediaTypeChange);
         // Set the title attribute of the video tag to display background media information on mobile devices
         if (_isMobile) {
             playerViewModel.change('playlistItem', setMediaTitleAttribute);
