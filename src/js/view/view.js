@@ -616,11 +616,6 @@ function View(_api, _model) {
         const isAudioFile = (val === 'audio');
         const provider = model.get('provider');
 
-        // Set the poster image for each audio file encountered in a playlist
-        if (isAudioFile) {
-            setPosterImage(model.get('playlistItem'));
-        }
-
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
 
         const isFlash = (provider && provider.name.indexOf('flash') === 0);
