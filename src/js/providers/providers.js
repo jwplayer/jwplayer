@@ -49,68 +49,20 @@ Object.assign(Providers.prototype, {
     },
 
     loadKarim: function(providerName) {
-        return new Promise((resolve, reject) => {
-            const providerLoaderMethod = LoadersKarim[providerName];
-            const rejectLoad = () => {
-                reject(new Error('Failed to load media'));
-            };
+        const providerLoaderMethod = Loaders['qqch'];
+        const rejectLoad = () => {
+            return Promise.reject(new Error('Failed to load media'));
+        };
 
-            if (!providerLoaderMethod) {
-                rejectLoad();
-                return;
+        if (!providerLoaderMethod) {
+            return rejectLoad();
+        }
+        return providerLoaderMethod().then(() => {
+            const providerConstructor = ProvidersLoaded['qqch'];
+            if (!providerConstructor) {
+                return rejectLoad();
             }
-            providerLoaderMethod().then(() => {
-                const providerConstructor = ProvidersLoaded[providerName];
-                if (providerConstructor) {
-                    rejectLoad();
-                    return;
-                }
-                resolve(ProvidersLoaded[providerName]);
-            });
-        });
-    },
-
-    loadKarim: function(providerName) {
-        return new Promise((resolve, reject) => {
-            const providerLoaderMethod = LoadersKarim[providerName];
-            const rejectLoad = () => {
-                reject(new Error('Failed to load media'));
-            };
-
-            if (!providerLoaderMethod) {
-                rejectLoad();
-                return;
-            }
-            providerLoaderMethod().then(() => {
-                const providerConstructor = ProvidersLoaded[providerName];
-                if (providerConstructor) {
-                    rejectLoad();
-                    return;
-                }
-                resolve(ProvidersLoaded[providerName]);
-            });
-        });
-    },
-
-    loadKarim: function(providerName) {
-        return new Promise((resolve, reject) => {
-            const providerLoaderMethod = LoadersKarim[providerName];
-            const rejectLoad = () => {
-                reject(new Error('Failed to load media'));
-            };
-
-            if (!providerLoaderMethod) {
-                rejectLoad();
-                return;
-            }
-            providerLoaderMethod().then(() => {
-                const providerConstructor = ProvidersLoaded[providerName];
-                if (providerConstructor) {
-                    rejectLoad();
-                    return;
-                }
-                resolve(ProvidersLoaded[providerName]);
-            });
+            return providerConstructor;
         });
     },
 
