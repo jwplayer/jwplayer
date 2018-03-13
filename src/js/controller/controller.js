@@ -398,6 +398,7 @@ Object.assign(Controller.prototype, {
             }
 
             const playReason = _getReason(meta);
+            const playTrigger = meta ? meta.playTrigger : null;
             _model.set('playReason', playReason);
             // Stop autoplay behavior if the video is started by the user or an api call
             if (playReason === 'interaction' || playReason === 'external') {
@@ -418,7 +419,10 @@ Object.assign(Controller.prototype, {
 
             if (!_beforePlay) {
                 _beforePlay = true;
-                _this.trigger(MEDIA_BEFOREPLAY, { playReason: playReason });
+                _this.trigger(MEDIA_BEFOREPLAY, {
+                    playReason: playReason,
+                    playTrigger
+                });
                 _beforePlay = false;
                 if (_interruptPlay) {
                     _interruptPlay = false;
