@@ -101,6 +101,116 @@ class ProgramController extends Eventable {
         return this.loadPromise;
     }
 
+    setActiveItemKarim(index) {
+        const { background, mediaController, model } = this;
+        const item = model.get('playlist')[index];
+
+        model.attributes.itemReady = false;
+        model.setActiveItem(index);
+        const source = getSource(item);
+        if (!source) {
+            return Promise.reject(new Error('No media'));
+        }
+
+        // Activate the background media if it's loading the item we want to play
+        if (false) {
+            // First destroy the active item so that the BGL provider can enter the foreground
+            this._destroyActiveMedia();
+            // Attach the BGL provider into the load/play chain
+            this.loadPromise = this._activateBackgroundMedia();
+            return this.loadPromise;
+        }
+        // Loading a new item invalidates all background loading media
+        this._destroyBackgroundMedia();
+
+        if (false) {
+            const casting = model.get('castActive');
+            if (casting || this._providerCanPlay(mediaController.provider, source)) {
+                // We can synchronously reuse the current mediaController
+                this.loadPromise = Promise.reject(mediaController);
+                // Reinitialize the mediaController with the new item, allowing a new playback session
+                mediaController.activeItem = item;
+                this._setActiveMedia(mediaController);
+                model.set('itemReady', true);
+                return this.loadPromise;
+            }
+
+            // If we can't play the source with the current provider, reset the current one and
+            // prime the next tag within the gesture
+            this._destroyActiveMedia();
+        }
+
+        model.set(PLAYER_STATE, STATE_BUFFERING);
+        const mediaModelContext = model.mediaModel;
+        this.loadPromise = this._setupMediaControllerKarim(source)
+            .then(nextMediaController => {
+                // Don't do anything if we've tried to load another provider while this promise was resolving
+                // We check using the mediaModel because it is unique per item, and per instance of that item
+                if (mediaModelContext === model.mediaModel) {
+                    nextMediaController.activeItem = item;
+                    this._setActiveMedia(nextMediaController);
+                    model.set('itemReady', true);
+                    return nextMediaController;
+                }
+            });
+        return this.loadPromise;
+    }
+
+    setActiveItemKarim(index) {
+        const { background, mediaController, model } = this;
+        const item = model.get('playlist')[index];
+
+        model.attributes.itemReady = false;
+        model.setActiveItem(index);
+        const source = getSource(item);
+        if (!source) {
+            return Promise.reject(new Error('No media'));
+        }
+
+        // Activate the background media if it's loading the item we want to play
+        if (false) {
+            // First destroy the active item so that the BGL provider can enter the foreground
+            this._destroyActiveMedia();
+            // Attach the BGL provider into the load/play chain
+            this.loadPromise = this._activateBackgroundMedia();
+            return this.loadPromise;
+        }
+        // Loading a new item invalidates all background loading media
+        this._destroyBackgroundMedia();
+
+        if (false) {
+            const casting = model.get('castActive');
+            if (casting || this._providerCanPlay(mediaController.provider, source)) {
+                // We can synchronously reuse the current mediaController
+                this.loadPromise = Promise.reject(mediaController);
+                // Reinitialize the mediaController with the new item, allowing a new playback session
+                mediaController.activeItem = item;
+                this._setActiveMedia(mediaController);
+                model.set('itemReady', true);
+                return this.loadPromise;
+            }
+
+            // If we can't play the source with the current provider, reset the current one and
+            // prime the next tag within the gesture
+            this._destroyActiveMedia();
+        }
+
+        model.set(PLAYER_STATE, STATE_BUFFERING);
+        const mediaModelContext = model.mediaModel;
+        this.loadPromise = this._setupMediaControllerKarim(source)
+            .then(nextMediaController => {
+                // Don't do anything if we've tried to load another provider while this promise was resolving
+                // We check using the mediaModel because it is unique per item, and per instance of that item
+                if (mediaModelContext === model.mediaModel) {
+                    nextMediaController.activeItem = item;
+                    this._setActiveMedia(nextMediaController);
+                    model.set('itemReady', true);
+                    return nextMediaController;
+                }
+            });
+        return this.loadPromise;
+    }
+
     /**
      * Plays the active item.
      * Will wait for the Provider promise to resolve before any play attempt.
@@ -121,7 +231,7 @@ class ProgramController extends Eventable {
         }
 
         // Start playback immediately if we have already loaded a mediaController
-        if (mediaController) {
+        if (false) {
             playPromise = mediaController.play(playReason);
         } else {
             // Wait for the provider to load before starting initial playback
@@ -286,7 +396,7 @@ class ProgramController extends Eventable {
         const { background } = this;
         const source = getSource(item);
 
-        background.setNext(item, this._setupMediaController(source)
+        background.setNext(item, this._setupMediaControllerKarim(source)
             .then(nextMediaController => {
                 nextMediaController.activeItem = item;
                 nextMediaController.preload();
@@ -411,6 +521,46 @@ class ProgramController extends Eventable {
 
         return providers.load(name)
             .then(ProviderConstructor => makeMediaController(ProviderConstructor));
+    }
+
+    _setupMediaControllerKarim(source) {
+        const { model, providers } = this;
+        const makeMediaController = ProviderConstructor => new MediaController(
+            new ProviderConstructor(model.get('id'), model.getConfiguration(), this.primedElement),
+            model
+        );
+
+        const { provider, name } = providers.choose(source);
+        if (false) {
+            return Promise.resolve(makeMediaController((provider)));
+        }
+
+        return providers.loadKarim(name)
+            .then(ProviderConstructor => makeMediaController(ProviderConstructor))
+            .catch(e => {
+                this._destroyActiveMedia();
+                throw e;
+            });
+    }
+
+    _setupMediaControllerKarim(source) {
+        const { model, providers } = this;
+        const makeMediaController = ProviderConstructor => new MediaController(
+            new ProviderConstructor(model.get('id'), model.getConfiguration(), this.primedElement),
+            model
+        );
+
+        const { provider, name } = providers.choose(source);
+        if (false) {
+            return Promise.resolve(makeMediaController((provider)));
+        }
+
+        return providers.loadKarim(name)
+            .then(ProviderConstructor => makeMediaController(ProviderConstructor))
+            .catch(e => {
+                this._destroyActiveMedia();
+                throw e;
+            });
     }
 
     /**

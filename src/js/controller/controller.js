@@ -170,6 +170,10 @@ Object.assign(Controller.prototype, {
             let item = model.get('playlist')[index];
             if ((item || recsAuto) && Features.backgroundLoading) {
                 const onPosition = (changedMediaModel, position) => {
+                    // if (item) {
+                    //     mediaModel.off('change:position', onPosition, this);
+                    //     _programController.backgroundLoad(item);
+                    // }
                     if (item && position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
                         mediaModel.off('change:position', onPosition, this);
                         _programController.backgroundLoad(item);
@@ -410,7 +414,7 @@ Object.assign(Controller.prototype, {
 
             if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
-                _setItem(0);
+                _setItemKarim(0);
             }
 
             if (!_beforePlay) {
@@ -563,7 +567,7 @@ Object.assign(Controller.prototype, {
 
         function _item(index, meta) {
             _stop(true);
-            _setItem(index);
+            _setItemKarim(index);
             _play(meta).catch(() => {
                 // Suppress "Uncaught (in promise) Error"
             });
@@ -582,6 +586,20 @@ Object.assign(Controller.prototype, {
             }
 
             return _programController.setActiveItem(index);
+        }
+        function _setItemKarim(index) {
+            _programController.stopVideo();
+
+            const playlist = _model.get('playlist');
+            const length = playlist.length;
+
+            // If looping past the end, or before the beginning
+            index = (parseInt(index, 10) || 0) % length;
+            if (index < 0) {
+                index += length;
+            }
+
+            return _programController.setActiveItemKarim(index);
         }
 
         function _prev(meta) {

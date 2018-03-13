@@ -18,6 +18,16 @@ export const Loaders = {
     }
 };
 
+export const LoadersKarim = {
+    html5: function() {
+        return require.ensure(['providers/html5'], chunkLoadErrorHandler, function(require) {
+            const provider = require('providers/html5').default;
+            registerProvider(provider);
+            return provider;
+        }, 'provider.html5');
+    }
+};
+
 Object.assign(Providers.prototype, {
 
     load: function(providerName) {
@@ -35,6 +45,50 @@ Object.assign(Providers.prototype, {
                 return rejectLoad();
             }
             return providerConstructor;
+        });
+    },
+
+    loadKarim: function(providerName) {
+        return new Promise((resolve, reject) => {
+            const providerLoaderMethod = LoadersKarim[providerName];
+            const rejectLoad = () => {
+                reject(new Error('Failed to load media'));
+            };
+
+            if (!providerLoaderMethod) {
+                rejectLoad();
+                return;
+            }
+            providerLoaderMethod().then(() => {
+                const providerConstructor = ProvidersLoaded[providerName];
+                if (providerConstructor) {
+                    rejectLoad();
+                    return;
+                }
+                resolve(ProvidersLoaded[providerName]);
+            });
+        });
+    },
+
+    loadKarim: function(providerName) {
+        return new Promise((resolve, reject) => {
+            const providerLoaderMethod = LoadersKarim[providerName];
+            const rejectLoad = () => {
+                reject(new Error('Failed to load media'));
+            };
+
+            if (!providerLoaderMethod) {
+                rejectLoad();
+                return;
+            }
+            providerLoaderMethod().then(() => {
+                const providerConstructor = ProvidersLoaded[providerName];
+                if (providerConstructor) {
+                    rejectLoad();
+                    return;
+                }
+                resolve(ProvidersLoaded[providerName]);
+            });
         });
     },
 
