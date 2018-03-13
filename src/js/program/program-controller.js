@@ -81,7 +81,6 @@ class ProgramController extends Eventable {
             this._destroyActiveMedia();
         }
 
-        model.set(PLAYER_STATE, STATE_BUFFERING);
         const mediaModelContext = model.mediaModel;
         this.loadPromise = this._setupMediaController(source)
             .then(nextMediaController => {
@@ -125,6 +124,8 @@ class ProgramController extends Eventable {
             playPromise = mediaController.play(playReason);
         } else {
             // Wait for the provider to load before starting initial playback
+            model.set(PLAYER_STATE, STATE_BUFFERING);
+
             // Make the subsequent promise cancelable so that we can avoid playback when no longer wanted
             const thenPlayPromise = cancelable((nextMediaController) => {
                 if (this.mediaController && this.mediaController.mediaModel === nextMediaController.mediaModel) {
