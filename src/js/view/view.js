@@ -298,10 +298,7 @@ function View(_api, _model) {
         playerViewModel.change('streamType', _setLiveMode);
         _model.change('mediaType', _onMediaTypeChange);
         // Set the title attribute of the video tag to display background media information on mobile devices
-        if (_isMobile) {
-            playerViewModel.change('playlistItem', setMediaTitleAttribute);
-        }
-
+        playerViewModel.change('playlistItem', onPlaylistItem);
         // Triggering 'resize' resulting in player 'ready'
         _lastWidth = _lastHeight = null;
         this.checkResized();
@@ -336,19 +333,6 @@ function View(_api, _model) {
     function addControls() {
         const controls = new ControlsModule(document, _this.element());
         _this.addControls(controls);
-    }
-
-    function setMediaTitleAttribute(model, playlistItem) {
-        var videotag = model.get('mediaElement');
-        // chromecast and flash providers do no support video tags
-        if (!videotag) {
-            return;
-        }
-
-        // Writing a string to innerHTML completely decodes multiple-encoded strings
-        const dummyDiv = document.createElement('div');
-        dummyDiv.innerHTML = playlistItem.title || '';
-        videotag.setAttribute('title', dummyDiv.textContent);
     }
 
     function redraw(model, visibility, lastVisibility) {
@@ -634,7 +618,7 @@ function View(_api, _model) {
 
         // Set the poster image for each audio file encountered in a playlist
         if (isAudioFile) {
-            setPosterImage(model);
+            setPosterImage(model.get('playlistItem'));
         }
 
         toggleClass(_playerElement, 'jw-flag-media-audio', isAudioFile);
@@ -690,10 +674,6 @@ function View(_api, _model) {
             case STATE_IDLE:
             case STATE_ERROR:
             case STATE_COMPLETE:
-                // Set the poster image before playback starts (idle), when the playlist ends (complete),
-                // or when an error is encountered. We don't get to the idle state between playlist items because of RAF
-                setPosterImage(_model);
-
                 if (_captionsRenderer) {
                     _captionsRenderer.hide();
                 }
@@ -709,9 +689,28 @@ function View(_api, _model) {
         }
     }
 
-    function setPosterImage(model) {
-        const playlistItem = model.get('playlistItem');
-        _preview.setImage(playlistItem && playlistItem.image);
+    function setMediaTitleAttribute(model, playlistItem) {
+        const videotag = model.get('mediaElement');
+        // chromecast and flash providers do no support video tags
+        if (!videotag) {
+            return;
+        }
+
+        // Writing a string to innerHTML completely decodes multiple-encoded strings
+        const dummyDiv = document.createElement('div');
+        dummyDiv.innerHTML = playlistItem.title || '';
+        videotag.setAttribute('title', dummyDiv.textContent);
+    }
+
+    function setPosterImage(item) {
+        _preview.setImage(item && item.image);
+    }
+
+    function onPlaylistItem(model, item) {
+        setPosterImage(item);
+        if (_isMobile) {
+            setMediaTitleAttribute(model, item);
+        }
     }
 
     const settingsMenuVisible = () => {
