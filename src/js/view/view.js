@@ -297,7 +297,6 @@ function View(_api, _model) {
         playerViewModel.change('controls', changeControls);
         playerViewModel.change('streamType', _setLiveMode);
         _model.change('mediaType', _onMediaTypeChange);
-        // Set the title attribute of the video tag to display background media information on mobile devices
         playerViewModel.change('playlistItem', onPlaylistItem);
         // Triggering 'resize' resulting in player 'ready'
         _lastWidth = _lastHeight = null;
@@ -703,6 +702,7 @@ function View(_api, _model) {
 
     function onPlaylistItem(model, item) {
         setPosterImage(item);
+        // Set the title attribute of the video tag to display background media information on mobile devices
         if (_isMobile) {
             setMediaTitleAttribute(model, item);
         }
