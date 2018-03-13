@@ -199,9 +199,12 @@ Object.assign(Controller.prototype, {
             const related = _api.getPlugin('related');
             if (related) {
                 related.on('nextUp', (nextUp) => {
-                    // Format the item from the nextUp feed into a valid PlaylistItem
-                    const item = Item(nextUp);
-                    item.sources = fixSources(item, _model);
+                    let item = null;
+                    if (nextUp === Object(nextUp)) {
+                        // Format the item from the nextUp feed into a valid PlaylistItem
+                        item = Item(nextUp);
+                        item.sources = fixSources(item, _model);
+                    }
                     _model.set('nextUp', item);
                 });
             }
