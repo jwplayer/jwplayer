@@ -165,10 +165,12 @@ Object.assign(Controller.prototype, {
                 model.setStreamType(type);
             });
 
-            const recsAuto = (model.get('related') || {}).oncomplete === 'autoplay';
             const index = model.get('item') + 1;
+            const recsAuto = (model.get('related') || {}).oncomplete === 'autoplay';
             let item = model.get('playlist')[index];
-            if ((item || recsAuto) && Features.backgroundLoading) {
+            // Do not background load DAI items because that item will be dynamically replaced
+            const isValidItem = (item && !item.daiSetting) || recsAuto;
+            if (isValidItem && Features.backgroundLoading) {
                 const onPosition = (changedMediaModel, position) => {
                     if (item && position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
                         mediaModel.off('change:position', onPosition, this);
