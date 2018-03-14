@@ -72,7 +72,6 @@ class ProgramController extends Eventable {
                 // Reinitialize the mediaController with the new item, allowing a new playback session
                 mediaController.activeItem = item;
                 this._setActiveMedia(mediaController);
-                model.set('itemReady', true);
                 return this.loadPromise;
             }
 
@@ -89,7 +88,6 @@ class ProgramController extends Eventable {
                 if (mediaModelContext === model.mediaModel) {
                     nextMediaController.activeItem = item;
                     this._setActiveMedia(nextMediaController);
-                    model.set('itemReady', true);
                     return nextMediaController;
                 }
             })
@@ -209,7 +207,6 @@ class ProgramController extends Eventable {
         const castMediaController = new MediaController(castProvider, model);
         castMediaController.activeItem = playlistItem;
         this._setActiveMedia(castMediaController);
-        model.set('itemReady', true);
     }
 
     /**
@@ -344,6 +341,7 @@ class ProgramController extends Eventable {
         model.setProvider(provider);
 
         forwardEvents(this, mediaController);
+        model.set('itemReady', true);
     }
 
     /**
@@ -424,7 +422,7 @@ class ProgramController extends Eventable {
      * @memberOf ProgramController
      */
     _activateBackgroundMedia() {
-        const { background, background: { nextLoadPromise }, model } = this;
+        const { background, background: { nextLoadPromise } } = this;
         // Activating this item means that any media already loaded in the background will no longer be needed
         this._destroyMediaController(background.currentMedia);
         background.currentMedia = null;
@@ -432,7 +430,6 @@ class ProgramController extends Eventable {
             if (!nextMediaController) {
                 return;
             }
-            model.attributes.itemReady = true;
             background.clearNext();
             if (this.adPlaying) {
                 background.currentMedia = nextMediaController;
