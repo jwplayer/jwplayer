@@ -424,12 +424,12 @@ Object.assign(Controller.prototype, {
                     startTime
                 });
                 _beforePlay = false;
+                if (_inInteraction(window.event)) {
+                    _programController.primeMediaElements();
+                }
                 if (_interruptPlay) {
                     _interruptPlay = false;
                     _actionOnAttach = null;
-                    if (_inInteraction(window.event)) {
-                        _programController.primeMediaElements();
-                    }
                     return resolved;
                 }
             }
