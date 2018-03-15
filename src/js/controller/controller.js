@@ -432,7 +432,7 @@ Object.assign(Controller.prototype, {
 
                 if (_inInteraction(window.event) && primeBeforePlay) {
                     _programController.primeMediaElements();
-                    primeBeforePlay = true;
+                    primeBeforePlay = false;
                 }
 
                 if (_interruptPlay) {

@@ -1,7 +1,9 @@
 export default function SharedMediaPool(sharedElement, mediaPool) {
     return Object.assign({}, mediaPool, {
         prime() {
-            sharedElement.load();
+            if (!sharedElement.src) {
+                sharedElement.load();
+            }
         },
         getPrimedElement() {
             return sharedElement;
