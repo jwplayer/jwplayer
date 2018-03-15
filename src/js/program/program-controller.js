@@ -299,6 +299,7 @@ class ProgramController extends Eventable {
     /**
      * Primes media elements so that they can autoplay without further user gesture.
      * A primed element is required for media to load in the background.
+     * This method does not prime elements who already have a source set ("safe prime").
      * @returns {void}
      */
     primeMediaElements() {
