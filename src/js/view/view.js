@@ -304,37 +304,37 @@ function View(_api, _model) {
     };
 
     function changeControls(model, enable) {
+        const controlsEvent = {
+            controls: enable
+        };
         if (enable) {
             ControlsModule = ControlsLoader.module.controls;
             if (!ControlsModule) {
-                ControlsLoader.load()
+                controlsEvent.loadPromise = ControlsLoader.load()
                     .then(function (Controls) {
                         ControlsModule = Controls;
                         // Check that controls is still true after the loader promise resolves
-                        if (model.get('controls')) {
+                        const enabledState = model.get('controls');
+                        if (enabledState) {
                             addControls();
                         }
+                        return enabledState;
                     })
                     .catch(function (reason) {
-                        _this.trigger(ERROR, {
+                        const error = {
                             message: 'Controls failed to load',
                             reason: reason
-                        });
-                    })
-                    .then(function () {
-                        _this.trigger(CONTROLS, {
-                            controls: enable
-                        });
+                        };
+                        _this.trigger(ERROR, error);
+                        return error;
                     });
-                return;
+            } else {
+                addControls();
             }
-            addControls();
         } else {
             _this.removeControls();
         }
-        _this.trigger(CONTROLS, {
-            controls: enable
-        });
+        _this.trigger(CONTROLS, controlsEvent);
     }
 
     function addControls() {
