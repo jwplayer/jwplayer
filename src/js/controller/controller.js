@@ -185,12 +185,6 @@ Object.assign(Controller.prototype, {
         _captions = new Captions(_model);
         _captions.on('all', _trigger, _this);
 
-        function triggerControls(model, enable) {
-            _this.trigger(CONTROLS, {
-                controls: enable
-            });
-        }
-
         viewModel.on('viewSetup', (viewElement) => {
             showView(this, viewElement);
         });
@@ -218,8 +212,6 @@ Object.assign(Controller.prototype, {
 
         function _playerReadyNotify() {
             _model.change('visibility', _updateViewable);
-            _model.on('change:controls', triggerControls);
-
             eventsReadyQueue.off();
 
             // Tell the api that we are loaded
