@@ -51,7 +51,7 @@ Object.assign(Controller.prototype, {
         let _interruptPlay;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
         let updatePlaylistCancelable = cancelable(function() {});
-        let hasPrimedBeforePlay = false;
+        let primeBeforePlay = true;
 
         _this.originalContainer = _this.currentContainer = originalContainer;
         _this._events = eventListeners;
@@ -430,9 +430,9 @@ Object.assign(Controller.prototype, {
                 });
                 _beforePlay = false;
 
-                if (_inInteraction(window.event) && !hasPrimedBeforePlay) {
+                if (_inInteraction(window.event) && primeBeforePlay) {
                     _programController.primeMediaElements();
-                    hasPrimedBeforePlay = true;
+                    primeBeforePlay = true;
                 }
 
                 if (_interruptPlay) {
@@ -442,7 +442,12 @@ Object.assign(Controller.prototype, {
                 }
             }
 
-            return _programController.playVideo(playReason);
+            return _programController.playVideo(playReason)
+                .then(() => {
+                    // If playback succeeded that means we captured a gesture (and used it to prime the pool)
+                    // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
+                    primeBeforePlay = false;
+                });
         }
 
         function _getReason(meta) {
