@@ -332,7 +332,10 @@ function View(_api, _model) {
         } else {
             _this.removeControls();
         }
-        _this.trigger(CONTROLS, controlsEvent);
+        // Only trigger controls events after the player and view are set up (and has width/height)
+        if (_lastWidth && _lastHeight) {
+            _this.trigger(CONTROLS, controlsEvent);
+        }
     }
 
     function addControls() {
