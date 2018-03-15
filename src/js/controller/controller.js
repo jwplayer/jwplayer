@@ -428,6 +428,11 @@ Object.assign(Controller.prototype, {
                 }
 
                 if (_interruptPlay) {
+                    // Force tags to prime if we're about to play an ad
+                    // Resetting the source in order to prime is OK since we'll be switching it anyway
+                    if (_inInteraction(window.event) && !Features.backgroundLoading) {
+                        _model.get('mediaElement').load();
+                    }
                     _interruptPlay = false;
                     _actionOnAttach = null;
                     return resolved;
