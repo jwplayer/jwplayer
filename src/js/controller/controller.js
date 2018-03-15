@@ -158,12 +158,15 @@ Object.assign(Controller.prototype, {
                 if (!model.get('errorEvent')) {
                     model.set(PLAYER_STATE, normalizeState(state));
                 }
-            });
-            mediaModel.on('change:duration', function (changedMediaModel, duration) {
+            }, this);
+            mediaModel.change('duration', function (changedMediaModel, duration) {
+                if (duration === 0) {
+                    return;
+                }
                 const minDvrWindow = model.get('minDvrWindow');
                 const type = streamType(duration, minDvrWindow);
                 model.setStreamType(type);
-            });
+            }, this);
 
             const index = model.get('item') + 1;
             const recsAuto = (model.get('related') || {}).oncomplete === 'autoplay';
