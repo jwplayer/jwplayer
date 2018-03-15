@@ -315,10 +315,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.off(null, null, _this);
         _adProgram.destroy();
 
-        // Sync player state with ad for model "change:state" events to trigger
+        // Force player state with ad to pause for model "change:state" events to trigger
         if (_inited && _adProgram.model) {
-            const adState = _adProgram.model.get('state');
-            _model.attributes.state = adState;
+            _model.attributes.state = STATE_PAUSED;
         }
 
         _model.set('instream', null);

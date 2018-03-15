@@ -11,7 +11,7 @@ import { Browser, OS, Features } from 'environment/environment';
 import * as ControlsLoader from 'controller/controls-loader';
 import {
     STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
-    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY } from 'events/events';
+    RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS } from 'events/events';
 import Events from 'utils/backbone.events';
 import {
     addClass,
@@ -304,28 +304,37 @@ function View(_api, _model) {
     };
 
     function changeControls(model, enable) {
+        const controlsEvent = {
+            controls: enable
+        };
         if (enable) {
             ControlsModule = ControlsLoader.module.controls;
             if (!ControlsModule) {
-                ControlsLoader.load()
+                controlsEvent.loadPromise = ControlsLoader.load()
                     .then(function (Controls) {
                         ControlsModule = Controls;
                         // Check that controls is still true after the loader promise resolves
-                        if (model.get('controls')) {
+                        const enabledState = model.get('controls');
+                        if (enabledState) {
                             addControls();
                         }
-                    })
-                    .catch(function (reason) {
-                        _this.trigger(ERROR, {
-                            message: 'Controls failed to load',
-                            reason: reason
-                        });
+                        return enabledState;
                     });
+                controlsEvent.loadPromise.catch(function (reason) {
+                    _this.trigger(ERROR, {
+                        message: 'Controls failed to load',
+                        reason: reason
+                    });
+                });
             } else {
                 addControls();
             }
         } else {
             _this.removeControls();
+        }
+        // Only trigger controls events after the player and view are set up (and has width/height)
+        if (_lastWidth && _lastHeight) {
+            _this.trigger(CONTROLS, controlsEvent);
         }
     }
 
