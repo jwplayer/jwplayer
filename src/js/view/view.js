@@ -319,15 +319,13 @@ function View(_api, _model) {
                             addControls();
                         }
                         return enabledState;
-                    })
-                    .catch(function (reason) {
-                        const error = {
-                            message: 'Controls failed to load',
-                            reason: reason
-                        };
-                        _this.trigger(ERROR, error);
-                        return error;
                     });
+                controlsEvent.loadPromise.catch(function (reason) {
+                    _this.trigger(ERROR, {
+                        message: 'Controls failed to load',
+                        reason: reason
+                    });
+                });
             } else {
                 addControls();
             }
