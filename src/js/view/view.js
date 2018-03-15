@@ -327,9 +327,8 @@ function View(_api, _model) {
                         });
                     });
                 return;
-            } else {
-                addControls();
             }
+            addControls();
         } else {
             _this.removeControls();
         }
