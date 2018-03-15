@@ -302,13 +302,6 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     primeMediaElements() {
-        if (!Features.backgroundLoading) {
-            // If background loading is not supported, the model will always contain the shared media element
-            // Prime it so that playback after changing the active item does not require further gestures
-            const { model } = this;
-            const mediaElement = model.get('mediaElement');
-            mediaElement.load();
-        }
         this.mediaPool.prime();
     }
 
