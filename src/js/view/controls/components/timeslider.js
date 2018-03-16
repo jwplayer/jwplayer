@@ -170,11 +170,12 @@ class TimeSlider extends Slider {
     performSeek() {
         var percent = this.seekTo;
         var duration = this._model.get('duration');
+        var seekRange = this.model.get('seekRange');
         var position;
         if (duration === 0) {
             this._api.play(reasonInteraction());
         } else if (this.streamType === 'DVR') {
-            position = (100 - percent) / 100 * this._model.get('seekRange').end;
+            position = -(100 - percent) / 100 * (seekRange.end - seekRange.start);
             this._api.seek(position, reasonInteraction());
         } else {
             position = percent / 100 * duration;
