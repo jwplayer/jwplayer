@@ -139,6 +139,17 @@ describe('Api', function() {
         }).remove();
     });
 
+    it('resets plugins on setup', function() {
+        const api = createApi('player');
+        const plugin = { addToPlayer: () => {} };
+
+        api.addPlugin('testPlugin', plugin);
+        expect(api.getPlugin('testPlugin')).to.equal(plugin);
+
+        api.setup({});
+        expect(api.getPlugin('testPlugin')).to.equal(undefined);
+    });
+
     it('event dispatching', function() {
         const api = createApi('player');
         const originalEvent = {

@@ -42,6 +42,10 @@ function coreFactory(api, element) {
  * @returns {void}
  */
 function resetPlayer(api, core) {
+    const plugins = api.plugins;
+    Object.keys(plugins).forEach(key => {
+        delete plugins[key];
+    });
     api.off();
     core.playerDestroy();
     core.getContainer().removeAttribute('data-jwplayer-id');
