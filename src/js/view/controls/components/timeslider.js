@@ -170,7 +170,7 @@ class TimeSlider extends Slider {
     performSeek() {
         var percent = this.seekTo;
         var duration = this._model.get('duration');
-        var seekRange = this.model.get('seekRange');
+        var seekRange = this._model.get('seekRange');
         var position;
         if (duration === 0) {
             this._api.play(reasonInteraction());
