@@ -1,4 +1,3 @@
-import { dvrSeekLimit } from 'view/constants';
 import _ from 'utils/underscore';
 import utils from 'utils/helpers';
 import UI, { getPointerType } from 'utils/ui';
