@@ -184,11 +184,12 @@ class TimeSlider extends Slider {
     }
 
     showTimeTooltip(evt) {
-        var duration = this._model.get('duration');
+        var seekRange = this._model.get('seekRange');
+        var duration = seekRange.end - seekRange.start;
+        var isDvr = this._model.get('streamType') === 'DVR';
         if (duration === 0) {
             return;
         }
-
         var playerWidth = this._model.get('containerWidth');
         var railBounds = utils.bounds(this.elementRail);
         var position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
@@ -197,8 +198,8 @@ class TimeSlider extends Slider {
         var time = duration * pct;
 
         // For DVR we need to swap it around
-        if (duration < 0) {
-            time = duration - time;
+        if (isDvr) {
+            time -= duration;
         }
 
         var timetipText;
@@ -221,7 +222,7 @@ class TimeSlider extends Slider {
             timetipText = utils.timeFormat(time, allowNegativeTime);
 
             // If DVR and within live buffer
-            if (duration < 0 && time > -1) {
+            if (isDvr && time > -1) {
                 timetipText = 'Live';
             }
         }
