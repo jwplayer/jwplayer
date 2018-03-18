@@ -464,7 +464,7 @@ export default class Controlbar {
         if (this._model.get('streamType') === 'DVR') {
             // Seek to "Live" position within live buffer, but not before current position
             const currentPosition = this._model.get('position');
-            this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
+            this._api.seek(Math.max(0, currentPosition), reasonInteraction());
         }
     }
 
