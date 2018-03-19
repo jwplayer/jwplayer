@@ -50,6 +50,7 @@ export function ProviderListener(mediaController) {
             case MEDIA_META: {
                 const duration = data.duration;
                 if (_isNumber(duration) && !_isNaN(duration)) {
+                    mediaModel.set('seekRange', data.seekRange);
                     mediaModel.set('duration', duration);
                 }
                 break;

@@ -27,7 +27,8 @@ const VideoListenerMixin = {
         var metadata = {
             duration: this.getDuration(),
             height: this.video.videoHeight,
-            width: this.video.videoWidth
+            width: this.video.videoWidth,
+            seekRange: this.getSeekRange()
         };
         var drmUsed = this.drmUsed;
         if (drmUsed) {
