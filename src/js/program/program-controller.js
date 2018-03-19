@@ -6,7 +6,7 @@ import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 import BackgroundMedia from 'program/background-media';
 
-import { ERROR, PLAYER_STATE, STATE_BUFFERING, STATE_IDLE } from 'events/events';
+import { ERROR, PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE } from 'events/events';
 import { Features } from '../environment/environment';
 
 /** @private Do not include in JSDocs */
@@ -616,8 +616,10 @@ class ProgramController extends Eventable {
         if (!mediaController) {
             return;
         }
+        const state = model.get(PLAYER_STATE);
+        const beforeLoad = (!mediaController.started && !mediaController.preloaded && state === STATE_IDLE);
 
-        if (!mediaController.started && !mediaController.preloaded && model.get(PLAYER_STATE) === STATE_IDLE) {
+        if (beforeLoad || state === STATE_COMPLETE) {
             mediaController.item.starttime = pos;
         } else if (mediaController.attached) {
             mediaController.position = pos;
