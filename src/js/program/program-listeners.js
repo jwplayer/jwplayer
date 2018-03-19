@@ -61,6 +61,7 @@ export function ProviderListener(mediaController) {
             case MEDIA_TIME: {
                 mediaModel.set('seekRange', data.seekRange);
                 mediaModel.set('position', data.position);
+                mediaModel.set('currentTime', data.currentTime);
                 const duration = data.duration;
                 if (_isNumber(duration) && !_isNaN(duration)) {
                     mediaModel.set('duration', duration);
