@@ -367,7 +367,6 @@ export default class Controlbar {
             const currentPosition = Math.ceil(position);
             elapsedTime = countdownTime = currentPosition >= 0 ? '' : '-' + utils.timeFormat(-position);
             model.set('dvrLive', currentPosition >= 0);
-            console.log(elapsedTime, countdownTime, currentPosition);
         } else {
             elapsedTime = utils.timeFormat(position);
             countdownTime = utils.timeFormat(duration - position);
