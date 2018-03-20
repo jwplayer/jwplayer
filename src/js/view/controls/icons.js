@@ -5,7 +5,7 @@ import PLAY_ICON from 'assets/SVG/play.svg';
 import PAUSE_ICON from 'assets/SVG/pause.svg';
 import REWIND_ICON from 'assets/SVG/rewind-10.svg';
 import NEXT_ICON from 'assets/SVG/next.svg';
-// import STOP_ICON from 'assets/SVG/stop.svg';
+import STOP_ICON from 'assets/SVG/stop.svg';
 import VOLUME_ICON_0 from 'assets/SVG/volume-0.svg';
 import VOLUME_ICON_50 from 'assets/SVG/volume-50.svg';
 import VOLUME_ICON_100 from 'assets/SVG/volume-100.svg';
@@ -72,6 +72,7 @@ function parseCollection() {
         PAUSE_ICON +
         REWIND_ICON +
         NEXT_ICON +
+        STOP_ICON +
         VOLUME_ICON_0 +
         VOLUME_ICON_50 +
         VOLUME_ICON_100 +

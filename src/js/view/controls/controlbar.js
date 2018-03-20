@@ -163,7 +163,7 @@ export default class Controlbar {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
                 _api.playToggle(reasonInteraction());
-            }, play, cloneIcons('play,pause')),
+            }, play, cloneIcons('play,pause,stop')),
             rewind: button('jw-icon-rewind', () => {
                 this.rewind();
             }, rewind, cloneIcons('rewind')),
