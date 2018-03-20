@@ -26,23 +26,21 @@ export default class PlayDisplayIcon {
                 case 'playing':
                     newStateLabel = localization.pause;
                     break;
+                case 'idle':
                 case 'paused':
                     newStateLabel = localization.playback;
                     break;
                 case 'complete':
                     newStateLabel = localization.replay;
                     break;
-                case 'idle':
-                    newStateLabel = localization.playback;
-                    break;
                 default:
                     newStateLabel = '';
                     break;
             }
-            if (newStateLabel === '') {
-                iconDisplay.removeAttribute('aria-label');
-            } else {
+            if (newStateLabel !== '') {
                 iconDisplay.setAttribute('aria-label', newStateLabel);
+            } else {
+                iconDisplay.removeAttribute('aria-label');
             }
 
             this.toggleIdleClass(oldState, newState, idleButton);
@@ -56,7 +54,7 @@ export default class PlayDisplayIcon {
     }
 
     toggleIdleClass(oldState, newState, idleButton) {
-        if (idleButton !== 'stroke' && idleButton !== 'fill') {
+        if (!(idleButton === 'stroke' || idleButton === 'fill')) {
             return;
         }
 
