@@ -428,12 +428,18 @@ export default class Controlbar {
     }
 
     onStreamTypeChange(model, streamType) {
+        const liveMode = streamType === 'LIVE';
+        const dvrMode = streamType === 'DVR';
+
         // Hide rewind button when in LIVE mode
-        this.elements.rewind.toggle(streamType !== 'LIVE');
-        this.elements.live.toggle(streamType === 'LIVE' || streamType === 'DVR');
-        this.elements.duration.style.display = streamType === 'DVR' ? 'none' : '';
-        const duration = model.get('duration');
-        this.onDuration(model, duration);
+        this.elements.rewind.toggle(!liveMode);
+
+        this.elements.live.toggle(liveMode || dvrMode);
+        this.elements.live.element().setAttribute('tabindex', liveMode ? '-1' : '0');
+
+        this.elements.duration.style.display = dvrMode ? 'none' : '';
+
+        this.onDuration(model, model.get('duration'));
     }
 
     addLogo(logo) {
