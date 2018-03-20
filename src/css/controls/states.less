@@ -79,14 +79,17 @@
 }
 
 // playing live
-.jwplayer.jw-state-playing.jw-flag-live {
-    .jw-icon-playback {
-        .jw-svg-icon-stop {
-            display: block;
-        }
+.jwplayer.jw-flag-live {
+    &.jw-state-playing,
+    &.jw-state-buffering {
+        .jw-icon-playback {
+            .jw-svg-icon-stop {
+                display: block;
+            }
 
-        .jw-svg-icon-pause {
-            display: none;
+            .jw-svg-icon-pause {
+                display: none;
+            }
         }
     }
 }
