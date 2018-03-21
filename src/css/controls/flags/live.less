@@ -38,6 +38,19 @@
             color: @inactive-color;
         }
     }
+
+    &.jw-state-playing,
+    &.jw-state-buffering {
+        .jw-icon-playback {
+            .jw-svg-icon-stop {
+                display: block;
+            }
+
+            .jw-svg-icon-pause {
+                display: none;
+            }
+        }
+    }
 }
 
 .jw-text-live {
