@@ -91,7 +91,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
 
     try {
         // xhr.withCredentials must must be set after xhr.open() is called
-        // otherwise older WebKit browsers will throw INVALID_STATE_ERR (PhantomJS 1.x)
+        // otherwise older WebKit browsers will throw INVALID_STATE_ERR
         if (options.withCredentials && 'withCredentials' in xhr) {
             xhr.withCredentials = true;
         }
