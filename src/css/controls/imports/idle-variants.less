@@ -1,0 +1,43 @@
+@import "../../shared-imports/vars";
+
+.jw-state-idle {
+    .jw-icon-display {
+        &[class*="jw-ab-idle"] {
+            border-radius: 50%;
+            color: @white;
+            transition: background-color @default-transition;
+            transition-property: background-color, filter;
+
+            .jw-svg-icon-play {
+                transform: scale(0.7, 0.7);
+            }
+        }
+
+        &.jw-ab-idle-stroke {
+            box-shadow: inset 0 0 0 3px currentColor;
+
+            &:hover {
+                background-color: fade(@white, 50%);
+            }
+
+            &,
+            & .jw-svg-icon-play {
+                filter: drop-shadow(1px 1px 2px fade(@black, 40%));
+            }
+        }
+
+        &.jw-ab-idle-fill {
+            filter: drop-shadow(0 0 10px fade(@black, 40%));
+            background-color: fade(@black, 30%);
+
+            .jw-svg-icon-play {
+                filter: drop-shadow(0 0 2px rgba(12, 26, 71, 0.2));
+            }
+
+            &:hover {
+                background-color: fade(@black, 70%);
+            }
+        }
+    }
+}
+
