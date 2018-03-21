@@ -21,6 +21,7 @@ const Defaults = {
         play: 'Play',
         playback: 'Start Playback',
         pause: 'Pause',
+        stop: 'Stop',
         volume: 'Volume',
         prev: 'Previous',
         next: 'Next',
