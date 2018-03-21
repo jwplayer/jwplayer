@@ -329,6 +329,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _play() {
+        const resumeLive = _videotag.duration === Infinity && _videotag.paused && _videotag.played && _videotag.played.length;
+        if (resumeLive) {
+            _videotag.load();
+        }
         return _videotag.play() || createPlayPromise(_videotag);
     }
 
