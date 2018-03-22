@@ -365,8 +365,8 @@ export default class Controlbar {
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
             const currentPosition = Math.ceil(position);
-            elapsedTime = countdownTime = currentPosition >= 0 ? '' : '-' + utils.timeFormat(-position);
-            model.set('dvrLive', currentPosition >= 0);
+            elapsedTime = countdownTime = currentPosition >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-position);
+            model.set('dvrLive', currentPosition >= dvrSeekLimit);
         } else {
             elapsedTime = utils.timeFormat(position);
             countdownTime = utils.timeFormat(duration - position);
@@ -464,7 +464,7 @@ export default class Controlbar {
         if (this._model.get('streamType') === 'DVR') {
             // Seek to "Live" position within live buffer, but not before current position
             const currentPosition = this._model.get('position');
-            this._api.seek(Math.max(0, currentPosition), reasonInteraction());
+            this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
         }
     }
 
