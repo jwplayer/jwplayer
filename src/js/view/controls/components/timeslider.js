@@ -142,9 +142,8 @@ class TimeSlider extends Slider {
         let pct = 0;
         if (duration) {
             if (this.streamType === 'DVR') {
-                const seekRange = this._model.get('seekRange');
-                const diff = seekRange.end - seekRange.start;
-                pct = (diff - (-position)) / diff * 100;
+                const diff = duration - dvrSeekLimit;
+                pct = (diff - (position - dvrSeekLimit)) / diff * 100;
             } else if (this.streamType === 'VOD' || !this.streamType) {
                 // Default to VOD behavior if streamType isn't set
                 pct = position / duration * 100;
@@ -200,7 +199,9 @@ class TimeSlider extends Slider {
 
         // For DVR we need to swap it around
         if (duration < 0) {
-            time = (duration - dvrSeekLimit) - time;
+            duration -= dvrSeekLimit;
+            time = (duration * pct);
+            time = duration - time;
         }
 
         var timetipText;
