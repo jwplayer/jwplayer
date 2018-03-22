@@ -3,7 +3,7 @@ import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_RATE_CHANGE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
     MEDIA_BEFORECOMPLETE, MEDIA_COMPLETE, MEDIA_META, MEDIA_SEEK, MEDIA_SEEKED,
-    NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY } from 'events/events';
+    NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, BANDWIDTH_ESTIMATE } from 'events/events';
 
 export function ProviderListener(mediaController) {
     return function (type, data) {
@@ -90,6 +90,11 @@ export function ProviderListener(mediaController) {
             case 'visualQuality':
                 mediaModel.set('visualQuality', Object.assign({}, data));
                 break;
+            case BANDWIDTH_ESTIMATE:
+                if (data) {
+                    mediaModel.set('bandwidthEstimate', Object.assign({}, data));
+                }
+                break;
             default:
                 break;
         }
@@ -143,6 +148,10 @@ export function MediaControllerListener(model, programController) {
             case 'subtitlesTracksData':
                 model.trigger(type, data);
                 break;
+            case BANDWIDTH_ESTIMATE: {
+                model.persistBandwidthEstimate(data.bandwidthEstimate);
+                return;
+            }
             default:
         }
 
