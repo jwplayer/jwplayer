@@ -15,7 +15,6 @@ import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
-import { dvrSeekLimit } from 'view/constants';
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
@@ -292,15 +291,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         const seekable = this.video.seekable;
 
         if (seekable.length) {
-            if (this.streamType === 'DVR') {
-                const maxSeekableEnd = Math.max(seekable.end(0), seekable.end(seekable.length - 1));
+            const maxSeekableEnd = Math.max(seekable.end(0), seekable.end(seekable.length - 1));
 
-                seekRange.end = maxSeekableEnd + dvrSeekLimit;
-                seekRange.start = Math.max(0, seekRange.end - (this.video.duration + dvrSeekLimit));
-            } else {
-                seekRange.start = seekable.start(0);
-                seekRange.end = seekable.end(0);
-            }
+            seekRange.end = maxSeekableEnd;
+            seekRange.start = Math.max(0, seekRange.end - this.video.duration);
         }
 
         return seekRange;
