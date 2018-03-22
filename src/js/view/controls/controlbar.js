@@ -365,7 +365,8 @@ export default class Controlbar {
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
             const currentPosition = Math.ceil(position);
-            elapsedTime = countdownTime = currentPosition >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-position);
+            let time = currentPosition >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-(position - dvrSeekLimit));
+            elapsedTime = countdownTime = time;
             model.set('dvrLive', currentPosition >= dvrSeekLimit);
         } else {
             elapsedTime = utils.timeFormat(position);
