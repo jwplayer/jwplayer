@@ -281,6 +281,7 @@ class TimeSlider extends Slider {
 
     reset() {
         this.resetThumbnails();
+        this.resetChapters();
         this.timeTip.resetWidth();
         this.textLength = 0;
     }
