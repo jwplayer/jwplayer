@@ -1,3 +1,4 @@
+import { dvrSeekLimit } from 'view/constants';
 import _ from 'utils/underscore';
 import utils from 'utils/helpers';
 import UI, { getPointerType } from 'utils/ui';
@@ -172,12 +173,11 @@ class TimeSlider extends Slider {
     performSeek() {
         var percent = this.seekTo;
         var duration = this._model.get('duration');
-        var seekRange = this._model.get('seekRange');
         var position;
         if (duration === 0) {
             this._api.play(reasonInteraction());
         } else if (this.streamType === 'DVR') {
-            position = -(100 - percent) / 100 * (seekRange.end - seekRange.start);
+            position = (100 - percent) / 100 * duration;
             this._api.seek(position, reasonInteraction());
         } else {
             position = percent / 100 * duration;
@@ -186,12 +186,11 @@ class TimeSlider extends Slider {
     }
 
     showTimeTooltip(evt) {
-        var seekRange = this._model.get('seekRange');
-        var duration = seekRange.end - seekRange.start;
-        var isDvr = this._model.get('streamType') === 'DVR';
+        var duration = this._model.get('duration');
         if (duration === 0) {
             return;
         }
+
         var playerWidth = this._model.get('containerWidth');
         var railBounds = utils.bounds(this.elementRail);
         var position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
@@ -200,8 +199,8 @@ class TimeSlider extends Slider {
         var time = duration * pct;
 
         // For DVR we need to swap it around
-        if (isDvr) {
-            time -= duration;
+        if (duration < 0) {
+            time = duration - time;
         }
 
         var timetipText;
@@ -224,7 +223,7 @@ class TimeSlider extends Slider {
             timetipText = utils.timeFormat(time, allowNegativeTime);
 
             // If DVR and within live buffer
-            if (isDvr && time > -1) {
+            if (duration < 0 && time > dvrSeekLimit) {
                 timetipText = 'Live';
             }
         }
