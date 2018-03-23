@@ -291,10 +291,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         const seekable = this.video.seekable;
 
         if (seekable.length) {
-            const maxSeekableEnd = Math.max(seekable.end(0), seekable.end(seekable.length - 1));
-
-            seekRange.end = maxSeekableEnd;
-            seekRange.start = Math.max(0, seekRange.end - this.video.duration);
+            seekRange.end = Math.max(seekable.end(0), seekable.end(seekable.length - 1));
+            seekRange.start = Math.min(seekable.start(0), seekable.start(seekable.length - 1));
         }
 
         return seekRange;
