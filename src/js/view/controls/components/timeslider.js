@@ -275,8 +275,6 @@ class TimeSlider extends Slider {
                 this.addCue(ele);
             });
             this.drawCues();
-        } else {
-            this.resetChapters();
         }
     }
 
