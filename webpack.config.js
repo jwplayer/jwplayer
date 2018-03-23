@@ -94,6 +94,7 @@ const multiConfig = [
     }
 ].map(configuration =>
     Object.assign({}, configuration, {
+        node: false,
         entry: {
             jwplayer: './src/js/jwplayer.js'
         },
