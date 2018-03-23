@@ -1,4 +1,3 @@
-import { dvrSeekLimit } from 'view/constants';
 import _ from 'utils/underscore';
 import utils from 'utils/helpers';
 import UI, { getPointerType } from 'utils/ui';
@@ -142,8 +141,9 @@ class TimeSlider extends Slider {
         let pct = 0;
         if (duration) {
             if (this.streamType === 'DVR') {
-                const diff = duration - dvrSeekLimit;
-                pct = (diff - (position - dvrSeekLimit)) / diff * 100;
+                const dvrSeekLimit = this._model.get('dvrSeekLimit');
+                const diff = duration + dvrSeekLimit;
+                pct = (diff - (position + dvrSeekLimit)) / diff * 100;
             } else if (this.streamType === 'VOD' || !this.streamType) {
                 // Default to VOD behavior if streamType isn't set
                 pct = position / duration * 100;
@@ -177,7 +177,8 @@ class TimeSlider extends Slider {
             this._api.play(reasonInteraction());
         } else if (this.streamType === 'DVR') {
             const seekRange = this._model.get('seekRange');
-            position = seekRange.start + (-duration + dvrSeekLimit) * percent / 100;
+            const dvrSeekLimit = this._model.get('dvrSeekLimit');
+            position = seekRange.start + (-duration - dvrSeekLimit) * percent / 100;
             this._api.seek(position, reasonInteraction());
         } else {
             position = percent / 100 * duration;
@@ -200,7 +201,8 @@ class TimeSlider extends Slider {
 
         // For DVR we need to swap it around
         if (duration < 0) {
-            duration -= dvrSeekLimit;
+            const dvrSeekLimit = this._model.get('dvrSeekLimit');
+            duration += dvrSeekLimit;
             time = (duration * pct);
             time = duration - time;
         }
