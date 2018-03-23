@@ -285,7 +285,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     _this.getSeekRange = function() {
         const seekRange = {
             start: 0,
-            end: 0
+            end: _this.getDuration()
         };
 
         const seekable = this.video.seekable;
