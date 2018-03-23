@@ -9,6 +9,8 @@ import { _isNumber, _isNaN } from 'utils/underscore';
 // Alphabetical order
 const Defaults = {
     autostart: false,
+    bandwidthEstimate: null,
+    bitrateSelection: null,
     castAvailable: false,
     controls: true,
     defaultPlaybackRate: 1,
@@ -158,6 +160,11 @@ const Config = function(options, persisted) {
         }
         config.liveTimeout = liveTimeout;
     }
+
+    const parsedBwEstimate = parseFloat(config.bandwidthEstimate);
+    const parsedBitrateSelection = parseFloat(config.bitrateSelection);
+    config.bandwidthEstimate = _isNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
+    config.bitrateSelection = _isNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
 
     return config;
 };

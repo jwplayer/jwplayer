@@ -1,13 +1,15 @@
 import { BANDWIDTH_ESTIMATE } from 'events/events';
 import { _isNumber } from 'utils/underscore';
 
-export default function BandwidthMonitor(provider) {
+export default function BandwidthMonitor(provider, initialEstimate) {
     let bandwidthMonitorInterval = null;
+    let bandwidthEstimate = initialEstimate;
     return {
         start() {
             setInterval(() => {
-                const bandwidthEstimate = provider.getBandwidthEstimate();
-                if (_isNumber(bandwidthEstimate)) {
+                const bwEstimate = provider.getBandwidthEstimate();
+                if (_isNumber(bwEstimate)) {
+                    bandwidthEstimate = bwEstimate;
                     provider.trigger(BANDWIDTH_ESTIMATE, {
                         bandwidthEstimate
                     });
@@ -16,6 +18,9 @@ export default function BandwidthMonitor(provider) {
         },
         stop() {
             clearInterval(bandwidthMonitorInterval);
+        },
+        getEstimate() {
+            return bandwidthEstimate;
         }
     };
 }
