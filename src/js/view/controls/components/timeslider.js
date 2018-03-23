@@ -258,13 +258,12 @@ class TimeSlider extends Slider {
     }
 
     addCues(model, cues) {
+        this.resetChapters();
         if (cues && cues.length) {
             cues.forEach((ele) => {
                 this.addCue(ele);
             });
             this.drawCues();
-        } else {
-            this.resetChapters();
         }
     }
 
