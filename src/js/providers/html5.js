@@ -282,6 +282,22 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return duration;
     };
 
+    _this.getSeekRange = function() {
+        const seekRange = {
+            start: 0,
+            end: _this.getDuration()
+        };
+
+        const seekable = this.video.seekable;
+
+        if (seekable.length) {
+            seekRange.end = Math.max(seekable.end(0), seekable.end(seekable.length - 1));
+            seekRange.start = Math.min(seekable.start(0), seekable.start(seekable.length - 1));
+        }
+
+        return seekRange;
+    };
+
     function _checkDelayedSeek(duration) {
         // Don't seek when _delayedSeek is set to -1 in _completeLoad
         if (_delayedSeek && _delayedSeek !== -1 && duration && duration !== Infinity) {

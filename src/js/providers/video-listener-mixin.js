@@ -27,7 +27,8 @@ const VideoListenerMixin = {
         var metadata = {
             duration: this.getDuration(),
             height: this.video.videoHeight,
-            width: this.video.videoWidth
+            width: this.video.videoWidth,
+            seekRange: this.getSeekRange()
         };
         var drmUsed = this.drmUsed;
         if (drmUsed) {
@@ -67,6 +68,7 @@ const VideoListenerMixin = {
             position,
             duration,
             currentTime: this.video.currentTime,
+            seekRange: this.getSeekRange(),
             metadata: {
                 currentTime: this.video.currentTime
             }
@@ -150,7 +152,8 @@ const VideoListenerMixin = {
         this.trigger(MEDIA_BUFFER, {
             bufferPercent: buffered * 100,
             position: this.getCurrentTime(),
-            duration: dur
+            duration: dur,
+            seekRange: this.getSeekRange()
         });
     },
 
