@@ -8,12 +8,13 @@ export default function BandwidthMonitor(provider, initialEstimate) {
         start() {
             setInterval(() => {
                 const bwEstimate = provider.getBandwidthEstimate();
-                if (_isNumber(bwEstimate)) {
-                    bandwidthEstimate = bwEstimate;
-                    provider.trigger(BANDWIDTH_ESTIMATE, {
-                        bandwidthEstimate
-                    });
+                if (!bwEstimate) {
+                    return;
                 }
+                bandwidthEstimate = bwEstimate;
+                provider.trigger(BANDWIDTH_ESTIMATE, {
+                    bandwidthEstimate
+                });
             }, 1000);
         },
         stop() {
