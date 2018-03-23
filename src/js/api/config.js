@@ -152,7 +152,7 @@ const Config = function(options, persisted) {
 
     let liveTimeout = config.liveTimeout;
     if (liveTimeout !== null) {
-        if (_isNaN(liveTimeout) || !_isNumber(liveTimeout)) {
+        if (!isValidNumber(liveTimeout)) {
             liveTimeout = null;
         } else if (liveTimeout !== 0) {
             liveTimeout = Math.max(30, liveTimeout);
@@ -162,11 +162,15 @@ const Config = function(options, persisted) {
 
     const parsedBwEstimate = parseFloat(config.bandwidthEstimate);
     const parsedBitrateSelection = parseFloat(config.bitrateSelection);
-    config.bandwidthEstimate = _isNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
-    config.bitrateSelection = _isNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
+    config.bandwidthEstimate = isValidNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
+    config.bitrateSelection = isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
 
     return config;
 };
+
+function isValidNumber(num) {
+    return _isNumber(num) && !_isNaN(num);
+}
 
 function _evaluateAspectRatio(ar, width) {
     if (width.toString().indexOf('%') === -1) {
