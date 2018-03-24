@@ -29,7 +29,7 @@ const Item = function(config) {
     }, config);
 
     if (playlistItem.dvrSeekLimit < 5) {
-        playlistItem.dvrSeekLimit = 25;
+        playlistItem.dvrSeekLimit = 5;
     }
 
 
