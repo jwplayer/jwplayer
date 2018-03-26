@@ -27,10 +27,11 @@ export function ProviderListener(mediaController) {
                     mediaController.thenPlayPromise.cancel();
                     mediaModel.srcReset();
                 }
-                // Always fire change:mediaState to keep player model in sync
-                const previousState = mediaModel.attributes.mediaState;
-                mediaModel.attributes.mediaState = data.newstate;
+
                 if (mediaController.attached && !mediaController.background) {
+                    //fire change:mediaState to keep player model in sync
+                    const previousState = mediaModel.attributes.mediaState;
+                    mediaModel.attributes.mediaState = data.newstate;
                     mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
                 }
                 // This "return" is important because
