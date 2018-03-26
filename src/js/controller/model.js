@@ -46,6 +46,7 @@ const Model = function() {
         this.attributes.playlistItem = null;
         this.set('item', index);
         this.set('minDvrWindow', item.minDvrWindow);
+        this.set('dvrSeekLimit', item.dvrSeekLimit);
         this.set('playlistItem', item);
     };
 

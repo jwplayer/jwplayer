@@ -1,6 +1,5 @@
 import { cloneIcons } from 'view/controls/icons';
 import { Browser, OS } from 'environment/environment';
-import { dvrSeekLimit } from 'view/constants';
 import CustomButton from 'view/controls/components/custom-button';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
@@ -314,7 +313,8 @@ export default class Controlbar {
             if (this._model.get('streamType') === 'DVR') {
                 // Seek to "Live" position within live buffer, but not before current position
                 const currentPosition = this._model.get('position');
-                this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
+                const dvrSeekLimit = this._model.get('dvrSeekLimit');
+                this._api.seek(Math.max(-dvrSeekLimit, currentPosition), reasonInteraction());
             }
         }, this);
 
@@ -365,9 +365,10 @@ export default class Controlbar {
         const duration = model.get('duration');
         if (model.get('streamType') === 'DVR') {
             const currentPosition = Math.ceil(position);
-            let time = currentPosition >= dvrSeekLimit ? '' : '-' + utils.timeFormat(-(position - dvrSeekLimit));
+            const dvrSeekLimit = this._model.get('dvrSeekLimit');
+            let time = currentPosition >= -dvrSeekLimit ? '' : '-' + utils.timeFormat(-(position + dvrSeekLimit));
             elapsedTime = countdownTime = time;
-            model.set('dvrLive', currentPosition >= dvrSeekLimit);
+            model.set('dvrLive', currentPosition >= -dvrSeekLimit);
         } else {
             elapsedTime = utils.timeFormat(position);
             countdownTime = utils.timeFormat(duration - position);
@@ -465,7 +466,9 @@ export default class Controlbar {
         if (this._model.get('streamType') === 'DVR') {
             // Seek to "Live" position within live buffer, but not before current position
             const currentPosition = this._model.get('position');
-            this._api.seek(Math.max(dvrSeekLimit, currentPosition), reasonInteraction());
+            const dvrSeekLimit = this._model.get('dvrSeekLimit');
+
+            this._api.seek(Math.max(-dvrSeekLimit, currentPosition), reasonInteraction());
         }
     }
 
