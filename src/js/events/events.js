@@ -415,6 +415,6 @@ export const BREAKPOINT = 'breakpoint';
 export const NATIVE_FULLSCREEN = 'fullscreenchange';
 
 /**
- * Triggered when a bandwidth estimate is calculated
+ * Triggered when a new bandwidth estimate is available
  */
 export const BANDWIDTH_ESTIMATE = 'bandwidthEstimate';
