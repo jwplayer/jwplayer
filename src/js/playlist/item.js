@@ -5,14 +5,14 @@ const isArray = Array.isArray;
 /**
  * An item in the playlist
  * @typedef {object} PlaylistItem
- * @property {Array.<PlaylistItemSource>} sources - A list of alternative media sources for the player to choose from.
- * @property {Array.<PlaylistItemTrack>} tracks - A list of tracks associated with this item.
  * @property {string} file - The selected source URL to be played.
+ * @property {Array.<PlaylistItemSource>} sources - A list of alternative media sources for the player to choose from.
+ * @property {Array.<PlaylistItemTrack>} [tracks] - A list of tracks associated with this item.
  * @property {string} [image] - The poster image.
- * @property {'none'|'metadata'|'auto'} preload - The selected preload setting.
- * @property {number} minDvrWindow - For live streams, the threshold at which the available media should be seekable,
+ * @property {'none'|'metadata'|'auto'} [preload] - The selected preload setting.
+ * @property {number} [minDvrWindow] - For live streams, the threshold at which the available media should be seekable,
  * and treated as a DVR stream.
- * @property {number} - For live streams, the number of seconds away from the live edge the user is allowed to seek to
+ * @property {number} [dvrSeekLimit] - For live streams, the number of seconds away from the live edge the user is allowed to seek to
  */
 
 const Item = function(config) {
