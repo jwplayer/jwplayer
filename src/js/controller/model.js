@@ -2,7 +2,7 @@ import { OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
-import _ from 'utils/underscore';
+import _, { _isValidNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
 
@@ -37,7 +37,7 @@ const Model = function() {
     this.persistQualityLevel = function(quality, levels) {
         const currentLevel = levels[quality] || {};
         const bitrate = currentLevel.bitrate;
-        if (!_.isNumber(bitrate) || _.isNaN(bitrate)) {
+        if (!_isValidNumber(bitrate)) {
             return;
         }
         this.set('bitrateSelection', bitrate);
@@ -199,7 +199,7 @@ const Model = function() {
     };
 
     this.persistBandwidthEstimate = function (bwEstimate) {
-        if (!_.isNumber(bwEstimate) || _.isNaN(bwEstimate)) {
+        if (!_isValidNumber(bwEstimate)) {
             return;
         }
         this.set('bandwidthEstimate', bwEstimate);
