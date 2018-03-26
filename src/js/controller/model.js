@@ -36,9 +36,11 @@ const Model = function() {
 
     this.persistQualityLevel = function(quality, levels) {
         const currentLevel = levels[quality] || {};
-        if (currentLevel.bitrate) {
-            this.set('bitrateSelection', currentLevel.bitrate);
+        const bitrate = currentLevel.bitrate;
+        if (!_.isNumber(bitrate) || _.isNaN(bitrate)) {
+            return;
         }
+        this.set('bitrateSelection', bitrate);
     };
 
     this.setActiveItem = function (index) {
@@ -197,9 +199,10 @@ const Model = function() {
     };
 
     this.persistBandwidthEstimate = function (bwEstimate) {
-        if (bwEstimate && this.attributes.bandwidthEstimate !== bwEstimate) {
-            this.set('bandwidthEstimate', bwEstimate);
+        if (!_.isNumber(bwEstimate) || _.isNaN(bwEstimate)) {
+            return;
         }
+        this.set('bandwidthEstimate', bwEstimate);
     };
 };
 
