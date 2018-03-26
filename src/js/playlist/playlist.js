@@ -50,33 +50,25 @@ export function validatePlaylist(playlist) {
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
 
 function formatSources(item, model) {
-    const sources = item.sources;
-    const androidhls = model.get('androidhls');
-    const safariHlsjs = model.get('safarihlsjs');
-    const itemDrm = item.drm || model.get('drm');
-    const withCredentials = fallbackIfUndefined(item.withCredentials, model.get('withCredentials'));
-    const hlsjsdefault = model.get('hlsjsdefault') !== false;
+    const { attributes } = model;
+    const { sources, preload, drm } = item;
+    const withCredentials = fallbackIfUndefined(item.withCredentials, attributes.withCredentials);
 
     return sources.map(function(originalSource) {
         if (originalSource !== Object(originalSource)) {
             return null;
         }
-        if (androidhls !== undefined && androidhls !== null) {
-            originalSource.androidhls = androidhls;
-        }
-        if (safariHlsjs !== undefined && safariHlsjs !== null) {
-            originalSource.safarihlsjs = safariHlsjs;
-        }
 
-        if (safariHlsjs !== undefined && safariHlsjs !== null) {
-            originalSource.safarihlsjs = safariHlsjs;
-        }
+        copyAttribute(originalSource, attributes, 'androidhls');
+        copyAttribute(originalSource, attributes, 'hlsjsdefault');
+        copyAttribute(originalSource, attributes, 'safarihlsjs');
 
-        if (originalSource.drm || itemDrm) {
-            originalSource.drm = originalSource.drm || itemDrm;
-        }
+        originalSource.preload = getPreload(originalSource.preload, preload);
 
-        originalSource.preload = getPreload(originalSource.preload, item.preload);
+        const sourceDrm = originalSource.drm || drm || attributes.drm;
+        if (sourceDrm) {
+            originalSource.drm = sourceDrm;
+        }
 
         // withCredentials is assigned in ascending priority order, source > playlist > model
         // a false value that is a higher priority than true must result in a false withCredentials value
@@ -84,10 +76,6 @@ function formatSources(item, model) {
         const cascadedWithCredentials = fallbackIfUndefined(originalSource.withCredentials, withCredentials);
         if (cascadedWithCredentials !== undefined) {
             originalSource.withCredentials = cascadedWithCredentials;
-        }
-
-        if (hlsjsdefault) {
-            originalSource.hlsjsdefault = hlsjsdefault;
         }
 
         return Source(originalSource);
@@ -126,6 +114,12 @@ function chooseProviderAndType(sources, providers) {
 
 function fallbackIfUndefined(value, fallback) {
     return (value === undefined) ? fallback : value;
+}
+
+function copyAttribute(source, attributes, name) {
+    if (name in attributes) {
+        source[name] = attributes[name];
+    }
 }
 
 export default Playlist;
