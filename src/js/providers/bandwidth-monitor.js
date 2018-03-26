@@ -1,5 +1,4 @@
 import { BANDWIDTH_ESTIMATE } from 'events/events';
-import { _isNumber } from 'utils/underscore';
 
 export default function BandwidthMonitor(provider, initialEstimate) {
     let bandwidthMonitorInterval = null;
