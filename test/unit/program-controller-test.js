@@ -54,7 +54,7 @@ const providerPlayerModelEvents = [
     {
         type: 'levelsChanged',
         currentQuality: 1,
-        levels: [ { label: 'level1' }, { label: 'level2' } ]
+        levels: [ { label: 'level1', bitrate: 100 }, { label: 'level2', bitrate: 200 } ]
     },
     {
         type: 'subtitlesTrackChanged',
@@ -251,12 +251,12 @@ describe('ProgramController', function () {
                 });
                 expect(model.set).to.have.callCount(4);
                 expect(model.set.firstCall).to.have.been.calledWith('volume', 10);
-                expect(model.set.getCall(1)).to.have.been.calledWith('qualityLabel', 'level2');
+                expect(model.set.getCall(1)).to.have.been.calledWith('bitrateSelection', 200);
                 expect(model.set.getCall(2)).to.have.been.calledWith('captionsIndex', 0);
                 expect(model.set.getCall(3)).to.have.been.calledWith('captionLabel', 'Off');
                 expect(model.trigger).to.have.callCount(5);
                 expect(model.trigger.firstCall).to.have.been.calledWith('change:volume');
-                expect(model.trigger.getCall(1)).to.have.been.calledWith('change:qualityLabel');
+                expect(model.trigger.getCall(1)).to.have.been.calledWith('change:bitrateSelection');
                 expect(model.trigger.getCall(2)).to.have.been.calledWith('change:captionsIndex');
                 expect(model.trigger.getCall(3)).to.have.been.calledWith('change:captionLabel');
                 expect(model.trigger.getCall(4)).to.have.been.calledWith('subtitlesTracks');

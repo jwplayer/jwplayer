@@ -2,7 +2,7 @@ import { OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
-import _ from 'utils/underscore';
+import _, { _isValidNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
 
@@ -35,9 +35,12 @@ const Model = function() {
     };
 
     this.persistQualityLevel = function(quality, levels) {
-        var currentLevel = levels[quality] || {};
-        var label = currentLevel.label;
-        this.set('qualityLabel', label);
+        const currentLevel = levels[quality] || {};
+        const bitrate = currentLevel.bitrate;
+        if (!_isValidNumber(bitrate)) {
+            return;
+        }
+        this.set('bitrateSelection', bitrate);
     };
 
     this.setActiveItem = function (index) {
@@ -193,6 +196,13 @@ const Model = function() {
         mediaModel.set('position', position);
         mediaModel.set('currentTime', 0);
         mediaModel.set('duration', duration);
+    };
+
+    this.persistBandwidthEstimate = function (bwEstimate) {
+        if (!_isValidNumber(bwEstimate)) {
+            return;
+        }
+        this.set('bandwidthEstimate', bwEstimate);
     };
 };
 
