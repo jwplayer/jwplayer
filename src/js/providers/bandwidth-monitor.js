@@ -5,6 +5,7 @@ export default function BandwidthMonitor(provider, initialEstimate) {
     let bandwidthEstimate = initialEstimate;
     return {
         start() {
+            this.stop();
             setInterval(() => {
                 const bwEstimate = provider.getBandwidthEstimate();
                 if (!bwEstimate) {

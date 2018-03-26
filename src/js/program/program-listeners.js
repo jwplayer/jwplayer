@@ -90,11 +90,6 @@ export function ProviderListener(mediaController) {
             case 'visualQuality':
                 mediaModel.set('visualQuality', Object.assign({}, data));
                 break;
-            case BANDWIDTH_ESTIMATE:
-                if (data) {
-                    mediaModel.set('bandwidthEstimate', Object.assign({}, data));
-                }
-                break;
             default:
                 break;
         }
