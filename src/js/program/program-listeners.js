@@ -30,7 +30,9 @@ export function ProviderListener(mediaController) {
                 // Always fire change:mediaState to keep player model in sync
                 const previousState = mediaModel.attributes.mediaState;
                 mediaModel.attributes.mediaState = data.newstate;
-                mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
+                if (mediaController.attached && !mediaController.background) {
+                    mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
+                }
                 // This "return" is important because
                 //  we are choosing to not propagate model event.
                 //  Instead letting the master controller do so
