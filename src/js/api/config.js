@@ -1,7 +1,7 @@
 import _ from 'utils/underscore';
 import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
-import { _isNumber, _isNaN } from 'utils/underscore';
+import { _isValidNumber } from 'utils/underscore';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -152,7 +152,7 @@ const Config = function(options, persisted) {
 
     let liveTimeout = config.liveTimeout;
     if (liveTimeout !== null) {
-        if (!isValidNumber(liveTimeout)) {
+        if (!_isValidNumber(liveTimeout)) {
             liveTimeout = null;
         } else if (liveTimeout !== 0) {
             liveTimeout = Math.max(30, liveTimeout);
@@ -162,15 +162,11 @@ const Config = function(options, persisted) {
 
     const parsedBwEstimate = parseFloat(config.bandwidthEstimate);
     const parsedBitrateSelection = parseFloat(config.bitrateSelection);
-    config.bandwidthEstimate = isValidNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
-    config.bitrateSelection = isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
+    config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
+    config.bitrateSelection = _isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
 
     return config;
 };
-
-function isValidNumber(num) {
-    return _isNumber(num) && !_isNaN(num);
-}
 
 function _evaluateAspectRatio(ar, width) {
     if (width.toString().indexOf('%') === -1) {
