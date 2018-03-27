@@ -213,9 +213,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         const adModel = _adProgram.model;
         adModel.set('playlist', playlist);
-
         _model.set('hideAdsControls', false);
 
+        // Reset starttime so that if the same ad is replayed by a plugin, it reloads from the start
+        item.starttime = 0;
         // Dispatch playlist item event for ad pods
         _this.trigger(PLAYLIST_ITEM, {
             index: _arrayIndex,
