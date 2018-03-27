@@ -45,7 +45,7 @@ export const optionalProperties = {
     viewable: true,
     castClicked: false,
     castState: '',
-    castActive: '',
+    castActive: ''
 };
 
 export const adModelProperties = {
@@ -102,4 +102,6 @@ export default {
     itemReady: false,
     liveTimeout: null,
     setupConfig: {},
+    bandwidthEstimate: null,
+    bitrateSelection: null
 };

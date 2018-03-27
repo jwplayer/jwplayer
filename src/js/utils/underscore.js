@@ -736,6 +736,7 @@ _.result = function (object, property) {
 };
 
 const _isNumber = _.isNumber;
+const _isValidNumber = (val) => _isNumber(val) && !_isNaN(val);
 
-export { _isNaN, _isNumber };
+export { _isNaN, _isNumber, _isValidNumber };
 export default _;

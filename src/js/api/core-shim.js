@@ -69,7 +69,8 @@ Object.assign(CoreShim.prototype, {
             'volume',
             'mute',
             'captionLabel',
-            'qualityLabel'
+            'bandwidthEstimate',
+            'bitrateSelection'
         ]);
         const persisted = storage && storage.getAllItems();
         model.attributes = model.attributes || {};
