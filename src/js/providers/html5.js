@@ -6,7 +6,7 @@ import { STATE_IDLE, STATE_PLAYING, STATE_STALLED, MEDIA_META, MEDIA_ERROR, MEDI
 import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
-import { style, transform } from 'utils/css';
+import { style } from 'utils/css';
 import utils from 'utils/helpers';
 import { emptyElement } from 'utils/dom';
 import _ from 'utils/underscore';
@@ -584,52 +584,6 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 opacity: 0
             });
         }
-    };
-
-    this.resize = function(width, height, stretching) {
-        if (!width || !height || !_videotag.videoWidth || !_videotag.videoHeight) {
-            return;
-        }
-        const styles = {
-            objectFit: '',
-            width: '',
-            height: ''
-        };
-        if (stretching === 'uniform') {
-            // snap video to edges when the difference in aspect ratio is less than 9%
-            const playerAspectRatio = width / height;
-            const videoAspectRatio = _videotag.videoWidth / _videotag.videoHeight;
-            if (Math.abs(playerAspectRatio - videoAspectRatio) < 0.09) {
-                styles.objectFit = 'fill';
-                stretching = 'exactfit';
-            }
-        }
-        // Prior to iOS 9, object-fit worked poorly
-        // object-fit is not implemented in IE or Android Browser in 4.4 and lower
-        // http://caniuse.com/#feat=object-fit
-        // feature detection may work for IE but not for browsers where object-fit works for images only
-        const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
-        if (fitVideoUsingTransforms) {
-            // Use transforms to center and scale video in container
-            const x = -Math.floor(_videotag.videoWidth / 2 + 1);
-            const y = -Math.floor(_videotag.videoHeight / 2 + 1);
-            let scaleX = Math.ceil(width * 100 / _videotag.videoWidth) / 100;
-            let scaleY = Math.ceil(height * 100 / _videotag.videoHeight) / 100;
-            if (stretching === 'none') {
-                scaleX = scaleY = 1;
-            } else if (stretching === 'fill') {
-                scaleX = scaleY = Math.max(scaleX, scaleY);
-            } else if (stretching === 'uniform') {
-                scaleX = scaleY = Math.min(scaleX, scaleY);
-            }
-            styles.width = _videotag.videoWidth;
-            styles.height = _videotag.videoHeight;
-            styles.top = styles.left = '50%';
-            styles.margin = 0;
-            transform(_videotag,
-                'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
-        }
-        style(_videotag, styles);
     };
 
     this.setFullscreen = function(state) {
