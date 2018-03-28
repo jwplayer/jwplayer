@@ -153,6 +153,7 @@ const VideoListenerMixin = {
             bufferPercent: buffered * 100,
             position: this.getCurrentTime(),
             duration: dur,
+            currentTime: this.video.currentTime,
             seekRange: this.getSeekRange()
         });
     },
