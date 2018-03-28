@@ -29,6 +29,7 @@ const Model = function() {
         Object.keys(INITIAL_MEDIA_STATE).forEach(key => {
             config[key] = mediaModelAttributes[key];
         });
+        config.instreamMode = !!config.instream;
         delete config.instream;
         delete config.mediaModel;
         return config;
