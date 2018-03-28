@@ -1,62 +1,73 @@
-import _ from 'test/underscore';
 import Playlists from 'data/playlists';
-import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist, fixSources } from 'playlist/playlist';
 import Providers from 'providers/providers';
 
-function sourcesMatch(playlistItems) {
-    let type;
-
-    return _.all(playlistItems, function (playlistItem) {
-        // Each item can have it's own type
-        type = null;
-
-        return _.all(playlistItem.sources, function (a) {
-            type = type || a.type;
-            return type === a.type;
-        });
-    });
-}
+const getProviders = function() {
+    return new Providers();
+};
 
 function testSource(sourceName, desiredType, isAndroidHls) {
-    const model = {
-        getProviders: function() {
-            return new Providers();
-        },
-        get: function (attribute) {
-            switch (attribute) {
-                case 'androidhls':
-                    return !!isAndroidHls;
-                default:
-                    break;
-            }
-        }
+    const attributes = {
+        androidhls: !!isAndroidHls
     };
-    const pl = Playlist(Playlists[sourceName]);
-    const filtered = filterPlaylist(pl, model);
+    const model = {
+        attributes,
+        getProviders,
+        get: attribute => attributes[attribute]
+    };
+    const item = Playlist(Playlists[sourceName])[0];
+    const sources = fixSources(item, model);
 
-    expect(sourcesMatch(filtered), `Comparing ${sourceName} ${desiredType}`).to.equal(true);
+    if (desiredType) {
+        expect(sources[0].type).to.equal(desiredType);
+    } else {
+        expect(sources, `"${sourceName}" unsupported`).to.be.empty;
+    }
 }
 
-describe('playlist.filterSources', function() {
+describe('playlist.fixSources', function() {
+
+    const flashSource = Playlist(Playlists.flv_mp4)[0].sources[0];
+    const flashSupport = (new Providers()).choose(flashSource).name === 'flash';
 
     it('should filter sources when androidhls is enabled', function() {
-        testSource('flv_mp4', 'flv', true);
         testSource('mp4_flv', 'mp4', true);
         testSource('aac_mp4', 'aac', true);
         testSource('mp4_aac', 'mp4', true);
+        testSource('flv_mp4', flashSupport ? 'flv' : undefined, true);
         testSource('invalid', undefined, true);
-        testSource('empty', undefined, true);
         testSource('mixed', 'mp4', true);
     });
 
     it('should filter sources when androidhls is disabled', function() {
-        testSource('flv_mp4', 'flv', false);
         testSource('mp4_flv', 'mp4', false);
         testSource('aac_mp4', 'aac', false);
         testSource('mp4_aac', 'mp4', false);
+        testSource('flv_mp4', flashSupport ? 'flv' : undefined, true);
         testSource('invalid', undefined, false);
-        testSource('empty', undefined, false);
         testSource('mixed', 'mp4', false);
+    });
+
+    it('copies source attributes from the model', function() {
+        const attributes = {
+            androidhls: false,
+            hlsjsdefault: false,
+            safarihlsjs: false,
+            withCredentials: false,
+            foobar: false
+        };
+        const model = {
+            attributes,
+            getProviders,
+            get: attribute => attributes[attribute]
+        };
+        const sources = fixSources(Playlist(Playlists.mp4_aac)[0], model);
+
+        expect(sources[0]).to.have.property('androidhls').which.equals(false);
+        expect(sources[0]).to.have.property('hlsjsdefault').which.equals(false);
+        expect(sources[0]).to.have.property('safarihlsjs').which.equals(false);
+        expect(sources[0]).to.have.property('withCredentials').which.equals(false);
+        expect(sources[0]).to.not.have.property('foobar');
     });
 });
 
@@ -65,18 +76,13 @@ describe('playlist.filterPlaylist', function() {
     it('filters playlist items', function() {
         let pl;
         const androidhls = true;
+        const attributes = {
+            androidhls
+        };
         const model = {
-            getProviders: function() {
-                return new Providers();
-            },
-            get: function (attribute) {
-                switch (attribute) {
-                    case 'androidhls':
-                        return androidhls;
-                    default:
-                        break;
-                }
-            }
+            attributes,
+            getProviders,
+            get: attribute => attributes[attribute]
         };
         pl = filterPlaylist(Playlists.webm_mp4, model);
         expect(pl[0].sources[0].type).to.equal('webm');
@@ -130,20 +136,13 @@ describe('playlist.filterPlaylist', function() {
             }]
         }];
 
-        const withCredentialsOnModel = true;
-
+        const attributes = {
+            withCredentials: true
+        };
         const model = {
-            getProviders: function() {
-                return new Providers();
-            },
-            get: function (attribute) {
-                switch (attribute) {
-                    case 'withCredentials':
-                        return withCredentialsOnModel;
-                    default:
-                        break;
-                }
-            }
+            attributes,
+            getProviders,
+            get: attribute => attributes[attribute]
         };
 
         const pl = filterPlaylist(withCredentialsPlaylist, model);
@@ -162,9 +161,8 @@ describe('playlist.filterPlaylist', function() {
             }]
         }];
         const model = {
-            getProviders: function() {
-                return new Providers();
-            },
+            attributes: {},
+            getProviders,
             get: function () {}
         };
 
