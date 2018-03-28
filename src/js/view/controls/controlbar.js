@@ -3,7 +3,7 @@ import { Browser, OS } from 'environment/environment';
 import CustomButton from 'view/controls/components/custom-button';
 import utils from 'utils/helpers';
 import _ from 'utils/underscore';
-import { USER_ACTION } from 'events/events';
+import { USER_ACTION, STATE_PLAYING } from 'events/events';
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
 import ariaLabel from 'utils/aria';
@@ -119,10 +119,7 @@ export default class Controlbar {
         let volumeTooltip;
         let muteButton;
 
-        const play = localization.play;
-        const next = localization.next;
         const vol = localization.volume;
-        const rewind = localization.rewind;
 
         // Do not show the volume toggle in the mobile SDKs or <iOS10
         if (!_model.get('sdkplatform') && !(OS.iOS && OS.version.major < 10)) {
@@ -141,7 +138,7 @@ export default class Controlbar {
 
         const nextButton = button('jw-icon-next', () => {
             _api.next();
-        }, next, cloneIcons('next'));
+        }, localization.next, cloneIcons('next'));
 
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', (event) => {
             this.trigger('settingsInteraction', 'quality', true, event);
@@ -162,10 +159,10 @@ export default class Controlbar {
             alt: text('jw-text-alt', 'status'),
             play: button('jw-icon-playback', () => {
                 _api.playToggle(reasonInteraction());
-            }, play, cloneIcons('play,pause')),
+            }, localization.play, cloneIcons('play,pause,stop')),
             rewind: button('jw-icon-rewind', () => {
                 this.rewind();
-            }, rewind, cloneIcons('rewind')),
+            }, localization.rewind, cloneIcons('rewind')),
             live: liveButton,
             next: nextButton,
             elapsed: textIcon('jw-text-elapsed', 'timer'),
@@ -261,6 +258,7 @@ export default class Controlbar {
         // Listen for model changes
         _model.change('volume', this.onVolume, this);
         _model.change('mute', this.onMute, this);
+        _model.change('state', this.onState, this);
         _model.change('duration', this.onDuration, this);
         _model.change('position', this.onElapsed, this);
         _model.change('fullscreen', this.onFullscreen, this);
@@ -429,13 +427,33 @@ export default class Controlbar {
         this._api.seek(Math.max(rewindPosition, startPosition), reasonInteraction());
     }
 
+    onState(model, state) {
+        const localization = model.get('localization');
+        let label = localization.play;
+        if (state === STATE_PLAYING) {
+            if (model.get('streamType') !== 'LIVE') {
+                label = localization.pause;
+            } else {
+                label = localization.stop;
+            }
+        }
+        this.elements.play.element().setAttribute('aria-label', label);
+    }
+
     onStreamTypeChange(model, streamType) {
+        const liveMode = streamType === 'LIVE';
+        const dvrMode = streamType === 'DVR';
+
         // Hide rewind button when in LIVE mode
-        this.elements.rewind.toggle(streamType !== 'LIVE');
-        this.elements.live.toggle(streamType === 'LIVE' || streamType === 'DVR');
-        this.elements.duration.style.display = streamType === 'DVR' ? 'none' : '';
-        const duration = model.get('duration');
-        this.onDuration(model, duration);
+        this.elements.rewind.toggle(!liveMode);
+
+        this.elements.live.toggle(liveMode || dvrMode);
+        this.elements.live.element().setAttribute('tabindex', liveMode ? '-1' : '0');
+
+        this.elements.duration.style.display = dvrMode ? 'none' : '';
+
+        this.onDuration(model, model.get('duration'));
+        this.onState(model, model.get('state'));
     }
 
     addLogo(logo) {
