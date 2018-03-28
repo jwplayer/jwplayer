@@ -38,19 +38,6 @@ const VideoListenerMixin = {
     },
 
     timeupdate() {
-        var height = this.video.videoHeight;
-        if (height !== this._helperLastVideoHeight) {
-            if (this.adaptation) {
-                this.adaptation({
-                    size: {
-                        width: this.video.videoWidth,
-                        height: height
-                    }
-                });
-            }
-        }
-        this._helperLastVideoHeight = height;
-
         const position = this.getCurrentTime();
         const duration = this.getDuration();
         if (isNaN(duration)) {
@@ -162,7 +149,8 @@ const VideoListenerMixin = {
     },
 
     ended() {
-        this._helperLastVideoHeight = 0;
+        this.videoHeight = 0;
+        this.streamBitrate = 0;
         if (this.state !== STATE_IDLE && this.state !== STATE_COMPLETE) {
             this.trigger(MEDIA_COMPLETE);
         }
