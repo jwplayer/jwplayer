@@ -277,6 +277,7 @@ function View(_api, _model) {
         _model.on('change:intersectionRatio', updateVisibility);
         _model.on('change:visibility', redraw);
         _model.on('instreamMode', (instreamMode) => {
+            _model.set('instreamMode', instreamMode);
             if (instreamMode) {
                 setupInstream();
             } else {

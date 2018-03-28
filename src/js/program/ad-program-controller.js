@@ -45,7 +45,6 @@ export default class AdProgramController extends ProgramController {
         model.setup({
             id: playerAttributes.id,
             volume: playerAttributes.volume,
-            instreamMode: true,
             edition: playerAttributes.edition,
             mediaContext: mediaModelContext,
             mute: playerAttributes.mute,

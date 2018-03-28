@@ -49,7 +49,6 @@ export const optionalProperties = {
 };
 
 export const adModelProperties = {
-    instreamMode: false,
     sdkplatform: null,
     mediaContext: null,
     mediaSrc: null,
@@ -71,6 +70,7 @@ export default {
     base: '',
     controls: true,
     stretching: 'uniform',
+    instreamMode: false,
     defaultPlaybackRate: 1.0,
     displaytitle: true,
     displaydescription: true,
