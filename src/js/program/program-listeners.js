@@ -66,6 +66,9 @@ export function ProviderListener(mediaController) {
                 if (_isNumber(duration) && !_isNaN(duration)) {
                     mediaModel.set('duration', duration);
                 }
+                if (_isNumber(mediaController.item.starttime)) {
+                    delete mediaController.item.starttime;
+                }
                 break;
             }
             case MEDIA_LEVELS:

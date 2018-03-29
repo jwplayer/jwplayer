@@ -101,11 +101,18 @@ export default class MediaController extends Eventable {
     }
 
     detach() {
-        const { model, provider } = this;
+        const { item, mediaModel, model, provider } = this;
         this.thenPlayPromise.cancel();
         provider.detachMedia();
         this.attached = false;
         model.set('attached', false);
+
+        // If detaching to play a midroll (pos > 0), ensure that the player resumes at the detached time by setting starttime
+        // We don't need to do this for prerolls because the player re-attaches at time 0 by default
+        const pos = mediaModel.get('position');
+        if (pos) {
+            item.starttime = pos;
+        }
     }
 
     // Executes the playPromise
@@ -126,7 +133,6 @@ export default class MediaController extends Eventable {
                 // Exit if model state was reset
                 return;
             }
-            delete item.starttime;
             mediaModel.set('started', true);
             if (mediaModel === model.mediaModel) {
                 // Start firing visualQuality once playback has started
