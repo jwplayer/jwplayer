@@ -36,11 +36,12 @@ const Model = function() {
 
     this.persistQualityLevel = function(quality, levels) {
         const currentLevel = levels[quality] || {};
-        const bitrate = currentLevel.bitrate;
+        const { bitrate, qualityLabel } = currentLevel.bitrate;
         if (!_isValidNumber(bitrate)) {
             return;
         }
         this.set('bitrateSelection', bitrate);
+        this.set('qualityLabel', qualityLabel);
     };
 
     this.setActiveItem = function (index) {
