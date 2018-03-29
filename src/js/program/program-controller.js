@@ -606,8 +606,8 @@ class ProgramController extends Eventable {
 
     /**
      * Seeks the media to the provided position.
-     * If the media is not attached, set the item's starttime so that when reattaching, it resumes at that time.
-     * If we seek before an item loads, set the item's starttime so that when playback begins, we buffer at that time.
+     * Set the item's starttime so that if detached while seeking it resumes from the correct time.
+     * ALso set the item's starttime so that if we seek before loading, we load and begin at the correct time.
      * @param {number} pos - The position to start at or seek to.
      * @returns {void}
      */

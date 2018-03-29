@@ -133,7 +133,6 @@ export default class MediaController extends Eventable {
                 // Exit if model state was reset
                 return;
             }
-            delete item.starttime;
             mediaModel.set('started', true);
             if (mediaModel === model.mediaModel) {
                 // Start firing visualQuality once playback has started
