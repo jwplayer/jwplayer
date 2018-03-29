@@ -6,7 +6,7 @@ import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 import BackgroundMedia from 'program/background-media';
 
-import { ERROR, PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE } from 'events/events';
+import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 import { Features } from '../environment/environment';
 
 /** @private Do not include in JSDocs */
