@@ -156,7 +156,7 @@ Object.assign(Controller.prototype, {
         _model.on('change:mediaModel', function(model, mediaModel) {
             model.set('errorEvent', undefined);
             mediaModel.change('mediaState', function (changedMediaModel, state) {
-                if (!model.get('errorEvent') && !model.get('instream')) {
+                if (!model.get('errorEvent')) {
                     model.set(PLAYER_STATE, normalizeState(state));
                 }
             }, this);
