@@ -612,19 +612,14 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     set position(pos) {
-        const { mediaController, model } = this;
+        const { mediaController } = this;
         if (!mediaController) {
             return;
         }
-        const state = model.get(PLAYER_STATE);
-        const beforeLoad = (!mediaController.started && !mediaController.preloaded && state === STATE_IDLE);
 
-        if (beforeLoad || state === STATE_COMPLETE) {
-            mediaController.item.starttime = pos;
-        } else if (mediaController.attached) {
+        mediaController.item.starttime = pos;
+        if (mediaController.attached) {
             mediaController.position = pos;
-        } else {
-            mediaController.item.starttime = pos;
         }
     }
 
