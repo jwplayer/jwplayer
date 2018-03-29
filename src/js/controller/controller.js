@@ -718,14 +718,12 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        function _attachMedia(position) {
+        function _attachMedia() {
             // Called after instream ends
 
             if (Features.backgroundLoading) {
                 _programController.restoreBackgroundMedia();
             } else {
-                // Set the position before attaching so that we resume at the expected time
-                _programController.position = position || 0;
                 _programController.attached = true;
             }
 
