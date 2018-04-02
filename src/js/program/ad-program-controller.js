@@ -75,7 +75,7 @@ export default class AdProgramController extends ProgramController {
             .then((mediaController) => {
                 this._setProvider(mediaController.provider);
             });
-        return this.playVideo();
+        return this.playVideo2();
     }
 
     usePsuedoProvider(provider) {

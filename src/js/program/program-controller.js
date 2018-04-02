@@ -149,6 +149,53 @@ class ProgramController extends Eventable {
         return playPromise;
     }
 
+    playVideo2(playReason) {
+        const { mediaController, model } = this;
+        const item = model.get('playlistItem');
+        let playPromise;
+
+        if (!item) {
+            return Promise.reject(new Error('No media'));
+        }
+
+        if (!playReason) {
+            playReason = model.get('playReason');
+        }
+
+        // Start playback immediately if we have already loaded a mediaController
+        if (mediaController) {
+            playPromise = mediaController.play(playReason);
+        } else {
+            // Make the subsequent promise cancelable so that we can avoid playback when no longer wanted
+            this.thenPlayPromise = cancelable((nextMediaController) => {
+                if (this.mediaController && this.mediaController.mediaModel === nextMediaController.mediaModel) {
+                    return nextMediaController.play(playReason);
+                }
+                throw new Error('Playback cancelled.');
+            });
+
+            playPromise = this.loadPromise
+                .catch(error => {
+                    this.thenPlayPromise.cancel();
+                    // Required provider was not loaded
+                    model.trigger(ERROR, {
+                        message: `Could not play video: ${error.message}`,
+                        error: error
+                    });
+                    // Fail the playPromise to trigger "playAttemptFailed"
+                    throw error;
+                })
+                .then((nextMediaController) => {
+                    if (this.mediaController && this.mediaController.mediaModel === nextMediaController.mediaModel) {
+                        nextMediaController.preload();
+                    }
+                    return nextMediaController;
+                });
+        }
+
+        return playPromise;
+    }
+
     /**
      * Stops playback of the active item, and sets the player state to IDLE.
      * @returns {void}

@@ -83,6 +83,49 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         return this;
     };
 
+    this.yoyo = function() {
+        if (_inited || _destroyed) {
+            return;
+        }
+        _inited = true;
+
+        // Keep track of the original player state
+        _adProgram.setup();
+
+        _oldpos = _controller.get('position');
+        _adProgram.on('all', _instreamForward, this);
+        _adProgram.on(MEDIA_PLAY_ATTEMPT_FAILED, triggerPlayRejected, this);
+        _adProgram.on(MEDIA_TIME, _instreamTime, this);
+        _adProgram.on(MEDIA_COMPLETE, _instreamItemComplete, this);
+        _adProgram.on(MEDIA_META, _instreamMeta, this);
+
+        // Make sure the original player's provider stops broadcasting events (pseudo-lock...)
+        _controller.detachMedia();
+
+        const mediaElement = _adProgram.primedElement;
+        const mediaContainer = _model.get('mediaContainer');
+        window.mediaElement = mediaElement;
+        mediaContainer.appendChild(mediaElement);
+
+        if (_controller.checkBeforePlay() || (_oldpos === 0 && !_controller.isBeforeComplete())) {
+            // make sure video restarts after preroll
+            _oldpos = 0;
+        } else if (_controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE) {
+            _oldpos = null;
+        }
+
+        // This enters the player into instream mode
+        _model.set('instream', _adProgram);
+
+        // don't trigger api play/pause on display click
+        const clickHandler = _view.clickHandler();
+        if (clickHandler) {
+            clickHandler.setAlternateClickHandlers(() => {}, null);
+        }
+
+        return this;
+    };
+
     this.init = function() {
         if (_inited || _destroyed) {
             return;
@@ -236,6 +279,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             _this.setupSkipButton(_skipOffset, _options);
         }
         return playPromise;
+    };
+
+    this.playResume = function() {
+        _adProgram.then(_adProgram.thenPlayPromise.async);
     };
 
     this.setupSkipButton = function(skipoffset, options, customNext) {
