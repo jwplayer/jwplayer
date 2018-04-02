@@ -370,7 +370,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             _this.seek(startTime);
         }
 
-        if (startTime > 0) {
+        // Check if we have already seeked the mediaElement before _completeLoad has been called
+        if (startTime > 0 && _videotag.currentTime !== startTime) {
             _this.seek(startTime);
         }
 
