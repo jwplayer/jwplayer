@@ -28,6 +28,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _backgroundLoadStart;
     let _destroyed = false;
     let _inited = false;
+    let _beforeComplete = false;
 
     const _clickHandler = (evt) => {
         if (_destroyed) {
@@ -115,6 +116,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
 
         this.setText(_model.get('localization').loadingAd);
+
+        // We need to know if we're beforeComplete before we reattach, since re-attaching will toggle the beforeComplete flag back if set
+        _beforeComplete = _controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE;
+
         return this;
     };
 
@@ -328,7 +333,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             return;
         }
 
-        if (_controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE) {
+        if (_beforeComplete) {
             _controller.stopVideo();
         } else {
             _controller.playVideo();
