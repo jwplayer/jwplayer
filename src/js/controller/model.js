@@ -36,11 +36,11 @@ const Model = function() {
 
     this.persistQualityLevel = function(quality, levels) {
         const currentLevel = levels[quality] || {};
-        const bitrate = currentLevel.bitrate;
-        if (!_isValidNumber(bitrate)) {
-            return;
-        }
+        const { label } = currentLevel;
+        // Default to null if bitrate is bad, or when the quality to persist is "auto" (bitrate is undefined in this case)
+        const bitrate = _isValidNumber(currentLevel.bitrate) ? currentLevel.bitrate : null;
         this.set('bitrateSelection', bitrate);
+        this.set('qualityLabel', label);
     };
 
     this.setActiveItem = function (index) {
