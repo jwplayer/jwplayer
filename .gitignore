@@ -7,3 +7,4 @@ bin-debug
 bin-release
 built
 reports
+package-lock.json
