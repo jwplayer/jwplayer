@@ -74,6 +74,9 @@ const DefaultProvider = {
     getPlaybackRate: function() {
         return 1;
     },
+    getBandwidthEstimate() {
+        return null;
+    },
 
     // TODO :: The following are targets for removal after refactoring
     checkComplete: noop,

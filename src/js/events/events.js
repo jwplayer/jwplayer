@@ -413,3 +413,8 @@ export const BREAKPOINT = 'breakpoint';
  * Triggered when receiving a native 'fullscreenchange' event from a video tag
 */
 export const NATIVE_FULLSCREEN = 'fullscreenchange';
+
+/**
+ * Triggered when a new bandwidth estimate is available
+ */
+export const BANDWIDTH_ESTIMATE = 'bandwidthEstimate';
