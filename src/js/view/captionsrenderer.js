@@ -114,20 +114,16 @@ const CaptionsRenderer = function (viewModel) {
     this.getAlignmentPosition = function (track, timeEvent) {
         const source = track.source;
         const metadata = timeEvent.metadata;
+        let time = timeEvent.currentTime;
 
         // subtitles with "source" time must be synced with "metadata[source]"
         if (source) {
             if (metadata && _.isNumber(metadata[source])) {
-                return metadata[source];
+                time = metadata[source];
             }
-            return;
-        } else if (timeEvent.duration < 0) {
-            // When the duration is negative (DVR mode), need to make alignmentPosition positive for captions to work
-            return timeEvent.position - timeEvent.duration;
-        }
+        } 
 
-        // Default to syncing with current position
-        return timeEvent.position;
+        return time;
     };
 
     this.clear = function () {

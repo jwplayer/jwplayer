@@ -1,5 +1,4 @@
 import { OS } from 'environment/environment';
-import { dvrSeekLimit } from 'view/constants';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
@@ -200,8 +199,9 @@ export default class Controls {
             let max = model.get('duration');
             const position = model.get('position');
             if (model.get('streamType') === 'DVR') {
+                const dvrSeekLimit = model.get('dvrSeekLimit');
                 min = max;
-                max = Math.max(position, dvrSeekLimit);
+                max = Math.max(position, -dvrSeekLimit);
             }
             const newSeek = utils.between(position + amount, min, max);
             api.seek(newSeek, reasonInteraction());

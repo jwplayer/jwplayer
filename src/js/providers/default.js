@@ -63,6 +63,13 @@ const DefaultProvider = {
     getCurrentAudioTrack: noop,
     setCurrentAudioTrack: noop,
 
+    getSeekRange: function() {
+        return {
+            start: 0,
+            end: this.getDuration()
+        };
+    },
+
     setPlaybackRate: noop,
     getPlaybackRate: function() {
         return 1;

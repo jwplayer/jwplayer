@@ -1,4 +1,5 @@
 import Item from 'playlist/item';
+import { fixSources } from 'playlist/playlist';
 import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import { module as ControlsModule } from 'controller/controls-loader';
@@ -50,7 +51,7 @@ export function requiresPolyfills() {
 export function requiresProvider(model, providerName) {
     const playlist = model.get('playlist');
     if (Array.isArray(playlist) && playlist.length) {
-        const sources = Item(playlist[0]).sources;
+        const sources = fixSources(Item(playlist[0]), model);
         for (let i = 0; i < sources.length; i++) {
             const source = sources[i];
             const providersManager = model.getProviders();
@@ -66,8 +67,7 @@ export function requiresProvider(model, providerName) {
 }
 
 function loadControlsPolyfillHtml5Bundle() {
-    bundleContainsProviders.html5 = true;
-    return require.ensure([
+    const loadPromise = require.ensure([
         'controller/controller',
         'view/controls/controls',
         'intersection-observer',
@@ -80,11 +80,12 @@ function loadControlsPolyfillHtml5Bundle() {
         registerProvider(require('providers/html5').default);
         return CoreMixin;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills.html5');
+    bundleContainsProviders.html5 = loadPromise;
+    return loadPromise;
 }
 
 function loadControlsHtml5Bundle() {
-    bundleContainsProviders.html5 = true;
-    return require.ensure([
+    const loadPromise = require.ensure([
         'controller/controller',
         'view/controls/controls',
         'providers/html5'
@@ -94,6 +95,8 @@ function loadControlsHtml5Bundle() {
         registerProvider(require('providers/html5').default);
         return CoreMixin;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.html5');
+    bundleContainsProviders.html5 = loadPromise;
+    return loadPromise;
 }
 
 function loadControlsPolyfillBundle() {

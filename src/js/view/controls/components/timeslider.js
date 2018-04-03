@@ -1,4 +1,3 @@
-import { dvrSeekLimit } from 'view/constants';
 import _ from 'utils/underscore';
 import utils from 'utils/helpers';
 import UI, { getPointerType } from 'utils/ui';
@@ -105,21 +104,6 @@ class TimeSlider extends Slider {
             .on('dragEnd out', this.hideTimeTooltip.bind(this), this);
     }
 
-    limit(percent) {
-        if (this.activeCue && _.isNumber(this.activeCue.pct)) {
-            return this.activeCue.pct;
-        }
-        var duration = this._model.get('duration');
-        if (this.streamType === 'DVR') {
-            var position = (1 - (percent / 100)) * duration;
-            var currentPosition = this._model.get('position');
-            var updatedPosition = Math.min(position, Math.max(dvrSeekLimit, currentPosition));
-            var updatedPercent = updatedPosition * 100 / duration;
-            return 100 - updatedPercent;
-        }
-        return percent;
-    }
-
     update(percent) {
         this.seekTo = percent;
         this.seekThrottled();
@@ -154,10 +138,12 @@ class TimeSlider extends Slider {
     }
 
     updateTime(position, duration) {
-        var pct = 0;
+        let pct = 0;
         if (duration) {
             if (this.streamType === 'DVR') {
-                pct = (duration - position) / duration * 100;
+                const dvrSeekLimit = this._model.get('dvrSeekLimit');
+                const diff = duration + dvrSeekLimit;
+                pct = (diff - (position + dvrSeekLimit)) / diff * 100;
             } else if (this.streamType === 'VOD' || !this.streamType) {
                 // Default to VOD behavior if streamType isn't set
                 pct = position / duration * 100;
@@ -190,7 +176,9 @@ class TimeSlider extends Slider {
         if (duration === 0) {
             this._api.play(reasonInteraction());
         } else if (this.streamType === 'DVR') {
-            position = (100 - percent) / 100 * duration;
+            const seekRange = this._model.get('seekRange');
+            const dvrSeekLimit = this._model.get('dvrSeekLimit');
+            position = seekRange.start + (-duration - dvrSeekLimit) * percent / 100;
             this._api.seek(position, reasonInteraction());
         } else {
             position = percent / 100 * duration;
@@ -213,6 +201,9 @@ class TimeSlider extends Slider {
 
         // For DVR we need to swap it around
         if (duration < 0) {
+            const dvrSeekLimit = this._model.get('dvrSeekLimit');
+            duration += dvrSeekLimit;
+            time = (duration * pct);
             time = duration - time;
         }
 
@@ -236,7 +227,7 @@ class TimeSlider extends Slider {
             timetipText = utils.timeFormat(time, allowNegativeTime);
 
             // If DVR and within live buffer
-            if (duration < 0 && time > dvrSeekLimit) {
+            if (duration < 0 && time > -1) {
                 timetipText = 'Live';
             }
         }
@@ -269,13 +260,12 @@ class TimeSlider extends Slider {
     }
 
     addCues(model, cues) {
+        this.resetChapters();
         if (cues && cues.length) {
             cues.forEach((ele) => {
                 this.addCue(ele);
             });
             this.drawCues();
-        } else {
-            this.resetChapters();
         }
     }
 

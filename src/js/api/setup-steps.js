@@ -48,10 +48,10 @@ function loadProvider(_model) {
         validatePlaylist(playlist);
 
         const providersManager = _model.getProviders();
-        const { name, provider } = providersManager.choose(playlist[0].sources[0]);
+        const { name } = providersManager.choose(playlist[0].sources[0]);
         // Skip provider loading if included in bundle
-        if (bundleContainsProviders.html5 && provider && name === 'html5') {
-            return;
+        if (bundleContainsProviders.html5 && name === 'html5') {
+            return bundleContainsProviders.html5;
         }
         return providersManager.load(name);
     });

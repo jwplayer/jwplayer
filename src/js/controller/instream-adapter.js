@@ -24,11 +24,11 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _options = {};
     let _skipAd = _instreamItemNext;
     let _backgroundLoadTriggered = false;
-    let _oldpos;
     let _skipOffset;
     let _backgroundLoadStart;
     let _destroyed = false;
     let _inited = false;
+    let _beforeComplete = false;
 
     const _clickHandler = (evt) => {
         if (_destroyed) {
@@ -92,7 +92,6 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // Keep track of the original player state
         _adProgram.setup();
 
-        _oldpos = _controller.get('position');
         _adProgram.on('all', _instreamForward, this);
         _adProgram.on(MEDIA_PLAY_ATTEMPT_FAILED, triggerPlayRejected, this);
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
@@ -106,13 +105,6 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         const mediaContainer = _model.get('mediaContainer');
         mediaContainer.appendChild(mediaElement);
 
-        if (_controller.checkBeforePlay() || (_oldpos === 0 && !_controller.isBeforeComplete())) {
-            // make sure video restarts after preroll
-            _oldpos = 0;
-        } else if (_controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE) {
-            _oldpos = null;
-        }
-
         // This enters the player into instream mode
         _model.set('instream', _adProgram);
         _adProgram.model.set('state', STATE_BUFFERING);
@@ -124,6 +116,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
 
         this.setText(_model.get('localization').loadingAd);
+
+        // We need to know if we're beforeComplete before we reattach, since re-attaching will toggle the beforeComplete flag back if set
+        _beforeComplete = _controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE;
+
         return this;
     };
 
@@ -213,9 +209,10 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         const adModel = _adProgram.model;
         adModel.set('playlist', playlist);
-
         _model.set('hideAdsControls', false);
 
+        // Reset starttime so that if the same ad is replayed by a plugin, it reloads from the start
+        item.starttime = 0;
         // Dispatch playlist item event for ad pods
         _this.trigger(PLAYLIST_ITEM, {
             index: _arrayIndex,
@@ -330,13 +327,13 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         // Re-attach the controller & resume playback
         // when instream was inited and the player was not destroyed\
-        _controller.attachMedia(_oldpos);
+        _controller.attachMedia();
 
         if (this.noResume) {
             return;
         }
 
-        if (_oldpos === null) {
+        if (_beforeComplete) {
             _controller.stopVideo();
         } else {
             _controller.playVideo();

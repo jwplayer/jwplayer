@@ -82,9 +82,8 @@ export default class Slider {
             }
         }
 
-        const updatedPercent = this.limit(percentage);
-        this.render(updatedPercent);
-        this.update(updatedPercent);
+        this.render(percentage);
+        this.update(percentage);
 
         return false;
     }

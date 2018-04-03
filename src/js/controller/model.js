@@ -29,6 +29,7 @@ const Model = function() {
         Object.keys(INITIAL_MEDIA_STATE).forEach(key => {
             config[key] = mediaModelAttributes[key];
         });
+        config.instreamMode = !!config.instream;
         delete config.instream;
         delete config.mediaModel;
         return config;
@@ -49,6 +50,7 @@ const Model = function() {
         this.attributes.playlistItem = null;
         this.set('item', index);
         this.set('minDvrWindow', item.minDvrWindow);
+        this.set('dvrSeekLimit', item.dvrSeekLimit);
         this.set('playlistItem', item);
     };
 

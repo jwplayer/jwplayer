@@ -50,6 +50,7 @@ export function ProviderListener(mediaController) {
             case MEDIA_META: {
                 const duration = data.duration;
                 if (_isNumber(duration) && !_isNaN(duration)) {
+                    mediaModel.set('seekRange', data.seekRange);
                     mediaModel.set('duration', duration);
                 }
                 break;
@@ -58,11 +59,15 @@ export function ProviderListener(mediaController) {
                 mediaModel.set('buffer', data.bufferPercent);
                 /* falls through to update duration while media is loaded */
             case MEDIA_TIME: {
+                mediaModel.set('seekRange', data.seekRange);
                 mediaModel.set('position', data.position);
                 mediaModel.set('currentTime', data.currentTime);
                 const duration = data.duration;
                 if (_isNumber(duration) && !_isNaN(duration)) {
                     mediaModel.set('duration', duration);
+                }
+                if (_isNumber(mediaController.item.starttime)) {
+                    delete mediaController.item.starttime;
                 }
                 break;
             }
