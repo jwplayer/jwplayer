@@ -295,7 +295,7 @@ function View(_api, _model) {
 
         _model.change('state', _stateHandler);
         playerViewModel.change('controls', changeControls);
-        playerViewModel.change('streamType', _setLiveMode);
+        _model.change('streamType', _setLiveMode);
         _model.change('mediaType', _onMediaTypeChange);
         playerViewModel.change('playlistItem', onPlaylistItem);
         // Triggering 'resize' resulting in player 'ready'
