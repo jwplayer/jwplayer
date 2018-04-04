@@ -175,7 +175,9 @@ Object.assign(Controller.prototype, {
             if ((item || recsAuto) && Features.backgroundLoading) {
                 const onPosition = (changedMediaModel, position) => {
                     // Do not background load DAI items because that item will be dynamically replaced before play
-                    if ((item && !item.daiSetting) && position >= mediaModel.get('duration') - BACKGROUND_LOAD_OFFSET) {
+                    const allowPreload = (item && !item.daiSetting);
+                    const duration = mediaModel.get('duration');
+                    if (allowPreload && position && duration > 0 && position >= duration - BACKGROUND_LOAD_OFFSET) {
                         mediaModel.off('change:position', onPosition, this);
                         _programController.backgroundLoad(item);
                     } else if (recsAuto) {
