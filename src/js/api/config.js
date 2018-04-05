@@ -13,6 +13,7 @@ const Defaults = {
     bitrateSelection: null,
     castAvailable: false,
     controls: true,
+    defaultBandwidthEstimate: null,
     defaultPlaybackRate: 1,
     displaydescription: true,
     displaytitle: true,
@@ -161,7 +162,7 @@ const Config = function(options, persisted) {
         config.liveTimeout = liveTimeout;
     }
 
-    const parsedBwEstimate = parseFloat(config.bandwidthEstimate);
+    const parsedBwEstimate = parseFloat(!config.bandwidthEstimate && config.defaultBandwidthEstimate > -1 ? config.defaultBandwidthEstimate : config.bandwidthEstimate);
     const parsedBitrateSelection = parseFloat(config.bitrateSelection);
     config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
     config.bitrateSelection = _isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
