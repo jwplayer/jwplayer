@@ -78,8 +78,8 @@ function _normalizeSize(val) {
 
 
 function _adjustDefaultBwEstimate(estimate) {
-    if (_isValidNumber(estimate)) {
-        return estimate > 1 ? estimate : 1;
+    if (_isValidNumber(parseFloat(estimate))) {
+        return Math.max(estimate, 1);
     }
 
     return Defaults.bandwidthEstimate;
@@ -172,7 +172,7 @@ const Config = function(options, persisted) {
 
     const parsedBwEstimate = parseFloat(config.bandwidthEstimate);
     const parsedBitrateSelection = parseFloat(config.bitrateSelection);
-    config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : _adjustDefaultBwEstimate(parseFloat(config.defaultBandwidthEstimate));
+    config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : _adjustDefaultBwEstimate(config.defaultBandwidthEstimate);
     config.bitrateSelection = _isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
     return config;
 };
