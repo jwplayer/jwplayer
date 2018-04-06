@@ -48,8 +48,13 @@ function loadProvider(_model) {
         validatePlaylist(playlist);
 
         const providersManager = _model.getProviders();
-        const { name } = providersManager.choose(playlist[0].sources[0]);
-        // Skip provider loading if included in bundle
+        const { provider, name } = providersManager.choose(playlist[0].sources[0]);
+
+        // If provider already loaded or a locally registered one, return it
+        if (typeof provider === 'function') {
+            return provider;
+        }
+
         if (bundleContainsProviders.html5 && name === 'html5') {
             return bundleContainsProviders.html5;
         }
