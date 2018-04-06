@@ -71,6 +71,7 @@ export default {
     base: '',
     controls: true,
     stretching: 'uniform',
+    defaultBandwidthEstimate: null,
     defaultPlaybackRate: 1.0,
     displaytitle: true,
     displaydescription: true,

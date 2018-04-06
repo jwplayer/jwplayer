@@ -77,6 +77,15 @@ function _normalizeSize(val) {
     return val;
 }
 
+
+function _adjustDefaultBwEstimate(estimate) {
+    if (_isValidNumber(estimate)) {
+        return estimate > 1 ? estimate : 1;
+    }
+
+    return Defaults.defaultBandwidthEstimate;
+}
+
 const Config = function(options, persisted) {
     let allOptions = Object.assign({}, (window.jwplayer || {}).defaults, persisted, options);
 
@@ -167,7 +176,7 @@ const Config = function(options, persisted) {
     const parsedDefaultBwEstimate = parseFloat(config.defaultBandwidthEstimate);
     config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
     config.bitrateSelection = _isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
-    config.defaultBandwidthEstimate = _isValidNumber(parsedDefaultBwEstimate) && parsedDefaultBwEstimate < 1 ? 1 : parsedDefaultBwEstimate;
+    config.defaultBandwidthEstimate = _adjustDefaultBwEstimate(parsedDefaultBwEstimate);
     return config;
 };
 
