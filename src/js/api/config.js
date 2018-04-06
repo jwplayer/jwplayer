@@ -162,11 +162,12 @@ const Config = function(options, persisted) {
         config.liveTimeout = liveTimeout;
     }
 
-    const parsedBwEstimate = parseFloat(!config.bandwidthEstimate && config.defaultBandwidthEstimate > -1 ? config.defaultBandwidthEstimate : config.bandwidthEstimate);
+    const parsedBwEstimate = parseFloat(config.bandwidthEstimate);
     const parsedBitrateSelection = parseFloat(config.bitrateSelection);
+    const parsedDefaultBwEstimate = parseFloat(config.defaultBandwidthEstimate);
     config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
     config.bitrateSelection = _isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
-
+    config.defaultBandwidthEstimate = _isValidNumber(parsedDefaultBwEstimate) && parsedDefaultBwEstimate > 0 ? parsedDefaultBwEstimate : Defaults.defaultBandwidthEstimate;
     return config;
 };
 
