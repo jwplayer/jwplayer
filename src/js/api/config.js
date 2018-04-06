@@ -78,8 +78,9 @@ function _normalizeSize(val) {
 
 
 function _adjustDefaultBwEstimate(estimate) {
-    if (_isValidNumber(parseFloat(estimate))) {
-        return Math.max(estimate, 1);
+    const parsedEstimate = parseFloat(estimate);
+    if (_isValidNumber(parsedEstimate)) {
+        return Math.max(parsedEstimate, 1);
     }
 
     return Defaults.bandwidthEstimate;
