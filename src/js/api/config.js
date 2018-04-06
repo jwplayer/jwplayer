@@ -167,7 +167,7 @@ const Config = function(options, persisted) {
     const parsedDefaultBwEstimate = parseFloat(config.defaultBandwidthEstimate);
     config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : Defaults.bandwidthEstimate;
     config.bitrateSelection = _isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
-    config.defaultBandwidthEstimate = _isValidNumber(parsedDefaultBwEstimate) && parsedDefaultBwEstimate > 0 ? parsedDefaultBwEstimate : Defaults.defaultBandwidthEstimate;
+    config.defaultBandwidthEstimate = _isValidNumber(parsedDefaultBwEstimate) && parsedDefaultBwEstimate < 0 ? 1 : parsedDefaultBwEstimate;
     return config;
 };
 
