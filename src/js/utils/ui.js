@@ -266,7 +266,6 @@ const UI = function (elem, options) {
             if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
                 triggerEvent(CLICK, evt);
             } else {
-                console.log('Staaahhp');
                 triggerEvent(TAP, evt);
                 if (evt.type === 'touchend') {
                     // preventDefault to not dispatch the 300ms delayed click after a tap

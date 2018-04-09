@@ -68,8 +68,6 @@ export default class RightClick {
     }
 
     showMenu(evt) {
-        console.log('Show Menu', evt);
-
         // Offset relative to player element
         var off = this.getOffset(evt);
 
