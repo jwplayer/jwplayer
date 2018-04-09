@@ -98,10 +98,11 @@ export default class Controls {
         }
 
         // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
+        this.rightClickMenu = new RightClick();
         if (touchMode) {
             utils.addClass(this.playerContainer, 'jw-flag-touch');
+            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
         } else {
-            this.rightClickMenu = new RightClick();
             model.change('flashBlocked', (modelChanged, isBlocked) => {
                 if (isBlocked) {
                     this.rightClickMenu.destroy();

@@ -18,7 +18,8 @@ export default class ClickHandler {
                     return;
                 }
                 this.trigger('doubleClick');
-            }
+            },
+            'longPress': (evt) => this.trigger('longPress', evt)
         }, this);
     }
 

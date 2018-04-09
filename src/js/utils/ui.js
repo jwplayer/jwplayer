@@ -1,5 +1,5 @@
 import { Browser, OS, Features } from 'environment/environment';
-import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
+import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER, LONG_PRESS } from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
@@ -89,6 +89,8 @@ const UI = function (elem, options) {
     let _doubleClickDelay = 300;
     let _touchListenerTarget;
     let _pointerId;
+    let isLongPress = false;
+    let timeoutId;
 
     options = options || {};
 
@@ -199,6 +201,10 @@ const UI = function (elem, options) {
                     setEventListener(document, 'mouseup', interactEndDelegate);
                 }
             } else if (evt.type === 'touchstart') {
+                timeoutId = setTimeout(() => {
+                    isLongPress = true;
+                }, 500);
+
                 setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler, listenerOptions);
                 setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
                 setEventListener(_touchListenerTarget, 'touchend', interactEndHandler);
@@ -226,6 +232,8 @@ const UI = function (elem, options) {
                 _hasMoved = true;
                 triggerEvent(DRAG, evt);
             }
+            isLongPress = false;
+            clearTimeout(timeoutId);
         }
 
         // Prevent scrolling the screen dragging while dragging on mobile.
@@ -252,6 +260,11 @@ const UI = function (elem, options) {
 
         if (_hasMoved) {
             triggerEvent(DRAG_END, evt);
+        } else if (isLongPress && evt.type === 'touchend') {
+            isLongPress = false;
+            clearTimeout(timeoutId);
+            triggerEvent(LONG_PRESS, evt);
+            preventDefault(evt);
         } else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
             if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
                 triggerEvent(CLICK, evt);

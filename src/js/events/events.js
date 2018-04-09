@@ -81,6 +81,11 @@ export const TAP = 'tap';
 export const DOUBLE_TAP = 'doubleTap';
 
 /**
+ * Event triggered when a user taps the observed element twice consecutively.
+ */
+export const LONG_PRESS = 'longPress';
+
+/**
  * Event triggered when the mouse is over the observed element.
 */
 export const OVER = 'over';

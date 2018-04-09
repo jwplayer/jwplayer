@@ -219,7 +219,7 @@ function View(_api, _model) {
 
         const playerViewModel = _model.player;
         playerViewModel.on('change:errorEvent', _errorHandler);
-        
+
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
@@ -396,7 +396,12 @@ function View(_api, _model) {
                     }
                 }
             },
-            doubleClick: () => _controls && api.setFullscreen()
+            doubleClick: () => _controls && api.setFullscreen(),
+            longPress: (evt) => {
+                if (_controls && _controls.rightClickMenu) {
+                    _controls.rightClickMenu.rightClick(evt);
+                }
+            }
         });
 
         _playerElement.addEventListener('mousemove', moveHandler);
