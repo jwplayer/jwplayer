@@ -126,7 +126,22 @@ const multiConfig = [
                     options: {
                         babelrc: false,
                         presets: [
-                            ['env']
+                            ['env', {
+                                // Output the babel targets/plugins used
+                                // https://babeljs.io/docs/plugins/preset-env/#debug
+                                // debug: true,
+                                modules: false,
+                                targets: {
+                                    browsers: [
+                                        'chrome >= 55',
+                                        'firefox >= 51',
+                                        'ie >= 11',
+                                        'safari >= 8',
+                                        'ios >= 8',
+                                        'android >= 4'
+                                    ]
+                                }
+                            }]
                         ],
                         plugins: [
                             'transform-object-assign'

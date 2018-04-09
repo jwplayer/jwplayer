@@ -49,7 +49,18 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
                 include: /(src)\/(js)\//,
                 loader: 'istanbul-instrumenter-loader'
             }
-        ].concat(webpackConfig.module.rules || []),
+        ].concat(webpackConfig.module.rules || []).map(rule => {
+            if (rule.options && rule.options.presets) {
+                rule.options.presets = rule.options.presets.map(preset => {
+                    if (Array.isArray(preset) && preset[0] === 'env' && preset[1]) {
+                        // karma-webpack failes if modules are not converted to commonjs by default
+                        delete preset[1].modules;
+                    }
+                    return preset;
+                });
+            }
+            return rule;
+        }),
         noParse: [
             /node_modules\/sinon\//,
             /node_modules\/jquery\//
