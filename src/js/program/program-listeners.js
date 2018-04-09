@@ -92,9 +92,6 @@ export function ProviderListener(mediaController) {
                 }
                 break;
             }
-            case 'visualQuality':
-                mediaModel.set('visualQuality', Object.assign({}, data));
-                break;
             default:
                 break;
         }
