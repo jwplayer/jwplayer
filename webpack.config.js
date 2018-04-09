@@ -41,20 +41,10 @@ const compileConstants = {
     __FLASH_VERSION__: flashVersion
 };
 
-const uglifyJsOptions = {
-    screwIE8: true,
-    stats: true,
-    mangle: {
-        toplevel: true,
-        eval: true,
-        except: ['export', 'require']
-    },
-    sourceMap: true
-};
-
 const multiConfig = [
     {
         name: 'debug',
+        mode: 'development',
         output: {
             path: `${__dirname}/bin-debug/`,
             filename: '[name].js',
@@ -76,6 +66,7 @@ const multiConfig = [
     },
     {
         name: 'release',
+        mode: 'production',
         output: {
             path: `${__dirname}/bin-release/`,
             filename: '[name].js',
@@ -88,7 +79,6 @@ const multiConfig = [
         watch: false,
         plugins: [
             new webpack.DefinePlugin(compileConstants),
-            new webpack.optimize.UglifyJsPlugin(uglifyJsOptions),
             new webpack.BannerPlugin(bannerOptions)
         ]
     }
@@ -97,6 +87,9 @@ const multiConfig = [
         node: false,
         entry: {
             jwplayer: './src/js/jwplayer.js'
+        },
+        optimization: {
+            splitChunks: false
         },
         stats: {
             timings: true
@@ -128,15 +121,38 @@ const multiConfig = [
                 },
                 {
                     test: /\.js$/,
+                    exclude: /\/node_modules\//,
                     loader: 'babel-loader',
-                    exclude: /node_modules/,
                     options: {
                         babelrc: false,
                         presets: [
-                            ['es2015']
+                            ['env', {
+                                // Output the babel targets/plugins used
+                                // https://babeljs.io/docs/plugins/preset-env/#debug
+                                // debug: true,
+                                modules: false,
+                                targets: {
+                                    browsers: [
+                                        'chrome >= 55',
+                                        'firefox >= 51',
+                                        'ie >= 11',
+                                        'safari >= 8',
+                                        'ios >= 8',
+                                        'android >= 4'
+                                    ]
+                                }
+                            }]
                         ],
                         plugins: [
-                            'transform-object-assign'
+                            {
+                                visitor: {
+                                    CallExpression: function(espath, file) {
+                                        if (espath.get('callee').matchesPattern('Object.assign')) {
+                                            espath.node.callee = file.addImport('utils/underscore', 'extend');
+                                        }
+                                    }
+                                }
+                            }
                         ]
                     }
                 },
