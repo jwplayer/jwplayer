@@ -144,7 +144,15 @@ const multiConfig = [
                             }]
                         ],
                         plugins: [
-                            'transform-object-assign'
+                            {
+                                visitor: {
+                                    CallExpression: function(espath, file) {
+                                        if (espath.get('callee').matchesPattern('Object.assign')) {
+                                            espath.node.callee = file.addImport('utils/underscore', 'extend');
+                                        }
+                                    }
+                                }
+                            }
                         ]
                     }
                 },
