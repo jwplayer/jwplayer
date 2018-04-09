@@ -365,6 +365,7 @@ function View(_api, _model) {
                 }
             },
             tap: () => {
+                console.log('Tapping');
                 _playerElement.removeEventListener('mousemove', moveHandler);
                 _playerElement.removeEventListener('mouseout', outHandler);
                 _playerElement.removeEventListener('mouseover', overHandler);

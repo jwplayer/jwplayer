@@ -56,14 +56,20 @@ export default class RightClick {
     }
 
     getOffset(evt) {
-        var playerBounds = bounds(this.playerElement);
-        var x = evt.pageX - playerBounds.left;
-        var y = evt.pageY - playerBounds.top;
+        const playerBounds = bounds(this.playerElement);
+        let x = evt.pageX - playerBounds.left;
+        let y = evt.pageY - playerBounds.top;
+
+        if (this.model.get('touchMode')) {
+            y -= 100;
+        }
 
         return { x: x, y: y };
     }
 
     showMenu(evt) {
+        console.log('Show Menu', evt);
+
         // Offset relative to player element
         var off = this.getOffset(evt);
 
@@ -77,7 +83,10 @@ export default class RightClick {
         return false;
     }
 
-    hideMenu() {
+    hideMenu(evt) {
+        if (evt && evt.type === 'mousedown') {
+            return;
+        }
         this.elementUI.off('out', this.hideMenu, this);
         if (this.mouseOverContext) {
             // If mouse is over the menu, hide the menu when mouse moves out
@@ -127,8 +136,11 @@ export default class RightClick {
         this.mouseOverContext = false;
         this.layer = layer;
 
+
         // Defer the rest of setup until the first click
-        _playerElement.oncontextmenu = this.rightClick.bind(this);
+        if (!_model.get('touchMode')) {
+            _playerElement.oncontextmenu = this.rightClick.bind(this);
+        }
     }
 
     addOffListener(element) {

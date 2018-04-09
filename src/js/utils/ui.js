@@ -89,9 +89,8 @@ const UI = function (elem, options) {
     let _doubleClickDelay = 300;
     let _touchListenerTarget;
     let _pointerId;
+    let longPressTimeout;
     let isLongPress = false;
-    let timeoutId;
-
     options = options || {};
 
     const listenerOptions = Features.passiveEvents ? { passive: !options.preventScrolling } : false;
@@ -201,7 +200,8 @@ const UI = function (elem, options) {
                     setEventListener(document, 'mouseup', interactEndDelegate);
                 }
             } else if (evt.type === 'touchstart') {
-                timeoutId = setTimeout(() => {
+                longPressTimeout = setTimeout(() => {
+                    triggerEvent(LONG_PRESS, evt);
                     isLongPress = true;
                 }, 500);
 
@@ -222,6 +222,8 @@ const UI = function (elem, options) {
 
         if (_hasMoved) {
             triggerEvent(DRAG, evt);
+            isLongPress = false;
+            clearTimeout(longPressTimeout);
         } else {
             const endX = getCoord(evt, 'X');
             const endY = getCoord(evt, 'Y');
@@ -232,8 +234,6 @@ const UI = function (elem, options) {
                 _hasMoved = true;
                 triggerEvent(DRAG, evt);
             }
-            isLongPress = false;
-            clearTimeout(timeoutId);
         }
 
         // Prevent scrolling the screen dragging while dragging on mobile.
@@ -260,15 +260,13 @@ const UI = function (elem, options) {
 
         if (_hasMoved) {
             triggerEvent(DRAG_END, evt);
-        } else if (isLongPress && evt.type === 'touchend') {
-            isLongPress = false;
-            clearTimeout(timeoutId);
-            triggerEvent(LONG_PRESS, evt);
+        } else if (isLongPress) {
             preventDefault(evt);
         } else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
             if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
                 triggerEvent(CLICK, evt);
             } else {
+                console.log('Staaahhp');
                 triggerEvent(TAP, evt);
                 if (evt.type === 'touchend') {
                     // preventDefault to not dispatch the 300ms delayed click after a tap
@@ -277,6 +275,8 @@ const UI = function (elem, options) {
             }
         }
 
+        isLongPress = false;
+        clearTimeout(longPressTimeout);
         _touchListenerTarget = null;
         _hasMoved = false;
     }
