@@ -138,6 +138,9 @@ export default class MediaController extends Eventable {
                 // Start firing visualQuality once playback has started
                 mediaModel.off(MEDIA_VISUAL_QUALITY, null, this);
                 mediaModel.change(MEDIA_VISUAL_QUALITY, (changedMediaModel, eventData) => {
+                    if (!eventData) {
+                        return;
+                    }
                     this.trigger(MEDIA_VISUAL_QUALITY, eventData);
                 }, this);
                 syncPlayerWithMediaModel(mediaModel);
