@@ -1,5 +1,5 @@
-@import "../shared-imports/vars";
-@import "imports/icons";
+@import "../shared-imports/vars.less";
+@import "imports/icons.less";
 
 // idle
 .jw-state-idle {
@@ -75,6 +75,12 @@
         &:not(.jw-flag-autostart) .jw-logo-bottom-right {
             bottom: 0;
         }
+    }
+}
+
+.jwplayer .jw-icon-playback {
+    .jw-svg-icon-stop {
+        display: none;
     }
 }
 

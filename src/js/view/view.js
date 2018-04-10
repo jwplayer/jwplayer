@@ -8,7 +8,7 @@ import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-anima
 import { getBreakpoint, setBreakpoint } from 'view/utils/breakpoint';
 import { normalizeSkin, handleColorOverrides } from 'view/utils/skin';
 import { Browser, OS, Features } from 'environment/environment';
-import * as ControlsLoader from 'controller/controls-loader';
+import { ControlsLoader, loadControls } from 'controller/controls-loader';
 import {
     STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR,
     RESIZE, BREAKPOINT, DISPLAY_CLICK, LOGO_CLICK, ERROR, NATIVE_FULLSCREEN, MEDIA_VISUAL_QUALITY, CONTROLS } from 'events/events';
@@ -295,7 +295,7 @@ function View(_api, _model) {
 
         _model.change('state', _stateHandler);
         playerViewModel.change('controls', changeControls);
-        playerViewModel.change('streamType', _setLiveMode);
+        _model.change('streamType', _setLiveMode);
         _model.change('mediaType', _onMediaTypeChange);
         playerViewModel.change('playlistItem', onPlaylistItem);
         // Triggering 'resize' resulting in player 'ready'
@@ -308,18 +308,17 @@ function View(_api, _model) {
             controls: enable
         };
         if (enable) {
-            ControlsModule = ControlsLoader.module.controls;
+            ControlsModule = ControlsLoader.controls;
             if (!ControlsModule) {
-                controlsEvent.loadPromise = ControlsLoader.load()
-                    .then(function (Controls) {
-                        ControlsModule = Controls;
-                        // Check that controls is still true after the loader promise resolves
-                        const enabledState = model.get('controls');
-                        if (enabledState) {
-                            addControls();
-                        }
-                        return enabledState;
-                    });
+                controlsEvent.loadPromise = loadControls().then(function (Controls) {
+                    ControlsModule = Controls;
+                    // Check that controls is still true after the loader promise resolves
+                    const enabledState = model.get('controls');
+                    if (enabledState) {
+                        addControls();
+                    }
+                    return enabledState;
+                });
                 controlsEvent.loadPromise.catch(function (reason) {
                     _this.trigger(ERROR, {
                         message: 'Controls failed to load',

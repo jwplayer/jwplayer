@@ -3,32 +3,70 @@
 /* eslint-env node */
 /* eslint no-process-env: 0 */
 
-const webpack = require('webpack');
 const path = require('path');
+const puppeteer = require('puppeteer');
+const webpack = require('webpack');
 const webpackConfig = require('./webpack.config.js')({ release: true });
 
-const aliases = {
-    'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
-    'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
-    jquery: path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
-    sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
-    data: path.resolve(__dirname + '/test/data'),
-    mock: path.resolve(__dirname + '/test/mock')
-};
-const rules = [{
-    enforce: 'post',
-    test: /\.js$/,
-    include: /(src)\/(js)\//,
-    loader: 'istanbul-instrumenter-loader'
-}];
-const noParse = [
-    /node_modules\/sinon\//,
-    /node_modules\/jquery\//
-];
-
-webpackConfig.resolve.alias = Object.assign(webpackConfig.resolve.alias || {}, aliases);
-webpackConfig.module.rules = rules.concat(webpackConfig.module.rules || []);
-webpackConfig.module.noParse = noParse.concat(webpackConfig.module.noParse || []);
+const webpackKarmaConfig = Object.assign({}, webpackConfig, {
+    entry: null,
+    output: null,
+    mode: 'development',
+    devtool: false,
+    plugins: [
+        new webpack.DefinePlugin({
+            __SELF_HOSTED__: true,
+            __REPO__: '\'\'',
+            __DEBUG__: false,
+            __BUILD_VERSION__: '\'' + '8.2.2' + '\'',
+            __FLASH_VERSION__: 18.0
+        }),
+    ],
+    externals: {
+        $: {
+            commonjs: 'jquery',
+            amd: 'jquery',
+            root: '$'
+        },
+        sinon: 'sinon'
+    },
+    resolve: Object.assign({}, webpackConfig.resolve, {
+        alias: Object.assign({}, webpackConfig.resolve.alias || {}, {
+            'test/underscore': path.resolve(__dirname + '/node_modules/underscore/underscore.js'),
+            'utils/video': path.resolve(__dirname + '/test/mock/video.js'),
+            // Tests using jQuery: api-test, jwplayer-selectplayer-test, setup-test
+            jquery: path.resolve(__dirname + '/node_modules/jquery/dist/jquery.js'),
+            sinon: path.resolve(__dirname + '/node_modules/sinon/pkg/sinon.js'),
+            data: path.resolve(__dirname + '/test/data'),
+            mock: path.resolve(__dirname + '/test/mock')
+        })
+    }),
+    module: Object.assign({}, webpackConfig.module, {
+        rules: [
+            {
+                enforce: 'post',
+                test: /\.js$/,
+                include: /(src)\/(js)\//,
+                loader: 'istanbul-instrumenter-loader'
+            }
+        ].concat(webpackConfig.module.rules || []).map(rule => {
+            if (rule.options && rule.options.presets) {
+                rule.options.presets = rule.options.presets.map(preset => {
+                    if (Array.isArray(preset) && preset[0] === 'env' && preset[1]) {
+                        // karma-webpack failes if modules are not converted to commonjs by default
+                        delete preset[1].modules;
+                    }
+                    return preset;
+                });
+            }
+            return rule;
+        }),
+        noParse: [
+            /node_modules\/sinon\//,
+            /node_modules\/jquery\//
+        ].concat(webpackConfig.module.noParse || [])
+    })
+});
 
 module.exports = function(config) {
     const env = process.env;
@@ -40,6 +78,7 @@ module.exports = function(config) {
     ];
     if (isJenkins) {
         testReporters.push('junit');
+        process.env.CHROME_BIN = puppeteer.executablePath();
     }
     const packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
@@ -51,16 +90,16 @@ module.exports = function(config) {
         autoWatch: false, // watch file and execute tests whenever any file changes
         singleRun: true, // if true, Karma captures browsers, runs the tests and exits
 
-        // Possible values:
-        // config.LOG_DISABLE
-        // config.LOG_ERROR
-        // config.LOG_WARN
-        // config.LOG_INFO
-        //  config.LOG_DEBUG LOG_DEBUG is useful for writing karma server network status messages to stdio
+        // Possible logLevel values:
+        // LOG_DISABLE
+        // LOG_ERROR
+        // LOG_WARN
+        // LOG_INFO
+        // LOG_DEBUG (useful for writing karma server network status messages to stdio)
         logLevel: config.LOG_INFO,
 
         browsers: [
-            'PhantomJS',
+            'ChromeHeadless',
             'Chrome',
             // 'Safari', // experiencing issues with safari-launcher@1.0.0 and Safari 9.1.1
             'Firefox'
@@ -86,43 +125,26 @@ module.exports = function(config) {
         captureTimeout: 120 * 1000, // default 60000
 
         files: [
-            { pattern: 'test-context.js' },
-            { pattern: 'test/files/*', included: false }
+            { pattern: 'test/index.js' },
+            { pattern: 'test/files/*', included: false },
+            { pattern: 'src/js/*', included: false }
         ],
 
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'test-context.js': ['webpack'],
+            'test/index.js': ['webpack']
         },
 
         coverageIstanbulReporter: {
-            reports: [ 'text-summary', 'html' ],
+            reports: ['text-summary', 'html'],
             dir: 'reports/coverage',
+            combineBrowserReports: true,
             fixWebpackSourcePaths: true
         },
 
-        webpack: {
-            resolve: webpackConfig.resolve,
-            module: webpackConfig.module,
-            plugins: [
-                new webpack.DefinePlugin({
-                    __SELF_HOSTED__: true,
-                    __REPO__: '\'\'',
-                    __DEBUG__: false,
-                    __BUILD_VERSION__: '\'' + '7.12.0' + '\'',
-                    __FLASH_VERSION__: 18.0
-                }),
-            ],
-            externals: {
-                $: {
-                    commonjs: 'jquery',
-                    amd: 'jquery',
-                    root: '$'
-                },
-                sinon: 'sinon'
-            }
-        },
+        webpack: webpackKarmaConfig,
+
         // number of browsers to run at once
         concurrency: Infinity
     });

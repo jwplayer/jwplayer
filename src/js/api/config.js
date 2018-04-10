@@ -1,7 +1,7 @@
 import _ from 'utils/underscore';
 import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
-import { _isNumber, _isNaN } from 'utils/underscore';
+import { _isValidNumber } from 'utils/underscore';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -9,6 +9,8 @@ import { _isNumber, _isNaN } from 'utils/underscore';
 // Alphabetical order
 const Defaults = {
     autostart: false,
+    bandwidthEstimate: null,
+    bitrateSelection: null,
     castAvailable: false,
     controls: true,
     defaultPlaybackRate: 1,
@@ -21,6 +23,7 @@ const Defaults = {
         play: 'Play',
         playback: 'Start Playback',
         pause: 'Pause',
+        stop: 'Stop',
         volume: 'Volume',
         prev: 'Previous',
         next: 'Next',
@@ -71,6 +74,16 @@ function _normalizeSize(val) {
         val = val.slice(0, -2);
     }
     return val;
+}
+
+
+function _adjustDefaultBwEstimate(estimate) {
+    const parsedEstimate = parseFloat(estimate);
+    if (_isValidNumber(parsedEstimate)) {
+        return Math.max(parsedEstimate, 1);
+    }
+
+    return Defaults.bandwidthEstimate;
 }
 
 const Config = function(options, persisted) {
@@ -150,7 +163,7 @@ const Config = function(options, persisted) {
 
     let liveTimeout = config.liveTimeout;
     if (liveTimeout !== null) {
-        if (_isNaN(liveTimeout) || !_isNumber(liveTimeout)) {
+        if (!_isValidNumber(liveTimeout)) {
             liveTimeout = null;
         } else if (liveTimeout !== 0) {
             liveTimeout = Math.max(30, liveTimeout);
@@ -158,6 +171,10 @@ const Config = function(options, persisted) {
         config.liveTimeout = liveTimeout;
     }
 
+    const parsedBwEstimate = parseFloat(config.bandwidthEstimate);
+    const parsedBitrateSelection = parseFloat(config.bitrateSelection);
+    config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : _adjustDefaultBwEstimate(config.defaultBandwidthEstimate);
+    config.bitrateSelection = _isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
     return config;
 };
 

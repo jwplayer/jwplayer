@@ -584,11 +584,13 @@ _.defaults = function(obj) {
 };
 
 // Extend a given object with all the properties in passed-in object(s).
-_.extend = function(obj) {
+const extend = _.extend = Object.assign || function(obj) {
     each(slice.call(arguments, 1), function(source) {
         if (source) {
             for (var prop in source) {
-                obj[prop] = source[prop];
+                if (Object.prototype.hasOwnProperty.call(source, prop)) {
+                    obj[prop] = source[prop];
+                }
             }
         }
     });
@@ -624,7 +626,7 @@ _.clone = function(obj) {
     if (!_.isObject(obj)) {
         return obj;
     }
-    return _.isArray(obj) ? obj.slice() : _.extend({}, obj);
+    return _.isArray(obj) ? obj.slice() : extend({}, obj);
 };
 
 // Is a given value an array?
@@ -645,6 +647,8 @@ each(['Function', 'String', 'Number', 'Date', 'RegExp'], function (name) {
     };
 });
 
+const _isNumber = _.isNumber;
+
 // Optimize `isFunction` if appropriate.
 if (typeof (/./) !== 'function') {
     _.isFunction = function (obj) {
@@ -659,7 +663,7 @@ _.isFinite = function (obj) {
 
 // Is the given value `NaN`? (NaN is the only number which does not equal itself).
 const _isNaN = _.isNaN = function (obj) {
-    return _.isNumber(obj) && obj != +obj;
+    return _isNumber(obj) && obj != +obj;
 };
 
 // Is a given value a boolean?
@@ -735,7 +739,7 @@ _.result = function (object, property) {
     return _.isFunction(value) ? value.call(object) : value;
 };
 
-const _isNumber = _.isNumber;
+const _isValidNumber = (val) => _isNumber(val) && !_isNaN(val);
 
-export { _isNaN, _isNumber };
+export { _isNaN, _isNumber, _isValidNumber, extend };
 export default _;
