@@ -1,14 +1,14 @@
 export default (menu) => {
     const { items = [] } = menu;
-    const itemsHtml = items
+    const menuItems = items
         .map(item => {
             return rightClickItem(item.link, item.title, item.featured, item.showLogo);
-        })
-        .join('');
+        });
+    menuItems.unshift(infoOverlayItem());
 
     return (
         `<div class="jw-rightclick jw-reset">` +
-            `<ul class="jw-rightclick-list jw-reset">${itemsHtml}</ul>` +
+            `<ul class="jw-rightclick-list jw-reset">${menuItems.join('')}</ul>` +
         `</div>`
     );
 };
@@ -21,3 +21,12 @@ const rightClickItem = (link = '', title = '', featured, showLogo) => {
         `</li>`
     );
 };
+
+const infoOverlayItem = () => {
+    return (
+        `<li class="jw-reset jw-rightclick-item">` +
+            `<button class=" jw-rightclick-link jw-info-overlay-item">About this video</button>` +
+        `</li>`
+    );
+};
+

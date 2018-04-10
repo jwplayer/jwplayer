@@ -359,6 +359,8 @@ function View(_api, _model) {
                 if (_controls) {
                     if (settingsMenuVisible()) {
                         _controls.settingsMenu.close();
+                    } else if (_controls.infoOverlay && _controls.infoOverlay.visible) {
+                        // _controls.infoOverlay.close();
                     } else {
                         api.playToggle(reasonInteraction());
                     }

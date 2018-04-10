@@ -1,0 +1,61 @@
+.jw-info-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    background: @menu-background-color;
+    color: @active-color;
+    pointer-events: all;
+    user-select: text;
+    height: 50%;
+    overflow: hidden;
+    flex-direction: column;
+
+    .jw-info-close {
+        flex: 0 0 auto;
+        margin-left: auto;
+        padding: 5px;
+    }
+
+    &.jw-info-open {
+        display: flex;
+    }
+
+    .jw-flag-small-player & {
+        bottom: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        max-width: none;
+        z-index: 1;
+    }
+}
+
+.jw-info-container {
+    display: flex;
+    flex: 1 1 auto;
+    flex-flow: column;
+    margin: 0 20px 20px;
+    overflow-y: auto;
+    padding: 5px;
+
+    [class*="jw-info"] {
+        &:not(:first-of-type) {
+            color: @inactive-color;
+            padding-top: 10px;
+            font-size: 12px;
+        }
+    }
+
+    .jw-info-clientid {
+        margin-left: auto;
+        margin-top: 40px;
+    }
+
+    .jw-info-title {
+        font-weight: bold;
+    }
+
+    .scrollbar-style();
+}

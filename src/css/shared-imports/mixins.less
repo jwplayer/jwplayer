@@ -75,6 +75,19 @@
     }
 }
 
+.scrollbar-style() {
+    &::-webkit-scrollbar {
+        background-color: transparent;
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: @white;
+        border: 1px solid @menu-background-color;
+        border-radius: 6px;
+    }
+}
+
 /* Less requires namespaced variables/mixins to overwrite globals - https://github.com/less/less.js/issues/1316 */
 
 /* Mixin for common skin styles with variable colors */

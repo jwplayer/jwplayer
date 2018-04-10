@@ -2,6 +2,7 @@ import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement, emptyElement, prependChild } from 'utils/dom';
+import { addInteractionListeners, removeInteractionListeners } from 'view/utils/interaction-listeners';
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
@@ -50,7 +51,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             visible = true;
             onVisibility(visible, event);
             settingsMenuElement.setAttribute('aria-expanded', 'true');
-            addDocumentListeners(documentClickHandler);
+            addInteractionListeners(document, documentClickHandler);
 
             if (isDefault) {
                 if (event && event.type === 'enter') {
@@ -69,7 +70,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             deactivateAllSubmenus(submenus);
 
             settingsMenuElement.setAttribute('aria-expanded', 'false');
-            removeDocumentListeners(documentClickHandler);
+            removeInteractionListeners(document, documentClickHandler);
         },
         toggle() {
             if (visible) {
@@ -162,18 +163,6 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     return instance;
 }
-
-const addDocumentListeners = (handler) => {
-    document.addEventListener('mouseup', handler);
-    document.addEventListener('pointerup', handler);
-    document.addEventListener('touchstart', handler);
-};
-
-const removeDocumentListeners = (handler) => {
-    document.removeEventListener('mouseup', handler);
-    document.removeEventListener('pointerup', handler);
-    document.removeEventListener('touchstart', handler);
-};
 
 const deactivateAllSubmenus = (submenus) => {
     Object.keys(submenus).forEach(name => {

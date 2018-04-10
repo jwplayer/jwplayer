@@ -4,6 +4,7 @@ import { version } from 'version';
 import { flashVersion } from 'utils/browser';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { OS } from 'environment/environment';
+import { addInteractionListeners, removeInteractionListeners } from 'view/utils/interaction-listeners';
 
 function createDomElement(html) {
     const element = createElement(html);
@@ -15,12 +16,16 @@ function createDomElement(html) {
 }
 
 export default class RightClick {
+    constructor(infoOverlay) {
+        this.infoOverlay = infoOverlay;
+        this.infoOverlayUI = null;
+    }
 
     buildArray() {
-        var semverParts = version.split('+');
-        var majorMinorPatchPre = semverParts[0];
+        const semverParts = version.split('+');
+        const majorMinorPatchPre = semverParts[0];
 
-        var menu = {
+        const menu = {
             items: [{
                 title: 'Powered by <span class="jw-reset">JW Player ' + majorMinorPatchPre + '</span>',
                 featured: true,
@@ -29,9 +34,9 @@ export default class RightClick {
             }]
         };
 
-        var provider = this.model.get('provider');
+        const provider = this.model.get('provider');
         if (provider && provider.name.indexOf('flash') >= 0) {
-            var text = 'Flash Version ' + flashVersion();
+            const text = 'Flash Version ' + flashVersion();
             menu.items.push({
                 title: text,
                 link: 'http://www.adobe.com/software/flash/about/'
@@ -71,7 +76,7 @@ export default class RightClick {
 
     showMenu(evt) {
         // Offset relative to player element
-        var off = this.getOffset(evt);
+        const off = this.getOffset(evt);
 
         this.el.style.left = off.x + 'px';
         this.el.style.top = off.y + 'px';
@@ -87,7 +92,14 @@ export default class RightClick {
     hideMenu(evt) {
         if (evt && this.el.contains(evt.target)) {
             // Do not hide menu when clicking inside menu
-            return;
+
+            if (evt.target.className.match(/.jw-info-overlay-item/)) {
+                this.mouseOverContext = false;
+                this.hideMenu();
+                this.infoOverlay.open();
+            } else {
+                return;
+            }
         }
 
         removeClass(this.playerElement, 'jw-flag-rightclick-open');
@@ -108,9 +120,9 @@ export default class RightClick {
             return;
         }
 
+
         this.html = html;
         this.el = createDomElement(this.html);
-
         this.layer.appendChild(this.el);
 
         this.hideMenuHandler = e => this.hideMenu(e);
@@ -123,12 +135,7 @@ export default class RightClick {
                 this.hideMenu();
             }
         };
-        this.addOffListener(this.playerElement);
-        this.addOffListener(document);
-
-        // Track if the mouse is above the menu or not
-        this.el.addEventListener('mouseover', this.overHandler);
-        this.el.addEventListener('mouseout', this.outHandler);
+        this.addListeners();
     }
 
     setup(_model, _playerElement, layer) {
@@ -164,29 +171,29 @@ export default class RightClick {
         clearTimeout(this.longPressTimeout);
     }
 
-    addOffListener(element) {
-        if (!OS.iOS) {
-            element.addEventListener('mousedown', this.hideMenuHandler);
-        }
-        element.addEventListener('touchstart', this.hideMenuHandler);
-        element.addEventListener('pointerdown', this.hideMenuHandler);
+    addListeners() {
+        addInteractionListeners(this.playerElement, this.hideMenuHandler, 'down');
+        addInteractionListeners(document, this.hideMenuHandler, 'down');
+        // Track if the mouse is above the menu or not
+        this.el.addEventListener('mouseover', this.overHandler);
+        this.el.addEventListener('mouseout', this.outHandler);
     }
 
-    removeOffListener(element) {
-        if (!OS.iOS) {
-            element.removeEventListener('mousedown', this.hideMenuHandler);
-        }
-        element.removeEventListener('touchstart', this.hideMenuHandler);
-        element.removeEventListener('pointerdown', this.hideMenuHandler);
+    removeListeners() {
+        removeInteractionListeners(this.playerElement, this.hideMenuHandler, 'down');
+        removeInteractionListeners(document, this.hideMenuHandler, 'down');
+        this.el.removeEventListener('mouseover', this.overHandler);
+        this.el.removeEventListener('mouseout', this.outHandler);
     }
 
     destroy() {
         clearTimeout(this._menuTimeout);
         if (this.el) {
             this.hideMenu();
-            this.removeOffListener(document);
-            this.el.removeEventListener('mouseover', this.overHandler);
-            this.el.removeEventListener('mouseout', this.outHandler);
+            this.elementUI.destroy();
+            this.infoOverlayUI.destroy();
+            this.removeListeners();
+            this.hideMenuHandler = null;
             this.el = null;
         }
 

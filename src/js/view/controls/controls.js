@@ -13,6 +13,7 @@ import { getBreakpoint } from 'view/utils/breakpoint';
 import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
+import InfoOverlay from 'view/controls/info-overlay';
 
 require('css/controls.less');
 
@@ -59,6 +60,7 @@ export default class Controls {
         this.logo = null;
         this.div = null;
         this.dimensions = {};
+        this.infoOverlay = null;
         this.userInactiveTimeout = () => {
             // Rerun at the scheduled time if remaining time is greater than the display refresh rate
             const remainingTime = this.inactiveTime - now();
@@ -98,7 +100,8 @@ export default class Controls {
         }
 
         // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
-        this.rightClickMenu = new RightClick();
+        this.infoOverlay = new InfoOverlay(this.playerContainer.querySelector('.jw-overlays'), model, api);
+        this.rightClickMenu = new RightClick(this.infoOverlay);
         if (touchMode) {
             utils.addClass(this.playerContainer, 'jw-flag-touch');
             this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
