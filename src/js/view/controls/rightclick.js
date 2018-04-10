@@ -60,8 +60,10 @@ export default class RightClick {
         let x = evt.pageX - playerBounds.left;
         let y = evt.pageY - playerBounds.top;
 
+        // move menu up on touch devices
+        // so it is not be blocked by fingers
         if (this.model.get('touchMode')) {
-            y -= 100;
+            y -= 75;
         }
 
         return { x: x, y: y };
