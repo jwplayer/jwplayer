@@ -90,7 +90,6 @@ const UI = function (elem, options) {
     let _touchListenerTarget;
     let _pointerId;
     let longPressTimeout;
-    let isLongPress = false;
     options = options || {};
 
     const listenerOptions = Features.passiveEvents ? { passive: !options.preventScrolling } : false;
@@ -202,7 +201,12 @@ const UI = function (elem, options) {
             } else if (evt.type === 'touchstart') {
                 longPressTimeout = setTimeout(() => {
                     triggerEvent(LONG_PRESS, evt);
-                    isLongPress = true;
+                    if (_touchListenerTarget) {
+                        _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
+                        _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
+                        _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+                        _touchListenerTarget = null;
+                    }
                 }, 500);
 
                 setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler, listenerOptions);
@@ -218,12 +222,11 @@ const UI = function (elem, options) {
     }
 
     function interactDragHandler(evt) {
-        const movementThreshold = 6;
+        clearTimeout(longPressTimeout);
 
+        const movementThreshold = 6;
         if (_hasMoved) {
             triggerEvent(DRAG, evt);
-            isLongPress = false;
-            clearTimeout(longPressTimeout);
         } else {
             const endX = getCoord(evt, 'X');
             const endY = getCoord(evt, 'Y');
@@ -243,6 +246,8 @@ const UI = function (elem, options) {
     }
 
     function interactEndHandler(evt) {
+        clearTimeout(longPressTimeout);
+
         const isPointerEvent = (evt.type === 'pointerup' || evt.type === 'pointercancel');
         if (isPointerEvent && options.preventScrolling) {
             elem.releasePointerCapture(_pointerId);
@@ -260,8 +265,6 @@ const UI = function (elem, options) {
 
         if (_hasMoved) {
             triggerEvent(DRAG_END, evt);
-        } else if (isLongPress) {
-            preventDefault(evt);
         } else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
             if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
                 triggerEvent(CLICK, evt);
@@ -274,8 +277,6 @@ const UI = function (elem, options) {
             }
         }
 
-        isLongPress = false;
-        clearTimeout(longPressTimeout);
         _touchListenerTarget = null;
         _hasMoved = false;
     }

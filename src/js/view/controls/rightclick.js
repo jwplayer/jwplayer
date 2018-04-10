@@ -138,9 +138,7 @@ export default class RightClick {
 
 
         // Defer the rest of setup until the first click
-        if (!_model.get('touchMode')) {
-            _playerElement.oncontextmenu = this.rightClick.bind(this);
-        }
+        _playerElement.oncontextmenu = this.rightClick.bind(this);
     }
 
     addOffListener(element) {
