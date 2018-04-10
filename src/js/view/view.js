@@ -68,6 +68,7 @@ function View(_api, _model) {
     let _stateClassRequestId = -1;
 
     let displayClickHandler;
+    let longPressHandler;
     let fullscreenHelpers;
     let focusHelper;
 
@@ -396,14 +397,7 @@ function View(_api, _model) {
                     }
                 }
             },
-            doubleClick: () => _controls && api.setFullscreen(),
-            longPress: (evt) => {
-                // manually trigger the right click menu on iOS
-                // because context menu is not supported
-                if (OS.iOS && _controls && _controls.rightClickMenu) {
-                    _controls.rightClickMenu.rightClick(evt);
-                }
-            }
+            doubleClick: () => _controls && api.setFullscreen()
         });
 
         _playerElement.addEventListener('mousemove', moveHandler);
@@ -825,6 +819,9 @@ function View(_api, _model) {
             _playerElement.removeEventListener('mouseout', outHandler);
             _playerElement.removeEventListener('mouseover', overHandler);
             displayClickHandler = null;
+        }
+        if (longPressHandler) {
+            longPressHandler.destroy();
         }
         _captionsRenderer.destroy();
         if (_logo) {

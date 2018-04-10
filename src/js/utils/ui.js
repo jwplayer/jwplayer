@@ -1,5 +1,5 @@
 import { Browser, OS, Features } from 'environment/environment';
-import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER, LONG_PRESS } from 'events/events';
+import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
@@ -202,7 +202,6 @@ const UI = function (elem, options) {
                 }
             } else if (evt.type === 'touchstart') {
                 longPressTimeout = setTimeout(() => {
-                    triggerEvent(LONG_PRESS, evt);
                     if (_touchListenerTarget) {
                         _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
                         _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
