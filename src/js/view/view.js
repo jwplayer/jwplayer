@@ -398,7 +398,9 @@ function View(_api, _model) {
             },
             doubleClick: () => _controls && api.setFullscreen(),
             longPress: (evt) => {
-                if (_controls && _controls.rightClickMenu) {
+                // manually trigger the right click menu on iOS
+                // because context menu is not supported
+                if (OS.iOS && _controls && _controls.rightClickMenu) {
                     _controls.rightClickMenu.rightClick(evt);
                 }
             }

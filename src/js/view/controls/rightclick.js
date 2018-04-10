@@ -3,6 +3,7 @@ import { cloneIcon } from 'view/controls/icons';
 import { version } from 'version';
 import { flashVersion } from 'utils/browser';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
+import { OS } from 'environment/environment';
 import UI from 'utils/ui';
 
 function createDomElement(html) {
@@ -63,7 +64,7 @@ export default class RightClick {
         // move menu up on touch devices
         // so it is not be blocked by fingers
         if (this.model.get('touchMode')) {
-            y -= 75;
+            y -= 100;
         }
 
         return { x: x, y: y };
@@ -136,9 +137,11 @@ export default class RightClick {
         this.mouseOverContext = false;
         this.layer = layer;
 
-
-        // Defer the rest of setup until the first click
-        _playerElement.oncontextmenu = this.rightClick.bind(this);
+        // iOS does not support oncontextmenu
+        if (!OS.iOS) {
+            // Defer the rest of setup until the first click
+            _playerElement.oncontextmenu = this.rightClick.bind(this);
+        }
     }
 
     addOffListener(element) {
