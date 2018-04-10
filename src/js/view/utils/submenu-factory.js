@@ -1,8 +1,11 @@
 import { cloneIcon } from 'view/controls/icons';
 import SettingsSubmenu from 'view/controls/components/settings/submenu';
 import SettingsContentItem from 'view/controls/components/settings/content-item';
+import AutoQualityTemplate from 'view/controls/templates/settings/auto-quality.js';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
+import { createElement } from 'utils/dom';
+
 
 const AUDIO_TRACKS_SUBMENU = 'audioTracks';
 const CAPTIONS_SUBMENU = 'captions';
@@ -72,10 +75,16 @@ export function removeAudioTracksSubmenu(settingsMenu) {
 
 export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, tooltipText) {
     const qualitiesItems = qualitiesList.map((track, index) => {
-        return SettingsContentItem(track.label, track.label, (evt) => {
+        const element = SettingsContentItem(track.label, track.label, (evt) => {
             action(index);
             settingsMenu.close(evt);
         });
+
+        if (index === 0) {
+            const autoQualityElement = createElement(AutoQualityTemplate());
+            element.element().appendChild(autoQualityElement);
+        }
+        return element;
     });
 
     const qualitiesSubmenu = makeSubmenu(settingsMenu, QUALITIES_SUBMENU, qualitiesItems, cloneIcon('quality-100'), tooltipText);

@@ -51,6 +51,9 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             emptyElement(submenuElement);
             contentItems = [];
         },
+        getItems() {
+            return contentItems;
+        },
         activate() {
             toggleClass(submenuElement, 'jw-settings-submenu-active', true);
             submenuElement.setAttribute('aria-expanded', 'true');
