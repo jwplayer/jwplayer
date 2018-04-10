@@ -90,6 +90,8 @@ const UI = function (elem, options) {
     let _touchListenerTarget;
     let _pointerId;
     let longPressTimeout;
+    let longPressDelay = 500;
+
     options = options || {};
 
     const listenerOptions = Features.passiveEvents ? { passive: !options.preventScrolling } : false;
@@ -207,7 +209,7 @@ const UI = function (elem, options) {
                         _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
                         _touchListenerTarget = null;
                     }
-                }, 500);
+                }, longPressDelay);
 
                 setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler, listenerOptions);
                 setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
