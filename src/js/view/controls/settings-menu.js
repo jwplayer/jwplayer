@@ -171,10 +171,8 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         const item = items[0].element().querySelector('.jw-auto-label');
         const levels = model.get('levels');
         const { mode, reason, level } = quality;
-
         if (mode === 'auto' || reason === 'auto') {
             item.innerHTML = ` ${levels[level.index].label}`;
-            qualitySubMenu.replaceContent(items);
         } else {
             // return if there already isnt a quality label on auto
             if (!item.innerHTML) {
@@ -182,7 +180,6 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             }
 
             item.innerHTML = ``;
-            qualitySubMenu.replaceContent(items);
         }
     });
 
