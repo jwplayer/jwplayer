@@ -2,7 +2,7 @@ import Item from 'playlist/item';
 import { fixSources } from 'playlist/playlist';
 import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
-import { module as ControlsModule } from 'controller/controls-loader';
+import { ControlsLoader } from 'controller/controls-loader';
 import { resolved } from 'polyfills/promise';
 
 let bundlePromise = null;
@@ -76,7 +76,7 @@ function loadControlsPolyfillHtml5Bundle() {
         // These modules should be required in this order
         require('intersection-observer');
         const CoreMixin = require('controller/controller').default;
-        ControlsModule.controls = require('view/controls/controls').default;
+        ControlsLoader.controls = require('view/controls/controls').default;
         registerProvider(require('providers/html5').default);
         return CoreMixin;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills.html5');
@@ -91,7 +91,7 @@ function loadControlsHtml5Bundle() {
         'providers/html5'
     ], function (require) {
         const CoreMixin = require('controller/controller').default;
-        ControlsModule.controls = require('view/controls/controls').default;
+        ControlsLoader.controls = require('view/controls/controls').default;
         registerProvider(require('providers/html5').default);
         return CoreMixin;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.html5');
@@ -107,7 +107,7 @@ function loadControlsPolyfillBundle() {
     ], function (require) {
         require('intersection-observer');
         const CoreMixin = require('controller/controller').default;
-        ControlsModule.controls = require('view/controls/controls').default;
+        ControlsLoader.controls = require('view/controls/controls').default;
         return CoreMixin;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills');
 }
@@ -118,7 +118,7 @@ function loadControlsBundle() {
         'view/controls/controls'
     ], function (require) {
         const CoreMixin = require('controller/controller').default;
-        ControlsModule.controls = require('view/controls/controls').default;
+        ControlsLoader.controls = require('view/controls/controls').default;
         return CoreMixin;
     }, chunkLoadErrorHandler, 'jwplayer.core.controls');
 }

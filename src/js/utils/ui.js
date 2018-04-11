@@ -89,6 +89,8 @@ const UI = function (elem, options) {
     let _doubleClickDelay = 300;
     let _touchListenerTarget;
     let _pointerId;
+    let longPressTimeout;
+    let longPressDelay = 500;
 
     options = options || {};
 
@@ -199,6 +201,15 @@ const UI = function (elem, options) {
                     setEventListener(document, 'mouseup', interactEndDelegate);
                 }
             } else if (evt.type === 'touchstart') {
+                longPressTimeout = setTimeout(() => {
+                    if (_touchListenerTarget) {
+                        _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
+                        _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
+                        _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
+                        _touchListenerTarget = null;
+                    }
+                }, longPressDelay);
+
                 setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler, listenerOptions);
                 setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
                 setEventListener(_touchListenerTarget, 'touchend', interactEndHandler);
@@ -212,8 +223,9 @@ const UI = function (elem, options) {
     }
 
     function interactDragHandler(evt) {
-        const movementThreshold = 6;
+        clearTimeout(longPressTimeout);
 
+        const movementThreshold = 6;
         if (_hasMoved) {
             triggerEvent(DRAG, evt);
         } else {
@@ -235,6 +247,8 @@ const UI = function (elem, options) {
     }
 
     function interactEndHandler(evt) {
+        clearTimeout(longPressTimeout);
+
         const isPointerEvent = (evt.type === 'pointerup' || evt.type === 'pointercancel');
         if (isPointerEvent && options.preventScrolling) {
             elem.releasePointerCapture(_pointerId);
