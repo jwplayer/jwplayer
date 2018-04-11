@@ -124,10 +124,12 @@ export default class RightClick {
         this.addOffListener(document);
 
         // Track if the mouse is above the menu or not
-        this.onMouseOverHandler = this.onMouseOver.bind(this);
-        this.onMouseOutHandler = this.onMouseOut.bind(this);
-        this.el.addEventListener('mouseover', this.onMouseOverHandler);
-        this.el.addEventListener('mouseout', this.onMouseOutHandler);
+        this.el.addEventListener('mouseover', () => {
+            this.mouseOverContext = true;
+        });
+        this.el.addEventListener('mouseout', () => {
+            this.mouseOverContext = false;
+        });
     }
 
     setup(_model, _playerElement, layer) {
@@ -149,14 +151,6 @@ export default class RightClick {
             _playerElement.addEventListener('touchend', this.cancelLongPressHandler);
             _playerElement.addEventListener('touchcancel', this.cancelLongPressHandler);
         }
-    }
-
-    onMouseOver() {
-        this.mouseOverContext = true;
-    }
-
-    onMouseOut() {
-        this.mouseOverContext = false;
     }
 
     startLongPress(evt) {
@@ -193,9 +187,7 @@ export default class RightClick {
             this.hideMenu();
             this.removeOffListener(this.playerElement);
             this.removeOffListener(document);
-            this.el.removeEventListener('mouseover', this.onMouseOverHandler);
-            this.el.removeEventListener('mouseout', this.onMouseOutHandler);
-            this.el.removeListener('mouseout', this.hideMenuHandler);
+            this.el.removeEventListener('mouseout', this.hideMenuHandler);
             this.hideMenuHandler = null;
             this.el = null;
         }
