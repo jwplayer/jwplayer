@@ -72,7 +72,12 @@ export function removeAudioTracksSubmenu(settingsMenu) {
 
 export function addQualitiesSubmenu(settingsMenu, qualitiesList, action, initialSelectionIndex, tooltipText) {
     const qualitiesItems = qualitiesList.map((track, index) => {
-        return SettingsContentItem(track.label, track.label, (evt) => {
+        let content = track.label;
+        if (index === 0) {
+            content += '&nbsp;<span class="jw-reset jw-auto-label"></span>';
+        }
+
+        return SettingsContentItem(track.label, content, (evt) => {
             action(index);
             settingsMenu.close(evt);
         });
