@@ -67,7 +67,7 @@ export default class RightClick {
             y -= 100;
         }
 
-        return { x: x, y: y };
+        return { x, y };
     }
 
     showMenu(evt) {
