@@ -152,12 +152,10 @@ export default class RightClick {
     }
 
     onMouseOver() {
-        console.log('onMouseOver');
         this.mouseOverContext = true;
     }
 
     onMouseOut() {
-        console.log('onMouseOut');
         this.mouseOverContext = false;
     }
 
