@@ -167,12 +167,14 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     // Visual Quality
     model.on('change:visualQuality', (changedModel, quality) => {
         const qualitySubMenu = settingsMenu.getSubmenu('quality');
-        const items = qualitySubMenu.getItems();
-        const item = items[0].element().querySelector('.jw-auto-label');
-        const levels = model.get('levels');
-        const { mode, level } = quality;
+        if (qualitySubMenu) {
+            const items = qualitySubMenu.getItems();
+            const item = items[0].element().querySelector('.jw-auto-label');
+            const levels = model.get('levels');
+            const { mode, level } = quality;
 
-        item.textContent = mode === 'auto' ? `${levels[level.index].label}` : ``;
+            item.textContent = mode === 'auto' ? `${levels[level.index].label}` : ``;
+        }
     });
 
     // Remove the audio tracks, qualities, and playback rates submenus when casting
