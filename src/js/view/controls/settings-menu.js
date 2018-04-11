@@ -170,17 +170,9 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         const items = qualitySubMenu.getItems();
         const item = items[0].element().querySelector('.jw-auto-label');
         const levels = model.get('levels');
-        const { mode, reason, level } = quality;
-        if (mode === 'auto' || reason === 'auto') {
-            item.innerHTML = ` ${levels[level.index].label}`;
-        } else {
-            // return if there already isnt a quality label on auto
-            if (!item.innerHTML) {
-                return;
-            }
+        const { mode, level } = quality;
 
-            item.innerHTML = ``;
-        }
+        item.textContent = mode === 'auto' ? `${levels[level.index].label}` : ``;
     });
 
     // Remove the audio tracks, qualities, and playback rates submenus when casting
