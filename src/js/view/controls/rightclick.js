@@ -92,7 +92,7 @@ export default class RightClick {
                 return;
             }
         } else if (evt && this.el.contains(evt.target)) {
-            // If menu is tapped, do not hide menu on elements
+            // If menu is tapped, do not hide menu
             return;
         }
 
