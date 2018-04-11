@@ -4,7 +4,6 @@ import { version } from 'version';
 import { flashVersion } from 'utils/browser';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { OS } from 'environment/environment';
-import UI from 'utils/ui';
 
 function createDomElement(html) {
     const element = createElement(html);
@@ -84,13 +83,19 @@ export default class RightClick {
         return false;
     }
 
-    hideMenu() {
-        this.elementUI.off('out', this.hideMenu, this);
-        if (this.mouseOverContext) {
+    hideMenu(evt) {
+        if (!this.model.get('touchMode')) {
             // If mouse is over the menu, hide the menu when mouse moves out
-            this.elementUI.on('out', this.hideMenu, this);
+            this.el.removeEventListener('mouseout', this.hideMenuHandler);
+            if (this.mouseOverContext) {
+                this.el.addEventListener('mouseout', this.hideMenuHandler);
+                return;
+            }
+        } else if (evt && this.el.contains(evt.target)) {
+            // If menu is tapped, do not hide menu on elements
             return;
         }
+
         removeClass(this.playerElement, 'jw-flag-rightclick-open');
         removeClass(this.el, 'jw-open');
     }
@@ -119,13 +124,10 @@ export default class RightClick {
         this.addOffListener(document);
 
         // Track if the mouse is above the menu or not
-        this.elementUI = new UI(this.el, { useHover: true })
-            .on('over', function() {
-                this.mouseOverContext = true;
-            }, this)
-            .on('out', function() {
-                this.mouseOverContext = false;
-            }, this);
+        this.onMouseOverHandler = this.onMouseOver.bind(this);
+        this.onMouseOutHandler = this.onMouseOut.bind(this);
+        this.el.addEventListener('mouseover', this.onMouseOverHandler);
+        this.el.addEventListener('mouseout', this.onMouseOutHandler);
     }
 
     setup(_model, _playerElement, layer) {
@@ -147,6 +149,16 @@ export default class RightClick {
             _playerElement.addEventListener('touchend', this.cancelLongPressHandler);
             _playerElement.addEventListener('touchcancel', this.cancelLongPressHandler);
         }
+    }
+
+    onMouseOver() {
+        console.log('onMouseOver');
+        this.mouseOverContext = true;
+    }
+
+    onMouseOut() {
+        console.log('onMouseOut');
+        this.mouseOverContext = false;
     }
 
     startLongPress(evt) {
@@ -181,9 +193,11 @@ export default class RightClick {
         clearTimeout(this._menuTimeout);
         if (this.el) {
             this.hideMenu();
-            this.elementUI.off();
             this.removeOffListener(this.playerElement);
             this.removeOffListener(document);
+            this.el.removeEventListener('mouseover', this.onMouseOverHandler);
+            this.el.removeEventListener('mouseout', this.onMouseOutHandler);
+            this.el.removeListener('mouseout', this.hideMenuHandler);
             this.hideMenuHandler = null;
             this.el = null;
         }
