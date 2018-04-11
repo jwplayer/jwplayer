@@ -219,7 +219,7 @@ function View(_api, _model) {
 
         const playerViewModel = _model.player;
         playerViewModel.on('change:errorEvent', _errorHandler);
-        
+
         _model.change('stretching', onStretchChange);
         _model.change('flashBlocked', onFlashBlockedChange);
 
