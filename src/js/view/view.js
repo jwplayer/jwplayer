@@ -68,7 +68,6 @@ function View(_api, _model) {
     let _stateClassRequestId = -1;
 
     let displayClickHandler;
-    let longPressHandler;
     let fullscreenHelpers;
     let focusHelper;
 
@@ -819,9 +818,6 @@ function View(_api, _model) {
             _playerElement.removeEventListener('mouseout', outHandler);
             _playerElement.removeEventListener('mouseover', overHandler);
             displayClickHandler = null;
-        }
-        if (longPressHandler) {
-            longPressHandler.destroy();
         }
         _captionsRenderer.destroy();
         if (_logo) {
