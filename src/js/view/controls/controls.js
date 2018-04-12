@@ -408,7 +408,7 @@ export default class Controls {
         api.setMute(mute);
         // the model's mute value may not have changed. ensure the controlbar's mute button is in the right state
         this.controlbar.renderVolume(mute, model.get('volume'));
-        if (OS.mobile) {
+        if (this.mute) {
             this.mute.hide();
         }
 
