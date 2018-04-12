@@ -19,11 +19,11 @@ describe('Setup', function() {
 
     it('fails when playlist is undefined', function (done) {
 
-        var readyHandler = function() {
+        const readyHandler = function() {
             expect(false, 'setup should not succeed').to.be.true;
         };
 
-        var errorHandler = function (message) {
+        const errorHandler = function (message) {
             expect(message, 'setup failed with message: ' + message).to.be.true;
         };
 
@@ -32,11 +32,11 @@ describe('Setup', function() {
 
     it('fails when playlist is an empty string', function (done) {
 
-        var readyHandler = function() {
+        const readyHandler = function() {
             expect(false, 'setup should not succeed').to.be.true;
         };
 
-        var errorHandler = function (message) {
+        const errorHandler = function (message) {
             expect(message, 'setup failed with message: ' + message).to.be.true;
         };
 
@@ -45,11 +45,11 @@ describe('Setup', function() {
 
     it('fails when playlist is a number', function (done) {
 
-        var readyHandler = function() {
+        const readyHandler = function() {
             expect(false, 'setup should not succeed').to.be.true;
         };
 
-        var errorHandler = function (message) {
+        const errorHandler = function (message) {
             expect(message, 'setup failed with message: ' + message).to.be.true;
         };
 
@@ -58,11 +58,11 @@ describe('Setup', function() {
 
     it('fails when playlist is a boolean', function (done) {
 
-        var readyHandler = function() {
+        const readyHandler = function() {
             expect(false, 'setup should not succeed').to.be.true;
         };
 
-        var errorHandler = function (message) {
+        const errorHandler = function (message) {
             expect(message, 'setup failed with message: ' + message).to.be.true;
         };
 
@@ -70,7 +70,7 @@ describe('Setup', function() {
     });
 
     it('fails if playlist is empty', function (done) {
-        var model = {
+        const model = {
             playlist: []
         };
 
@@ -84,7 +84,7 @@ describe('Setup', function() {
     });
 
     it('fails when playlist items are filtered out', function (done) {
-        var model = {
+        const model = {
             playlist: [{ sources: [{ file: 'file.foo' }] }]
         };
 
@@ -105,7 +105,7 @@ describe('Setup', function() {
     });
 
     it('succeeds when model.playlist.sources is valid', function (done) {
-        var model = {
+        const model = {
             playlist: [{ sources: [{ file: 'http://playertest.longtailvideo.com/mp4.mp4' }] }]
         };
 
@@ -119,8 +119,8 @@ describe('Setup', function() {
     });
 
     function testSetup(done, model, success, error) {
-        var container = $('#player')[0];
-        var api = new Api(container);
+        const container = $('#player')[0];
+        const api = new Api(container);
         api.setup(model);
 
         api.on('ready', function() {

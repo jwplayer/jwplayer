@@ -23,7 +23,7 @@ const ThumbnailsMixin = {
     },
 
     thumbnailsLoaded: function (evt) {
-        var data = srt(evt.responseText);
+        const data = srt(evt.responseText);
         if (_.isArray(data)) {
             _.each(data, function(obj) {
                 this.thumbnails.push(new Thumbnail(obj));
@@ -35,11 +35,11 @@ const ThumbnailsMixin = {
     thumbnailsFailed: function () { },
 
     chooseThumbnail: function(seconds) {
-        var idx = _.sortedIndex(this.thumbnails, { end: seconds }, _.property('end'));
+        let idx = _.sortedIndex(this.thumbnails, { end: seconds }, _.property('end'));
         if (idx >= this.thumbnails.length) {
             idx = this.thumbnails.length - 1;
         }
-        var url = this.thumbnails[idx].img;
+        let url = this.thumbnails[idx].img;
         if (url.indexOf('://') < 0) {
             url = this.vttPath ? this.vttPath + '/' + url : url;
         }
@@ -48,16 +48,16 @@ const ThumbnailsMixin = {
     },
 
     loadThumbnail: function(seconds) {
-        var url = this.chooseThumbnail(seconds);
-        var style = {
+        let url = this.chooseThumbnail(seconds);
+        const style = {
             margin: '0 auto',
             backgroundPosition: '0 0'
         };
 
-        var hashIndex = url.indexOf('#xywh');
+        const hashIndex = url.indexOf('#xywh');
         if (hashIndex > 0) {
             try {
-                var matched = (/(.+)#xywh=(\d+),(\d+),(\d+),(\d+)/).exec(url);
+                const matched = (/(.+)#xywh=(\d+),(\d+),(\d+),(\d+)/).exec(url);
                 url = matched[1];
                 style.backgroundPosition = (matched[2] * -1) + 'px ' + (matched[3] * -1) + 'px';
                 style.width = matched[4];

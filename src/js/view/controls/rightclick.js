@@ -18,10 +18,10 @@ function createDomElement(html) {
 export default class RightClick {
 
     buildArray() {
-        var semverParts = version.split('+');
-        var majorMinorPatchPre = semverParts[0];
+        const semverParts = version.split('+');
+        const majorMinorPatchPre = semverParts[0];
 
-        var menu = {
+        const menu = {
             items: [{
                 title: 'Powered by <span class="jw-reset">JW Player ' + majorMinorPatchPre + '</span>',
                 featured: true,
@@ -30,9 +30,9 @@ export default class RightClick {
             }]
         };
 
-        var provider = this.model.get('provider');
+        const provider = this.model.get('provider');
         if (provider && provider.name.indexOf('flash') >= 0) {
-            var text = 'Flash Version ' + flashVersion();
+            const text = 'Flash Version ' + flashVersion();
             menu.items.push({
                 title: text,
                 link: 'http://www.adobe.com/software/flash/about/'
@@ -72,7 +72,7 @@ export default class RightClick {
 
     showMenu(evt) {
         // Offset relative to player element
-        var off = this.getOffset(evt);
+        const off = this.getOffset(evt);
 
         this.el.style.left = off.x + 'px';
         this.el.style.top = off.y + 'px';

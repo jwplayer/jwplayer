@@ -15,7 +15,7 @@ export function pad(str, length, padder) {
 
 // Get the value of a case-insensitive attribute in an XML node
 export function xmlAttribute(xml, attribute) {
-    for (var attrib = 0; attrib < xml.attributes.length; attrib++) {
+    for (let attrib = 0; attrib < xml.attributes.length; attrib++) {
         if (xml.attributes[attrib].name && xml.attributes[attrib].name.toLowerCase() === attribute.toLowerCase()) {
             return xml.attributes[attrib].value.toString();
         }
@@ -38,7 +38,7 @@ export function extension(path) {
         return '';
     }
 
-    var azureFormat = getAzureFileFormat(path);
+    const azureFormat = getAzureFileFormat(path);
     if (azureFormat) {
         return azureFormat;
     }
@@ -51,9 +51,9 @@ export function extension(path) {
 
 // Convert seconds to HH:MN:SS.sss
 export function hms(secondsNumber) {
-    var h = parseInt(secondsNumber / 3600);
-    var m = parseInt(secondsNumber / 60) % 60;
-    var s = secondsNumber % 60;
+    const h = parseInt(secondsNumber / 3600);
+    const m = parseInt(secondsNumber / 60) % 60;
+    const s = secondsNumber % 60;
     return pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s.toFixed(3), 6);
 }
 
@@ -67,9 +67,9 @@ export function seconds(str, frameRate) {
     }
 
     str = str.replace(',', '.');
-    var arr = str.split(':');
-    var arrLength = arr.length;
-    var sec = 0;
+    const arr = str.split(':');
+    const arrLength = arr.length;
+    let sec = 0;
     if (str.slice(-1) === 's') {
         sec = parseFloat(str);
     } else if (str.slice(-1) === 'm') {
@@ -77,7 +77,7 @@ export function seconds(str, frameRate) {
     } else if (str.slice(-1) === 'h') {
         sec = parseFloat(str) * 3600;
     } else if (arrLength > 1) {
-        var secIndex = arrLength - 1;
+        let secIndex = arrLength - 1;
         if (arrLength === 4) {
             // if frame is included in the string, calculate seconds by dividing by frameRate
             if (frameRate) {

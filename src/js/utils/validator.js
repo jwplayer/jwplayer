@@ -49,7 +49,7 @@ export function typeOf(value) {
     if (value === null) {
         return 'null';
     }
-    var typeofString = typeof value;
+    const typeofString = typeof value;
     if (typeofString === 'object') {
         if (Array.isArray(value)) {
             return 'array';

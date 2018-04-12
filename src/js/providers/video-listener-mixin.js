@@ -24,13 +24,13 @@ const VideoListenerMixin = {
     },
 
     loadedmetadata() {
-        var metadata = {
+        const metadata = {
             duration: this.getDuration(),
             height: this.video.videoHeight,
             width: this.video.videoWidth,
             seekRange: this.getSeekRange()
         };
-        var drmUsed = this.drmUsed;
+        const drmUsed = this.drmUsed;
         if (drmUsed) {
             metadata.drm = drmUsed;
         }
@@ -51,7 +51,7 @@ const VideoListenerMixin = {
             this.setState(STATE_PLAYING);
         }
 
-        var timeEventObject = {
+        const timeEventObject = {
             position,
             duration,
             currentTime: this.video.currentTime,
@@ -61,7 +61,7 @@ const VideoListenerMixin = {
             }
         };
         if (this.getPtsOffset) {
-            var ptsOffset = this.getPtsOffset();
+            const ptsOffset = this.getPtsOffset();
             if (ptsOffset >= 0) {
                 timeEventObject.metadata.mpegts = ptsOffset + position;
             }
@@ -78,7 +78,7 @@ const VideoListenerMixin = {
     },
 
     volumechange() {
-        var video = this.video;
+        const video = this.video;
 
         this.trigger(MEDIA_VOLUME, {
             volume: Math.round(video.volume * 100)
@@ -126,11 +126,11 @@ const VideoListenerMixin = {
     },
 
     progress() {
-        var dur = this.getDuration();
+        const dur = this.getDuration();
         if (dur <= 0 || dur === Infinity) {
             return;
         }
-        var buf = this.video.buffered;
+        const buf = this.video.buffered;
         if (!buf || buf.length === 0) {
             return;
         }
@@ -163,8 +163,8 @@ const VideoListenerMixin = {
         }
     },
     error() {
-        var code = (this.video.error && this.video.error.code) || -1;
-        var message = ({
+        const code = (this.video.error && this.video.error.code) || -1;
+        const message = ({
             1: 'Unknown operation aborted',
             2: 'Unknown network error',
             3: 'Unknown decode error',

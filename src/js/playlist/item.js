@@ -21,7 +21,7 @@ const Item = function(config) {
         delete config.tracks;
     }
 
-    var playlistItem = Object.assign({}, {
+    const playlistItem = Object.assign({}, {
         sources: [],
         tracks: [],
         minDvrWindow: 120,
@@ -46,13 +46,13 @@ const Item = function(config) {
     }
 
     /** Each source should be a named object **/
-    for (var i = 0; i < playlistItem.sources.length; i++) {
-        var s = playlistItem.sources[i];
+    for (let i = 0; i < playlistItem.sources.length; i++) {
+        const s = playlistItem.sources[i];
         if (!s) {
             continue;
         }
 
-        var def = s.default;
+        const def = s.default;
         if (def) {
             s.default = (def.toString() === 'true');
         } else {

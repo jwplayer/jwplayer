@@ -15,33 +15,33 @@ describe('time-ranges', function() {
     }
 
     it('returns the end when there is one range', function() {
-        var mockRanges = MockTimeRanges([{ start: 1, end: 2 }]);
-        var expected = 2;
-        var actual = endOfRange(mockRanges);
+        const mockRanges = MockTimeRanges([{ start: 1, end: 2 }]);
+        const expected = 2;
+        const actual = endOfRange(mockRanges);
 
         expect(expected).to.deep.equal(actual);
     });
 
     it('returns the end when there are multiple ranges', function() {
-        var mockRanges = MockTimeRanges([{ start: 1, end: 2 }, { start: 3, end: 4 }]);
-        var expected = 4;
-        var actual = endOfRange(mockRanges);
+        const mockRanges = MockTimeRanges([{ start: 1, end: 2 }, { start: 3, end: 4 }]);
+        const expected = 4;
+        const actual = endOfRange(mockRanges);
 
         expect(expected).to.deep.equal(actual);
     });
 
     it('returns 0 when there are no ranges', function() {
-        var mockRanges = MockTimeRanges([]);
-        var expected = 0;
-        var actual = endOfRange(mockRanges);
+        const mockRanges = MockTimeRanges([]);
+        const expected = 0;
+        const actual = endOfRange(mockRanges);
 
         expect(expected).to.deep.equal(actual);
     });
 
     it('returns 0 when ranges are undefined', function() {
-        var mockRanges = MockTimeRanges();
-        var expected = 0;
-        var actual = endOfRange(mockRanges);
+        const mockRanges = MockTimeRanges();
+        const expected = 0;
+        const actual = endOfRange(mockRanges);
 
         expect(expected).to.deep.equal(actual);
     });

@@ -16,7 +16,7 @@ import {
 describe('dom', function() {
 
     it('addClass', function() {
-        var element = document.createElement('div');
+        const element = document.createElement('div');
         expect(element.className, 'Created an element with no classes').to.equal('');
 
         addClass(element, 'class1');
@@ -36,7 +36,7 @@ describe('dom', function() {
     });
 
     it('removeClass', function() {
-        var element = document.createElement('div');
+        const element = document.createElement('div');
         element.className = 'class1 class2 class3';
         expect(element.className, 'Created an element with two classes').to.equal('class1 class2 class3');
 
@@ -52,7 +52,7 @@ describe('dom', function() {
 
 
     it('replaceClass', function() {
-        var element = document.createElement('div');
+        const element = document.createElement('div');
 
         replaceClass(element, /class0/, 'class1');
         expect(element.className, 'Adds class to element when pattern is not matched').to.equal('class1');
@@ -72,14 +72,14 @@ describe('dom', function() {
     });
 
     it('createElement', function() {
-        var element = createElement('<div id=\'testid\'></div>');
+        const element = createElement('<div id=\'testid\'></div>');
 
         expect(element.id, 'element create test').to.equal('testid');
     });
 
     it('styleDimension', function() {
-        var percentage = styleDimension('50%');
-        var px = styleDimension('50');
+        const percentage = styleDimension('50%');
+        const px = styleDimension('50');
 
         // check style dimensions with percentage and px
         expect(percentage, 'percentage dimension test').to.equal('50%');
@@ -87,15 +87,15 @@ describe('dom', function() {
     });
 
     it('classList', function() {
-        var elementA = document.createElement('div');
+        const elementA = document.createElement('div');
         elementA.className = 'class1 class2';
 
-        var elementB = document.createElement('div');
+        const elementB = document.createElement('div');
         addClass(elementB, 'a b');
 
         // get classList with both elements
-        var classA = classList(elementA);
-        var classB = classList(elementB);
+        const classA = classList(elementA);
+        const classB = classList(elementB);
 
         // check that the classList is what we expect
         expect(classA[0], 'first class add to class list').to.equal('class1');
@@ -109,7 +109,7 @@ describe('dom', function() {
     });
 
     it('toggleClass', function() {
-        var element = document.createElement('div');
+        const element = document.createElement('div');
         addClass(element, 'a');
 
         // check toggleClass
@@ -122,8 +122,8 @@ describe('dom', function() {
     });
 
     it('emptyElement', function() {
-        var element = document.createElement('div');
-        var child = document.createElement('p');
+        const element = document.createElement('div');
+        const child = document.createElement('p');
 
         // confirm that child is added to the element
         element.appendChild(child);
@@ -146,7 +146,7 @@ describe('dom', function() {
     });
 
     it('addStyleSheet test', function() {
-        var url = './data/playlist.json';
+        const url = './data/playlist.json';
         addStyleSheet(url);
 
         // check that stylesheet with testUrl href has been added to the head
@@ -154,8 +154,8 @@ describe('dom', function() {
     });
 
     it('bounds test', function() {
-        var element = document.createElement('div');
-        var emptyBound = { left: 0, right: 0, width: 0, height: 0, top: 0, bottom: 0 };
+        const element = document.createElement('div');
+        const emptyBound = { left: 0, right: 0, width: 0, height: 0, top: 0, bottom: 0 };
 
         // check null bounds does not break
         expect(bounds(null), 'bounds should be empty when element is not defined').to.deep.equal(emptyBound);

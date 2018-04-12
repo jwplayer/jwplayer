@@ -85,7 +85,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             if (_androidHls && duration === Infinity) {
                 duration = 0;
             }
-            var metadata = {
+            const metadata = {
                 duration: duration,
                 height: _videotag.videoHeight,
                 width: _videotag.videoWidth
@@ -266,14 +266,14 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     _this.getDuration = function() {
-        var duration = _videotag.duration;
+        let duration = _videotag.duration;
         // Don't sent time event on Android before real duration is known
         if (_androidHls && (duration === Infinity && _videotag.currentTime === 0) || isNaN(duration)) {
             return 0;
         }
-        var end = _getSeekableEnd();
+        const end = _getSeekableEnd();
         if (_this.isLive() && end) {
-            var seekableDuration = end - _getSeekableStart();
+            const seekableDuration = end - _getSeekableStart();
             if (seekableDuration !== Infinity && seekableDuration > MIN_DVR_DURATION) {
                 // Player interprets negative duration as DVR
                 duration = -seekableDuration;
@@ -306,7 +306,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _getPublicLevels(levels) {
-        var publicLevels;
+        let publicLevels;
         if (utils.typeOf(levels) === 'array' && levels.length > 0) {
             publicLevels = _.map(levels, function(level, i) {
                 return {
@@ -323,10 +323,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _pickInitialQuality(levels) {
-        var currentQuality = Math.max(0, _currentQuality);
-        var label = _playerConfig.qualityLabel;
+        let currentQuality = Math.max(0, _currentQuality);
+        const label = _playerConfig.qualityLabel;
         if (levels) {
-            for (var i = 0; i < levels.length; i++) {
+            for (let i = 0; i < levels.length; i++) {
                 if (levels[i].default) {
                     currentQuality = i;
                 }
@@ -379,7 +379,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             _this.seek(startTime);
         }
 
-        var publicLevels = _getPublicLevels(_levels);
+        const publicLevels = _getPublicLevels(_levels);
         if (publicLevels) {
             _this.trigger(MEDIA_LEVELS, {
                 levels: publicLevels,
@@ -400,9 +400,9 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         }
         _canSeek = false;
 
-        var sourceElement = document.createElement('source');
+        const sourceElement = document.createElement('source');
         sourceElement.src = source.file;
-        var sourceChanged = (_videotag.src !== sourceElement.src);
+        const sourceChanged = (_videotag.src !== sourceElement.src);
         if (sourceChanged) {
             _videotag.src = source.file;
         }
@@ -426,8 +426,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _getSeekableStart() {
-        var index = _videotag.seekable ? _videotag.seekable.length : 0;
-        var start = Infinity;
+        let index = _videotag.seekable ? _videotag.seekable.length : 0;
+        let start = Infinity;
 
         while (index--) {
             start = Math.min(start, _videotag.seekable.start(index));
@@ -436,8 +436,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     }
 
     function _getSeekableEnd() {
-        var index = _videotag.seekable ? _videotag.seekable.length : 0;
-        var end = 0;
+        let index = _videotag.seekable ? _videotag.seekable.length : 0;
+        let end = 0;
 
         while (index--) {
             end = Math.max(end, _videotag.seekable.end(index));
@@ -507,12 +507,12 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     this.pause = function() {
         clearTimeouts();
         _beforeResumeHandler = function() {
-            var unpausing = _videotag.paused && _videotag.currentTime;
+            const unpausing = _videotag.paused && _videotag.currentTime;
             if (unpausing && _this.isLive()) {
-                var end = _getSeekableEnd();
-                var seekableDuration = end - _getSeekableStart();
-                var isLiveNotDvr = seekableDuration < MIN_DVR_DURATION;
-                var behindLiveEdge = end - _videotag.currentTime;
+                const end = _getSeekableEnd();
+                const seekableDuration = end - _getSeekableStart();
+                const isLiveNotDvr = seekableDuration < MIN_DVR_DURATION;
+                const behindLiveEdge = end - _videotag.currentTime;
                 if (isLiveNotDvr && end && (behindLiveEdge > 15 || behindLiveEdge < 0)) {
                     // resume playback at edge of live stream
                     _seekOffset = Math.max(end - 10, end - seekableDuration);
@@ -555,8 +555,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     function _audioTrackChangeHandler() {
-        var _selectedAudioTrackIndex = -1;
-        for (var i = 0; i < _videotag.audioTracks.length; i++) {
+        let _selectedAudioTrackIndex = -1;
+        for (let i = 0; i < _videotag.audioTracks.length; i++) {
             if (_videotag.audioTracks[i].enabled) {
                 _selectedAudioTrackIndex = i;
                 break;
@@ -597,8 +597,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         // This implementation is for iOS and Android WebKit only
         // This won't get called if the player container can go fullscreen
         if (state) {
-            var status = utils.tryCatch(function() {
-                var enterFullscreen =
+            const status = utils.tryCatch(function() {
+                const enterFullscreen =
                     _videotag.webkitEnterFullscreen ||
                     _videotag.webkitEnterFullScreen;
                 if (enterFullscreen) {
@@ -614,7 +614,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             return _this.getFullScreen();
         }
 
-        var exitFullscreen =
+        const exitFullscreen =
             _videotag.webkitExitFullscreen ||
             _videotag.webkitExitFullScreen;
         if (exitFullscreen) {
@@ -686,7 +686,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             return;
         }
         if (tracks.length) {
-            for (var i = 0; i < tracks.length; i++) {
+            for (let i = 0; i < tracks.length; i++) {
                 if (tracks[i].enabled) {
                     _currentAudioTrackIndex = i;
                     break;
@@ -697,7 +697,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 tracks[_currentAudioTrackIndex].enabled = true;
             }
             _audioTracks = _.map(tracks, function(track) {
-                var _track = {
+                const _track = {
                     name: track.label || track.language,
                     language: track.language
                 };
@@ -732,7 +732,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     function _setMediaType() {
         // Send mediaType when format is HLS. Other types are handled earlier by default.js.
         if (_levels[0].type === 'hls') {
-            var mediaType = 'video';
+            let mediaType = 'video';
             if (_videotag.videoHeight === 0) {
                 // Safari will report videoHeight as 0 for HLS streams until readyState indicates that the browser has data
                 if ((OS.iOS || Browser.safari) && _videotag.readyState < 2) {
@@ -750,8 +750,8 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (_staleStreamDuration === 0) {
             return;
         }
-        var endOfBuffer = endOfRange(_videotag.buffered);
-        var live = _this.isLive();
+        const endOfBuffer = endOfRange(_videotag.buffered);
+        const live = _this.isLive();
 
         // Don't end if we have noting buffered yet, or cannot get any information about the buffer
         if (live && endOfBuffer && _lastEndOfBuffer === endOfBuffer) {

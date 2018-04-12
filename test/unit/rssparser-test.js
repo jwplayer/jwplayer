@@ -3,7 +3,7 @@ import parseRss from 'parsers/rssparser';
 describe('rssParser', function() {
 
     it('adds mediaTypes array to source object when at least one jwplayer:mediaTypes element is present', function() {
-        var data =
+        const data =
             '<rss xmlns:jwplayer="http://rss.jwpcdn.com/" xmlns:media="http://search.yahoo.com/mrss">' +
             '<media:channel>' +
             '<item>' +
@@ -17,18 +17,18 @@ describe('rssParser', function() {
             '</media:channel>' +
             '</rss>';
 
-        var expectedMediaTypes = [
+        const expectedMediaTypes = [
             'video/webm; codecs="vp9"',
             'audio/webm; codecs="vorbis"'
         ];
         // Skip the first node since the parser alone can't handle it
-        var actual = parseRss(parseXML(data).childNodes[0]);
-        var actualMediaTypes = actual[0].sources[0].mediaTypes;
+        const actual = parseRss(parseXML(data).childNodes[0]);
+        const actualMediaTypes = actual[0].sources[0].mediaTypes;
         expect(expectedMediaTypes).to.deep.equal(actualMediaTypes);
     });
 
     it('does not add a mediaTypes array to source object when no jwplayer:mediaTypes elements are present', function() {
-        var data =
+        const data =
             '<rss xmlns:jwplayer="http://rss.jwpcdn.com/" xmlns:media="http://search.yahoo.com/mrss">' +
             '<media:channel>' +
             '<item>' +
@@ -40,16 +40,16 @@ describe('rssParser', function() {
             '</media:channel>' +
             '</rss>';
 
-        var actual = parseRss(parseXML(data).childNodes[0]);
+        const actual = parseRss(parseXML(data).childNodes[0]);
         expect(actual[0].sources[0].mediaTypes).to.be.undefined;
     });
 
     function parseXML(input) {
         if (window.DOMParser) {
-            var parser = new window.DOMParser();
+            const parser = new window.DOMParser();
             return parser.parseFromString(input, 'text/xml');
         }
-        var xmlDom = new window.ActiveXObject('Microsoft.XMLDOM');
+        const xmlDom = new window.ActiveXObject('Microsoft.XMLDOM');
         xmlDom.async = 'false';
         xmlDom.loadXML(input);
         return xmlDom;

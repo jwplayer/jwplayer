@@ -7,8 +7,8 @@ let useDomParser = false;
 
 // TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url)). It's used here for IE9 compatibility
 export function crossdomain(uri) {
-    var a = document.createElement('a');
-    var b = document.createElement('a');
+    const a = document.createElement('a');
+    const b = document.createElement('a');
     a.href = location.href;
     try {
         b.href = uri;
@@ -23,8 +23,8 @@ export function ajax(url, completeCallback, errorCallback, args) {
         args = url;
         url = args.url;
     }
-    var xhr;
-    var options = Object.assign({
+    let xhr;
+    const options = Object.assign({
         xhr: null,
         url: url,
         withCredentials: false,
@@ -53,7 +53,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
         options.onerror('', url);
         return;
     }
-    var requestError = _requestError('Error loading file', options);
+    const requestError = _requestError('Error loading file', options);
     xhr.onerror = requestError;
 
     if ('overrideMimeType' in xhr) {
@@ -114,12 +114,12 @@ export function abortAjax(xhr) {
 
 function _requestError(message, options) {
     return function(e) {
-        var xhr = e.currentTarget || options.xhr;
+        const xhr = e.currentTarget || options.xhr;
         clearTimeout(options.timeoutId);
         // Handle Access-Control-Allow-Origin wildcard error when using withCredentials to send cookies
         if (options.retryWithoutCredentials && options.xhr.withCredentials) {
             abortAjax(xhr);
-            var args = Object.assign({}, options, {
+            const args = Object.assign({}, options, {
                 xhr: null,
                 withCredentials: false,
                 retryWithoutCredentials: false
@@ -133,11 +133,11 @@ function _requestError(message, options) {
 
 function _readyStateChangeHandler(options) {
     return function(e) {
-        var xhr = e.currentTarget || options.xhr;
+        const xhr = e.currentTarget || options.xhr;
         if (xhr.readyState === 4) {
             clearTimeout(options.timeoutId);
             if (xhr.status >= 400) {
-                var message;
+                let message;
                 if (xhr.status === 404) {
                     message = 'File not found';
                 } else {
@@ -154,7 +154,7 @@ function _readyStateChangeHandler(options) {
 
 function _ajaxComplete(options) {
     return function(e) {
-        var xhr = e.currentTarget || options.xhr;
+        const xhr = e.currentTarget || options.xhr;
         clearTimeout(options.timeoutId);
         if (options.responseType) {
             if (options.responseType === 'json') {
@@ -162,8 +162,8 @@ function _ajaxComplete(options) {
             }
         } else {
             // Handle the case where an XML document was returned with an incorrect MIME type.
-            var xml = xhr.responseXML;
-            var firstChild;
+            let xml = xhr.responseXML;
+            let firstChild;
             if (xml) {
                 try {
                     // This will throw an error on Windows Mobile 7.5.
@@ -211,7 +211,7 @@ function _jsonResponse(xhr, options) {
 
 function _xmlResponse(xhr, xml, options) {
     // Handle DOMParser 'parsererror'
-    var doc = xml.documentElement;
+    const doc = xml.documentElement;
     if (options.requireValidXML &&
             (doc.nodeName === 'parsererror' || doc.getElementsByTagName('parsererror').length)) {
         options.onerror('Invalid XML', options.url, xhr);

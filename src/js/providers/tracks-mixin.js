@@ -64,18 +64,18 @@ function setTextTracks(tracks) {
 
     // filter for 'subtitles' or 'captions' tracks
     if (tracks.length) {
-        var i = 0;
-        var len = tracks.length;
+        let i = 0;
+        const len = tracks.length;
 
         for (i; i < len; i++) {
-            var track = tracks[i];
+            const track = tracks[i];
             if (!track._id) {
                 if (track.kind === 'captions' || track.kind === 'metadata') {
                     track._id = 'native' + track.kind + i;
                     if (!track.label && track.kind === 'captions') {
                         // track label is read only in Safari
                         // 'captions' tracks without a label need a name in order for the cc menu to work
-                        var labelInfo = createLabel(track, this._unknownCount);
+                        const labelInfo = createLabel(track, this._unknownCount);
                         track.name = labelInfo.label;
                         this._unknownCount = labelInfo.unknownCount;
                     }
@@ -99,7 +99,7 @@ function setTextTracks(tracks) {
                 this._tracksById[track._id] = track;
             } else if (_kindSupported(track.kind)) {
                 var mode = track.mode;
-                var cue;
+                let cue;
 
                 // By setting the track mode to 'hidden', we can determine if the track has cues
                 track.mode = 'hidden';
@@ -151,7 +151,7 @@ function setupSideloadedTracks(itemTracks) {
         return;
     }
     // Determine if the tracks are the same and the embedded + sideloaded count = # of tracks in the controlbar
-    var alreadyLoaded = itemTracks === this._itemTracks;
+    const alreadyLoaded = itemTracks === this._itemTracks;
     if (!alreadyLoaded) {
         cancelXhr(this._itemTracks);
     }
@@ -217,8 +217,8 @@ function addCaptionsCue(cueData) {
     if (!cueData.text || !cueData.begin || !cueData.end) {
         return;
     }
-    var trackId = cueData.trackid.toString();
-    var track = this._tracksById && this._tracksById[trackId];
+    const trackId = cueData.trackid.toString();
+    let track = this._tracksById && this._tracksById[trackId];
     if (!track) {
         track = {
             kind: 'captions',
@@ -229,7 +229,7 @@ function addCaptionsCue(cueData) {
         this.trigger('subtitlesTracks', { tracks: this._textTracks });
     }
 
-    var cueId;
+    let cueId;
 
     if (cueData.useDTS) {
         // There may not be any 608 captions when the track is first created
@@ -241,7 +241,7 @@ function addCaptionsCue(cueData) {
     }
     cueId = cueData.begin + '_' + cueData.text;
 
-    var cue = this._metaCuesByTextTime[cueId];
+    let cue = this._metaCuesByTextTime[cueId];
     if (!cue) {
         cue = {
             begin: cueData.begin,
@@ -249,7 +249,7 @@ function addCaptionsCue(cueData) {
             text: cueData.text
         };
         this._metaCuesByTextTime[cueId] = cue;
-        var vttCue = convertToVTTCues([cue])[0];
+        const vttCue = convertToVTTCues([cue])[0];
         track.data.push(vttCue);
     }
 }
@@ -259,13 +259,13 @@ function addVTTCue(cueData) {
         this._initTextTracks();
     }
 
-    var trackId = cueData.track ? cueData.track : 'native' + cueData.type;
+    const trackId = cueData.track ? cueData.track : 'native' + cueData.type;
     var track = this._tracksById[trackId];
-    var label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
-    var vttCue = cueData.cue;
+    const label = cueData.type === 'captions' ? 'Unknown CC' : 'ID3 Metadata';
+    const vttCue = cueData.cue;
 
     if (!track) {
-        var itemTrack = {
+        const itemTrack = {
             kind: cueData.type,
             _id: trackId,
             label: label,
@@ -291,19 +291,19 @@ function addVTTCue(cueData) {
 
 function addCuesToTrack(cueData) {
     // convert cues coming from the flash provider into VTTCues, then append them to track
-    var track = this._tracksById[cueData.name];
+    const track = this._tracksById[cueData.name];
     if (!track) {
         return;
     }
 
     track.source = cueData.source;
-    var cues = cueData.captions || [];
-    var cuesToConvert = [];
-    var sort = false;
+    const cues = cueData.captions || [];
+    const cuesToConvert = [];
+    let sort = false;
 
-    for (var i = 0; i < cues.length; i++) {
-        var cue = cues[i];
-        var cueId = cueData.name + '_' + cue.begin + '_' + cue.end;
+    for (let i = 0; i < cues.length; i++) {
+        const cue = cues[i];
+        const cueId = cueData.name + '_' + cue.begin + '_' + cue.end;
         if (!this._metaCuesByTextTime[cueId]) {
             this._metaCuesByTextTime[cueId] = cue;
             cuesToConvert.push(cue);
@@ -315,7 +315,7 @@ function addCuesToTrack(cueData) {
             return a.begin - b.begin;
         });
     }
-    var vttCues = convertToVTTCues(cuesToConvert);
+    const vttCues = convertToVTTCues(cuesToConvert);
     Array.prototype.push.apply(track.data, vttCues);
 }
 
@@ -350,7 +350,7 @@ function removeTracksListener(tracks, eventType, handler) {
 
 function clearTracks() {
     cancelXhr(this._itemTracks);
-    var metadataTrack = this._tracksById && this._tracksById.nativemetadata;
+    const metadataTrack = this._tracksById && this._tracksById.nativemetadata;
     if (this.renderNatively || metadataTrack) {
         _removeCues(this.renderNatively, this.video.textTracks);
         if (metadataTrack) {
@@ -386,7 +386,7 @@ function clearCueData(trackId) {
 
 function disableTextTrack() {
     if (this._textTracks) {
-        var track = this._textTracks[this._currentTextTrackIndex];
+        const track = this._textTracks[this._currentTextTrackIndex];
         if (track) {
             // FF does not remove the active cue from the dom when the track is hidden, so we must disable it
             track.mode = 'disabled';
@@ -400,7 +400,7 @@ function disableTextTrack() {
 
 function enableTextTrack() {
     if (this._textTracks) {
-        var track = this._textTracks[this._currentTextTrackIndex];
+        const track = this._textTracks[this._currentTextTrackIndex];
         if (track) {
             track.mode = 'showing';
         }
@@ -408,8 +408,8 @@ function enableTextTrack() {
 }
 
 function textTrackChangeHandler() {
-    var textTracks = this.video.textTracks;
-    var inUseTracks = _.filter(textTracks, function (track) {
+    const textTracks = this.video.textTracks;
+    const inUseTracks = _.filter(textTracks, function (track) {
         return (track.inuse || !track._id) && _kindSupported(track.kind);
     });
     if (!this._textTracks || _tracksModified.call(this, inUseTracks)) {
@@ -417,8 +417,8 @@ function textTrackChangeHandler() {
         return;
     }
     // If a caption/subtitle track is showing, find its index
-    var selectedTextTrackIndex = -1;
-    for (var i = 0; i < this._textTracks.length; i++) {
+    let selectedTextTrackIndex = -1;
+    for (let i = 0; i < this._textTracks.length; i++) {
         if (this._textTracks[i].mode === 'showing') {
             selectedTextTrackIndex = i;
             break;
@@ -450,7 +450,7 @@ function addTextTracks(tracksArray) {
         if (itemTrack.kind && !_kindSupported(itemTrack.kind)) {
             return;
         }
-        var textTrackAny = _createTrack.call(this, itemTrack);
+        const textTrackAny = _createTrack.call(this, itemTrack);
         _addTrackToList.call(this, textTrackAny);
         if (itemTrack.file) {
             itemTrack.data = [];
@@ -477,7 +477,7 @@ function addVTTCuesToTrack(track, vttCues) {
         return;
     }
 
-    var textTrack = this._tracksById[track._id];
+    const textTrack = this._tracksById[track._id];
     // the track may not be on the video tag yet
     if (!textTrack) {
 
@@ -492,7 +492,7 @@ function addVTTCuesToTrack(track, vttCues) {
         return;
     }
 
-    var cue;
+    let cue;
     this._cuesByTrackId[track._id] = { cues: vttCues, loaded: true };
 
     while ((cue = vttCues.shift())) {
@@ -512,7 +512,7 @@ function _addCueToTrack(renderNatively, track, vttCue) {
     // There's no support for the VTTCue interface in IE/Edge.
     // We need to convert VTTCue to TextTrackCue before adding them to the TextTrack
     // This unfortunately removes positioning properties from the cues
-    var textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
+    const textTrackCue = new window.TextTrackCue(vttCue.startTime, vttCue.endTime, vttCue.text);
     track.addCue(textTrackCue);
 }
 
@@ -529,7 +529,7 @@ function _removeCues(renderNatively, tracks) {
             // Set to disabled before hidden to ensure active cues disappear
             track.mode = 'disabled';
             track.mode = 'hidden';
-            for (var i = track.cues.length; i--;) {
+            for (let i = track.cues.length; i--;) {
                 track.removeCue(track.cues[i]);
             }
             if (!track.embedded) {
@@ -554,13 +554,13 @@ function _initTextTracks() {
 }
 
 function _createTrack(itemTrack) {
-    var track;
-    var labelInfo = createLabel(itemTrack, this._unknownCount);
-    var label = labelInfo.label;
+    let track;
+    const labelInfo = createLabel(itemTrack, this._unknownCount);
+    const label = labelInfo.label;
     this._unknownCount = labelInfo.unknownCount;
 
     if (this.renderNatively || itemTrack.kind === 'metadata') {
-        var tracks = this.video.textTracks;
+        const tracks = this.video.textTracks;
         // TextTrack label is read only, so we'll need to create a new track if we don't
         // already have one with the same label
         track = _.findWhere(tracks, { label: label });
@@ -594,7 +594,7 @@ function _clearSideloadedTextTracks() {
     if (!this._textTracks) {
         return;
     }
-    var nonSideloadedTracks = _.filter(this._textTracks, function (track) {
+    const nonSideloadedTracks = _.filter(this._textTracks, function (track) {
         return track.embedded || track.groupid === 'subs';
     });
     this._initTextTracks();
@@ -605,19 +605,19 @@ function _clearSideloadedTextTracks() {
 }
 
 function _cueChangeHandler(e) {
-    var activeCues = e.currentTarget.activeCues;
+    const activeCues = e.currentTarget.activeCues;
     if (!activeCues || !activeCues.length) {
         return;
     }
 
     // Get the most recent start time. Cues are sorted by start time in ascending order by the browser
-    var startTime = activeCues[activeCues.length - 1].startTime;
+    const startTime = activeCues[activeCues.length - 1].startTime;
     // Prevent duplicate meta events for the same list of cues since the cue change handler fires once
     // for each activeCue in Safari
     if (this._activeCuePosition === startTime) {
         return;
     }
-    var dataCues = [];
+    const dataCues = [];
 
     _.each(activeCues, function(cue) {
         if (cue.startTime < startTime) {
@@ -634,7 +634,7 @@ function _cueChangeHandler(e) {
     }, this);
 
     if (dataCues.length) {
-        var id3Data = parseID3(dataCues);
+        const id3Data = parseID3(dataCues);
         this.trigger('meta', {
             metadataTime: startTime,
             metadata: id3Data
@@ -644,25 +644,26 @@ function _cueChangeHandler(e) {
 }
 
 function _cacheVTTCue(track, vttCue) {
-    var trackKind = track.kind;
+    const trackKind = track.kind;
     if (!this._cachedVTTCues[track._id]) {
         this._cachedVTTCues[track._id] = {};
     }
-    var cachedCues = this._cachedVTTCues[track._id];
-    var cacheKeyTime;
+    const cachedCues = this._cachedVTTCues[track._id];
+    let cacheKeyTime;
+
+    // VTTCues should have unique start and end times, even in cases where there are multiple
+    // active cues. This is safer than ensuring text is unique, which may be violated on seek.
+    // Captions within .05s of each other are treated as unique to account for
+    // quality switches where start/end times are slightly different.
+    cacheKeyTime = Math.floor(vttCue.startTime * 20);
+    const cacheLine = '_' + vttCue.line;
+    const cacheValue = Math.floor(vttCue.endTime * 20);
+    const cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
+    const text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
 
     switch (trackKind) {
         case 'captions':
         case 'subtitles':
-            // VTTCues should have unique start and end times, even in cases where there are multiple
-            // active cues. This is safer than ensuring text is unique, which may be violated on seek.
-            // Captions within .05s of each other are treated as unique to account for
-            // quality switches where start/end times are slightly different.
-            cacheKeyTime = Math.floor(vttCue.startTime * 20);
-            var cacheLine = '_' + vttCue.line;
-            var cacheValue = Math.floor(vttCue.endTime * 20);
-            var cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
-
             if (cueExists && Math.abs(cueExists - cacheValue) <= 1) {
                 return false;
             }
@@ -670,7 +671,6 @@ function _cacheVTTCue(track, vttCue) {
             cachedCues[cacheKeyTime + cacheLine] = cacheValue;
             return true;
         case 'metadata':
-            var text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
             cacheKeyTime = vttCue.startTime + text;
             if (cachedCues[cacheKeyTime]) {
                 return false;
@@ -690,8 +690,8 @@ function _tracksModified(inUseTracks) {
     }
 
     // Tracks may have changed in Safari after an ad
-    for (var i = 0; i < inUseTracks.length; i++) {
-        var track = inUseTracks[i];
+    for (let i = 0; i < inUseTracks.length; i++) {
+        const track = inUseTracks[i];
         if (!track._id || !this._tracksById[track._id]) {
             return true;
         }

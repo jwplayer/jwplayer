@@ -4,19 +4,19 @@ import { seconds, trim } from 'utils/strings';
 
 export default function Srt(data) {
     // Trim whitespace and split the list by returns.
-    var _captions = [];
+    const _captions = [];
     data = trim(data);
-    var list = data.split('\r\n\r\n');
+    let list = data.split('\r\n\r\n');
     if (list.length === 1) {
         list = data.split('\n\n');
     }
 
-    for (var i = 0; i < list.length; i++) {
+    for (let i = 0; i < list.length; i++) {
         if (list[i] === 'WEBVTT') {
             continue;
         }
         // Parse each entry
-        var entry = _entry(list[i]);
+        const entry = _entry(list[i]);
         if (entry.text) {
             _captions.push(entry);
         }
@@ -28,19 +28,19 @@ export default function Srt(data) {
 
 /* Parse a single captions entry. */
 function _entry(data) {
-    var entry = {};
-    var array = data.split('\r\n');
+    const entry = {};
+    let array = data.split('\r\n');
     if (array.length === 1) {
         array = data.split('\n');
     }
-    var idx = 1;
+    let idx = 1;
     if (array[0].indexOf(' --> ') > 0) {
         idx = 0;
     }
     if (array.length > idx + 1 && array[idx + 1]) {
         // This line contains the start and end.
-        var line = array[idx];
-        var index = line.indexOf(' --> ');
+        const line = array[idx];
+        const index = line.indexOf(' --> ');
         if (index > 0) {
             entry.begin = seconds(line.substr(0, index));
             entry.end = seconds(line.substr(index + 5));
