@@ -4,7 +4,6 @@ import { version } from 'version';
 import { flashVersion } from 'utils/browser';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { OS } from 'environment/environment';
-import UI from 'utils/ui';
 
 function createDomElement(html) {
     const element = createElement(html);
@@ -76,6 +75,7 @@ export default class RightClick {
 
         this.el.style.left = off.x + 'px';
         this.el.style.top = off.y + 'px';
+        this.outCount = 0;
 
         addClass(this.playerElement, 'jw-flag-rightclick-open');
         addClass(this.el, 'jw-open');
@@ -84,13 +84,12 @@ export default class RightClick {
         return false;
     }
 
-    hideMenu() {
-        this.elementUI.off('out', this.hideMenu, this);
-        if (this.mouseOverContext) {
-            // If mouse is over the menu, hide the menu when mouse moves out
-            this.elementUI.on('out', this.hideMenu, this);
+    hideMenu(evt) {
+        if (evt && this.el.contains(evt.target)) {
+            // Do not hide menu when clicking inside menu
             return;
         }
+
         removeClass(this.playerElement, 'jw-flag-rightclick-open');
         removeClass(this.el, 'jw-open');
     }
@@ -114,18 +113,22 @@ export default class RightClick {
 
         this.layer.appendChild(this.el);
 
-        this.hideMenuHandler = this.hideMenu.bind(this);
+        this.hideMenuHandler = e => this.hideMenu(e);
+        this.overHandler = () => {
+            this.mouseOverContext = true;
+        };
+        this.outHandler = (evt) => {
+            this.mouseOverContext = false;
+            if (evt.relatedTarget && !this.el.contains(evt.relatedTarget) && ++this.outCount > 1) {
+                this.hideMenu();
+            }
+        };
         this.addOffListener(this.playerElement);
         this.addOffListener(document);
 
         // Track if the mouse is above the menu or not
-        this.elementUI = new UI(this.el, { useHover: true })
-            .on('over', function() {
-                this.mouseOverContext = true;
-            }, this)
-            .on('out', function() {
-                this.mouseOverContext = false;
-            }, this);
+        this.el.addEventListener('mouseover', this.overHandler);
+        this.el.addEventListener('mouseout', this.outHandler);
     }
 
     setup(_model, _playerElement, layer) {
@@ -181,14 +184,14 @@ export default class RightClick {
         clearTimeout(this._menuTimeout);
         if (this.el) {
             this.hideMenu();
-            this.elementUI.off();
-            this.removeOffListener(this.playerElement);
             this.removeOffListener(document);
-            this.hideMenuHandler = null;
+            this.el.removeEventListener('mouseover', this.overHandler);
+            this.el.removeEventListener('mouseout', this.outHandler);
             this.el = null;
         }
 
         if (this.playerElement) {
+            this.removeOffListener(this.playerElement);
             this.playerElement.removeEventListener('touchstart', this.startLongPressHandler);
             this.playerElement.removeEventListener('touchmove', this.cancelLongPressHandler);
             this.playerElement.removeEventListener('touchend', this.cancelLongPressHandler);
