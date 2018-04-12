@@ -2,7 +2,6 @@ import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement, emptyElement, prependChild } from 'utils/dom';
-import { addInteractionListeners, removeInteractionListeners } from 'view/utils/interaction-listeners';
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
@@ -51,7 +50,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             visible = true;
             onVisibility(visible, event);
             settingsMenuElement.setAttribute('aria-expanded', 'true');
-            addInteractionListeners(document, documentClickHandler);
+            document.addEventListener('click', documentClickHandler);
 
             if (isDefault) {
                 if (event && event.type === 'enter') {
@@ -70,7 +69,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             deactivateAllSubmenus(submenus);
 
             settingsMenuElement.setAttribute('aria-expanded', 'false');
-            removeInteractionListeners(document, documentClickHandler);
+            document.removeEventListener('click', documentClickHandler);
         },
         toggle() {
             if (visible) {

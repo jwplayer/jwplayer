@@ -332,6 +332,7 @@ export default class Controls {
     }
 
     disable(model) {
+        const { nextUpToolTip, settingsMenu, infoOverlay } = this;
         this.off();
 
         if (model) {
@@ -361,15 +362,17 @@ export default class Controls {
             this.playerContainer.removeEventListener('blur', this.blurCallback);
         }
 
-        const nextUpToolTip = this.nextUpToolTip;
         if (nextUpToolTip) {
             nextUpToolTip.destroy();
         }
 
-        const settingsMenu = this.settingsMenu;
         if (settingsMenu) {
             settingsMenu.destroy();
             this.div.removeChild(settingsMenu.element());
+        }
+
+        if (infoOverlay) {
+            infoOverlay.destroy();
         }
 
         this.removeBackdrop();

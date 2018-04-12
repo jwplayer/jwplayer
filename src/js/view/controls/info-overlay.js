@@ -1,7 +1,6 @@
 import InfoOverlayTemplate from 'view/controls/templates/info-overlay';
 import { addClass, createElement, prependChild, removeClass } from 'utils/dom';
 import { STATE_PLAYING, STATE_PAUSED } from 'events/events';
-import { addInteractionListeners, removeInteractionListeners } from 'view/utils/interaction-listeners';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { timeFormat } from 'utils/parser';
@@ -41,13 +40,13 @@ export default function (container, model, api) {
 
         model.change('title', (changeModel, title = 'Unknown Title') => {
             titleContainer.textContent = title;
-        });
+        }, instance);
         model.change('duration', (changeModel, duration = '') => {
             durationContainer.textContent = (duration < 0 ? 'Live' : timeFormat(duration));
-        });
+        }, instance);
         model.change('description', (changeModel, description = '') => {
             descriptionContainer.textContent = description;
-        });
+        }, instance);
         clientIdContainer.textContent = `Client ID: ${getClientId()}`;
     }
 
@@ -57,7 +56,7 @@ export default function (container, model, api) {
                 append();
             }
             addClass(template, openClass);
-            addInteractionListeners(document, documentClickHandler);
+            document.addEventListener('click', documentClickHandler);
             visible = true;
 
             const state = model.get('state');
@@ -68,7 +67,7 @@ export default function (container, model, api) {
         },
         close() {
             removeClass(template, openClass);
-            removeInteractionListeners(document, documentClickHandler);
+            document.removeEventListener('click', documentClickHandler);
             visible = false;
 
             const state = model.get('state');
@@ -76,6 +75,10 @@ export default function (container, model, api) {
                 api.play(infoOverlayInteraction);
             }
             lastState = null;
+        },
+        destroy() {
+            this.close();
+            model.off(null, null, this);
         }
     };
 

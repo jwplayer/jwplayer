@@ -360,8 +360,9 @@ function View(_api, _model) {
                     if (settingsMenuVisible()) {
                         _controls.settingsMenu.close();
                     } else if (_controls.infoOverlay && _controls.infoOverlay.visible) {
-                        // _controls.infoOverlay.close();
+                        _controls.infoOverlay.close();
                     } else {
+                        console.log('play')
                         api.playToggle(reasonInteraction());
                     }
                 }
