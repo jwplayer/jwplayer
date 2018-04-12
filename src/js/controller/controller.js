@@ -771,7 +771,12 @@ Object.assign(Controller.prototype, {
 
         function addProgramControllerListeners() {
             _programController
-                .on('all', _trigger, _this)
+                .on('all', (type, event) => {
+                    if (_this._instreamAdapter) {
+                        return;
+                    }
+                    _trigger(type, event);
+                }, _this)
                 .on('subtitlesTracks', (e) => {
                     _captions.setSubtitlesTracks(e.tracks);
                     const defaultCaptionsIndex = _captions.getCurrentIndex();
