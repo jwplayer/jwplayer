@@ -136,6 +136,17 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     // Quality Levels
     model.change('levels', onQualitiesChanged, settingsMenu);
     model.on('change:currentLevel', (changedModel, currentQuality) => {
+        const qualitySubMenu = settingsMenu.getSubmenu('quality');
+        if (qualitySubMenu) {
+            const prevQuality = model.get('visualQuality').index;
+            // Remove the quality from the "auto" label if we switch to the quality that auto was representing
+            if (prevQuality === currentQuality) {
+                const items = qualitySubMenu.getItems();
+                const item = items[0].element().querySelector('.jw-auto-label');
+
+                item.textContent = '';
+            }
+        }
         activateSubmenuItem('quality', currentQuality);
     }, settingsMenu);
 
@@ -194,7 +205,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         }
     }, settingsMenu);
 
-    model.on('change:streamType', () => {  
+    model.on('change:streamType', () => {
         setupPlaybackRatesMenu(model, model.get('playbackRates'));
     }, settingsMenu);
 
