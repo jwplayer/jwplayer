@@ -3,7 +3,7 @@ import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { ERROR } from 'events/events';
-import _ from 'utils/underscore';
+import { _reject, _findWhere } from 'utils/underscore';
 
 // Used across all providers for loading tracks and handling browser track-related events
 const Tracks = {
@@ -48,7 +48,7 @@ function setTextTracks(tracks) {
     } else {
         // Remove the 608 captions track that was mutated by the browser
         this._unknownCount = 0;
-        this._textTracks = _.reject(this._textTracks, function(track) {
+        this._textTracks = _reject(this._textTracks, function(track) {
             const trackId = track._id;
             if (this.renderNatively && trackId && trackId.indexOf('nativecaptions') === 0) {
                 delete this._tracksById[trackId];
@@ -185,7 +185,7 @@ function setSubtitlesTrack(menuIndex) {
 
     // 0 = 'Off'
     if (menuIndex === 0) {
-        _.each(this._textTracks, function (track) {
+        this._textTracks.forEach(function (track) {
             track.mode = track.embedded ? 'hidden' : 'disabled';
         });
     }
@@ -409,7 +409,7 @@ function enableTextTrack() {
 
 function textTrackChangeHandler() {
     var textTracks = this.video.textTracks;
-    var inUseTracks = _.filter(textTracks, function (track) {
+    var inUseTracks = textTracks.filter(function (track) {
         return (track.inuse || !track._id) && _kindSupported(track.kind);
     });
     if (!this._textTracks || _tracksModified.call(this, inUseTracks)) {
@@ -518,7 +518,7 @@ function _addCueToTrack(renderNatively, track, vttCue) {
 
 function _removeCues(renderNatively, tracks) {
     if (tracks && tracks.length) {
-        _.each(tracks, function(track) {
+        tracks.forEach(function(track) {
             // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
             if (Browser.ie && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
                 return;
@@ -563,7 +563,7 @@ function _createTrack(itemTrack) {
         var tracks = this.video.textTracks;
         // TextTrack label is read only, so we'll need to create a new track if we don't
         // already have one with the same label
-        track = _.findWhere(tracks, { label: label });
+        track = _findWhere(tracks, { label: label });
 
         if (!track) {
             track = this.video.addTextTrack(itemTrack.kind, label, itemTrack.language || '');
@@ -594,11 +594,11 @@ function _clearSideloadedTextTracks() {
     if (!this._textTracks) {
         return;
     }
-    var nonSideloadedTracks = _.filter(this._textTracks, function (track) {
+    var nonSideloadedTracks = this._textTracks.filter(function (track) {
         return track.embedded || track.groupid === 'subs';
     });
     this._initTextTracks();
-    _.each(nonSideloadedTracks, function (track) {
+    nonSideloadedTracks.forEach(function (track) {
         this._tracksById[track._id] = track;
     });
     this._textTracks = nonSideloadedTracks;
@@ -619,7 +619,7 @@ function _cueChangeHandler(e) {
     }
     var dataCues = [];
 
-    _.each(activeCues, function(cue) {
+    activeCues.forEach(function(cue) {
         if (cue.startTime < startTime) {
             return;
         }

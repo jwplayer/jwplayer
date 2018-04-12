@@ -1,4 +1,4 @@
-import _ from 'utils/underscore';
+import { _isNaN, _isNumber, _isString, _map } from './underscore';
 
 export function trim(inputString) {
     return inputString.replace(/^\s+|\s+$/g, '');
@@ -62,7 +62,7 @@ export function seconds(str, frameRate) {
     if (!str) {
         return 0;
     }
-    if (_.isNumber(str) && !_.isNaN(str)) {
+    if (_isNumber(str) && !_isNaN(str)) {
         return str;
     }
 
@@ -93,7 +93,7 @@ export function seconds(str, frameRate) {
     } else {
         sec = parseFloat(str);
     }
-    if (_.isNaN(sec)) {
+    if (_isNaN(sec)) {
         return 0;
     }
     return sec;
@@ -101,7 +101,7 @@ export function seconds(str, frameRate) {
 
 // Convert an offset string to a number; supports conversion of percentage offsets
 export function offsetToSeconds(offset, duration, frameRate) {
-    if (_.isString(offset) && offset.slice(-1) === '%') {
+    if (_isString(offset) && offset.slice(-1) === '%') {
         const percent = parseFloat(offset);
         if (!duration || isNaN(duration) || isNaN(percent)) {
             return null;
@@ -112,13 +112,13 @@ export function offsetToSeconds(offset, duration, frameRate) {
 }
 
 export function prefix(arr, add) {
-    return _.map(arr, function(val) {
+    return _map(arr, function(val) {
         return add + val;
     });
 }
 
 export function suffix(arr, add) {
-    return _.map(arr, function(val) {
+    return _map(arr, function(val) {
         return val + add;
     });
 }

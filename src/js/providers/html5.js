@@ -9,7 +9,7 @@ import VideoAttached from 'providers/video-attached-mixin';
 import { style } from 'utils/css';
 import utils from 'utils/helpers';
 import { emptyElement } from 'utils/dom';
-import _ from 'utils/underscore';
+import { _map } from 'utils/underscore';
 import DefaultProvider from 'providers/default';
 import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
@@ -308,7 +308,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     function _getPublicLevels(levels) {
         var publicLevels;
         if (utils.typeOf(levels) === 'array' && levels.length > 0) {
-            publicLevels = _.map(levels, function(level, i) {
+            publicLevels = _map(levels, function(level, i) {
                 return {
                     label: level.label || i
                 };
@@ -668,7 +668,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.getQualityLevels = function() {
-        return _.map(_levels, level => qualityLevel(level));
+        return _map(_levels, level => qualityLevel(level));
     };
 
     this.getName = function() {
@@ -696,7 +696,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 _currentAudioTrackIndex = 0;
                 tracks[_currentAudioTrackIndex].enabled = true;
             }
-            _audioTracks = _.map(tracks, function(track) {
+            _audioTracks = _map(tracks, function(track) {
                 var _track = {
                     name: track.label || track.language,
                     language: track.language

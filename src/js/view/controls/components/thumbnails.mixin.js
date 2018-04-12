@@ -1,4 +1,4 @@
-import _ from 'utils/underscore';
+import { _sortedIndex, _property, _bind } from 'utils/underscore';
 import utils from 'utils/helpers';
 import srt from 'parsers/captions/srt';
 
@@ -24,8 +24,8 @@ const ThumbnailsMixin = {
 
     thumbnailsLoaded: function (evt) {
         var data = srt(evt.responseText);
-        if (_.isArray(data)) {
-            _.each(data, function(obj) {
+        if (Array.isArray(data)) {
+            data.forEach(function(obj) {
                 this.thumbnails.push(new Thumbnail(obj));
             }, this);
             this.drawCues();
@@ -35,7 +35,7 @@ const ThumbnailsMixin = {
     thumbnailsFailed: function () { },
 
     chooseThumbnail: function(seconds) {
-        var idx = _.sortedIndex(this.thumbnails, { end: seconds }, _.property('end'));
+        var idx = _sortedIndex(this.thumbnails, { end: seconds }, _property('end'));
         if (idx >= this.thumbnails.length) {
             idx = this.thumbnails.length - 1;
         }
@@ -69,7 +69,7 @@ const ThumbnailsMixin = {
             }
         } else if (!this.individualImage) {
             this.individualImage = new Image();
-            this.individualImage.onload = _.bind(function () {
+            this.individualImage.onload = _bind(function () {
                 this.individualImage.onload = null;
                 this.timeTip.image({ width: this.individualImage.width, height: this.individualImage.height });
                 this.timeTip.setWidth(this.individualImage.width);

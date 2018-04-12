@@ -4,7 +4,7 @@ import Events from 'utils/backbone.events';
 import { ERROR } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
 import { addClass, removeClass, empty } from 'utils/dom';
-import _ from 'utils/underscore';
+import { _identity, _difference, _isNumber, _isFinite } from 'utils/underscore';
 import { MEDIA_SEEK, MEDIA_TIME } from 'events/events';
 
 let _WebVTT;
@@ -16,7 +16,7 @@ const _defaults = {
     fontSize: 14,
     fontOpacity: 100,
     fontScale: 0.05, // Default captions font size = 1/20th of the video's height
-    preprocessor: _.identity,
+    preprocessor: _identity,
     windowOpacity: 0
 };
 
@@ -94,7 +94,7 @@ const CaptionsRenderer = function (viewModel) {
     };
 
     this.getCurrentCues = function (allCues, pos) {
-        return _.filter(allCues, function (cue) {
+        return allCues.filter(function (cue) {
             return pos >= (cue.startTime) && (!cue.endTime || pos <= cue.endTime);
         });
     };
@@ -103,7 +103,7 @@ const CaptionsRenderer = function (viewModel) {
         // Render with vtt.js if there are cues, clear if there are none
         if (!cues.length) {
             _currentCues = [];
-        } else if (_.difference(cues, _currentCues).length) {
+        } else if (_difference(cues, _currentCues).length) {
             addClass(_captionsWindow, 'jw-captions-window-active');
             _currentCues = cues;
         }
@@ -118,10 +118,10 @@ const CaptionsRenderer = function (viewModel) {
 
         // subtitles with "source" time must be synced with "metadata[source]"
         if (source) {
-            if (metadata && _.isNumber(metadata[source])) {
+            if (metadata && _isNumber(metadata[source])) {
                 time = metadata[source];
             }
-        } 
+        }
 
         return time;
     };
@@ -189,7 +189,7 @@ const CaptionsRenderer = function (viewModel) {
     };
 
     function _setFontScale() {
-        if (!_.isFinite(_options.fontSize)) {
+        if (!_isFinite(_options.fontSize)) {
             return;
         }
 

@@ -2,9 +2,9 @@ import { OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
-import _, { _isValidNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
+import { _isValidNumber, _isNumber } from 'utils/underscore';
 
 // Represents the state of the player
 const Model = function() {
@@ -132,7 +132,7 @@ const Model = function() {
     };
 
     this.setPlaybackRate = function(playbackRate) {
-        if (!_.isNumber(playbackRate)) {
+        if (!_isNumber(playbackRate)) {
             return;
         }
 

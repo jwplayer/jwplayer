@@ -1,7 +1,6 @@
-import _ from 'utils/underscore';
 import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
-import { _isValidNumber } from 'utils/underscore';
+import { _isValidNumber, _isNumber, _pick } from 'utils/underscore';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -113,7 +112,7 @@ const Config = function(options, persisted) {
         if (Array.isArray(rateControls)) {
             rates = rateControls;
         }
-        rates = rates.filter(rate => _.isNumber(rate) && rate >= 0.25 && rate <= 4)
+        rates = rates.filter(rate => _isNumber(rate) && rate >= 0.25 && rate <= 4)
             .map(rate => Math.round(rate * 4) / 4);
 
         if (rates.indexOf(1) < 0) {
@@ -139,7 +138,7 @@ const Config = function(options, persisted) {
     const configPlaylist = config.playlist;
     if (!configPlaylist) {
         // This is a legacy fallback, assuming a playlist item has been flattened into the config
-        const obj = _.pick(config, [
+        const obj = _pick(config, [
             'title',
             'description',
             'type',

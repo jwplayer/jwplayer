@@ -1,4 +1,4 @@
-import _ from 'utils/underscore';
+import { _throttle } from 'utils/underscore';
 import utils from 'utils/helpers';
 import UI, { getPointerType } from 'utils/ui';
 import Slider from 'view/controls/components/slider';
@@ -78,7 +78,7 @@ class TimeSlider extends Slider {
         this.cues = [];
 
         // Store the attempted seek, until the previous one completes
-        this.seekThrottled = _.throttle(this.performSeek, 400);
+        this.seekThrottled = _throttle(this.performSeek, 400);
         this.mobileHoverDistance = 5;
 
         this.setup();
@@ -160,7 +160,7 @@ class TimeSlider extends Slider {
         this.addCues(model, model.get('cues'));
 
         var tracks = playlistItem.tracks;
-        _.each(tracks, function (track) {
+        tracks.forEach(function (track) {
             if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
                 this.loadThumbnails(track.file);
             } else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {

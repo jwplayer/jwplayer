@@ -1,4 +1,4 @@
-import _ from 'utils/underscore';
+import { _keys, _some } from 'utils/underscore';
 
 // Try and find a corresponding custom label. If there are no custom labels, create one using height, bandwidth, or both
 export function generateLabel(level, qualityLabels, redundant) {
@@ -36,7 +36,7 @@ export function createLabel(height, bandwidth, redundant) {
 // bandwidth, a quality label will always be found. Return null otherwise
 export function getCustomLabel(qualityLabels, bandwidth) {
     let label = null;
-    const bandwidths = _.keys(qualityLabels);
+    const bandwidths = _keys(qualityLabels);
 
     if (bandwidth && qualityLabels && bandwidths.length) {
         const key = parseFloat(bandwidth);
@@ -54,8 +54,8 @@ export function findClosestBandwidth(bandwidths, targetBandwidth) {
     let smallestDiff = Infinity;
     let curDiff;
 
-    if (_.isArray(bandwidths)) {
-        _.forEach(bandwidths, function (cur) {
+    if (Array.isArray(bandwidths)) {
+        bandwidths.forEach(function (cur) {
             curDiff = Math.abs(cur - targetBandwidth);
             if (curDiff < smallestDiff) {
                 closest = cur;
@@ -73,10 +73,10 @@ export function toKbps(bandwidth) {
 
 // Use an empty object as the context and populate it like a hash map
 export function hasRedundantLevels(levels) {
-    if (!_.isArray(levels)) {
+    if (!Array.isArray(levels)) {
         return false;
     }
-    return _.some(levels, function (level) {
+    return _some(levels, function (level) {
         const key = level.height || level.bitrate || level.bandwidth;
         const foundDuplicate = this[key];
         this[key] = 1;

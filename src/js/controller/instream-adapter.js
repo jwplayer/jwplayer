@@ -6,7 +6,7 @@ import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/p
 import Promise from 'polyfills/promise';
 import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
-import _ from 'utils/underscore';
+import { } from 'utils/underscore';
 import AdProgramController from 'program/ad-program-controller';
 
 var _defaultOptions = {
@@ -123,7 +123,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         return this;
     };
 
-    function triggerPlayRejected() { 
+    function triggerPlayRejected() {
         _adProgram.model.set('playRejected', true);
     }
 
@@ -196,7 +196,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
         // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
         let playlist = item;
-        if (_.isArray(item)) {
+        if (Array.isArray(item)) {
             _array = item;
             _arrayOptions = options || _arrayOptions;
             item = _array[_arrayIndex];

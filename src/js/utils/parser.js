@@ -1,5 +1,5 @@
 import { exists } from 'utils/validator';
-import _ from 'utils/underscore';
+import { _some, _isNaN } from './underscore';
 
 // Returns the absolute file path based on a relative filepath, and optional base path
 export function getAbsolutePath(path, base) {
@@ -44,7 +44,7 @@ export function isAbsolutePath(path) {
 }
 
 function containsParserErrors(childNodes) {
-    return _.some(childNodes, function(node) {
+    return _some(childNodes, function(node) {
         return node.nodeName === 'parsererror';
     });
 }
@@ -110,7 +110,7 @@ export function parseDimension(dimension) {
 
 // Returns a formatted time string from "mm:ss" to "hh:mm:ss" for the given number of seconds
 export function timeFormat(sec, allowNegative) {
-    if ((sec <= 0 && !allowNegative) || _.isNaN(parseInt(sec))) {
+    if ((sec <= 0 && !allowNegative) || _isNaN(parseInt(sec))) {
         return '00:00';
     }
 

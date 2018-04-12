@@ -1,4 +1,4 @@
-import _ from 'utils/underscore';
+import { _invert } from './underscore';
 
 /**
  * A map of 2-letter language codes (ISO 639-1) to language name in English
@@ -17,7 +17,7 @@ const codeToLang = {
     el: 'Greek',
 };
 
-const langToCode = _.invert(codeToLang);
+const langToCode = _invert(codeToLang);
 
 export function getLabel(language) {
     if (!language) {
