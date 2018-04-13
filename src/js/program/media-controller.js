@@ -50,6 +50,7 @@ export default class MediaController extends Eventable {
 
     stop() {
         const { provider } = this;
+        this.beforeComplete = false;
         provider.stop();
     }
 

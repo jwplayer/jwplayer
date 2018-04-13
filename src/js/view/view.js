@@ -359,6 +359,8 @@ function View(_api, _model) {
                 if (_controls) {
                     if (settingsMenuVisible()) {
                         _controls.settingsMenu.close();
+                    } else if (infoOverlayVisible()) {
+                        _controls.infoOverlay.close();
                     } else {
                         api.playToggle(reasonInteraction());
                     }
@@ -371,6 +373,9 @@ function View(_api, _model) {
                 _this.trigger(DISPLAY_CLICK);
                 if (settingsMenuVisible()) {
                     _controls.settingsMenu.close();
+                }
+                if (infoOverlayVisible()) {
+                    _controls.infoOverlay.close();
                 }
                 const state = model.get('state');
 
@@ -719,6 +724,11 @@ function View(_api, _model) {
     const settingsMenuVisible = () => {
         const settingsMenu = _controls && _controls.settingsMenu;
         return !!(settingsMenu && settingsMenu.visible);
+    };
+
+    const infoOverlayVisible = () => {
+        const info = _controls && _controls.infoOverlay;
+        return !!(info && info.visible);
     };
 
     const setupInstream = function() {

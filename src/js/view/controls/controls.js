@@ -13,6 +13,7 @@ import { getBreakpoint } from 'view/utils/breakpoint';
 import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
+import InfoOverlay from 'view/controls/info-overlay';
 
 require('css/controls.less');
 
@@ -59,6 +60,7 @@ export default class Controls {
         this.logo = null;
         this.div = null;
         this.dimensions = {};
+        this.infoOverlay = null;
         this.userInactiveTimeout = () => {
             // Rerun at the scheduled time if remaining time is greater than the display refresh rate
             const remainingTime = this.inactiveTime - now();
@@ -98,7 +100,10 @@ export default class Controls {
         }
 
         // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
-        this.rightClickMenu = new RightClick();
+        this.infoOverlay = new InfoOverlay(element, model, api, visible => {
+            utils.toggleClass(this.div, 'jw-info-open', visible);
+        });
+        this.rightClickMenu = new RightClick(this.infoOverlay);
         if (touchMode) {
             utils.addClass(this.playerContainer, 'jw-flag-touch');
             this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
@@ -329,6 +334,7 @@ export default class Controls {
     }
 
     disable(model) {
+        const { nextUpToolTip, settingsMenu, infoOverlay } = this;
         this.off();
 
         if (model) {
@@ -358,15 +364,17 @@ export default class Controls {
             this.playerContainer.removeEventListener('blur', this.blurCallback);
         }
 
-        const nextUpToolTip = this.nextUpToolTip;
         if (nextUpToolTip) {
             nextUpToolTip.destroy();
         }
 
-        const settingsMenu = this.settingsMenu;
         if (settingsMenu) {
             settingsMenu.destroy();
             this.div.removeChild(settingsMenu.element());
+        }
+
+        if (infoOverlay) {
+            infoOverlay.destroy();
         }
 
         this.removeBackdrop();

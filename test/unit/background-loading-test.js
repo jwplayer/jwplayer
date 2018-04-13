@@ -78,6 +78,16 @@ describe('Background Loading', function () {
         });
     });
 
+    describe('mediaController.stop', function () {
+        it('resets beforeComplete', function () {
+            mediaController.container = container;
+            mediaController.beforeComplete = true;
+            expect(mediaController.beforeComplete).to.equal(true);
+            mediaController.stop();
+            expect(mediaController.beforeComplete).to.equal(false);
+        });
+    });
+
     describe('prograController._setActiveMedia()', function () {
         it('activates the given mediaController', function () {
             programController._setActiveMedia(mediaController);
