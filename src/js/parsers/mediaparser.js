@@ -38,7 +38,6 @@ const mediaparser = function (obj, item) {
             if (!localName(node)) {
                 continue;
             }
-            const entry = {};
             switch (localName(node).toLowerCase()) {
                 case 'content':
                     if (xmlAttribute(node, 'duration')) {
@@ -83,7 +82,8 @@ const mediaparser = function (obj, item) {
                 case 'group':
                     mediaparser(node, item);
                     break;
-                case 'subtitle':
+                case 'subtitle': {
+                    const entry = {};
                     entry.file = xmlAttribute(node, 'url');
                     entry.kind = 'captions';
                     if (xmlAttribute(node, 'lang').length > 0) {
@@ -91,6 +91,7 @@ const mediaparser = function (obj, item) {
                     }
                     captions.push(entry);
                     break;
+                }
                 default:
                     break;
             }

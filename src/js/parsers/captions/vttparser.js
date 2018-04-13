@@ -355,7 +355,6 @@ VTTParser.prototype = {
                         alreadyCollectedLine = false;
                     }
 
-                    const hasSubstring = arrowRegex.test(line);
                     switch (self.state) {
                         case 'HEADER':
                             // 13-18 - Allow a header (metadata) under the WEBVTT line.
@@ -403,7 +402,8 @@ VTTParser.prototype = {
                             }
                             self.state = 'CUETEXT';
                             break;
-                        case 'CUETEXT':
+                        case 'CUETEXT': {
+                            const hasSubstring = arrowRegex.test(line);
                             // 34 - If we have an empty line then report the cue.
                             // 35 - If we have the special substring '-->' then report the cue,
                             // but do not collect the line as we need to process the current
@@ -423,6 +423,7 @@ VTTParser.prototype = {
                             }
                             self.cue.text += line;
                             break;
+                        }
                         case 'BADCUE': // BADCUE
                             // 54-62 - Collect and discard the remaining cue.
                             if (!line) {

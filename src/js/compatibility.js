@@ -17,9 +17,9 @@
         Check if the version of the player requires the compatibility shim. Only versions below 8 require this script.
     */
     if (parseInt(playerLibrary.version, 10) >= 8) {
-        const jwplayerCompatible = function(query) {
-            const basePlayer = playerLibrary(query);
-            const playerInstance = Object.create(basePlayer);
+        var jwplayerCompatible = function(query) {
+            var basePlayer = playerLibrary(query);
+            var playerInstance = Object.create(basePlayer);
             if (!playerInstance.trigger || playerInstance.compatibility) {
                 return playerInstance;
             }
@@ -47,7 +47,7 @@
                 a callback. The event name is typically the name as it's on* event, with the "on" removed and the first letter
                 decapitalized.
             */
-            const callbackMap = {
+            var callbackMap = {
                 onBuffer: 'buffer',
                 onPause: 'pause',
                 onPlay: 'play',
@@ -104,12 +104,12 @@
              `jwplayer().setup({ events: { onReady: fn } })` becomes
              `jwplayer().setup({ events: { ready: fn } })`
              */
-            const setup = basePlayer.setup;
+            var setup = basePlayer.setup;
             playerInstance.setup = function(options) {
-                const eventMap = options.events;
+                var eventMap = options.events;
                 if (eventMap) {
                     Object.keys(eventMap).forEach(function(eventKey) {
-                        const eventName = callbackMap[eventKey];
+                        var eventName = callbackMap[eventKey];
                         if (eventName) {
                             eventMap[eventName] = eventMap[eventKey];
                             delete eventMap[eventKey];
@@ -123,8 +123,8 @@
             /*
              Play and Pause no longer accept the state argument, and no longer toggle.
              */
-            const play = basePlayer.play;
-            const pause = basePlayer.pause;
+            var play = basePlayer.play;
+            var pause = basePlayer.pause;
             playerInstance.play = function(state, meta) {
                 if (state && state.reason) {
                     meta = state;
@@ -173,12 +173,12 @@
          an Environment object. This object details the environment in which the player thinks it's in. Refer to our
          API docs for more information.
          */
-        const tempPlayer = playerLibrary(document.createElement('div'));
-        const environment = tempPlayer.getEnvironment();
+        var tempPlayer = playerLibrary(document.createElement('div'));
+        var environment = tempPlayer.getEnvironment();
         tempPlayer.remove();
 
-        const utils = playerLibrary.utils;
-        const valueFn = function (getter) {
+        var utils = playerLibrary.utils;
+        var valueFn = function (getter) {
             return function() {
                 return getter;
             };
@@ -206,7 +206,7 @@
         utils.isFlashSupported = valueFn(environment.Features.flash);
         utils.isIE = valueFn(environment.Browser.ie);
         utils.isIETrident = function () {
-            return environment.Browser.ie && environment.Browser.version.major >= 11; 
+            return environment.Browser.ie && environment.Browser.version.major >= 11;
         };
         utils.isIOS = function(osVersion) {
             if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {
@@ -235,7 +235,7 @@
             In JW8 we've removed the jwplayer.events.JWPLAYER_* events, as well as the jwplayer.events.states.* states.
             They've been replaced by ES6 constants. The state names are prefixed with STATE_, and the event names lose the JWPLAYER_ prefix.
         */
-        const events = {
+        var events = {
             // Script Loaders
             COMPLETE: 'complete',
             ERROR: 'error',

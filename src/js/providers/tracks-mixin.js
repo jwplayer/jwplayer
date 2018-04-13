@@ -651,26 +651,27 @@ function _cacheVTTCue(track, vttCue) {
     const cachedCues = this._cachedVTTCues[track._id];
     let cacheKeyTime;
 
-    // VTTCues should have unique start and end times, even in cases where there are multiple
-    // active cues. This is safer than ensuring text is unique, which may be violated on seek.
-    // Captions within .05s of each other are treated as unique to account for
-    // quality switches where start/end times are slightly different.
-    cacheKeyTime = Math.floor(vttCue.startTime * 20);
-    const cacheLine = '_' + vttCue.line;
-    const cacheValue = Math.floor(vttCue.endTime * 20);
-    const cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
-    const text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
-
     switch (trackKind) {
         case 'captions':
-        case 'subtitles':
+        case 'subtitles': {
+            // VTTCues should have unique start and end times, even in cases where there are multiple
+            // active cues. This is safer than ensuring text is unique, which may be violated on seek.
+            // Captions within .05s of each other are treated as unique to account for
+            // quality switches where start/end times are slightly different.
+            cacheKeyTime = Math.floor(vttCue.startTime * 20);
+            const cacheLine = '_' + vttCue.line;
+            const cacheValue = Math.floor(vttCue.endTime * 20);
+            const cueExists = cachedCues[cacheKeyTime + cacheLine] || cachedCues[(cacheKeyTime + 1) + cacheLine] || cachedCues[(cacheKeyTime - 1) + cacheLine];
+
             if (cueExists && Math.abs(cueExists - cacheValue) <= 1) {
                 return false;
             }
 
             cachedCues[cacheKeyTime + cacheLine] = cacheValue;
             return true;
-        case 'metadata':
+        }
+        case 'metadata': {
+            const text = vttCue.data ? new Uint8Array(vttCue.data).join('') : vttCue.text;
             cacheKeyTime = vttCue.startTime + text;
             if (cachedCues[cacheKeyTime]) {
                 return false;
@@ -678,6 +679,7 @@ function _cacheVTTCue(track, vttCue) {
 
             cachedCues[cacheKeyTime] = vttCue.endTime;
             return true;
+        }
         default:
             return false;
     }
