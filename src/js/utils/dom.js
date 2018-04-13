@@ -1,5 +1,5 @@
 import { trim } from 'utils/strings';
-import { _isString, _contains, _difference, _isBoolean } from './underscore';
+import { _isString, _contains, _difference, _isBoolean, _forEach } from './underscore';
 
 export function hasClass(element, searchClass) {
     return element.classList.contains(searchClass);
@@ -38,12 +38,12 @@ export function classList(element) {
 }
 
 export function addClass(element, classes) {
-    // TODO:: use _union on the two arrays
+    // TODO:: use _.union on the two arrays
 
     var originalClasses = classNameArray(element);
     var addClasses = Array.isArray(classes) ? classes : classes.split(' ');
 
-    addClasses.forEach(function (c) {
+    _forEach(addClasses, function (c) {
         if (!_contains(originalClasses, c)) {
             originalClasses.push(c);
         }

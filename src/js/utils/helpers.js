@@ -14,7 +14,7 @@ import {
 } from 'utils/strings';
 import Timer from 'api/timer';
 import { tryCatch, JwError as Error } from 'utils/trycatch';
-
+import { _indexOf } from './underscore';
 import { isIframe, flashVersion } from 'utils/browser';
 import {
     addClass,
@@ -37,7 +37,6 @@ import {
     getRgba
 } from 'utils/css';
 import { ajax, crossdomain } from 'utils/ajax';
-import { _indexOf } from './underscore';
 
 export const log = (typeof console.log === 'function') ? console.log.bind(console) : function() {};
 

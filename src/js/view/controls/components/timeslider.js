@@ -1,4 +1,4 @@
-import { _throttle } from 'utils/underscore';
+import { _throttle, _forEach } from 'utils/underscore';
 import utils from 'utils/helpers';
 import UI, { getPointerType } from 'utils/ui';
 import Slider from 'view/controls/components/slider';
@@ -160,7 +160,7 @@ class TimeSlider extends Slider {
         this.addCues(model, model.get('cues'));
 
         var tracks = playlistItem.tracks;
-        tracks.forEach(function (track) {
+        _forEach(tracks, function (track) {
             if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
                 this.loadThumbnails(track.file);
             } else if (track && track.kind && track.kind.toLowerCase() === 'chapters') {

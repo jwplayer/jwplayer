@@ -17,9 +17,9 @@ import {
     flashVersion,
     isIframe,
 } from 'utils/browser';
-import { _memoize } from 'utils/underscore';
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
+import { _memoize } from 'utils/underscore';
 
 const memoize = _memoize;
 const userAgent = navigator.userAgent;

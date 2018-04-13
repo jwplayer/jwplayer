@@ -3,7 +3,7 @@ import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { ERROR } from 'events/events';
-import { _reject, _findWhere } from 'utils/underscore';
+import { _reject, _findWhere, _forEach } from 'utils/underscore';
 
 // Used across all providers for loading tracks and handling browser track-related events
 const Tracks = {
@@ -185,7 +185,7 @@ function setSubtitlesTrack(menuIndex) {
 
     // 0 = 'Off'
     if (menuIndex === 0) {
-        this._textTracks.forEach(function (track) {
+        _forEach(this._textTracks, function (track) {
             track.mode = track.embedded ? 'hidden' : 'disabled';
         });
     }
@@ -518,7 +518,7 @@ function _addCueToTrack(renderNatively, track, vttCue) {
 
 function _removeCues(renderNatively, tracks) {
     if (tracks && tracks.length) {
-        tracks.forEach(function(track) {
+        _forEach(tracks, function(track) {
             // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
             if (Browser.ie && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
                 return;
@@ -598,7 +598,7 @@ function _clearSideloadedTextTracks() {
         return track.embedded || track.groupid === 'subs';
     });
     this._initTextTracks();
-    nonSideloadedTracks.forEach(function (track) {
+    _forEach(nonSideloadedTracks, function (track) {
         this._tracksById[track._id] = track;
     });
     this._textTracks = nonSideloadedTracks;
@@ -619,7 +619,7 @@ function _cueChangeHandler(e) {
     }
     var dataCues = [];
 
-    activeCues.forEach(function(cue) {
+    _forEach(activeCues, function(cue) {
         if (cue.startTime < startTime) {
             return;
         }

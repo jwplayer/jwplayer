@@ -6,7 +6,6 @@ import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/p
 import Promise from 'polyfills/promise';
 import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
-import { } from 'utils/underscore';
 import AdProgramController from 'program/ad-program-controller';
 
 var _defaultOptions = {
