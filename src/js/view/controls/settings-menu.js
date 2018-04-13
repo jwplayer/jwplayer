@@ -133,9 +133,23 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         );
     };
 
+    const changeAutoLabel = function (quality, qualitySubMenu, currentQuality) {
+        const items = qualitySubMenu.getItems();
+        const item = items[0].element().querySelector('.jw-auto-label');
+        const levels = model.get('levels');
+        const { level, mode } = quality;
+
+        item.textContent = currentQuality || mode === 'manual' ? '' : levels[level.index].label;
+    };
+
     // Quality Levels
     model.change('levels', onQualitiesChanged, settingsMenu);
     model.on('change:currentLevel', (changedModel, currentQuality) => {
+        const qualitySubMenu = settingsMenu.getSubmenu('quality');
+        const visualQuality = model.get('visualQuality');
+        if (visualQuality && qualitySubMenu) {
+            changeAutoLabel(visualQuality, qualitySubMenu, currentQuality);
+        }
         activateSubmenuItem('quality', currentQuality);
     }, settingsMenu);
 
@@ -168,12 +182,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     model.on('change:visualQuality', (changedModel, quality) => {
         const qualitySubMenu = settingsMenu.getSubmenu('quality');
         if (qualitySubMenu) {
-            const items = qualitySubMenu.getItems();
-            const item = items[0].element().querySelector('.jw-auto-label');
-            const levels = model.get('levels');
-            const { mode, level } = quality;
-
-            item.textContent = mode === 'auto' ? `${levels[level.index].label}` : ``;
+            changeAutoLabel(quality, qualitySubMenu, model.get('currentLevel'));
         }
     });
 
@@ -194,7 +203,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         }
     }, settingsMenu);
 
-    model.on('change:streamType', () => {  
+    model.on('change:streamType', () => {
         setupPlaybackRatesMenu(model, model.get('playbackRates'));
     }, settingsMenu);
 
