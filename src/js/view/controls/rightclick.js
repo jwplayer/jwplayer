@@ -98,7 +98,7 @@ export default class RightClick {
     }
 
     lazySetup() {
-        const html = rightclickTemplate(this.buildArray());
+        const html = rightclickTemplate(this.buildArray(), this.model.get('localization'));
         if (this.el) {
             if (this.html !== html) {
                 this.html = html;

@@ -1,10 +1,10 @@
-export default (menu) => {
+export default (menu, localization) => {
     const { items = [] } = menu;
     const menuItems = items
         .map(item => {
             return rightClickItem(item.link, item.title, item.featured, item.showLogo);
         });
-    menuItems.unshift(infoOverlayItem());
+    menuItems.unshift(infoOverlayItem(localization.videoInfo));
 
     return (
         `<div class="jw-rightclick jw-reset">` +
@@ -22,11 +22,12 @@ const rightClickItem = (link = '', title = '', featured, showLogo) => {
     );
 };
 
-const infoOverlayItem = () => {
+const infoOverlayItem = (videoInfoLocalization) => {
     return (
         `<li class="jw-reset jw-rightclick-item">` +
-            `<button class=" jw-rightclick-link jw-info-overlay-item">About this video</button>` +
+            `<button class="jw-rightclick-link jw-info-overlay-item">${videoInfoLocalization}</button>` +
         `</li>`
     );
 };
+
 
