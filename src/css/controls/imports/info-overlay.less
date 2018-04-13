@@ -8,7 +8,8 @@
     color: @active-color;
     pointer-events: all;
     user-select: text;
-    height: 50%;
+    height: auto;
+    max-height: 50%;
     overflow: hidden;
     flex-direction: column;
 
@@ -38,7 +39,7 @@
     flex-flow: column;
     margin: 0 20px 20px;
     overflow-y: auto;
-    padding: 5px;
+    padding: 5px 5px 24px;
 
     [class*="jw-info"] {
         &:not(:first-of-type) {
