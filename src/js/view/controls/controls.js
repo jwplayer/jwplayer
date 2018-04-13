@@ -14,6 +14,7 @@ import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
+import {toggleClass} from "../../utils/dom";
 
 require('css/controls.less');
 
@@ -100,7 +101,9 @@ export default class Controls {
         }
 
         // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
-        this.infoOverlay = new InfoOverlay(this.playerContainer.querySelector('.jw-overlays'), model, api);
+        this.infoOverlay = new InfoOverlay(element, model, api, visible => {
+            utils.toggleClass(this.div, 'jw-info-open', visible);
+        });
         this.rightClickMenu = new RightClick(this.infoOverlay);
         if (touchMode) {
             utils.addClass(this.playerContainer, 'jw-flag-touch');

@@ -1,13 +1,12 @@
 import InfoOverlayTemplate from 'view/controls/templates/info-overlay';
-import { addClass, createElement, prependChild, removeClass } from 'utils/dom';
+import { createElement, prependChild } from 'utils/dom';
 import { STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import button from 'view/controls/components/button';
 import { cloneIcon } from 'view/controls/icons';
 import { timeFormat } from 'utils/parser';
 
-export default function (container, model, api) {
+export default function (container, model, api, onVisibility) {
     const template = createElement(InfoOverlayTemplate());
-    const openClass = 'jw-info-open';
     const infoOverlayInteraction = 'infoOverlayInteraction';
     const closeButton = button('jw-info-close', () => {
         instance.close();
@@ -55,7 +54,7 @@ export default function (container, model, api) {
             if (!appended) {
                 append();
             }
-            addClass(template, openClass);
+            // addClass(template, openClass);
             document.addEventListener('click', documentClickHandler);
             visible = true;
 
@@ -64,9 +63,10 @@ export default function (container, model, api) {
                 api.pause(infoOverlayInteraction);
             }
             lastState = state;
+            onVisibility(true);
         },
         close() {
-            removeClass(template, openClass);
+            // removeClass(template, openClass);
             document.removeEventListener('click', documentClickHandler);
             visible = false;
 
@@ -75,6 +75,7 @@ export default function (container, model, api) {
                 api.play(infoOverlayInteraction);
             }
             lastState = null;
+            onVisibility(false);
         },
         destroy() {
             this.close();

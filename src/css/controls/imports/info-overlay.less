@@ -18,7 +18,7 @@
         padding: 5px;
     }
 
-    &.jw-info-open {
+    .jw-info-open & {
         display: flex;
     }
 
@@ -48,9 +48,16 @@
         }
     }
 
+    .jw-info-description {
+        margin-bottom: 40px;
+
+        &:empty {
+            display: none;
+        }
+    }
+
     .jw-info-clientid {
         margin-left: auto;
-        margin-top: 40px;
     }
 
     .jw-info-title {
@@ -58,4 +65,12 @@
     }
 
     .scrollbar-style();
+}
+
+.jw-info-open {
+    .jw-flag-touch & {
+        .jw-display-container {
+            display: none;
+        }
+    }
 }
