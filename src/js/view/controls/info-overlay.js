@@ -8,24 +8,22 @@ import { timeFormat } from 'utils/parser';
 export default function (container, model, api, onVisibility) {
     const template = createElement(InfoOverlayTemplate());
     const infoOverlayInteraction = 'infoOverlayInteraction';
-    const closeButton = button('jw-info-close', () => {
-        instance.close();
-    }, 'Close Info Overlay', [cloneIcon('close')]);
-    closeButton.show();
-    prependChild(template, closeButton.element());
-
     let appended = false;
     let lastState = null;
     let visible = false;
 
     const documentClickHandler = (e) => {
-        const targetClass = e.target.className;
-        if (!targetClass.match(/jw-info/)) {
+        if (/jw-info/.test(e.target.className)) {
             instance.close();
         }
     };
 
     const append = () => {
+        const closeButton = button('jw-info-close', () => {
+            instance.close();
+        }, 'Close Info Overlay', [cloneIcon('close')]);
+        closeButton.show();
+        prependChild(template, closeButton.element());
         attachListeners();
         container.appendChild(template);
         appended = true;

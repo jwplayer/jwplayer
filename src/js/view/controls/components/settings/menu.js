@@ -8,8 +8,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         // Close if anything other than the settings menu has been clicked
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
         // Don't close if the user has dismissed the nextup tooltip via it's close button (the tooltip overlays the menu)
-        const targetClass = e.target.className;
-        if (!targetClass.match(/jw-(settings|video|nextup-close|sharing-link)/)) {
+        if (/jw-(settings|video|nextup-close|sharing-link)/.test(e.target.className)) {
             instance.close();
         }
     };
