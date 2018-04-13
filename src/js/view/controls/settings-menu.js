@@ -137,14 +137,16 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     model.change('levels', onQualitiesChanged, settingsMenu);
     model.on('change:currentLevel', (changedModel, currentQuality) => {
         const qualitySubMenu = settingsMenu.getSubmenu('quality');
-        if (qualitySubMenu) {
-            const prevQuality = model.get('visualQuality').index;
-            // Remove the quality from the "auto" label if we switch to the quality that auto was representing
-            if (prevQuality === currentQuality) {
-                const items = qualitySubMenu.getItems();
-                const item = items[0].element().querySelector('.jw-auto-label');
+        const visualQuality = model.get('visualQuality');
+        if (qualitySubMenu && visualQuality) {
+            const items = qualitySubMenu.getItems();
+            const item = items[0].element().querySelector('.jw-auto-label');
+            const levels = model.get('levels');
+            const { mode, level } = visualQuality;
 
-                item.textContent = '';
+            // Remove the quality from the "auto" label if we switch to the quality that auto was representing
+            if (mode === 'auto') {
+                item.textContent = item.textContent === levels[currentQuality].label ? '' : levels[level.index].label;
             }
         }
         activateSubmenuItem('quality', currentQuality);
@@ -184,7 +186,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             const levels = model.get('levels');
             const { mode, level } = quality;
 
-            item.textContent = mode === 'auto' ? `${levels[level.index].label}` : ``;
+            item.textContent = mode === 'auto' ? levels[level.index].label : ``;
         }
     });
 
