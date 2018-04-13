@@ -125,7 +125,7 @@ export default class RightClick {
                 this.hideMenu();
             }
         };
-        this.infoOverlayHandler = e => {
+        this.infoOverlayHandler = () => {
             // Open the info overlay if clicked, and hide the rightclick menu
             this.mouseOverContext = false;
             this.hideMenu();

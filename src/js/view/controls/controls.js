@@ -14,7 +14,6 @@ import { cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
-import {toggleClass} from "../../utils/dom";
 
 require('css/controls.less');
 
