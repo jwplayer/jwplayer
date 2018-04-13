@@ -1,21 +1,19 @@
 .jw-info-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    .topleft(50%, 50%);
+    background: @menu-background-color;
     transform: translate(-50%, -50%);
     display: none;
-    background: @menu-background-color;
     color: @active-color;
     pointer-events: all;
     user-select: text;
-    height: 50%;
     overflow: hidden;
     flex-direction: column;
+    max-width: calc(50% + @mobile-touch-target);
+    max-height: calc(50% + @mobile-touch-target);
 
     .jw-info-close {
         flex: 0 0 auto;
-        margin-left: auto;
-        padding: 5px;
+        margin: 5px 5px 5px auto;
     }
 
     .jw-info-open & {
@@ -27,6 +25,7 @@
         right: 0;
         height: 100%;
         width: 100%;
+        max-height: none;
         max-width: none;
         z-index: 1;
     }
@@ -56,15 +55,20 @@
         }
     }
 
-    .jw-info-clientid {
-        margin-left: auto;
-    }
-
     .jw-info-title {
+        font-size: 12px;
         font-weight: bold;
     }
 
     .scrollbar-style();
+}
+
+.jw-info-clientid {
+    align-self: flex-end;
+    font-size: 12px;
+    color: @inactive-color;
+    margin: 0 20px 20px @mobile-touch-target;
+    text-align: right;
 }
 
 .jw-info-open {
