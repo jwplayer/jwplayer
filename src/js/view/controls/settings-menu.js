@@ -137,9 +137,8 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         const items = qualitySubMenu.getItems();
         const item = items[0].element().querySelector('.jw-auto-label');
         const levels = model.get('levels');
-        const { level, mode } = quality;
 
-        item.textContent = currentQuality || mode === 'manual' ? '' : levels[level.index].label;
+        item.textContent = currentQuality ? '' : levels[quality.level.index].label;
     };
 
     // Quality Levels
