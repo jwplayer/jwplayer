@@ -13,7 +13,7 @@ export default function (container, model, api, onVisibility) {
     let visible = false;
 
     const documentClickHandler = (e) => {
-        if (/jw-info/.test(e.target.className)) {
+        if (!/jw-info/.test(e.target.className)) {
             instance.close();
         }
     };
