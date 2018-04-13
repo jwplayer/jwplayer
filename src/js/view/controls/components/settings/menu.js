@@ -8,8 +8,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         // Close if anything other than the settings menu has been clicked
         // Let the display (jw-video) handles closing itself (display clicks do not pause if the menu is open)
         // Don't close if the user has dismissed the nextup tooltip via it's close button (the tooltip overlays the menu)
-        const targetClass = e.target.className;
-        if (!targetClass.match(/jw-(settings|video|nextup-close|sharing-link)/)) {
+        if (!/jw-(settings|video|nextup-close|sharing-link)/.test(e.target.className)) {
             instance.close();
         }
     };
@@ -50,7 +49,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             visible = true;
             onVisibility(visible, event);
             settingsMenuElement.setAttribute('aria-expanded', 'true');
-            addDocumentListeners(documentClickHandler);
+            document.addEventListener('click', documentClickHandler);
 
             if (isDefault) {
                 if (event && event.type === 'enter') {
@@ -69,7 +68,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             deactivateAllSubmenus(submenus);
 
             settingsMenuElement.setAttribute('aria-expanded', 'false');
-            removeDocumentListeners(documentClickHandler);
+            document.removeEventListener('click', documentClickHandler);
         },
         toggle() {
             if (visible) {
@@ -162,18 +161,6 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     return instance;
 }
-
-const addDocumentListeners = (handler) => {
-    document.addEventListener('mouseup', handler);
-    document.addEventListener('pointerup', handler);
-    document.addEventListener('touchstart', handler);
-};
-
-const removeDocumentListeners = (handler) => {
-    document.removeEventListener('mouseup', handler);
-    document.removeEventListener('pointerup', handler);
-    document.removeEventListener('touchstart', handler);
-};
 
 const deactivateAllSubmenus = (submenus) => {
     Object.keys(submenus).forEach(name => {
