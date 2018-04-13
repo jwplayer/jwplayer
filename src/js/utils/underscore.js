@@ -200,7 +200,7 @@ const _every = _.every = _.all = function (obj, predicate, context) {
 // Determine if at least one element in the object matches a truth test.
 // Delegates to **ECMAScript 5**'s native `some` if available.
 // Aliased as `any`.
-_.some = _.any = function (obj, predicate, context) {
+const _any = _.some = _.any = function (obj, predicate, context) {
     predicate || (predicate = _.identity);
     var result = false;
     if (obj == null) {
@@ -216,8 +216,7 @@ _.some = _.any = function (obj, predicate, context) {
     });
     return !!result;
 };
-const _any = _.any;
-const _some = _.any;
+const _some = _.some;
 
 // returns the size of an object
 const _size = _.size = function (obj) {
@@ -636,7 +635,7 @@ const _clone = _.clone = function(obj) {
 
 // Is a given value an array?
 // Delegates to ECMA5's native Array.isArray
-Array.isArray = nativeIsArray || function (obj) {
+_.isArray = nativeIsArray || function (obj) {
     return toString.call(obj) == '[object Array]';
 };
 
@@ -736,7 +735,7 @@ const _matches = _.matches = function (attrs) {
 };
 
 // A (possibly faster) way to get the current timestamp as an integer.
-const _now = _.now = now;
+_.now = now;
 
 // If the value of the named `property` is a function then invoke it with the
 // `object` as context; otherwise, return it.
@@ -752,7 +751,6 @@ const _isValidNumber = (val) => _isNumber(val) && !_isNaN(val);
 
 export {
     _after,
-    _any,
     _before,
     _bind,
     _clone,
@@ -792,7 +790,6 @@ export {
     _matches,
     _max,
     _memoize,
-    _now,
     _omit,
     _once,
     _partial,
