@@ -135,7 +135,7 @@ const _reduce = _.reduce = _.foldl = _.inject = function(obj, iterator, memo, co
 // Return the first value which passes a truth test. Aliased as `detect`.
 const _find = _.find = _.detect = function (obj, predicate, context) {
     var result;
-    _any(obj, function (value, index, list) {
+    any(obj, function (value, index, list) {
         if (predicate.call(context, value, index, list)) {
             result = value;
             return true;
@@ -166,14 +166,14 @@ _.filter = _.select = function (obj, predicate, context) {
 
 // Return all the elements for which a truth test fails.
 const _reject = _.reject = function(obj, predicate, context) {
-    return obj.filter(function(value, index, list) {
+    return _.filter(obj, function(value, index, list) {
         return !predicate.call(context, value, index, list);
     }, context);
 };
 
 // Trim out all falsy values from an array.
 const _compact = _.compact = function(array) {
-    return array.filter(_.identity);
+    return _.filter(array, _.identity);
 };
 
 
@@ -200,7 +200,7 @@ const _every = _.every = _.all = function (obj, predicate, context) {
 // Determine if at least one element in the object matches a truth test.
 // Delegates to **ECMAScript 5**'s native `some` if available.
 // Aliased as `any`.
-const _any = _.some = _.any = function (obj, predicate, context) {
+const any = _.some = _.any = function (obj, predicate, context) {
     predicate || (predicate = _.identity);
     var result = false;
     if (obj == null) {
@@ -326,33 +326,33 @@ _.contains = _.include = function (obj, target) {
     if (obj.length !== +obj.length) {
         obj = _.values(obj);
     }
-    return obj.indexOf(target) >= 0;
+    return _.indexOf(obj, target) >= 0;
 };
 const _contains = _.include;
 const _include = _.include;
 
 // Convenience version of a common use case of `map`: fetching a property.
 const _pluck = _.pluck = function(obj, key) {
-    return obj.map(_.property(key));
+    return _.map(obj, _.property(key));
 };
 
 // Convenience version of a common use case of `filter`: selecting only objects
 // containing specific `key:value` pairs.
 const _where = _.where = function (obj, attrs) {
-    return obj.filter(_.matches(attrs));
+    return _.filter(obj, _.matches(attrs));
 };
 
 // Convenience version of a common use case of `find`: getting the first object
 // containing specific `key:value` pairs.
 const _findWhere = _.findWhere = function(obj, attrs) {
-    return obj.find(_.matches(attrs));
+    return _.find(obj, _.matches(attrs));
 };
 
 // Return the maximum element or (element-based computation).
 // Can't optimize arrays of integers longer than 65,535 elements.
 // See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
 const _max = _.max = function(obj, iterator, context) {
-    if (!iterator && Array.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
+    if (!iterator && _.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
         return Math.max.apply(Math, obj);
     }
     var result = -Infinity;
@@ -371,8 +371,8 @@ const _max = _.max = function(obj, iterator, context) {
 // Only the elements present in just the first array will remain.
 const _difference = _.difference = function (array) {
     var rest = concat.apply(ArrayProto, slice.call(arguments, 1));
-    return array.filter(function (value) {
-        return !rest.includes(value);
+    return _.filter(array, function (value) {
+        return !_.contains(rest, value);
     });
 };
 
@@ -618,7 +618,7 @@ const _omit = _.omit = function(obj) {
     var copy = {};
     var keys = concat.apply(ArrayProto, slice.call(arguments, 1));
     for (var key in obj) {
-        if (!keys.includes(key)) {
+        if (!_.contains(keys, key)) {
             copy[key] = obj[key];
         }
     }
@@ -630,7 +630,7 @@ const _clone = _.clone = function(obj) {
     if (!_.isObject(obj)) {
         return obj;
     }
-    return Array.isArray(obj) ? obj.slice() : extend({}, obj);
+    return _.isArray(obj) ? obj.slice() : extend({}, obj);
 };
 
 // Is a given value an array?
