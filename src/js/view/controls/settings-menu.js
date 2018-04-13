@@ -182,7 +182,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     model.on('change:visualQuality', (changedModel, quality) => {
         const qualitySubMenu = settingsMenu.getSubmenu('quality');
         if (qualitySubMenu) {
-            changeAutoLabel(quality, qualitySubMenu, 0);
+            changeAutoLabel(quality, qualitySubMenu, model.get('currentLevel'));
         }
     });
 
