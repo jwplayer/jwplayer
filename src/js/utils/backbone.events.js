@@ -145,7 +145,7 @@ function eventsApi(obj, action, name, rest) {
     }
     // Handle event maps.
     if (typeof name === 'object') {
-        for (var key in name) {
+        for (const key in name) {
             if (Object.prototype.hasOwnProperty.call(name, key)) {
                 obj[action].apply(obj, [key, name[key]].concat(rest));
             }

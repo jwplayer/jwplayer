@@ -4,13 +4,13 @@ import { seconds, trim } from 'utils/strings';
 
 export default function Dfxp(xmlDoc) {
     validate(xmlDoc);
-    var _captions = [];
-    var paragraphs = xmlDoc.getElementsByTagName('p');
+    const _captions = [];
+    let paragraphs = xmlDoc.getElementsByTagName('p');
     // Default frameRate is 30
-    var frameRate = 30;
-    var tt = xmlDoc.getElementsByTagName('tt');
+    let frameRate = 30;
+    const tt = xmlDoc.getElementsByTagName('tt');
     if (tt && tt[0]) {
-        var parsedFrameRate = parseFloat(tt[0].getAttribute('ttp:frameRate'));
+        const parsedFrameRate = parseFloat(tt[0].getAttribute('ttp:frameRate'));
         if (!isNaN(parsedFrameRate)) {
             frameRate = parsedFrameRate;
         }
@@ -23,23 +23,23 @@ export default function Dfxp(xmlDoc) {
         }
     }
 
-    for (var i = 0; i < paragraphs.length; i++) {
-        var p = paragraphs[i];
+    for (let i = 0; i < paragraphs.length; i++) {
+        const p = paragraphs[i];
 
-        var breaks = p.getElementsByTagName('br');
-        for (var j = 0; j < breaks.length; j++) {
-            var b = breaks[j];
+        const breaks = p.getElementsByTagName('br');
+        for (let j = 0; j < breaks.length; j++) {
+            const b = breaks[j];
             b.parentNode.replaceChild(xmlDoc.createTextNode('\r\n'), b);
         }
 
-        var rawText = (p.innerHTML || p.textContent || p.text || '');
+        const rawText = (p.innerHTML || p.textContent || p.text || '');
         var text = trim(rawText).replace(/>\s+</g, '><').replace(/(<\/?)tts?:/g, '$1').replace(/<br.*?\/>/g, '\r\n');
         if (text) {
-            var begin = p.getAttribute('begin');
-            var dur = p.getAttribute('dur');
-            var end = p.getAttribute('end');
+            const begin = p.getAttribute('begin');
+            const dur = p.getAttribute('dur');
+            const end = p.getAttribute('end');
 
-            var entry = {
+            const entry = {
                 begin: seconds(begin, frameRate),
                 text: text
             };

@@ -206,7 +206,7 @@
         utils.isFlashSupported = valueFn(environment.Features.flash);
         utils.isIE = valueFn(environment.Browser.ie);
         utils.isIETrident = function () {
-            return environment.Browser.ie && environment.Browser.version.major >= 11; 
+            return environment.Browser.ie && environment.Browser.version.major >= 11;
         };
         utils.isIOS = function(osVersion) {
             if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {

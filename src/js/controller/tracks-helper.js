@@ -1,6 +1,6 @@
 export function createId(track, tracksCount) {
-    var trackId;
-    var prefix = track.kind || 'cc';
+    let trackId;
+    const prefix = track.kind || 'cc';
     if (track.default || track.defaulttrack) {
         trackId = 'default';
     } else {
@@ -10,7 +10,7 @@ export function createId(track, tracksCount) {
 }
 
 export function createLabel(track, unknownCount) {
-    var label = track.label || track.name || track.language;
+    let label = track.label || track.name || track.language;
     if (!label) {
         label = 'Unknown CC';
         unknownCount += 1;

@@ -54,7 +54,7 @@ const mediaparser = function (obj, item) {
                             label: xmlAttribute(node, 'label')
                         };
 
-                        var mediaTypes = findMediaTypes(node);
+                        const mediaTypes = findMediaTypes(node);
                         if (mediaTypes.length) {
                             sources.mediaTypes = mediaTypes;
                         }
@@ -82,8 +82,8 @@ const mediaparser = function (obj, item) {
                 case 'group':
                     mediaparser(node, item);
                     break;
-                case 'subtitle':
-                    var entry = {};
+                case 'subtitle': {
+                    const entry = {};
                     entry.file = xmlAttribute(node, 'url');
                     entry.kind = 'captions';
                     if (xmlAttribute(node, 'lang').length > 0) {
@@ -91,6 +91,7 @@ const mediaparser = function (obj, item) {
                     }
                     captions.push(entry);
                     break;
+                }
                 default:
                     break;
             }

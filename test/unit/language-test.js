@@ -14,67 +14,67 @@ describe('languageUtils', function() {
         describe('getLabel from ISO 639-1 codes', function() {
 
             it('should be English for its codes', function() {
-                var expected = 'English';
+                const expected = 'English';
 
                 expect(getLabel('en')).to.equal(expected);
             });
 
             it('should be Chinese for its codes', function() {
-                var expected = 'Chinese';
+                const expected = 'Chinese';
 
                 expect(getLabel('zh')).to.equal(expected);
             });
 
             it('should be Dutch for its codes', function() {
-                var expected = 'Dutch';
+                const expected = 'Dutch';
 
                 expect(getLabel('nl')).to.equal(expected);
             });
 
             it('should be French for its codes', function() {
-                var expected = 'French';
+                const expected = 'French';
 
                 expect(getLabel('fr')).to.equal(expected);
             });
 
             it('should be German for its codes', function() {
-                var expected = 'German';
+                const expected = 'German';
 
                 expect(getLabel('de')).to.equal(expected);
             });
 
             it('should be Japanese for its codes', function() {
-                var expected = 'Japanese';
+                const expected = 'Japanese';
 
                 expect(getLabel('ja')).to.equal(expected);
             });
 
             it('should be Portuguese for its codes', function() {
-                var expected = 'Portuguese';
+                const expected = 'Portuguese';
 
                 expect(getLabel('pt')).to.equal(expected);
             });
 
             it('should be Italian for its codes', function() {
-                var expected = 'Italian';
+                const expected = 'Italian';
 
                 expect(getLabel('it')).to.equal(expected);
             });
 
             it('should be Russian for its codes', function() {
-                var expected = 'Russian';
+                const expected = 'Russian';
 
                 expect(getLabel('ru')).to.equal(expected);
             });
 
             it('should be Spanish for its codes', function() {
-                var expected = 'Spanish';
+                const expected = 'Spanish';
 
                 expect(getLabel('es')).to.equal(expected);
             });
 
             it('should map based only on the first two characters', function() {
-                var expected = 'Portuguese';
+                const expected = 'Portuguese';
                 expect(getLabel('pt-br')).to.equal(expected);
             });
         });

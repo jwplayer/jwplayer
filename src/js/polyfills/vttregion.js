@@ -16,7 +16,7 @@
 
 (function() {
 
-    var scrollSetting = {
+    const scrollSetting = {
         '': true,
         up: true
     };
@@ -25,7 +25,7 @@
         if (typeof value !== 'string') {
             return false;
         }
-        var scroll = scrollSetting[value.toLowerCase()];
+        const scroll = scrollSetting[value.toLowerCase()];
         return scroll ? value.toLowerCase() : false;
     }
 
@@ -35,13 +35,13 @@
 
     // VTTRegion shim http://dev.w3.org/html5/webvtt/#vttregion-interface
     function VTTRegion() {
-        var _width = 100;
-        var _lines = 3;
-        var _regionAnchorX = 0;
-        var _regionAnchorY = 100;
-        var _viewportAnchorX = 0;
-        var _viewportAnchorY = 100;
-        var _scroll = '';
+        let _width = 100;
+        let _lines = 3;
+        let _regionAnchorX = 0;
+        let _regionAnchorY = 100;
+        let _viewportAnchorX = 0;
+        let _viewportAnchorY = 100;
+        let _scroll = '';
 
         Object.defineProperties(this, {
             width: {
@@ -122,7 +122,7 @@
                     return _scroll;
                 },
                 set: function(value) {
-                    var setting = findScrollSetting(value);
+                    const setting = findScrollSetting(value);
                     // Have to check for false as an empty string is a legal value.
                     if (setting === false) {
                         throw new SyntaxError('An invalid or illegal string was specified.');

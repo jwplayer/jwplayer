@@ -18,7 +18,7 @@ Object.assign(Title.prototype, {
         this.el = titleEl;
 
         // Perform the DOM search only once
-        var arr = this.el.getElementsByTagName('div');
+        const arr = this.el.getElementsByTagName('div');
         this.title = arr[0];
         this.description = arr[1];
 
@@ -27,12 +27,12 @@ Object.assign(Title.prototype, {
     },
 
     update: function(model) {
-        var titleStyle = {};
-        var logo = model.get('logo');
+        const titleStyle = {};
+        const logo = model.get('logo');
         if (logo) {
             // Only use Numeric or pixel ("Npx") margin values
-            var margin = 1 * ('' + logo.margin).replace('px', '');
-            var padding = model.get('logoWidth') + (isNaN(margin) ? 0 : margin + 10);
+            const margin = 1 * ('' + logo.margin).replace('px', '');
+            const padding = model.get('logoWidth') + (isNaN(margin) ? 0 : margin + 10);
             if (logo.position === 'top-left') {
                 titleStyle.paddingLeft = padding;
             } else if (logo.position === 'top-right') {
@@ -47,8 +47,8 @@ Object.assign(Title.prototype, {
             return;
         }
         if (model.get('displaytitle') || model.get('displaydescription')) {
-            var title = '';
-            var description = '';
+            let title = '';
+            let description = '';
 
             if (item.title && model.get('displaytitle')) {
                 title = item.title;

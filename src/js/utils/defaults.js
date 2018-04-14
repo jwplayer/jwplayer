@@ -4,7 +4,7 @@
 export default function defaults(obj) {
     Array.prototype.slice.call(arguments, 1).forEach(function(source) {
         if (source) {
-            for (var prop in source) {
+            for (const prop in source) {
                 if (!(prop in obj)) {
                     obj[prop] = source[prop];
                 }

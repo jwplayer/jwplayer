@@ -1,22 +1,22 @@
 import { createId, createLabel } from 'controller/tracks-helper';
 import _ from 'utils/underscore';
 
-var tracks;
-var itemTrack;
-var prop;
-var func;
-var count;
+let tracks;
+let itemTrack;
+let prop;
+let func;
+let count;
 
-var setCount = function() {
+const setCount = function() {
     count = tracks.length;
 };
 
-var assertProperty = function (propToDelete, expected, msg) {
+const assertProperty = function (propToDelete, expected, msg) {
     if (propToDelete) {
         delete itemTrack[propToDelete];
     }
-    var track = Object.assign({}, itemTrack);
-    var val = func(track, count);
+    const track = Object.assign({}, itemTrack);
+    const val = func(track, count);
     track[prop] = val[prop] || val;
     tracks.push(track);
     expect(track[prop], msg).to.equal(expected);

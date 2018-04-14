@@ -17,7 +17,7 @@ class TimeTip extends Tooltip {
         this.textLength = 0;
         this.dragJustReleased = false;
 
-        var wrapper = document.createElement('div');
+        const wrapper = document.createElement('div');
         wrapper.className = 'jw-time-tip jw-reset';
         wrapper.appendChild(this.img);
         wrapper.appendChild(this.text);
@@ -159,7 +159,7 @@ class TimeSlider extends Slider {
         this.reset();
         this.addCues(model, model.get('cues'));
 
-        var tracks = playlistItem.tracks;
+        const tracks = playlistItem.tracks;
         _.each(tracks, function (track) {
             if (track && track.kind && track.kind.toLowerCase() === 'thumbnails') {
                 this.loadThumbnails(track.file);
@@ -170,9 +170,9 @@ class TimeSlider extends Slider {
     }
 
     performSeek() {
-        var percent = this.seekTo;
-        var duration = this._model.get('duration');
-        var position;
+        const percent = this.seekTo;
+        const duration = this._model.get('duration');
+        let position;
         if (duration === 0) {
             this._api.play(reasonInteraction());
         } else if (this.streamType === 'DVR') {
@@ -187,17 +187,17 @@ class TimeSlider extends Slider {
     }
 
     showTimeTooltip(evt) {
-        var duration = this._model.get('duration');
+        let duration = this._model.get('duration');
         if (duration === 0) {
             return;
         }
 
-        var playerWidth = this._model.get('containerWidth');
-        var railBounds = utils.bounds(this.elementRail);
-        var position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
+        const playerWidth = this._model.get('containerWidth');
+        const railBounds = utils.bounds(this.elementRail);
+        let position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
         position = utils.between(position, 0, railBounds.width);
-        var pct = position / railBounds.width;
-        var time = duration * pct;
+        const pct = position / railBounds.width;
+        let time = duration * pct;
 
         // For DVR we need to swap it around
         if (duration < 0) {
@@ -207,7 +207,7 @@ class TimeSlider extends Slider {
             time = duration - time;
         }
 
-        var timetipText;
+        let timetipText;
 
         // With touch events, we never will get the hover events on the cues that cause cues to be active.
         // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
@@ -223,7 +223,7 @@ class TimeSlider extends Slider {
         if (this.activeCue) {
             timetipText = this.activeCue.text;
         } else {
-            var allowNegativeTime = true;
+            const allowNegativeTime = true;
             timetipText = utils.timeFormat(time, allowNegativeTime);
 
             // If DVR and within live buffer
@@ -231,7 +231,7 @@ class TimeSlider extends Slider {
                 timetipText = 'Live';
             }
         }
-        var timeTip = this.timeTip;
+        const timeTip = this.timeTip;
 
         timeTip.update(timetipText);
         if (this.textLength !== timetipText.length) {
@@ -243,15 +243,15 @@ class TimeSlider extends Slider {
 
         utils.addClass(timeTip.el, 'jw-open');
 
-        var timeTipWidth = timeTip.getWidth();
-        var widthPct = railBounds.width / 100;
-        var tolerance = playerWidth - railBounds.width;
-        var timeTipPct = 0;
+        const timeTipWidth = timeTip.getWidth();
+        const widthPct = railBounds.width / 100;
+        const tolerance = playerWidth - railBounds.width;
+        let timeTipPct = 0;
         if (timeTipWidth > tolerance) {
             // timeTip may go outside the bounds of the player. Determine the % of tolerance needed
             timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
         }
-        var safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
+        const safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
         utils.style(timeTip.el, { left: safePct + '%' });
     }
 

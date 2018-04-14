@@ -76,8 +76,8 @@ export function flashVersion() {
         return 0;
     }
 
-    var plugins = navigator.plugins;
-    var flash;
+    const plugins = navigator.plugins;
+    let flash;
 
     if (plugins) {
         flash = plugins['Shockwave Flash'];

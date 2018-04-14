@@ -109,7 +109,7 @@ Settings.prototype = {
     },
     // Accept a setting if its one of the given alternatives.
     alt: function(k, v, a) {
-        for (var n = 0; n < a.length; ++n) {
+        for (let n = 0; n < a.length; ++n) {
             if (v === a[n]) {
                 this.set(k, v);
                 break;
@@ -136,32 +136,32 @@ Settings.prototype = {
 // Helper function to parse input into groups separated by 'groupDelim', and
 // interprete each group as a key/value pair separated by 'keyValueDelim'.
 function parseOptions(input, callback, keyValueDelim, groupDelim) {
-    var groups = groupDelim ? input.split(groupDelim) : [input];
-    for (var i = 0; i <= groups.length; i += 1) {
+    const groups = groupDelim ? input.split(groupDelim) : [input];
+    for (let i = 0; i <= groups.length; i += 1) {
         if (typeof groups[i] !== 'string') {
             continue;
         }
-        var kv = groups[i].split(keyValueDelim);
+        const kv = groups[i].split(keyValueDelim);
         if (kv.length !== 2) {
             continue;
         }
-        var k = kv[0];
-        var v = kv[1];
+        const k = kv[0];
+        const v = kv[1];
         callback(k, v);
     }
 }
 
-var defaults = new VTTCue(0, 0, 0);
+const defaults = new VTTCue(0, 0, 0);
 // 'middle' was changed to 'center' in the spec: https://github.com/w3c/webvtt/pull/244
 // Chrome and Safari don't yet support this change, but FF does
-var center = defaults.align === 'middle' ? 'middle' : 'center';
+const center = defaults.align === 'middle' ? 'middle' : 'center';
 
 function parseCue(input, cue, regionList) {
     // Remember the original input if we need to throw an error.
-    var oInput = input;
+    const oInput = input;
     // 4.1 WebVTT timestamp
     function consumeTimeStamp() {
-        var ts = parseTimeStamp(input);
+        const ts = parseTimeStamp(input);
         if (ts === null) {
             throw new Error('Malformed timestamp: ' + oInput);
         }
@@ -172,13 +172,13 @@ function parseCue(input, cue, regionList) {
 
     // 4.4.2 WebVTT cue settings
     function consumeCueSettings(inputInner, cueInner) {
-        var settings = new Settings();
+        const settings = new Settings();
 
         parseOptions(inputInner, function (k, v) {
             switch (k) {
                 case 'region':
                     // Find the last region we parsed with the same region id.
-                    for (var i = regionList.length - 1; i >= 0; i--) {
+                    for (let i = regionList.length - 1; i >= 0; i--) {
                         if (regionList[i].id === v) {
                             settings.set(k, regionList[i].region);
                             break;
@@ -222,7 +222,7 @@ function parseCue(input, cue, regionList) {
         // Apply default values for any missing fields.
         cueInner.region = settings.get('region', null);
         cueInner.vertical = settings.get('vertical', '');
-        var line = settings.get('line', 'auto');
+        let line = settings.get('line', 'auto');
         if (line === 'auto' && defaults.line === -1) {
             // set numeric line number for Safari
             line = -1;
@@ -232,7 +232,7 @@ function parseCue(input, cue, regionList) {
         cueInner.snapToLines = settings.get('snapToLines', true);
         cueInner.size = settings.get('size', 100);
         cueInner.align = settings.get('align', center);
-        var position = settings.get('position', 'auto');
+        let position = settings.get('position', 'auto');
         if (position === 'auto' && defaults.position === 50) {
             // set numeric position for Safari
             position = cueInner.align === 'start' || cueInner.align === 'left' ? 0 : cueInner.align === 'end' || cueInner.align === 'right' ? 100 : 50;
@@ -263,7 +263,7 @@ function parseCue(input, cue, regionList) {
 
 VTTParser.prototype = {
     parse: function (data, flushing) {
-        var self = this;
+        const self = this;
 
         // If there is no data then we won't decode it, but will just try to parse
         // whatever is in buffer already. This may occur in circumstances, for
@@ -274,12 +274,12 @@ VTTParser.prototype = {
         }
 
         function collectNextLine() {
-            var buffer = self.buffer;
-            var pos = 0;
+            const buffer = self.buffer;
+            let pos = 0;
             while (pos < buffer.length && buffer[pos] !== '\r' && buffer[pos] !== '\n') {
                 ++pos;
             }
-            var line = buffer.substr(0, pos);
+            const line = buffer.substr(0, pos);
             // Advance the buffer early in case we fail below.
             if (buffer[pos] === '\r') {
                 ++pos;
@@ -327,7 +327,7 @@ VTTParser.prototype = {
 
                 line = collectNextLine();
 
-                var m = line.match(headerRegex);
+                const m = line.match(headerRegex);
                 if (!m || !m[0]) {
                     throw new Error('Malformed WebVTT signature.');
                 }
@@ -338,8 +338,8 @@ VTTParser.prototype = {
             return this;
         }
 
-        var alreadyCollectedLine = false;
-        var currentCueBatch = 0;
+        let alreadyCollectedLine = false;
+        let currentCueBatch = 0;
         function processBuffer() {
             try {
                 while (self.buffer && currentCueBatch <= self.maxCueBatch) {
@@ -402,8 +402,8 @@ VTTParser.prototype = {
                             }
                             self.state = 'CUETEXT';
                             break;
-                        case 'CUETEXT':
-                            var hasSubstring = arrowRegex.test(line);
+                        case 'CUETEXT': {
+                            const hasSubstring = arrowRegex.test(line);
                             // 34 - If we have an empty line then report the cue.
                             // 35 - If we have the special substring '-->' then report the cue,
                             // but do not collect the line as we need to process the current
@@ -423,6 +423,7 @@ VTTParser.prototype = {
                             }
                             self.cue.text += line;
                             break;
+                        }
                         case 'BADCUE': // BADCUE
                             // 54-62 - Collect and discard the remaining cue.
                             if (!line) {
@@ -450,7 +451,7 @@ VTTParser.prototype = {
         processBuffer();
     },
     flush: function () {
-        var self = this;
+        const self = this;
         try {
             // Finish decoding the stream.
             self.buffer += self.decoder.decode();
