@@ -2,15 +2,24 @@ import jwplayer from 'jwplayer';
 import instances from 'api/players';
 import Api from 'api/api';
 import ApiSettings from 'api/api-settings';
-import _ from 'test/underscore';
 import sinon from 'sinon';
-import $ from 'jquery';
 import apiMembers from 'data/api-members';
 import apiMethods from 'data/api-methods';
 import apiMethodsChainable from 'data/api-methods-chainable';
 import apiMethodsDeprecated from 'data/api-methods-deprecated';
+import apiUnderscoreKeys from 'data/api-underscore-keys';
 import Events from 'utils/backbone.events';
 import utils from 'utils/helpers';
+
+function createContainer(id) {
+    const container = document.createElement('div');
+    container.id = id;
+    return container;
+}
+
+function createApi(id) {
+    return new Api(createContainer(id));
+}
 
 describe('Api', function() {
 
@@ -20,7 +29,10 @@ describe('Api', function() {
 
     afterEach(function() {
         // remove fixture and player instances
-        $('#player').remove();
+        const fixture = document.getElementById('player');
+        if (fixture) {
+            fixture.parentNode.removeChild(fixture);
+        }
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
@@ -36,41 +48,30 @@ describe('Api', function() {
 
     it('extends Events', function() {
         const api = createApi('player');
-        _.each(Events, function (value, key) {
-            const itExtends = api[key] === value;
-            const itOverrides = _.isFunction(api[key]);
-            const action = itExtends ? 'extends' : (itOverrides ? 'overrides' : 'does not implement');
-            expect(itExtends || itOverrides, 'api.' + key + ' ' + action + ' Events.' + key).to.be.true;
+        Object.keys(Events).forEach((key) => {
+            expect(api, key).to.have.property(key).which.is.a('function');
         });
     });
 
     it('api.trigger works', function() {
         const api = createApi('player');
-        let check = false;
-
-        function update() {
-            check = true;
-        }
+        const update = sinon.spy();
 
         api.on('x', update);
-        api.trigger('x');
+        api.trigger('x', { ok: true });
 
-        expect(check, 'api.trigger works').to.be.true;
+        expect(update).to.have.callCount(1).calledWith({ type: 'x', ok: true });
     });
 
     it('api.off works', function() {
         const api = createApi('player');
-        let check = false;
-
-        function update() {
-            check = true;
-        }
+        const update = sinon.spy();
 
         api.on('x', update);
         api.off('x', update);
         api.trigger('x');
 
-        expect(check, 'api.off works').to.equal(false);
+        expect(update).to.have.callCount(0);
     });
 
     it('bad events do not break player', function() {
@@ -90,9 +91,9 @@ describe('Api', function() {
             api.trigger('x');
         }).to.not.throw();
 
-        expect(invalidEvent.callCount).to.equal(2);
-        expect(validEvent.callCount).to.equal(1);
-        expect(console.log.callCount).to.equal(2);
+        expect(invalidEvent).to.have.callCount(2);
+        expect(validEvent).to.have.callCount(1);
+        expect(console.log).to.have.callCount(2);
 
         console.log.reset();
     });
@@ -108,7 +109,7 @@ describe('Api', function() {
 
         api.on('x', invalidEvent);
 
-        expect(function() {
+        expect(() => {
             api.trigger('x');
         }).to.throw();
 
@@ -151,92 +152,89 @@ describe('Api', function() {
         };
 
         api.on('test', function (event) {
-            expect(event.type, 'event type matches event name').to.equal('test');
-            expect(_.isObject(event) && event !== originalEvent, 'event object is a shallow clone of original').to.be.true;
+            expect(event).to.be.an('object').which.has.property('type').which.equals('test');
+            expect(event).to.not.equal(originalEvent);
         });
 
         api.trigger('test', originalEvent);
 
-        expect(originalEvent.type, 'original event.type is not modified').to.equal('original');
+        expect(originalEvent, 'original event.type is not modified').to.have.property('type').which.equals('original');
     });
 
     it('defines expected methods', function() {
         const api = createApi('player');
-        _.each(apiMethods, (args, method) => {
-            expect(api[method], method).to.be.a('function', 'api.' + method + ' is defined');
+        Object.keys(apiMethods).forEach((method) => {
+            expect(api, method).to.have.property(method).which.is.a('function');
         });
     });
 
     it('does not recognize deprecated methods', function() {
         const api = createApi('player');
 
-        _.each(apiMethodsDeprecated, (args, method) => {
-            expect(_.isFunction(api[method]), 'deprecated api.' + method + ' is not defined').to.be.false;
+        Object.keys(apiMethodsDeprecated).forEach((method) => {
+            expect(api).to.not.have.property(method);
         });
     });
 
     it('defines expected members', function() {
         const api = createApi('player');
-        _.each(apiMembers, (value, member) => {
-            const actualType = (typeof api[member]);
-            const expectedType = (typeof value);
-            expect(actualType, 'api.' + member + ' is a ' + expectedType).to.equal(expectedType);
+        Object.keys(apiMembers).forEach((member) => {
+            const sampleValue = apiMembers[member];
+            const expectedType = (typeof sampleValue);
+            expect(api, member).to.have.property(member).which.is.a(expectedType);
         });
-
     });
 
     it('does not contain unexpected members or methods', function() {
         const api = createApi('player');
 
-        _.each(api, (args, property) => {
+        Object.keys(api).forEach((property) => {
             const isApiMethod = apiMethods.hasOwnProperty(property);
             const isApiMember = apiMembers.hasOwnProperty(property);
 
             const message = '"' + property + '" is XXX of api';
 
             if (isApiMethod) {
-                expect(true, message.replace('XXX', 'a method')).to.be.true;
+                expect(api, property).to.have.property(property).which.is.a('function');
             } else if (isApiMember) {
-                expect(true, message.replace('XXX', 'a member')).to.be.true;
+                expect(api, property).to.have.property(property).which.is.not.a('function');
             } else {
                 const expectedMessage = 'api.' + property + ' is undefined';
                 const actualdMessage = 'api.' + property + ' is a ' + (typeof api[property]);
                 expect(actualdMessage, expectedMessage, 'not part').to.equal(message.replace('XXX') +
                     '. Is this a new API method or member?');
             }
-
         });
-
     });
 
     it('has chainable methods', function() {
         const api = createApi('player');
 
-        _.each(apiMethodsChainable, (args, method) => {
-            const fn = api[method];
-            expect(_.isFunction(fn), 'api.' + method + ' is defined').to.be.true;
+        Object.keys(apiMethodsChainable).forEach((method) => {
+            expect(api, method).to.have.property(method).which.is.a('function');
 
-            let result;
+            const args = apiMethodsChainable[method];
+            let result = null;
             try {
-                result = fn.apply(api, args);
+                result = api[method].apply(api, args);
             } catch (e) {
                 const expectedMessage = method + ' does not throw an error';
                 expect(method + ' threw an error', expectedMessage + ':' + e.message).to.equal(expectedMessage);
             }
 
-            expect(result, 'api.' + method + ' returns an instance of itself').to.equal(api);
+            expect(result).to.equal(api);
         });
     });
 
     it('has methods which can be invoked before setup', function() {
         const api = createApi('player');
-        _.each(apiMethods, (args, method) => {
+        Object.keys(apiMethods).forEach((method) => {
             // do not invoke methods on the prototype (only `core` methods assigned in the constructor)
             if (Object.prototype.hasOwnProperty.call(api, method)) {
                 if (method === 'setup') {
                     return;
                 }
-                expect(api[method].bind(api), method).to.not.throw();
+                expect(() => api[method](), method).to.not.throw();
             }
         });
     });
@@ -334,12 +332,13 @@ describe('Api', function() {
         expect(api.getViewable(), '.getViewable()').to.equal(undefined);
     });
 
-    function createApi(id) {
-        const container = createContainer(id);
-        return new Api(container);
-    }
+    it('has underscore', function() {
+        const api = createApi('player');
 
-    function createContainer(id) {
-        return $('<div id="' + id + '"></div>')[0];
-    }
+        expect(api).has.property('_');
+
+        apiUnderscoreKeys.forEach((key) => {
+            expect(api._, key).to.have.property(key).which.is.a('function');
+        });
+    });
 });
