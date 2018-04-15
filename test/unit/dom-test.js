@@ -78,12 +78,13 @@ describe('dom', function() {
     });
 
     it('styleDimension', function() {
-        var percentage = styleDimension('50%');
-        var px = styleDimension('50');
+        expect(styleDimension('100%')).to.equal('100%');
+        expect(styleDimension('100')).to.equal('100px');
+        expect(styleDimension(100)).to.equal('100px');
 
-        // check style dimensions with percentage and px
-        expect(percentage, 'percentage dimension test').to.equal('50%');
-        expect(px, 'px dimension test').to.equal('50px');
+        // These should be supported, but currently are not
+        // expect(styleDimension('100px')).to.equal('100px');
+        // expect(styleDimension(0)).to.equal('0');
     });
 
     it('classList', function() {
