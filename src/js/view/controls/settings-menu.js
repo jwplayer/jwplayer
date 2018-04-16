@@ -135,8 +135,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
 
     const changeAutoLabel = function (quality, qualitySubMenu, currentQuality) {
         const levels = model.get('levels');
-        // return early if the label isnt "Auto";
-        // (ex: html5 where we have multiple sources for the video)
+        // Return early if the label isn't "Auto" (html5 provider with multiple mp4 sources)
         if (levels[0].label !== 'Auto') {
             return;
         }
