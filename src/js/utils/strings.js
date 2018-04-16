@@ -1,4 +1,4 @@
-import { isNaN, isNumber, isString, map } from 'utils/underscore';
+import { isValidNumber, isString, map } from 'utils/underscore';
 
 export function trim(inputString) {
     return inputString.replace(/^\s+|\s+$/g, '');
@@ -62,7 +62,7 @@ export function seconds(str, frameRate) {
     if (!str) {
         return 0;
     }
-    if (isNumber(str) && !isNaN(str)) {
+    if (isValidNumber(str)) {
         return str;
     }
 
@@ -93,7 +93,7 @@ export function seconds(str, frameRate) {
     } else {
         sec = parseFloat(str);
     }
-    if (isNaN(sec)) {
+    if (!isValidNumber(sec)) {
         return 0;
     }
     return sec;
@@ -103,7 +103,7 @@ export function seconds(str, frameRate) {
 export function offsetToSeconds(offset, duration, frameRate) {
     if (isString(offset) && offset.slice(-1) === '%') {
         const percent = parseFloat(offset);
-        if (!duration || window.isNaN(duration) || window.isNaN(percent)) {
+        if (!duration || !isValidNumber(duration) || !isValidNumber(percent)) {
             return null;
         }
         return duration * percent / 100;
