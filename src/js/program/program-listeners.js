@@ -1,4 +1,4 @@
-import { isNaN, isNumber } from 'utils/underscore';
+import { isValidNumber, isNumber } from 'utils/underscore';
 import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
     MEDIA_TYPE, AUDIO_TRACKS, AUDIO_TRACK_CHANGED,
     MEDIA_RATE_CHANGE, MEDIA_BUFFER, MEDIA_TIME, MEDIA_LEVELS, MEDIA_LEVEL_CHANGED, MEDIA_ERROR,
@@ -49,7 +49,7 @@ export function ProviderListener(mediaController) {
                 break;
             case MEDIA_META: {
                 const duration = data.duration;
-                if (isNumber(duration) && !isNaN(duration)) {
+                if (isValidNumber(duration)) {
                     mediaModel.set('seekRange', data.seekRange);
                     mediaModel.set('duration', duration);
                 }
@@ -63,7 +63,7 @@ export function ProviderListener(mediaController) {
                 mediaModel.set('position', data.position);
                 mediaModel.set('currentTime', data.currentTime);
                 const duration = data.duration;
-                if (isNumber(duration) && !isNaN(duration)) {
+                if (isValidNumber(duration)) {
                     mediaModel.set('duration', duration);
                 }
                 if (isNumber(mediaController.item.starttime)) {
