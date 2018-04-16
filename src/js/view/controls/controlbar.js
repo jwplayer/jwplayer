@@ -2,6 +2,7 @@ import { cloneIcons } from 'view/controls/icons';
 import { Browser, OS } from 'environment/environment';
 import CustomButton from 'view/controls/components/custom-button';
 import utils from 'utils/helpers';
+import { forEach } from 'utils/underscore';
 import { USER_ACTION, STATE_PLAYING } from 'events/events';
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
@@ -319,7 +320,7 @@ export default class Controlbar {
         new UI(this.el).on('click tap drag', function () {
             this.trigger(USER_ACTION);
         }, this);
-        menus.forEach(function (ele) {
+        forEach(menus, function (ele) {
             ele.on('open-tooltip', this.closeMenus, this);
         }, this);
     }
@@ -405,7 +406,7 @@ export default class Controlbar {
 
     // Close menus if it has no event.  Otherwise close all but the event's target.
     closeMenus(evt) {
-        this.menus.forEach(function (ele) {
+        forEach(this.menus, function (ele) {
             if (!evt || evt.target !== ele.el) {
                 ele.closeTooltip(evt);
             }

@@ -4,7 +4,7 @@ import Events from 'utils/backbone.events';
 import { ERROR } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
 import { addClass, removeClass, empty } from 'utils/dom';
-import { identity, difference, isNumber, isFinite } from 'utils/underscore';
+import { identity, difference, isNumber, isFinite, filter } from 'utils/underscore';
 import { MEDIA_SEEK, MEDIA_TIME } from 'events/events';
 
 let _WebVTT;
@@ -94,7 +94,7 @@ const CaptionsRenderer = function (viewModel) {
     };
 
     this.getCurrentCues = function (allCues, pos) {
-        return allCues.filter(function (cue) {
+        return filter(allCues, function (cue) {
             return pos >= (cue.startTime) && (!cue.endTime || pos <= cue.endTime);
         });
     };

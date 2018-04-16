@@ -3,7 +3,7 @@ import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { ERROR } from 'events/events';
-import { reject, findWhere, forEach } from 'utils/underscore';
+import { reject, findWhere, forEach, filter } from 'utils/underscore';
 
 // Used across all providers for loading tracks and handling browser track-related events
 const Tracks = {
@@ -409,7 +409,7 @@ function enableTextTrack() {
 
 function textTrackChangeHandler() {
     var textTracks = this.video.textTracks;
-    var inUseTracks = textTracks.filter(function (track) {
+    var inUseTracks = filter(textTracks, function (track) {
         return (track.inuse || !track._id) && _kindSupported(track.kind);
     });
     if (!this._textTracks || _tracksModified.call(this, inUseTracks)) {
@@ -594,7 +594,7 @@ function _clearSideloadedTextTracks() {
     if (!this._textTracks) {
         return;
     }
-    var nonSideloadedTracks = this._textTracks.filter(function (track) {
+    var nonSideloadedTracks = filter(this._textTracks, function (track) {
         return track.embedded || track.groupid === 'subs';
     });
     this._initTextTracks();
