@@ -1,5 +1,7 @@
 import * as _ from 'utils/underscore';
 
+// Copied over from https://github.com/jashkenas/underscore/tree/master/test
+// and modified to use mocha/chai
 describe('underscore', function() {
 
     describe('function functions', function() {
