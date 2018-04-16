@@ -35,14 +35,25 @@ export default function (container, model, api, onVisibility) {
         const descriptionContainer = template.querySelector('.jw-info-description');
         const clientIdContainer = template.querySelector('.jw-info-clientid');
 
-        model.change('title', (changeModel, title = 'Unknown Title') => {
-            titleContainer.textContent = title;
-        }, instance);
-        model.change('duration', (changeModel, duration = '') => {
-            durationContainer.textContent = (duration < 0 ? 'Live' : timeFormat(duration));
-        }, instance);
-        model.change('description', (changeModel, description = '') => {
-            descriptionContainer.textContent = description;
+        model.change('playlistItem', (changeModel, item) => {
+            const { description, title } = item;
+            descriptionContainer.textContent = description || '';
+            titleContainer.textContent = title || 'Unknown Title';
+        });
+        model.change('duration', (changeModel, duration) => {
+            const streamType = model.get('streamType');
+            let durationText = '';
+            switch (streamType) {
+                case 'LIVE':
+                    durationText = 'Live';
+                    break;
+                case 'DVR':
+                    durationText = 'DVR';
+                    break;
+                default:
+                    durationText = timeFormat(duration);
+            }
+            durationContainer.textContent = durationText;
         }, instance);
         clientIdContainer.textContent = `Client ID: ${getClientId()}`;
     }
