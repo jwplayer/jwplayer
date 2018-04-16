@@ -1,6 +1,6 @@
 import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
-import { _isValidNumber, _isNumber, _pick } from 'utils/underscore';
+import { isValidNumber, isNumber, pick } from 'utils/underscore';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -79,7 +79,7 @@ function _normalizeSize(val) {
 
 function _adjustDefaultBwEstimate(estimate) {
     const parsedEstimate = parseFloat(estimate);
-    if (_isValidNumber(parsedEstimate)) {
+    if (isValidNumber(parsedEstimate)) {
         return Math.max(parsedEstimate, 1);
     }
 
@@ -112,7 +112,7 @@ const Config = function(options, persisted) {
         if (Array.isArray(rateControls)) {
             rates = rateControls;
         }
-        rates = rates.filter(rate => _isNumber(rate) && rate >= 0.25 && rate <= 4)
+        rates = rates.filter(rate => isNumber(rate) && rate >= 0.25 && rate <= 4)
             .map(rate => Math.round(rate * 4) / 4);
 
         if (rates.indexOf(1) < 0) {
@@ -138,7 +138,7 @@ const Config = function(options, persisted) {
     const configPlaylist = config.playlist;
     if (!configPlaylist) {
         // This is a legacy fallback, assuming a playlist item has been flattened into the config
-        const obj = _pick(config, [
+        const obj = pick(config, [
             'title',
             'description',
             'type',
@@ -163,7 +163,7 @@ const Config = function(options, persisted) {
 
     let liveTimeout = config.liveTimeout;
     if (liveTimeout !== null) {
-        if (!_isValidNumber(liveTimeout)) {
+        if (!isValidNumber(liveTimeout)) {
             liveTimeout = null;
         } else if (liveTimeout !== 0) {
             liveTimeout = Math.max(30, liveTimeout);
@@ -173,8 +173,8 @@ const Config = function(options, persisted) {
 
     const parsedBwEstimate = parseFloat(config.bandwidthEstimate);
     const parsedBitrateSelection = parseFloat(config.bitrateSelection);
-    config.bandwidthEstimate = _isValidNumber(parsedBwEstimate) ? parsedBwEstimate : _adjustDefaultBwEstimate(config.defaultBandwidthEstimate);
-    config.bitrateSelection = _isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
+    config.bandwidthEstimate = isValidNumber(parsedBwEstimate) ? parsedBwEstimate : _adjustDefaultBwEstimate(config.defaultBandwidthEstimate);
+    config.bitrateSelection = isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
     return config;
 };
 

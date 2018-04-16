@@ -1,4 +1,4 @@
-import { _sortedIndex, _property, _bind } from 'utils/underscore';
+import { sortedIndex, property, bind } from 'utils/underscore';
 import utils from 'utils/helpers';
 import srt from 'parsers/captions/srt';
 
@@ -35,7 +35,7 @@ const ThumbnailsMixin = {
     thumbnailsFailed: function () { },
 
     chooseThumbnail: function(seconds) {
-        var idx = _sortedIndex(this.thumbnails, { end: seconds }, _property('end'));
+        var idx = sortedIndex(this.thumbnails, { end: seconds }, property('end'));
         if (idx >= this.thumbnails.length) {
             idx = this.thumbnails.length - 1;
         }
@@ -69,7 +69,7 @@ const ThumbnailsMixin = {
             }
         } else if (!this.individualImage) {
             this.individualImage = new Image();
-            this.individualImage.onload = _bind(function () {
+            this.individualImage.onload = bind(function () {
                 this.individualImage.onload = null;
                 this.timeTip.image({ width: this.individualImage.width, height: this.individualImage.height });
                 this.timeTip.setWidth(this.individualImage.width);

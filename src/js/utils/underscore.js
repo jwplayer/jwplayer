@@ -3,7 +3,7 @@
 //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
 
-import { now } from 'utils/date';
+import { now as nowDate } from 'utils/date';
 
 /* eslint-disable no-unused-expressions,new-cap */
 /* eslint no-eq-null: 0 */
@@ -11,6 +11,7 @@ import { now } from 'utils/date';
 /* eslint no-void: 0 */
 /* eslint guard-for-in: 0 */
 /* eslint no-constant-condition: 0 */
+/* eslint dot-notation: 0 */
 
 /*
  * Source: https://github.com/jashkenas/underscore/blob/1f4bf62/underscore.js
@@ -60,7 +61,7 @@ var _ = function (obj) {
 // The cornerstone, an `each` implementation, aka `forEach`.
 // Handles objects with the built-in `forEach`, arrays, and raw objects.
 // Delegates to **ECMAScript 5**'s native `forEach` if available.
-_.each = _.forEach = function (obj, iterator, context) {
+export const each = function (obj, iterator, context) {
     var i;
     var length;
     if (obj == null) {
@@ -75,21 +76,20 @@ _.each = _.forEach = function (obj, iterator, context) {
             }
         }
     } else {
-        var keys = _.keys(obj);
-        for (i = 0, length = keys.length; i < length; i++) {
-            if (iterator.call(context, obj[keys[i]], keys[i], obj) === breaker) {
+        var objectKeys = keys(obj);
+        for (i = 0, length = objectKeys.length; i < length; i++) {
+            if (iterator.call(context, obj[objectKeys[i]], objectKeys[i], obj) === breaker) {
                 return;
             }
         }
     }
     return obj;
 };
-const _forEach = _.forEach;
-const each = _.forEach;
+export const forEach = each;
 
 // Return the results of applying the iterator to each element.
 // Delegates to **ECMAScript 5**'s native `map` if available.
-const _map = _.map = _.collect = function (obj, iterator, context) {
+export const map = function (obj, iterator, context) {
     var results = [];
     if (obj == null) {
         return results;
@@ -102,19 +102,20 @@ const _map = _.map = _.collect = function (obj, iterator, context) {
     });
     return results;
 };
+export const collect = map;
 
 const reduceError = 'Reduce of empty array with no initial value';
 
 // **Reduce** builds up a single result from a list of values, aka `inject`,
 // or `foldl`. Delegates to **ECMAScript 5**'s native `reduce` if available.
-const _reduce = _.reduce = _.foldl = _.inject = function(obj, iterator, memo, context) {
+export const reduce = function(obj, iterator, memo, context) {
     var initial = arguments.length > 2;
     if (obj == null) {
         obj = [];
     }
     if (nativeReduce && obj.reduce === nativeReduce) {
         if (context) {
-            iterator = _.bind(iterator, context);
+            iterator = bind(iterator, context);
         }
         return initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
     }
@@ -131,9 +132,11 @@ const _reduce = _.reduce = _.foldl = _.inject = function(obj, iterator, memo, co
     }
     return memo;
 };
+export const foldl = reduce;
+export const inject = reduce;
 
 // Return the first value which passes a truth test. Aliased as `detect`.
-const _find = _.find = _.detect = function (obj, predicate, context) {
+export const find = function (obj, predicate, context) {
     var result;
     any(obj, function (value, index, list) {
         if (predicate.call(context, value, index, list)) {
@@ -143,12 +146,13 @@ const _find = _.find = _.detect = function (obj, predicate, context) {
     });
     return result;
 };
+export const detect = find;
 
 
 // Return all the elements that pass a truth test.
 // Delegates to **ECMAScript 5**'s native `filter` if available.
 // Aliased as `select`.
-_.filter = _.select = function (obj, predicate, context) {
+export const filter = function (obj, predicate, context) {
     var results = [];
     if (obj == null) {
         return results;
@@ -163,25 +167,26 @@ _.filter = _.select = function (obj, predicate, context) {
     });
     return results;
 };
+export const select = filter;
 
 // Return all the elements for which a truth test fails.
-const _reject = _.reject = function(obj, predicate, context) {
-    return _.filter(obj, function(value, index, list) {
+export const reject = function(obj, predicate, context) {
+    return filter(obj, function(value, index, list) {
         return !predicate.call(context, value, index, list);
     }, context);
 };
 
 // Trim out all falsy values from an array.
-const _compact = _.compact = function(array) {
-    return _.filter(array, _.identity);
+export const compact = function(array) {
+    return filter(array, identity);
 };
 
 
 // Determine whether all of the elements match a truth test.
 // Delegates to **ECMAScript 5**'s native `every` if available.
 // Aliased as `all`.
-const _every = _.every = _.all = function (obj, predicate, context) {
-    predicate || (predicate = _.identity);
+export const every = function (obj, predicate, context) {
+    predicate || (predicate = identity);
     var result = true;
     if (obj == null) {
         return result;
@@ -196,12 +201,13 @@ const _every = _.every = _.all = function (obj, predicate, context) {
     });
     return !!result;
 };
+export const all = every;
 
 // Determine if at least one element in the object matches a truth test.
 // Delegates to **ECMAScript 5**'s native `some` if available.
 // Aliased as `any`.
-const any = _.some = _.any = function (obj, predicate, context) {
-    predicate || (predicate = _.identity);
+export const some = function (obj, predicate, context) {
+    predicate || (predicate = identity);
     var result = false;
     if (obj == null) {
         return result;
@@ -216,14 +222,14 @@ const any = _.some = _.any = function (obj, predicate, context) {
     });
     return !!result;
 };
-const _some = _.some;
+export const any = some;
 
 // returns the size of an object
-const _size = _.size = function (obj) {
+export const size = function (obj) {
     if (obj == null) {
         return 0;
     }
-    return obj.length === +obj.length ? obj.length : _.keys(obj).length;
+    return obj.length === +obj.length ? obj.length : keys(obj).length;
 };
 
 
@@ -232,8 +238,8 @@ const _size = _.size = function (obj) {
 
 
 // Get the last element of an array. Passing **n** will return the last N
-// values in the array. The **guard** check allows it to work with `_.map`.
-const _last = _.last = function(array, n, guard) {
+// values in the array. The **guard** check allows it to work with `map`.
+export const last = function(array, n, guard) {
     if (array == null) {
         return void 0;
     }
@@ -245,7 +251,7 @@ const _last = _.last = function(array, n, guard) {
 
 
 // Returns a function that will only be executed after being called N times.
-const _after = _.after = function (times, func) {
+export const after = function (times, func) {
     return function () {
         if (--times < 1) {
             return func.apply(this, arguments);
@@ -254,7 +260,7 @@ const _after = _.after = function (times, func) {
 };
 
 // Returns a function that will only be executed up to (but not including) the Nth call.
-const _before = _.before = function(times, func) {
+export const before = function(times, func) {
     var memo;
     return function() {
         if (--times > 0) {
@@ -270,12 +276,12 @@ const _before = _.before = function(times, func) {
 // An internal function to generate lookup iterators.
 var lookupIterator = function (value) {
     if (value == null) {
-        return _.identity;
+        return identity;
     }
-    if (_.isFunction(value)) {
+    if (isFunction(value)) {
         return value;
     }
-    return _.property(value);
+    return property(value);
 };
 
 
@@ -294,20 +300,20 @@ var group = function(behavior) {
 
 // Groups the object's values by a criterion. Pass either a string attribute
 // to group by, or a function that returns the criterion.
-const _groupBy = _.groupBy = group(function(result, key, value) {
-    _.has(result, key) ? result[key].push(value) : result[key] = [value];
+export const groupBy = group(function(result, key, value) {
+    has(result, key) ? result[key].push(value) : result[key] = [value];
 });
 
 // Indexes the object's values by a criterion, similar to `groupBy`, but for
 // when you know that your index values will be unique.
-const _indexBy = _.indexBy = group(function(result, key, value) {
+export const indexBy = group(function(result, key, value) {
     result[key] = value;
 });
 
 
 // Use a comparator function to figure out the smallest index at which
 // an object should be inserted so as to maintain order. Uses binary search.
-const _sortedIndex = _.sortedIndex = function (array, obj, iterator, context) {
+export const sortedIndex = function (array, obj, iterator, context) {
     iterator = lookupIterator(iterator);
     var value = iterator.call(context, obj);
     var low = 0;
@@ -319,40 +325,39 @@ const _sortedIndex = _.sortedIndex = function (array, obj, iterator, context) {
     return low;
 };
 
-_.contains = _.include = function (obj, target) {
+export const contains = function (obj, target) {
     if (obj == null) {
         return false;
     }
     if (obj.length !== +obj.length) {
-        obj = _.values(obj);
+        obj = values(obj);
     }
-    return _.indexOf(obj, target) >= 0;
+    return indexOf(obj, target) >= 0;
 };
-const _contains = _.include;
-const _include = _.include;
+export const include = contains;
 
 // Convenience version of a common use case of `map`: fetching a property.
-const _pluck = _.pluck = function(obj, key) {
-    return _.map(obj, _.property(key));
+export const pluck = function(obj, key) {
+    return map(obj, property(key));
 };
 
 // Convenience version of a common use case of `filter`: selecting only objects
 // containing specific `key:value` pairs.
-const _where = _.where = function (obj, attrs) {
-    return _.filter(obj, _.matches(attrs));
+export const where = function (obj, attrs) {
+    return filter(obj, matches(attrs));
 };
 
 // Convenience version of a common use case of `find`: getting the first object
 // containing specific `key:value` pairs.
-const _findWhere = _.findWhere = function(obj, attrs) {
-    return _.find(obj, _.matches(attrs));
+export const findWhere = function(obj, attrs) {
+    return find(obj, matches(attrs));
 };
 
 // Return the maximum element or (element-based computation).
 // Can't optimize arrays of integers longer than 65,535 elements.
 // See [WebKit Bug 80797](https://bugs.webkit.org/show_bug.cgi?id=80797)
-const _max = _.max = function(obj, iterator, context) {
-    if (!iterator && _.isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
+export const max = function(obj, iterator, context) {
+    if (!iterator && isArray(obj) && obj[0] === +obj[0] && obj.length < 65535) {
         return Math.max.apply(Math, obj);
     }
     var result = -Infinity;
@@ -369,16 +374,16 @@ const _max = _.max = function(obj, iterator, context) {
 
 // Take the difference between one array and a number of other arrays.
 // Only the elements present in just the first array will remain.
-const _difference = _.difference = function (array) {
+export const difference = function (array) {
     var rest = concat.apply(ArrayProto, slice.call(arguments, 1));
-    return _.filter(array, function (value) {
-        return !_.contains(rest, value);
+    return filter(array, function (value) {
+        return !contains(rest, value);
     });
 };
 
 // Return a version of the array that does not contain the specified value(s).
-const _without = _.without = function (array) {
-    return _.difference(array, slice.call(arguments, 1));
+export const without = function (array) {
+    return difference(array, slice.call(arguments, 1));
 };
 
 // If the browser doesn't supply us with indexOf (I'm looking at you, **MSIE**),
@@ -387,7 +392,7 @@ const _without = _.without = function (array) {
 // Delegates to **ECMAScript 5**'s native `indexOf` if available.
 // If the array is large and already in sort order, pass `true`
 // for **isSorted** to use binary search.
-const _indexOf = _.indexOf = function (array, item, isSorted) {
+export const indexOf = function (array, item, isSorted) {
     if (array == null) {
         return -1;
     }
@@ -397,7 +402,7 @@ const _indexOf = _.indexOf = function (array, item, isSorted) {
         if (typeof isSorted == 'number') {
             i = (isSorted < 0 ? Math.max(0, length + isSorted) : isSorted);
         } else {
-            i = _.sortedIndex(array, item);
+            i = sortedIndex(array, item);
             return array[i] === item ? i : -1;
         }
     }
@@ -416,20 +421,19 @@ const _indexOf = _.indexOf = function (array, item, isSorted) {
 // Function (ahem) Functions
 // ------------------
 
-
 // Reusable constructor function for prototype setting.
 var ctor = function() {};
 
 // Create a function bound to a given object (assigning `this`, and arguments,
 // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
 // available.
-const _bind = _.bind = function(func, context) {
+export const bind = function(func, context) {
     var args;
     var bound;
     if (nativeBind && func.bind === nativeBind) {
         return nativeBind.apply(func, slice.call(arguments, 1));
     }
-    if (!_.isFunction(func)) {
+    if (!isFunction(func)) {
         throw new TypeError();
     }
     args = slice.call(arguments, 2);
@@ -452,7 +456,7 @@ const _bind = _.bind = function(func, context) {
 // Partially apply a function by creating a version that has had some of its
 // arguments pre-filled, without changing its dynamic `this` context. _ acts
 // as a placeholder, allowing any combination of arguments to be pre-filled.
-const _partial = _.partial = function (func) {
+export const partial = function (func) {
     var boundArgs = slice.call(arguments, 1);
     return function () {
         var position = 0;
@@ -471,29 +475,29 @@ const _partial = _.partial = function (func) {
 
 // Returns a function that will be executed at most one time, no matter how
 // often you call it. Useful for lazy initialization.
-const _once = _.once = _.partial(_.before, 2);
+export const once = partial(before, 2);
 
 // Returns the first function passed as an argument to the second,
 // allowing you to adjust arguments, run code before and after, and
 // conditionally execute the original function.
-// _.wrap = function(func, wrapper) {
-//    return _.partial(wrapper, func);
+// wrap = function(func, wrapper) {
+//    return partial(wrapper, func);
 // };
 
 
 // Memoize an expensive function by storing its results.
-const _memoize = _.memoize = function (func, hasher) {
+export const memoize = function (func, hasher) {
     var memo = {};
-    hasher || (hasher = _.identity);
+    hasher || (hasher = identity);
     return function () {
         var key = hasher.apply(this, arguments);
-        return _.has(memo, key) ? memo[key] : (memo[key] = func.apply(this, arguments));
+        return has(memo, key) ? memo[key] : (memo[key] = func.apply(this, arguments));
     };
 };
 
 // Delays a function for the given number of milliseconds, and then calls
 // it with the arguments supplied.
-const _delay = _.delay = function (func, wait) {
+export const delay = function (func, wait) {
     var args = slice.call(arguments, 2);
     return setTimeout(function () {
         return func.apply(null, args);
@@ -502,8 +506,8 @@ const _delay = _.delay = function (func, wait) {
 
 // Defers a function, scheduling it to run after the current call stack has
 // cleared.
-const _defer = _.defer = function (func) {
-    return _.delay.apply(_, [func, 1].concat(slice.call(arguments, 1)));
+export const defer = function (func) {
+    return delay.apply(_, [func, 1].concat(slice.call(arguments, 1)));
 };
 
 
@@ -512,7 +516,7 @@ const _defer = _.defer = function (func) {
 // as much as it can, without ever going more than once per `wait` duration;
 // but if you'd like to disable the execution on the leading edge, pass
 // `{leading: false}`. To disable execution on the trailing edge, ditto.
-const _throttle = _.throttle = function(func, wait, options) {
+export const throttle = function(func, wait, options) {
     var context;
     var args;
     var result;
@@ -548,33 +552,44 @@ const _throttle = _.throttle = function(func, wait, options) {
 
 // Retrieve the names of an object's properties.
 // Delegates to **ECMAScript 5**'s native `Object.keys`
-const _keys = _.keys = function (obj) {
-    if (!_.isObject(obj)) {
+export const keys = function (obj) {
+    if (!isObject(obj)) {
         return [];
     }
     if (nativeKeys) {
         return nativeKeys(obj);
     }
-    var keys = [];
+    var objectKeys = [];
     for (var key in obj) {
-        if (_.has(obj, key)) {
-            keys.push(key);
+        if (has(obj, key)) {
+            objectKeys.push(key);
         }
     }
-    return keys;
+    return objectKeys;
 };
 
-const _invert = _.invert = function (obj) {
+// Retrieve the values of an object's properties.
+const values = function(obj) {
+    const objectKeys = keys(obj);
+    const length = keys.length;
+    const result = Array(length);
+    for (let i = 0; i < length; i++) {
+        result[i] = obj[objectKeys[i]];
+    }
+    return result;
+};
+
+export const invert = function (obj) {
     var result = {};
-    var keys = _.keys(obj);
-    for (var i = 0, length = keys.length; i < length; i++) {
-        result[obj[keys[i]]] = keys[i];
+    var objectKeys = keys(obj);
+    for (var i = 0, length = objectKeys.length; i < length; i++) {
+        result[obj[objectKeys[i]]] = objectKeys[i];
     }
     return result;
 };
 
 // Fill in a given object with default properties.
-const _defaults = _.defaults = function(obj) {
+export const defaults = function(obj) {
     each(slice.call(arguments, 1), function(source) {
         if (source) {
             for (var prop in source) {
@@ -588,7 +603,7 @@ const _defaults = _.defaults = function(obj) {
 };
 
 // Extend a given object with all the properties in passed-in object(s).
-const extend = _.extend = Object.assign || function(obj) {
+export const extend = Object.assign || function(obj) {
     each(slice.call(arguments, 1), function(source) {
         if (source) {
             for (var prop in source) {
@@ -602,10 +617,10 @@ const extend = _.extend = Object.assign || function(obj) {
 };
 
 // Return a copy of the object only containing the whitelisted properties.
-const _pick = _.pick = function (obj) {
+export const pick = function (obj) {
     var copy = {};
-    var keys = concat.apply(ArrayProto, slice.call(arguments, 1));
-    each(keys, function (key) {
+    var objectKeys = concat.apply(ArrayProto, slice.call(arguments, 1));
+    each(objectKeys, function (key) {
         if (key in obj) {
             copy[key] = obj[key];
         }
@@ -614,11 +629,11 @@ const _pick = _.pick = function (obj) {
 };
 
 // Return a copy of the object without the blacklisted properties.
-const _omit = _.omit = function(obj) {
+export const omit = function(obj) {
     var copy = {};
-    var keys = concat.apply(ArrayProto, slice.call(arguments, 1));
+    var objectKeys = concat.apply(ArrayProto, slice.call(arguments, 1));
     for (var key in obj) {
-        if (!_.contains(keys, key)) {
+        if (!contains(objectKeys, key)) {
             copy[key] = obj[key];
         }
     }
@@ -626,100 +641,101 @@ const _omit = _.omit = function(obj) {
 };
 
 // Create a (shallow-cloned) duplicate of an object.
-const _clone = _.clone = function(obj) {
-    if (!_.isObject(obj)) {
+export const clone = function(obj) {
+    if (!isObject(obj)) {
         return obj;
     }
-    return _.isArray(obj) ? obj.slice() : extend({}, obj);
+    return isArray(obj) ? obj.slice() : extend({}, obj);
 };
 
 // Is a given value an array?
 // Delegates to ECMA5's native Array.isArray
-_.isArray = nativeIsArray || function (obj) {
+export const isArray = nativeIsArray || function (obj) {
     return toString.call(obj) == '[object Array]';
 };
 
 // Is a given variable an object?
-const _isObject = _.isObject = function (obj) {
+export const isObject = function (obj) {
     return obj === Object(obj);
 };
 
 // Add some isType methods: isFunction, isString, isNumber, isDate, isRegExp.
+const is = [];
 each(['Function', 'String', 'Number', 'Date', 'RegExp'], function (name) {
-    _['is' + name] = function (obj) {
+    is[name] = function (obj) {
         return toString.call(obj) == '[object ' + name + ']';
     };
 });
 
 // Optimize `isFunction` if appropriate.
 if (typeof (/./) !== 'function') {
-    _.isFunction = function (obj) {
+    is['Function'] = function (obj) {
         return typeof obj === 'function';
     };
 }
 
-const _isFunction = _.isFunction;
-const _isString = _.isString;
-const _isNumber = _.isNumber;
-const _isDate = _.isDate;
-const _isRegExp = _.isRegExp;
+export const isFunction = is['Function'];
+export const isString = is['String'];
+export const isNumber = is['Number'];
+export const isDate = is['Date'];
+export const isRegExp = is['RegExp'];
 
 // Is a given object a finite number?
-const _isFinite = _.isFinite = function (obj) {
+export const _isFinite = function (obj) {
     return isFinite(obj) && !isNaN(parseFloat(obj));
 };
 
 // Is the given value `NaN`? (NaN is the only number which does not equal itself).
-const _isNaN = _.isNaN = function (obj) {
-    return _isNumber(obj) && obj != +obj;
+export const _isNaN = function (obj) {
+    return isNumber(obj) && obj != +obj;
 };
 
 // Is a given value a boolean?
-const _isBoolean = _.isBoolean = function (obj) {
+export const isBoolean = function (obj) {
     return obj === true || obj === false || toString.call(obj) == '[object Boolean]';
 };
 
 // Is a given value equal to null?
-const _isNull = _.isNull = function (obj) {
+export const isNull = function (obj) {
     return obj === null;
 };
 
 // Is a given variable undefined?
-const _isUndefined = _.isUndefined = function (obj) {
+export const isUndefined = function (obj) {
     return obj === void 0;
 };
 
 // Shortcut function for checking if an object has a given property directly
 // on itself (in other words, not on a prototype).
-const _has = _.has = function (obj, key) {
+export const has = function (obj, key) {
     return hasOwnProperty.call(obj, key);
 };
 
 // Keep the identity function around for default iterators.
-const _identity = _.identity = function (value) {
+export const identity = function (value) {
     return value;
 };
 
-const _constant = _.constant = function (value) {
+export const constant = function (value) {
     return function () {
         return value;
     };
 };
 
-const _property = _.property = function (key) {
+export const property = function (key) {
     return function (obj) {
         return obj[key];
     };
 };
 
-const _propertyOf = _.propertyOf = function(obj) {
+export const propertyOf = function(obj) {
     return obj == null ? function() {} : function(key) {
         return obj[key];
     };
 };
 
 // Returns a predicate for checking whether an object has a given set of `key:value` pairs.
-const _matches = _.matches = function (attrs) {
+export const matches = function (attrs) {
     return function (obj) {
         // avoid comparing an object to itself.
         if (obj === attrs) {
@@ -735,77 +751,18 @@ const _matches = _.matches = function (attrs) {
 };
 
 // A (possibly faster) way to get the current timestamp as an integer.
-_.now = now;
+export const now = nowDate;
 
 // If the value of the named `property` is a function then invoke it with the
 // `object` as context; otherwise, return it.
-const _result = _.result = function (object, property) {
+export const result = function (object, prop) {
     if (object == null) {
         return void 0;
     }
-    var value = object[property];
-    return _.isFunction(value) ? value.call(object) : value;
+    var value = object[prop];
+    return isFunction(value) ? value.call(object) : value;
 };
 
-const _isValidNumber = (val) => _isNumber(val) && !_isNaN(val);
+export const isValidNumber = (val) => isNumber(val) && !_isNaN(val);
 
-export {
-    _after,
-    _before,
-    _bind,
-    _clone,
-    _compact,
-    _constant,
-    _contains,
-    _defaults,
-    _defer,
-    _delay,
-    _difference,
-    _every,
-    _find,
-    _findWhere,
-    _forEach,
-    _groupBy,
-    _has,
-    _identity,
-    _include,
-    _indexBy,
-    _indexOf,
-    _invert,
-    _isBoolean,
-    _isDate,
-    _isFinite,
-    _isFunction,
-    _isNaN,
-    _isNull,
-    _isNumber,
-    _isObject,
-    _isRegExp,
-    _isString,
-    _isUndefined,
-    _isValidNumber,
-    _keys,
-    _last,
-    _map,
-    _matches,
-    _max,
-    _memoize,
-    _omit,
-    _once,
-    _partial,
-    _pick,
-    _pluck,
-    _property,
-    _propertyOf,
-    _reduce,
-    _reject,
-    _result,
-    _size,
-    _some,
-    _sortedIndex,
-    _throttle,
-    _where,
-    _without,
-    extend
-};
 export default _;

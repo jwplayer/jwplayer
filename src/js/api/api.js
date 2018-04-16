@@ -8,7 +8,7 @@ import Timer from 'api/timer';
 import Events, { on, once, off, trigger, triggerSafe } from 'utils/backbone.events';
 import { registerPlugin } from 'plugins/plugins';
 import utils from 'utils/helpers';
-import _ from 'utils/underscore';
+import * as _ from 'utils/underscore';
 
 let instancesCreated = 0;
 

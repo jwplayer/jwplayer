@@ -26,7 +26,7 @@ import {
     clearCss,
     style,
 } from 'utils/css';
-import { _isNumber } from 'utils/underscore';
+import { isNumber } from 'utils/underscore';
 import requestFullscreenHelper from 'view/utils/request-fullscreen-helper';
 import flagNoFocus from 'view/utils/flag-no-focus';
 import ClickHandler from 'view/utils/clickhandler';
@@ -167,7 +167,7 @@ function View(_api, _model) {
     function updateContainerStyles(width, height) {
         const audioMode = isAudioMode(_model);
         // Set timeslider flags
-        if (_isNumber(width) && _isNumber(height)) {
+        if (isNumber(width) && isNumber(height)) {
             const breakpoint = getBreakpoint(width);
             setBreakpoint(_playerElement, breakpoint);
 
@@ -533,7 +533,7 @@ function View(_api, _model) {
             // If the height is a pixel value (number) greater than 0, snap it to the minimum supported height
             // Allow zero to mean "hide the player"
             let height = playerHeight;
-            if (_isNumber(height) && height !== 0) {
+            if (isNumber(height) && height !== 0) {
                 height = Math.max(height, CONTROLBAR_ONLY_HEIGHT);
             }
             playerStyle.height = height;

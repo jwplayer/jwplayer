@@ -1,4 +1,4 @@
-import { _keys, _some } from 'utils/underscore';
+import { keys, some } from 'utils/underscore';
 
 // Try and find a corresponding custom label. If there are no custom labels, create one using height, bandwidth, or both
 export function generateLabel(level, qualityLabels, redundant) {
@@ -36,7 +36,7 @@ export function createLabel(height, bandwidth, redundant) {
 // bandwidth, a quality label will always be found. Return null otherwise
 export function getCustomLabel(qualityLabels, bandwidth) {
     let label = null;
-    const bandwidths = _keys(qualityLabels);
+    const bandwidths = keys(qualityLabels);
 
     if (bandwidth && qualityLabels && bandwidths.length) {
         const key = parseFloat(bandwidth);
@@ -76,7 +76,7 @@ export function hasRedundantLevels(levels) {
     if (!Array.isArray(levels)) {
         return false;
     }
-    return _some(levels, function (level) {
+    return some(levels, function (level) {
         const key = level.height || level.bitrate || level.bandwidth;
         const foundDuplicate = this[key];
         this[key] = 1;

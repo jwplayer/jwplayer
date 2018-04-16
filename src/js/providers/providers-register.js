@@ -1,7 +1,7 @@
 import ProvidersLoaded from 'providers/providers-loaded';
 import ProvidersSupported from 'providers/providers-supported';
 import DefaultProvider from 'providers/default';
-import { _find, _matches, _isFunction, _defaults } from 'utils/underscore';
+import { find, matches, isFunction, defaults } from 'utils/underscore';
 
 export default function registerProvider(provider) {
     var name = provider.getName().name;
@@ -12,8 +12,8 @@ export default function registerProvider(provider) {
     }
 
     // If there isn't a "supports" val for this guy
-    if (!_find(ProvidersSupported, _matches({ name: name }))) {
-        if (!_isFunction(provider.supports)) {
+    if (!find(ProvidersSupported, matches({ name: name }))) {
+        if (!isFunction(provider.supports)) {
             throw new Error('Tried to register a provider with an invalid object');
         }
 
@@ -25,7 +25,7 @@ export default function registerProvider(provider) {
     }
 
     // Fill in any missing properties with the defaults - looks at the prototype chain
-    _defaults(provider.prototype, DefaultProvider);
+    defaults(provider.prototype, DefaultProvider);
 
     // After registration, it is loaded
     ProvidersLoaded[name] = provider;

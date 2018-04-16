@@ -1,4 +1,4 @@
-import { _isNaN, _isNumber, _isString, _map } from './underscore';
+import { _isNaN, isNumber, isString, map } from './underscore';
 
 export function trim(inputString) {
     return inputString.replace(/^\s+|\s+$/g, '');
@@ -62,7 +62,7 @@ export function seconds(str, frameRate) {
     if (!str) {
         return 0;
     }
-    if (_isNumber(str) && !_isNaN(str)) {
+    if (isNumber(str) && !_isNaN(str)) {
         return str;
     }
 
@@ -101,7 +101,7 @@ export function seconds(str, frameRate) {
 
 // Convert an offset string to a number; supports conversion of percentage offsets
 export function offsetToSeconds(offset, duration, frameRate) {
-    if (_isString(offset) && offset.slice(-1) === '%') {
+    if (isString(offset) && offset.slice(-1) === '%') {
         const percent = parseFloat(offset);
         if (!duration || isNaN(duration) || isNaN(percent)) {
             return null;
@@ -112,13 +112,13 @@ export function offsetToSeconds(offset, duration, frameRate) {
 }
 
 export function prefix(arr, add) {
-    return _map(arr, function(val) {
+    return map(arr, function(val) {
         return add + val;
     });
 }
 
 export function suffix(arr, add) {
-    return _map(arr, function(val) {
+    return map(arr, function(val) {
         return val + add;
     });
 }

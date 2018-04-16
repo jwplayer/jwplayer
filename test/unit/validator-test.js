@@ -1,5 +1,5 @@
 import * as validator from 'utils/validator';
-import _ from 'utils/underscore';
+import * as _ from 'utils/underscore';
 
 describe('validator', function() {
     const testerGenerator = function (method) {

@@ -2,7 +2,7 @@ import { OS } from 'environment/environment';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { STATE_IDLE } from 'events/events';
-import { _isValidNumber, _isNumber } from 'utils/underscore';
+import { isValidNumber, isNumber } from 'utils/underscore';
 import { seconds } from 'utils/strings';
 import Providers from 'providers/providers';
 
@@ -39,7 +39,7 @@ const Model = function() {
         const currentLevel = levels[quality] || {};
         const { label } = currentLevel;
         // Default to null if bitrate is bad, or when the quality to persist is "auto" (bitrate is undefined in this case)
-        const bitrate = _isValidNumber(currentLevel.bitrate) ? currentLevel.bitrate : null;
+        const bitrate = isValidNumber(currentLevel.bitrate) ? currentLevel.bitrate : null;
         this.set('bitrateSelection', bitrate);
         this.set('qualityLabel', label);
     };
@@ -132,7 +132,7 @@ const Model = function() {
     };
 
     this.setPlaybackRate = function(playbackRate) {
-        if (!_isNumber(playbackRate)) {
+        if (!isNumber(playbackRate)) {
             return;
         }
 
@@ -201,7 +201,7 @@ const Model = function() {
     };
 
     this.persistBandwidthEstimate = function (bwEstimate) {
-        if (!_isValidNumber(bwEstimate)) {
+        if (!isValidNumber(bwEstimate)) {
             return;
         }
         this.set('bandwidthEstimate', bwEstimate);

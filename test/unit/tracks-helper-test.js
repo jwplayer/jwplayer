@@ -1,5 +1,5 @@
 import { createId, createLabel } from 'controller/tracks-helper';
-import _ from 'utils/underscore';
+import * as _ from 'utils/underscore';
 
 var tracks;
 var itemTrack;

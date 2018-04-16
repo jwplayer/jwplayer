@@ -1,4 +1,4 @@
-import _ from 'utils/underscore';
+import * as _ from 'utils/underscore';
 import {
     hasRedundantLevels,
     generateLabel,

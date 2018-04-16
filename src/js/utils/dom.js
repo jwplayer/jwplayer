@@ -1,5 +1,5 @@
 import { trim } from 'utils/strings';
-import { _isString, _contains, _difference, _isBoolean, _forEach } from './underscore';
+import { isString, contains, difference, isBoolean, forEach } from './underscore';
 
 export function hasClass(element, searchClass) {
     return element.classList.contains(searchClass);
@@ -19,7 +19,7 @@ export function styleDimension(dimension) {
 }
 
 function classNameArray(element) {
-    return _isString(element.className) ? element.className.split(' ') : [];
+    return isString(element.className) ? element.className.split(' ') : [];
 }
 
 function setClassName(element, className) {
@@ -43,8 +43,8 @@ export function addClass(element, classes) {
     var originalClasses = classNameArray(element);
     var addClasses = Array.isArray(classes) ? classes : classes.split(' ');
 
-    _forEach(addClasses, function (c) {
-        if (!_contains(originalClasses, c)) {
+    forEach(addClasses, function (c) {
+        if (!contains(originalClasses, c)) {
             originalClasses.push(c);
         }
     });
@@ -56,7 +56,7 @@ export function removeClass(element, c) {
     var originalClasses = classNameArray(element);
     var removeClasses = Array.isArray(c) ? c : c.split(' ');
 
-    setClassName(element, _difference(originalClasses, removeClasses).join(' '));
+    setClassName(element, difference(originalClasses, removeClasses).join(' '));
 }
 
 export function replaceClass(element, pattern, replaceWith) {
@@ -71,7 +71,7 @@ export function replaceClass(element, pattern, replaceWith) {
 
 export function toggleClass(element, c, toggleTo) {
     const hasIt = hasClass(element, c);
-    toggleTo = _isBoolean(toggleTo) ? toggleTo : !hasIt;
+    toggleTo = isBoolean(toggleTo) ? toggleTo : !hasIt;
 
     // short circuit if nothing to do
     if (toggleTo === hasIt) {
