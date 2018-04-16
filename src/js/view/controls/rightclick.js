@@ -176,6 +176,8 @@ export default class RightClick {
         // Track if the mouse is above the menu or not
         this.el.addEventListener('mouseover', this.overHandler);
         this.el.addEventListener('mouseout', this.outHandler);
+        this.addOffListener(this.playerElement);
+        this.addOffListener(document);
     }
 
     removeListeners() {
@@ -186,13 +188,32 @@ export default class RightClick {
             this.playerElement.removeEventListener('touchend', this.cancelLongPressHandler);
             this.playerElement.removeEventListener('touchcancel', this.cancelLongPressHandler);
             this.playerElement.oncontextmenu = null;
+            this.removeOffListener(this.playerElement);
         }
         if (this.el) {
+            this.removeOffListener(document);
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
             this.el.removeEventListener('mouseover', this.overHandler);
             this.el.removeEventListener('mouseout', this.outHandler);
+            this.removeOffListener(this.playerElement);
         }
         document.removeEventListener('click', this.hideMenuHandler);
+    }
+
+    addOffListener(element) {
+        if (!OS.iOS) {
+            element.addEventListener('mousedown', this.hideMenuHandler);
+        }
+        element.addEventListener('touchstart', this.hideMenuHandler);
+        element.addEventListener('pointerdown', this.hideMenuHandler);
+    }
+
+    removeOffListener(element) {
+        if (!OS.iOS) {
+            element.removeEventListener('mousedown', this.hideMenuHandler);
+        }
+        element.removeEventListener('touchstart', this.hideMenuHandler);
+        element.removeEventListener('pointerdown', this.hideMenuHandler);
     }
 
     destroy() {
