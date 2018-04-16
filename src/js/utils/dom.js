@@ -1,5 +1,5 @@
 import { trim } from 'utils/strings';
-import { isString, contains, difference, isBoolean, forEach } from './underscore';
+import { isString, contains, difference, isBoolean, forEach } from 'utils/underscore';
 
 export function hasClass(element, searchClass) {
     return element.classList.contains(searchClass);

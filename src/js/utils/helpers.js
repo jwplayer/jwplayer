@@ -14,7 +14,7 @@ import {
 } from 'utils/strings';
 import Timer from 'api/timer';
 import { tryCatch, JwError as Error } from 'utils/trycatch';
-import { indexOf } from './underscore';
+import { indexOf } from 'utils/underscore';
 import { isIframe, flashVersion } from 'utils/browser';
 import {
     addClass,

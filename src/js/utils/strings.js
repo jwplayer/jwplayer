@@ -1,4 +1,4 @@
-import { isNaN, isNumber, isString, map } from './underscore';
+import { isNaN, isNumber, isString, map } from 'utils/underscore';
 
 export function trim(inputString) {
     return inputString.replace(/^\s+|\s+$/g, '');

@@ -1,4 +1,4 @@
-import { invert } from './underscore';
+import { invert } from 'utils/underscore';
 
 /**
  * A map of 2-letter language codes (ISO 639-1) to language name in English

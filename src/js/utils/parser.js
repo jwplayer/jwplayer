@@ -1,5 +1,5 @@
 import { exists } from 'utils/validator';
-import { some, isNaN } from './underscore';
+import { some, isNaN } from 'utils/underscore';
 
 // Returns the absolute file path based on a relative filepath, and optional base path
 export function getAbsolutePath(path, base) {
