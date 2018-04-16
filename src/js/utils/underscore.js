@@ -18,32 +18,32 @@ import { now as nowDate } from 'utils/date';
  */
 
 // Establish the object that gets returned to break out of a loop iteration.
-var breaker = {};
+const breaker = {};
 
 // Save bytes in the minified (but not gzipped) version:
-var ArrayProto = Array.prototype;
-var ObjProto = Object.prototype;
-var FuncProto = Function.prototype;
+const ArrayProto = Array.prototype;
+const ObjProto = Object.prototype;
+const FuncProto = Function.prototype;
 
-// Create quick reference variables for speed access to core prototypes.
-var slice = ArrayProto.slice;
-var concat = ArrayProto.concat;
-var toString = ObjProto.toString;
-var hasOwnProperty = ObjProto.hasOwnProperty;
+// Create quick reference constiables for speed access to core prototypes.
+const slice = ArrayProto.slice;
+const concat = ArrayProto.concat;
+const toString = ObjProto.toString;
+const hasOwnProperty = ObjProto.hasOwnProperty;
 
 // All **ECMAScript 5** native function implementations that we hope to use
 // are declared here.
-var nativeMap = ArrayProto.map;
-var nativeReduce = ArrayProto.reduce;
-var nativeForEach = ArrayProto.forEach;
-var nativeFilter = ArrayProto.filter;
-var nativeEvery = ArrayProto.every;
-var nativeSome = ArrayProto.some;
-var nativeIndexOf = ArrayProto.indexOf;
-var nativeIsArray = Array.isArray;
-var nativeKeys = Object.keys;
-var nativeBind = FuncProto.bind;
-
+const nativeMap = ArrayProto.map;
+const nativeReduce = ArrayProto.reduce;
+const nativeForEach = ArrayProto.forEach;
+const nativeFilter = ArrayProto.filter;
+const nativeEvery = ArrayProto.every;
+const nativeSome = ArrayProto.some;
+const nativeIndexOf = ArrayProto.indexOf;
+const nativeIsArray = Array.isArray;
+const nativeKeys = Object.keys;
+const nativeBind = FuncProto.bind;
+const nativeIsFinite = window.isFinite;
 
 // Create a safe reference to the Underscore object for use below.
 var _ = function (obj) {
@@ -568,7 +568,6 @@ export const keys = function (obj) {
     return objectKeys;
 };
 
-// Retrieve the values of an object's properties.
 const values = function(obj) {
     const objectKeys = keys(obj);
     const length = keys.length;
@@ -681,12 +680,12 @@ export const isDate = is['Date'];
 export const isRegExp = is['RegExp'];
 
 // Is a given object a finite number?
-export const _isFinite = function (obj) {
-    return isFinite(obj) && !isNaN(parseFloat(obj));
+export const isFinite = function (obj) {
+    return nativeIsFinite(obj) && !isNaN(parseFloat(obj));
 };
 
 // Is the given value `NaN`? (NaN is the only number which does not equal itself).
-export const _isNaN = function (obj) {
+export const isNaN = function (obj) {
     return isNumber(obj) && obj != +obj;
 };
 
@@ -763,6 +762,6 @@ export const result = function (object, prop) {
     return isFunction(value) ? value.call(object) : value;
 };
 
-export const isValidNumber = (val) => isNumber(val) && !_isNaN(val);
+export const isValidNumber = (val) => isNumber(val) && !isNaN(val);
 
 export default _;

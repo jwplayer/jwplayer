@@ -4,7 +4,7 @@ import Events from 'utils/backbone.events';
 import { ERROR } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
 import { addClass, removeClass, empty } from 'utils/dom';
-import { identity, difference, isNumber, _isFinite } from 'utils/underscore';
+import { identity, difference, isNumber, isFinite } from 'utils/underscore';
 import { MEDIA_SEEK, MEDIA_TIME } from 'events/events';
 
 let _WebVTT;
@@ -189,7 +189,7 @@ const CaptionsRenderer = function (viewModel) {
     };
 
     function _setFontScale() {
-        if (!_isFinite(_options.fontSize)) {
+        if (!isFinite(_options.fontSize)) {
             return;
         }
 
