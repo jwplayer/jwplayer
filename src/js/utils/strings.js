@@ -103,9 +103,7 @@ export function seconds(str, frameRate) {
 export function offsetToSeconds(offset, duration, frameRate) {
     if (isString(offset) && offset.slice(-1) === '%') {
         const percent = parseFloat(offset);
-        console.log('duration', duration, isNaN(duration), window.isNaN(duration));
-        console.log('percent', percent, isNaN(percent), window.isNaN(percent));
-        if (!duration || isNaN(duration) || isNaN(percent)) {
+        if (!duration || window.isNaN(duration) || window.isNaN(percent)) {
             return null;
         }
         return duration * percent / 100;

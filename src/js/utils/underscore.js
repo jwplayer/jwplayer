@@ -45,16 +45,6 @@ const nativeKeys = Object.keys;
 const nativeBind = FuncProto.bind;
 const nativeIsFinite = window.isFinite;
 
-// Create a safe reference to the Underscore object for use below.
-var _ = function (obj) {
-    if (obj instanceof _) {
-        return obj;
-    }
-    if (!(this instanceof _)) {
-        return new _(obj);
-    }
-};
-
 // Collection Functions
 // --------------------
 
@@ -462,7 +452,7 @@ export const partial = function (func) {
         var position = 0;
         var args = boundArgs.slice();
         for (var i = 0, length = args.length; i < length; i++) {
-            if (args[i] === _) {
+            if (has(args[i], 'partial')) {
                 args[i] = arguments[position++];
             }
         }
@@ -506,9 +496,7 @@ export const delay = function (func, wait) {
 
 // Defers a function, scheduling it to run after the current call stack has
 // cleared.
-export const defer = function (func) {
-    return delay.apply(_, [func, 1].concat(slice.call(arguments, 1)));
-};
+export const defer = partial(delay, { partial }, 1);
 
 
 // Returns a function, that, when invoked, will only be triggered at most once
@@ -763,5 +751,3 @@ export const result = function (object, prop) {
 };
 
 export const isValidNumber = (val) => isNumber(val) && !isNaN(val);
-
-export default _;
