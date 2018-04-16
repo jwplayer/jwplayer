@@ -1,5 +1,5 @@
 import { trim } from 'utils/strings';
-import { isString, contains, difference, isBoolean, forEach } from 'utils/underscore';
+import { isString, contains, difference, isBoolean } from 'utils/underscore';
 
 export function hasClass(element, searchClass) {
     return element.classList.contains(searchClass);
@@ -43,7 +43,7 @@ export function addClass(element, classes) {
     var originalClasses = classNameArray(element);
     var addClasses = Array.isArray(classes) ? classes : classes.split(' ');
 
-    forEach(addClasses, function (c) {
+    addClasses.forEach(function (c) {
         if (!contains(originalClasses, c)) {
             originalClasses.push(c);
         }
