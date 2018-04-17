@@ -25,7 +25,7 @@ const rightClickItem = (link = '', title = '', featured, showLogo) => {
 const infoOverlayItem = (videoInfoLocalization) => {
     return (
         `<li class="jw-reset jw-rightclick-item">` +
-            `<button class="jw-rightclick-link jw-info-overlay-item">${videoInfoLocalization}</button>` +
+            `<button class="jw-reset jw-rightclick-link jw-info-overlay-item">${videoInfoLocalization}</button>` +
         `</li>`
     );
 };
