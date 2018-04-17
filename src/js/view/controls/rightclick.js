@@ -185,7 +185,6 @@ export default class RightClick {
     removeHideMenuHandlers() {
         if (this.playerElement) {
             this.playerElement.removeEventListener('click', this.hideMenuHandler);
-            this.playerElement.oncontextmenu = null;
         }
         if (this.el) {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
@@ -211,6 +210,7 @@ export default class RightClick {
             this.playerElement.removeEventListener('touchmove', this.cancelLongPressHandler);
             this.playerElement.removeEventListener('touchend', this.cancelLongPressHandler);
             this.playerElement.removeEventListener('touchcancel', this.cancelLongPressHandler);
+            this.playerElement.oncontextmenu = null;
             this.playerElement = null;
         }
 
