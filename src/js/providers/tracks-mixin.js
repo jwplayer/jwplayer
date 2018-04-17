@@ -3,7 +3,7 @@ import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { ERROR } from 'events/events';
-import { reject, findWhere } from 'utils/underscore';
+import { findWhere } from 'utils/underscore';
 
 // Used across all providers for loading tracks and handling browser track-related events
 const Tracks = {
@@ -48,14 +48,15 @@ function setTextTracks(tracks) {
     } else {
         // Remove the 608 captions track that was mutated by the browser
         this._unknownCount = 0;
-        this._textTracks = reject(this._textTracks, function(track) {
+        this._textTracks = this._textTracks.filter(function(track) {
             const trackId = track._id;
             if (this.renderNatively && trackId && trackId.indexOf('nativecaptions') === 0) {
                 delete this._tracksById[trackId];
-                return true;
+                return false;
             } else if (track.name && track.name.indexOf('Unknown') === 0) {
                 this._unknownCount++;
             }
+            return true;
         }, this);
 
         // Remove the ID3 track from the cache
