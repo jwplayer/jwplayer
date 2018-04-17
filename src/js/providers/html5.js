@@ -14,6 +14,7 @@ import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
+import { map } from 'utils/underscore';
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
@@ -698,7 +699,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 _currentAudioTrackIndex = 0;
                 tracks[_currentAudioTrackIndex].enabled = true;
             }
-            _audioTracks = tracks.map(function(track) {
+            _audioTracks = map(tracks, function(track) {
                 var _track = {
                     name: track.label || track.language,
                     language: track.language
