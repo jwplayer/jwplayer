@@ -54,6 +54,7 @@ export default class RightClick {
 
         this.hideMenu();
         this.showMenu(evt);
+        this.addHideMenuHandlers();
 
         return false;
     }
@@ -131,7 +132,6 @@ export default class RightClick {
             this.hideMenu();
             this.infoOverlay.open();
         };
-        this.addListeners();
     }
 
     setup(_model, _playerElement, layer) {
@@ -167,24 +167,24 @@ export default class RightClick {
         clearTimeout(this.longPressTimeout);
     }
 
-    addListeners() {
-        if (!OS.iOS) {
+    addHideMenuHandlers() {
+        this.removeHideMenuHandlers();
+        if (OS.iOS) {
+            this.playerElement.addEventListener('touchstart', this.hideMenuHandler);
+            document.addEventListener('touchstart', this.hideMenuHandler);
+        } else {
             this.playerElement.addEventListener('click', this.hideMenuHandler);
             document.addEventListener('click', this.hideMenuHandler);
+            // Track if the mouse is above the menu or not
+            this.el.addEventListener('mouseover', this.overHandler);
+            this.el.addEventListener('mouseout', this.outHandler);
         }
         this.el.querySelector('.jw-info-overlay-item').addEventListener('click', this.infoOverlayHandler);
-        // Track if the mouse is above the menu or not
-        this.el.addEventListener('mouseover', this.overHandler);
-        this.el.addEventListener('mouseout', this.outHandler);
     }
 
-    removeListeners() {
+    removeHideMenuHandlers() {
         if (this.playerElement) {
             this.playerElement.removeEventListener('click', this.hideMenuHandler);
-            this.playerElement.removeEventListener('touchstart', this.startLongPressHandler);
-            this.playerElement.removeEventListener('touchmove', this.cancelLongPressHandler);
-            this.playerElement.removeEventListener('touchend', this.cancelLongPressHandler);
-            this.playerElement.removeEventListener('touchcancel', this.cancelLongPressHandler);
             this.playerElement.oncontextmenu = null;
         }
         if (this.el) {
@@ -193,11 +193,12 @@ export default class RightClick {
             this.el.removeEventListener('mouseout', this.outHandler);
         }
         document.removeEventListener('click', this.hideMenuHandler);
+        document.removeEventListener('touchstart', this.hideMenuHandler);
     }
 
     destroy() {
         clearTimeout(this._menuTimeout);
-        this.removeListeners();
+        this.removeHideMenuHandlers();
 
         if (this.el) {
             this.hideMenu();
@@ -206,6 +207,10 @@ export default class RightClick {
         }
 
         if (this.playerElement) {
+            this.playerElement.removeEventListener('touchstart', this.startLongPressHandler);
+            this.playerElement.removeEventListener('touchmove', this.cancelLongPressHandler);
+            this.playerElement.removeEventListener('touchend', this.cancelLongPressHandler);
+            this.playerElement.removeEventListener('touchcancel', this.cancelLongPressHandler);
             this.playerElement = null;
         }
 
