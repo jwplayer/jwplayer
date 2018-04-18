@@ -1,8 +1,9 @@
 import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
-    INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
+    INSTREAM_CLICK, AD_CLICK, AD_SKIPPED } from 'events/events';
 import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
+import InstreamProvider from 'providers/instream-provider';
 import Promise from 'polyfills/promise';
 import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
@@ -29,6 +30,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _destroyed = false;
     let _inited = false;
     let _beforeComplete = false;
+    let _instreamProvider = new InstreamProvider(_, Events);
 
     const _clickHandler = (evt) => {
         if (_destroyed) {
@@ -121,6 +123,32 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _beforeComplete = _controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE;
 
         return this;
+    };
+
+
+    this.enableAdsMode = function(clickThroughUrl) {
+        if (_inited || _destroyed) {
+            return;
+        }
+        this.addAdProgramTimeListener();
+        this.applyProviderListeners(_instreamProvider);
+        this.on(INSTREAM_CLICK, () => {
+            if (_model.get('state') === STATE_PAUSED) {
+                _controller.playVideo();
+            } else if (clickThroughUrl) {
+                _controller.trigger(AD_CLICK, { clickThroughUrl });
+                _controller.pause();
+                window.open(clickThroughUrl);
+            }
+        });
+        return this;
+    };
+
+    this.updateTimeInAdsMode = function(event) {
+        if (!_instreamProvider) {
+            return;
+        }
+        _instreamProvider.trigger(MEDIA_TIME, event);
     };
 
     function triggerPlayRejected() { 
