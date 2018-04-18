@@ -248,6 +248,17 @@ Object.assign(Controller.prototype, {
                         index: _model.get('item'),
                         item: playlistItem
                     });
+                    const { title, image } = playlistItem;
+                    if ('mediaSession' in navigator && title && image) {
+                        navigator.mediaSession.metadata = new MediaMetadata({
+                            title: title,
+                            artist: window.location.hostname,
+                            artwork: [
+                                { src: image, sizes: '384x384' }
+                            ]
+                        });
+                    }
+                    
                 }
             });
 
