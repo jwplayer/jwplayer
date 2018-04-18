@@ -886,7 +886,6 @@ Object.assign(Controller.prototype, {
             let customButtons = _model.get('customButtons') || [];
 
             customButtons = customButtons.filter(
-                _model.get('customButtons'),
                 (button) => button.id !== id
             );
 
