@@ -484,6 +484,7 @@ Object.assign(Controller.prototype, {
 
                     _model.once('change:autostartMuted', function(model) {
                         model.off('change:viewable', _checkPlayOnViewable);
+                        _this.trigger(MEDIA_MUTE, { mute: _model.getMute() });
                     });
                 }
 
