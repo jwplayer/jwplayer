@@ -259,7 +259,7 @@ Object.assign(Controller.prototype, {
                         item: playlistItem
                     });
                     const { title, image } = playlistItem;
-                    if ('mediaSession' in navigator && title && image) {
+                    if ('mediaSession' in navigator && (title || image)) {
                         navigator.mediaSession.metadata = new window.MediaMetadata({
                             title: title,
                             artist: window.location.hostname,
