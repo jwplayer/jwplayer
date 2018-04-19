@@ -244,10 +244,6 @@ Object.assign(Controller.prototype, {
 
             _model.change('playlistItem', function(model, playlistItem) {
                 if (playlistItem) {
-                    _this.trigger(PLAYLIST_ITEM, {
-                        index: _model.get('item'),
-                        item: playlistItem
-                    });
                     const { title, image } = playlistItem;
                     if ('mediaSession' in navigator && (title || image)) {
                         navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -258,6 +254,10 @@ Object.assign(Controller.prototype, {
                             ]
                         });
                     }
+                    _this.trigger(PLAYLIST_ITEM, {
+                        index: _model.get('item'),
+                        item: playlistItem
+                    });
                 }
             });
 
