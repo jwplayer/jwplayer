@@ -264,10 +264,10 @@ Object.assign(Controller.prototype, {
                     const { title, image } = playlistItem;
                     if ('mediaSession' in navigator && (title || image)) {
                         navigator.mediaSession.metadata = new window.MediaMetadata({
-                            title: title,
+                            title,
                             artist: window.location.hostname,
                             artwork: [
-                                { src: image, sizes: '384x384' }
+                                { src: image }
                             ]
                         });
                     }
