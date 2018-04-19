@@ -10,7 +10,6 @@ import {
     PLAYER_STATE, STATE_PAUSED, STATE_BUFFERING, STATE_COMPLETE,
     MEDIA_VISUAL_QUALITY
 } from 'events/events';
-import {_isNumber} from "../utils/underscore";
 
 export default class MediaController extends Eventable {
     constructor(provider, model) {
