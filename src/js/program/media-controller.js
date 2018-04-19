@@ -10,6 +10,7 @@ import {
     PLAYER_STATE, STATE_PAUSED, STATE_BUFFERING, STATE_COMPLETE,
     MEDIA_VISUAL_QUALITY
 } from 'events/events';
+import {_isNumber} from "../utils/underscore";
 
 export default class MediaController extends Eventable {
     constructor(provider, model) {
@@ -161,7 +162,8 @@ export default class MediaController extends Eventable {
     }
 
     _playbackComplete() {
-        const { provider } = this;
+        const { item, provider } = this;
+        delete item.starttime;
         this.beforeComplete = false;
         provider.setState(STATE_COMPLETE);
         this.trigger(MEDIA_COMPLETE, {});
