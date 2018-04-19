@@ -169,10 +169,11 @@ export default class RightClick {
 
     addHideMenuHandlers() {
         this.removeHideMenuHandlers();
-        if (OS.iOS) {
-            this.playerElement.addEventListener('touchstart', this.hideMenuHandler);
-            document.addEventListener('touchstart', this.hideMenuHandler);
-        } else {
+
+        this.playerElement.addEventListener('touchstart', this.hideMenuHandler);
+        document.addEventListener('touchstart', this.hideMenuHandler);
+
+        if (!OS.iOS) {
             this.playerElement.addEventListener('click', this.hideMenuHandler);
             document.addEventListener('click', this.hideMenuHandler);
             // Track if the mouse is above the menu or not
