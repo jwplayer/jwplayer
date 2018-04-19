@@ -162,7 +162,9 @@ export default class MediaController extends Eventable {
 
     _playbackComplete() {
         const { item, provider } = this;
-        delete item.starttime;
+        if (item) {
+            delete item.starttime;
+        }
         this.beforeComplete = false;
         provider.setState(STATE_COMPLETE);
         this.trigger(MEDIA_COMPLETE, {});

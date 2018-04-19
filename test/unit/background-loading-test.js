@@ -67,6 +67,9 @@ describe('Background Loading', function () {
         it('triggers beforeComplete when false and the media has already ended', function () {
             const onComplete = sinon.spy();
             mediaController.container = container;
+            mediaController.item = {
+                starttime: 42
+            }
             mediaController.beforeComplete = true;
             mediaController.background = true;
             mediaController.on('complete', onComplete);
@@ -75,6 +78,7 @@ describe('Background Loading', function () {
             mediaController.background = false;
             expect(onComplete.calledOnce).to.equal(true);
             expect(mediaController.beforeComplete).to.equal(false);
+            expect(mediaController.item.starttime).to.not.exist;
         });
     });
 
