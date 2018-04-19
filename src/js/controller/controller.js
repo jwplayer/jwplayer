@@ -244,6 +244,7 @@ Object.assign(Controller.prototype, {
 
             _model.change('playlistItem', function(model, playlistItem) {
                 if (playlistItem) {
+<<<<<<< HEAD
                     const { title, image } = playlistItem;
                     if ('mediaSession' in navigator && (title || image)) {
                         navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -258,6 +259,8 @@ Object.assign(Controller.prototype, {
                         index: _model.get('item'),
                         item: playlistItem
                     });
+=======
+>>>>>>> create metadata before playlist_item event triggers
                     const { title, image } = playlistItem;
                     if ('mediaSession' in navigator && (title || image)) {
                         navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -268,6 +271,10 @@ Object.assign(Controller.prototype, {
                             ]
                         });
                     }
+                    _this.trigger(PLAYLIST_ITEM, {
+                        index: _model.get('item'),
+                        item: playlistItem
+                    });
                 }
             });
 
