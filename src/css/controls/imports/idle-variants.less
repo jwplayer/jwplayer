@@ -38,6 +38,37 @@
                 background-color: fade(@black, 70%);
             }
         }
+
+        &.jw-ab-idle-label {
+            filter: drop-shadow(1px 1px 5px rgba(12, 26, 71, 0.25));
+            font: normal 26px/1 Arial, Helvetica, sans-serif;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+
+            &::after {
+                content: "Play";
+                display: block;
+                line-height: 1;
+                position: absolute;
+                text-align: center;
+                text-indent: 0.25em;
+                top: 100%;
+                width: 100%;
+            }
+
+            .jw-flag-small-player& {
+                font-size: 16px;
+            }
+
+            .jw-breakpoint-0& {
+                font-size: 12px;
+            }
+
+            .jw-breakpoint-2&,
+            .jw-breakpoint-3& {
+                font-size: 22px;
+            }
+        }
     }
 }
 
