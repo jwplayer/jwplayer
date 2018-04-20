@@ -14,7 +14,7 @@ export const Loaders = {
             const provider = require('providers/html5').default;
             registerProvider(provider);
             return provider;
-        }, chunkLoadErrorHandler, 'provider.html5');
+        }, chunkLoadErrorHandler(152), 'provider.html5');
     }
 };
 

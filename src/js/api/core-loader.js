@@ -16,9 +16,13 @@ export default function loadCoreBundle(model) {
     return bundlePromise;
 }
 
-export function chunkLoadErrorHandler(/* error */) {
+export function chunkLoadErrorHandler(code) {
     // Webpack require.ensure error: "Loading chunk 3 failed"
-    throw new Error('Network error');
+    return () => {
+        const error = new Error('Network error');
+        error.code = code;
+        throw error;
+    };
 }
 
 export function selectBundle(model) {
@@ -79,7 +83,7 @@ function loadControlsPolyfillHtml5Bundle() {
         ControlsLoader.controls = require('view/controls/controls').default;
         registerProvider(require('providers/html5').default);
         return CoreMixin;
-    }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills.html5');
+    }, chunkLoadErrorHandler(105), 'jwplayer.core.controls.polyfills.html5');
     bundleContainsProviders.html5 = loadPromise;
     return loadPromise;
 }
@@ -94,7 +98,7 @@ function loadControlsHtml5Bundle() {
         ControlsLoader.controls = require('view/controls/controls').default;
         registerProvider(require('providers/html5').default);
         return CoreMixin;
-    }, chunkLoadErrorHandler, 'jwplayer.core.controls.html5');
+    }, chunkLoadErrorHandler(104), 'jwplayer.core.controls.html5');
     bundleContainsProviders.html5 = loadPromise;
     return loadPromise;
 }
@@ -109,7 +113,7 @@ function loadControlsPolyfillBundle() {
         const CoreMixin = require('controller/controller').default;
         ControlsLoader.controls = require('view/controls/controls').default;
         return CoreMixin;
-    }, chunkLoadErrorHandler, 'jwplayer.core.controls.polyfills');
+    }, chunkLoadErrorHandler(103), 'jwplayer.core.controls.polyfills');
 }
 
 function loadControlsBundle() {
@@ -120,7 +124,7 @@ function loadControlsBundle() {
         const CoreMixin = require('controller/controller').default;
         ControlsLoader.controls = require('view/controls/controls').default;
         return CoreMixin;
-    }, chunkLoadErrorHandler, 'jwplayer.core.controls');
+    }, chunkLoadErrorHandler(102), 'jwplayer.core.controls');
 }
 
 function loadCore() {
@@ -129,7 +133,7 @@ function loadCore() {
             'controller/controller'
         ], function (require) {
             return require('controller/controller').default;
-        }, chunkLoadErrorHandler, 'jwplayer.core');
+        }, chunkLoadErrorHandler(101), 'jwplayer.core');
     });
 }
 
@@ -139,7 +143,7 @@ function loadIntersectionObserverIfNeeded() {
             'intersection-observer'
         ], function (require) {
             return require('intersection-observer');
-        }, chunkLoadErrorHandler, 'polyfills.intersection-observer');
+        }, chunkLoadErrorHandler(120), 'polyfills.intersection-observer');
     }
     return resolved;
 }

@@ -328,7 +328,7 @@ const CaptionsRenderer = function (viewModel) {
     function loadWebVttPolyfill() {
         return require.ensure(['polyfills/webvtt'], function (require) {
             _WebVTT = require('polyfills/webvtt').default;
-        }, chunkLoadErrorHandler, 'polyfills.webvtt');
+        }, chunkLoadErrorHandler(121), 'polyfills.webvtt');
     }
 
     _model.on('change:playlistItem', function () {

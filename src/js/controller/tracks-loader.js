@@ -96,5 +96,5 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
 function loadVttParser() {
     return require.ensure(['parsers/captions/vttparser'], function (require) {
         return require('parsers/captions/vttparser').default;
-    }, chunkLoadErrorHandler, 'vttparser');
+    }, chunkLoadErrorHandler(131), 'vttparser');
 }
