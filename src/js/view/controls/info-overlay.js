@@ -51,7 +51,9 @@ export default function (container, model, api, onVisibility) {
                     durationText = 'DVR';
                     break;
                 default:
-                    durationText = timeFormat(duration);
+                    if (duration) {
+                        durationText = timeFormat(duration);
+                    }
             }
             durationContainer.textContent = durationText;
         }, instance);
