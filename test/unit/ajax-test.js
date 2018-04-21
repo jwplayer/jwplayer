@@ -140,6 +140,46 @@ describe('utils.ajax', function() {
         });
     });
 
+    it('supports a custom xhr argument', function (done) {
+        const customXhr = new window.XMLHttpRequest();
+        const xmlHttpRequest = ajax({
+            xhr: customXhr,
+            url: '/base/test/files/playlist.json',
+            oncomplete: function (xhrResult) {
+                expect(xhrResult).to.equal(customXhr);
+                expect(xhrResult.status).to.equal(200);
+                done();
+            },
+            onerror: function(message, requestUrl, xhrResult) {
+                assert.fail(xhrResult.status, 200, message, requestUrl);
+                done();
+            }
+        });
+        expect(xmlHttpRequest).to.equal(customXhr);
+    });
+
+    it('supports a requestFilter xhr argument', function (done) {
+        const customXhr = new window.XMLHttpRequest();
+        const xmlHttpRequest = ajax({
+            requestFilter: function(request) {
+                expect(request).to.have.property('url').which.equals('/base/test/files/playlist.json');
+                expect(request).to.have.property('xhr');
+                return customXhr;
+            },
+            url: '/base/test/files/playlist.json',
+            oncomplete: function (xhrResult) {
+                expect(xhrResult).to.equal(customXhr);
+                expect(xhrResult.status).to.equal(200);
+                done();
+            },
+            onerror: function(message, requestUrl, xhrResult) {
+                assert.fail(xhrResult.status, 200, message, requestUrl);
+                done();
+            }
+        });
+        expect(xmlHttpRequest).to.equal(customXhr);
+    });
+
     it('error "Error loading file" (bad request)', function (done) {
         ajax({
             oncomplete: function () {

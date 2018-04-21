@@ -1,14 +1,11 @@
 import { parseXML } from 'utils/parser';
-import _ from 'utils/underscore';
 
 const noop = function() {};
 
-let useDomParser = false;
-
 // TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url)). It's used here for IE9 compatibility
 export function crossdomain(uri) {
-    var a = document.createElement('a');
-    var b = document.createElement('a');
+    const a = document.createElement('a');
+    const b = document.createElement('a');
     a.href = location.href;
     try {
         b.href = uri;
@@ -19,12 +16,12 @@ export function crossdomain(uri) {
 }
 
 export function ajax(url, completeCallback, errorCallback, args) {
-    if (_.isObject(url)) {
+    if (url === Object(url)) {
         args = url;
         url = args.url;
     }
-    var xhr;
-    var options = Object.assign({
+    let xhr;
+    const options = Object.assign({
         xhr: null,
         url: url,
         withCredentials: false,
@@ -35,25 +32,37 @@ export function ajax(url, completeCallback, errorCallback, args) {
         onerror: errorCallback || noop,
         mimeType: (args && !args.responseType) ? 'text/xml' : '',
         requireValidXML: false, /* Require responseXML */
-        responseType: (args && args.plainText) ? 'text' : '' /* xhr.responseType ex: "json" or "text" */
+        responseType: (args && args.plainText) ? 'text' : '', /* xhr.responseType ex: "json" or "text" */
+        useDomParser: false,
+        requestFilter: null
     }, args);
+    const requestError = _requestError('Error loading file', options);
 
-    if ('XDomainRequest' in window && crossdomain(url)) {
-        // IE8 / 9
-        xhr = options.xhr = new window.XDomainRequest();
-        xhr.onload = _ajaxComplete(options);
-        xhr.ontimeout = xhr.onprogress = noop;
-        useDomParser = true;
-    } else if ('XMLHttpRequest' in window) {
+    if ('XMLHttpRequest' in window) {
         // Firefox, Chrome, Opera, Safari
-        xhr = options.xhr = new window.XMLHttpRequest();
-        xhr.onreadystatechange = _readyStateChangeHandler(options);
+        xhr = options.xhr = options.xhr || new window.XMLHttpRequest();
     } else {
         // browser cannot make xhr requests
         options.onerror('', url);
         return;
     }
-    var requestError = _requestError('Error loading file', options);
+    if (typeof options.requestFilter === 'function') {
+        let result;
+        try {
+            result = options.requestFilter({
+                url,
+                xhr
+            });
+        } catch (e) {
+            requestError(e);
+            return xhr;
+        }
+        if (result && 'open' in result && 'send' in result) {
+            xhr = options.xhr = result;
+        }
+    }
+    xhr.onreadystatechange = _readyStateChangeHandler(options);
+
     xhr.onerror = requestError;
 
     if ('overrideMimeType' in xhr) {
@@ -61,7 +70,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
             xhr.overrideMimeType(options.mimeType);
         }
     } else {
-        useDomParser = true;
+        options.useDomParser = true;
     }
 
     try {
@@ -114,12 +123,12 @@ export function abortAjax(xhr) {
 
 function _requestError(message, options) {
     return function(e) {
-        var xhr = e.currentTarget || options.xhr;
+        const xhr = e.currentTarget || options.xhr;
         clearTimeout(options.timeoutId);
         // Handle Access-Control-Allow-Origin wildcard error when using withCredentials to send cookies
         if (options.retryWithoutCredentials && options.xhr.withCredentials) {
             abortAjax(xhr);
-            var args = Object.assign({}, options, {
+            const args = Object.assign({}, options, {
                 xhr: null,
                 withCredentials: false,
                 retryWithoutCredentials: false
@@ -133,11 +142,11 @@ function _requestError(message, options) {
 
 function _readyStateChangeHandler(options) {
     return function(e) {
-        var xhr = e.currentTarget || options.xhr;
+        const xhr = e.currentTarget || options.xhr;
         if (xhr.readyState === 4) {
             clearTimeout(options.timeoutId);
             if (xhr.status >= 400) {
-                var message;
+                let message;
                 if (xhr.status === 404) {
                     message = 'File not found';
                 } else {
@@ -154,7 +163,7 @@ function _readyStateChangeHandler(options) {
 
 function _ajaxComplete(options) {
     return function(e) {
-        var xhr = e.currentTarget || options.xhr;
+        const xhr = e.currentTarget || options.xhr;
         clearTimeout(options.timeoutId);
         if (options.responseType) {
             if (options.responseType === 'json') {
@@ -162,8 +171,8 @@ function _ajaxComplete(options) {
             }
         } else {
             // Handle the case where an XML document was returned with an incorrect MIME type.
-            var xml = xhr.responseXML;
-            var firstChild;
+            let xml = xhr.responseXML;
+            let firstChild;
             if (xml) {
                 try {
                     // This will throw an error on Windows Mobile 7.5.
@@ -176,8 +185,7 @@ function _ajaxComplete(options) {
             if (xml && firstChild) {
                 return _xmlResponse(xhr, xml, options);
             }
-            // IE9
-            if (useDomParser && xhr.responseText && !xml) {
+            if (options.useDomParser && xhr.responseText && !xml) {
                 xml = parseXML(xhr.responseText);
                 if (xml && xml.firstChild) {
                     return _xmlResponse(xhr, xml, options);
@@ -195,7 +203,7 @@ function _ajaxComplete(options) {
 function _jsonResponse(xhr, options) {
     // insure that xhr.response is parsed JSON
     if (!xhr.response ||
-        (_.isString(xhr.response) && xhr.responseText.substr(1) !== '"')) {
+        (typeof xhr.response === 'string' && xhr.responseText.substr(1) !== '"')) {
         try {
             xhr = Object.assign({}, xhr, {
                 response: JSON.parse(xhr.responseText)
@@ -211,7 +219,7 @@ function _jsonResponse(xhr, options) {
 
 function _xmlResponse(xhr, xml, options) {
     // Handle DOMParser 'parsererror'
-    var doc = xml.documentElement;
+    const doc = xml.documentElement;
     if (options.requireValidXML &&
             (doc.nodeName === 'parsererror' || doc.getElementsByTagName('parsererror').length)) {
         options.onerror('Invalid XML', options.url, xhr);
