@@ -36,7 +36,7 @@ export default class MediaController extends Eventable {
 
         model.set('playRejected', false);
         let playPromise = resolved;
-        if (mediaModel.get('setup')) {
+        if (mediaModel.get('setup') && this.mediaElement) {
             playPromise = provider.play() || resolved;
         } else {
             mediaModel.set('setup', true);
