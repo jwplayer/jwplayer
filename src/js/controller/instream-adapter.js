@@ -115,8 +115,6 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             clickHandler.setAlternateClickHandlers(() => {}, null);
         }
 
-        this.setText(_model.get('localization').loadingAd);
-
         // We need to know if we're beforeComplete before we reattach, since re-attaching will toggle the beforeComplete flag back if set
         _beforeComplete = _controller.isBeforeComplete() || _model.get('state') === STATE_COMPLETE;
 
@@ -194,6 +192,9 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_destroyed || !_inited) {
             return Promise.reject(new Error('Instream not setup'));
         }
+        
+        this.setText(_model.get('localization').loadingAd);
+
         // Copy the playlist item passed in and make sure it's formatted as a proper playlist item
         let playlist = item;
         if (_.isArray(item)) {
