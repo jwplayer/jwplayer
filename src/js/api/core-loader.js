@@ -4,6 +4,7 @@ import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import { ControlsLoader } from 'controller/controls-loader';
 import { resolved } from 'polyfills/promise';
+import { PlayerError, SETUP_ERROR_LOADING_CORE_JS } from 'api/errors';
 
 let bundlePromise = null;
 
@@ -16,12 +17,10 @@ export default function loadCoreBundle(model) {
     return bundlePromise;
 }
 
-export function chunkLoadErrorHandler(code) {
+export function chunkLoadErrorHandler(code, error) {
     // Webpack require.ensure error: "Loading chunk 3 failed"
     return () => {
-        const error = new Error('Network error');
-        error.code = code;
-        throw error;
+        throw new PlayerError('Network Error', SETUP_ERROR_LOADING_CORE_JS + code, error);
     };
 }
 
