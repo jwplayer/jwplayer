@@ -150,6 +150,13 @@ function View(_api, _model) {
         }
     };
 
+    this.checkOrientation = function() {
+        if (OS.android && Browser.chrome) {
+            const orientationType = window.screen.orientation.type;
+            this.model.set('fullscreen', orientationType === 'landscape-primary' || orientationType === 'landscape-secondary');
+        }
+    };
+
     function _responsiveListener() {
         cancelAnimationFrame(_resizeContainerRequestId);
         _resizeContainerRequestId = requestAnimationFrame(_responsiveUpdate);
