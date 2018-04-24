@@ -25,8 +25,9 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
     CAPTIONS_LIST, RESIZE, MEDIA_VISUAL_QUALITY } from 'events/events';
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
-import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
+import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
 import Item from 'playlist/item';
+import { ERROR_LOADING_PLAYLIST } from 'api/errors';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -333,9 +334,7 @@ Object.assign(Controller.prototype, {
                     _model.attributes.item = 0;
                     _model.attributes.itemReady = false;
                     const loadPlaylistPromise = _loadPlaylist(item).catch(error => {
-                        _this.triggerError({
-                            message: `Error loading playlist: ${error.message}`
-                        });
+                        _this.triggerError(error);
                     });
                     updatePlaylistCancelable = cancelable((data) => {
                         if (data) {
@@ -356,9 +355,9 @@ Object.assign(Controller.prototype, {
                     return;
             }
             loadPromise.catch(error => {
-                _this.triggerError({
-                    message: `Playlist error: ${error.message}`
-                });
+                error.message = `Playlist error: ${error.message}`;
+                error.code = (error.code || 0) + ERROR_LOADING_PLAYLIST;
+                _this.triggerError(error);
             });
 
             loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
@@ -371,6 +370,7 @@ Object.assign(Controller.prototype, {
                     resolve(data);
                 });
                 loader.on(ERROR, function(error) {
+                    error.code = (error || 0) + ERROR_LOADING_PLAYLIST;
                     reject(error);
                 }, this);
                 loader.load(toLoad);
@@ -923,6 +923,7 @@ Object.assign(Controller.prototype, {
                 _model.set('feedData', feedData);
                 _model.set('playlist', filteredPlaylist);
             } catch (error) {
+                error.code = (error.code || 0) + ERROR_LOADING_PLAYLIST;
                 return Promise.reject(error);
             }
             return _setItem(_model.get('item'));

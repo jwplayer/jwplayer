@@ -30,6 +30,16 @@ export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
 export const SETUP_ERROR_LOADING_CORE_JS = 101000;
 
 /**
+ * @enum {ErrorCode} Setup failed because the playlist failed to load
+ */
+export const SETUP_ERROR_LOADING_PLAYLIST = 102000;
+
+/**
+ * @enum {ErrorCode} Playback stopped because the playlist failed to load
+ */
+export const ERROR_LOADING_PLAYLIST = 203000;
+
+/**
  * Class representing the jwplayer() API.
  * Creates an instance of the player.
  * @class PlayerError
@@ -38,9 +48,9 @@ export const SETUP_ERROR_LOADING_CORE_JS = 101000;
  * @param {sourceError} [Error] - The lower level error, caught by the player, which resulted in this error.
  */
 export class PlayerError extends Error {
-    constructor(message, code, sourceError) {
+    constructor(message, code, sourceError = null) {
         super(message);
         this.code = isValidNumber(code) ? code : null;
-        this.sourceError = sourceError || null;
+        this.sourceError = sourceError;
     }
 }

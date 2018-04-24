@@ -4,7 +4,7 @@ import { PLAYLIST_LOADED, ERROR } from 'events/events';
 describe('playlist/loader', function() {
     this.timeout(5000);
 
-    it('Test JSON feed', function (done) {
+    it('loads a valid JSON feed', function (done) {
         const loader = new PlaylistLoader();
         const expectedJSON = [{
             file: 'http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4'
@@ -26,7 +26,7 @@ describe('playlist/loader', function() {
         loader.load('/base/test/files/playlist.json');
     });
 
-    it('Test XML feed', function (done) {
+    it('loads a valid XML feed', function (done) {
         const loader = new PlaylistLoader();
         const mediaid = 'TQjoCPTk';
         loader.on(PLAYLIST_LOADED, function (data) {
@@ -43,19 +43,26 @@ describe('playlist/loader', function() {
         loader.load('/base/test/files/playlist.xml');
     });
 
-    it('Test invalid feed', function (done) {
+    it('throws a PlayerError when loading an invalid JSON feed', function (done) {
         const loader = new PlaylistLoader();
+        let numCalls = 0;
+        let expectedCalls = 2;
 
         loader.on(PLAYLIST_LOADED, function (data) {
             expect(false, 'No error was fired with invalid JSON feed ' + data).to.be.true;
             done();
         });
 
-        loader.on(ERROR, function() {
+        loader.on(ERROR, function(e) {
             expect(true, 'Invalid JSON feed successfully fired error').to.be.true;
-            done();
+            expect(e.code).to.equal(21);
+            expect(e.message).to.equal('Error loading playlist: Not a valid RSS/JSON feed');
+            numCalls += 1;
+            if (numCalls === expectedCalls) {
+                done();
+            }
         });
-
+        loader.load('/base/test/files/invalid.xml');
         loader.load('/base/test/files/invalid.json');
     });
 });

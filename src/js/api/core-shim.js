@@ -13,6 +13,7 @@ import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
 import { Features } from 'environment/environment';
+import { SETUP_ERROR_LOADING_PLAYLIST } from 'api/errors';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -119,7 +120,11 @@ Object.assign(CoreShim.prototype, {
             storage.track(coreModel);
 
             // Set the active playlist item after plugins are loaded and the view is setup
-            return this.updatePlaylist(coreModel.get('playlist'), coreModel.get('feedData'));
+            return this.updatePlaylist(coreModel.get('playlist'), coreModel.get('feedData'))
+                .catch((error) => {
+                    error.code += (error.code || 0) + SETUP_ERROR_LOADING_PLAYLIST;
+                    throw error;
+                });
         }).then(() => {
             if (!this.setup) {
                 return;
