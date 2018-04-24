@@ -823,12 +823,3 @@ export default {
     where,
     without
 };
-
-// export {
-//     property, bind, forEach, identity, difference, isNumber, isFinite, filter, some,
-//     isNaN, isString, contains, isBoolean, indexOf, isValidNumber, memoize, findWhere,
-//     matches, find, map, where,
-//     isObject, size, groupBy, reduce, every, isUndefined, any, defaults, constant,
-//     isFunction, pick, invert,
-//     throttle, extend
-// };
