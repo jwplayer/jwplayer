@@ -25,6 +25,11 @@ export const SETUP_ERROR_LICENSE_INVALID = 100012;
 export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
 
 /**
+ * @enum {ErrorCode} Setup failed because a core module failed to load.
+ */
+export const SETUP_ERROR_LOADING_CORE_JS = 101000;
+
+/**
  * Class representing the jwplayer() API.
  * Creates an instance of the player.
  * @class PlayerError

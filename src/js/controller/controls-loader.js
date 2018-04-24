@@ -12,7 +12,7 @@ export function loadControls() {
             return ControlsModule;
         }, function() {
             controlsPromise = null;
-            chunkLoadErrorHandler();
+            chunkLoadErrorHandler(130)();
         }, 'jwplayer.controls');
     }
     return controlsPromise;
