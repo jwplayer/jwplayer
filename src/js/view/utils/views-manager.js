@@ -42,9 +42,12 @@ function scheduleResponsiveRedraw() {
         views.forEach(view => {
             view.checkResized();
         });
-        views.forEach(view => {
-            view.checkOrientation();
-        });
+    });
+}
+
+function checkOrientation(event) {
+    views.forEach(view => {
+        view.checkOrientation(event.target.type);
     });
 }
 
@@ -58,12 +61,14 @@ document.addEventListener('visibilitychange', onVisibilityChange);
 document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 window.addEventListener('resize', scheduleResponsiveRedraw);
 window.addEventListener('orientationchange', scheduleResponsiveRedraw);
+screen.orientation.addEventListener('change', checkOrientation);
 
 window.addEventListener('beforeunload', () => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
     document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
     window.removeEventListener('resize', scheduleResponsiveRedraw);
     window.removeEventListener('orientationchange', scheduleResponsiveRedraw);
+    screen.orientation.removeEventListener('change', checkOrientation);
 });
 
 export default {
