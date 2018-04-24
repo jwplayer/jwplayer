@@ -150,10 +150,9 @@ function View(_api, _model) {
         }
     };
 
-    this.checkOrientation = function() {
+    this.checkOrientation = function(type) {
         if (OS.android && Browser.chrome) {
-            const orientationType = window.screen.orientation.type;
-            this.model.set('fullscreen', orientationType === 'landscape-primary' || orientationType === 'landscape-secondary');
+            _this.model.set('fullscreen', type === 'landscape-primary' || type === 'landscape-secondary');
         }
     };
 
