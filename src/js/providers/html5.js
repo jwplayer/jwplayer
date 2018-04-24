@@ -9,12 +9,12 @@ import VideoAttached from 'providers/video-attached-mixin';
 import { style } from 'utils/css';
 import utils from 'utils/helpers';
 import { emptyElement } from 'utils/dom';
-import _ from 'utils/underscore';
 import DefaultProvider from 'providers/default';
 import Events from 'utils/backbone.events';
 import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
+import { map } from 'utils/underscore';
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
@@ -308,7 +308,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     function _getPublicLevels(levels) {
         var publicLevels;
         if (utils.typeOf(levels) === 'array' && levels.length > 0) {
-            publicLevels = _.map(levels, function(level, i) {
+            publicLevels = levels.map(function(level, i) {
                 return {
                     label: level.label || i
                 };
@@ -668,7 +668,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.getQualityLevels = function() {
-        return _.map(_levels, level => qualityLevel(level));
+        if (Array.isArray(_levels)) {
+            return _levels.map(level => qualityLevel(level));
+        }
+        return [];
     };
 
     this.getName = function() {
@@ -696,7 +699,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 _currentAudioTrackIndex = 0;
                 tracks[_currentAudioTrackIndex].enabled = true;
             }
-            _audioTracks = _.map(tracks, function(track) {
+            _audioTracks = map(tracks, function(track) {
                 var _track = {
                     name: track.label || track.language,
                     language: track.language

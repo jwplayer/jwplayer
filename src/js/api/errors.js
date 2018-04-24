@@ -1,4 +1,4 @@
-import { _isValidNumber } from 'utils/underscore';
+import { isValidNumber } from 'utils/underscore';
 /**
  * @typedef {number} ErrorCode
  * @module errors
@@ -40,7 +40,7 @@ export const SETUP_ERROR_LOADING_CORE_JS = 101000;
 export class PlayerError extends Error {
     constructor(message, code, sourceError) {
         super(message);
-        this.code = _isValidNumber(code) ? code : null;
+        this.code = isValidNumber(code) ? code : null;
         this.sourceError = sourceError || null;
     }
 }
