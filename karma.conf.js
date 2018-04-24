@@ -125,9 +125,10 @@ module.exports = function(config) {
         captureTimeout: 120 * 1000, // default 60000
 
         files: [
-            { pattern: 'test/index.js' },
-            { pattern: 'test/files/*', included: false },
-            { pattern: 'src/js/*', included: false }
+            { pattern: './node_modules/intersection-observer/intersection-observer.js' },
+            { pattern: './test/index.js' },
+            { pattern: './test/files/*', included: false },
+            { pattern: './src/js/*', included: false }
         ],
 
         // preprocess matching files before serving them to the browser

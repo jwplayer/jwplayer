@@ -69,8 +69,8 @@ describe('Setup', function() {
         return expectSetupError({
             // playlist is undefined
         }).then(({ event }) => {
-            expect(event.message).to.equal('No playable sources found');
             expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
         });
     });
 
@@ -78,8 +78,8 @@ describe('Setup', function() {
         return expectSetupError({
             playlist: ''
         }).then(({ event }) => {
-            expect(event.message).to.equal('No playable sources found');
             expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
         });
     });
 
@@ -87,8 +87,8 @@ describe('Setup', function() {
         return expectSetupError({
             playlist: 1
         }).then(({ event }) => {
-            expect(event.message).to.equal('No playable sources found');
             expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
         });
     });
 
@@ -96,8 +96,8 @@ describe('Setup', function() {
         return expectSetupError({
             playlist: true
         }).then(({ event }) => {
-            expect(event.message).to.equal('No playable sources found');
             expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
         });
     });
 
@@ -105,8 +105,8 @@ describe('Setup', function() {
         return expectSetupError({
             playlist: []
         }).then(({ event }) => {
-            expect(event.message).to.equal('No playable sources found');
             expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
         });
     });
 
@@ -118,8 +118,8 @@ describe('Setup', function() {
 
             expect(playlist).to.be.an('array').that.is.empty;
 
-            expect(event.message).to.equal('No playable sources found');
             expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
         });
     });
 
