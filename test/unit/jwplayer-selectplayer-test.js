@@ -20,7 +20,7 @@ describe('jwplayer function', function() {
         for (let i = 10; i--;) {
             let player = jwplayer();
             if (player.remove) {
-                player.remove(); 
+                player.remove();
             }
         }
         // remove fixture

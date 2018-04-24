@@ -3,7 +3,7 @@ import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { ERROR } from 'events/events';
-import { findWhere, forEach } from 'utils/underscore';
+import { findWhere, each } from 'utils/underscore';
 
 // Used across all providers for loading tracks and handling browser track-related events
 const Tracks = {
@@ -519,7 +519,7 @@ function _addCueToTrack(renderNatively, track, vttCue) {
 
 function _removeCues(renderNatively, tracks) {
     if (tracks && tracks.length) {
-        forEach(tracks, function(track) {
+        each(tracks, function(track) {
             // Let IE & Edge handle cleanup of non-sideloaded text tracks for native rendering
             if (Browser.ie && renderNatively && /^(native|subtitle|cc)/.test(track._id)) {
                 return;
@@ -620,7 +620,7 @@ function _cueChangeHandler(e) {
     }
     var dataCues = [];
 
-    forEach(activeCues, function(cue) {
+    each(activeCues, function(cue) {
         if (cue.startTime < startTime) {
             return;
         }

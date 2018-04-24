@@ -1,4 +1,4 @@
-import { _isValidNumber } from 'utils/underscore';
+import { isValidNumber } from 'utils/underscore';
 /**
  * @typedef {number} ErrorCode
  * @module errors
@@ -35,7 +35,7 @@ export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
 export class PlayerError extends Error {
     constructor(message, code, sourceError) {
         super(message);
-        this.code = _isValidNumber(code) ? code : null;
+        this.code = isValidNumber(code) ? code : null;
         this.sourceError = sourceError || null;
     }
 }

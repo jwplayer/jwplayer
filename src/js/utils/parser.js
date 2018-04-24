@@ -1,5 +1,5 @@
 import { exists } from 'utils/validator';
-import { some, isNaN } from 'utils/underscore';
+import { any, isNaN } from 'utils/underscore';
 
 // Returns the absolute file path based on a relative filepath, and optional base path
 export function getAbsolutePath(path, base) {
@@ -44,7 +44,7 @@ export function isAbsolutePath(path) {
 }
 
 function containsParserErrors(childNodes) {
-    return some(childNodes, function(node) {
+    return any(childNodes, function(node) {
         return node.nodeName === 'parsererror';
     });
 }
