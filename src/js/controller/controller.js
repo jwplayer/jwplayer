@@ -250,7 +250,7 @@ Object.assign(Controller.prototype, {
                             title,
                             artist: window.location.hostname,
                             artwork: [
-                                { src: image }
+                                { src: image || '' }
                             ]
                         });
                     }
