@@ -61,14 +61,20 @@ document.addEventListener('visibilitychange', onVisibilityChange);
 document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 window.addEventListener('resize', scheduleResponsiveRedraw);
 window.addEventListener('orientationchange', scheduleResponsiveRedraw);
-screen.orientation.addEventListener('change', checkOrientation);
+
+if (screen.orientation) {
+    screen.orientation.addEventListener('change', checkOrientation);
+}
 
 window.addEventListener('beforeunload', () => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
     document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
     window.removeEventListener('resize', scheduleResponsiveRedraw);
     window.removeEventListener('orientationchange', scheduleResponsiveRedraw);
-    screen.orientation.removeEventListener('change', checkOrientation);
+
+    if (screen.orientation) {
+        screen.orientation.removeEventListener('change', checkOrientation);
+    }
 });
 
 export default {
