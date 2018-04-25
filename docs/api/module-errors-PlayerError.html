@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: BackgroundMedia</title>
+    <title>JSDoc: Class: PlayerError</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: BackgroundMedia</h1>
+    <h1 class="page-title">Class: PlayerError</h1>
 
     
 
@@ -28,7 +28,8 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>BackgroundMedia<span class="signature">()</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="module-errors.html">errors</a>~</span>PlayerError<span class="signature">(string, ErrorCode<span class="signature-attributes">opt</span>, Error<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
         
     
 </header>
@@ -41,13 +42,17 @@
     
 
     
-    <h4 class="name" id="BackgroundMedia"><span class="type-signature"></span>new BackgroundMedia<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="PlayerError"><span class="type-signature"></span>new PlayerError<span class="signature">(string, ErrorCode<span class="signature-attributes">opt</span>, Error<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    <p>Class representing the jwplayer() API.
+Creates an instance of the player.</p>
+</div>
 
 
 
@@ -57,14 +62,10 @@
 
 
 
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
+    <h5>Parameters:</h5>
     
 
-<table class="props">
+<table class="params">
     <thead>
     <tr>
         
@@ -73,6 +74,8 @@
 
         <th>Type</th>
 
+        
+        <th>Attributes</th>
         
 
         
@@ -86,74 +89,104 @@
 
         <tr>
             
-                <td class="name"><code>currentMedia</code></td>
+                <td class="name"><code>string</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">MediaController</span>
+<span class="param-type">message</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>The mediaController which has been placed into the background during playback.</p></td>
+            <td class="description last"><p>The error message.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>nextItem</code></td>
+                <td class="name"><code>ErrorCode</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Item</span>
+<span class="param-type">code</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>The playlist item loading in the background.</p></td>
+            <td class="description last"><p>The error code.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>nextMedia</code></td>
+                <td class="name"><code>Error</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Promise</span>
+<span class="param-type">sourceError</span>
 
 
             
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>A promise representing the media loading in the background. Resolves with the mediaController.</p></td>
+            <td class="description last"><p>The lower level error, caught by the player, which resulted in this error.</p></td>
         </tr>
 
     
     </tbody>
 </table>
+
+
 
 
 
