@@ -1,4 +1,4 @@
-import { _isValidNumber } from 'utils/underscore';
+import { isValidNumber } from 'utils/underscore';
 /**
  * @typedef {number} ErrorCode
  * @module errors
@@ -25,6 +25,11 @@ export const SETUP_ERROR_LICENSE_INVALID = 100012;
 export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
 
 /**
+ * @enum {ErrorCode} Setup failed because a core module failed to load.
+ */
+export const SETUP_ERROR_LOADING_CORE_JS = 101000;
+
+/**
  * Class representing the jwplayer() API.
  * Creates an instance of the player.
  * @class PlayerError
@@ -35,7 +40,7 @@ export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
 export class PlayerError extends Error {
     constructor(message, code, sourceError) {
         super(message);
-        this.code = _isValidNumber(code) ? code : null;
+        this.code = isValidNumber(code) ? code : null;
         this.sourceError = sourceError || null;
     }
 }

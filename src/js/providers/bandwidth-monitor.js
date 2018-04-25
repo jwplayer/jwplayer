@@ -1,5 +1,5 @@
 import { BANDWIDTH_ESTIMATE } from 'events/events';
-import { _isValidNumber } from 'utils/underscore';
+import { isValidNumber } from 'utils/underscore';
 
 export default function BandwidthMonitor(provider, initialEstimate) {
     let bandwidthMonitorInterval = null;
@@ -9,7 +9,7 @@ export default function BandwidthMonitor(provider, initialEstimate) {
             this.stop();
             setInterval(() => {
                 const bwEstimate = provider.getBandwidthEstimate();
-                if (!_isValidNumber(bwEstimate)) {
+                if (!isValidNumber(bwEstimate)) {
                     return;
                 }
                 bandwidthEstimate = bwEstimate;
