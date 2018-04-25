@@ -78,7 +78,7 @@ function primeMediaElementForPlayback(mediaElement) {
         // Clear the src for MSE providers who have already preloaded so that we do a full reload
         // The HTML5 provider already reloads identical sources, so we don't always need to reset if for non-blobs
         if (mediaElement.src.indexOf('blob') > -1) {
-            mediaElement.src = '';
+            mediaElement.removeAttribute('src');
         }
 
         const played = mediaElement.played;
