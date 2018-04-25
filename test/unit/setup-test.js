@@ -2,7 +2,12 @@ import instances from 'api/players';
 import Api from 'api/api';
 import ApiSettings from 'api/api-settings';
 
-describe('Setup', function() {
+describe('api.setup', function() {
+    /*
+     * This is an api.setup integration test.
+     * It verifies "setupError" and "ready" events for config.playlist values.
+    */
+
     this.timeout(3000);
 
     beforeEach(() => {
@@ -116,8 +121,7 @@ describe('Setup', function() {
         }).then(function ({ event, api }) {
             const playlist = api.getPlaylist();
 
-            expect(playlist).to.be.an('array').that.is.empty;
-
+            expect(playlist).to.be.an('array').that.has.lengthOf(0);
             expect(event.code).to.equal(undefined);
             expect(event.message).to.equal('No playable sources found');
         });
@@ -126,8 +130,38 @@ describe('Setup', function() {
     it('succeeds when model.playlist.sources is valid', function () {
         return expectReady({
             preload: 'none',
-            playlist: [{ sources: [{ file: 'http://playertest.longtailvideo.com/mp4.mp4' }] }]
-        }).then(({ event }) => {
+            playlist: [{
+                sources: [
+                    { file: 'http://playertest.longtailvideo.com/mp4.mp4' }
+                ]
+            }]
+        }).then(({ event, api }) => {
+            const playlist = api.getPlaylist();
+
+            expect(playlist).to.be.an('array').that.has.lengthOf(1);
+            expect(event.type).to.equal('ready');
+        });
+    });
+
+    it('succeeds with model.playlist.allSources when one source is valid', function () {
+        return expectReady({
+            preload: 'none',
+            playlist: [{
+                sources: [
+                    { file: 'foobar' }
+                ]
+            }, {
+                sources: [
+                    { file: 'http://playertest.longtailvideo.com/mp4.webm' },
+                    { file: 'http://playertest.longtailvideo.com/mp4.mp4' }
+                ]
+            }]
+        }).then(({ event, api }) => {
+            const playlist = api.getPlaylist();
+
+            expect(playlist).to.be.an('array').that.has.lengthOf(1);
+            expect(playlist[0], 'sources').to.have.property('sources').that.is.an('array').that.has.lengthOf(1);
+            expect(playlist[0], 'allSources').to.have.property('allSources').that.is.an('array').that.has.lengthOf(2);
             expect(event.type).to.equal('ready');
         });
     });

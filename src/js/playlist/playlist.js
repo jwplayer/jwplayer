@@ -51,10 +51,10 @@ export const fixSources = (item, model) => filterSources(formatSources(item, mod
 
 function formatSources(item, model) {
     const { attributes } = model;
-    const { sources, preload, drm } = item;
+    const { sources, allSources, preload, drm } = item;
     const withCredentials = fallbackIfUndefined(item.withCredentials, attributes.withCredentials);
 
-    return sources.map(function(originalSource) {
+    return (allSources || sources).map(function(originalSource) {
         if (originalSource !== Object(originalSource)) {
             return null;
         }
