@@ -1,147 +1,134 @@
+import instances from 'api/players';
 import Api from 'api/api';
 import ApiSettings from 'api/api-settings';
-import $ from 'jquery';
 
 describe('Setup', function() {
     this.timeout(3000);
 
-    beforeEach(function() {
+    beforeEach(() => {
         ApiSettings.debug = true;
-        // remove fixture
-        $('body').append('<div id="test-container"><div id="player"></div></div>');
+        // add fixture
+        const fixture = document.createElement('div');
+        const container = document.createElement('div');
+        fixture.id = 'test-fixture';
+        container.id = 'player';
+        fixture.appendChild(container);
+        document.body.appendChild(fixture);
     });
 
-    afterEach(function() {
+    afterEach(() => {
         ApiSettings.debug = false;
-        // remove fixture
-        $('#test-container').remove();
+        // remove fixture and player instances
+        const fixture = document.querySelector('#test-fixture');
+        if (fixture.parentNode) {
+            fixture.parentNode.removeChild(fixture);
+        }
+        for (let i = instances.length; i--;) {
+            instances[i].remove();
+        }
     });
 
-    it('fails when playlist is undefined', function (done) {
+    function expectReady(model) {
+        const container = document.querySelector('#player');
+        const api = new Api(container);
 
-        var readyHandler = function() {
-            expect(false, 'setup should not succeed').to.be.true;
-        };
-
-        var errorHandler = function (message) {
-            expect(message, 'setup failed with message: ' + message).to.be.true;
-        };
-
-        testSetup(done, {}, readyHandler, errorHandler);
-    });
-
-    it('fails when playlist is an empty string', function (done) {
-
-        var readyHandler = function() {
-            expect(false, 'setup should not succeed').to.be.true;
-        };
-
-        var errorHandler = function (message) {
-            expect(message, 'setup failed with message: ' + message).to.be.true;
-        };
-
-        testSetup(done, { playlist: '' }, readyHandler, errorHandler);
-    });
-
-    it('fails when playlist is a number', function (done) {
-
-        var readyHandler = function() {
-            expect(false, 'setup should not succeed').to.be.true;
-        };
-
-        var errorHandler = function (message) {
-            expect(message, 'setup failed with message: ' + message).to.be.true;
-        };
-
-        testSetup(done, { playlist: 1 }, readyHandler, errorHandler);
-    });
-
-    it('fails when playlist is a boolean', function (done) {
-
-        var readyHandler = function() {
-            expect(false, 'setup should not succeed').to.be.true;
-        };
-
-        var errorHandler = function (message) {
-            expect(message, 'setup failed with message: ' + message).to.be.true;
-        };
-
-        testSetup(done, { playlist: true }, readyHandler, errorHandler);
-    });
-
-    it('fails if playlist is empty', function (done) {
-        var model = {
-            playlist: []
-        };
-
-        testSetup(done, model, function() {
-            expect(false, 'setup should not succeed').to.be.true;
-            done();
-        }, function (message) {
-            expect(message, 'setup failed with message: ' + message).to.be.true;
-            done();
+        return new Promise((resolve, reject) => {
+            api.setup(model);
+            api.on('ready', function(event) {
+                resolve({
+                    api,
+                    event
+                });
+            });
+            api.on('setupError', function(event) {
+                reject(new Error('Expected "ready" after setup. Got "setupError" with:' +
+                    JSON.stringify(event)));
+            });
         });
-    });
-
-    it('fails when playlist items are filtered out', function (done) {
-        var model = {
-            playlist: [{ sources: [{ file: 'file.foo' }] }]
-        };
-
-        var playlist;
-        testSetup(done, model, function() {
-            // 'this' is the api instance
-            playlist = this.getPlaylist();
-            expect(playlist, 'playlist is an empty array').to.be.an('array').that.is.empty;
-            expect(false, 'setup should not succeed').to.be.true;
-            done();
-        }, function (message) {
-            playlist = this.getPlaylist();
-            expect(playlist, 'playlist is an empty array').to.be.an('array').that.is.empty;
-            expect(message, 'setup failed with message: ' + message).to.be.true;
-            done();
-        });
-        done();
-    });
-
-    it('succeeds when model.playlist.sources is valid', function (done) {
-        var model = {
-            playlist: [{ sources: [{ file: 'http://playertest.longtailvideo.com/mp4.mp4' }] }]
-        };
-
-        testSetup(done, model, function() {
-            expect(true, 'setup ok').to.be.true;
-            done();
-        }, function (message) {
-            expect(false, 'setup failed with message: ' + message).to.be.true;
-            done();
-        });
-    });
-
-    function testSetup(done, model, success, error) {
-        var container = $('#player')[0];
-        var api = new Api(container);
-        api.setup(model);
-
-        api.on('ready', function() {
-            success.call(api);
-            try {
-                api.remove();
-            } catch (e) {
-                expect(e.toString()).to.be.false;
-            }
-            done();
-        });
-        api.on('setupError', function (e) {
-            error.call(api, e.message);
-            try {
-                api.remove();
-            } catch (evt) {
-                expect(evt.toString()).to.be.false;
-            }
-            done();
-        });
-        done();
-        return api;
     }
+
+    function expectSetupError(model) {
+        const container = document.querySelector('#player');
+        const api = new Api(container);
+
+        return new Promise((resolve, reject) => {
+            api.setup(model);
+            api.on('ready', function() {
+                reject(new Error('Expected "setupError" after setup. Got "ready" instead.'));
+            });
+            api.on('setupError', function(event) {
+                resolve({
+                    api,
+                    event
+                });
+            });
+        });
+    }
+
+    it('fails when playlist is undefined', function() {
+        return expectSetupError({
+            // playlist is undefined
+        }).then(({ event }) => {
+            expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
+        });
+    });
+
+    it('fails when playlist is an empty string', function () {
+        return expectSetupError({
+            playlist: ''
+        }).then(({ event }) => {
+            expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
+        });
+    });
+
+    it('fails when playlist is a number', function () {
+        return expectSetupError({
+            playlist: 1
+        }).then(({ event }) => {
+            expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
+        });
+    });
+
+    it('fails when playlist is a boolean', function () {
+        return expectSetupError({
+            playlist: true
+        }).then(({ event }) => {
+            expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
+        });
+    });
+
+    it('fails if playlist is empty', function () {
+        return expectSetupError({
+            playlist: []
+        }).then(({ event }) => {
+            expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
+        });
+    });
+
+    it('fails when playlist items are filtered out', function () {
+        return expectSetupError({
+            playlist: [{ sources: [{ file: 'file.foo' }] }]
+        }).then(function ({ event, api }) {
+            const playlist = api.getPlaylist();
+
+            expect(playlist).to.be.an('array').that.is.empty;
+
+            expect(event.code).to.equal(undefined);
+            expect(event.message).to.equal('No playable sources found');
+        });
+    });
+
+    it('succeeds when model.playlist.sources is valid', function () {
+        return expectReady({
+            preload: 'none',
+            playlist: [{ sources: [{ file: 'http://playertest.longtailvideo.com/mp4.mp4' }] }]
+        }).then(({ event }) => {
+            expect(event.type).to.equal('ready');
+        });
+    });
 });

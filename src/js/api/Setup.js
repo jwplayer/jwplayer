@@ -1,6 +1,7 @@
 import loadCoreBundle from 'api/core-loader';
 import startSetup from 'api/setup-steps';
 import loadPlugins from 'plugins/plugins';
+import { PlayerError, SETUP_ERROR_TIMEOUT } from 'api/errors';
 import Promise from 'polyfills/promise';
 
 const SETUP_TIMEOUT_SECONDS = 30;
@@ -19,7 +20,10 @@ const Setup = function(_model) {
 
         const timeout = new Promise((resolve, reject) => {
             _setupFailureTimeout = setTimeout(() => {
-                reject(new Error(`Setup Timeout Error: Setup took longer than ${SETUP_TIMEOUT_SECONDS} seconds to complete.`));
+                const error = new PlayerError(
+                    `Setup Timeout Error: Setup took longer than ${SETUP_TIMEOUT_SECONDS} seconds to complete.`,
+                    SETUP_ERROR_TIMEOUT);
+                reject(error);
             }, SETUP_TIMEOUT_SECONDS * 1000);
             const timeoutCancelled = () => {
                 clearTimeout(_setupFailureTimeout);

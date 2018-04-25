@@ -1,4 +1,4 @@
-import _ from 'utils/underscore';
+import { size, isUndefined } from 'utils/underscore';
 
 const supportedFields = [
     'repeat',
@@ -18,14 +18,14 @@ function setAutoStart(model, controller, autoStart) {
 export default (controller, newConfig) => {
     const model = controller._model;
 
-    if (!_.size(newConfig)) {
+    if (!size(newConfig)) {
         return;
     }
 
     supportedFields.forEach(field => {
         const newValue = newConfig[field];
 
-        if (_.isUndefined(newValue)) {
+        if (isUndefined(newValue)) {
             return;
         }
 

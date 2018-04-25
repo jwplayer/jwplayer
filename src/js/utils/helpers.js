@@ -14,7 +14,7 @@ import {
 } from 'utils/strings';
 import Timer from 'api/timer';
 import { tryCatch, JwError as Error } from 'utils/trycatch';
-import _ from 'utils/underscore';
+import { indexOf } from 'utils/underscore';
 import { isIframe, flashVersion } from 'utils/browser';
 import {
     addClass,
@@ -52,8 +52,6 @@ const foreach = function (aData, fnEach) {
         }
     }
 };
-
-const indexOf = _.indexOf;
 
 const noop = function () {};
 

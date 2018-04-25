@@ -91,9 +91,6 @@ const multiConfig = [
         optimization: {
             splitChunks: false
         },
-        stats: {
-            timings: true
-        },
         resolve: {
             modules: [
                 'src/js/',

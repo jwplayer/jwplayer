@@ -17,7 +17,7 @@ import { OS, Features } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
-import _ from 'utils/underscore';
+import { isString, isUndefined, isBoolean } from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, AUTOSTART_NOT_ALLOWED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
@@ -277,7 +277,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _updateViewable(model, visibility) {
-            if (!_.isUndefined(visibility)) {
+            if (!isUndefined(visibility)) {
                 _model.set('viewable', Math.round(visibility));
             }
         }
@@ -393,7 +393,7 @@ Object.assign(Controller.prototype, {
 
         function _getState() {
             const adState = _getAdState();
-            if (_.isString(adState)) {
+            if (isString(adState)) {
                 return adState;
             }
             return _model.get('state');
@@ -415,7 +415,7 @@ Object.assign(Controller.prototype, {
             }
 
             const adState = _getAdState();
-            if (_.isString(adState)) {
+            if (isString(adState)) {
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false);
                 return resolved;
@@ -524,7 +524,7 @@ Object.assign(Controller.prototype, {
             apiQueue.empty();
 
             const adState = _getAdState();
-            if (_.isString(adState)) {
+            if (isString(adState)) {
                 return;
             }
 
@@ -556,7 +556,7 @@ Object.assign(Controller.prototype, {
             }
 
             const adState = _getAdState();
-            if (_.isString(adState)) {
+            if (isString(adState)) {
                 _api.pauseAd(true);
                 return;
             }
@@ -746,7 +746,7 @@ Object.assign(Controller.prototype, {
         }
 
         function _setFullscreen(state) {
-            if (!_.isBoolean(state)) {
+            if (!isBoolean(state)) {
                 state = !_model.get('fullscreen');
             }
 
@@ -893,8 +893,9 @@ Object.assign(Controller.prototype, {
             _model.set('customButtons', customButtons);
         };
         this.removeButton = function(id) {
-            const customButtons = _.filter(
-                _model.get('customButtons'),
+            let customButtons = _model.get('customButtons') || [];
+
+            customButtons = customButtons.filter(
                 (button) => button.id !== id
             );
 
@@ -911,7 +912,7 @@ Object.assign(Controller.prototype, {
         };
 
         this.setControls = function (mode) {
-            if (!_.isBoolean(mode)) {
+            if (!isBoolean(mode)) {
                 mode = !_model.get('controls');
             }
             _model.set('controls', mode);

@@ -75,6 +75,12 @@ function primeMediaElementForPlayback(mediaElement) {
         // If the player sets up without a gesture and preloads, the background tag may not be primed for playback.
         // We need to load again on Android in order to play without another gesture. But make sure we're only reloading
         // a tag which hasn't begun playback yet
+        // Clear the src for MSE providers who have already preloaded so that we do a full reload
+        // The HTML5 provider already reloads identical sources, so we don't always need to reset if for non-blobs
+        if (mediaElement.src.indexOf('blob') > -1) {
+            mediaElement.src = '';
+        }
+
         const played = mediaElement.played;
         if (!played || (played && !played.length)) {
             mediaElement.load();

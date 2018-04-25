@@ -19,9 +19,8 @@ import {
 } from 'utils/browser';
 import { browserVersion } from './browser-version';
 import { osVersion } from './os-version';
-import _ from 'utils/underscore';
+import { memoize } from 'utils/underscore';
 
-const memoize = _.memoize;
 const userAgent = navigator.userAgent;
 
 function supportsPassive() {

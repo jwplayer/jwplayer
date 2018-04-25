@@ -43,6 +43,7 @@ function loadProvider(_model) {
         // Loads the first provider if not included in the core bundle
         // A provider loaded this way will not be set upon completion
         const playlist = filterPlaylist(_model.get('playlist'), _model);
+        _model.attributes.playlist = playlist;
 
         // Throw exception if playlist is empty
         validatePlaylist(playlist);
