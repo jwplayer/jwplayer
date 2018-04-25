@@ -20,7 +20,7 @@ export default function loadCoreBundle(model) {
 export function chunkLoadErrorHandler(code, error) {
     // Webpack require.ensure error: "Loading chunk 3 failed"
     return () => {
-        throw new PlayerError('Network Error', SETUP_ERROR_LOADING_CORE_JS + code, error);
+        throw new PlayerError('Network error', SETUP_ERROR_LOADING_CORE_JS + code, error);
     };
 }
 
