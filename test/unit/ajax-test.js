@@ -28,11 +28,12 @@ describe('utils.ajax', function() {
             options.oncomplete = (result) => {
                 reject(successHandler(result));
             };
-            options.onerror = (message, url, result) => {
+            options.onerror = (message, url, result, error) => {
                 resolve({
                     message,
                     url,
-                    result
+                    result,
+                    error
                 });
             };
             ajax(options);
@@ -65,11 +66,11 @@ describe('utils.ajax', function() {
 
     it('supports responseType "text" argument', function () {
         return expectSuccess({
-            url: '/base/test/files/playlist.json',
+            url: '/base/test/files/playlist.xml',
             responseType: 'text'
         }).then(({ result, xhr }) => {
             validateXHR(xhr);
-            expect(result).to.have.property('responseText').which.is.a('string').and.has.lengthOf(161);
+            expect(result).to.have.property('responseText').which.is.a('string').and.has.lengthOf(2401);
             expect(result).to.have.property('status').which.equals(200);
         });
     });
@@ -87,6 +88,7 @@ describe('utils.ajax', function() {
     });
 
     it('supports timeout argument', function () {
+        const errorMessage = 'Timeout';
         const nonce = Math.random().toFixed(20).substr(2);
 
         return expectError({
@@ -95,10 +97,14 @@ describe('utils.ajax', function() {
             responseType: 'text'
         }, success => {
             return new Error(`Expected XHR request to timeout. It succeeded with status ${success.status}.`);
-        }).then(({ message, url, result }) => {
-            expect(message).to.equal('Timeout');
+        }).then(({ message, url, result, error }) => {
+            expect(message).to.equal(errorMessage);
             expect(url).to.be.a('string');
+            validateXHR(result);
             expect(result).to.have.property('status').which.equals(0);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(1);
+            expect(error).to.have.property('sourceError').which.equals(null);
         });
     });
 
@@ -166,54 +172,95 @@ describe('utils.ajax', function() {
         });
     });
 
-    it('error "Error loading file" (bad request)', function () {
+    it('handles bad request exceptions', function () {
+        const errorMessage = 'Error loading file';
+
         return expectError({}, success => {
             return new Error(`Expected bad request to fail with "Error loading file". Got ${success.status}`);
-        }).then(({ message, url, result }) => {
-            expect(message).to.equal('Error loading file');
+        }).then(({ message, url, result, error }) => {
+            expect(message).to.equal(errorMessage);
             expect(url).to.equal(undefined);
             expect(result.status).to.equal(0);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(3);
+            expect(error).to.have.property('sourceError').which.does.not.equal(null);
+        });
+    });
+
+    it('handles requestFilter exceptions', function () {
+        const errorMessage = 'Error loading file';
+        const url = '/base/test/files/playlist.json';
+
+        return expectError({
+            requestFilter: function() {
+                throw new Error('Bad request filter');
+            },
+            url
+        }, success => {
+            return new Error(`Expected bad filter to fail with "Error loading file". Got ${success.status}`);
+        }).then(({ message, url: u, result, error }) => {
+            expect(message).to.equal(errorMessage);
+            expect(u).to.equal(url);
+            expect(result.status).to.equal(0);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(5);
+            expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
     });
 
     it('error "Invalid XML"', function () {
+        const errorMessage = 'Invalid XML';
         const url = '/base/test/files/invalid.xml';
+
         return expectError({
             url,
             requireValidXML: true
         }, success => {
             return new Error(`Expected bad request to fail with "Invalid XML". Got ${success.status}`);
-        }).then(({ message, url: u, result }) => {
-            expect(message).to.equal('Invalid XML');
+        }).then(({ message, url: u, result, error }) => {
+            expect(message).to.equal(errorMessage);
             expect(u).to.equal(url);
             expect(result.status).to.equal(200);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(602);
+            expect(error).to.have.property('sourceError').which.equals(null);
         });
     });
 
     it('error "Invalid JSON"', function () {
+        const errorMessage = 'Invalid JSON';
         const url = '/base/test/files/invalid.xml';
+
         return expectError({
             url,
             responseType: 'json'
         }, success => {
             return new Error(`Expected bad request to fail with "Invalid JSON". Got ${success.status}`);
-        }).then(({ message, url: u, result }) => {
-            expect(message).to.equal('Invalid JSON');
+        }).then(({ message, url: u, result, error }) => {
+            expect(message).to.equal(errorMessage);
             expect(u).to.equal(url);
             expect(result.status).to.equal(200);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(611);
+            expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
     });
 
     it('error "File not found" (404) - Integration Test', function () {
+        const errorMessage = 'File not found';
         const url = 'foobar';
+
         return expectError({
             url
         }, success => {
             return new Error(`Expected bad request to fail with "File not found". Got ${success.status}`);
-        }).then(({ message, url: u, result }) => {
-            expect(message).to.equal('File not found');
+        }).then(({ message, url: u, result, error }) => {
+            expect(message).to.equal(errorMessage);
             expect(u).to.equal(url);
             expect(result.status).to.equal(404);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(404);
+            expect(error).to.have.property('sourceError').which.equals(null);
         });
     });
 });
