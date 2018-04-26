@@ -38,7 +38,7 @@ export default class AdProgramController extends ProgramController {
         this.mediaPool = SharedMediaPool(mediaElement, mediaPool);
     }
 
-    setup(doNotPausePrime) {
+    setup() {
         const { model, playerModel, primedElement } = this;
         const playerAttributes = playerModel.attributes;
         const mediaModelContext = playerModel.mediaModel;
@@ -63,7 +63,7 @@ export default class AdProgramController extends ProgramController {
             this.trigger(ERROR, data);
         }, this);
 
-        if (!primedElement.paused && !doNotPausePrime) {
+        if (!primedElement.paused) {
             primedElement.pause();
         }
     }
