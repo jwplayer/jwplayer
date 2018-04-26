@@ -355,8 +355,6 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         _adProgram = null;
 
-        _controller.attachEvents();
-
         if (!_inited || _model.attributes._destroyed) {
             return;
         }
