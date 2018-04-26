@@ -1,19 +1,23 @@
 import { parseXML } from 'utils/parser';
+import { PlayerError } from 'api/errors';
+
+// XHR Request Errors
+const ERROR_TIMEOUT = 1;
+const ERROR_XHR_UNDEFINED = 2;
+const ERROR_XHR_OPEN = 3;
+const ERROR_XHR_SEND = 4;
+const ERROR_XHR_FILTER = 5;
+const ERROR_XHR_UNKNOWN = 6;
+
+// Network Responses with http status 400-599
+// will produce an error with the http status code
+
+// Format Errors
+const ERROR_DOM_PARSER = 601;
+const ERROR_NO_XML = 602;
+const ERROR_JSON_PARSE = 611;
 
 const noop = function() {};
-
-// TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url)). It's used here for IE9 compatibility
-export function crossdomain(uri) {
-    const a = document.createElement('a');
-    const b = document.createElement('a');
-    a.href = location.href;
-    try {
-        b.href = uri;
-        b.href = b.href; /* IE fix for relative urls */
-        return a.protocol + '//' + a.host !== b.protocol + '//' + b.host;
-    } catch (e) {/* swallow */}
-    return true;
-}
 
 export function ajax(url, completeCallback, errorCallback, args) {
     if (url === Object(url)) {
@@ -43,7 +47,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
         xhr = options.xhr = options.xhr || new window.XMLHttpRequest();
     } else {
         // browser cannot make xhr requests
-        options.onerror('', url);
+        _error(options, '', ERROR_XHR_UNDEFINED);
         return;
     }
     if (typeof options.requestFilter === 'function') {
@@ -54,7 +58,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
                 xhr
             });
         } catch (e) {
-            requestError(e);
+            requestError(e, ERROR_XHR_FILTER);
             return xhr;
         }
         if (result && 'open' in result && 'send' in result) {
@@ -78,7 +82,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
         url = url.replace(/#.*$/, '');
         xhr.open('GET', url, true);
     } catch (e) {
-        requestError(e);
+        requestError(e, ERROR_XHR_OPEN);
         return xhr;
     }
 
@@ -91,7 +95,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
     if (options.timeout) {
         options.timeoutId = setTimeout(function() {
             abortAjax(xhr);
-            options.onerror('Timeout', url, xhr);
+            _error(options, 'Timeout', ERROR_TIMEOUT);
         }, options.timeout);
         xhr.onabort = function() {
             clearTimeout(options.timeoutId);
@@ -106,7 +110,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
         }
         xhr.send();
     } catch (e) {
-        requestError(e);
+        requestError(e, ERROR_XHR_SEND);
     }
     return xhr;
 }
@@ -122,8 +126,8 @@ export function abortAjax(xhr) {
 }
 
 function _requestError(message, options) {
-    return function(e) {
-        const xhr = e.currentTarget || options.xhr;
+    return function(errorOrEvent, code) {
+        const xhr = errorOrEvent.currentTarget || options.xhr;
         clearTimeout(options.timeoutId);
         // Handle Access-Control-Allow-Origin wildcard error when using withCredentials to send cookies
         if (options.retryWithoutCredentials && options.xhr.withCredentials) {
@@ -136,8 +140,17 @@ function _requestError(message, options) {
             ajax(args);
             return;
         }
-        options.onerror(message, options.url, xhr);
+
+        if (!code && xhr.status >= 400 && xhr.status < 600) {
+            code = xhr.status;
+        }
+
+        _error(options, message, code || ERROR_XHR_UNKNOWN, errorOrEvent);
     };
+}
+
+function _error(options, message, code, error) {
+    options.onerror(message, options.url, options.xhr, new PlayerError(message, code, error));
 }
 
 function _readyStateChangeHandler(options) {
@@ -152,7 +165,8 @@ function _readyStateChangeHandler(options) {
                 } else {
                     message = '' + xhr.status + '(' + xhr.statusText + ')';
                 }
-                return options.onerror(message, options.url, xhr);
+                _error(options, message, (xhr.status < 600) ? xhr.status : ERROR_XHR_UNKNOWN);
+                return;
             }
             if (xhr.status === 200) {
                 return _ajaxComplete(options)(e);
@@ -192,7 +206,7 @@ function _ajaxComplete(options) {
                 }
             }
             if (options.requireValidXML) {
-                options.onerror('Invalid XML', options.url, xhr);
+                _error(options, 'Invalid XML', ERROR_NO_XML);
                 return;
             }
         }
@@ -209,7 +223,7 @@ function _jsonResponse(xhr, options) {
                 response: JSON.parse(xhr.responseText)
             });
         } catch (err) {
-            options.onerror('Invalid JSON', options.url, xhr);
+            _error(options, 'Invalid JSON', ERROR_JSON_PARSE, err);
             return;
         }
     }
@@ -222,7 +236,7 @@ function _xmlResponse(xhr, xml, options) {
     const doc = xml.documentElement;
     if (options.requireValidXML &&
             (doc.nodeName === 'parsererror' || doc.getElementsByTagName('parsererror').length)) {
-        options.onerror('Invalid XML', options.url, xhr);
+        _error(options, 'Invalid XML', ERROR_DOM_PARSER);
         return;
     }
     if (!xhr.responseXML) {
