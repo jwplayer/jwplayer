@@ -766,6 +766,14 @@ Object.assign(Controller.prototype, {
             }
         }
 
+        function _attachEvents() {
+            _programController.eventsAttached = true;
+        }
+
+        function _detachEvents() {
+            _programController.eventsAttached = false;
+        }
+
         function _setFullscreen(state) {
             if (!isBoolean(state)) {
                 state = !_model.get('fullscreen');
@@ -839,6 +847,8 @@ Object.assign(Controller.prototype, {
         this.setFullscreen = _setFullscreen;
         this.detachMedia = _detachMedia;
         this.attachMedia = _attachMedia;
+        this.detachEvents = _detachEvents;
+        this.attachEvents = _attachEvents;
         this.getCurrentQuality = _getCurrentQuality;
         this.getQualityLevels = _getQualityLevels;
         this.setCurrentAudioTrack = _setCurrentAudioTrack;

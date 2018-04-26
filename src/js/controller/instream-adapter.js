@@ -70,7 +70,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             return;
         }
 
+        _adProgram.on('all', _instreamForward, this);
         _adProgram.on(MEDIA_TIME, _instreamTime, this);
+
+        _controller.detachEvents();
 
         // This enters the player into instream mode
         _model.set('instream', _adProgram);
@@ -346,6 +349,8 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _model.set('instream', null);
 
         _adProgram = null;
+
+        _controller.attachEvents();
 
         if (!_inited || _model.attributes._destroyed) {
             return;

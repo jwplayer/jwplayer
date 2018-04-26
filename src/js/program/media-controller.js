@@ -116,6 +116,19 @@ export default class MediaController extends Eventable {
         }
     }
 
+    attachEvents() {
+        const { model } = this;
+        this.attached = true;
+        model.set('attached', true);
+        this.eventQueue.empty();
+    }
+
+    detachEvents() {
+        const { model } = this;
+        this.attached = false;
+        model.set('attached', false);
+    }
+
     // Executes the playPromise
     _playAttempt(playPromise, playReason) {
         const { item, mediaModel, model, provider } = this;
