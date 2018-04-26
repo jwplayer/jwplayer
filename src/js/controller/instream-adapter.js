@@ -6,6 +6,7 @@ import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/p
 import InstreamProvider from 'providers/instream-provider';
 import Promise from 'polyfills/promise';
 import { offsetToSeconds } from 'utils/strings';
+import { extend } from 'utils/underscore';
 import Events from 'utils/backbone.events';
 import AdProgramController from 'program/ad-program-controller';
 
@@ -29,7 +30,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     let _destroyed = false;
     let _inited = false;
     let _beforeComplete = false;
-    let _instreamProvider = new InstreamProvider(_, Events);
+    let _instreamProvider = new InstreamProvider({ extend }, Events);
 
     const _clickHandler = (evt) => {
         if (_destroyed) {
