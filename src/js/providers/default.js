@@ -94,9 +94,9 @@ const DefaultProvider = {
     },
 
     sendMediaType: function(levels) {
-        var level = levels[0];
-        var type = level.type;
-        var isAudioFile = (type === 'oga' || type === 'aac' || type === 'mp3' ||
+        const level = levels[0];
+        const type = level.type;
+        const isAudioFile = (type === 'oga' || type === 'aac' || type === 'mp3' ||
             type === 'mpeg' || type === 'vorbis' || level.mimeType === 'audio/mp4');
 
         this.trigger(MEDIA_TYPE, {
