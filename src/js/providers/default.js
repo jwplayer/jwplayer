@@ -94,8 +94,7 @@ const DefaultProvider = {
     },
 
     sendMediaType: function(levels) {
-        const level = levels[0];
-        const { type, mimeType } = level;
+        const { type, mimeType } = levels[0];
         const isAudioFile = (type === 'oga' || type === 'aac' || type === 'mp3' ||
             type === 'mpeg' || type === 'vorbis' || (mimeType && mimeType.indexOf('audio/') === 0));
 
