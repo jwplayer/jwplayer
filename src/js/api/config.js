@@ -39,6 +39,7 @@ const Defaults = {
         more: 'More',
         liveBroadcast: 'Live',
         loadingAd: 'Loading ad',
+        playingAd: 'Playing ad',
         rewind: 'Rewind 10 Seconds',
         nextUp: 'Next Up',
         nextUpClose: 'Next Up Close',
