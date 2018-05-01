@@ -53,19 +53,11 @@ function containsParserErrors(childNodes) {
 export function parseXML(input) {
     let parsedXML = null;
     try {
-        // Parse XML in FF/Chrome/Safari/Opera
-        if ('DOMParser' in window) {
-            parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
-            // In Firefox the XML doc may contain the parsererror, other browsers it's further down
-            if (containsParserErrors(parsedXML.childNodes) ||
-                (parsedXML.childNodes && containsParserErrors(parsedXML.childNodes[0].childNodes))) {
-                parsedXML = null;
-            }
-        } else {
-            // Internet Explorer
-            parsedXML = new window.ActiveXObject('Microsoft.XMLDOM');
-            parsedXML.async = 'false';
-            parsedXML.loadXML(input);
+        parsedXML = (new window.DOMParser()).parseFromString(input, 'text/xml');
+        // In Firefox the XML doc may contain the parsererror, other browsers it's further down
+        if (containsParserErrors(parsedXML.childNodes) ||
+            (parsedXML.childNodes && containsParserErrors(parsedXML.childNodes[0].childNodes))) {
+            parsedXML = null;
         }
     } catch (e) {/* Expected when content is not XML */}
 

@@ -36,13 +36,26 @@ import {
     transform,
     getRgba
 } from 'utils/css';
-import { ajax, crossdomain } from 'utils/ajax';
+import { ajax } from 'utils/ajax';
 
 export const log = (typeof console.log === 'function') ? console.log.bind(console) : function() {};
 
 const between = function (num, min, max) {
     return Math.max(Math.min(num, max), min);
 };
+
+// TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url))
+function crossdomain(uri) {
+    const a = document.createElement('a');
+    const b = document.createElement('a');
+    a.href = location.href;
+    try {
+        b.href = uri;
+        b.href = b.href; /* IE fix for relative urls */
+        return a.protocol + '//' + a.host !== b.protocol + '//' + b.host;
+    } catch (e) {/* swallow */}
+    return true;
+}
 
 // The predicate received the arguments (key, value) instead of (value, key)
 const foreach = function (aData, fnEach) {
