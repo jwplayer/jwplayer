@@ -62,7 +62,7 @@ We use `grunt` and a few `npm scripts` to build the player, lint code, and run t
 #### Requirements:
 
 - [Node.js](http://nodejs.org/download/) with npm
-- [yarn](https://yarnpkg.com/en/docs/install) is preferred for package management and used by tasks and scripts that update dependencies.
+- [yarn](https://yarnpkg.com/en/docs/install) is preferred for package management
 - Install global npm dependencies
 `yarn global add eslint grunt-cli jsdoc karma-cli stylelint webpack webpack-cli`
 
