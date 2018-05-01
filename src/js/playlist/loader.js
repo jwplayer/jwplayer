@@ -3,13 +3,15 @@ import { localName } from 'parsers/parsers';
 import parseRss from 'parsers/rssparser';
 import utils from 'utils/helpers';
 import Events from 'utils/backbone.events';
-import { PlayerError, ERROR_LOADING_PLAYLIST } from 'api/errors';
+import { PlayerError } from 'api/errors';
 
 const PlaylistLoader = function() {
-    var _this = Object.assign(this, Events);
+    const _this = Object.assign(this, Events);
 
     this.load = function(playlistfile) {
-        utils.ajax(playlistfile, playlistLoaded, playlistError);
+        utils.ajax(playlistfile, playlistLoaded, (message, file, url, error) => {
+            playlistError(error);
+        });
     };
 
     this.destroy = function() {
