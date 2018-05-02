@@ -37,7 +37,7 @@ export const SETUP_ERROR_LOADING_PLAYLIST = 102000;
 /**
  * @enum {ErrorCode} Playback stopped because the playlist failed to load
  */
-export const ERROR_LOADING_PLAYLIST = 203000;
+export const ERROR_LOADING_PLAYLIST = 202000;
 
 /**
  * Class representing the jwplayer() API.
