@@ -245,14 +245,20 @@ Object.assign(Controller.prototype, {
             _model.change('playlistItem', function(model, playlistItem) {
                 if (playlistItem) {
                     const { title, image } = playlistItem;
-                    if ('mediaSession' in navigator && (title || image)) {
-                        navigator.mediaSession.metadata = new window.MediaMetadata({
-                            title,
-                            artist: window.location.hostname,
-                            artwork: [
-                                { src: image || '' }
-                            ]
-                        });
+                    if ('mediaSession' in navigator && window.MediaMetadata && (title || image)) {
+                        try {
+                            navigator.mediaSession.metadata = new window.MediaMetadata({
+                                title,
+                                artist: window.location.hostname,
+                                artwork: [
+                                    { src: image || '' }
+                                ]
+                            });
+                        } catch (error) {
+                            _this.triggerError({
+                                message: `Error loading playlist item: ${error.message}`
+                            });
+                        }
                     }
                     _this.trigger(PLAYLIST_ITEM, {
                         index: _model.get('item'),
