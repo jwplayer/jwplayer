@@ -64,6 +64,18 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
         }
     };
 
+    const changeAutoLabel = function (quality, qualitySubMenu, currentQuality) {
+        const levels = model.get('levels');
+        // Return early if the label isn't "Auto" (html5 provider with multiple mp4 sources)
+        if (!levels || levels[0].label !== 'Auto') {
+            return;
+        }
+        const items = qualitySubMenu.getItems();
+        const item = items[0].element().querySelector('.jw-auto-label');
+
+        item.textContent = currentQuality ? '' : levels[quality.level.index].label;
+    };
+
     const onAudiotracksChanged = (changedModel, audioTracks) => {
         if (!audioTracks || audioTracks.length <= 1) {
             removeAudioTracksSubmenu(settingsMenu);
@@ -85,13 +97,24 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             return;
         }
 
+        const currentLevel = model.get('currentLevel');
+
         addQualitiesSubmenu(
             settingsMenu,
             levels,
             (index) => api.setCurrentQuality(index),
-            model.get('currentLevel'),
+            currentLevel,
             model.get('localization').hd
         );
+
+        if (currentLevel === 0) {
+            // Set quality label again after preroll on HLS on Android Chrome
+            changeAutoLabel(
+                model.get('mediaModel').get('visualQuality'), 
+                settingsMenu.getSubmenu('quality'), 
+                currentLevel
+            );
+        }
     };
 
     const onCaptionsChanged = (changedModel, captionsList) => {
@@ -131,18 +154,6 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             model.get('playbackRate'),
             model.get('localization').playbackRates
         );
-    };
-
-    const changeAutoLabel = function (quality, qualitySubMenu, currentQuality) {
-        const levels = model.get('levels');
-        // Return early if the label isn't "Auto" (html5 provider with multiple mp4 sources)
-        if (!levels || levels[0].label !== 'Auto') {
-            return;
-        }
-        const items = qualitySubMenu.getItems();
-        const item = items[0].element().querySelector('.jw-auto-label');
-
-        item.textContent = currentQuality ? '' : levels[quality.level.index].label;
     };
 
     // Quality Levels
