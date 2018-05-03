@@ -54,7 +54,7 @@ export default class PlayDisplayIcon {
     }
 
     toggleIdleClass(oldState, newState, idleButton) {
-        if (!(idleButton === 'stroke' || idleButton === 'fill')) {
+        if (!(idleButton === 'stroke' || idleButton === 'fill' || idleButton === 'label')) {
             return;
         }
 
