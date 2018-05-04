@@ -50,10 +50,10 @@ const PlaylistLoader = function() {
                     } else if (Array.isArray(pl.playlist)) {
                         jsonObj = pl;
                     } else {
-                        throw Error;
+                        throw Error('Playlist is not an array');
                     }
                 } catch (e) {
-                    throw new PlayerError('Not a valid RSS/JSON feed', 21, e);
+                    throw new PlayerError('Not a valid RSS/JSON feed', 621, e);
                 }
             }
 

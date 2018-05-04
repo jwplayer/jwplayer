@@ -923,7 +923,6 @@ Object.assign(Controller.prototype, {
                 _model.set('feedData', feedData);
                 _model.set('playlist', filteredPlaylist);
             } catch (error) {
-                error.code = (error.code || 0) + ERROR_LOADING_PLAYLIST;
                 return Promise.reject(error);
             }
             return _setItem(_model.get('item'));

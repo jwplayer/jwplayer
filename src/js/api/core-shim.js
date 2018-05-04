@@ -122,7 +122,7 @@ Object.assign(CoreShim.prototype, {
             // Set the active playlist item after plugins are loaded and the view is setup
             return this.updatePlaylist(coreModel.get('playlist'), coreModel.get('feedData'))
                 .catch((error) => {
-                    error.code += (error.code || 0) + SETUP_ERROR_LOADING_PLAYLIST;
+                    error.code = (error.code || 0) + SETUP_ERROR_LOADING_PLAYLIST;
                     throw error;
                 });
         }).then(() => {
