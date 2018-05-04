@@ -1,7 +1,7 @@
 import PlaylistLoader from 'playlist/loader';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 
-describe.only('playlist/loader', function() {
+describe('playlist/loader', function() {
     this.timeout(5000);
 
     it('loads a valid JSON feed', function () {
