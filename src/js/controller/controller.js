@@ -370,7 +370,7 @@ Object.assign(Controller.prototype, {
                     resolve(data);
                 });
                 loader.on(ERROR, function(error) {
-                    error.code = (error || 0) + ERROR_LOADING_PLAYLIST;
+                    error.code = (error.code || 0) + ERROR_LOADING_PLAYLIST;
                     reject(error);
                 }, this);
                 loader.load(toLoad);
