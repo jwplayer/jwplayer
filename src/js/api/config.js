@@ -47,7 +47,7 @@ const Defaults = {
         settings: 'Settings',
         unmute: 'Unmute',
         copied: 'Copied',
-        videoInfo: 'About this video'
+        videoInfo: 'About This Video'
     },
     mute: false,
     nextUpDisplay: true,

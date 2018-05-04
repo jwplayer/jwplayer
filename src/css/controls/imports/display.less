@@ -49,6 +49,8 @@ display icons
 
 .jw-display-icon-container {
     display: inline-block;
+    padding: (@mobile-touch-target * 0.125);
+    margin: 0 (@mobile-touch-target * 0.5);
 
     .jw-icon {
         .square(75px);
@@ -90,11 +92,6 @@ display icons
 }
 
 .jw-breakpoint-1 {
-    .jw-display-icon-container {
-        padding: (@mobile-touch-target * 0.125);
-        margin: 0 (@mobile-touch-target * 0.5);
-    }
-
     .jw-display .jw-icon,
     .jw-display .jw-svg-icon {
         width: (@mobile-touch-target);

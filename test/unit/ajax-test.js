@@ -4,240 +4,263 @@ describe('utils.ajax', function() {
     this.timeout(5000);
 
     function validateXHR(xhr) {
-        if ('XDomainRequest' in window) {
-            expect(xhr).to.be.instanceOf(window.XDomainRequest);
-        } else {
-            expect(xhr).to.be.instanceOf(window.XMLHttpRequest);
-        }
+        expect(xhr).to.be.instanceOf(window.XMLHttpRequest);
     }
 
-    it('uses default mimetype "text/xml" with legacy boolean argument', function (done) {
-        const xhr = ajax('/base/test/files/playlist.xml',
-            function success(xhrResult) {
-                expect(xhrResult)
-                    .to.equal(xhr);
-                expect(xhrResult.responseText)
-                    .to.be.a('string')
-                    .and.have.lengthOf(2401);
-                expect(xhrResult)
-                    .to.have.property('responseXML')
-                    .that.does.not.equal(undefined);
-                expect(xhrResult.status)
-                    .to.equal(200);
-                done();
-            },
-            function error(message, requestUrl, xhrResult) {
-                assert.fail(xhrResult.status, 200, message, requestUrl);
-                done();
-            },
-            true
-        );
-        validateXHR(xhr);
+    function expectSuccess(options) {
+        return new Promise((resolve, reject) => {
+            options.oncomplete = (result) => {
+                resolve({
+                    result,
+                    xhr
+                });
+            };
+            options.onerror = (message, url, result) => {
+                reject(new Error(`Expected request to return OK status 200. ` +
+                    `Got ${result.status} "${message}" ${url}`));
+            };
+            const xhr = ajax(options);
+        });
+    }
+
+    function expectError(options, successHandler) {
+        return new Promise((resolve, reject) => {
+            options.oncomplete = (result) => {
+                reject(successHandler(result));
+            };
+            options.onerror = (message, url, result, error) => {
+                resolve({
+                    message,
+                    url,
+                    result,
+                    error
+                });
+            };
+            ajax(options);
+        });
+    }
+
+    it('uses default mimetype "text/xml" with legacy boolean argument', function () {
+        return new Promise((resolve, reject) => {
+            const xhr = ajax('/base/test/files/playlist.xml',
+                function success(result) {
+                    resolve({
+                        result,
+                        xhr
+                    });
+                },
+                function error(message, requestUrl, xhrResult) {
+                    reject(new Error(`Expected request to return OK status 200. ` +
+                        `Got ${xhrResult.status} "${message}" ${requestUrl}`));
+                },
+                true
+            );
+            validateXHR(xhr);
+        }).then(({ result, xhr }) => {
+            expect(result).to.equal(xhr);
+            expect(result).to.have.property('responseText').which.is.a('string').and.has.lengthOf(2401);
+            expect(result).to.have.property('responseXML').which.does.not.equal(undefined);
+            expect(result).to.have.property('status').which.equals(200);
+        });
     });
 
-    it('supports responseType "text" argument', function (done) {
-        const xhr = ajax({
-            url: '/base/test/files/playlist.json',
-            oncomplete: function (xhrResult) {
-                expect(xhrResult.responseText)
-                    .to.be.a('string')
-                    .and.have.lengthOf(161);
-                expect(xhrResult.status)
-                    .to.equal(200);
-                done();
-            },
-            onerror: function (message, requestUrl, xhrResult) {
-                assert.fail(xhrResult.status, 200, message, requestUrl);
-                done();
-            },
+    it('supports responseType "text" argument', function () {
+        return expectSuccess({
+            url: '/base/test/files/playlist.xml',
             responseType: 'text'
+        }).then(({ result, xhr }) => {
+            validateXHR(xhr);
+            expect(result).to.have.property('responseText').which.is.a('string').and.has.lengthOf(2401);
+            expect(result).to.have.property('status').which.equals(200);
         });
-        validateXHR(xhr);
     });
 
-    it('supports responseType "json" argument', function (done) {
-        const xhr = ajax({
+    it('supports responseType "json" argument', function () {
+        return expectSuccess({
             url: '/base/test/files/playlist.json',
-            oncomplete: function (xhrResult) {
-                expect(xhrResult.response).to.be.an('array');
-                expect(xhrResult.response[0].file).to.equal('http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4');
-                done();
-            },
-            onerror: function (message, requestUrl, xhrResult) {
-                assert.fail(xhrResult.status, 200, message, requestUrl);
-                done();
-            },
             responseType: 'json'
+        }).then(({ result, xhr }) => {
+            validateXHR(xhr);
+            expect(result).to.have.property('response').which.is.an('array').and.has.lengthOf(2);
+            expect(result.response[0]).to.have.property('file')
+                .which.equals('http://content.bitsontherun.com/videos/3XnJSIm4-52qL9xLP.mp4');
         });
-        validateXHR(xhr);
     });
 
-    it('supports timeout argument', function (done) {
+    it('supports timeout argument', function () {
+        const errorMessage = 'Timeout';
         const nonce = Math.random().toFixed(20).substr(2);
 
-        ajax({
+        return expectError({
             url: '//playertest.longtailvideo.com/vast/preroll.xml?n=' + nonce,
-            oncomplete: function () {
-                assert.fail('XHR request completed', 'XHR request should have timed out');
-                done();
-            },
-            onerror: function (message, requestUrl, xhrResult) {
-                expect(xhrResult.status).to.equal(0);
-                expect(message).to.equal('Timeout');
-                done();
-            },
             timeout: 0.0001,
             responseType: 'text'
+        }, success => {
+            return new Error(`Expected XHR request to timeout. It succeeded with status ${success.status}.`);
+        }).then(({ message, url, result, error }) => {
+            expect(message).to.equal(errorMessage);
+            expect(url).to.be.a('string');
+            validateXHR(result);
+            expect(result).to.have.property('status').which.equals(0);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(1);
+            expect(error).to.have.property('sourceError').which.equals(null);
         });
     });
 
-    it('supports withCredentials argument', function (done) {
-        ajax({
+    it('supports withCredentials argument', function () {
+        return expectSuccess({
             url: '/base/test/files/playlist.json',
-            oncomplete: function (xhrResult) {
-                if ('withCredentials' in xhrResult) {
-                    expect(xhrResult).to.have.property('withCredentials').that.equals(true);
-                } else {
-                    assert.isOk(true, 'withCredentials is not available in this browser');
-                }
-                done();
-            },
-            onerror: function(message, requestUrl, xhrResult) {
-                assert.fail(xhrResult.status, 200, message, requestUrl);
-                done();
-            },
             withCredentials: true,
             responseType: 'text'
+        }).then(({ result }) => {
+            if ('withCredentials' in result) {
+                expect(result).to.have.property('withCredentials').which.equals(true);
+            } else {
+                assert.isOk(true, 'withCredentials is not available in this browser');
+            }
         });
     });
 
-    it('supports retryWithoutCredentials argument', function (done) {
-        const xhr = ajax({
+    it('supports retryWithoutCredentials argument', function () {
+        return expectSuccess({
             url: 'https://cdn.jwplayer.com/v2/playlists/r1AALLcN?format=mrss',
-            oncomplete: function (xhrResult) {
-                expect(xhrResult, 'A second XHR instance is created to re-request without credentials')
-                    .to.not.equal(xhr);
-                expect(xhrResult)
-                    .to.have.property('withCredentials')
-                    .that.is.a('boolean')
-                    .that.equals(false);
-                expect(xhrResult.responseText)
-                    .to.be.a('string');
-                expect(xhrResult.status)
-                    .to.equal(200);
-                expect(xhrResult.responseXML)
-                    .to.have.property('firstChild')
-                    .that.does.not.equal(undefined);
-                done();
-            },
-            onerror: function(message, requestUrl, xhrResult) {
-                assert.fail(xhrResult.status, 200, message, requestUrl);
-                done();
-            },
             withCredentials: true,
             retryWithoutCredentials: true,
             requireValidXML: true
+        }).then(({ result, xhr }) => {
+            expect(result, 'A second XHR instance is created to re-request without credentials').to.not.equal(xhr);
+            expect(result)
+                .to.have.property('withCredentials')
+                .which.is.a('boolean')
+                .which.equals(false);
+            expect(result.responseText)
+                .to.be.a('string');
+            expect(result.status)
+                .to.equal(200);
+            expect(result.responseXML)
+                .to.have.property('firstChild')
+                .which.does.not.equal(undefined);
         });
     });
 
-    it('supports a custom xhr argument', function (done) {
+    it('supports a custom xhr argument', function () {
         const customXhr = new window.XMLHttpRequest();
-        const xmlHttpRequest = ajax({
+        return expectSuccess({
             xhr: customXhr,
-            url: '/base/test/files/playlist.json',
-            oncomplete: function (xhrResult) {
-                expect(xhrResult).to.equal(customXhr);
-                expect(xhrResult.status).to.equal(200);
-                done();
-            },
-            onerror: function(message, requestUrl, xhrResult) {
-                assert.fail(xhrResult.status, 200, message, requestUrl);
-                done();
-            }
+            url: '/base/test/files/playlist.json'
+        }).then(({ result, xhr }) => {
+            expect(xhr).to.equal(customXhr);
+            expect(result).to.equal(customXhr);
+            expect(result.status).to.equal(200);
         });
-        expect(xmlHttpRequest).to.equal(customXhr);
     });
 
-    it('supports a requestFilter xhr argument', function (done) {
+    it('supports a requestFilter xhr argument', function () {
         const customXhr = new window.XMLHttpRequest();
-        const xmlHttpRequest = ajax({
+        return expectSuccess({
             requestFilter: function(request) {
                 expect(request).to.have.property('url').which.equals('/base/test/files/playlist.json');
                 expect(request).to.have.property('xhr');
                 return customXhr;
             },
-            url: '/base/test/files/playlist.json',
-            oncomplete: function (xhrResult) {
-                expect(xhrResult).to.equal(customXhr);
-                expect(xhrResult.status).to.equal(200);
-                done();
-            },
-            onerror: function(message, requestUrl, xhrResult) {
-                assert.fail(xhrResult.status, 200, message, requestUrl);
-                done();
-            }
-        });
-        expect(xmlHttpRequest).to.equal(customXhr);
-    });
-
-    it('error "Error loading file" (bad request)', function (done) {
-        ajax({
-            oncomplete: function () {
-                assert.fail('XHR request completed', '"Error loading file" Error');
-                done();
-            },
-            onerror: function(message, requestUrl, xhrResult) {
-                expect(xhrResult.status).to.equal(0);
-                expect(message).to.equal('Error loading file');
-                done();
-            }
+            url: '/base/test/files/playlist.json'
+        }).then(({ result, xhr }) => {
+            expect(xhr).to.equal(customXhr);
+            expect(result).to.equal(customXhr);
+            expect(result.status).to.equal(200);
         });
     });
 
-    it('error "Invalid XML"', function (done) {
-        ajax({
-            url: '/base/test/files/invalid.xml',
-            oncomplete: function () {
-                assert.fail('XHR request completed', '"Invalid XML" Error');
-                done();
+    it('handles bad request exceptions', function () {
+        const errorMessage = 'Error loading file';
+
+        return expectError({}, success => {
+            return new Error(`Expected bad request to fail with "Error loading file". Got ${success.status}`);
+        }).then(({ message, url, result, error }) => {
+            expect(message).to.equal(errorMessage);
+            expect(url).to.equal(undefined);
+            expect(result.status).to.equal(0);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(3);
+            expect(error).to.have.property('sourceError').which.does.not.equal(null);
+        });
+    });
+
+    it('handles requestFilter exceptions', function () {
+        const errorMessage = 'Error loading file';
+        const url = '/base/test/files/playlist.json';
+
+        return expectError({
+            requestFilter: function() {
+                throw new Error('Bad request filter');
             },
-            onerror: function (message, requestUrl, xhrResult) {
-                expect(xhrResult.status).to.equal(200);
-                expect(message).to.equal('Invalid XML');
-                done();
-            },
+            url
+        }, success => {
+            return new Error(`Expected bad filter to fail with "Error loading file". Got ${success.status}`);
+        }).then(({ message, url: u, result, error }) => {
+            expect(message).to.equal(errorMessage);
+            expect(u).to.equal(url);
+            expect(result.status).to.equal(0);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(5);
+            expect(error).to.have.property('sourceError').which.does.not.equal(null);
+        });
+    });
+
+    it('error "Invalid XML"', function () {
+        const errorMessage = 'Invalid XML';
+        const url = '/base/test/files/invalid.xml';
+
+        return expectError({
+            url,
             requireValidXML: true
+        }, success => {
+            return new Error(`Expected bad request to fail with "Invalid XML". Got ${success.status}`);
+        }).then(({ message, url: u, result, error }) => {
+            expect(message).to.equal(errorMessage);
+            expect(u).to.equal(url);
+            expect(result.status).to.equal(200);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(602);
+            expect(error).to.have.property('sourceError').which.equals(null);
         });
     });
 
-    it('error "Invalid JSON"', function (done) {
-        ajax({
-            url: '/base/test/files/invalid.xml',
-            oncomplete: function() {
-                assert.fail('XHR request completed', '"Invalid JSON" Error');
-                done();
-            },
-            onerror: function (message, requestUrl, xhrResult) {
-                expect(xhrResult.status).to.equal(200);
-                expect(message).to.equal('Invalid JSON');
-                done();
-            },
+    it('error "Invalid JSON"', function () {
+        const errorMessage = 'Invalid JSON';
+        const url = '/base/test/files/invalid.xml';
+
+        return expectError({
+            url,
             responseType: 'json'
+        }, success => {
+            return new Error(`Expected bad request to fail with "Invalid JSON". Got ${success.status}`);
+        }).then(({ message, url: u, result, error }) => {
+            expect(message).to.equal(errorMessage);
+            expect(u).to.equal(url);
+            expect(result.status).to.equal(200);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(611);
+            expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
     });
 
-    it('error "File not found" (404) - Integration Test', function (done) {
-        ajax({
-            url: 'foobar',
-            oncomplete: function() {
-                assert.fail('XHR request completed', '"File not found" Error');
-                done();
-            },
-            onerror: function (message, requestUrl, xhrResult) {
-                expect(xhrResult.status).to.equal(404);
-                expect(message).to.equal('File not found');
-                done();
-            }
+    it('error "File not found" (404) - Integration Test', function () {
+        const errorMessage = 'File not found';
+        const url = 'foobar';
+
+        return expectError({
+            url
+        }, success => {
+            return new Error(`Expected bad request to fail with "File not found". Got ${success.status}`);
+        }).then(({ message, url: u, result, error }) => {
+            expect(message).to.equal(errorMessage);
+            expect(u).to.equal(url);
+            expect(result.status).to.equal(404);
+            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('code').which.equals(404);
+            expect(error).to.have.property('sourceError').which.equals(null);
         });
     });
 });
