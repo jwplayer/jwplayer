@@ -15,12 +15,12 @@ Object.assign(Preview.prototype, {
     },
     setImage: function(img) {
         // Remove onload function from previous image
-        var image = this.image;
+        let image = this.image;
         if (image) {
             image.onload = null;
         }
         this.image = null;
-        var backgroundImage = '';
+        let backgroundImage = '';
         if (typeof img === 'string') {
             backgroundImage = 'url("' + img + '")';
             image = this.image = new Image();
@@ -41,17 +41,17 @@ Object.assign(Preview.prototype, {
                 return;
             }
             // snap image to edges when the difference in aspect ratio is less than 9%
-            var image = this.image;
-            var backgroundSize = null;
+            const image = this.image;
+            let backgroundSize = null;
             if (image) {
                 if (image.width === 0) {
-                    var _this = this;
+                    const _this = this;
                     image.onload = function() {
                         _this.resize(width, height, stretching);
                     };
                     return;
                 }
-                var imageAspectRatio = image.width / image.height;
+                const imageAspectRatio = image.width / image.height;
                 if (Math.abs(this.playerAspectRatio - imageAspectRatio) < 0.09) {
                     backgroundSize = 'cover';
                 }

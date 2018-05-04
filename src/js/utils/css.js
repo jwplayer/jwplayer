@@ -5,11 +5,11 @@ export const clearCss = styleLoader.clear;
 
 export function css(selector, styles, playerId, important) {
     playerId = playerId || 'all-players';
-    var cssText = '';
+    let cssText = '';
     if (typeof styles === 'object') {
-        var el = document.createElement('div');
+        const el = document.createElement('div');
         style(el, styles);
-        var styleCSSText = el.style.cssText;
+        let styleCSSText = el.style.cssText;
         if (important && styleCSSText) {
             styleCSSText = styleCSSText.replace(/;/g, ' !important;');
         }
@@ -34,17 +34,17 @@ export function style(elements, styles) {
         elements = [elements];
     }
 
-    var property;
-    var cssRules = {};
+    let property;
+    const cssRules = {};
     for (property in styles) {
         if (Object.prototype.hasOwnProperty.call(styles, property)) {
             cssRules[property] = _styleValue(property, styles[property]);
         }
     }
 
-    for (var i = 0; i < elements.length; i++) {
-        var element = elements[i];
-        var styleName;
+    for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        let styleName;
 
         if (element !== undefined && element !== null) {
             for (property in cssRules) {
@@ -61,7 +61,7 @@ export function style(elements, styles) {
 
 function _styleAttributeName(name) {
     name = name.split('-');
-    for (var i = 1; i < name.length; i++) {
+    for (let i = 1; i < name.length; i++) {
         name[i] = name[i].charAt(0).toUpperCase() + name[i].slice(1);
     }
     return name.join('');
@@ -103,13 +103,13 @@ export function transform(element, value) {
 let canvasColorContext;
 
 export function getRgba(color, opacity) {
-    var colorFn = 'rgb';
-    var hasAlpha = (opacity !== undefined && opacity !== 100);
+    let colorFn = 'rgb';
+    const hasAlpha = (opacity !== undefined && opacity !== 100);
     if (hasAlpha) {
         colorFn += 'a';
     }
     if (!canvasColorContext) {
-        var canvas = document.createElement('canvas');
+        const canvas = document.createElement('canvas');
         canvas.height = 1;
         canvas.width = 1;
         canvasColorContext = canvas.getContext('2d');
@@ -122,7 +122,7 @@ export function getRgba(color, opacity) {
     canvasColorContext.clearRect(0, 0, 1, 1);
     canvasColorContext.fillStyle = color;
     canvasColorContext.fillRect(0, 0, 1, 1);
-    var data = canvasColorContext.getImageData(0, 0, 1, 1).data;
+    const data = canvasColorContext.getImageData(0, 0, 1, 1).data;
     colorFn += '(' + data[0] + ', ' + data[1] + ', ' + data[2];
     if (hasAlpha) {
         colorFn += ', ' + (opacity / 100);

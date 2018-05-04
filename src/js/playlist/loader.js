@@ -5,7 +5,7 @@ import utils from 'utils/helpers';
 import Events from 'utils/backbone.events';
 
 const PlaylistLoader = function() {
-    var _this = Object.assign(this, Events);
+    const _this = Object.assign(this, Events);
 
     this.load = function(playlistfile) {
         utils.ajax(playlistfile, playlistLoaded, playlistError);
@@ -17,11 +17,11 @@ const PlaylistLoader = function() {
 
     function playlistLoaded(loadedEvent) {
         try {
-            var childNodes = loadedEvent.responseXML ? loadedEvent.responseXML.childNodes : null;
-            var rss = '';
-            var jsonObj;
+            const childNodes = loadedEvent.responseXML ? loadedEvent.responseXML.childNodes : null;
+            let rss = '';
+            let jsonObj;
             if (childNodes) {
-                for (var i = 0; i < childNodes.length; i++) {
+                for (let i = 0; i < childNodes.length; i++) {
                     rss = childNodes[i];
                     // 8: Node.COMMENT_NODE (IE8 doesn't have the Node.COMMENT_NODE constant)
                     if (rss.nodeType !== 8) {
@@ -32,7 +32,7 @@ const PlaylistLoader = function() {
                     rss = rss.nextSibling;
                 }
                 if (localName(rss) === 'rss') {
-                    var rssPlaylist = parseRss(rss);
+                    const rssPlaylist = parseRss(rss);
                     jsonObj = Object.assign({ playlist: rssPlaylist }, rssPlaylist.feedData);
                 }
             }
@@ -40,7 +40,7 @@ const PlaylistLoader = function() {
             // If the response is not valid RSS, check if it is JSON
             if (!jsonObj) {
                 try {
-                    var pl = JSON.parse(loadedEvent.responseText);
+                    const pl = JSON.parse(loadedEvent.responseText);
                     // If the response is not a JSON array, try to read playlist of the response
                     if (Array.isArray(pl)) {
                         jsonObj = { playlist: pl };

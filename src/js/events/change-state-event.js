@@ -16,8 +16,8 @@ export default function ChangeStateEvent(model, newstate, oldstate) {
     if (newstate !== oldstate) {
         // buffering, playing and paused states become:
         // buffer, play and pause events
-        var eventType = newstate.replace(/(?:ing|d)$/, '');
-        var evt = {
+        const eventType = newstate.replace(/(?:ing|d)$/, '');
+        const evt = {
             type: eventType,
             newstate: newstate,
             oldstate: oldstate,

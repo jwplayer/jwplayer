@@ -2,14 +2,14 @@ import * as parser from 'utils/parser';
 
 describe('parser', function() {
 
-    var testerGenerator = function (method) {
+    const testerGenerator = function (method) {
         return function (left, right, message) {
             expect(method.apply(this, left), message).to.equal(right);
         };
     };
 
     it('parser.getAbsolutePath', function() {
-        var path = parser.getAbsolutePath(null, null);
+        let path = parser.getAbsolutePath(null, null);
         expect(path, 'passing null as path returns null').to.be.undefined;
 
         path = parser.getAbsolutePath('https://testingUrl', null);
@@ -19,7 +19,7 @@ describe('parser', function() {
         expect(path.indexOf('path') >= 0, 'passing path and base returns correct url with path').to.be.true;
         expect(path.indexOf('base') >= 0, 'passing path and base returns correct url with base').to.be.true;
 
-        var test = testerGenerator(parser.getAbsolutePath);
+        const test = testerGenerator(parser.getAbsolutePath);
         test(['.', 'https://example.com/alpha/beta/filename'], 'https://example.com/alpha/beta');
         test(['/', 'https://example.com/alpha/beta/filename'], 'https://example.com/');
         test(['../', 'https://example.com/alpha/beta/filename'], 'https://example.com/alpha');
@@ -34,10 +34,10 @@ describe('parser', function() {
     });
 
     it('parser.serialize', function() {
-        var array = [];
-        var object = {};
+        const array = [];
+        const object = {};
 
-        var test = testerGenerator(parser.serialize);
+        const test = testerGenerator(parser.serialize);
         test([undefined], null, 'undefined returns null');
         test([null], null, 'null is passed through');
         test([array], array, 'arrays are passed through');
@@ -56,16 +56,16 @@ describe('parser', function() {
     });
 
     it('parser.parseXML', function() {
-        var xml = parser.parseXML('<input>');
+        let xml = parser.parseXML('<input>');
         expect(xml).to.equal(null);
 
-        var input = '<input><test>ToTest</test></input>';
+        const input = '<input><test>ToTest</test></input>';
         xml = parser.parseXML(input);
         expect(!!xml, 'xml should be returned').to.be.true;
     });
 
     it('parser.parseDimension', function() {
-        var dimension = parser.parseDimension('');
+        let dimension = parser.parseDimension('');
         expect(dimension, 'dimension with empty string should be 0').to.equal(0);
 
         dimension = parser.parseDimension('35%');
@@ -79,7 +79,7 @@ describe('parser', function() {
     });
 
     it('parser.timeFormat', function() {
-        var time;
+        let time;
 
         time = parser.timeFormat(3661);
         expect(time, 'timeFormat with hours minutes seconds').to.equal('1:01:01');

@@ -92,7 +92,7 @@ const Model = function() {
     this.setVolume = function(volume) {
         volume = Math.round(volume);
         this.set('volume', volume);
-        var mute = (volume === 0);
+        const mute = (volume === 0);
         if (mute !== (this.getMute())) {
             this.setMute(mute);
         }
@@ -108,7 +108,7 @@ const Model = function() {
         }
         this.set('mute', mute);
         if (!mute) {
-            var volume = Math.max(10, this.get('volume'));
+            const volume = Math.max(10, this.get('volume'));
             this.set('autostartMuted', false);
             this.setVolume(volume);
         }
@@ -151,7 +151,7 @@ const Model = function() {
     };
 
     this.persistCaptionsTrack = function() {
-        var track = this.get('captionsTrack');
+        const track = this.get('captionsTrack');
 
         if (track) {
             // update preference if an option was selected
