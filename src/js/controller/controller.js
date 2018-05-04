@@ -27,7 +27,7 @@ import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
 import Item from 'playlist/item';
-import { ERROR_LOADING_PLAYLIST } from 'api/errors';
+import { PlayerError, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, PLAYLIST_ERROR_LOADING_PROVIDER } from 'api/errors';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -333,15 +333,12 @@ Object.assign(Controller.prototype, {
                 case 'string': {
                     _model.attributes.item = 0;
                     _model.attributes.itemReady = false;
-                    const loadPlaylistPromise = _loadPlaylist(item).catch(error => {
-                        _this.triggerError(error);
-                    });
                     updatePlaylistCancelable = cancelable((data) => {
                         if (data) {
                             return _this.updatePlaylist(Playlist(data.playlist), data);
                         }
                     });
-                    loadPromise = loadPlaylistPromise.then(updatePlaylistCancelable.async);
+                    loadPromise = _loadPlaylist(item).then(updatePlaylistCancelable.async);
                     break;
                 }
                 case 'object':
@@ -354,10 +351,14 @@ Object.assign(Controller.prototype, {
                 default:
                     return;
             }
-            loadPromise.catch(error => {
-                error.message = `Playlist error: ${error.message}`;
-                error.code = (error.code || 0) + ERROR_LOADING_PLAYLIST;
-                _this.triggerError(error);
+            loadPromise.catch(e => {
+                if (e.code >= 151 && e.code <= 162) {
+                    e.code = PlayerError.compose(e.code, ERROR_LOADING_PROVIDER);
+                } else {
+                    e.message = `Playlist e: ${e.message}`;
+                    e.code = PlayerError.compose(e.code, ERROR_LOADING_PLAYLIST);
+                }
+                _this.triggerError(e);
             });
 
             loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
@@ -370,7 +371,7 @@ Object.assign(Controller.prototype, {
                     resolve(data);
                 });
                 loader.on(ERROR, function(error) {
-                    error.code = (error.code || 0) + ERROR_LOADING_PLAYLIST;
+                    error.code = PlayerError.compose(error.code, ERROR_LOADING_PROVIDER);
                     reject(error);
                 }, this);
                 loader.load(toLoad);
@@ -585,7 +586,11 @@ Object.assign(Controller.prototype, {
 
         function _item(index, meta) {
             _stop(true);
-            _setItem(index);
+            _setItem(index)
+                .catch(e => {
+                    e.code = PlayerError.compose(e.code, PLAYLIST_ERROR_LOADING_PROVIDER);
+                    throw e;
+                });
             _play(meta).catch(() => {
                 // Suppress "Uncaught (in promise) Error"
             });
@@ -925,7 +930,7 @@ Object.assign(Controller.prototype, {
             } catch (error) {
                 return Promise.reject(error);
             }
-            return _setItem(_model.get('item'));
+            return _setItem(_model.get('item'))
         };
 
         this.playerDestroy = function () {

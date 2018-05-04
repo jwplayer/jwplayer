@@ -7,7 +7,7 @@ import Eventable from 'utils/eventable';
 import BackgroundMedia from 'program/background-media';
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
 import { Features } from 'environment/environment';
-import { PlayerError } from 'api/errors';
+import { PlayerError, ERROR_LOADING_PROVIDER } from 'api/errors';
 
 /** @private Do not include in JSDocs */
 
