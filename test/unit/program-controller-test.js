@@ -405,6 +405,23 @@ describe('ProgramController', function () {
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
             });
     });
+
+    describe('errors', function () {
+        it('throws a PlayerError when attempting to set an item with no source as active', function () {
+            model.attributes.playlist = [{}];
+            return new Promise((resolve, reject) => {
+                programController.setActiveItem(0)
+                    .then(() => {
+                        reject(new Error('Should have thrown an error'));
+                    })
+                    .catch(e => {
+                        expect(e.code).to.equal(640);
+                        expect(e.message).to.equal('No media');
+                        resolve();
+                    });
+            });
+        });
+    });
 });
 
 function expectAllEventsTriggered(callbackSpy) {

@@ -2,6 +2,7 @@ import { getPreload } from './preload';
 import PlaylistItem from 'playlist/item';
 import Source from 'playlist/source';
 import Providers from 'providers/providers';
+import { PlayerError } from 'api/errors';
 
 const Playlist = function(playlist) {
     // Can be either an array of items or a single item.
@@ -42,9 +43,10 @@ export function filterPlaylist(playlist, model, feedData) {
     return list;
 }
 
+
 export function validatePlaylist(playlist) {
     if (!Array.isArray(playlist) || playlist.length === 0) {
-        throw new Error('No playable sources found');
+        throw new PlayerError('No playable sources found', 630);
     }
 }
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());

@@ -5,9 +5,9 @@ import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 import BackgroundMedia from 'program/background-media';
-
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
-import { Features } from '../environment/environment';
+import { Features } from 'environment/environment';
+import { PlayerError } from 'api/errors';
 
 /** @private Do not include in JSDocs */
 
@@ -50,7 +50,7 @@ class ProgramController extends Eventable {
         model.setActiveItem(index);
         const source = getSource(item);
         if (!source) {
-            return Promise.reject(new Error('No media'));
+            return Promise.reject(new PlayerError('No media', 640));
         }
 
         // Activate the background media if it's loading the item we want to play

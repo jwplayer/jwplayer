@@ -3,12 +3,15 @@ import { localName } from 'parsers/parsers';
 import parseRss from 'parsers/rssparser';
 import utils from 'utils/helpers';
 import Events from 'utils/backbone.events';
+import { PlayerError } from 'api/errors';
 
 const PlaylistLoader = function() {
-    var _this = Object.assign(this, Events);
+    const _this = Object.assign(this, Events);
 
     this.load = function(playlistfile) {
-        utils.ajax(playlistfile, playlistLoaded, playlistError);
+        utils.ajax(playlistfile, playlistLoaded, (message, file, url, error) => {
+            playlistError(error);
+        });
     };
 
     this.destroy = function() {
@@ -47,23 +50,25 @@ const PlaylistLoader = function() {
                     } else if (Array.isArray(pl.playlist)) {
                         jsonObj = pl;
                     } else {
-                        throw Error;
+                        throw Error('Playlist is not an array');
                     }
                 } catch (e) {
-                    throw new Error('Not a valid RSS/JSON feed');
+                    throw new PlayerError('Not a valid RSS/JSON feed', 621, e);
                 }
             }
 
             _this.trigger(PLAYLIST_LOADED, jsonObj);
         } catch (error) {
-            playlistError(error.message);
+            playlistError(error);
         }
     }
 
-    function playlistError(msg) {
-        _this.trigger(ERROR, {
-            message: msg ? msg : 'Error loading file'
-        });
+    function playlistError(error) {
+        if (!error.code) {
+            error = new PlayerError(error ? error : 'Error loading file', 0);
+        }
+        error.message = `Error loading playlist: ${error.message}`;
+        _this.trigger(ERROR, error);
     }
 };
 

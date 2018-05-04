@@ -4,6 +4,7 @@ import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
+import { SETUP_ERROR_LOADING_PLAYLIST } from 'api/errors';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -18,7 +19,8 @@ export function loadPlaylist(_model) {
             });
             playlistLoader.on(ERROR, err => {
                 setPlaylistAttributes(_model, [], {});
-                reject(new Error(`Error loading playlist: ${err.message}`));
+                err.code = (err.code || 0) + SETUP_ERROR_LOADING_PLAYLIST;
+                reject(err);
             });
             playlistLoader.load(playlist);
         });
@@ -46,7 +48,12 @@ function loadProvider(_model) {
         _model.attributes.playlist = playlist;
 
         // Throw exception if playlist is empty
-        validatePlaylist(playlist);
+        try {
+            validatePlaylist(playlist);
+        } catch (e) {
+            e.code += SETUP_ERROR_LOADING_PLAYLIST;
+            throw e;
+        }
 
         const providersManager = _model.getProviders();
         const { provider, name } = providersManager.choose(playlist[0].sources[0]);

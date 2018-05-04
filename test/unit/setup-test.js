@@ -74,7 +74,7 @@ describe('api.setup', function() {
         return expectSetupError({
             // playlist is undefined
         }).then(({ event }) => {
-            expect(event.code).to.equal(undefined);
+            expect(event.code).to.equal(102630);
             expect(event.message).to.equal('No playable sources found');
         });
     });
@@ -83,7 +83,7 @@ describe('api.setup', function() {
         return expectSetupError({
             playlist: ''
         }).then(({ event }) => {
-            expect(event.code).to.equal(undefined);
+            expect(event.code).to.equal(102630);
             expect(event.message).to.equal('No playable sources found');
         });
     });
@@ -92,7 +92,7 @@ describe('api.setup', function() {
         return expectSetupError({
             playlist: 1
         }).then(({ event }) => {
-            expect(event.code).to.equal(undefined);
+            expect(event.code).to.equal(102630);
             expect(event.message).to.equal('No playable sources found');
         });
     });
@@ -101,7 +101,7 @@ describe('api.setup', function() {
         return expectSetupError({
             playlist: true
         }).then(({ event }) => {
-            expect(event.code).to.equal(undefined);
+            expect(event.code).to.equal(102630);
             expect(event.message).to.equal('No playable sources found');
         });
     });
@@ -110,7 +110,7 @@ describe('api.setup', function() {
         return expectSetupError({
             playlist: []
         }).then(({ event }) => {
-            expect(event.code).to.equal(undefined);
+            expect(event.code).to.equal(102630);
             expect(event.message).to.equal('No playable sources found');
         });
     });
@@ -122,7 +122,7 @@ describe('api.setup', function() {
             const playlist = api.getPlaylist();
 
             expect(playlist).to.be.an('array').that.has.lengthOf(0);
-            expect(event.code).to.equal(undefined);
+            expect(event.code).to.equal(102630);
             expect(event.message).to.equal('No playable sources found');
         });
     });
