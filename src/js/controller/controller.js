@@ -27,6 +27,7 @@ import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from '../program/program-constants';
 import Item from 'playlist/item';
+import { log } from 'utils/helpers';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -255,9 +256,7 @@ Object.assign(Controller.prototype, {
                                 ]
                             });
                         } catch (error) {
-                            _this.triggerError({
-                                message: `Error loading playlist item: ${error.message}`
-                            });
+                            log(error);
                         }
                     }
                     _this.trigger(PLAYLIST_ITEM, {
