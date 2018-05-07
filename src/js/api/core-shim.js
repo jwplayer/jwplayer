@@ -143,6 +143,7 @@ Object.assign(CoreShim.prototype, {
         this.off();
         this._events =
             this._model =
+            this.modelShim =
             this.originalContainer =
             this.apiQueue =
             this.setup = null;
