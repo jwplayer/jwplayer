@@ -150,23 +150,6 @@ function View(_api, _model) {
         }
     };
 
-    this.checkOrientation = function(type) {
-        if (OS.android && Browser.chrome && _this.model.get('visibility') >= 0.75) {
-            const state = _this.model.get('state');
-            const isLandscape = type === 'landscape-primary' || type === 'landscape-secondary';
-
-            if (!isLandscape && state === 'paused') {
-                // Set fullscreen to false when going back to portrait while paused and return early
-                _this.model.set('fullscreen', false);
-                return;
-            }
-
-            if (state === 'playing') {
-                _this.model.set('fullscreen', isLandscape);
-            }
-        }
-    };
-
     function _responsiveListener() {
         cancelAnimationFrame(_resizeContainerRequestId);
         _resizeContainerRequestId = requestAnimationFrame(_responsiveUpdate);
