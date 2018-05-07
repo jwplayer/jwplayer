@@ -61,6 +61,14 @@ describe('PlayDisplayIcon', function() {
 
             expect(icon.className).to.include('jw-ab-idle-fill');
         });
+
+        it('should add class if config is label', function() {
+            model.set('idleButton', 'label');
+
+            displayIcon = new PlayDisplayIcon(model, {}, element);
+
+            expect(icon.className).to.include('jw-ab-idle-label');
+        });
     });
 
     describe('on state change', function() {
