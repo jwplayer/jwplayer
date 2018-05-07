@@ -3,12 +3,6 @@ import PluginsModel from 'plugins/model';
 import { log } from 'utils/helpers';
 
 const pluginsModel = new PluginsModel();
-const pluginLoaders = {};
-
-function getPluginLoader(id) {
-    pluginLoaders[id] = new PluginsLoader();
-    return pluginLoaders[id];
-}
 
 export const registerPlugin = function(name, minimumVersion, pluginClass) {
     let plugin = pluginsModel.addPlugin(name);
@@ -18,14 +12,15 @@ export const registerPlugin = function(name, minimumVersion, pluginClass) {
 };
 
 export default function loadPlugins(model, api) {
-    const playerId = model.get('id');
     const pluginsConfig = model.get('plugins');
 
     window.jwplayerPluginJsonp = registerPlugin;
 
-    const pluginLoader = getPluginLoader(playerId);
-    return pluginLoader.load(api, pluginsModel, pluginsConfig).then(events => {
-        if (pluginLoader !== pluginLoaders[playerId]) {
+    const pluginLoader = model.pluginLoader =
+        model.pluginLoader || new PluginsLoader();
+
+    return pluginLoader.load(api, pluginsModel, pluginsConfig, model).then(events => {
+        if (model.attributes._destroyed) {
             // Player and plugin loader was replaced
             return;
         }
