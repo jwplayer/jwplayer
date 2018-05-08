@@ -92,6 +92,7 @@ function createMediaElement() {
     const mediaElement = document.createElement('video');
 
     mediaElement.className = 'jw-video jw-reset';
+    mediaElement.setAttribute('tabindex', '-1');
     mediaElement.setAttribute('disableRemotePlayback', '');
     mediaElement.setAttribute('webkit-playsinline', '');
     mediaElement.setAttribute('playsinline', '');
