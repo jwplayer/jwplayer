@@ -12,12 +12,12 @@ const getPluginPathType = function (path) {
         return;
     }
     path = path.split('?')[0];
-    var protocol = path.indexOf('://');
+    const protocol = path.indexOf('://');
     if (protocol > 0) {
         return PLUGIN_PATH_TYPE_ABSOLUTE;
     }
-    var folder = path.indexOf('/');
-    var fileExtension = extension(path);
+    const folder = path.indexOf('/');
+    const fileExtension = extension(path);
     if (protocol < 0 && folder < 0 && (!fileExtension || !isNaN(fileExtension))) {
         return PLUGIN_PATH_TYPE_CDN;
     }

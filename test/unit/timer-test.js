@@ -15,27 +15,27 @@ describe('clock', function() {
 describe('timer', function() {
 
     it('timer start/end test', function() {
-        var time = new Timer();
+        const time = new Timer();
         time.start('test');
         time.end('test');
 
-        var dump = time.dump();
+        const dump = time.dump();
         expect(dump.counts.test, 'test has been called once').to.equal(1);
         expect(typeof dump.sums.test, 'sum is a number').to.equal('number');
 
-        var invalidEnd = time.end('notStarted');
+        const invalidEnd = time.end('notStarted');
         expect(invalidEnd, 'function that has not yet started should have no end time').to.be.undefined;
     });
 
     it('timer tick test', function (done) {
-        var time = new Timer();
+        const time = new Timer();
 
         time.tick('event1');
 
         setTimeout(function() {
             time.tick('event2');
 
-            var between = time.between('event1', 'event2');
+            let between = time.between('event1', 'event2');
             expect(between > 5 && between < 30000, 'between tick time is correctly calculated').to.be.true;
 
             between = time.between('no', 'value');

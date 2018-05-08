@@ -17,6 +17,7 @@
         Check if the version of the player requires the compatibility shim. Only versions below 8 require this script.
     */
     if (parseInt(playerLibrary.version, 10) >= 8) {
+        /* eslint-disable no-var */
         var jwplayerCompatible = function(query) {
             var basePlayer = playerLibrary(query);
             var playerInstance = Object.create(basePlayer);
@@ -206,7 +207,7 @@
         utils.isFlashSupported = valueFn(environment.Features.flash);
         utils.isIE = valueFn(environment.Browser.ie);
         utils.isIETrident = function () {
-            return environment.Browser.ie && environment.Browser.version.major >= 11; 
+            return environment.Browser.ie && environment.Browser.version.major >= 11;
         };
         utils.isIOS = function(osVersion) {
             if (osVersion && environment.OS.version.indexOf(osVersion) !== 0) {

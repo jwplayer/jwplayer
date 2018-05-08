@@ -3,8 +3,8 @@ import utils from 'utils/helpers';
 describe('helpers', function() {
 
     it('helpers foreach test', function() {
-        var aData = { hello: 'hi' };
-        var tester = [];
+        const aData = { hello: 'hi' };
+        const tester = [];
 
         function fnEach(key, val) {
             tester.push(key);

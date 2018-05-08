@@ -8,12 +8,12 @@ import { offsetToSeconds } from 'utils/strings';
 import Events from 'utils/backbone.events';
 import AdProgramController from 'program/ad-program-controller';
 
-var _defaultOptions = {
+const _defaultOptions = {
     skipoffset: null,
     tag: null
 };
 
-var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
+const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     const _this = this;
 
     let _adProgram = new AdProgramController(_model, _mediaPool);
@@ -169,7 +169,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     }
 
     function _instreamItemComplete(e) {
-        var data = {};
+        const data = {};
         if (_options.tag) {
             data.tag = _options.tag;
         }
@@ -273,7 +273,7 @@ var InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     this.skipAd = function(evt) {
-        var skipAdType = AD_SKIPPED;
+        const skipAdType = AD_SKIPPED;
         this.trigger(skipAdType, evt);
         _skipAd.call(this, {
             type: skipAdType
