@@ -61,6 +61,7 @@ function onOrientationChange() {
                 return;
             } else if (state === 'playing') {
                 view.api.setFullscreen(isLandscape);
+                return;
             }
         }
     });
