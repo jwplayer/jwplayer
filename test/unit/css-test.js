@@ -3,15 +3,15 @@ import { css, clearCss, style, transform, getRgba } from 'utils/css';
 describe('css', function() {
 
     it('css() and clearCss()', function() {
-        var playerId = 'css-testplayer';
-        var count = document.getElementsByTagName('style').length;
+        const playerId = 'css-testplayer';
+        const count = document.getElementsByTagName('style').length;
 
-        var testSelector = 'test-selector';
-        var stylesBlue = {
+        const testSelector = 'test-selector';
+        const stylesBlue = {
             'background-color': 'blue'
         };
 
-        var stylesRed = {
+        const stylesRed = {
             backgroundColor: 'red'
         };
 
@@ -19,11 +19,11 @@ describe('css', function() {
 
         // check that css() accepts a style object and that a new style sheet has been added since
         // this is the first time calling css().
-        var newCount = document.getElementsByTagName('style').length;
+        const newCount = document.getElementsByTagName('style').length;
         expect(newCount, 'css adds a new style sheet').to.equal(count + 1);
 
         // check that style sheet is correctly included to the end of head
-        var styleSheet = document.getElementsByTagName('head')[0].lastChild;
+        const styleSheet = document.getElementsByTagName('head')[0].lastChild;
         expect(/test-selector{background-color: ?blue;?}/.test(styleSheet.innerHTML), 'css object correctly included').to.be.true;
 
         // check that css() accepts a style object and css will be replaced
@@ -42,17 +42,17 @@ describe('css', function() {
     });
 
     it('style', function() {
-        var element = document.createElement('div');
-        var element2 = document.createElement('div');
+        const element = document.createElement('div');
+        const element2 = document.createElement('div');
 
-        var styles = {
+        const styles = {
             'background-color': 'white',
             'z-index': 10,
             'background-image': 'images/image.jpg',
             color: '123456'
         };
 
-        var styles2 = {
+        const styles2 = {
             backgroundColor: 'white',
             backgroundImage: 'images/image.jpg'
         };
@@ -74,7 +74,7 @@ describe('css', function() {
     });
 
     it('transform', function() {
-        var element = document.createElement('div');
+        const element = document.createElement('div');
 
         // this should not break
         transform(null, 'none');
@@ -99,7 +99,7 @@ describe('css', function() {
         // this should not break
         getRgba(null, null);
 
-        var rgba = getRgba('123456', 0.5);
+        let rgba = getRgba('123456', 0.5);
         expect(rgba, 'css getRgba test').to.equal('rgba(18, 52, 86, 0.005)');
 
         rgba = getRgba('123', 0);

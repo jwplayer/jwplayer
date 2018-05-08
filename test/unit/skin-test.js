@@ -22,7 +22,7 @@ function diffString(before, after) {
     /**
      * fast-diff returns an array of results [fast-diff](https://github.com/jhchen/fast-diff)
      *
-     * var result = diff('Good dog', 'Bad dog');
+     * result = diff('Good dog', 'Bad dog');
      * // [[-1, "Goo"], [1, "Ba"], [0, "d dog"]]
      *
      * This maps the results to an object:

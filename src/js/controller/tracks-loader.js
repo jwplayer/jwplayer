@@ -14,7 +14,7 @@ export function loadFile(track, successHandler, errorHandler) {
 export function cancelXhr(tracks) {
     if (tracks) {
         tracks.forEach(track => {
-            var xhr = track.xhr;
+            const xhr = track.xhr;
             if (xhr) {
                 xhr.onload = null;
                 xhr.onreadystatechange = null;
@@ -34,9 +34,9 @@ export function convertToVTTCues(cues) {
 }
 
 function xhrSuccess(xhr, track, successHandler, errorHandler) {
-    var xmlRoot = xhr.responseXML ? xhr.responseXML.firstChild : null;
-    var cues;
-    var vttCues;
+    let xmlRoot = xhr.responseXML ? xhr.responseXML.firstChild : null;
+    let cues;
+    let vttCues;
 
     // IE9 sets the firstChild element to the root <xml> tag
     if (xmlRoot) {
@@ -58,11 +58,11 @@ function xhrSuccess(xhr, track, successHandler, errorHandler) {
             successHandler(vttCues);
         } else {
             // parse VTT/SRT track
-            var responseText = xhr.responseText;
+            const responseText = xhr.responseText;
             if (responseText.indexOf('WEBVTT') >= 0) {
                 // make VTTCues from VTT track
                 loadVttParser().then(VTTParser => {
-                    var parser = new VTTParser(window);
+                    const parser = new VTTParser(window);
                     vttCues = [];
                     parser.oncue = function(cue) {
                         vttCues.push(cue);
