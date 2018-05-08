@@ -1,5 +1,6 @@
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import { Browser, OS } from 'environment/environment';
 
 const views = [];
 const observed = {};
@@ -45,6 +46,26 @@ function scheduleResponsiveRedraw() {
     });
 }
 
+function onOrientationChange() {
+    views.forEach(view => {
+        if (view.model.get('visibility') >= 0.75) {
+            const state = view.model.get('state');
+            const orientation = window.screen.orientation.type;
+            const isLandscape = orientation === 'landscape-primary' || orientation === 'landscape-secondary';
+
+            if (!isLandscape && state === 'paused') {
+                // Set fullscreen to false when going back to portrait while paused and return early
+                view.api.setFullscreen(false);
+                return;
+            }
+
+            if (state === 'playing') {
+                view.api.setFullscreen(isLandscape);
+            }
+        }
+    });
+}
+
 function onVisibilityChange() {
     views.forEach(view => {
         view.model.set('activeTab', activeTab());
@@ -56,11 +77,19 @@ document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 window.addEventListener('resize', scheduleResponsiveRedraw);
 window.addEventListener('orientationchange', scheduleResponsiveRedraw);
 
+if (OS.android && Browser.chrome) {
+    window.screen.orientation.addEventListener('change', onOrientationChange);
+}
+
 window.addEventListener('beforeunload', () => {
     document.removeEventListener('visibilitychange', onVisibilityChange);
     document.removeEventListener('webkitvisibilitychange', onVisibilityChange);
     window.removeEventListener('resize', scheduleResponsiveRedraw);
     window.removeEventListener('orientationchange', scheduleResponsiveRedraw);
+
+    if (OS.android && Browser.chrome) {
+        window.screen.orientation.removeEventListener('change', onOrientationChange);
+    }
 });
 
 export default {
