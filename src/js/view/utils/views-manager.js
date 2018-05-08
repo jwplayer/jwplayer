@@ -1,9 +1,11 @@
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
+import { Browser, OS } from 'environment/environment';
 
 const views = [];
 const observed = {};
 const hasOrientation = 'screen' in window && 'orientation' in window.screen;
+const isAndroidChrome = OS.android && Browser.chrome;
 
 let intersectionObserver;
 let responsiveRepaintRequestId = -1;
@@ -75,7 +77,7 @@ document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 window.addEventListener('resize', scheduleResponsiveRedraw);
 window.addEventListener('orientationchange', scheduleResponsiveRedraw);
 
-if (hasOrientation) {
+if (isAndroidChrome && hasOrientation) {
     window.screen.orientation.addEventListener('change', onOrientationChange);
 }
 
@@ -85,7 +87,7 @@ window.addEventListener('beforeunload', () => {
     window.removeEventListener('resize', scheduleResponsiveRedraw);
     window.removeEventListener('orientationchange', scheduleResponsiveRedraw);
 
-    if (hasOrientation) {
+    if (isAndroidChrome && hasOrientation) {
         window.screen.orientation.removeEventListener('change', onOrientationChange);
     }
 });
