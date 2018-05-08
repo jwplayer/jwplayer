@@ -55,7 +55,7 @@ function onOrientationChange() {
             const orientation = window.screen.orientation.type;
             const isLandscape = orientation === 'landscape-primary' || orientation === 'landscape-secondary';
 
-            if (!isLandscape && state === 'paused') {
+            if (!isLandscape && state === 'paused' && view.api.getFullscreen()) {
                 // Set fullscreen to false when going back to portrait while paused and return early
                 view.api.setFullscreen(false);
                 return;
