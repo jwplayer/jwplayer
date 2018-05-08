@@ -40,8 +40,8 @@ export function classList(element) {
 export function addClass(element, classes) {
     // TODO:: use _.union on the two arrays
 
-    var originalClasses = classNameArray(element);
-    var addClasses = Array.isArray(classes) ? classes : classes.split(' ');
+    const originalClasses = classNameArray(element);
+    const addClasses = Array.isArray(classes) ? classes : classes.split(' ');
 
     addClasses.forEach(function (c) {
         if (!contains(originalClasses, c)) {
@@ -53,14 +53,14 @@ export function addClass(element, classes) {
 }
 
 export function removeClass(element, c) {
-    var originalClasses = classNameArray(element);
-    var removeClasses = Array.isArray(c) ? c : c.split(' ');
+    const originalClasses = classNameArray(element);
+    const removeClasses = Array.isArray(c) ? c : c.split(' ');
 
     setClassName(element, difference(originalClasses, removeClasses).join(' '));
 }
 
 export function replaceClass(element, pattern, replaceWith) {
-    var classes = (element.className || '');
+    let classes = (element.className || '');
     if (pattern.test(classes)) {
         classes = classes.replace(pattern, replaceWith);
     } else if (replaceWith) {
@@ -92,7 +92,7 @@ export function emptyElement(element) {
 }
 
 export function addStyleSheet(url) {
-    var link = document.createElement('link');
+    const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = url;
     document.getElementsByTagName('head')[0].appendChild(link);
@@ -119,9 +119,9 @@ export function bounds(element) {
         return boundsRect;
     }
 
-    var rect = element.getBoundingClientRect();
-    var scrollOffsetY = window.pageYOffset;
-    var scrollOffsetX = window.pageXOffset;
+    const rect = element.getBoundingClientRect();
+    const scrollOffsetY = window.pageYOffset;
+    const scrollOffsetX = window.pageXOffset;
 
     if (!rect.width && !rect.height && !rect.left && !rect.top) {
         // element is not visible / no layout

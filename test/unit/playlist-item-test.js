@@ -4,7 +4,7 @@ import _ from 'test/underscore';
 describe('playlist item', function() {
 
     function testItem(config) {
-        var x = item(config);
+        const x = item(config);
 
         expect(_.isObject(x), 'Item generated from ' + config + ' input').to.be.true;
         expect(_.isArray(x.sources), 'Item has sources array').to.be.true;
@@ -14,9 +14,9 @@ describe('playlist item', function() {
 
     // Check for the attrs which testItem does not
     function testItemComplete(config) {
-        var playlistItem = testItem(config);
+        const playlistItem = testItem(config);
 
-        var attrs = ['image', 'description', 'mediaid', 'title', 'minDvrWindow'];
+        const attrs = ['image', 'description', 'mediaid', 'title', 'minDvrWindow'];
         _.each(attrs, function (a) {
             expect(_.has(playlistItem, a), 'Item has ' + a + ' attribute').to.be.true;
         });
@@ -37,7 +37,7 @@ describe('playlist item', function() {
     });
 
     it('input with multiple sources, a default and captions track', function() {
-        var x = testItemComplete({
+        const x = testItemComplete({
             image: 'image.png',
             description: 'desc',
             sources: [
@@ -84,7 +84,7 @@ describe('playlist item', function() {
     });
 
     it('input source type normalization', function() {
-        var x = testItem({
+        const x = testItem({
             sources: [
                 {
                     file: 'f1.mp4'
@@ -123,7 +123,7 @@ describe('playlist item', function() {
     });
 
     it('input.levels are converted to sources', function() {
-        var x = testItem({
+        const x = testItem({
             levels: [{
                 file: 'f1.mp4',
                 label: 'f1 label',
@@ -136,7 +136,7 @@ describe('playlist item', function() {
     });
 
     it('input.captions are converted to tracks', function() {
-        var x = testItem({
+        const x = testItem({
             file: 'x',
             captions: [
                 {
@@ -150,7 +150,7 @@ describe('playlist item', function() {
     });
 
     it('property passthrough of unknown values', function() {
-        var x = testItem({
+        const x = testItem({
             file: 'x',
             randomStr: 'rrr',
             adSchedule: {
@@ -165,7 +165,7 @@ describe('playlist item', function() {
     });
 
     it('input.sources may contain one source object instead of array', function() {
-        var x = testItem({
+        const x = testItem({
             sources: {
                 file: 'f1.mp4',
                 label: 'f1 label',
