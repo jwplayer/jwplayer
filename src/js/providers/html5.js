@@ -105,6 +105,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             VideoEvents.loadeddata.call(_this);
             _setAudioTracks(_videotag.audioTracks);
             _checkDelayedSeek(_this.getDuration());
+            checkVisualQuality();
         },
 
         canplay() {
@@ -234,12 +235,13 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     function checkVisualQuality() {
         const level = visualQuality.level;
         if (level.width !== _videotag.videoWidth || level.height !== _videotag.videoHeight) {
+            // Exit if we're not certain that the stream is audio or the level is unknown
+            if ((!_videotag.videoWidth && !isAudioStream()) || _currentQuality === -1) {
+                return;
+            }
             level.width = _videotag.videoWidth;
             level.height = _videotag.videoHeight;
             _setMediaType();
-            if (!level.width || !level.height || _currentQuality === -1) {
-                return;
-            }
             visualQuality.reason = visualQuality.reason || 'auto';
             visualQuality.mode = _levels[_currentQuality].type === 'hls' ? 'auto' : 'manual';
             visualQuality.bitrate = 0;
@@ -732,18 +734,16 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         return _currentAudioTrackIndex;
     }
 
+    function isAudioStream() {
+        // Safari will report videoHeight as 0 for HLS streams until readyState indicates that the browser has data
+        return _videotag.videoHeight === 0 && !((OS.iOS || Browser.safari) && _videotag.readyState < 2);
+    }
+
     function _setMediaType() {
         // Send mediaType when format is HLS. Other types are handled earlier by default.js.
         if (_levels[0].type === 'hls') {
-            let mediaType = 'video';
-            if (_videotag.videoHeight === 0) {
-                // Safari will report videoHeight as 0 for HLS streams until readyState indicates that the browser has data
-                if ((OS.iOS || Browser.safari) && _videotag.readyState < 2) {
-                    return;
-                }
-                mediaType = 'audio';
-            }
-            _this.trigger(MEDIA_TYPE, { mediaType: mediaType });
+            const mediaType = isAudioStream() ? 'audio' : 'video';
+            _this.trigger(MEDIA_TYPE, { mediaType });
         }
     }
 
