@@ -1,5 +1,3 @@
-/* eslint-disable no-var */
-
 /*
     This script is a compatibility bridge between our new API, introduced in JW8, and our old API. Our new API removes
     several methods and properties and may break any scripts interacting with the new player. We provide this script to
@@ -19,6 +17,7 @@
         Check if the version of the player requires the compatibility shim. Only versions below 8 require this script.
     */
     if (parseInt(playerLibrary.version, 10) >= 8) {
+        /* eslint-disable no-var */
         var jwplayerCompatible = function(query) {
             var basePlayer = playerLibrary(query);
             var playerInstance = Object.create(basePlayer);
