@@ -1,9 +1,9 @@
 import activeTab from 'utils/active-tab';
 import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-animation-frame';
-import { Browser, OS } from 'environment/environment';
 
 const views = [];
 const observed = {};
+const hasOrientation = 'screen' in window && 'orientation' in window.screen;
 
 let intersectionObserver;
 let responsiveRepaintRequestId = -1;
@@ -57,9 +57,7 @@ function onOrientationChange() {
                 // Set fullscreen to false when going back to portrait while paused and return early
                 view.api.setFullscreen(false);
                 return;
-            }
-
-            if (state === 'playing') {
+            } else if (state === 'playing') {
                 view.api.setFullscreen(isLandscape);
             }
         }
@@ -77,7 +75,7 @@ document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 window.addEventListener('resize', scheduleResponsiveRedraw);
 window.addEventListener('orientationchange', scheduleResponsiveRedraw);
 
-if (OS.android && Browser.chrome) {
+if (hasOrientation) {
     window.screen.orientation.addEventListener('change', onOrientationChange);
 }
 
@@ -87,7 +85,7 @@ window.addEventListener('beforeunload', () => {
     window.removeEventListener('resize', scheduleResponsiveRedraw);
     window.removeEventListener('orientationchange', scheduleResponsiveRedraw);
 
-    if (OS.android && Browser.chrome) {
+    if (hasOrientation) {
         window.screen.orientation.removeEventListener('change', onOrientationChange);
     }
 });
