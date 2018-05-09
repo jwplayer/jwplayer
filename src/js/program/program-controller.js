@@ -557,6 +557,25 @@ class ProgramController extends Eventable {
     }
 
     /**
+     * Attaches or detaches the current media's player events
+     * @param {boolean} shouldAttach - Attach or detach events?
+     * @returns {void}
+     */
+    set eventsAttached(shouldAttach) {
+        const { mediaController } = this;
+
+        if (!mediaController) {
+            return;
+        }
+
+        if (shouldAttach) {
+            mediaController.attachEvents();
+        } else {
+            mediaController.detachEvents();
+        }
+    }
+
+    /**
      * Sets the active audio index.
      * @param {number} index - The index of the audio track to select.
      * @returns {void}

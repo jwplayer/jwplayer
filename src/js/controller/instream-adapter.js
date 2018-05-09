@@ -1,7 +1,7 @@
 import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
-    INSTREAM_CLICK, AD_SKIPPED } from 'events/events';
+    INSTREAM_CLICK, AD_CLICK, AD_SKIPPED } from 'events/events';
 import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
 import Promise from 'polyfills/promise';
 import { offsetToSeconds } from 'utils/strings';
@@ -63,25 +63,6 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
     this.type = 'instream';
 
-    this.addAdProgramTimeListener = function() {
-        if (_inited || _destroyed) {
-            return;
-        }
-
-        _adProgram.on(MEDIA_TIME, _instreamTime, this);
-
-        // This enters the player into instream mode
-        _model.set('instream', _adProgram);
-
-        // don't trigger api play/pause on display click
-        const clickHandler = _view.clickHandler();
-        if (clickHandler) {
-            clickHandler.setAlternateClickHandlers(() => {}, null);
-        }
-
-        return this;
-    };
-
     this.init = function() {
         if (_inited || _destroyed) {
             return;
@@ -121,6 +102,59 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         return this;
     };
+
+    this.enableAdsMode = function(clickThroughUrl, addDefaultClickHandler) {
+        if (_inited || _destroyed) {
+            return;
+        }
+        _addAdProgramTimeListener();
+        _addInstreamCickHandler(clickThroughUrl, addDefaultClickHandler);
+
+        return this;
+    };
+
+    this.disableAdsMode = function() {
+        _controller.attachEvents();
+        this.destroy();
+
+        return this;
+    };
+
+    function _addAdProgramTimeListener() {
+        if (_inited || _destroyed) {
+            return;
+        }
+
+        _adProgram.on('all', _instreamForward, _this);
+        _adProgram.on(MEDIA_TIME, _instreamTime, this);
+
+        _controller.detachEvents();
+
+        // This enters the player into instream mode
+        _model.set('instream', _adProgram);
+    }
+
+    function _addInstreamCickHandler(clickThroughUrl, addDefaultClickHandler) {
+        // don't trigger api play/pause on display click
+        const clickHandler = _view.clickHandler();
+        if (clickHandler) {
+            clickHandler.setAlternateClickHandlers(() => {}, null);
+        }
+        if (!addDefaultClickHandler) {
+            return;
+        }
+        _this.on(INSTREAM_CLICK, () => {
+            if (_model.get('state') === STATE_PAUSED) {
+                _controller.playVideo();
+            } else {
+                _controller.pause();
+                if (clickThroughUrl) {
+                    _controller.trigger(AD_CLICK, { clickThroughUrl });
+                    window.open(clickThroughUrl);
+                }
+            }
+        });
+    }
 
     function triggerPlayRejected() {
         _adProgram.model.set('playRejected', true);
