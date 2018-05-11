@@ -40,6 +40,22 @@ export const SETUP_ERROR_LOADING_PLAYLIST = 102000;
 export const ERROR_LOADING_PLAYLIST = 202000;
 
 /**
+ * @enum {ErrorCode} An error occurred duing Flash setup
+ */
+export const FLASH_SETUP_ERROR = 210001;
+
+/**
+ * @enum {ErrorCode} An error occurred during Flash playback
+ */
+export const FLASH_ERROR = 210000;
+
+/**
+ * @enum {ErrorCode} A media error occurred during Flash playback
+ */
+export const FLASH_MEDIA_ERROR = 214000;
+
+
+/**
  * Class representing the jwplayer() API.
  * Creates an instance of the player.
  * @class PlayerError
