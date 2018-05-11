@@ -930,7 +930,7 @@ Object.assign(Controller.prototype, {
             } catch (error) {
                 return Promise.reject(error);
             }
-            return _setItem(_model.get('item'))
+            return _setItem(_model.get('item'));
         };
 
         this.playerDestroy = function () {
