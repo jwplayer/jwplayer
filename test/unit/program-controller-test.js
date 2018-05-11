@@ -408,11 +408,13 @@ describe('ProgramController', function () {
             });
     });
 
-    describe('errors', function () {
+    describe.only('errors', function () {
         it('throws a PlayerError after failing to load a provider', function () {
             const providersMock = {
                 load() {
-                    return Promise.reject({});
+                    return Promise.reject({
+                        code: 153
+                    });
                 },
                 choose() {
                     return {};
@@ -426,7 +428,7 @@ describe('ProgramController', function () {
                         reject(new Error('Should have thrown an error'));
                     })
                     .catch(e => {
-                        expect(e.code).to.equal(204000);
+                        expect(e.code).to.equal(153);
                         resolve();
                     });
             });
