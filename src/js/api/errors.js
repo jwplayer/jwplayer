@@ -30,27 +30,27 @@ export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
 export const SETUP_ERROR_LOADING_CORE_JS = 101000;
 
 /**
- * @enum {ErrorCode} Setup failed because the playlist failed to load
+ * @enum {ErrorCode} Setup failed because the playlist failed to load.
  */
 export const SETUP_ERROR_LOADING_PLAYLIST = 102000;
 
 /**
- * @enum {ErrorCode} Playback stopped because the playlist failed to load
+ * @enum {ErrorCode} Playback stopped because the playlist failed to load.
  */
 export const ERROR_LOADING_PLAYLIST = 202000;
 
 /**
- * @enum {ErrorCode} Setup failed because the initial provider failed to load
+ * @enum {ErrorCode} Setup failed because the initial provider failed to load.
  */
 export const SETUP_ERROR_LOADING_PROVIDER = 104000;
 
 /**
- * @enum {ErrorCode} Between playlist items, the required provider could not be loaded be
+ * @enum {ErrorCode} Between playlist items, the required provider could not be loaded be.
  */
-export const PLAYLIST_ERROR_LOADING_PROVIDER = 203000;
+export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
 
 /**
- * @enum {ErrorCode} Using the load API, the required provider could not be loaded
+ * @enum {ErrorCode} Using the load API, the required provider could not be loaded.
  */
 export const ERROR_LOADING_PROVIDER = 204000;
 
