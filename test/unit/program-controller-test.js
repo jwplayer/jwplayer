@@ -71,9 +71,10 @@ const providerPlayerModelEvents = [
 ];
 
 describe('ProgramController', function () {
-
+    const sandbox = sinon.sandbox.create();
     let model = null;
     let programController = null;
+
 
     beforeEach(function () {
         const config = Object.assign({}, defaultConfig, {
@@ -96,10 +97,11 @@ describe('ProgramController', function () {
         model.destroy();
         model = null;
         programController = null;
+        sandbox.restore();
     });
 
     it('forwards provider events', function() {
-        const callback = sinon.spy();
+        const callback = sandbox.spy();
         const context = {};
         programController.on('all', callback, context);
         programController.stopVideo();
@@ -116,7 +118,7 @@ describe('ProgramController', function () {
     });
 
     it('does not forward provider events when provider is backgrounded', function() {
-        const callback = sinon.spy();
+        const callback = sandbox.spy();
         programController.on('all', callback, {});
         programController.stopVideo();
         return programController.setActiveItem(0)
@@ -132,7 +134,7 @@ describe('ProgramController', function () {
     });
 
     it('does not forward provider events when provider is detached', function() {
-        const callback = sinon.spy();
+        const callback = sandbox.spy();
         programController.on('all', callback, {});
         programController.stopVideo();
         return programController.setActiveItem(0)
@@ -148,7 +150,7 @@ describe('ProgramController', function () {
     });
 
     it('does not forward provider events when program-controller is destroyed', function() {
-        const callback = sinon.spy();
+        const callback = sandbox.spy();
         programController.on('all', callback, {});
         programController.stopVideo();
         const itemPromise = programController.setActiveItem(0)
@@ -164,7 +166,7 @@ describe('ProgramController', function () {
     });
 
     it('forwards queued provider events when provider is foregrounded', function() {
-        const callback = sinon.spy();
+        const callback = sandbox.spy();
         programController.on('all', callback, {});
         programController.stopVideo();
         return programController.setActiveItem(0)
@@ -182,7 +184,7 @@ describe('ProgramController', function () {
     });
 
     it('forwards queued provider events when provider is reattached', function() {
-        const callback = sinon.spy();
+        const callback = sandbox.spy();
         programController.on('all', callback, {});
         programController.stopVideo();
         return programController.setActiveItem(0)
@@ -204,7 +206,7 @@ describe('ProgramController', function () {
         const { backgroundLoading } = Features;
         let call = 1;
 
-        sinon.spy(model, 'trigger');
+        sandbox.spy(model, 'trigger');
         return programController.setActiveItem(0)
             .then(function () {
                 const provider = programController.mediaController.provider;
@@ -242,10 +244,10 @@ describe('ProgramController', function () {
             .then(function () {
                 const provider = programController.mediaController.provider;
 
-                sinon.spy(model, 'set');
-                sinon.spy(model, 'trigger');
-                sinon.spy(model, 'persistQualityLevel');
-                sinon.spy(model, 'persistVideoSubtitleTrack');
+                sandbox.spy(model, 'set');
+                sandbox.spy(model, 'trigger');
+                sandbox.spy(model, 'persistQualityLevel');
+                sandbox.spy(model, 'persistVideoSubtitleTrack');
                 providerPlayerModelEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
@@ -273,10 +275,10 @@ describe('ProgramController', function () {
                 const provider = programController.mediaController.provider;
 
                 programController.backgroundActiveMedia();
-                sinon.spy(model, 'set');
-                sinon.spy(model, 'trigger');
-                sinon.spy(model, 'persistQualityLevel');
-                sinon.spy(model, 'persistVideoSubtitleTrack');
+                sandbox.spy(model, 'set');
+                sandbox.spy(model, 'trigger');
+                sandbox.spy(model, 'persistQualityLevel');
+                sandbox.spy(model, 'persistVideoSubtitleTrack');
                 providerPlayerModelEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
@@ -293,10 +295,10 @@ describe('ProgramController', function () {
                 const provider = programController.mediaController.provider;
 
                 programController.attached = false;
-                sinon.spy(model, 'set');
-                sinon.spy(model, 'trigger');
-                sinon.spy(model, 'persistQualityLevel');
-                sinon.spy(model, 'persistVideoSubtitleTrack');
+                sandbox.spy(model, 'set');
+                sandbox.spy(model, 'trigger');
+                sandbox.spy(model, 'persistQualityLevel');
+                sandbox.spy(model, 'persistVideoSubtitleTrack');
                 providerPlayerModelEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
@@ -313,10 +315,10 @@ describe('ProgramController', function () {
                 const provider = programController.mediaController.provider;
 
                 programController.backgroundActiveMedia();
-                sinon.spy(model, 'set');
-                sinon.spy(model, 'trigger');
-                sinon.spy(model, 'persistQualityLevel');
-                sinon.spy(model, 'persistVideoSubtitleTrack');
+                sandbox.spy(model, 'set');
+                sandbox.spy(model, 'trigger');
+                sandbox.spy(model, 'persistQualityLevel');
+                sandbox.spy(model, 'persistVideoSubtitleTrack');
                 providerPlayerModelEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
@@ -341,10 +343,10 @@ describe('ProgramController', function () {
                 const provider = programController.mediaController.provider;
 
                 programController.attached = false;
-                sinon.spy(model, 'set');
-                sinon.spy(model, 'trigger');
-                sinon.spy(model, 'persistQualityLevel');
-                sinon.spy(model, 'persistVideoSubtitleTrack');
+                sandbox.spy(model, 'set');
+                sandbox.spy(model, 'trigger');
+                sandbox.spy(model, 'persistQualityLevel');
+                sandbox.spy(model, 'persistVideoSubtitleTrack');
                 providerPlayerModelEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
@@ -369,10 +371,10 @@ describe('ProgramController', function () {
                 const provider = programController.mediaController.provider;
 
                 programController.backgroundActiveMedia();
-                sinon.spy(model, 'set');
-                sinon.spy(model, 'trigger');
-                sinon.spy(model, 'persistQualityLevel');
-                sinon.spy(model, 'persistVideoSubtitleTrack');
+                sandbox.spy(model, 'set');
+                sandbox.spy(model, 'trigger');
+                sandbox.spy(model, 'persistQualityLevel');
+                sandbox.spy(model, 'persistVideoSubtitleTrack');
                 providerPlayerModelEvents.forEach(event => {
                     provider.trigger(event.type, event);
                 });
@@ -392,7 +394,7 @@ describe('ProgramController', function () {
     });
 
     it('fires itemReady for background loaded items', function() {
-        sinon.spy(model, 'trigger');
+        sandbox.spy(model, 'trigger');
         return programController.setActiveItem(0)
             .then(function () {
                 expect(model.trigger).to.have.callCount(6);
@@ -406,7 +408,32 @@ describe('ProgramController', function () {
             });
     });
 
-    describe('errors', function () {
+    describe.only('errors', function () {
+        it('throws a PlayerError after failing to load a provider', function () {
+            const providersMock = {
+                load() {
+                    return Promise.reject({
+                        code: 153
+                    });
+                },
+                choose() {
+                    return {};
+                }
+            };
+
+            programController.providers = providersMock;
+            return new Promise((resolve, reject) => {
+                programController._setupMediaController('foo')
+                    .then(() => {
+                        reject(new Error('Should have thrown an error'));
+                    })
+                    .catch(e => {
+                        expect(e.code).to.equal(153);
+                        resolve();
+                    });
+            });
+        });
+
         it('throws a PlayerError when attempting to set an item with no source as active', function () {
             model.attributes.playlist = [{}];
             return new Promise((resolve, reject) => {

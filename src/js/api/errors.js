@@ -30,14 +30,29 @@ export const SETUP_ERROR_LICENSE_EXPIRED = 100013;
 export const SETUP_ERROR_LOADING_CORE_JS = 101000;
 
 /**
- * @enum {ErrorCode} Setup failed because the playlist failed to load
+ * @enum {ErrorCode} Setup failed because the playlist failed to load.
  */
 export const SETUP_ERROR_LOADING_PLAYLIST = 102000;
 
 /**
- * @enum {ErrorCode} Playback stopped because the playlist failed to load
+ * @enum {ErrorCode} Playback stopped because the playlist failed to load.
  */
 export const ERROR_LOADING_PLAYLIST = 202000;
+
+/**
+ * @enum {ErrorCode} Setup failed because the initial provider failed to load.
+ */
+export const SETUP_ERROR_LOADING_PROVIDER = 104000;
+
+/**
+ * @enum {ErrorCode} Between playlist items, the required provider could not be loaded be.
+ */
+export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
+
+/**
+ * @enum {ErrorCode} Using the load API, the required provider could not be loaded.
+ */
+export const ERROR_LOADING_PROVIDER = 204000;
 
 /**
  * @enum {ErrorCode} An error occurred duing Flash setup.
@@ -68,5 +83,9 @@ export class PlayerError extends Error {
         super(message);
         this.code = isValidNumber(code) ? code : null;
         this.sourceError = sourceError;
+    }
+
+    static compose(code, superCode) {
+        return (code || 0) + superCode;
     }
 }
