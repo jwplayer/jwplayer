@@ -1,5 +1,6 @@
 import { MEDIA_POOL_SIZE } from 'program/program-constants';
 import { OS } from 'environment/environment';
+import cancelable from 'utils/cancelable';
 
 export default function MediaElementPool() {
     const maxPrimedTags = MEDIA_POOL_SIZE;
@@ -77,12 +78,21 @@ function primeMediaElementForPlayback(mediaElement) {
         // Since calling load() would empty source buffers, use play() to prime and pause once resolved.
         const played = mediaElement.played;
         if (!played || (played && !played.length)) {
+            const nativePlay = mediaElement.play;
+            const pauseCancelable = cancelable(() => {
+                mediaElement.pause();
+            });
             const playPromise = mediaElement.play();
-            const pause = () => mediaElement.pause();
+            // If play is called again, cancel the pause on play callback
+            mediaElement.play = function() {
+                pauseCancelable.cancel();
+                mediaElement.play = nativePlay;
+                return mediaElement.play();
+            };
             if (playPromise) {
-                playPromise.then(pause);
+                playPromise.then(pauseCancelable);
             } else {
-                pause();
+                mediaElement.pause();
             }
         }
     }
