@@ -408,7 +408,7 @@ describe('ProgramController', function () {
             });
     });
 
-    describe.only('errors', function () {
+    describe('errors', function () {
         it('throws a PlayerError after failing to load a provider', function () {
             const providersMock = {
                 load() {
