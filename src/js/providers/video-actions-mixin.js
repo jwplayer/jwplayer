@@ -47,24 +47,34 @@ const VideoActionsMixin = {
         const fitVideoUsingTransforms = Browser.ie || (OS.iOS && OS.version.major < 9) || Browser.androidNative;
         if (fitVideoUsingTransforms) {
             if (stretching !== 'uniform') {
+                styles.objectFit = 'contain';
+                const aspectPlayer = width / height;
+                const aspectVideo = videoWidth / videoHeight;
                 // Use transforms to center and scale video in container
-                const x = -Math.floor(videoWidth / 2 + 0.9);
-                const y = -Math.floor(videoHeight / 2 + 0.9);
-                let scaleX = Math.ceil(width * 100 / videoWidth) / 100;
-                let scaleY = Math.ceil(height * 100 / videoHeight) / 100;
+                let scaleX = 1;
+                let scaleY = 1;
                 if (stretching === 'none') {
-                    scaleX = scaleY = 1;
+                    if (aspectPlayer > aspectVideo) {
+                        scaleX = scaleY = Math.ceil(videoHeight * 100 / height) / 100;
+                    } else {
+                        scaleX = scaleY = Math.ceil(videoWidth * 100 / width) / 100;
+                    }
                 } else if (stretching === 'fill') {
-                    scaleX = scaleY = Math.max(scaleX, scaleY);
-                } else if (stretching === 'uniform') {
-                    scaleX = scaleY = Math.min(scaleX, scaleY);
+                    if (aspectPlayer > aspectVideo) {
+                        scaleX = scaleY = aspectPlayer / aspectVideo;
+                    } else {
+                        scaleX = scaleY = aspectVideo / aspectPlayer;
+                    }
+                } else if (stretching === 'exactfit') {
+                    if (aspectPlayer > aspectVideo) {
+                        scaleX = aspectPlayer / aspectVideo;
+                        scaleY = 1;
+                    } else {
+                        scaleX = 1;
+                        scaleY = aspectVideo / aspectPlayer;
+                    }
                 }
-                styles.width = videoWidth;
-                styles.height = videoHeight;
-                styles.top = styles.left = '50%';
-                styles.margin = 0;
-                transform(video,
-                    'translate(' + x + 'px, ' + y + 'px) scale(' + scaleX.toFixed(2) + ', ' + scaleY.toFixed(2) + ')');
+                transform(video, `matrix(${scaleX.toFixed(2)}, 0, 0, ${scaleY.toFixed(2)}, 0, 0)`);
             } else {
                 styles.top = styles.left = styles.margin = '';
                 transform(video, '');

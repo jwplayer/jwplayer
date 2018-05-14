@@ -11,7 +11,6 @@
     "sourceType": "module"
   },
   "rules": {
-    "no-var": 0,
     "indent": ["error", 4, { "SwitchCase": 1 }],
     "no-underscore-dangle": ["error", { "allowAfterThis": true }],
     "vars-on-top": "off",

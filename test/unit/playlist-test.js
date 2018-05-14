@@ -18,7 +18,7 @@ describe('playlist', function() {
     });
 
     it('constructs a playlist from a single item', function() {
-        var p;
+        let p;
 
         p = Playlist(mp4.starscape);
         expect(isValidPlaylistItem(p[0]), 'Initialize single item').to.be.true;
@@ -32,8 +32,8 @@ describe('playlist', function() {
     });
 
     it('constructs a playlist from an arry of items', function() {
-        var p;
-        var arr = [mp4.starscape, mp4.starscape, mp4.starscape];
+        let p;
+        const arr = [mp4.starscape, mp4.starscape, mp4.starscape];
 
         p = Playlist(arr);
         expect(p.length, 'Same number of items initialized').to.equal(arr.length);
