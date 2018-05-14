@@ -245,6 +245,20 @@ Object.assign(Controller.prototype, {
 
             _model.change('playlistItem', function(model, playlistItem) {
                 if (playlistItem) {
+                    const { title, image } = playlistItem;
+                    if ('mediaSession' in navigator && window.MediaMetadata && (title || image)) {
+                        try {
+                            navigator.mediaSession.metadata = new window.MediaMetadata({
+                                title,
+                                artist: window.location.hostname,
+                                artwork: [
+                                    { src: image || '' }
+                                ]
+                            });
+                        } catch (error) {
+                            // catch error that occurs when mediaSession fails to setup
+                        }
+                    }
                     _this.trigger(PLAYLIST_ITEM, {
                         index: _model.get('item'),
                         item: playlistItem

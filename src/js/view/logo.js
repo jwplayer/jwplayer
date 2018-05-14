@@ -15,8 +15,8 @@ const LogoDefaults = {
 export default function Logo(_model) {
     Object.assign(this, Events);
 
-    var _logo;
-    var _settings;
+    let _logo;
+    let _settings;
     const _img = new Image();
 
     this.setup = function() {

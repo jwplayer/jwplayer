@@ -11,7 +11,7 @@ import {
 describe('strings', function() {
 
     it('pad', function() {
-        var str = pad('test', 7, '1');
+        let str = pad('test', 7, '1');
         expect(str, 'strings padding correctly done').to.equal('111test');
 
         str = pad('test', 3, '1');
@@ -19,7 +19,7 @@ describe('strings', function() {
     });
 
     it('extension', function() {
-        var ext = extension('invalid');
+        let ext = extension('invalid');
         expect(ext, 'invalid path extension returns undefined').to.equal(undefined);
 
         ext = extension(null);
@@ -114,7 +114,7 @@ describe('strings', function() {
     }
 
     it('hms', function() {
-        var str = hms(3661);
+        let str = hms(3661);
         expect(str, 'hms gives correct time string format').to.equal('01:01:01.000');
 
         str = hms(1.11111);
@@ -122,11 +122,11 @@ describe('strings', function() {
     });
 
     it('prefix, suffix', function() {
-        var pre = prefix(['1', '2'], '0');
+        const pre = prefix(['1', '2'], '0');
         expect(pre[0], 'prefix with 0 index correct').to.equal('01');
         expect(pre[1], 'prefix with 1 index correct').to.equal('02');
 
-        var suf = suffix(['1', '2'], '0');
+        const suf = suffix(['1', '2'], '0');
         expect(suf[0], 'prefix suffix 0 index correct').to.equal('10');
         expect(suf[1], 'prefix suffix 1 index correct').to.equal('20');
     });

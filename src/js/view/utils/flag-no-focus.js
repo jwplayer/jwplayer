@@ -2,7 +2,7 @@ import { addClass, removeClass } from 'utils/dom';
 
 
 export default function (elementContext) {
-    var _focusFromClick = false;
+    let _focusFromClick = false;
 
     const onBlur = function () {
         _focusFromClick = false;

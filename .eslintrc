@@ -101,6 +101,7 @@
         "no-sequences": 2,
         "no-throw-literal": 2,
         "no-unused-expressions": 1,
+        "no-var": 2,
         "no-void": 2,
         "no-warning-comments": [0, {"terms": ["todo", "fixme"], "location": "start"}],
         "no-with": 2,

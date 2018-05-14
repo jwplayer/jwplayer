@@ -14,7 +14,7 @@ function configurePlugin(pluginObj, pluginConfig, api) {
 }
 
 const PluginLoader = function () {
-    this.load = function (api, pluginsModel, pluginsConfig) {
+    this.load = function (api, pluginsModel, pluginsConfig, model) {
         // Must be a hash map
         if (!pluginsConfig || typeof pluginsConfig !== 'object') {
             return resolved;
@@ -25,6 +25,9 @@ const PluginLoader = function () {
                 const plugin = pluginsModel.addPlugin(pluginUrl, true);
                 const pluginConfig = pluginsConfig[pluginUrl];
                 return plugin.load().then(() => {
+                    if (model.attributes._destroyed) {
+                        return;
+                    }
                     configurePlugin(plugin, pluginConfig, api);
                 }).catch(error => {
                     if (!(error instanceof Error)) {

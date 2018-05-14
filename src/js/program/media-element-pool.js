@@ -73,17 +73,17 @@ function primeMediaElementForPlayback(mediaElement) {
         mediaElement.load();
     } else if (OS.android && !mediaElement.parentNode) {
         // If the player sets up without a gesture and preloads, the background tag may not be primed for playback.
-        // We need to load again on Android in order to play without another gesture. But make sure we're only reloading
-        // a tag which hasn't begun playback yet
-        // Clear the src for MSE providers who have already preloaded so that we do a full reload
-        // The HTML5 provider already reloads identical sources, so we don't always need to reset if for non-blobs
-        if (mediaElement.src.indexOf('blob') > -1) {
-            mediaElement.removeAttribute('src');
-        }
-
+        // We need to prime on Android in order to play without another gesture, for tags which have not begun playback.
+        // Since calling load() would empty source buffers, use play() to prime and pause once resolved.
         const played = mediaElement.played;
         if (!played || (played && !played.length)) {
-            mediaElement.load();
+            const playPromise = mediaElement.play();
+            const pause = () => mediaElement.pause();
+            if (playPromise) {
+                playPromise.then(pause);
+            } else {
+                pause();
+            }
         }
     }
 }
@@ -92,6 +92,7 @@ function createMediaElement() {
     const mediaElement = document.createElement('video');
 
     mediaElement.className = 'jw-video jw-reset';
+    mediaElement.setAttribute('tabindex', '-1');
     mediaElement.setAttribute('disableRemotePlayback', '');
     mediaElement.setAttribute('webkit-playsinline', '');
     mediaElement.setAttribute('playsinline', '');

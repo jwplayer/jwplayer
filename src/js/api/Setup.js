@@ -37,6 +37,7 @@ const Setup = function(_model) {
 
     this.destroy = function() {
         clearTimeout(_setupFailureTimeout);
+        _model.set('_destroyed', true);
         _model = null;
     };
 
