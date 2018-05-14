@@ -27,7 +27,7 @@ import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
 import Item from 'playlist/item';
-import { PlayerError, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, PLAYLIST_ERROR_LOADING_PROVIDER } from 'api/errors';
+import { PlayerError, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -602,7 +602,7 @@ Object.assign(Controller.prototype, {
             _stop(true);
             _setItem(index)
                 .catch(e => {
-                    e.code = PlayerError.compose(e.code, PLAYLIST_ERROR_LOADING_PROVIDER);
+                    e.code = PlayerError.compose(e.code, ERROR_LOADING_PLAYLIST_ITEM);
                     throw e;
                 });
             _play(meta).catch(() => {
