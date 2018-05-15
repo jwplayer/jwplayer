@@ -1,5 +1,4 @@
 import { MEDIA_POOL_SIZE } from 'program/program-constants';
-import { OS } from 'environment/environment';
 
 export default function MediaElementPool() {
     const maxPrimedTags = MEDIA_POOL_SIZE;
@@ -71,23 +70,6 @@ function primeMediaElementForPlayback(mediaElement) {
     // If we're in a user-gesture event call load() on video to allow async playback
     if (!mediaElement.src) {
         mediaElement.load();
-    } else if (OS.android && !mediaElement.parentNode) {
-        // If the player sets up without a gesture and preloads, the background tag may not be primed for playback.
-        // We need to prime on Android in order to play without another gesture, for tags which have not begun playback.
-        // Since calling load() would empty source buffers, use play() to prime and pause once resolved.
-        const played = mediaElement.played;
-        if (!played || (played && !played.length)) {
-            const nativePlay = mediaElement.play;
-            mediaElement.playbackRate = 0;
-            mediaElement.play();
-            // If play is called again, cancel the pause on play callback
-            mediaElement.play = function() {
-                mediaElement.pause();
-                mediaElement.playbackRate = 1;
-                mediaElement.play = nativePlay;
-                return mediaElement.play();
-            };
-        }
     }
 }
 
