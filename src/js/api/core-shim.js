@@ -13,7 +13,8 @@ import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
 import { Features } from 'environment/environment';
-import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST } from 'api/errors';
+import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN } from 'api/errors';
+import { isValidNumber } from 'utils/underscore';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -238,7 +239,8 @@ Object.assign(CoreShim.prototype, {
 
 function setupError(core, error) {
     resolved.then(() => {
-        const { message, code } = error;
+        const { message } = error;
+        const code = isValidNumber(error.code) ? error.code : SETUP_ERROR_UNKNOWN;
         const errorContainer = ErrorContainer(core, message);
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
