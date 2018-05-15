@@ -9,6 +9,20 @@ describe('CoreShim', function() {
         core = new CoreShim(document.createElement('div'));
     });
 
+    function expectError(expectedCode) {
+        sandbox.stub(core.setup, 'start').callsFake(() => Promise.reject({ message: 'foo', code: expectedCode }));
+        const expectError =
+            new Promise((resolve, reject) => {
+                core.on(SETUP_ERROR, e => resolve(e));
+            })
+                .then(e => {
+                    expect(e.code).to.equal(expectedCode);
+                })
+
+        core.init({}, {});
+        return expectError;
+    }
+
     it('is a constructor', function() {
         expect(core).to.be.an('object');
     });
@@ -19,41 +33,14 @@ describe('CoreShim', function() {
     });
 
     it('sets the setupError code to 100000 if passed an error with no code', function () {
-        sandbox.stub(core.setup, 'start').callsFake(() => Promise.reject({ message: 'foo' }));
-        const expectError = new Promise((resolve, reject) => {
-            core.on(SETUP_ERROR, e => resolve(e));
-        })
-            .then(e => {
-                expect(e.code).to.equal(100000);
-            })
-
-        core.init({}, {});
-        return expectError;
+        return expectError(100000);
     });
 
     it('sets the setupError code to 100000 if passed an error with a non-numerical code', function () {
-        sandbox.stub(core.setup, 'start').callsFake(() => Promise.reject({ message: 'foo', code: 'foo' }));
-        const expectError = new Promise((resolve, reject) => {
-            core.on(SETUP_ERROR, e => resolve(e));
-        })
-            .then(e => {
-                expect(e.code).to.equal(100000);
-            })
-
-        core.init({}, {});
-        return expectError;
+        return expectError(100000);
     });
 
     it('passes through a valid error code', function () {
-        sandbox.stub(core.setup, 'start').callsFake(() => Promise.reject({ message: 'foo', code: 424242 }));
-        const expectError = new Promise((resolve, reject) => {
-            core.on(SETUP_ERROR, e => resolve(e));
-        })
-            .then(e => {
-                expect(e.code).to.equal(424242);
-            })
-
-        core.init({}, {});
-        return expectError;
+        return expectError(424242);
     });
 });
