@@ -312,21 +312,13 @@ Object.assign(Controller.prototype, {
                 // If video has not been primed on Android, test that video will play before preloading
                 // This ensures we always prime the tag on play when necessary
                 if (primeBeforePlay && OS.android) {
-                    const video = model.get('mediaElement');
-                    if (!video.src) {
-                        const muted = _this.getMute();
-                        let testSrc;
-                        startPlayback(video, { muted }).then(() => {
-                            if (_model.get('state') === 'idle') {
-                                _programController.preloadVideo();
-                            }
-                        }).catch(() => {
-                            if (testSrc === video.src) {
-                                video.removeAttribute('src');
-                            }
-                        });
-                        testSrc = video.src;
-                    }
+                    const video = mediaPool.getTestElement();
+                    const muted = _this.getMute();
+                    startPlayback(video, { muted }).then(() => {
+                        if (_model.get('state') === 'idle') {
+                            _programController.preloadVideo();
+                        }
+                    }).catch(() => {});
                 } else {
                     _programController.preloadVideo();
                 }
