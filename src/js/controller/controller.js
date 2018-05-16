@@ -12,7 +12,7 @@ import ViewModel from 'view/view-model';
 import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
 import Events from 'utils/backbone.events';
-import { AUTOPLAY_DISABLED, AUTOPLAY_MUTED, canAutoplay } from 'utils/can-autoplay';
+import { AUTOPLAY_DISABLED, AUTOPLAY_MUTED, canAutoplay, startPlayback } from 'utils/can-autoplay';
 import { OS, Features } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
@@ -309,7 +309,19 @@ Object.assign(Controller.prototype, {
                 return;
             }
             if (_model.get('state') === 'idle' && _model.get('autostart') === false) {
-                _programController.preloadVideo();
+                // If video has not been primed on Android, test that video will play before preloading
+                // This ensures we always prime the tag on play when necessary
+                if (primeBeforePlay && OS.android) {
+                    const video = mediaPool.getTestElement();
+                    const muted = _this.getMute();
+                    startPlayback(video, { muted }).then(() => {
+                        if (_model.get('state') === 'idle') {
+                            _programController.preloadVideo();
+                        }
+                    }).catch(() => {});
+                } else {
+                    _programController.preloadVideo();
+                }
             }
         }
 
