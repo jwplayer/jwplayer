@@ -88,6 +88,9 @@ class TimeSlider extends Slider {
     setup() {
         super.setup.apply(this, arguments);
 
+        this.element().setAttribute('aria-label', 'Time Slider');
+        this.element().setAttribute('tabindex', '0');
+
         this._model
             .on('change:duration', this.onDuration, this)
             .on('change:cues', this.addCues, this)
