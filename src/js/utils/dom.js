@@ -85,6 +85,13 @@ export function toggleClass(element, c, toggleTo) {
     }
 }
 
+export function setAttribute(element, name, value) {
+    if (!element) {
+        return;
+    }
+    element.setAttribute(name, value);
+}
+
 export function emptyElement(element) {
     while (element.firstChild) {
         element.removeChild(element.firstChild);
