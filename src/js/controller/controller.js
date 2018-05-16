@@ -315,11 +315,17 @@ Object.assign(Controller.prototype, {
                     const video = model.get('mediaElement');
                     if (!video.src) {
                         const muted = _this.getMute();
+                        let testSrc;
                         startPlayback(video, { muted }).then(() => {
                             if (_model.get('state') === 'idle') {
                                 _programController.preloadVideo();
                             }
-                        }).catch(function() {});
+                        }).catch(() => {
+                            if (testSrc === video.src) {
+                                video.removeAttribute('src');
+                            }
+                        });
+                        testSrc = video.src;
                     }
                 } else {
                     _programController.preloadVideo();
