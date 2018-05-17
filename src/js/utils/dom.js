@@ -86,9 +86,6 @@ export function toggleClass(element, c, toggleTo) {
 }
 
 export function setAttribute(element, name, value) {
-    if (!element) {
-        return;
-    }
     element.setAttribute(name, value);
 }
 
