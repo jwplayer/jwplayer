@@ -4,7 +4,6 @@ import Source from 'playlist/source';
 import _ from 'test/underscore';
 import mp4 from 'data/mp4';
 import track from 'playlist/track';
-import { PlayerError } from 'api/errors';
 
 function isValidPlaylistItem(playlistItem) {
     return _.isObject(playlistItem) && _.isArray(playlistItem.sources) && _.isArray(playlistItem.tracks);
