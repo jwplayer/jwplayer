@@ -238,7 +238,6 @@ export default class Controls {
                 // Let event bubble upwards
                 return true;
             }
-
             switch (evt.keyCode) {
                 case 27: // Esc
                     onEscape();
@@ -247,21 +246,25 @@ export default class Controls {
                 case 32: // space
                     api.playToggle(reasonInteraction());
                     break;
-                case 37: // left-arrow, if not adMode
-                    if (!this.instreamState) {
+                case 37: // left-arrow, if not adMode settings menu is hidden
+                    if (!this.instreamState && !this.settingsMenu.visible) {
                         adjustSeek(-5);
                     }
                     break;
-                case 39: // right-arrow, if not adMode
-                    if (!this.instreamState) {
+                case 39: // right-arrow, if not adMode and settings menu is hidden
+                    if (!this.instreamState && !this.settingsMenu.visible) {
                         adjustSeek(5);
                     }
                     break;
-                case 38: // up-arrow
-                    adjustVolume(10);
+                case 38: // up-arrow, if setting menu is hidden
+                    if (!this.settingsMenu.visible) {
+                        adjustVolume(10);
+                    }
                     break;
-                case 40: // down-arrow
-                    adjustVolume(-10);
+                case 40: // down-arrow, if settings menu is hidden
+                    if (!this.settingsMenu.visible) {
+                        adjustVolume(-10);
+                    }
                     break;
                 case 67: // c-key
                     {
