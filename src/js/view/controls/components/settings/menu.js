@@ -19,13 +19,29 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const settingsMenuElement = createElement(SettingsMenuTemplate());
 
-    const closeOnEnter = function(evt) {
-        if (evt && evt.keyCode === 27) {
-            instance.close(evt);
+    const handleKeyDown = function(evt) {
+        if (evt) {
+            const { keyCode, target } = evt;
+
+            switch (keyCode) {
+                case 37: // left-arrow
+                    target.previousElementSibling.focus();
+                    break;
+                case 38: // up-arrow
+                    break;
+                case 39: // right-arrow
+                    target.nextElementSibling.focus();
+                    break;
+                case 40: // down-arrow
+                case 13: // enter
+                    break;
+                default:
+                    break;
+            }
             evt.stopPropagation();
         }
     };
-    settingsMenuElement.addEventListener('keydown', closeOnEnter);
+    settingsMenuElement.addEventListener('keydown', handleKeyDown);
 
     const closeButton = button('jw-settings-close', () => {
         instance.close();
@@ -146,7 +162,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         },
         destroy() {
             this.close();
-            settingsMenuElement.removeEventListener('keydown', closeOnEnter);
+            settingsMenuElement.removeEventListener('keydown', handleKeyDown);
             closeButton.element().removeEventListener('keydown', closeOnButton);
             emptyElement(settingsMenuElement);
         }
