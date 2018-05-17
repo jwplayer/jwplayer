@@ -34,7 +34,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const closeOnButton = function(evt) {
         // Close settings menu when enter is pressed on the close button
         // or when tab key is pressed since it is the last element in topbar
-        if (evt.keyCode === 13 || (evt.keyCode === 9 && !evt.shiftKey)) {
+        if (evt.keyCode === 13 || evt.keyCode === 39 || (evt.keyCode === 9 && !evt.shiftKey)) {
             instance.close(evt);
         }
     };
