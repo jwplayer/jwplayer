@@ -33,6 +33,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             }
             items.forEach(item => {
                 submenuElement.appendChild(item.element());
+                item.element().setAttribute('tabindex', '-1');
             });
 
             contentItems = items;
