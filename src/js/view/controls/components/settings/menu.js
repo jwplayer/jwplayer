@@ -28,17 +28,23 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                     target.previousElementSibling.focus();
                     break;
                 case 38: // up-arrow
+                    instance.activateSubmenu(target.getAttribute('name'), true);
                     break;
                 case 39: // right-arrow
                     target.nextElementSibling.focus();
                     break;
                 case 40: // down-arrow
-                case 13: // enter
+                    instance.activateSubmenu(target.getAttribute('name'));
                     break;
                 default:
                     break;
             }
-            evt.stopPropagation();
+
+            if (/13|32|37|38|39|40/.test(keyCode)) {
+                // Prevent keypresses from scrolling the screen
+                evt.preventDefault();
+                return false;
+            }
         }
     };
     settingsMenuElement.addEventListener('keydown', handleKeyDown);
@@ -139,7 +145,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                 onMenuEmpty();
             }
         },
-        activateSubmenu(name) {
+        activateSubmenu(name, focusOnLast) {
             const submenu = submenus[name];
             if (!submenu || submenu.active) {
                 return;
@@ -149,8 +155,11 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             submenu.activate();
             active = submenu;
 
-            if (!submenu.isDefault) {
+            if (!submenu.isDefault && !focusOnLast) {
                 active.element().firstChild.focus();
+            } else if (focusOnLast) {
+                // focus on last element in submenu if up arrow was pressed
+                active.element().lastChild.focus();
             }
         },
         activateFirstSubmenu() {
