@@ -40,7 +40,7 @@ import { ajax } from 'utils/ajax';
 
 export const log = (typeof console.log === 'function') ? console.log.bind(console) : function() {};
 
-const between = function (num, min, max) {
+export const between = function (num, min, max) {
     return Math.max(Math.min(num, max), min);
 };
 

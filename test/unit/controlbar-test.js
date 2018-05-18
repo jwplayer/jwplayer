@@ -1,7 +1,7 @@
 import ControlBar from 'view/controls/controlbar';
 import SimpleModel from 'model/simplemodel';
 import sinon from 'sinon';
-import utils from 'utils/helpers';
+import * as utils from 'utils/dom';
 
 const model = Object.assign({}, SimpleModel);
 model.change = sinon.stub();
@@ -111,20 +111,24 @@ describe('Control Bar', function() {
 
         it('should do nothing if there is no captions button', function() {
             const toggledReturn = controlBar.toggleCaptionsButtonState();
-            utils.toggleClass = sinon.spy();
+            const toggleClass = sinon.stub(utils, 'toggleClass');
 
-            expect(utils.toggleClass.notCalled).to.be.true;
+            expect(toggleClass.notCalled).to.be.true;
             expect(toggledReturn).to.be.undefined;
+
+            toggleClass.restore();
         });
 
         it('should toggle the captions button when the button is present', function() {
-            const captionsElement = {element: () => {}}
+            const captionsElement = { element: () => {} };
             controlBar.elements.captionsButton = captionsElement;
-            utils.toggleClass = sinon.spy();
+            const toggleClass = sinon.stub(utils, 'toggleClass');
 
             controlBar.toggleCaptionsButtonState();
-            expect(utils.toggleClass.called).to.be.true;
-            expect(utils.toggleClass.calledWith(captionsElement));
+            expect(toggleClass.called).to.be.true;
+            expect(toggleClass.calledWith(captionsElement));
+
+            toggleClass.restore();
         });
 
     });

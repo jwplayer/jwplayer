@@ -15,6 +15,7 @@ export default class VolumeTooltip extends Tooltip {
 
         this.volumeSlider.on('update', function (evt) {
             this.trigger('update', evt);
+            this.el.focus();
         }, this);
 
         new UI(this.el, { useHover: true, directSelect: true, useFocus: true })
