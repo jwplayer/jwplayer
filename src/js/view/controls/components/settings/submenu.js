@@ -14,16 +14,18 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
     // return focus to topbar element when tabbing after the first or last item
     const onFocus = function(evt) {
-        const focus =
-            categoryButtonElement &&
-            evt.keyCode === 9 && (
-                evt.srcElement === contentItems[0].element() && evt.shiftKey ||
-                evt.srcElement === contentItems[contentItems.length - 1].element() && !evt.shiftKey
-            );
-
-        if (focus) {
-            categoryButtonElement.focus();
+        switch (evt.keyCode) {
+            case 9: // tab
+                if (evt.shiftKey) {
+                    categoryButtonElement.previousElementSibling.focus();
+                } else {
+                    categoryButtonElement.nextElementSibling.focus();
+                }
+                break;
+            default:
+                break;
         }
+        evt.stopPropagation();
     };
 
     const instance = {
@@ -34,21 +36,19 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             items.forEach(item => {
                 submenuElement.appendChild(item.element());
                 item.element().setAttribute('tabindex', '-1');
+                item.element().addEventListener('keydown', onFocus);
             });
 
             contentItems = items;
-
-            contentItems[0].element().addEventListener('keydown', onFocus);
-            contentItems[contentItems.length - 1].element().addEventListener('keydown', onFocus);
         },
         replaceContent(items) {
             instance.removeContent();
             this.addContent(items);
         },
         removeContent() {
-            contentItems[0].element().removeEventListener('keydown', onFocus);
-            contentItems[contentItems.length - 1].element().removeEventListener('keydown', onFocus);
-
+            contentItems.forEach(item => {
+                item.element().removeEventListener('keydown', onFocus);
+            });
             emptyElement(submenuElement);
             contentItems = [];
         },
