@@ -32,7 +32,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                     instance.activateSubmenu(evt.target.getAttribute('name'), true);
                     break;
                 case 39: // right-arrow
-                    evt.target.nextElementSibling.focus();
+                    if (evt.target !== closeButton.element()) {
+                        evt.target.nextElementSibling.focus();
+                    }
                     break;
                 case 40: // down-arrow
                     instance.activateSubmenu(evt.target.getAttribute('name'));
