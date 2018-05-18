@@ -21,29 +21,27 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const handleKeyDown = function(evt) {
         if (evt) {
-            const { keyCode, target } = evt;
-
-            switch (keyCode) {
+            switch (evt.keyCode) {
                 case 27: // esc
                     instance.close();
                     break;
                 case 37: // left-arrow
-                    target.previousElementSibling.focus();
+                    evt.target.previousElementSibling.focus();
                     break;
                 case 38: // up-arrow
-                    instance.activateSubmenu(target.getAttribute('name'), true);
+                    instance.activateSubmenu(evt.target.getAttribute('name'), true);
                     break;
                 case 39: // right-arrow
-                    target.nextElementSibling.focus();
+                    evt.target.nextElementSibling.focus();
                     break;
                 case 40: // down-arrow
-                    instance.activateSubmenu(target.getAttribute('name'));
+                    instance.activateSubmenu(evt.target.getAttribute('name'));
                     break;
                 default:
                     break;
             }
             evt.stopPropagation();
-            if (/13|32|37|38|39|40/.test(keyCode)) {
+            if (/13|32|37|38|39|40/.test(evt.keyCode)) {
                 // Prevent keypresses from scrolling the screen
                 evt.preventDefault();
                 return false;

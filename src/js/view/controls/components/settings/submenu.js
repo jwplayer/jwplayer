@@ -12,7 +12,16 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
     categoryButtonElement.className += ' jw-submenu-' + name;
     categoryButton.show();
 
-    // return focus to topbar element when tabbing after the first or last item
+    // focus on next or previous element if it exists
+    // if not, focus on last or first element in content items based on index given
+    const selectElement = function(ele, index) {
+        if (ele) {
+            ele.focus();
+        } else {
+            contentItems[index].element().focus();
+        }
+    };
+
     const onFocus = function(evt) {
         switch (evt.keyCode) {
             case 9: // tab
@@ -26,11 +35,13 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
                 categoryButtonElement.previousElementSibling.focus();
                 break;
             case 38: // up-arrow
+                selectElement(evt.target.previousElementSibling, contentItems.length - 1);
                 break;
             case 39: // right-arrow
                 categoryButtonElement.nextElementSibling.focus();
                 break;
             case 40: // down-arrow
+                selectElement(evt.target.nextElementSibling, 0);
                 break;
             default:
                 break;
