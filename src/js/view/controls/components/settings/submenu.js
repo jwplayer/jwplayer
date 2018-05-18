@@ -47,7 +47,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
                 break;
         }
         evt.preventDefault();
-        evt.stopPropagation();
+        return false;
     };
 
     const instance = {
