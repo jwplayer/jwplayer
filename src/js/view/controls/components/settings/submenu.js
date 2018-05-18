@@ -25,6 +25,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             default:
                 break;
         }
+        evt.preventDefault();
         evt.stopPropagation();
     };
 
