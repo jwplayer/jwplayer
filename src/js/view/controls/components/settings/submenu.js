@@ -22,6 +22,16 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
                     categoryButtonElement.nextElementSibling.focus();
                 }
                 break;
+            case 37: // left-arrow
+                categoryButtonElement.previousElementSibling.focus();
+                break;
+            case 38: // up-arrow
+                break;
+            case 39: // right-arrow
+                categoryButtonElement.nextElementSibling.focus();
+                break;
+            case 40: // down-arrow
+                break;
             default:
                 break;
         }
