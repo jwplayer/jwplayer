@@ -83,11 +83,11 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             if (isDefault) {
                 if (event && event.type === 'enter') {
                     active.categoryButtonElement.focus();
+                    return;
                 }
-            } else {
-                active.element().firstChild.focus();
             }
 
+            active.element().firstChild.focus();
         },
         close(event) {
             visible = false;
