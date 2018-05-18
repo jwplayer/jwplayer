@@ -26,7 +26,11 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                     instance.close();
                     break;
                 case 37: // left-arrow
-                    evt.target.previousElementSibling.focus();
+                    if (evt.target.previousElementSibling) {
+                        evt.target.previousElementSibling.focus();
+                    } else {
+                        instance.close();
+                    }
                     break;
                 case 38: // up-arrow
                     instance.activateSubmenu(evt.target.getAttribute('name'), true);
