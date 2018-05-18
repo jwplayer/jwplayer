@@ -24,6 +24,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             const { keyCode, target } = evt;
 
             switch (keyCode) {
+                case 27: // esc
+                    instance.close();
+                    break;
                 case 37: // left-arrow
                     target.previousElementSibling.focus();
                     break;
@@ -39,7 +42,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                 default:
                     break;
             }
-
+            evt.stopPropagation();
             if (/13|32|37|38|39|40/.test(keyCode)) {
                 // Prevent keypresses from scrolling the screen
                 evt.preventDefault();
