@@ -20,38 +20,36 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const settingsMenuElement = createElement(SettingsMenuTemplate());
 
     const handleKeyDown = function(evt) {
-        if (evt) {
-            switch (evt.keyCode) {
-                case 27: // esc
+        switch (evt.keyCode) {
+            case 27: // esc
+                instance.close();
+                break;
+            case 37: // left-arrow
+                if (evt.target.previousElementSibling) {
+                    evt.target.previousElementSibling.focus();
+                } else {
                     instance.close();
-                    break;
-                case 37: // left-arrow
-                    if (evt.target.previousElementSibling) {
-                        evt.target.previousElementSibling.focus();
-                    } else {
-                        instance.close();
-                    }
-                    break;
-                case 38: // up-arrow
-                    instance.activateSubmenu(evt.target.getAttribute('name'), true);
-                    break;
-                case 39: // right-arrow
-                    if (evt.target !== closeButton.element()) {
-                        evt.target.nextElementSibling.focus();
-                    }
-                    break;
-                case 40: // down-arrow
-                    instance.activateSubmenu(evt.target.getAttribute('name'));
-                    break;
-                default:
-                    break;
-            }
-            evt.stopPropagation();
-            if (/13|32|37|38|39|40/.test(evt.keyCode)) {
-                // Prevent keypresses from scrolling the screen
-                evt.preventDefault();
-                return false;
-            }
+                }
+                break;
+            case 38: // up-arrow
+                instance.activateSubmenu(evt.target.getAttribute('name'), true);
+                break;
+            case 39: // right-arrow
+                if (evt.target !== closeButton.element()) {
+                    evt.target.nextElementSibling.focus();
+                }
+                break;
+            case 40: // down-arrow
+                instance.activateSubmenu(evt.target.getAttribute('name'));
+                break;
+            default:
+                break;
+        }
+        evt.stopPropagation();
+        if (/13|32|37|38|39|40/.test(evt.keyCode)) {
+            // Prevent keypresses from scrolling the screen
+            evt.preventDefault();
+            return false;
         }
     };
     settingsMenuElement.addEventListener('keydown', handleKeyDown);
