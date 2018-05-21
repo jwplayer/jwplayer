@@ -3,7 +3,7 @@ import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement, emptyElement, prependChild } from 'utils/dom';
 
-function nextSibiling(element) {
+function nextSibling(element) {
     return element.nextElementSibling;
 }
 
@@ -29,7 +29,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const handleKeyDown = function(evt) {
         const { target } = evt;
-        const next = nextSibiling(target);
+        const next = nextSibling(target);
         const prev = previousSibling(target);
 
         switch (evt.keyCode) {
