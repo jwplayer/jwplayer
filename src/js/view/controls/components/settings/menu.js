@@ -19,28 +19,40 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const settingsMenuElement = createElement(SettingsMenuTemplate());
 
+    const nextSibiling = function(element) {
+        return element.nextElementSibling;
+    };
+
+    const previousSibling = function(element) {
+        return element.previousElementSibling;
+    };
+
     const handleKeyDown = function(evt) {
+        const { target } = evt;
+        const next = nextSibiling(target);
+        const prev = previousSibling(target);
+
         switch (evt.keyCode) {
             case 27: // esc
                 instance.close();
                 break;
             case 37: // left-arrow
-                if (evt.target.previousElementSibling) {
-                    evt.target.previousElementSibling.focus();
+                if (prev) {
+                    prev.focus();
                 } else {
                     instance.close();
                 }
                 break;
             case 38: // up-arrow
-                instance.activateSubmenu(evt.target.getAttribute('name'), true);
+                instance.activateSubmenu(target.getAttribute('name'), true);
                 break;
             case 39: // right-arrow
-                if (evt.target !== closeButton.element()) {
-                    evt.target.nextElementSibling.focus();
+                if (next && closeButton.element() && target !== closeButton.element()) {
+                    next.focus();
                 }
                 break;
             case 40: // down-arrow
-                instance.activateSubmenu(evt.target.getAttribute('name'));
+                instance.activateSubmenu(target.getAttribute('name'));
                 break;
             default:
                 break;
