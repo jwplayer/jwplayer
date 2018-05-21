@@ -47,7 +47,11 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
                 break;
         }
         evt.preventDefault();
-        evt.stopPropagation();
+        if (evt.keyCode !== 27) {
+            // only bubble event if esc key was pressed
+            evt.stopPropagation();
+        }
+        
     };
 
     const instance = {
