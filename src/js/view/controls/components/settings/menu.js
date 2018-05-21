@@ -88,11 +88,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             settingsMenuElement.setAttribute('aria-expanded', 'true');
             document.addEventListener('click', documentClickHandler);
 
-            if (isDefault) {
-                if (event && event.type === 'enter') {
-                    active.categoryButtonElement.focus();
-                    return;
-                }
+            if (isDefault && event && event.type === 'enter') {
+                active.categoryButtonElement.focus();
+                return;
             }
 
             active.element().firstChild.focus();
