@@ -43,16 +43,14 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                     instance.close();
                 }
                 break;
-            case 38: // up-arrow
-                instance.activateSubmenu(target.getAttribute('name'), true);
-                break;
             case 39: // right-arrow
                 if (next && closeButton.element() && target !== closeButton.element()) {
                     next.focus();
                 }
                 break;
+            case 38: // up-arrow
             case 40: // down-arrow
-                instance.activateSubmenu(target.getAttribute('name'));
+                instance.activateSubmenu(target.getAttribute('name'), evt.keyCode === 38);
                 break;
             default:
                 break;
