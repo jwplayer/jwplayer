@@ -3,6 +3,14 @@ import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement, emptyElement, prependChild } from 'utils/dom';
 
+function nextSibiling(element) {
+    return element.nextElementSibling;
+}
+
+function previousSibling(element) {
+    return element.previousElementSibling;
+}
+
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
         // Close if anything other than the settings menu has been clicked
@@ -18,14 +26,6 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const submenus = {};
 
     const settingsMenuElement = createElement(SettingsMenuTemplate());
-
-    const nextSibiling = function(element) {
-        return element.nextElementSibling;
-    };
-
-    const previousSibling = function(element) {
-        return element.previousElementSibling;
-    };
 
     const handleKeyDown = function(evt) {
         const { target } = evt;
