@@ -16,14 +16,10 @@ import AIRPLAY_OFF_ICON from 'assets/SVG/airplay-off.svg';
 import PLAYBACK_RATE_ICON from 'assets/SVG/playback-rate.svg';
 import SETTINGS_ICON from 'assets/SVG/settings.svg';
 import AUDIO_TRACKS_ICON from 'assets/SVG/audio-tracks.svg';
-// import QUALITY_ICON_25 from 'assets/SVG/quality-25.svg';
-// import QUALITY_ICON_50 from 'assets/SVG/quality-50.svg';
-// import QUALITY_ICON_75 from 'assets/SVG/quality-75.svg';
 import QUALITY_ICON from 'assets/SVG/quality-100.svg';
 import FULLSCREEN_EXIT_ICON from 'assets/SVG/fullscreen-not.svg';
 import FULLSCREEN_ENTER_ICON from 'assets/SVG/fullscreen.svg';
 import CLOSE_ICON from 'assets/SVG/close.svg';
-// import ARROW_ICON from 'assets/SVG/arror.svg';
 import JW_LOGO from 'assets/SVG/jw-logo.svg';
 import svgParse from 'utils/svgParser';
 

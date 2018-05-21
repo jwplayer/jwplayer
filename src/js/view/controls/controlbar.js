@@ -1,7 +1,8 @@
 import { cloneIcons } from 'view/controls/icons';
 import { Browser, OS } from 'environment/environment';
 import CustomButton from 'view/controls/components/custom-button';
-import utils from 'utils/helpers';
+import { toggleClass, setAttribute } from 'utils/dom';
+import { timeFormat } from 'utils/parser';
 import { each } from 'utils/underscore';
 import { USER_ACTION, STATE_PLAYING } from 'events/events';
 import Events from 'utils/backbone.events';
@@ -17,7 +18,7 @@ function text(name, role) {
     const element = document.createElement('span');
     element.className = 'jw-text jw-reset ' + name;
     if (role) {
-        element.setAttribute('role', role);
+        setAttribute(element, 'role', role);
     }
     return element;
 }
@@ -26,7 +27,7 @@ function textIcon(name, role) {
     const element = document.createElement('div');
     element.className = 'jw-icon jw-icon-inline jw-text jw-reset ' + name;
     if (role) {
-        element.setAttribute('role', role);
+        setAttribute(element, 'role', role);
     }
     return element;
 }
@@ -57,8 +58,8 @@ function createCastButton(castToggle, localization) {
 
 
     const castButton = document.createElement('button', 'google-cast-button');
-    castButton.setAttribute('type', 'button');
-    castButton.setAttribute('tabindex', '-1');
+    setAttribute(castButton, 'type', 'button');
+    setAttribute(castButton, 'tabindex', '-1');
 
     const element = document.createElement('div');
     element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
@@ -134,6 +135,11 @@ export default class Controlbar {
         if (!this._isMobile) {
             volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
                 cloneIcons('volume-0,volume-50,volume-100'));
+
+            const volumeTooltipEl = volumeTooltip.element();
+            setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
+            setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
+            setAttribute(volumeTooltipEl, 'role', 'status');
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -143,12 +149,12 @@ export default class Controlbar {
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', (event) => {
             this.trigger('settingsInteraction', 'quality', true, event);
         }, localization.settings, cloneIcons('settings'));
-        settingsButton.element().setAttribute('aria-haspopup', 'true');
+        setAttribute(settingsButton.element(), 'aria-haspopup', 'true');
 
         const captionsButton = button('jw-icon-cc jw-settings-submenu-button', (event) => {
             this.trigger('settingsInteraction', 'captions', false, event);
         }, localization.cc, cloneIcons('cc-off,cc-on'));
-        captionsButton.element().setAttribute('aria-haspopup', 'true');
+        setAttribute(captionsButton.element(), 'aria-haspopup', 'true');
 
         const liveButton = button('jw-text-live', () => {
             this.goToLiveEdge();
@@ -264,7 +270,7 @@ export default class Controlbar {
         _model.change('fullscreen', this.onFullscreen, this);
         _model.change('streamType', this.onStreamTypeChange, this);
         _model.change('dvrLive', (model, dvrLive) => {
-            utils.toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive === false);
+            toggleClass(this.elements.live.element(), 'jw-dvr-live', dvrLive === false);
         }, this);
         _model.change('altText', this.setAltText, this);
         _model.change('customButtons', this.updateButtons, this);
@@ -334,15 +340,19 @@ export default class Controlbar {
     }
 
     renderVolume(muted, vol) {
+        const mute = this.elements.mute;
+        const volumeTooltip = this.elements.volumetooltip;
         // mute, volume, and volumetooltip do not exist on mobile devices.
-        if (this.elements.mute) {
-            utils.toggleClass(this.elements.mute.element(), 'jw-off', muted);
-            utils.toggleClass(this.elements.mute.element(), 'jw-full', !muted);
+        if (mute) {
+            toggleClass(mute.element(), 'jw-off', muted);
+            toggleClass(mute.element(), 'jw-full', !muted);
         }
-        if (this.elements.volumetooltip) {
-            this.elements.volumetooltip.volumeSlider.render(muted ? 0 : vol);
-            utils.toggleClass(this.elements.volumetooltip.element(), 'jw-off', muted);
-            utils.toggleClass(this.elements.volumetooltip.element(), 'jw-full', vol >= 75 && !muted);
+        if (volumeTooltip) {
+            const volumeTooltipEl = volumeTooltip.element();
+            volumeTooltip.volumeSlider.render(muted ? 0 : vol);
+            toggleClass(volumeTooltipEl, 'jw-off', muted);
+            toggleClass(volumeTooltipEl, 'jw-full', vol >= 75 && !muted);
+            setAttribute(volumeTooltipEl, 'aria-label', `volume ${muted ? 0 : vol}%`);
         }
     }
 
@@ -353,7 +363,7 @@ export default class Controlbar {
     onCastActive(model, val) {
         this.elements.fullscreen.toggle(!val);
         if (this.elements.cast.button) {
-            utils.toggleClass(this.elements.cast.button, 'jw-off', !val);
+            toggleClass(this.elements.cast.button, 'jw-off', !val);
         }
     }
 
@@ -364,23 +374,23 @@ export default class Controlbar {
         if (model.get('streamType') === 'DVR') {
             const currentPosition = Math.ceil(position);
             const dvrSeekLimit = this._model.get('dvrSeekLimit');
-            let time = currentPosition >= -dvrSeekLimit ? '' : '-' + utils.timeFormat(-(position + dvrSeekLimit));
+            let time = currentPosition >= -dvrSeekLimit ? '' : '-' + timeFormat(-(position + dvrSeekLimit));
             elapsedTime = countdownTime = time;
             model.set('dvrLive', currentPosition >= -dvrSeekLimit);
         } else {
-            elapsedTime = utils.timeFormat(position);
-            countdownTime = utils.timeFormat(duration - position);
+            elapsedTime = timeFormat(position);
+            countdownTime = timeFormat(duration - position);
         }
         this.elements.elapsed.textContent = elapsedTime;
         this.elements.countdown.textContent = countdownTime;
     }
 
     onDuration(model, val) {
-        this.elements.duration.textContent = utils.timeFormat(Math.abs(val));
+        this.elements.duration.textContent = timeFormat(Math.abs(val));
     }
 
     onFullscreen(model, val) {
-        utils.toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
+        toggleClass(this.elements.fullscreen.element(), 'jw-off', val);
         this.elements.play.element().focus();
     }
 
@@ -437,7 +447,7 @@ export default class Controlbar {
                 label = localization.stop;
             }
         }
-        this.elements.play.element().setAttribute('aria-label', label);
+        setAttribute(this.elements.play.element(), 'aria-label', label);
     }
 
     onStreamTypeChange(model, streamType) {
@@ -448,7 +458,7 @@ export default class Controlbar {
         this.elements.rewind.toggle(!liveMode);
 
         this.elements.live.toggle(liveMode || dvrMode);
-        this.elements.live.element().setAttribute('tabindex', liveMode ? '-1' : '0');
+        setAttribute(this.elements.live.element(), 'tabindex', liveMode ? '-1' : '0');
 
         this.elements.duration.style.display = dvrMode ? 'none' : '';
 
@@ -472,7 +482,7 @@ export default class Controlbar {
         );
 
         if (!logo.link) {
-            logoButton.element().setAttribute('tabindex', '-1');
+            setAttribute(logoButton.element(), 'tabindex', '-1');
         }
         buttonContainer.insertBefore(
             logoButton.element(),
@@ -557,7 +567,7 @@ export default class Controlbar {
             return;
         }
 
-        utils.toggleClass(captionsButton.element(), 'jw-off', !active);
+        toggleClass(captionsButton.element(), 'jw-off', !active);
     }
 }
 

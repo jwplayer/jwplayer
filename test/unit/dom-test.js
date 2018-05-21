@@ -4,6 +4,7 @@ import {
     removeClass,
     replaceClass,
     toggleClass,
+    setAttribute,
     classList,
     styleDimension,
     createElement,
@@ -50,7 +51,6 @@ describe('dom', function() {
         expect(element.className, 'Removed lass class from element').to.equal('');
     });
 
-
     it('replaceClass', function() {
         const element = document.createElement('div');
 
@@ -69,6 +69,16 @@ describe('dom', function() {
         element.className = 'class1 class2 classB';
         replaceClass(element, /class\d/g, '');
         expect(element.className, 'Replaces classes when pattern matches any class').to.equal('classB');
+    });
+
+    it('setAttribute', function() {
+        const element = document.createElement('div');
+
+        setAttribute(element, 'a', 'b');
+        expect(element.getAttribute('a')).to.equal('b');
+
+        setAttribute(element, 'a', 1);
+        expect(element.getAttribute('a')).to.equal('1');
     });
 
     it('createElement', function() {
@@ -172,4 +182,5 @@ describe('dom', function() {
         element.style.height = '400px';
         expect('bounds should not be empty when element has layout').to.not.equal(bounds(element), emptyBound);
     });
+
 });

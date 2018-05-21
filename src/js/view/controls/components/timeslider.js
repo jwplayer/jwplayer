@@ -1,5 +1,8 @@
 import { throttle, each } from 'utils/underscore';
-import utils from 'utils/helpers';
+import { between } from 'utils/helpers';
+import { style } from 'utils/css';
+import { timeFormat } from 'utils/parser';
+import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
 import UI, { getPointerType } from 'utils/ui';
 import Slider from 'view/controls/components/slider';
 import Tooltip from 'view/controls/components/tooltip';
@@ -25,8 +28,8 @@ class TimeTip extends Tooltip {
         this.addContent(wrapper);
     }
 
-    image(style) {
-        utils.style(this.img, style);
+    image(styles) {
+        style(this.img, styles);
     }
 
     update(txt) {
@@ -53,7 +56,7 @@ class TimeTip extends Tooltip {
             return;
         }
 
-        this.containerWidth = utils.bounds(this.container).width + tolerance;
+        this.containerWidth = bounds(this.container).width + tolerance;
     }
 
     resetWidth () {
@@ -96,12 +99,18 @@ class TimeSlider extends Slider {
             .change('buffer', this.onBuffer, this)
             .change('streamType', this.onStreamType, this);
 
+
+        setAttribute(this.el, 'tabindex', '0');
+        setAttribute(this.el, 'role', 'slider');
+        setAttribute(this.el, 'aria-label', 'Time Slider');
+        this.el.removeAttribute('aria-hidden');
         this.elementRail.appendChild(this.timeTip.element());
 
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
         this.elementUI = new UI(this.el, { useHover: true, useMove: true })
             .on('drag move over', this.showTimeTooltip.bind(this), this)
-            .on('dragEnd out', this.hideTimeTooltip.bind(this), this);
+            .on('dragEnd out', this.hideTimeTooltip.bind(this), this)
+            .on('click', () => this.el.focus());
     }
 
     update(percent) {
@@ -130,6 +139,8 @@ class TimeSlider extends Slider {
 
     onDuration(model, duration) {
         this.updateTime(model.get('position'), duration);
+        setAttribute(this.el, 'aria-valuemin', 0);
+        setAttribute(this.el, 'aria-valuemax', duration);
         this.drawCues();
     }
 
@@ -143,10 +154,13 @@ class TimeSlider extends Slider {
             if (this.streamType === 'DVR') {
                 const dvrSeekLimit = this._model.get('dvrSeekLimit');
                 const diff = duration + dvrSeekLimit;
-                pct = (diff - (position + dvrSeekLimit)) / diff * 100;
+                const pos = position + dvrSeekLimit;
+                pct = (diff - pos) / diff * 100;
+                setAttribute(this.el, 'aria-valuetext', timeFormat(pos, true));
             } else if (this.streamType === 'VOD' || !this.streamType) {
                 // Default to VOD behavior if streamType isn't set
                 pct = position / duration * 100;
+                setAttribute(this.el, 'aria-valuetext', `${timeFormat(position)} of ${timeFormat(duration)}`);
             }
         }
         this.render(pct);
@@ -193,9 +207,9 @@ class TimeSlider extends Slider {
         }
 
         const playerWidth = this._model.get('containerWidth');
-        const railBounds = utils.bounds(this.elementRail);
+        const railBounds = bounds(this.elementRail);
         let position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
-        position = utils.between(position, 0, railBounds.width);
+        position = between(position, 0, railBounds.width);
         const pct = position / railBounds.width;
         let time = duration * pct;
 
@@ -224,7 +238,7 @@ class TimeSlider extends Slider {
             timetipText = this.activeCue.text;
         } else {
             const allowNegativeTime = true;
-            timetipText = utils.timeFormat(time, allowNegativeTime);
+            timetipText = timeFormat(time, allowNegativeTime);
 
             // If DVR and within live buffer
             if (duration < 0 && time > -1) {
@@ -241,7 +255,7 @@ class TimeSlider extends Slider {
         }
         this.showThumbnail(time);
 
-        utils.addClass(timeTip.el, 'jw-open');
+        addClass(timeTip.el, 'jw-open');
 
         const timeTipWidth = timeTip.getWidth();
         const widthPct = railBounds.width / 100;
@@ -252,11 +266,14 @@ class TimeSlider extends Slider {
             timeTipPct = (timeTipWidth - tolerance) / (2 * 100 * widthPct);
         }
         const safePct = Math.min(1 - timeTipPct, Math.max(timeTipPct, pct)).toFixed(3) * 100;
-        utils.style(timeTip.el, { left: safePct + '%' });
+        style(timeTip.el, { left: safePct + '%' });
     }
 
-    hideTimeTooltip() {
-        utils.removeClass(this.timeTip.el, 'jw-open');
+    hideTimeTooltip(evt) {
+        removeClass(this.timeTip.el, 'jw-open');
+        if (evt.type === 'dragEnd') {
+            this.el.focus();
+        }
     }
 
     addCues(model, cues) {

@@ -1,8 +1,8 @@
 import { isValidNumber } from 'utils/underscore';
 /**
- * @typedef {number} ErrorCode
- * @module errors
+ * @type {ErrorCode} Base code for a setup failure.
  **/
+export const SETUP_ERROR_UNKNOWN = 100000;
 
 /**
  * @type {ErrorCode} Setup failed because it took longer than 30 seconds.
