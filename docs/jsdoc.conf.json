@@ -5,7 +5,6 @@
     ],
     "exclude": [
       "./src/js/cast/",
-      "./src/js/controller/",
       "./src/js/events/",
       "./src/js/parsers/",
       "./src/js/plugins/",

@@ -13,6 +13,16 @@ const _defaultOptions = {
     tag: null
 };
 
+/**
+ * InstreamAdapter JW Player instream API. Instantiated via jwplayer().createInstream(). Only one instance can be
+ * created per player. It is destoryed via jwplayer()instreamDestroy().
+ * @param _controller - The player controller instance
+ * @param _model - The player model instance
+ * @param _view - The player view instance
+ * @param _mediaPool - The player media pool
+ * @constructor
+ */
+
 const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     const _this = this;
 
@@ -61,8 +71,11 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     };
 
-    this.type = 'instream';
-
+    /**
+     * Put the player in instream ads mode, detaching media, and preparing the ad program for
+     * instream playback
+     * @return {InstreamAdapter} - chainable
+     */
     this.init = function() {
         if (_inited || _destroyed) {
             return;
@@ -102,38 +115,41 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         return this;
     };
-    
+
+    /**
+     * Put the player in SSAI ad mode.
+     * @param {string} clickThroughUrl - Url to open on click while playing
+     * @param {boolean} addDefaultClickHandler - TODO: remove. clickThroughUrl suggests the click should be handled.
+     * @return {InstreamAdapter} - chainable
+     */
     this.enableAdsMode = function(clickThroughUrl, addDefaultClickHandler) {
         if (_inited || _destroyed) {
             return;
         }
-        _addAdProgramTimeListener();
-
-        _addInstreamCickHandler(clickThroughUrl, addDefaultClickHandler);
-
-        return this;
-    };
-
-    this.disableAdsMode = function() {
-        _controller.attachEvents();
-        this.destroy();
-    };
-
-    function _addAdProgramTimeListener() {
-        if (_inited || _destroyed) {
-            return;
-        }
+        // Tell the controller to ignore media playback events from the current provider
+        _controller.detachEvents();
 
         // _adProgram.setup();
 
         _adProgram.on('all', _instreamForward, _this);
         _adProgram.on(MEDIA_TIME, _instreamTime, _this);
 
-        _controller.detachEvents();
-
         // This enters the player into instream mode
         _model.set('instream', _adProgram);
-    }
+        _addInstreamCickHandler(clickThroughUrl, addDefaultClickHandler);
+        return this;
+    };
+
+    /**
+     * Reattach media and destroy this instream instance, existing SSAI ads mode
+     * @return {void}
+     */
+    this.disableAdsMode = function() {
+        // Tell the controller to listen to media playback events from the current provider
+        _controller.attachEvents();
+        // this.noResume = true;
+        this.destroy();
+    };
 
     function _addInstreamCickHandler(clickThroughUrl, addDefaultClickHandler) {
         // don't trigger api play/pause on display click
@@ -224,6 +240,12 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     }
 
+    /**
+     * Load an Item, playing it as an insteam ad.
+     * @param {Item|Array.<Item>} item - The ad item or ad pod array of items to be played.
+     * @param {Object|Array.<Object>} options - The ad options or ad pod array of options.
+     * @return {Promise} - The ad playback promise.
+     */
     this.loadItem = function(item, options) {
         if (_destroyed || !_inited) {
             return Promise.reject(new Error('Instream not setup'));
@@ -255,7 +277,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         _options = Object.assign({}, _defaultOptions, options);
 
-        _this.addClickHandler();
+        _setDefaultClickHandler();
 
         adModel.set('skipButton', false);
 
@@ -269,6 +291,13 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         return playPromise;
     };
 
+    /**
+     * Add a skip button.
+     * @param {Number} skipoffset - The number of seconds from the start where the ad becomes skippable.
+     * @param {Object} options - Custom skip button text and message.
+     * @param {function} [customNext] - The skip callback.
+     * @return {void}
+     */
     this.setupSkipButton = function(skipoffset, options, customNext) {
         const adModel = _adProgram.model;
         if (customNext) {
@@ -283,21 +312,33 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         adModel.set('skipButton', true);
     };
 
+    /**
+     * Attach the provider handling ad playback.
+     * @param {Object} provider - The provider that will accept media commands and trigger media events.
+     * @return {void}
+     */
     this.applyProviderListeners = function(provider) {
         _adProgram.usePsuedoProvider(provider);
-
-        this.addClickHandler();
+        _setDefaultClickHandler();
     };
 
+    /**
+     * Resume ad playback.
+     * @return {void}
+     */
     this.play = function() {
         _adProgram.playVideo();
     };
 
+    /**
+     * Pause ad playback.
+     * @return {void}
+     */
     this.pause = function() {
         _adProgram.pause();
     };
 
-    this.addClickHandler = function() {
+    function _setDefaultClickHandler() {
         if (_destroyed) {
             return;
         }
@@ -305,11 +346,16 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_view.clickHandler()) {
             _view.clickHandler().setAlternateClickHandlers(_clickHandler, _doubleClickHandler);
         }
-    };
+    }
 
-    this.skipAd = function(evt) {
+    /**
+     * Skip the current Ad.
+     * @param {Object} event - The 'adSkipped' event object.
+     * @return {void}
+     */
+    this.skipAd = function(event) {
         const skipAdType = AD_SKIPPED;
-        this.trigger(skipAdType, evt);
+        this.trigger(skipAdType, event);
         _skipAd.call(this, {
             type: skipAdType
         });
@@ -322,6 +368,11 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     }
 
+    /**
+     * Replace the current playlist item, with a new source. Used with SSAI plugins.
+     * @param {Item} item - The new playlist item.
+     * @return {void}
+     */
     this.replacePlaylistItem = function(item) {
         if (_destroyed) {
             return;
@@ -330,6 +381,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _adProgram.srcReset();
     };
 
+    /**
+     * Destroy this instream instance, reattach media and resume playback.
+     * @return {void}
+     */
     this.destroy = function() {
         if (_destroyed) {
             return;
@@ -374,6 +429,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         }
     };
 
+    /**
+     * Get the ad playback state. Returns false if destroyed.
+     * @return {string|boolean} The ad player's playback state
+     */
     this.getState = function() {
         if (_destroyed) {
             // api expects false to know we aren't in instreamMode
@@ -382,6 +441,11 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         return _adProgram.model.get('state');
     };
 
+    /**
+     * Update the ads mode controlbar message.
+     * @param {string} text - The message to display in the controlbar.
+     * @return {void}
+     */
     this.setText = function(text) {
         if (_destroyed) {
             return;
@@ -389,7 +453,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         _view.setAltText(text || '');
     };
 
-    // This method is triggered by plugins which want to hide player controls
+    /**
+     * Hide the ads mode controls
+     * @return {void}
+     */
     this.hide = function() {
         if (_destroyed) {
             return;
@@ -409,7 +476,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     /**
-     * Sets the internal skip offset. Does not set the skip button.
+     * Sets the internal skip offset used for preloading content. Does not setup the skip button.
      * @param {Number} skipOffset - The number of seconds from the start where the ad becomes skippable.
      * @returns {void}
      */
