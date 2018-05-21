@@ -1,6 +1,13 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
 import { createElement, emptyElement, toggleClass } from 'utils/dom';
 
+function nextSibling(element) {
+    return element.nextElementSibling;
+}
+
+function previousSibling(element) {
+    return element.previousElementSibling;
+}
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
     let active;
@@ -14,34 +21,39 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
     // focus on next or previous element if it exists
     // if not, focus on last or first element in content items based on index given
-    const selectElement = function(ele, index) {
+    const focusElement = function(ele, index) {
         if (ele) {
             ele.focus();
-        } else {
+        } else if (index !== undefined) {
             contentItems[index].element().focus();
         }
     };
 
     const onFocus = function(evt) {
+        const nextItem = nextSibling(categoryButtonElement);
+        const prevItem = previousSibling(categoryButtonElement);
+        const nextSubItem = nextSibling(evt.target);
+        const prevSubItem = previousSibling(evt.target);
+
         switch (evt.keyCode) {
             case 9: // tab
                 if (evt.shiftKey) {
-                    categoryButtonElement.previousElementSibling.focus();
+                    focusElement(prevItem);
                 } else {
-                    categoryButtonElement.nextElementSibling.focus();
+                    focusElement(nextItem);
                 }
                 break;
             case 37: // left-arrow
-                categoryButtonElement.previousElementSibling.focus();
+                focusElement(prevItem);
                 break;
             case 38: // up-arrow
-                selectElement(evt.target.previousElementSibling, contentItems.length - 1);
+                focusElement(prevSubItem, contentItems.length - 1);
                 break;
             case 39: // right-arrow
-                categoryButtonElement.nextElementSibling.focus();
+                focusElement(nextItem);
                 break;
             case 40: // down-arrow
-                selectElement(evt.target.nextElementSibling, 0);
+                focusElement(nextSubItem, 0);
                 break;
             default:
                 break;
