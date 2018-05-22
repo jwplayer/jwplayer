@@ -139,7 +139,7 @@ export default class Controlbar {
             const volumeTooltipEl = volumeTooltip.element();
             setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
             setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
-            setAttribute(volumeTooltipEl, 'role', 'status');
+            setAttribute(volumeTooltipEl, 'role', 'slider');
         }
 
         const nextButton = button('jw-icon-next', () => {
@@ -348,11 +348,13 @@ export default class Controlbar {
             toggleClass(mute.element(), 'jw-full', !muted);
         }
         if (volumeTooltip) {
+            const volume = muted ? 0 : vol;
             const volumeTooltipEl = volumeTooltip.element();
-            volumeTooltip.volumeSlider.render(muted ? 0 : vol);
+            volumeTooltip.volumeSlider.render(volume);
             toggleClass(volumeTooltipEl, 'jw-off', muted);
             toggleClass(volumeTooltipEl, 'jw-full', vol >= 75 && !muted);
-            setAttribute(volumeTooltipEl, 'aria-label', `volume ${muted ? 0 : vol}%`);
+            setAttribute(volumeTooltipEl, 'aria-valuenow', volume);
+            setAttribute(volumeTooltipEl, 'aria-valuetext', `Volume ${volume}%`);
         }
     }
 
