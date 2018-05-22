@@ -72,8 +72,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     /**
-     * Put the player in instream ads mode, detaching media, and preparing the ad program for
-     * instream playback
+     * Put the player in instream ads mode, detaching media, and preparing the ad program for instream playback.
      * @return {InstreamAdapter} - chainable
      */
     this.init = function() {
@@ -141,7 +140,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     /**
-     * Reattach media and destroy this instream instance, existing SSAI ads mode
+     * Reattach media and destroy this instream instance, existing SSAI ads mode.
      * @return {void}
      */
     this.disableAdsMode = function() {
