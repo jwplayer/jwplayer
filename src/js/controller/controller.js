@@ -17,7 +17,7 @@ import { OS, Features } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
-import { isString, isUndefined, isBoolean } from 'utils/underscore';
+import { isUndefined, isBoolean } from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, AUTOSTART_NOT_ALLOWED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
@@ -88,7 +88,7 @@ Object.assign(Controller.prototype, {
         // If we attempt to load flash, assume it is blocked if we don't hear back within a second
         _model.on('change:flashBlocked', function(model, isBlocked) {
             if (!isBlocked) {
-                this._model.set('errorEvent', undefined);
+                model.set('errorEvent', undefined);
                 return;
             }
             // flashThrottle indicates whether this is a throttled event or plugin blocked event
@@ -100,10 +100,15 @@ Object.assign(Controller.prototype, {
             if (!throttled) {
                 this.trigger(ERROR, errorEvent);
             }
-            this._model.set('errorEvent', errorEvent);
+            model.set('errorEvent', errorEvent);
         }, this);
 
-        _model.on('change:state', changeStateEvent, this);
+        _model.on('change:state', (model, newstate, oldstate) => {
+            const adState = _getAdState();
+            if (!adState) {
+                changeStateEvent.call(this, model, newstate, oldstate);
+            }
+        }, this);
 
         _model.on('change:castState', function(model, evt) {
             _this.trigger(CAST_SESSION, evt);
@@ -405,12 +410,16 @@ Object.assign(Controller.prototype, {
         }
 
         function _getAdState() {
-            return _this._instreamAdapter && _this._instreamAdapter.getState();
+            const instream = _this._instreamAdapter;
+            if (instream) {
+                return instream.getState();
+            }
+            return false;
         }
 
         function _getState() {
             const adState = _getAdState();
-            if (isString(adState)) {
+            if (adState) {
                 return adState;
             }
             return _model.get('state');
@@ -432,9 +441,9 @@ Object.assign(Controller.prototype, {
             }
 
             const adState = _getAdState();
-            if (isString(adState)) {
+            if (adState) {
                 // this will resume the ad. _api.playAd would load a new ad
-                _api.pauseAd(false);
+                _api.pauseAd(false, meta);
                 return resolved;
             }
 
@@ -541,7 +550,7 @@ Object.assign(Controller.prototype, {
             apiQueue.empty();
 
             const adState = _getAdState();
-            if (isString(adState)) {
+            if (adState) {
                 return;
             }
 
@@ -573,8 +582,8 @@ Object.assign(Controller.prototype, {
             }
 
             const adState = _getAdState();
-            if (isString(adState)) {
-                _api.pauseAd(true);
+            if (adState) {
+                _api.pauseAd(true, meta);
                 return;
             }
 

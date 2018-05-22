@@ -1,7 +1,8 @@
-import { STATE_BUFFERING, STATE_COMPLETE, STATE_PAUSED,
+import { STATE_BUFFERING, STATE_COMPLETE, STATE_PLAYING, STATE_PAUSED,
     MEDIA_META, MEDIA_PLAY_ATTEMPT_FAILED, MEDIA_TIME, MEDIA_COMPLETE,
     PLAYLIST_ITEM, PLAYLIST_COMPLETE,
-    INSTREAM_CLICK, AD_CLICK, AD_SKIPPED } from 'events/events';
+    INSTREAM_CLICK,
+    AD_PLAY, AD_PAUSE, AD_TIME, AD_CLICK, AD_SKIPPED } from 'events/events';
 import { BACKGROUND_LOAD_OFFSET, BACKGROUND_LOAD_MIN_OFFSET } from '../program/program-constants';
 import Promise from 'polyfills/promise';
 import { offsetToSeconds } from 'utils/strings';
@@ -16,10 +17,10 @@ const _defaultOptions = {
 /**
  * InstreamAdapter JW Player instream API. Instantiated via jwplayer().createInstream(). Only one instance can be
  * created per player. It is destoryed via jwplayer()instreamDestroy().
- * @param _controller - The player controller instance
- * @param _model - The player model instance
- * @param _view - The player view instance
- * @param _mediaPool - The player media pool
+ * @param {Controller} _controller - The player controller instance
+ * @param {Model} _model - The player model instance
+ * @param {View} _view - The player view instance
+ * @param {MediaPool} _mediaPool - The player media pool
  * @constructor
  */
 
@@ -129,14 +130,12 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // Tell the controller to ignore media playback events from the current provider
         _controller.detachEvents();
 
-        // _adProgram.setup();
-
-        _adProgram.on('all', _instreamForward, _this);
-        _adProgram.on(MEDIA_TIME, _instreamTime, _this);
-
         // This enters the player into instream mode
         _model.set('instream', _adProgram);
+        _adProgram.model.set('state', STATE_PLAYING);
+
         _addInstreamCickHandler(clickThroughUrl, addDefaultClickHandler);
+
         return this;
     };
 
@@ -200,6 +199,35 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             }
         }
     }
+
+    /**
+     * Update instream player state. If `event.newstate` is 'playing' trigger an 'adPlay' event.
+     * If `event.newstate` is 'paused' trigger and 'adPause' event.
+     * @param {AdPlayEvent|AdPauseEvent} event - An ad event object containing relavant ad data.
+     * @return {void}
+     */
+    this.setState = function(event) {
+        const { newstate } = event;
+        event.oldstate = _adProgram.model.get('state');
+
+        _adProgram.model.set('state', newstate);
+
+        if (newstate === STATE_PLAYING) {
+            _controller.trigger(AD_PLAY, event);
+        } else if (newstate === STATE_PAUSED) {
+            _controller.trigger(AD_PAUSE, event);
+        }
+    };
+
+    /**
+     * Update instream time and trigger 'adTime' event.
+     * @param {AdTimeEvent} event - An ad event object containing relavant ad data.
+     * @return {void}
+     */
+    this.setTime = function(event) {
+        _instreamTime(event);
+        _controller.trigger(AD_TIME, event);
+    };
 
     function _instreamTime(evt) {
         const { duration, position } = evt;
