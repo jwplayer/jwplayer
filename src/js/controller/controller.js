@@ -444,6 +444,7 @@ Object.assign(Controller.prototype, {
             }
 
             if (!_beforePlay) {
+                // TODO: Do not trigger "beforePlay" in adsMode
                 _beforePlay = true;
                 _this.trigger(MEDIA_BEFOREPLAY, {
                     playReason,
@@ -847,8 +848,11 @@ Object.assign(Controller.prototype, {
         this.setFullscreen = _setFullscreen;
         this.detachMedia = _detachMedia;
         this.attachMedia = _attachMedia;
+
+        // TODO: Remove in favor of adProgramController state (ssai ads mode). Note backgroundActiveMedia is public, but detach is not
         this.detachEvents = _detachEvents;
         this.attachEvents = _attachEvents;
+
         this.getCurrentQuality = _getCurrentQuality;
         this.getQualityLevels = _getQualityLevels;
         this.setCurrentAudioTrack = _setCurrentAudioTrack;
