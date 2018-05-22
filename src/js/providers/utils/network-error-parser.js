@@ -1,6 +1,6 @@
 export default function parseNetworkError(baseCode, statusCode, url = '', responseText) {
     let message;
-    let code = baseCode;
+    let code = baseCode + 1000;
 
     if (statusCode > 0) {
         message = badStatusMessage(statusCode, responseText);
