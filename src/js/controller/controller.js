@@ -381,7 +381,7 @@ Object.assign(Controller.prototype, {
                 if (e.code >= 151 && e.code <= 162) {
                     e.code = PlayerError.compose(e.code, ERROR_LOADING_PROVIDER);
                 } else {
-                    e.message = `Playlist e: ${e.message}`;
+                    e.message = `Playlist error: ${e.message}`;
                     e.code = PlayerError.compose(e.code, ERROR_LOADING_PLAYLIST);
                 }
                 _this.triggerError(e);
