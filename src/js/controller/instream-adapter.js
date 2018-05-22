@@ -444,13 +444,14 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     /**
      * Update the ads mode controlbar message.
      * @param {string} text - The message to display in the controlbar.
-     * @return {void}
+     * @return {InstreamAdapter} - chainable
      */
     this.setText = function(text) {
         if (_destroyed) {
-            return;
+            return this;
         }
         _view.setAltText(text || '');
+        return this;
     };
 
     /**
