@@ -775,14 +775,6 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        function _attachEvents() {
-            _programController.eventsAttached = true;
-        }
-
-        function _detachEvents() {
-            _programController.eventsAttached = false;
-        }
-
         function _setFullscreen(state) {
             if (!isBoolean(state)) {
                 state = !_model.get('fullscreen');
@@ -854,10 +846,6 @@ Object.assign(Controller.prototype, {
         this.setCurrentCaptions = _setCurrentCaptions;
         this.setCurrentQuality = _setCurrentQuality;
         this.setFullscreen = _setFullscreen;
-        this.detachMedia = _detachMedia;
-        this.attachMedia = _attachMedia;
-        this.detachEvents = _detachEvents;
-        this.attachEvents = _attachEvents;
         this.getCurrentQuality = _getCurrentQuality;
         this.getQualityLevels = _getQualityLevels;
         this.setCurrentAudioTrack = _setCurrentAudioTrack;
@@ -873,8 +861,12 @@ Object.assign(Controller.prototype, {
             setConfig(_this, newConfig);
         };
         this.setItemIndex = _setItem;
+        this.detachMedia = _detachMedia;
+        this.attachMedia = _attachMedia;
 
         // Program Controller passthroughs
+        this.detachEvents = () => _programController.forwardEvents(false);
+        this.attachEvents = () => _programController.forwardEvents(true);
         this.playVideo = (playReason) => _programController.playVideo(playReason);
         this.stopVideo = () => _programController.stopVideo();
         this.castVideo = (castProvider, item) => _programController.castVideo(castProvider, item);

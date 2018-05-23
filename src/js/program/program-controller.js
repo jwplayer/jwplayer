@@ -297,6 +297,25 @@ class ProgramController extends Eventable {
     }
 
     /**
+     * Toggle the 'all' events listener that forwards events from the media-controller
+     * @param {boolean} shouldForward - Whether or not to forward events
+     * @returns {void}
+     */
+    forwardEvents(shouldForward) {
+        const { mediaController } = this;
+
+        if (!mediaController) {
+            return;
+        }
+
+        if (shouldForward) {
+            forwardEvents(this, mediaController);
+        } else {
+            mediaController.off('all', this.mediaControllerListener, this);
+        }
+    }
+
+    /**
      * Primes media elements so that they can autoplay without further user gesture.
      * A primed element is required for media to load in the background.
      * This method does not prime elements who already have a source set ("safe prime").
@@ -553,25 +572,6 @@ class ProgramController extends Eventable {
             mediaController.attach();
         } else {
             mediaController.detach();
-        }
-    }
-
-    /**
-     * Attaches or detaches the current media's player events
-     * @param {boolean} shouldAttach - Attach or detach events?
-     * @returns {void}
-     */
-    set eventsAttached(shouldAttach) {
-        const { mediaController } = this;
-
-        if (!mediaController) {
-            return;
-        }
-
-        if (shouldAttach) {
-            mediaController.attachEvents();
-        } else {
-            mediaController.detachEvents();
         }
     }
 
