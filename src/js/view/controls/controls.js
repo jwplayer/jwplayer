@@ -238,7 +238,7 @@ export default class Controls {
                 // Let event bubble upwards
                 return true;
             }
-            const menuVisible = this.settingsMenu.visible;
+            const menuHidden = !this.settingsMenu.visible;
             const adMode = this.instreamState;
 
             switch (evt.keyCode) {
@@ -250,22 +250,22 @@ export default class Controls {
                     api.playToggle(reasonInteraction());
                     break;
                 case 37: // left-arrow, if not adMode settings menu is hidden
-                    if (adMode && !menuVisible) {
+                    if (!adMode && menuHidden) {
                         adjustSeek(-5);
                     }
                     break;
                 case 39: // right-arrow, if not adMode and settings menu is hidden
-                    if (adMode && !menuVisible) {
+                    if (!adMode && menuHidden) {
                         adjustSeek(5);
                     }
                     break;
-                case 38: // up-arrow, if setting menu is hidden
-                    if (!menuVisible) {
+                case 38: // up-arrow, if settings menu is hidden
+                    if (menuHidden) {
                         adjustVolume(10);
                     }
                     break;
                 case 40: // down-arrow, if settings menu is hidden
-                    if (!menuVisible) {
+                    if (menuHidden) {
                         adjustVolume(-10);
                     }
                     break;
