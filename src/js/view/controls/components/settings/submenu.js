@@ -30,11 +30,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
         switch (evt.keyCode) {
             case 9: // tab
-                if (evt.shiftKey) {
-                    focusElement(prevItem);
-                } else {
-                    focusElement(nextItem);
-                }
+                focusElement(evt.shiftKey ? prevItem : nextItem);
                 break;
             case 37: // left-arrow
                 focusElement(prevItem);
