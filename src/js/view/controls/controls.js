@@ -249,7 +249,7 @@ export default class Controls {
                 case 32: // space
                     api.playToggle(reasonInteraction());
                     break;
-                case 37: // left-arrow, if not adMode settings menu is hidden
+                case 37: // left-arrow, if not adMode and settings menu is hidden
                     if (!adMode && menuHidden) {
                         adjustSeek(-5);
                     }
