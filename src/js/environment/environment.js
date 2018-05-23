@@ -177,7 +177,7 @@ Object.defineProperties(Features, {
         enumerable: true
     },
     backgroundLoading: {
-        get: memoize(() => !(OS.iOS || Browser.safari)),
+        get: memoize(() => !(OS.iOS || Browser.safari) && !Browser.androidNative),
         enumerable: true
     }
 });
