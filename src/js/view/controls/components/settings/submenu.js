@@ -1,13 +1,6 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
-import { createElement, emptyElement, toggleClass } from 'utils/dom';
+import { createElement, emptyElement, toggleClass, nextSibling, previousSibling } from 'utils/dom';
 
-function nextSibling(element) {
-    return element.nextElementSibling;
-}
-
-function previousSibling(element) {
-    return element.previousElementSibling;
-}
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
     let active;

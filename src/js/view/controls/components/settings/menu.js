@@ -1,15 +1,7 @@
 import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
-import { createElement, emptyElement, prependChild } from 'utils/dom';
-
-function nextSibling(element) {
-    return element.nextElementSibling;
-}
-
-function previousSibling(element) {
-    return element.previousElementSibling;
-}
+import { createElement, emptyElement, prependChild, nextSibling, previousSibling } from 'utils/dom';
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
