@@ -24,25 +24,25 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         const next = nextSibling(target);
         const prev = previousSibling(target);
 
-        switch (evt.keyCode) {
-            case 27: // esc
+        switch (evt.key) {
+            case 'Escape': // esc
                 instance.close();
                 break;
-            case 37: // left-arrow
+            case 'ArrowLeft':
                 if (prev) {
                     prev.focus();
                 } else {
                     instance.close();
                 }
                 break;
-            case 39: // right-arrow
+            case 'ArrowRight':
                 if (next && closeButton.element() && target !== closeButton.element()) {
                     next.focus();
                 }
                 break;
-            case 38: // up-arrow
-            case 40: // down-arrow
-                instance.activateSubmenu(target.getAttribute('name'), evt.keyCode === 38);
+            case 'ArrowUp':
+            case 'ArrowDown':
+                instance.activateSubmenu(target.getAttribute('name'), evt.key === 'ArrowUp');
                 break;
             default:
                 break;
