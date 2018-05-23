@@ -35,13 +35,13 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             case 'ArrowLeft':
                 focusElement(prevItem);
                 break;
-            case 'ArrowUp': // up-arrow
+            case 'ArrowUp':
                 focusElement(prevSubItem, contentItems.length - 1);
                 break;
-            case 'ArrowRight': // right-arrow
+            case 'ArrowRight':
                 focusElement(nextItem);
                 break;
-            case 'ArrowDown': // down-arrow
+            case 'ArrowDown':
                 focusElement(nextSubItem, 0);
                 break;
             default:
