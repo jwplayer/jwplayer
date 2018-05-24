@@ -134,15 +134,6 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         return this;
     };
 
-    /**
-     * Reattach media listeners and destroy this instream instance, existing SSAI ads mode
-     * @return {void}
-     */
-    this.disableAdsMode = function() {
-        _controller.forwardEvents();
-        this.destroy();
-    };
-
     function _addClickHandler(clickThroughUrl) {
         // don't trigger api play/pause on display click
         const clickHandler = _view.clickHandler();
@@ -431,6 +422,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             _model.attributes.state = STATE_PAUSED;
         }
 
+        _controller.forwardEvents();
         _model.set('instream', null);
 
         _adProgram = null;
