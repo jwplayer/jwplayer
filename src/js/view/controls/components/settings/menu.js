@@ -3,6 +3,17 @@ import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement, emptyElement, prependChild, nextSibling, previousSibling } from 'utils/dom';
 
+function focusSettingsElement(direction) {
+    const settingsIcon = document.getElementsByClassName('jw-icon-settings')[0];
+
+    if (settingsIcon) {
+        const element = direction === 'ArrowRight' ? nextSibling(settingsIcon) : previousSibling(settingsIcon);
+        if (element) {
+            element.focus();
+        }
+    }
+}
+
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
         // Close if anything other than the settings menu has been clicked
@@ -25,7 +36,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         const prev = previousSibling(target);
 
         switch (evt.key) {
-            case 'Escape': // esc
+            case 'Escape':
                 instance.close();
                 break;
             case 'ArrowLeft':
@@ -33,6 +44,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                     prev.focus();
                 } else {
                     instance.close();
+                    focusSettingsElement(evt.key);
                 }
                 break;
             case 'ArrowRight':
@@ -61,10 +73,15 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     }, 'Close Settings', [cloneIcon('close')]);
 
     const closeOnButton = function(evt) {
+        const { key } = evt;
         // Close settings menu when enter is pressed on the close button
         // or when tab or right arrow key is pressed since it is the last element in topbar
-        if (evt.keyCode === 13 || evt.keyCode === 39 || (evt.keyCode === 9 && !evt.shiftKey)) {
+        if (key === 'Enter' || key === 'ArrowRight' || (key === 'Tab' && !evt.shiftKey)) {
             instance.close(evt);
+        }
+
+        if (key === 'ArrowRight') {
+            focusSettingsElement(evt.key);
         }
     };
     closeButton.show();

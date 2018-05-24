@@ -33,7 +33,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
                 focusElement(evt.shiftKey ? prevItem : nextItem);
                 break;
             case 'ArrowLeft':
-                focusElement(prevItem);
+                focusElement(prevItem || previousSibling(document.getElementsByClassName('jw-icon-settings')[0]));
                 break;
             case 'ArrowUp':
                 focusElement(prevSubItem, contentItems.length - 1);
