@@ -118,7 +118,8 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     /**
-     * Put the player in SSAI ad mode.
+     * Put the player in SSAI ad mode. Detaches media listeners
+     * to prevent player events from being triggered during a break.
      * @param {string} clickThroughUrl - Url to open on click while playing
      * @param {boolean} addDefaultClickHandler - TODO: remove. clickThroughUrl suggests the click should be handled.
      * @return {InstreamAdapter} - chainable
@@ -127,8 +128,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_inited || _destroyed) {
             return;
         }
-        // Tell the controller to ignore media playback events from the current provider
-        _controller.detachEvents();
+        _controller.removeEvents();
 
         // This enters the player into instream mode
         _model.set('instream', _adProgram);
@@ -140,13 +140,11 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
     };
 
     /**
-     * Reattach media and destroy this instream instance, existing SSAI ads mode
+     * Reattach media listeners and destroy this instream instance, existing SSAI ads mode
      * @return {void}
      */
     this.disableAdsMode = function() {
-        // Tell the controller to listen to media playback events from the current provider
-        _controller.attachEvents();
-        // this.noResume = true;
+        _controller.forwardEvents();
         this.destroy();
     };
 
