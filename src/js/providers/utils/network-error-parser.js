@@ -3,7 +3,8 @@ export default function parseNetworkError(baseCode, statusCode, url = '', respon
     let code = baseCode + 1000;
 
     if (statusCode > 0) {
-        message = badStatusMessage(statusCode, responseText);
+        // Restrict status code range between 400 and 600 in order to avoid conflicting codes; 10 otherwise
+        message = badStatusMessage((statusCode >= 400 && statusCode <= 600) ? statusCode : 10, responseText);
         code += statusCode;
     } else if (url.substring(0, 5) === 'http:' && document.location.protocol === 'https:') {
         message = 'Unable to fetch HTTP resource over HTTPS';
