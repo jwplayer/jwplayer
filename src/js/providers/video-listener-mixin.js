@@ -3,6 +3,7 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING
     MEDIA_BUFFER, MEDIA_META, MEDIA_TIME, MEDIA_SEEKED, MEDIA_VOLUME, MEDIA_MUTE, MEDIA_COMPLETE
 } from 'events/events';
 import utils from 'utils/helpers';
+import { PlayerError } from 'api/errors';
 
 // This will trigger the events required by jwplayer model to
 //  properly follow the state of the video tag
@@ -170,11 +171,18 @@ const VideoListenerMixin = {
             3: 'Unknown decode error',
             4: 'File could not be played'
         }[code] || 'Unknown');
-        this.trigger(MEDIA_ERROR, {
-            code: code,
-            message: 'Error loading media: ' + message
-        });
+
+        this.trigger(
+            MEDIA_ERROR,
+            new PlayerError(`Error loading media ${message}`, HTML5_BASE_MEDIA_ERROR + Math.max(code, 0))
+        );
     }
 };
 
 export default VideoListenerMixin;
+
+/**
+ *
+ @enum {ErrorCode} - The HTML5 media element encountered an error.
+ */
+const HTML5_BASE_MEDIA_ERROR = 224000;

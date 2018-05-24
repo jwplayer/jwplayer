@@ -15,6 +15,7 @@ import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
 import { map } from 'utils/underscore';
+import { PlayerError } from 'api/errors';
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
@@ -774,9 +775,10 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     function checkStreamEnded() {
         if (_stale && _this.atEdgeOfLiveStream()) {
-            _this.trigger(MEDIA_ERROR, {
-                message: 'The live stream is either down or has ended'
-            });
+            _this.trigger(
+                MEDIA_ERROR,
+                new PlayerError('The live stream is either down or has ended', HTML5_ERROR_LIVE_STREAM_DOWN_OR_ENDED)
+            );
             return true;
         }
 
@@ -796,3 +798,10 @@ VideoProvider.getName = function() {
 };
 
 export default VideoProvider;
+
+/**
+ *
+ @enum {ErrorCode} - The HTML5 live stream is down or has ended.
+ */
+const HTML5_ERROR_LIVE_STREAM_DOWN_OR_ENDED = 220001;
+
