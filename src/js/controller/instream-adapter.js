@@ -121,21 +121,16 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      * Put the player in SSAI ad mode. Detaches media listeners
      * to prevent player events from being triggered during a break.
      * @param {string} clickThroughUrl - Url to open on click while playing
-     * @param {boolean} addDefaultClickHandler - TODO: remove. clickThroughUrl suggests the click should be handled.
      * @return {InstreamAdapter} - chainable
      */
-    this.enableAdsMode = function(clickThroughUrl, addDefaultClickHandler) {
+    this.enableAdsMode = function(clickThroughUrl) {
         if (_inited || _destroyed) {
             return;
         }
         _controller.removeEvents();
-
-        // This enters the player into instream mode
         _model.set('instream', _adProgram);
         _adProgram.model.set('state', STATE_PLAYING);
-
-        _addInstreamCickHandler(clickThroughUrl, addDefaultClickHandler);
-
+        _addClickHandler(clickThroughUrl);
         return this;
     };
 
@@ -148,26 +143,30 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         this.destroy();
     };
 
-    function _addInstreamCickHandler(clickThroughUrl, addDefaultClickHandler) {
+    function _addClickHandler(clickThroughUrl) {
         // don't trigger api play/pause on display click
         const clickHandler = _view.clickHandler();
         if (clickHandler) {
-            clickHandler.setAlternateClickHandlers(() => {}, null);
-        }
-        if (!addDefaultClickHandler) {
-            return;
-        }
-        _this.on(INSTREAM_CLICK, () => {
-            if (_model.get('state') === STATE_PAUSED) {
-                _controller.playVideo();
-            } else {
-                _controller.pause();
-                if (clickThroughUrl) {
-                    _controller.trigger(AD_CLICK, { clickThroughUrl });
-                    window.open(clickThroughUrl);
+            clickHandler.setAlternateClickHandlers((evt) => {
+                if (_destroyed) {
+                    return;
                 }
-            }
-        });
+                evt = evt || {};
+                evt.hasControls = !!_model.get('controls');
+                _this.trigger(INSTREAM_CLICK, evt);
+                if (clickThroughUrl) {
+                    if (_model.get('state') === STATE_PAUSED) {
+                        _controller.playVideo();
+                    } else {
+                        _controller.pause();
+                        if (clickThroughUrl) {
+                            _controller.trigger(AD_CLICK, { clickThroughUrl });
+                            window.open(clickThroughUrl);
+                        }
+                    }
+                }
+            }, null);
+        }
     }
 
     function triggerPlayRejected() {
