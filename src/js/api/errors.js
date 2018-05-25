@@ -78,10 +78,10 @@ export const FLASH_MEDIA_ERROR = 214000;
  * @param {code} [ErrorCode] - The error code.
  * @param {sourceError} [Error] - The lower level error, caught by the player, which resulted in this error.
  */
-export class PlayerError extends Error {
+export class PlayerError {
     constructor(message, code, sourceError = null) {
-        super(message);
         this.code = isValidNumber(code) ? code : null;
+        this.message = message;
         this.sourceError = sourceError;
     }
 

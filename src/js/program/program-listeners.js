@@ -8,11 +8,8 @@ import { PLAYER_STATE, STATE_IDLE, MEDIA_VOLUME, MEDIA_MUTE,
 export function ProviderListener(mediaController) {
     return function (type, data) {
         const { mediaModel } = mediaController;
-        const event = Object.create(data || {}, {
-            type: {
-                enumerable: true,
-                get: () => type
-            }
+        const event = Object.assign({}, data, {
+            type: type
         });
 
         switch (type) {
