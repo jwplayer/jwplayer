@@ -240,19 +240,19 @@ Object.assign(CoreShim.prototype, {
 function setupError(core, error) {
     resolved.then(() => {
         const { message } = error;
-        const code = isValidNumber(error.code) ? error.code : SETUP_ERROR_UNKNOWN;
+        error.code = isValidNumber(error.code) ? error.code : SETUP_ERROR_UNKNOWN;
+
         const errorContainer = ErrorContainer(core, message);
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }
         showView(core, errorContainer);
 
-        const errorEvent = { message, code, error };
         const model = core._model || core.modelShim;
-        model.set('errorEvent', errorEvent);
+        model.set('errorEvent', error);
         model.set('state', STATE_ERROR);
 
-        core.trigger(SETUP_ERROR, errorEvent);
+        core.trigger(SETUP_ERROR, error);
     });
 }
 
