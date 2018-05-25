@@ -145,3 +145,11 @@ export function bounds(element) {
 export function prependChild(parentElement, childElement) {
     parentElement.insertBefore(childElement, parentElement.firstChild);
 }
+
+export function nextSibling(element) {
+    return element.nextElementSibling;
+}
+
+export function previousSibling(element) {
+    return element.previousElementSibling;
+}

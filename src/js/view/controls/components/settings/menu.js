@@ -1,7 +1,18 @@
 import { cloneIcon } from 'view/controls/icons';
 import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
-import { createElement, emptyElement, prependChild } from 'utils/dom';
+import { createElement, emptyElement, prependChild, nextSibling, previousSibling } from 'utils/dom';
+
+function focusSettingsElement(direction) {
+    const settingsIcon = document.getElementsByClassName('jw-icon-settings')[0];
+
+    if (settingsIcon) {
+        const element = direction === 'ArrowRight' ? nextSibling(settingsIcon) : previousSibling(settingsIcon);
+        if (element) {
+            element.focus();
+        }
+    }
+}
 
 export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     const documentClickHandler = (e) => {
@@ -19,23 +30,58 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
 
     const settingsMenuElement = createElement(SettingsMenuTemplate());
 
-    const closeOnEnter = function(evt) {
-        if (evt && evt.keyCode === 27) {
-            instance.close(evt);
-            evt.stopPropagation();
+    const handleKeyDown = function(evt) {
+        const { target } = evt;
+        const next = nextSibling(target);
+        const prev = previousSibling(target);
+
+        switch (evt.key) {
+            case 'Escape':
+                instance.close();
+                break;
+            case 'ArrowLeft':
+                if (prev) {
+                    prev.focus();
+                } else {
+                    instance.close();
+                    focusSettingsElement(evt.key);
+                }
+                break;
+            case 'ArrowRight':
+                if (next && closeButton.element() && target !== closeButton.element()) {
+                    next.focus();
+                }
+                break;
+            case 'ArrowUp':
+            case 'ArrowDown':
+                instance.activateSubmenu(target.getAttribute('name'), evt.key === 'ArrowUp');
+                break;
+            default:
+                break;
+        }
+        evt.stopPropagation();
+        if (/13|32|37|38|39|40/.test(evt.keyCode)) {
+            // Prevent keypresses from scrolling the screen
+            evt.preventDefault();
+            return false;
         }
     };
-    settingsMenuElement.addEventListener('keydown', closeOnEnter);
+    settingsMenuElement.addEventListener('keydown', handleKeyDown);
 
     const closeButton = button('jw-settings-close', () => {
         instance.close();
     }, 'Close Settings', [cloneIcon('close')]);
 
     const closeOnButton = function(evt) {
+        const { key } = evt;
         // Close settings menu when enter is pressed on the close button
-        // or when tab key is pressed since it is the last element in topbar
-        if (evt.keyCode === 13 || (evt.keyCode === 9 && !evt.shiftKey)) {
+        // or when tab or right arrow key is pressed since it is the last element in topbar
+        if (key === 'Enter' || key === 'ArrowRight' || (key === 'Tab' && !evt.shiftKey)) {
             instance.close(evt);
+        }
+
+        if (key === 'ArrowRight') {
+            focusSettingsElement(evt.key);
         }
     };
     closeButton.show();
@@ -51,14 +97,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             settingsMenuElement.setAttribute('aria-expanded', 'true');
             document.addEventListener('click', documentClickHandler);
 
-            if (isDefault) {
-                if (event && event.type === 'enter') {
-                    active.categoryButtonElement.focus();
-                }
-            } else {
-                active.element().firstChild.focus();
+            if (isDefault && event && event.type === 'enter') {
+                active.categoryButtonElement.focus();
+                return;
             }
 
+            active.element().firstChild.focus();
         },
         close(event) {
             visible = false;
@@ -123,7 +167,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
                 onMenuEmpty();
             }
         },
-        activateSubmenu(name) {
+        activateSubmenu(name, focusOnLast) {
             const submenu = submenus[name];
             if (!submenu || submenu.active) {
                 return;
@@ -133,8 +177,11 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             submenu.activate();
             active = submenu;
 
-            if (!submenu.isDefault) {
+            if (!submenu.isDefault && !focusOnLast) {
                 active.element().firstChild.focus();
+            } else if (focusOnLast) {
+                // focus on last element in submenu if up arrow was pressed
+                active.element().lastChild.focus();
             }
         },
         activateFirstSubmenu() {
@@ -146,7 +193,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         },
         destroy() {
             this.close();
-            settingsMenuElement.removeEventListener('keydown', closeOnEnter);
+            settingsMenuElement.removeEventListener('keydown', handleKeyDown);
             closeButton.element().removeEventListener('keydown', closeOnButton);
             emptyElement(settingsMenuElement);
         }

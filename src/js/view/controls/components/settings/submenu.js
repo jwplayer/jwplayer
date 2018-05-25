@@ -1,5 +1,5 @@
 import SubmenuTemplate from 'view/controls/templates/settings/submenu';
-import { createElement, emptyElement, toggleClass } from 'utils/dom';
+import { createElement, emptyElement, toggleClass, nextSibling, previousSibling } from 'utils/dom';
 
 export default function SettingsSubmenu(name, categoryButton, isDefault) {
 
@@ -12,18 +12,47 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
     categoryButtonElement.className += ' jw-submenu-' + name;
     categoryButton.show();
 
-    // return focus to topbar element when tabbing after the first or last item
-    const onFocus = function(evt) {
-        const focus =
-            categoryButtonElement &&
-            evt.keyCode === 9 && (
-                evt.srcElement === contentItems[0].element() && evt.shiftKey ||
-                evt.srcElement === contentItems[contentItems.length - 1].element() && !evt.shiftKey
-            );
-
-        if (focus) {
-            categoryButtonElement.focus();
+    // focus on next or previous element if it exists
+    // if not, focus on last or first element in content items based on index given
+    const focusElement = function(ele, index) {
+        if (ele) {
+            ele.focus();
+        } else if (index !== undefined) {
+            contentItems[index].element().focus();
         }
+    };
+
+    const onFocus = function(evt) {
+        const nextItem = nextSibling(categoryButtonElement);
+        const prevItem = previousSibling(categoryButtonElement);
+        const nextSubItem = nextSibling(evt.target);
+        const prevSubItem = previousSibling(evt.target);
+
+        switch (evt.key) {
+            case 'Tab':
+                focusElement(evt.shiftKey ? prevItem : nextItem);
+                break;
+            case 'ArrowLeft':
+                focusElement(prevItem || previousSibling(document.getElementsByClassName('jw-icon-settings')[0]));
+                break;
+            case 'ArrowUp':
+                focusElement(prevSubItem, contentItems.length - 1);
+                break;
+            case 'ArrowRight':
+                focusElement(nextItem);
+                break;
+            case 'ArrowDown':
+                focusElement(nextSubItem, 0);
+                break;
+            default:
+                break;
+        }
+        evt.preventDefault();
+        if (evt.key !== 'Escape') {
+            // only bubble event if esc key was pressed
+            evt.stopPropagation();
+        }
+        
     };
 
     const instance = {
@@ -33,21 +62,20 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             }
             items.forEach(item => {
                 submenuElement.appendChild(item.element());
+                item.element().setAttribute('tabindex', '-1');
+                item.element().addEventListener('keydown', onFocus);
             });
 
             contentItems = items;
-
-            contentItems[0].element().addEventListener('keydown', onFocus);
-            contentItems[contentItems.length - 1].element().addEventListener('keydown', onFocus);
         },
         replaceContent(items) {
             instance.removeContent();
             this.addContent(items);
         },
         removeContent() {
-            contentItems[0].element().removeEventListener('keydown', onFocus);
-            contentItems[contentItems.length - 1].element().removeEventListener('keydown', onFocus);
-
+            contentItems.forEach(item => {
+                item.element().removeEventListener('keydown', onFocus);
+            });
             emptyElement(submenuElement);
             contentItems = [];
         },
