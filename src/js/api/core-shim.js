@@ -240,7 +240,9 @@ Object.assign(CoreShim.prototype, {
 function setupError(core, error) {
     resolved.then(() => {
         const { message } = error;
-        error.code = isValidNumber(error.code) ? error.code : SETUP_ERROR_UNKNOWN;
+        if (!isValidNumber(error.code)) {
+            error.code = SETUP_ERROR_UNKNOWN;
+        }
 
         const errorContainer = ErrorContainer(core, message);
         if (ErrorContainer.cloneIcon) {
