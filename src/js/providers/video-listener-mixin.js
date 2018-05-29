@@ -164,17 +164,17 @@ const VideoListenerMixin = {
         }
     },
     error() {
-        const code = (this.video.error && this.video.error.code) || -1;
-        const message = ({
-            1: 'Unknown operation aborted',
-            2: 'Unknown network error',
-            3: 'Unknown decode error',
-            4: 'File could not be played'
-        }[code] || 'Unknown');
+        const errorCode = (this.video.error && this.video.error.code) || -1;
+        const [message, code] = ({
+            1: ['Unknown operation aborted', 1],
+            2: ['Unknown network error', 0],
+            3: ['Unknown decode error', 2],
+            4: ['File could not be played', 3]
+        }[errorCode] || ['Unknown', 0]);
 
         this.trigger(
             MEDIA_ERROR,
-            new PlayerError(`Error loading media ${message}`, HTML5_BASE_MEDIA_ERROR + Math.max(code, 0))
+            new PlayerError(`Error loading media ${message}`, HTML5_BASE_MEDIA_ERROR + code, this.video.error)
         );
     }
 };
