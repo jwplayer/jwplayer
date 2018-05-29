@@ -80,8 +80,10 @@ export const FLASH_MEDIA_ERROR = 214000;
  */
 export class PlayerError extends Error {
     constructor(message, code, sourceError = null) {
-        super(message);
+        // Avoid passing message via super so that we can define an enumerable message property on PlayerError
+        super();
         this.code = isValidNumber(code) ? code : null;
+        this.message = message;
         this.sourceError = sourceError;
     }
 
