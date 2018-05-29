@@ -28,27 +28,27 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
         const nextSubItem = nextSibling(evt.target);
         const prevSubItem = previousSibling(evt.target);
 
-        switch (evt.key) {
-            case 'Tab':
+        switch (evt.keyCode) {
+            case 9: // tab
                 focusElement(evt.shiftKey ? prevItem : nextItem);
                 break;
-            case 'ArrowLeft':
+            case 37: // left-arrow
                 focusElement(prevItem || previousSibling(document.getElementsByClassName('jw-icon-settings')[0]));
                 break;
-            case 'ArrowUp':
+            case 38: // up-arrow
                 focusElement(prevSubItem, contentItems.length - 1);
                 break;
-            case 'ArrowRight':
+            case 39: // right-arrow
                 focusElement(nextItem);
                 break;
-            case 'ArrowDown':
+            case 40: // down-arrow
                 focusElement(nextSubItem, 0);
                 break;
             default:
                 break;
         }
         evt.preventDefault();
-        if (evt.key !== 'Escape') {
+        if (evt.keyCode !== 27) {
             // only bubble event if esc key was pressed
             evt.stopPropagation();
         }
