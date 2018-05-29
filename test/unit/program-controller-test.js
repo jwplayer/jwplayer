@@ -454,6 +454,6 @@ describe('ProgramController', function () {
 function expectAllEventsTriggered(callbackSpy) {
     expect(callbackSpy).to.have.callCount(providerEvents.length);
     providerEvents.forEach((event, i) => {
-        expect(callbackSpy.getCall(i)).to.have.been.calledWith(event.type);
+        expect(callbackSpy.getCall(i)).to.have.been.calledWith(event.type, event);
     });
 }
