@@ -165,16 +165,19 @@ const VideoListenerMixin = {
     },
     error() {
         const errorCode = (this.video.error && this.video.error.code) || -1;
-        const [message, code] = ({
-            1: ['Unknown operation aborted', 1],
-            2: ['Unknown network error', 0],
-            3: ['Unknown decode error', 2],
-            4: ['File could not be played', 3]
-        }[errorCode] || ['Unknown', 0]);
+        const errorData = [
+            ['Unknown', 0],
+            ['Unknown operation aborted', 1],
+            ['Unknown network error', 0],
+            ['Unknown decode error', 2],
+            ['File could not be played', 3]
+        ][errorCode] || ['Unknown', 0];
+        // Error code 2 from the video element is a network error
+        const code = errorData[1] += (errorCode === 2 ? HTML5_NETWORK_ERROR : HTML5_BASE_MEDIA_ERROR);
 
         this.trigger(
             MEDIA_ERROR,
-            new PlayerError(`Error loading media ${message}`, HTML5_BASE_MEDIA_ERROR + code, this.video.error)
+            new PlayerError(`Error loading media ${errorData[0]}`, code, this.video.error)
         );
     }
 };
@@ -186,3 +189,9 @@ export default VideoListenerMixin;
  @enum {ErrorCode} - The HTML5 media element encountered an error.
  */
 const HTML5_BASE_MEDIA_ERROR = 224000;
+
+/**
+ *
+ @enum {ErrorCode} - The HTML5 media element encountered a network error.
+ */
+const HTML5_NETWORK_ERROR = 221000;
