@@ -239,9 +239,11 @@ Object.assign(CoreShim.prototype, {
 
 function setupError(core, error) {
     resolved.then(() => {
-        const { message } = error;
+        const message = error.message;
+        let errorEvent = error;
         if (!isValidNumber(error.code)) {
-            error.code = SETUP_ERROR_UNKNOWN;
+            // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
+            errorEvent = new PlayerError(message, SETUP_ERROR_UNKNOWN, error);
         }
 
         const errorContainer = ErrorContainer(core, message);
@@ -251,10 +253,10 @@ function setupError(core, error) {
         showView(core, errorContainer);
 
         const model = core._model || core.modelShim;
-        model.set('errorEvent', error);
+        model.set('errorEvent', errorEvent);
         model.set('state', STATE_ERROR);
 
-        core.trigger(SETUP_ERROR, error);
+        core.trigger(SETUP_ERROR, errorEvent);
     });
 }
 
