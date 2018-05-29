@@ -2,11 +2,9 @@ import errorContainerTemplate from 'templates/error';
 import { createElement } from 'utils/dom';
 import { style } from 'utils/css';
 
-export default function ErrorContainer(model, message) {
-    const index = message.indexOf(':') + 1;
-    const title = (index > 0) ? message.substr(0, index) : 'Error loading player:';
-    const description = message.substr(index);
-    const html = errorContainerTemplate(model.get('id'), title, description);
+export default function ErrorContainer(model, error) {
+    const { message, code } = error;
+    const html = errorContainerTemplate(model.get('id'), message, code);
     const width = model.get('width');
     const height = model.get('height');
     const element = createElement(html);
