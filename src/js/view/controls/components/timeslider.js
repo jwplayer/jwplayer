@@ -94,6 +94,11 @@ class TimeSlider extends Slider {
         this._model
             .on('change:duration', this.onDuration, this)
             .on('change:cues', this.addCues, this)
+            .on('seeked', () => {
+                if (!this._model.get('scrubbing')) {
+                    this.updateAriaText();
+                }
+            })
             .change('playlistItem', this.onPlaylistItem, this)
             .change('position', this.onPosition, this)
             .change('buffer', this.onBuffer, this)
@@ -113,12 +118,6 @@ class TimeSlider extends Slider {
             .on('click', () => this.el.focus());
 
         this.el.addEventListener('focus', () => this.updateAriaText());
-        this._model.on('seeked', () => {
-            if (this._model.get('scrubbing')) {
-                return;
-            }
-            this.updateAriaText();
-        });
     }
 
     update(percent) {
