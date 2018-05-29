@@ -136,10 +136,8 @@ class ProgramController extends Eventable {
                 .catch(error => {
                     thenPlayPromise.cancel();
                     // Required provider was not loaded
-                    model.trigger(ERROR, {
-                        message: `Could not play video: ${error.message}`,
-                        error: error
-                    });
+                    error.message = `Could not play video: ${error.message}`;
+                    model.trigger(ERROR, error);
                     // Fail the playPromise to trigger "playAttemptFailed"
                     throw error;
                 })
