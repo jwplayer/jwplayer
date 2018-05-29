@@ -297,6 +297,32 @@ class ProgramController extends Eventable {
     }
 
     /**
+     * Add the 'all' events listener that forwards events from the media-controller
+     * @returns {void}
+     */
+    forwardEvents() {
+        if (!this.mediaController) {
+            return;
+        }
+
+        forwardEvents(this);
+    }
+
+    /**
+     * Remove the 'all' events listener that forwards events from the media-controller
+     * @returns {void}
+     */
+    removeEvents() {
+        const { mediaController } = this;
+
+        if (!mediaController) {
+            return;
+        }
+
+        mediaController.off('all', this.mediaControllerListener, this);
+    }
+
+    /**
      * Primes media elements so that they can autoplay without further user gesture.
      * A primed element is required for media to load in the background.
      * This method does not prime elements who already have a source set ("safe prime").
@@ -334,7 +360,7 @@ class ProgramController extends Eventable {
         model.setMediaModel(mediaModel);
         model.setProvider(provider);
 
-        forwardEvents(this, mediaController);
+        forwardEvents(this);
         model.set('itemReady', true);
     }
 
@@ -682,9 +708,10 @@ function assignMediaContainer(model, mediaController) {
     }
 }
 
-function forwardEvents(programController, mediaController) {
-    mediaController.off('all', programController.mediaControllerListener, programController);
-    mediaController.on('all', programController.mediaControllerListener, programController);
+function forwardEvents(programController) {
+    const { mediaController, mediaControllerListener } = programController;
+    mediaController.off('all', mediaControllerListener, programController);
+    mediaController.on('all', mediaControllerListener, programController);
 }
 
 function getSource(item) {

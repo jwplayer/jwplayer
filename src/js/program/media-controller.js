@@ -93,7 +93,6 @@ export default class MediaController extends Eventable {
         model.setPlaybackRate(model.get('defaultPlaybackRate'));
         provider.attachMedia();
         this.attached = true;
-        model.set('attached', true);
         this.eventQueue.flush();
 
         if (this.beforeComplete) {
@@ -102,11 +101,10 @@ export default class MediaController extends Eventable {
     }
 
     detach() {
-        const { item, mediaModel, model, provider } = this;
+        const { item, mediaModel, provider } = this;
         this.thenPlayPromise.cancel();
         provider.detachMedia();
         this.attached = false;
-        model.set('attached', false);
 
         // If detaching to play a midroll (pos > 0), ensure that the player resumes at the detached time by setting starttime
         // We don't need to do this for prerolls because the player re-attaches at time 0 by default

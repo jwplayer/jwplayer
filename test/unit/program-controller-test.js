@@ -355,10 +355,8 @@ describe('ProgramController', function () {
                 expect(model.persistQualityLevel).to.have.callCount(0);
                 expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
                 programController.attached = true;
-                expect(model.set).to.have.callCount(6);
-                expect(model.set.firstCall).to.have.been.calledWith('attached', true);
-                expect(model.trigger).to.have.callCount(7);
-                expect(model.trigger.firstCall).to.have.been.calledWith('change:attached');
+                expect(model.set).to.have.callCount(5);
+                expect(model.trigger).to.have.callCount(6);
                 expect(model.persistQualityLevel).to.have.callCount(1);
                 expect(model.persistVideoSubtitleTrack).to.have.callCount(1);
             });
@@ -383,11 +381,11 @@ describe('ProgramController', function () {
                 expect(model.persistQualityLevel).to.have.callCount(0);
                 expect(model.persistVideoSubtitleTrack).to.have.callCount(0);
                 programController.restoreBackgroundMedia();
-                expect(model.set).to.have.callCount(15);
+                expect(model.set).to.have.callCount(14);
                 expect(model.set.firstCall).to.have.been.calledWith('mediaElement');
                 expect(model.set.getCall(1)).to.have.been.calledWith('mediaModel');
                 expect(model.set.getCall(2)).to.have.been.calledWith('provider');
-                expect(model.trigger).to.have.callCount(8);
+                expect(model.trigger).to.have.callCount(7);
                 expect(model.persistQualityLevel).to.have.callCount(1);
                 expect(model.persistVideoSubtitleTrack).to.have.callCount(1);
             });
@@ -403,7 +401,7 @@ describe('ProgramController', function () {
             })
             .then(() => programController.setActiveItem(1))
             .then(function () {
-                expect(model.trigger).to.have.callCount(14);
+                expect(model.trigger).to.have.callCount(13);
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
             });
     });
