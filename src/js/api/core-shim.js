@@ -12,7 +12,6 @@ import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
-import { Features } from 'environment/environment';
 import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN } from 'api/errors';
 import { isValidNumber } from 'utils/underscore';
 
@@ -93,7 +92,7 @@ Object.assign(CoreShim.prototype, {
 
         // Create/get click-to-play media element, and call .load() to unblock user-gesture to play requirement
         let mediaPool = MediaElementPool();
-        if (!Features.backgroundLoading) {
+        if (!model.get('backgroundLoading')) {
             mediaPool = SharedMediaPool(mediaPool.getPrimedElement(), mediaPool);
         }
         mediaPool.prime();

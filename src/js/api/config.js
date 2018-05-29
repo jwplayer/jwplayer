@@ -1,6 +1,7 @@
 import { loadFrom, getScriptPath } from 'utils/playerutils';
 import { serialize } from 'utils/parser';
-import { isValidNumber, isNumber, pick } from 'utils/underscore';
+import { isValidNumber, isNumber, pick, isBoolean } from 'utils/underscore';
+import { Features } from 'environment/environment';
 
 /* global __webpack_public_path__:true */
 /* eslint camelcase: 0 */
@@ -175,6 +176,8 @@ const Config = function(options, persisted) {
     const parsedBitrateSelection = parseFloat(config.bitrateSelection);
     config.bandwidthEstimate = isValidNumber(parsedBwEstimate) ? parsedBwEstimate : _adjustDefaultBwEstimate(config.defaultBandwidthEstimate);
     config.bitrateSelection = isValidNumber(parsedBitrateSelection) ? parsedBitrateSelection : Defaults.bitrateSelection;
+
+    config.backgroundLoading = isBoolean(config.backgroundLoading) ? config.backgroundLoading : Features.backgroundLoading;
     return config;
 };
 

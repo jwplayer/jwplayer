@@ -6,7 +6,6 @@ import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 import BackgroundMedia from 'program/background-media';
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
-import { Features } from 'environment/environment';
 import { PlayerError } from 'api/errors';
 
 /** @private Do not include in JSDocs */
@@ -28,8 +27,9 @@ class ProgramController extends Eventable {
         this.model = model;
         this.providers = new Providers(model.getConfiguration());
         this.loadPromise = resolved;
+        this.backgroundLoading = model.get('backgroundLoading');
 
-        if (!Features.backgroundLoading) {
+        if (!this.backgroundLoading) {
             // If background loading is not supported, set the shared media element
             model.set('mediaElement', this.mediaPool.getPrimedElement());
         }
@@ -527,7 +527,7 @@ class ProgramController extends Eventable {
      * @returns {HTMLVideoElement|null} The first video element in the pool, or null if the pool is empty.
      */
     get primedElement() {
-        if (!Features.backgroundLoading) {
+        if (!this.backgroundLoading) {
             // If background loading is not supported, the model will always contain the shared media element
             // Prime it so that playback after changing the active item does not require further gestures
             const { model } = this;
