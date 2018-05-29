@@ -3,11 +3,11 @@ import button from 'view/controls/components/button';
 import SettingsMenuTemplate from 'view/controls/templates/settings/menu';
 import { createElement, emptyElement, prependChild, nextSibling, previousSibling } from 'utils/dom';
 
-function focusSettingsElement(direction) {
+function focusSettingsElement(keyCode) {
     const settingsIcon = document.getElementsByClassName('jw-icon-settings')[0];
 
     if (settingsIcon) {
-        const element = direction === 'ArrowRight' ? nextSibling(settingsIcon) : previousSibling(settingsIcon);
+        const element = keyCode === 39 ? nextSibling(settingsIcon) : previousSibling(settingsIcon);
         if (element) {
             element.focus();
         }
@@ -35,26 +35,26 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         const next = nextSibling(target);
         const prev = previousSibling(target);
 
-        switch (evt.key) {
-            case 'Escape':
+        switch (evt.keyCode) {
+            case 27: // Esc
                 instance.close();
                 break;
-            case 'ArrowLeft':
+            case 37: // left-arrow
                 if (prev) {
                     prev.focus();
                 } else {
                     instance.close();
-                    focusSettingsElement(evt.key);
+                    focusSettingsElement(evt.keyCode);
                 }
                 break;
-            case 'ArrowRight':
+            case 39: // right-arrow
                 if (next && closeButton.element() && target !== closeButton.element()) {
                     next.focus();
                 }
                 break;
-            case 'ArrowUp':
-            case 'ArrowDown':
-                instance.activateSubmenu(target.getAttribute('name'), evt.key === 'ArrowUp');
+            case 38: // up-arrow
+            case 40: // down-arrow
+                instance.activateSubmenu(target.getAttribute('name'), evt.keyCode === 38);
                 break;
             default:
                 break;
@@ -73,15 +73,15 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
     }, 'Close Settings', [cloneIcon('close')]);
 
     const closeOnButton = function(evt) {
-        const { key } = evt;
+        const { keyCode } = evt;
         // Close settings menu when enter is pressed on the close button
         // or when tab or right arrow key is pressed since it is the last element in topbar
-        if (key === 'Enter' || key === 'ArrowRight' || (key === 'Tab' && !evt.shiftKey)) {
+        if (keyCode === 13 || keyCode === 39 || (keyCode === 9 && !evt.shiftKey)) {
             instance.close(evt);
         }
 
-        if (key === 'ArrowRight') {
-            focusSettingsElement(evt.key);
+        if (keyCode === 39) {
+            focusSettingsElement(keyCode);
         }
     };
     closeButton.show();
