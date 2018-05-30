@@ -27,28 +27,29 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
         const prevItem = previousSibling(categoryButtonElement);
         const nextSubItem = nextSibling(evt.target);
         const prevSubItem = previousSibling(evt.target);
+        const key = evt.key.replace(/(Arrow|ape)/, '');
 
-        switch (evt.key) {
+        switch (key) {
             case 'Tab':
                 focusElement(evt.shiftKey ? prevItem : nextItem);
                 break;
-            case 'ArrowLeft':
+            case 'Left':
                 focusElement(prevItem || previousSibling(document.getElementsByClassName('jw-icon-settings')[0]));
                 break;
-            case 'ArrowUp':
+            case 'Up':
                 focusElement(prevSubItem, contentItems.length - 1);
                 break;
-            case 'ArrowRight':
+            case 'Right':
                 focusElement(nextItem);
                 break;
-            case 'ArrowDown':
+            case 'Down':
                 focusElement(nextSubItem, 0);
                 break;
             default:
                 break;
         }
         evt.preventDefault();
-        if (evt.key !== 'Escape') {
+        if (key !== 'Esc') {
             // only bubble event if esc key was pressed
             evt.stopPropagation();
         }
