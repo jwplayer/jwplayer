@@ -86,9 +86,11 @@ export class PlayerError {
     }
 
     get logMessage() {
-        let codeStr = this.code.toString();
-        const prefix = codeStr.slice(0, 3);
-        const suffix = codeStr.slice(-3);
+        const code = this.code;
+        const suffix = code % 1000;
+        const prefix = Math.floor((code - suffix) / 1000);
+        let codeStr = code;
+
         if (suffix >= 400 && suffix < 600) {
             codeStr = `${prefix}400-${prefix}599`;
         }
