@@ -102,7 +102,7 @@ describe('ApiQueueDecorator', function () {
         expect(b).to.have.callCount(1);
     });
 
-    it('destory() removes decorators and empties the queue', function() {
+    it('destroy() removes decorators and empties the queue', function() {
         const queue = new ApiQueueDecorator(stub, ['a', 'b'], () => true);
 
         stub.a();
