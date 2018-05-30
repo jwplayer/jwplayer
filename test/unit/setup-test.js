@@ -75,7 +75,7 @@ describe('api.setup', function() {
             // playlist is undefined
         }).then(({ event }) => {
             expect(event.code).to.equal(102630);
-            expect(event.message).to.equal('No playable sources found');
+            expect(event.message).to.equal('Playlist error: No playable sources found');
         });
     });
 
@@ -84,7 +84,7 @@ describe('api.setup', function() {
             playlist: ''
         }).then(({ event }) => {
             expect(event.code).to.equal(102630);
-            expect(event.message).to.equal('No playable sources found');
+            expect(event.message).to.equal('Playlist error: No playable sources found');
         });
     });
 
@@ -93,7 +93,7 @@ describe('api.setup', function() {
             playlist: 1
         }).then(({ event }) => {
             expect(event.code).to.equal(102630);
-            expect(event.message).to.equal('No playable sources found');
+            expect(event.message).to.equal('Playlist error: No playable sources found');
         });
     });
 
@@ -102,7 +102,7 @@ describe('api.setup', function() {
             playlist: true
         }).then(({ event }) => {
             expect(event.code).to.equal(102630);
-            expect(event.message).to.equal('No playable sources found');
+            expect(event.message).to.equal('Playlist error: No playable sources found');
         });
     });
 
@@ -111,7 +111,7 @@ describe('api.setup', function() {
             playlist: []
         }).then(({ event }) => {
             expect(event.code).to.equal(102630);
-            expect(event.message).to.equal('No playable sources found');
+            expect(event.message).to.equal('Playlist error: No playable sources found');
         });
     });
 
@@ -123,7 +123,7 @@ describe('api.setup', function() {
 
             expect(playlist).to.be.an('array').that.has.lengthOf(0);
             expect(event.code).to.equal(102630);
-            expect(event.message).to.equal('No playable sources found');
+            expect(event.message).to.equal('Playlist error: No playable sources found');
         });
     });
 
