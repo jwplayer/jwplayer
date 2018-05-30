@@ -2,7 +2,7 @@ import { cloneIcons } from 'view/controls/icons';
 import { Browser, OS } from 'environment/environment';
 import CustomButton from 'view/controls/components/custom-button';
 import { toggleClass, setAttribute } from 'utils/dom';
-import { timeFormat } from 'utils/parser';
+import utils from 'utils/helpers';
 import { each } from 'utils/underscore';
 import { USER_ACTION, STATE_PLAYING } from 'events/events';
 import Events from 'utils/backbone.events';
@@ -376,19 +376,19 @@ export default class Controlbar {
         if (model.get('streamType') === 'DVR') {
             const currentPosition = Math.ceil(position);
             const dvrSeekLimit = this._model.get('dvrSeekLimit');
-            let time = currentPosition >= -dvrSeekLimit ? '' : '-' + timeFormat(-(position + dvrSeekLimit));
+            let time = currentPosition >= -dvrSeekLimit ? '' : '-' + utils.timeFormat(-(position + dvrSeekLimit));
             elapsedTime = countdownTime = time;
             model.set('dvrLive', currentPosition >= -dvrSeekLimit);
         } else {
-            elapsedTime = timeFormat(position);
-            countdownTime = timeFormat(duration - position);
+            elapsedTime = utils.timeFormat(position);
+            countdownTime = utils.timeFormat(duration - position);
         }
         this.elements.elapsed.textContent = elapsedTime;
         this.elements.countdown.textContent = countdownTime;
     }
 
     onDuration(model, val) {
-        this.elements.duration.textContent = timeFormat(Math.abs(val));
+        this.elements.duration.textContent = utils.timeFormat(Math.abs(val));
     }
 
     onFullscreen(model, val) {
