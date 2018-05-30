@@ -78,13 +78,21 @@ export const FLASH_MEDIA_ERROR = 214000;
  * @param {code} [ErrorCode] - The error code.
  * @param {sourceError} [Error] - The lower level error, caught by the player, which resulted in this error.
  */
-export class PlayerError extends Error {
+export class PlayerError {
     constructor(message, code, sourceError = null) {
-        // Avoid passing message via super so that we can define an enumerable message property on PlayerError
-        super();
-        this.code = isValidNumber(code) ? code : null;
+        this.code = isValidNumber(code) ? code : 0;
         this.message = message;
         this.sourceError = sourceError;
+    }
+
+    get logMessage() {
+        let codeStr = this.code.toString();
+        const prefix = codeStr.slice(0, 3);
+        const suffix = codeStr.slice(-3);
+        if (suffix >= 400 && suffix < 600) {
+            codeStr = `${prefix}400-${prefix}599`;
+        }
+        return `JW Player Error ${this.code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
     }
 
     static compose(code, superCode) {

@@ -97,6 +97,8 @@ Object.assign(CoreShim.prototype, {
         }
         mediaPool.prime();
 
+        model.on('change:errorEvent', logError);
+
         return this.setup.start(api).then(allPromises => {
             const CoreMixin = allPromises[0];
             if (!this.setup) {
@@ -105,7 +107,7 @@ Object.assign(CoreShim.prototype, {
             }
             const config = this.modelShim.clone();
             // Exit if embed config encountered an error
-            if (config.error instanceof Error) {
+            if (config.error) {
                 throw config.error;
             }
             // copy queued commands
@@ -256,6 +258,13 @@ function setupError(core, error) {
 
         core.trigger(SETUP_ERROR, errorEvent);
     });
+}
+
+function logError(model, error) {
+    if (!error || !error.code) {
+        return;
+    }
+    console.error(error.logMessage);
 }
 
 export function showView(core, viewElement) {
