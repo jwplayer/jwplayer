@@ -1,3 +1,5 @@
+import { Features } from 'environment/environment';
+
 export const optionalProperties = {
     aspectratio: 1.0,
     fullscreen: false,
@@ -103,5 +105,6 @@ export default {
     liveTimeout: null,
     setupConfig: {},
     bandwidthEstimate: null,
-    bitrateSelection: null
+    bitrateSelection: null,
+    backgroundLoading: Features.backgroundLoading
 };

@@ -11,7 +11,8 @@ const defaultConfig = {
     mediaContainer: null,
     volume: 20,
     mute: false,
-    edition: 'enterprise'
+    edition: 'enterprise',
+    backgroundLoading: Features.backgroundLoading
 };
 
 const mp4Item = {

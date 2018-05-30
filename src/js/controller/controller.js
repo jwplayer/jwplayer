@@ -13,7 +13,7 @@ import changeStateEvent from 'events/change-state-event';
 import eventsMiddleware from 'controller/events-middleware';
 import Events from 'utils/backbone.events';
 import { AUTOPLAY_DISABLED, AUTOPLAY_MUTED, canAutoplay, startPlayback } from 'utils/can-autoplay';
-import { OS, Features } from 'environment/environment';
+import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
@@ -72,6 +72,8 @@ Object.assign(Controller.prototype, {
         };
 
         _model.setup(config);
+
+        const _backgroundLoading = _model.get('backgroundLoading');
 
         const viewModel = new ViewModel(_model);
 
@@ -178,7 +180,7 @@ Object.assign(Controller.prototype, {
             const index = model.get('item') + 1;
             const recsAuto = (model.get('related') || {}).oncomplete === 'autoplay';
             let item = model.get('playlist')[index];
-            if ((item || recsAuto) && Features.backgroundLoading) {
+            if ((item || recsAuto) && _backgroundLoading) {
                 const onPosition = (changedMediaModel, position) => {
                     // Do not background load DAI items because that item will be dynamically replaced before play
                     const allowPreload = (item && !item.daiSetting);
@@ -468,7 +470,7 @@ Object.assign(Controller.prototype, {
                 if (_interruptPlay) {
                     // Force tags to prime if we're about to play an ad
                     // Resetting the source in order to prime is OK since we'll be switching it anyway
-                    if (_inInteraction(window.event) && !Features.backgroundLoading) {
+                    if (_inInteraction(window.event) && !_backgroundLoading) {
                         _model.get('mediaElement').load();
                     }
                     _interruptPlay = false;
@@ -754,7 +756,7 @@ Object.assign(Controller.prototype, {
                 _interruptPlay = true;
             }
 
-            if (Features.backgroundLoading) {
+            if (_backgroundLoading) {
                 _programController.backgroundActiveMedia();
             } else {
                 _programController.attached = false;
@@ -764,7 +766,7 @@ Object.assign(Controller.prototype, {
         function _attachMedia() {
             // Called after instream ends
 
-            if (Features.backgroundLoading) {
+            if (_backgroundLoading) {
                 _programController.restoreBackgroundMedia();
             } else {
                 _programController.attached = true;

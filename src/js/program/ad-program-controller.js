@@ -1,4 +1,3 @@
-import { Features } from 'environment/environment';
 import { ERROR, FULLSCREEN, MEDIA_COMPLETE, PLAYER_STATE, STATE_PLAYING, STATE_PAUSED } from 'events/events';
 import ProgramController from 'program/program-controller';
 import Model from 'controller/model';
@@ -11,13 +10,14 @@ export default class AdProgramController extends ProgramController {
         const adModel = this.model = new Model();
         this.playerModel = model;
         this.provider = null;
+        this.backgroundLoading = model.get('backgroundLoading');
 
         adModel.mediaModel.attributes.mediaType = 'video';
 
         // Ad plugins must use only one element, and must use the same element during playback of an item
         // (i.e. prerolls, midrolls, and postrolls must use the same tag)
         let mediaElement;
-        if (Features.backgroundLoading) {
+        if (this.backgroundLoading) {
             // The media pool has reserves an element for ads to use. It is reserved on setup and is not used by other media
             mediaElement = mediaPool.getAdElement();
         } else {
@@ -145,7 +145,7 @@ export default class AdProgramController extends ProgramController {
 
         // We only use one media element from ads; getPrimedElement will return it
         const mediaElement = mediaPool.getPrimedElement();
-        if (!Features.backgroundLoading) {
+        if (!this.backgroundLoading) {
             if (mediaElement) {
                 mediaElement.removeEventListener('emptied', this.srcResetListener);
                 // Reset the player media model if the src was changed externally
