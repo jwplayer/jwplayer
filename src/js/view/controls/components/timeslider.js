@@ -94,6 +94,11 @@ class TimeSlider extends Slider {
         this._model
             .on('change:duration', this.onDuration, this)
             .on('change:cues', this.addCues, this)
+            .on('seeked', () => {
+                if (!this._model.get('scrubbing')) {
+                    this.updateAriaText();
+                }
+            })
             .change('playlistItem', this.onPlaylistItem, this)
             .change('position', this.onPosition, this)
             .change('buffer', this.onBuffer, this)
@@ -108,9 +113,11 @@ class TimeSlider extends Slider {
 
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
         this.elementUI = new UI(this.el, { useHover: true, useMove: true })
-            .on('drag move over', this.showTimeTooltip.bind(this), this)
-            .on('dragEnd out', this.hideTimeTooltip.bind(this), this)
+            .on('drag move over', this.showTimeTooltip, this)
+            .on('out', this.hideTimeTooltip, this)
             .on('click', () => this.el.focus());
+
+        this.el.addEventListener('focus', () => this.updateAriaText());
     }
 
     update(percent) {
@@ -156,11 +163,9 @@ class TimeSlider extends Slider {
                 const diff = duration + dvrSeekLimit;
                 const pos = position + dvrSeekLimit;
                 pct = (diff - pos) / diff * 100;
-                setAttribute(this.el, 'aria-valuetext', timeFormat(pos, true));
             } else if (this.streamType === 'VOD' || !this.streamType) {
                 // Default to VOD behavior if streamType isn't set
                 pct = position / duration * 100;
-                setAttribute(this.el, 'aria-valuetext', `${timeFormat(position)} of ${timeFormat(duration)}`);
             }
         }
         this.render(pct);
@@ -269,11 +274,8 @@ class TimeSlider extends Slider {
         style(timeTip.el, { left: safePct + '%' });
     }
 
-    hideTimeTooltip(evt) {
+    hideTimeTooltip() {
         removeClass(this.timeTip.el, 'jw-open');
-        if (evt.type === 'dragEnd') {
-            this.el.focus();
-        }
     }
 
     addCues(model, cues) {
@@ -284,6 +286,19 @@ class TimeSlider extends Slider {
             });
             this.drawCues();
         }
+    }
+
+    updateAriaText() {
+        const position = this._model.get('position');
+        const duration = this._model.get('duration');
+        let ariaText;
+
+        if (this.streamType === 'DVR') {
+            ariaText = timeFormat(position);
+        } else {
+            ariaText = `${timeFormat(position)} of ${timeFormat(duration)}`;
+        }
+        setAttribute(this.el, 'aria-valuetext', ariaText);
     }
 
     reset() {
