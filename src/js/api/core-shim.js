@@ -119,6 +119,9 @@ Object.assign(CoreShim.prototype, {
             this.setup(config, api, this.originalContainer, this._events, commandQueue, mediaPool);
 
             const coreModel = this._model;
+            // Switch the error log handlers after the real model has been set
+            model.off('change:errorEvent', logError);
+            coreModel.on('change:errorEvent', logError);
             storage.track(coreModel);
 
             // Set the active playlist item after plugins are loaded and the view is setup
@@ -264,7 +267,7 @@ function logError(model, error) {
     if (!error || !error.code) {
         return;
     }
-    console.error(error.logMessage);
+    console.error(PlayerError.logMessage(error.code));
 }
 
 export function showView(core, viewElement) {

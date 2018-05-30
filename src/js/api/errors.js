@@ -84,8 +84,7 @@ export class PlayerError {
         this.sourceError = sourceError;
     }
 
-    get logMessage() {
-        const code = this.code;
+    static logMessage(code) {
         const suffix = code % 1000;
         const prefix = Math.floor((code - suffix) / 1000);
         let codeStr = code;
@@ -93,7 +92,7 @@ export class PlayerError {
         if (suffix >= 400 && suffix < 600) {
             codeStr = `${prefix}400-${prefix}599`;
         }
-        return `JW Player Error ${this.code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
+        return `JW Player Error ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
     }
 
     static compose(code, superCode) {
