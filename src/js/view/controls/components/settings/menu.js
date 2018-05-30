@@ -98,6 +98,12 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             onVisibility(visible, event);
             settingsMenuElement.setAttribute('aria-expanded', 'true');
             document.addEventListener('click', documentClickHandler);
+
+            if (isDefault && event && event.type === 'enter') {
+                active.categoryButtonElement.focus();
+                return;
+            }
+
             active.element().firstChild.focus();
         },
         close(event) {
@@ -166,6 +172,9 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         activateSubmenu(name, focusOnLast) {
             const submenu = submenus[name];
             if (!submenu || submenu.active) {
+                if (submenu.isDefault) {
+                    submenu.element().firstChild.focus();
+                }
                 return;
             }
 
