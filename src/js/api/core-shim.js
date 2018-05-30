@@ -238,14 +238,13 @@ Object.assign(CoreShim.prototype, {
 
 function setupError(core, error) {
     resolved.then(() => {
-        const message = error.message;
         let errorEvent = error;
         if (!isValidNumber(error.code)) {
             // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
-            errorEvent = new PlayerError(message, SETUP_ERROR_UNKNOWN, error);
+            errorEvent = new PlayerError(error.message, SETUP_ERROR_UNKNOWN, error);
         }
 
-        const errorContainer = ErrorContainer(core, message);
+        const errorContainer = ErrorContainer(core, errorEvent);
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }

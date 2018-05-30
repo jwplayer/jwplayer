@@ -637,12 +637,12 @@ function View(_api, _model) {
         _playerElement.insertBefore(_preview.el, element);
     }
 
-    function _errorHandler(model, evt) {
-        if (!evt) {
+    function _errorHandler(model, errorEvent) {
+        if (!errorEvent) {
             _title.playlistItem(model, model.get('playlistItem'));
             return;
         }
-        const errorContainer = ErrorContainer(model, evt.message);
+        const errorContainer = ErrorContainer(model, errorEvent);
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }
