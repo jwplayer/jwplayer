@@ -71,8 +71,7 @@ export const FLASH_MEDIA_ERROR = 214000;
 
 
 /**
- * Class representing the jwplayer() API.
- * Creates an instance of the player.
+ * Class used to create "setupError" and "error" event instances.
  * @class PlayerError
  * @param {message} string - The error message.
  * @param {code} [ErrorCode] - The error code.
