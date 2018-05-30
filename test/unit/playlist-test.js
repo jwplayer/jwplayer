@@ -51,7 +51,7 @@ describe('playlist', function() {
                 validatePlaylist(playlist);
                 expect.fail('Should have thrown an error');
             } catch (e) {
-                expect(e.message).to.equal('No playable sources found');
+                expect(e.message).to.equal('Playlist error: No playable sources found');
                 expect(e.code).to.equal(630);
                 expect(e.sourceError).to.not.exist;
             }
