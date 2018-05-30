@@ -171,21 +171,18 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         },
         activateSubmenu(name, focusOnLast) {
             const submenu = submenus[name];
-            if (!submenu || submenu.active) {
-                if (submenu.isDefault) {
+            if (submenu) {
+                if (!submenu.active) {
+                    deactivateAllSubmenus(submenus);
+                    submenu.activate();
+                    active = submenu;
+                }
+
+                if (focusOnLast) {
+                    submenu.element().lastChild.focus();
+                } else {
                     submenu.element().firstChild.focus();
                 }
-                return;
-            }
-
-            deactivateAllSubmenus(submenus);
-            submenu.activate();
-            active = submenu;
-
-            if (focusOnLast) {
-                active.element().lastChild.focus();
-            } else {
-                active.element().firstChild.focus();
             }
         },
         activateFirstSubmenu() {
