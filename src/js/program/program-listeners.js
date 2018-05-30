@@ -31,10 +31,7 @@ export function ProviderListener(mediaController) {
                 const previousState = mediaModel.attributes.mediaState;
                 mediaModel.attributes.mediaState = data.newstate;
                 mediaModel.trigger('change:mediaState', mediaModel, data.newstate, previousState);
-                // This "return" is important because
-                //  we are choosing to not propagate model event.
-                //  Instead letting the master controller do so
-                return;
+                break;
             }
             case MEDIA_COMPLETE:
                 mediaController.beforeComplete = true;
@@ -103,6 +100,11 @@ export function ProviderListener(mediaController) {
 export function MediaControllerListener(model, programController) {
     return function (type, data) {
         switch (type) {
+            case PLAYER_STATE:
+                // This "return" is important because
+                //  we are choosing to not propagate model event.
+                //  Instead letting the master controller do so
+                return;
             case 'flashThrottle': {
                 const throttled = (data.state !== 'resume');
                 model.set('flashThrottle', throttled);

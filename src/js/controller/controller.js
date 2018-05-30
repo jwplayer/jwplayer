@@ -866,7 +866,7 @@ Object.assign(Controller.prototype, {
         this.attachMedia = _attachMedia;
 
         // Program Controller passthroughs
-        this.removeEvents = () => _programController.removeEvents();
+        this.routeEvents = (target) => _programController.routeEvents(target);
         this.forwardEvents = () => _programController.forwardEvents();
         this.playVideo = (playReason) => _programController.playVideo(playReason);
         this.stopVideo = () => _programController.stopVideo();
