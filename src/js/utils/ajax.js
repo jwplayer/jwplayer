@@ -1,5 +1,5 @@
 import { parseXML } from 'utils/parser';
-import { PlayerError } from 'api/errors';
+import { PlayerError, CANT_LOAD_PLAYER } from 'api/errors';
 
 // XHR Request Errors
 const ERROR_TIMEOUT = 1;
@@ -150,7 +150,7 @@ function _requestError(message, options) {
 }
 
 function _error(options, message, code, error) {
-    options.onerror(message, options.url, options.xhr, new PlayerError(message, code, error));
+    options.onerror(message, options.url, options.xhr, new PlayerError(CANT_LOAD_PLAYER, code, error));
 }
 
 function _readyStateChangeHandler(options) {

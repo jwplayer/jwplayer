@@ -55,6 +55,56 @@ export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
 export const ERROR_LOADING_PROVIDER = 204000;
 
 /**
+ * @enum {ErrorCode} An error occurred duing Flash setup.
+ */
+export const FLASH_SETUP_ERROR = 210001;
+
+/**
+ * @enum {ErrorCode} An error occurred during Flash playback.
+ */
+export const FLASH_ERROR = 210000;
+
+/**
+ * @enum {ErrorCode} A media error occurred during Flash playback.
+ */
+export const FLASH_MEDIA_ERROR = 214000;
+
+/**
+ * @enum {ErrorKey}
+ */
+export const CANT_PLAY_VIDEO = 'cantPlayVideo';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const BAD_CONNECTION = 'badConnection';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const CANT_LOAD_PLAYER = 'cantLoadPlayer';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const CANT_PLAY_IN_BROWSER = 'cantPlayInBrowser';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const LIVE_STREAM_DOWN = 'liveStreamDown';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const PROTECTED_CONTENT = 'protectedContent';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const TECHNICAL_ERROR = 'technicalError';
+
+/**
  * Class used to create "setupError" and "error" event instances.
  * @class PlayerError
  * @param {message} string - The error message.
@@ -62,9 +112,9 @@ export const ERROR_LOADING_PROVIDER = 204000;
  * @param {sourceError} [Error] - The lower level error, caught by the player, which resulted in this error.
  */
 export class PlayerError {
-    constructor(message, code, sourceError = null) {
+    constructor(key, code, sourceError = null) {
         this.code = isValidNumber(code) ? code : 0;
-        this.message = message;
+        this.key = key;
         this.sourceError = sourceError;
     }
 

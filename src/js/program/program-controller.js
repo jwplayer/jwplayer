@@ -6,7 +6,7 @@ import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 import BackgroundMedia from 'program/background-media';
 import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
-import { PlayerError } from 'api/errors';
+import { PlayerError, CANT_PLAY_VIDEO } from 'api/errors';
 
 /** @private Do not include in JSDocs */
 
@@ -50,7 +50,7 @@ class ProgramController extends Eventable {
         model.setActiveItem(index);
         const source = getSource(item);
         if (!source) {
-            return Promise.reject(new PlayerError('No media', 640));
+            return Promise.reject(new PlayerError(CANT_PLAY_VIDEO, 640));
         }
 
         // Activate the background media if it's loading the item we want to play

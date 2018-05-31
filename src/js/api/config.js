@@ -48,7 +48,18 @@ const Defaults = {
         settings: 'Settings',
         unmute: 'Unmute',
         copied: 'Copied',
-        videoInfo: 'About This Video'
+        videoInfo: 'About This Video',
+        errors: {
+            errorCode: 'Error Code',
+            cantPlayVideo: 'This video file cannot be played.',
+            badConnection: 'This video cannot be played because of a problem with your internet connection.',
+            cantLoadPlayer: 'Sorry, the video player failed to load.',
+            cantPlayInBrowser: 'The video cannot be played in this browser.',
+            liveStreamDown: 'The live stream is either down or has ended.',
+            protectedContent: 'There was a problem providing access to protected content.',
+            technicalError: 'This video cannot be played because of a technical error.'
+        }
+
     },
     mute: false,
     nextUpDisplay: true,

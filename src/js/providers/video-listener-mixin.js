@@ -3,7 +3,8 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING
     MEDIA_BUFFER, MEDIA_META, MEDIA_TIME, MEDIA_SEEKED, MEDIA_VOLUME, MEDIA_MUTE, MEDIA_COMPLETE
 } from 'events/events';
 import { between } from 'utils/math';
-import { PlayerError } from 'api/errors';
+import utils from 'utils/helpers';
+import { PlayerError, TECHNICAL_ERROR } from 'api/errors';
 
 // This will trigger the events required by jwplayer model to
 //  properly follow the state of the video tag
@@ -177,7 +178,7 @@ const VideoListenerMixin = {
 
         this.trigger(
             MEDIA_ERROR,
-            new PlayerError(`Error loading media ${errorData[0]}`, code, this.video.error)
+            new PlayerError(TECHNICAL_ERROR, code, this.video.error)
         );
     }
 };
