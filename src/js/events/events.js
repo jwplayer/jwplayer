@@ -360,6 +360,11 @@ export const AUDIO_TRACK_CHANGED = 'audioTrackChanged';
 */
 export const PLAYBACK_RATE_CHANGED = 'playbackRateChanged';
 
+/**
+ * Fired when a playlist item is preloaded.
+ */
+export const PRELOAD = 'preload';
+
 // View Component Actions
 
 /**
