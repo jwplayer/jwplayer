@@ -1,7 +1,6 @@
 import { throttle, each } from 'utils/underscore';
-import { between } from 'utils/helpers';
+import utils from 'utils/helpers';
 import { style } from 'utils/css';
-import { timeFormat } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
 import UI, { getPointerType } from 'utils/ui';
 import Slider from 'view/controls/components/slider';
@@ -214,7 +213,7 @@ class TimeSlider extends Slider {
         const playerWidth = this._model.get('containerWidth');
         const railBounds = bounds(this.elementRail);
         let position = (evt.pageX ? (evt.pageX - railBounds.left) : evt.x);
-        position = between(position, 0, railBounds.width);
+        position = utils.between(position, 0, railBounds.width);
         const pct = position / railBounds.width;
         let time = duration * pct;
 
@@ -243,7 +242,7 @@ class TimeSlider extends Slider {
             timetipText = this.activeCue.text;
         } else {
             const allowNegativeTime = true;
-            timetipText = timeFormat(time, allowNegativeTime);
+            timetipText = utils.timeFormat(time, allowNegativeTime);
 
             // If DVR and within live buffer
             if (duration < 0 && time > -1) {
@@ -294,9 +293,9 @@ class TimeSlider extends Slider {
         let ariaText;
 
         if (this.streamType === 'DVR') {
-            ariaText = timeFormat(position);
+            ariaText = utils.timeFormat(position);
         } else {
-            ariaText = `${timeFormat(position)} of ${timeFormat(duration)}`;
+            ariaText = `${utils.timeFormat(position)} of ${utils.timeFormat(duration)}`;
         }
         setAttribute(this.el, 'aria-valuetext', ariaText);
     }
