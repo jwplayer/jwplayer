@@ -251,7 +251,7 @@ function setupError(core, error) {
             errorEvent = new PlayerError(TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         }
 
-        errorEvent.message = model.get('localization').errors[errorEvent.key];
+        errorEvent.message = errorEvent.message || model.get('localization').errors[errorEvent.key];
         delete errorEvent.key;
 
         const errorContainer = ErrorContainer(core, errorEvent);
