@@ -124,7 +124,7 @@ describe('api.setup', function() {
 
             expect(playlist).to.be.an('array').that.has.lengthOf(0);
             expect(event.code).to.equal(102630);
-            expect(event.message).to.equal('This video file cannot be played.');
+            expect(event.message).to.equal(errorMessage);
         });
     });
 
