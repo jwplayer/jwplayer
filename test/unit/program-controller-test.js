@@ -5,6 +5,7 @@ import { Features } from 'environment/environment';
 import MockProvider, { MockVideolessProvider } from 'mock/mock-provider';
 import sinon from 'sinon';
 import Config from 'api/config';
+import { CANT_PLAY_VIDEO } from 'api/errors';
 
 const defaultConfig = {
     playlist: null,
@@ -442,7 +443,7 @@ describe('ProgramController', function () {
                     })
                     .catch(e => {
                         expect(e.code).to.equal(640);
-                        expect(e.message).to.equal('No media');
+                        expect(e.key).to.equal(CANT_PLAY_VIDEO);
                         resolve();
                     });
             });

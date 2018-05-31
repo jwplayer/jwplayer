@@ -1,4 +1,5 @@
 import { ajax } from 'utils/ajax';
+import * as errors from 'api/errors';
 
 describe('utils.ajax', function() {
     this.timeout(5000);
@@ -102,7 +103,7 @@ describe('utils.ajax', function() {
             expect(url).to.be.a('string');
             validateXHR(result);
             expect(result).to.have.property('status').which.equals(0);
-            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('key').which.equals(errors.CANT_LOAD_PLAYER);
             expect(error).to.have.property('code').which.equals(1);
             expect(error).to.have.property('sourceError').which.equals(null);
         });
@@ -181,7 +182,7 @@ describe('utils.ajax', function() {
             expect(message).to.equal(errorMessage);
             expect(url).to.equal(undefined);
             expect(result.status).to.equal(0);
-            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('key').which.equals(errors.CANT_LOAD_PLAYER);
             expect(error).to.have.property('code').which.equals(3);
             expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
@@ -202,7 +203,7 @@ describe('utils.ajax', function() {
             expect(message).to.equal(errorMessage);
             expect(u).to.equal(url);
             expect(result.status).to.equal(0);
-            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('key').which.equals(errors.CANT_LOAD_PLAYER);
             expect(error).to.have.property('code').which.equals(5);
             expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
@@ -221,7 +222,7 @@ describe('utils.ajax', function() {
             expect(message).to.equal(errorMessage);
             expect(u).to.equal(url);
             expect(result.status).to.equal(200);
-            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('key').which.equals(errors.CANT_LOAD_PLAYER);
             expect(error).to.have.property('code').which.equals(602);
             expect(error).to.have.property('sourceError').which.equals(null);
         });
@@ -240,7 +241,7 @@ describe('utils.ajax', function() {
             expect(message).to.equal(errorMessage);
             expect(u).to.equal(url);
             expect(result.status).to.equal(200);
-            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('key').which.equals(errors.CANT_LOAD_PLAYER);
             expect(error).to.have.property('code').which.equals(611);
             expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
@@ -258,7 +259,7 @@ describe('utils.ajax', function() {
             expect(message).to.equal(errorMessage);
             expect(u).to.equal(url);
             expect(result.status).to.equal(404);
-            expect(error).to.have.property('message').which.equals(errorMessage);
+            expect(error).to.have.property('key').which.equals(errors.CANT_LOAD_PLAYER);
             expect(error).to.have.property('code').which.equals(404);
             expect(error).to.have.property('sourceError').which.equals(null);
         });

@@ -19,6 +19,20 @@ const Defaults = {
     height: 360,
     liveTimeout: null,
     localization: {
+        airplay: 'AirPlay',
+        audioTracks: 'Audio Tracks',
+        cast: 'Chromecast',
+        cc: 'Closed Captions',
+        errors: {
+            errorCode: 'Error Code',
+            cantPlayVideo: 'This video file cannot be played.',
+            badConnection: 'This video cannot be played because of a problem with your internet connection.',
+            cantLoadPlayer: 'Sorry, the video player failed to load.',
+            cantPlayInBrowser: 'The video cannot be played in this browser.',
+            liveStreamDown: 'The live stream is either down or has ended.',
+            protectedContent: 'There was a problem providing access to protected content.',
+            technicalError: 'This video cannot be played because of a technical error.'
+        },
         player: 'Video Player',
         play: 'Play',
         playback: 'Start Playback',
@@ -27,13 +41,9 @@ const Defaults = {
         volume: 'Volume',
         prev: 'Previous',
         next: 'Next',
-        cast: 'Chromecast',
-        airplay: 'AirPlay',
         fullscreen: 'Fullscreen',
         playlist: 'Playlist',
         hd: 'Quality',
-        cc: 'Closed Captions',
-        audioTracks: 'Audio Tracks',
         playbackRates: 'Playback Rates',
         replay: 'Replay',
         buffer: 'Loading',
@@ -48,18 +58,7 @@ const Defaults = {
         settings: 'Settings',
         unmute: 'Unmute',
         copied: 'Copied',
-        videoInfo: 'About This Video',
-        errors: {
-            errorCode: 'Error Code',
-            cantPlayVideo: 'This video file cannot be played.',
-            badConnection: 'This video cannot be played because of a problem with your internet connection.',
-            cantLoadPlayer: 'Sorry, the video player failed to load.',
-            cantPlayInBrowser: 'The video cannot be played in this browser.',
-            liveStreamDown: 'The live stream is either down or has ended.',
-            protectedContent: 'There was a problem providing access to protected content.',
-            technicalError: 'This video cannot be played because of a technical error.'
-        }
-
+        videoInfo: 'About This Video'
     },
     mute: false,
     nextUpDisplay: true,
