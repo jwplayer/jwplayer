@@ -55,22 +55,6 @@ export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
 export const ERROR_LOADING_PROVIDER = 204000;
 
 /**
- * @enum {ErrorCode} An error occurred duing Flash setup.
- */
-export const FLASH_SETUP_ERROR = 210001;
-
-/**
- * @enum {ErrorCode} An error occurred during Flash playback.
- */
-export const FLASH_ERROR = 210000;
-
-/**
- * @enum {ErrorCode} A media error occurred during Flash playback.
- */
-export const FLASH_MEDIA_ERROR = 214000;
-
-
-/**
  * Class used to create "setupError" and "error" event instances.
  * @class PlayerError
  * @param {message} string - The error message.
