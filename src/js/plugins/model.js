@@ -1,5 +1,5 @@
 import Plugin from 'plugins/plugin';
-import { log } from 'utils/helpers';
+import { log } from 'utils/log';
 
 const pluginsRegistered = {};
 

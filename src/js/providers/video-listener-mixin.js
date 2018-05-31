@@ -2,7 +2,7 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING
     PROVIDER_FIRST_FRAME, CLICK, MEDIA_BUFFER_FULL, MEDIA_RATE_CHANGE, MEDIA_ERROR,
     MEDIA_BUFFER, MEDIA_META, MEDIA_TIME, MEDIA_SEEKED, MEDIA_VOLUME, MEDIA_MUTE, MEDIA_COMPLETE
 } from 'events/events';
-import utils from 'utils/helpers';
+import { between } from 'utils/math';
 import { PlayerError } from 'api/errors';
 
 // This will trigger the events required by jwplayer model to
@@ -136,7 +136,7 @@ const VideoListenerMixin = {
             return;
         }
 
-        const buffered = utils.between(buf.end(buf.length - 1) / dur, 0, 1);
+        const buffered = between(buf.end(buf.length - 1) / dur, 0, 1);
         this.trigger(MEDIA_BUFFER, {
             bufferPercent: buffered * 100,
             position: this.getCurrentTime(),
