@@ -4,7 +4,7 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING
 } from 'events/events';
 import { between } from 'utils/math';
 import utils from 'utils/helpers';
-import { PlayerError, TECHNICAL_ERROR } from 'api/errors';
+import { PlayerError, MSG_TECHNICAL_ERROR } from 'api/errors';
 
 // This will trigger the events required by jwplayer model to
 //  properly follow the state of the video tag
@@ -178,7 +178,7 @@ const VideoListenerMixin = {
 
         this.trigger(
             MEDIA_ERROR,
-            new PlayerError(TECHNICAL_ERROR, code, this.video.error)
+            new PlayerError(MSG_TECHNICAL_ERROR, code, this.video.error)
         );
     }
 };

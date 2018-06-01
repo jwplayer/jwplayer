@@ -1,6 +1,6 @@
 import PlaylistLoader from 'playlist/loader';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
-import { CANT_LOAD_PLAYER } from 'api/errors';
+import { MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
 describe('playlist/loader', function() {
     this.timeout(5000);
@@ -33,7 +33,7 @@ describe('playlist/loader', function() {
         return expectLoaderError('/base/test/files/invalid.json')
             .then(e => {
                 expect(e.code).to.equal(621);
-                expect(e.key).to.equal(CANT_LOAD_PLAYER);
+                expect(e.key).to.equal(MSG_CANT_LOAD_PLAYER);
             });
     });
 
@@ -41,7 +41,7 @@ describe('playlist/loader', function() {
         return expectLoaderError('/base/test/files/invalid.xml')
             .then(e => {
                 expect(e.code).to.equal(621);
-                expect(e.key).to.equal(CANT_LOAD_PLAYER);
+                expect(e.key).to.equal(MSG_CANT_LOAD_PLAYER);
             });
     });
 });

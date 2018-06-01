@@ -4,7 +4,7 @@ import Source from 'playlist/source';
 import _ from 'test/underscore';
 import mp4 from 'data/mp4';
 import track from 'playlist/track';
-import { CANT_PLAY_VIDEO } from 'api/errors';
+import { MSG_CANT_PLAY_VIDEO } from 'api/errors';
 
 function isValidPlaylistItem(playlistItem) {
     return _.isObject(playlistItem) && _.isArray(playlistItem.sources) && _.isArray(playlistItem.tracks);
@@ -52,7 +52,7 @@ describe('playlist', function() {
                 validatePlaylist(playlist);
                 expect.fail('Should have thrown an error');
             } catch (e) {
-                expect(e.key).to.equal(CANT_PLAY_VIDEO);
+                expect(e.key).to.equal(MSG_CANT_PLAY_VIDEO);
                 expect(e.code).to.equal(630);
                 expect(e.sourceError).to.not.exist;
             }

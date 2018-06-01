@@ -4,7 +4,7 @@ import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import { ControlsLoader } from 'controller/controls-loader';
 import { resolved } from 'polyfills/promise';
-import { PlayerError, SETUP_ERROR_LOADING_CORE_JS, CANT_LOAD_PLAYER } from 'api/errors';
+import { PlayerError, SETUP_ERROR_LOADING_CORE_JS, MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
 let bundlePromise = null;
 
@@ -20,7 +20,7 @@ export default function loadCoreBundle(model) {
 export function chunkLoadErrorHandler(code, error) {
     // Webpack require.ensure error: "Loading chunk 3 failed"
     return () => {
-        throw new PlayerError(CANT_LOAD_PLAYER, code, error);
+        throw new PlayerError(MSG_CANT_LOAD_PLAYER, code, error);
     };
 }
 

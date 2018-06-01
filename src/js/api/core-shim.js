@@ -12,7 +12,7 @@ import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
-import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, TECHNICAL_ERROR } from 'api/errors';
+import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, MSG_TECHNICAL_ERROR } from 'api/errors';
 import { isValidNumber } from 'utils/underscore';
 
 const ModelShim = function() {};
@@ -248,7 +248,7 @@ function setupError(core, error) {
 
         if (!isValidNumber(error.code)) {
             // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
-            errorEvent = new PlayerError(TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
+            errorEvent = new PlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         }
 
         errorEvent.message = errorEvent.message || model.get('localization').errors[errorEvent.key];

@@ -15,7 +15,7 @@ import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
 import { map } from 'utils/underscore';
-import { PlayerError, LIVE_STREAM_DOWN } from 'api/errors';
+import { PlayerError, MSG_LIVE_STREAM_DOWN } from 'api/errors';
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
@@ -778,7 +778,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (_stale && _this.atEdgeOfLiveStream()) {
             _this.trigger(
                 MEDIA_ERROR,
-                new PlayerError(LIVE_STREAM_DOWN, HTML5_ERROR_LIVE_STREAM_DOWN_OR_ENDED)
+                new PlayerError(MSG_LIVE_STREAM_DOWN, HTML5_ERROR_LIVE_STREAM_DOWN_OR_ENDED)
             );
             return true;
         }
