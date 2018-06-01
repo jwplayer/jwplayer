@@ -2,18 +2,19 @@ import sliderTemplate from 'view/controls/templates/slider';
 import { OS } from 'environment/environment';
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
-import utils from 'utils/helpers';
+import { between } from 'utils/dom';
+import { bounds, createElement } from 'utils/dom';
 
 const getRailBounds = function(elementRail) {
-    const bounds = utils.bounds(elementRail);
+    const railBounds = bounds(elementRail);
     // Partial workaround of Android 'inert-visual-viewport'
     // https://bugs.chromium.org/p/chromium/issues/detail?id=489206
     const pageXOffset = window.pageXOffset;
     if (pageXOffset && OS.android && document.body.parentElement.getBoundingClientRect().left >= 0) {
-        bounds.left -= pageXOffset;
-        bounds.right -= pageXOffset;
+        railBounds.left -= pageXOffset;
+        railBounds.right -= pageXOffset;
     }
-    return bounds;
+    return railBounds;
 };
 
 export default class Slider {
@@ -31,7 +32,7 @@ export default class Slider {
     }
 
     setup() {
-        this.el = utils.createElement(sliderTemplate(this.className, 'jw-slider-' + this.orientation));
+        this.el = createElement(sliderTemplate(this.className, 'jw-slider-' + this.orientation));
 
         this.elementRail = this.el.getElementsByClassName('jw-slider-container')[0];
         this.elementBuffer = this.el.getElementsByClassName('jw-buffer')[0];
@@ -58,27 +59,28 @@ export default class Slider {
     }
 
     dragMove(evt) {
-        const bounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail);
+        const railBounds = this.railBounds = (this.railBounds) ? this.railBounds : getRailBounds(this.elementRail);
         let dimension;
         let percentage;
 
         if (this.orientation === 'horizontal') {
             dimension = evt.pageX;
-            if (dimension < bounds.left) {
+            if (dimension < railBounds.left) {
                 percentage = 0;
-            } else if (dimension > bounds.right) {
+            } else if (dimension > railBounds.right) {
                 percentage = 100;
             } else {
-                percentage = utils.between((dimension - bounds.left) / bounds.width, 0, 1) * 100;
+                percentage = between((dimension - railBounds.left) / railBounds.width, 0, 1) * 100;
             }
         } else {
             dimension = evt.pageY;
-            if (dimension >= bounds.bottom) {
+            if (dimension >= railBounds.bottom) {
                 percentage = 0;
-            } else if (dimension <= bounds.top) {
+            } else if (dimension <= railBounds.top) {
                 percentage = 100;
             } else {
-                percentage = utils.between((bounds.height - (dimension - bounds.top)) / bounds.height, 0, 1) * 100;
+                percentage =
+                    between((railBounds.height - (dimension - railBounds.top)) / railBounds.height, 0, 1) * 100;
             }
         }
 

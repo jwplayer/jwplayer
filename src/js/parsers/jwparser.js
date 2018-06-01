@@ -1,6 +1,6 @@
 import { localName, textContent } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
-import utils from 'utils/helpers';
+import { serialize } from 'utils/parser';
 
 /**
 * Parse a feed item for JWPlayer content.
@@ -36,7 +36,7 @@ const parseEntry = function (obj, itm) {
                     label: xmlAttribute(node, label)
                 });
             } else {
-                itm[_localName] = utils.serialize(textContent(node));
+                itm[_localName] = serialize(textContent(node));
                 if (_localName === 'file' && itm.sources) {
                     // jwplayer namespace file should override existing source
                     // (probably set in MediaParser)

@@ -3,11 +3,11 @@ import RewindDisplayIcon from 'view/controls/rewind-display-icon';
 import PlayDisplayIcon from 'view/controls/play-display-icon';
 import NextDisplayIcon from 'view/controls/next-display-icon';
 import { cloneIcons } from 'view/controls/icons';
-import utils from 'utils/helpers';
+import { createElement } from 'utils/dom';
 
 export default class DisplayContainer {
     constructor(model, api) {
-        this.el = utils.createElement(displayContainerTemplate(model.get('localization')));
+        this.el = createElement(displayContainerTemplate(model.get('localization')));
 
         const container = this.el.querySelector('.jw-display-controls');
         const buttons = {};
