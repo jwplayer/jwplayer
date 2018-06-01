@@ -2,7 +2,7 @@ import sliderTemplate from 'view/controls/templates/slider';
 import { OS } from 'environment/environment';
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
-import { between } from 'utils/dom';
+import { between } from 'utils/math';
 import { bounds, createElement } from 'utils/dom';
 
 const getRailBounds = function(elementRail) {
