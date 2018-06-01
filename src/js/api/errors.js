@@ -72,37 +72,37 @@ export const FLASH_MEDIA_ERROR = 214000;
 /**
  * @enum {ErrorKey}
  */
-export const CANT_PLAY_VIDEO = 'cantPlayVideo';
+export const MSG_CANT_PLAY_VIDEO = 'cantPlayVideo';
 
 /**
  * @enum {ErrorKey}
  */
-export const BAD_CONNECTION = 'badConnection';
+export const MSG_BAD_CONNECTION = 'badConnection';
 
 /**
  * @enum {ErrorKey}
  */
-export const CANT_LOAD_PLAYER = 'cantLoadPlayer';
+export const MSG_CANT_LOAD_PLAYER = 'cantLoadPlayer';
 
 /**
  * @enum {ErrorKey}
  */
-export const CANT_PLAY_IN_BROWSER = 'cantPlayInBrowser';
+export const MSG_CANT_PLAY_IN_BROWSER = 'cantPlayInBrowser';
 
 /**
  * @enum {ErrorKey}
  */
-export const LIVE_STREAM_DOWN = 'liveStreamDown';
+export const MSG_LIVE_STREAM_DOWN = 'liveStreamDown';
 
 /**
  * @enum {ErrorKey}
  */
-export const PROTECTED_CONTENT = 'protectedContent';
+export const MSG_PROTECTED_CONTENT = 'protectedContent';
 
 /**
  * @enum {ErrorKey}
  */
-export const TECHNICAL_ERROR = 'technicalError';
+export const MSG_TECHNICAL_ERROR = 'technicalError';
 
 /**
  * Class used to create "setupError" and "error" event instances.
