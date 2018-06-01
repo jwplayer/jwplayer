@@ -1,36 +1,22 @@
-export default function parseNetworkError(baseCode, statusCode, url = '', responseText) {
-    let message;
+import { MSG_PROTECTED_CONTENT, MSG_CANNOT_PLAY_VIDEO } from 'api/errors';
+
+export default function parseNetworkError(baseCode, statusCode, url = '') {
     let code = baseCode + 1000;
+    let key;
 
     if (statusCode > 0) {
         // Restrict status code range between 400 and 599 in order to avoid conflicting codes; 6 otherwise
-        message = badStatusMessage(statusCode, responseText);
+        key = statusCode === 403 ? MSG_PROTECTED_CONTENT : MSG_CANNOT_PLAY_VIDEO;
         code += clampStatus(statusCode);
     } else if (url.substring(0, 5) === 'http:' && document.location.protocol === 'https:') {
-        message = 'Unable to fetch HTTP resource over HTTPS';
+        key = MSG_CANNOT_PLAY_VIDEO;
         code += 12;
     } else if (statusCode === 0) {
-        message = 'Crossdomain access denied';
+        key = MSG_CANNOT_PLAY_VIDEO;
         code += 11;
     }
 
-    return { code, message };
-}
-
-function badStatusMessage(statusCode, responseText = '') {
-    let message = '';
-    switch (statusCode) {
-        case 403:
-            message = 'You do not have permission to access this content';
-            break;
-        case 404:
-            message = '404 Not Found';
-            break;
-        default:
-            message = `${statusCode} ${responseText}`;
-    }
-
-    return message;
+    return { code, key };
 }
 
 export const clampStatus = code => (code >= 400 && code < 600) ? code : 6;
