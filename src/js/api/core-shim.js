@@ -250,8 +250,7 @@ function setupError(core, error) {
             // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
             errorEvent = new PlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         }
-
-        errorEvent.message = errorEvent.message || model.get('localization').errors[errorEvent.key];
+        errorEvent.message = model.get('localization').errors[errorEvent.key];
         delete errorEvent.key;
 
         const errorContainer = ErrorContainer(core, errorEvent);

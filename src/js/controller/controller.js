@@ -1028,11 +1028,14 @@ Object.assign(Controller.prototype, {
         return this._model.getMute();
     },
     triggerError(evt) {
-        this._model.set('errorEvent', evt);
-        this._model.set('state', STATE_ERROR);
-        this._model.once('change:state', function() {
-            this._model.set('errorEvent', undefined);
-        }, this);
+        const model = this._model;
+        evt.message = model.get('localization').errors[evt.key];
+        delete evt.key;
+        model.set('errorEvent', evt);
+        model.set('state', STATE_ERROR);
+        model.once('change:state', function() {
+            this.set('errorEvent', undefined);
+        }, model);
 
         this.trigger(ERROR, evt);
     }
