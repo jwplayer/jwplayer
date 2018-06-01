@@ -221,7 +221,6 @@ function View(_api, _model) {
         playerViewModel.on('change:errorEvent', _errorHandler);
 
         _model.change('stretching', onStretchChange);
-        _model.change('flashBlocked', onFlashBlockedChange);
 
         const width = _model.get('width');
         const height = _model.get('height');
@@ -439,10 +438,6 @@ function View(_api, _model) {
         style(aspectRatioContainer, {
             paddingTop: aspectratio || null
         });
-    }
-
-    function onFlashBlockedChange(model, isBlocked) {
-        toggleClass(_playerElement, 'jw-flag-flash-blocked', isBlocked);
     }
 
     function _logoClickHandler(evt) {

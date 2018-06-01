@@ -105,17 +105,9 @@ export function MediaControllerListener(model, programController) {
                 //  we are choosing to not propagate model event.
                 //  Instead letting the master controller do so
                 return;
-            case 'flashThrottle': {
-                const throttled = (data.state !== 'resume');
-                model.set('flashThrottle', throttled);
-                model.set('flashBlocked', throttled);
-            }
-                break;
+            case 'flashThrottle':
             case 'flashBlocked':
-                model.set('flashBlocked', true);
-                return;
-            case 'flashUnblocked':
-                model.set('flashBlocked', false);
+                model.set(type, data.value);
                 return;
             case MEDIA_VOLUME:
                 model.set(type, data[type]);

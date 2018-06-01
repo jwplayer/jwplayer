@@ -87,24 +87,6 @@ Object.assign(Controller.prototype, {
 
         _model.on(ERROR, _this.triggerError, _this);
 
-        // If we attempt to load flash, assume it is blocked if we don't hear back within a second
-        _model.on('change:flashBlocked', function(model, isBlocked) {
-            if (!isBlocked) {
-                model.set('errorEvent', undefined);
-                return;
-            }
-            // flashThrottle indicates whether this is a throttled event or plugin blocked event
-            const throttled = !!model.get('flashThrottle');
-            const errorEvent = {
-                message: throttled ? 'Click to run Flash' : 'Flash plugin failed to load'
-            };
-            // Only dispatch an error for Flash blocked, not throttled events
-            if (!throttled) {
-                this.trigger(ERROR, errorEvent);
-            }
-            model.set('errorEvent', errorEvent);
-        }, this);
-
         _model.on('change:state', (model, newstate, oldstate) => {
             const adState = _getAdState();
             if (!adState) {
