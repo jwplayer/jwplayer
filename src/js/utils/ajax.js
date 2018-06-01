@@ -7,7 +7,7 @@ const ERROR_XHR_UNDEFINED = 2;
 const ERROR_XHR_OPEN = 3;
 const ERROR_XHR_SEND = 4;
 const ERROR_XHR_FILTER = 5;
-const ERROR_XHR_UNKNOWN = 600;
+const ERROR_XHR_UNKNOWN = 6;
 
 // Network Responses with http status 400-599
 // will produce an error with the http status code
