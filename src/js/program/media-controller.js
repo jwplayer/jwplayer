@@ -145,16 +145,18 @@ export default class MediaController extends Eventable {
                 syncPlayerWithMediaModel(mediaModel);
             }
         }).catch(error => {
-            model.set('playRejected', true);
-            const videoTagPaused = provider && provider.video && provider.video.paused;
-            if (videoTagPaused) {
-                mediaModel.set('mediaState', STATE_PAUSED);
+            if (this.item && mediaModel === model.mediaModel) {
+                model.set('playRejected', true);
+                const videoTagPaused = provider && provider.video && provider.video.paused;
+                if (videoTagPaused) {
+                    mediaModel.set('mediaState', STATE_PAUSED);
+                }
+                this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
+                    error,
+                    item,
+                    playReason
+                });
             }
-            this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
-                error,
-                item,
-                playReason
-            });
         });
     }
 
