@@ -27,11 +27,11 @@ const Defaults = {
         close: 'Close',
         copied: 'Copied',
         errors: {
-            errorCode: 'Error Code',
             badConnection: 'This video cannot be played because of a problem with your internet connection.',
             cantLoadPlayer: 'Sorry, the video player failed to load.',
             cantPlayInBrowser: 'The video cannot be played in this browser.',
             cantPlayVideo: 'This video file cannot be played.',
+            errorCode: 'Error Code',
             liveStreamDown: 'The live stream is either down or has ended.',
             protectedContent: 'There was a problem providing access to protected content.',
             technicalError: 'This video cannot be played because of a technical error.'
@@ -54,11 +54,11 @@ const Defaults = {
         related: 'More Videos',
         replay: 'Replay',
         rewind: 'Rewind 10 Seconds',
-        stop: 'Stop',
-        volume: 'Volume',
         settings: 'Settings',
+        stop: 'Stop',
         unmute: 'Unmute',
-        videoInfo: 'About This Video'
+        videoInfo: 'About This Video',
+        volume: 'Volume'
     },
     mute: false,
     nextUpDisplay: true,
