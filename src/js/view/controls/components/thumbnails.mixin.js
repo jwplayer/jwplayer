@@ -1,5 +1,5 @@
 import { sortedIndex, property, bind } from 'utils/underscore';
-import utils from 'utils/helpers';
+import { ajax } from 'utils/ajax';
 import srt from 'parsers/captions/srt';
 
 function Thumbnail(obj) {
@@ -17,7 +17,7 @@ const ThumbnailsMixin = {
         // Only load the first individual image file so we can get its dimensions. All others are loaded when
         // they're set as background-images.
         this.individualImage = null;
-        utils.ajax(file, this.thumbnailsLoaded.bind(this), this.thumbnailsFailed.bind(this), {
+        ajax(file, this.thumbnailsLoaded.bind(this), this.thumbnailsFailed.bind(this), {
             plainText: true
         });
     },

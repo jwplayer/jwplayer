@@ -1,18 +1,17 @@
-import { cloneIcons } from 'view/controls/icons';
 import { Browser, OS } from 'environment/environment';
-import CustomButton from 'view/controls/components/custom-button';
-import { toggleClass, setAttribute } from 'utils/dom';
-import { timeFormat } from 'utils/parser';
-import { each } from 'utils/underscore';
 import { USER_ACTION, STATE_PLAYING } from 'events/events';
-import Events from 'utils/backbone.events';
-import UI from 'utils/ui';
-import ariaLabel from 'utils/aria';
+import { cloneIcons } from 'view/controls/icons';
+import CustomButton from 'view/controls/components/custom-button';
 import TimeSlider from 'view/controls/components/timeslider';
 import VolumeTooltip from 'view/controls/components/volumetooltip';
 import button from 'view/controls/components/button';
 import { SimpleTooltip } from 'view/controls/components/simple-tooltip';
-import { prependChild } from 'utils/dom';
+import ariaLabel from 'utils/aria';
+import Events from 'utils/backbone.events';
+import { prependChild, setAttribute, toggleClass } from 'utils/dom';
+import { timeFormat } from 'utils/parser';
+import UI from 'utils/ui';
+import { each } from 'utils/underscore';
 
 function text(name, role) {
     const element = document.createElement('span');

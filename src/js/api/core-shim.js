@@ -97,6 +97,8 @@ Object.assign(CoreShim.prototype, {
         }
         mediaPool.prime();
 
+        model.on('change:errorEvent', logError);
+
         return this.setup.start(api).then(allPromises => {
             const CoreMixin = allPromises[0];
             if (!this.setup) {
@@ -105,7 +107,7 @@ Object.assign(CoreShim.prototype, {
             }
             const config = this.modelShim.clone();
             // Exit if embed config encountered an error
-            if (config.error instanceof Error) {
+            if (config.error) {
                 throw config.error;
             }
             // copy queued commands
@@ -117,6 +119,9 @@ Object.assign(CoreShim.prototype, {
             this.setup(config, api, this.originalContainer, this._events, commandQueue, mediaPool);
 
             const coreModel = this._model;
+            // Switch the error log handlers after the real model has been set
+            model.off('change:errorEvent', logError);
+            coreModel.on('change:errorEvent', logError);
             storage.track(coreModel);
 
             // Set the active playlist item after plugins are loaded and the view is setup
@@ -256,6 +261,13 @@ function setupError(core, error) {
 
         core.trigger(SETUP_ERROR, errorEvent);
     });
+}
+
+function logError(model, error) {
+    if (!error || !error.code) {
+        return;
+    }
+    console.error(PlayerError.logMessage(error.code));
 }
 
 export function showView(core, viewElement) {

@@ -37,12 +37,8 @@ import {
     getRgba
 } from 'utils/css';
 import { ajax } from 'utils/ajax';
-
-export const log = (typeof console.log === 'function') ? console.log.bind(console) : function() {};
-
-export const between = function (num, min, max) {
-    return Math.max(Math.min(num, max), min);
-};
+import { between } from 'utils/math';
+import { log } from 'utils/log';
 
 // TODO: deprecate (jwplayer-ads-vast uses utils.crossdomain(url))
 function crossdomain(uri) {

@@ -1,5 +1,5 @@
 import { throttle, each } from 'utils/underscore';
-import { between } from 'utils/helpers';
+import { between } from 'utils/math';
 import { style } from 'utils/css';
 import { timeFormat } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';

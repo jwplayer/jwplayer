@@ -1,4 +1,4 @@
-import utils from 'utils/helpers';
+import { ajax } from 'utils/ajax';
 import srt from 'parsers/captions/srt';
 
 class Cue {
@@ -25,7 +25,7 @@ class Cue {
 const ChaptersMixin = {
 
     loadChapters: function (file) {
-        utils.ajax(file, this.chaptersLoaded.bind(this), this.chaptersFailed, {
+        ajax(file, this.chaptersLoaded.bind(this), this.chaptersFailed, {
             plainText: true
         });
     },

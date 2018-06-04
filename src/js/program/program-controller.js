@@ -299,25 +299,31 @@ class ProgramController extends Eventable {
      * @returns {void}
      */
     forwardEvents() {
-        if (!this.mediaController) {
+        const { mediaController } = this;
+        if (!mediaController) {
             return;
         }
 
-        forwardEvents(this);
+        forwardEvents(mediaController, this);
     }
 
     /**
-     * Remove the 'all' events listener that forwards events from the media-controller
+     * Remove the 'all' events listener that forwards events from the media-controller.
+     * If a target is specified, route all events to target.mediaControllerListener.
+     * @param {Object} [target] - Optional argument that must contain a mediaControllerListener method.
      * @returns {void}
      */
-    removeEvents() {
+    routeEvents(target) {
         const { mediaController } = this;
 
         if (!mediaController) {
             return;
         }
 
-        mediaController.off('all', this.mediaControllerListener, this);
+        mediaController.off();
+        if (target) {
+            forwardEvents(mediaController, target);
+        }
     }
 
     /**
@@ -358,7 +364,7 @@ class ProgramController extends Eventable {
         model.setMediaModel(mediaModel);
         model.setProvider(provider);
 
-        forwardEvents(this);
+        forwardEvents(mediaController, this);
         model.set('itemReady', true);
     }
 
@@ -706,10 +712,9 @@ function assignMediaContainer(model, mediaController) {
     }
 }
 
-function forwardEvents(programController) {
-    const { mediaController, mediaControllerListener } = programController;
-    mediaController.off('all', mediaControllerListener, programController);
-    mediaController.on('all', mediaControllerListener, programController);
+function forwardEvents(mediaController, target) {
+    const { mediaControllerListener } = target;
+    mediaController.off().on('all', mediaControllerListener, target);
 }
 
 function getSource(item) {

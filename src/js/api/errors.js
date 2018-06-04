@@ -55,35 +55,28 @@ export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
 export const ERROR_LOADING_PROVIDER = 204000;
 
 /**
- * @enum {ErrorCode} An error occurred duing Flash setup.
- */
-export const FLASH_SETUP_ERROR = 210001;
-
-/**
- * @enum {ErrorCode} An error occurred during Flash playback.
- */
-export const FLASH_ERROR = 210000;
-
-/**
- * @enum {ErrorCode} A media error occurred during Flash playback.
- */
-export const FLASH_MEDIA_ERROR = 214000;
-
-
-/**
  * Class used to create "setupError" and "error" event instances.
  * @class PlayerError
  * @param {message} string - The error message.
  * @param {code} [ErrorCode] - The error code.
  * @param {sourceError} [Error] - The lower level error, caught by the player, which resulted in this error.
  */
-export class PlayerError extends Error {
+export class PlayerError {
     constructor(message, code, sourceError = null) {
-        // Avoid passing message via super so that we can define an enumerable message property on PlayerError
-        super();
-        this.code = isValidNumber(code) ? code : null;
+        this.code = isValidNumber(code) ? code : 0;
         this.message = message;
         this.sourceError = sourceError;
+    }
+
+    static logMessage(code) {
+        const suffix = code % 1000;
+        const prefix = Math.floor((code - suffix) / 1000);
+        let codeStr = code;
+
+        if (suffix >= 400 && suffix < 600) {
+            codeStr = `${prefix}400-${prefix}599`;
+        }
+        return `JW Player Error ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
     }
 
     static compose(code, superCode) {

@@ -46,7 +46,7 @@ export function filterPlaylist(playlist, model, feedData) {
 
 export function validatePlaylist(playlist) {
     if (!Array.isArray(playlist) || playlist.length === 0) {
-        throw new PlayerError('No playable sources found', 630);
+        throw new PlayerError('Playlist error: No playable sources found', 630);
     }
 }
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());

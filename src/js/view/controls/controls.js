@@ -1,7 +1,8 @@
 import { OS } from 'environment/environment';
 import { DISPLAY_CLICK, USER_ACTION, STATE_PAUSED, STATE_PLAYING, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import utils from 'utils/helpers';
+import { between } from 'utils/math';
+import { addClass, removeClass, toggleClass } from 'utils/dom';
 import { now } from 'utils/date';
 import button from 'view/controls/components/button';
 import Controlbar from 'view/controls/controlbar';
@@ -101,11 +102,11 @@ export default class Controls {
 
         // Touch UI mode when we're on mobile and we have a percentage height or we can fit the large UI in
         this.infoOverlay = new InfoOverlay(element, model, api, visible => {
-            utils.toggleClass(this.div, 'jw-info-open', visible);
+            toggleClass(this.div, 'jw-info-open', visible);
         });
         this.rightClickMenu = new RightClick(this.infoOverlay);
         if (touchMode) {
-            utils.addClass(this.playerContainer, 'jw-flag-touch');
+            addClass(this.playerContainer, 'jw-flag-touch');
             this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
         } else {
             model.change('flashBlocked', (modelChanged, isBlocked) => {
@@ -144,7 +145,7 @@ export default class Controls {
             const settingsInteraction = { reason: 'settingsInteraction' };
             const isKeyEvent = (evt && evt.sourceEvent || evt || {}).type === 'keydown';
 
-            utils.toggleClass(this.div, 'jw-settings-open', visible);
+            toggleClass(this.div, 'jw-settings-open', visible);
             if (getBreakpoint(model.get('containerWidth')) < 2) {
                 if (visible && state === STATE_PLAYING) {
                     // Pause playback on open if we're currently playing
@@ -190,7 +191,7 @@ export default class Controls {
                 // Set mute state in the controlbar
                 controlbar.renderVolume(true, _model.get('volume'));
                 // Hide the controlbar until the autostart flag is removed
-                utils.addClass(this.playerContainer, 'jw-flag-autostart');
+                addClass(this.playerContainer, 'jw-flag-autostart');
 
                 _model.on('change:autostartFailed change:autostartMuted change:mute', unmuteCallback, this);
                 this.unmuteCallback = unmuteCallback;
@@ -209,12 +210,12 @@ export default class Controls {
                 min = max;
                 max = Math.max(position, -dvrSeekLimit);
             }
-            const newSeek = utils.between(position + amount, min, max);
+            const newSeek = between(position + amount, min, max);
             api.seek(newSeek, reasonInteraction());
         }
 
         function adjustVolume(amount) {
-            const newVol = utils.between(model.get('volume') + amount, 0, 100);
+            const newVol = between(model.get('volume') + amount, 0, 100);
             api.setVolume(newVol);
         }
 
@@ -351,7 +352,7 @@ export default class Controls {
         this.activeTimeout = -1;
 
         if (this.div.parentNode) {
-            utils.removeClass(this.playerContainer, 'jw-flag-touch');
+            removeClass(this.playerContainer, 'jw-flag-touch');
             this.playerContainer.removeChild(this.div);
         }
         if (this.rightClickMenu) {
@@ -426,7 +427,7 @@ export default class Controls {
             this.mute.hide();
         }
 
-        utils.removeClass(this.playerContainer, 'jw-flag-autostart');
+        removeClass(this.playerContainer, 'jw-flag-autostart');
         this.userActive();
     }
 
@@ -452,7 +453,7 @@ export default class Controls {
             this.inactiveTime = 0;
         }
         if (!this.showing) {
-            utils.removeClass(this.playerContainer, 'jw-flag-user-inactive');
+            removeClass(this.playerContainer, 'jw-flag-user-inactive');
             this.showing = true;
             this.trigger('userActive');
         }
@@ -466,7 +467,7 @@ export default class Controls {
         }
         this.inactiveTime = 0;
         this.showing = false;
-        utils.addClass(this.playerContainer, 'jw-flag-user-inactive');
+        addClass(this.playerContainer, 'jw-flag-user-inactive');
         this.trigger('userInactive');
     }
 
@@ -492,14 +493,14 @@ export default class Controls {
         if (this.settingsMenu) {
             this.settingsMenu.close();
         }
-        utils.removeClass(this.playerContainer, 'jw-flag-autostart');
+        removeClass(this.playerContainer, 'jw-flag-autostart');
     }
 
     destroyInstream(model) {
         this.instreamState = null;
         this.addBackdrop();
         if (model.get('autostartMuted')) {
-            utils.addClass(this.playerContainer, 'jw-flag-autostart');
+            addClass(this.playerContainer, 'jw-flag-autostart');
         }
     }
 }

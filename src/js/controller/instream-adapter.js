@@ -16,7 +16,7 @@ const _defaultOptions = {
 
 /**
  * InstreamAdapter JW Player instream API. Instantiated via jwplayer().createInstream(). Only one instance can be
- * created per player. It is destoryed via jwplayer()instreamDestroy().
+ * created per player. It is destroyed via jwplayer().instreamDestroy().
  * @param {Controller} _controller - The player controller instance
  * @param {Model} _model - The player model instance
  * @param {View} _view - The player view instance
@@ -127,7 +127,12 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         if (_inited || _destroyed) {
             return;
         }
-        _controller.removeEvents();
+        // Forward current provider events through instream
+        _controller.routeEvents({
+            mediaControllerListener: (type, data) => {
+                this.trigger(type, data);
+            }
+        });
         _model.set('instream', _adProgram);
         _adProgram.model.set('state', STATE_PLAYING);
         _addClickHandler(clickThroughUrl);
@@ -196,9 +201,11 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
      */
     this.setState = function(event) {
         const { newstate } = event;
-        event.oldstate = _adProgram.model.get('state');
+        const adModel = _adProgram.model;
 
-        _adProgram.model.set('state', newstate);
+        event.oldstate = adModel.get('state');
+
+        adModel.set('state', newstate);
 
         if (newstate === STATE_PLAYING) {
             _controller.trigger(AD_PLAY, event);

@@ -99,6 +99,7 @@ const multiConfig = [
             ]
         },
         module: {
+            strictExportPresence: true,
             rules: [
                 {
                     test: /\.less$/,

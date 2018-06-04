@@ -1,6 +1,6 @@
 import { localName, textContent, numChildren } from 'parsers/parsers';
 import { xmlAttribute } from 'utils/strings';
-import utils from 'utils/helpers';
+import { seconds } from 'utils/strings';
 
 /**
  * Parse a MRSS group into a playlistitem (used in RSS and ATOM)
@@ -41,7 +41,7 @@ const mediaparser = function (obj, item) {
             switch (localName(node).toLowerCase()) {
                 case 'content':
                     if (xmlAttribute(node, 'duration')) {
-                        item.duration = utils.seconds(xmlAttribute(node, 'duration'));
+                        item.duration = seconds(xmlAttribute(node, 'duration'));
                     }
                     if (xmlAttribute(node, 'url')) {
                         if (!item.sources) {

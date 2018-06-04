@@ -95,7 +95,7 @@ export default function SettingsSubmenu(name, categoryButton, isDefault) {
             categoryButtonElement.setAttribute('aria-checked', 'false');
             active = false;
         },
-        activateItem(itemOrdinal = 0) {
+        activateItem(itemOrdinal) {
             const item = contentItems[itemOrdinal];
             if (!item || item.active) {
                 return;

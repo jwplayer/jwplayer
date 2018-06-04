@@ -3,7 +3,7 @@ export default function parseNetworkError(baseCode, statusCode, url = '', respon
     let code = baseCode + 1000;
 
     if (statusCode > 0) {
-        // Restrict status code range between 400 and 600 in order to avoid conflicting codes; 10 otherwise
+        // Restrict status code range between 400 and 599 in order to avoid conflicting codes; 6 otherwise
         message = badStatusMessage(statusCode, responseText);
         code += clampStatus(statusCode);
     } else if (url.substring(0, 5) === 'http:' && document.location.protocol === 'https:') {
@@ -33,5 +33,5 @@ function badStatusMessage(statusCode, responseText = '') {
     return message;
 }
 
-export const clampStatus = code => (code >= 400 && code <= 600) ? code : 10;
+export const clampStatus = code => (code >= 400 && code < 600) ? code : 6;
 

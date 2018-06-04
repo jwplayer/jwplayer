@@ -1,12 +1,12 @@
 import VTTCue from 'parsers/captions/vttcue';
 import { chunkLoadErrorHandler } from '../api/core-loader';
-import utils from 'utils/helpers';
+import { ajax } from 'utils/ajax';
 import { localName } from 'parsers/parsers';
 import srt from 'parsers/captions/srt';
 import dfxp from 'parsers/captions/dfxp';
 
 export function loadFile(track, successHandler, errorHandler) {
-    track.xhr = utils.ajax(track.file, function(xhr) {
+    track.xhr = ajax(track.file, function(xhr) {
         xhrSuccess(xhr, track, successHandler, errorHandler);
     }, errorHandler);
 }
