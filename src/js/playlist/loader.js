@@ -3,7 +3,7 @@ import { localName } from 'parsers/parsers';
 import parseRss from 'parsers/rssparser';
 import { ajax } from 'utils/ajax';
 import Events from 'utils/backbone.events';
-import { PlayerError, MSG_CANT_LOAD_PLAYER, MSG_CANT_PLAY_VIDEO } from 'api/errors';
+import { PlayerError, MSG_CANT_PLAY_VIDEO } from 'api/errors';
 
 const PlaylistLoader = function() {
     const _this = Object.assign(this, Events);
