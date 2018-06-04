@@ -99,8 +99,8 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             settingsMenuElement.setAttribute('aria-expanded', 'true');
             document.addEventListener('click', documentClickHandler);
 
+            // menu icon should be in focus on enter, but we should focus on the first item within the menu if the interaction is with the up/down arrow
             if (isDefault && event && event.type === 'enter') {
-                // Focus on menu icon on enter to make the menu the active element and tababble
                 active.categoryButtonElement.focus();
                 return;
             }
