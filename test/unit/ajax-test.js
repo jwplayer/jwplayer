@@ -29,9 +29,9 @@ describe('utils.ajax', function() {
             options.oncomplete = (result) => {
                 reject(successHandler(result));
             };
-            options.onerror = (message, url, result, error) => {
+            options.onerror = (key, url, result, error) => {
                 resolve({
-                    message,
+                    key,
                     url,
                     result,
                     error
@@ -89,7 +89,7 @@ describe('utils.ajax', function() {
     });
 
     it('supports timeout argument', function () {
-        const errorMessage = 'Timeout';
+        const errorKey = errors.MSG_TECHNICAL_ERROR;
         const nonce = Math.random().toFixed(20).substr(2);
 
         return expectError({
@@ -98,12 +98,12 @@ describe('utils.ajax', function() {
             responseType: 'text'
         }, success => {
             return new Error(`Expected XHR request to timeout. It succeeded with status ${success.status}.`);
-        }).then(({ message, url, result, error }) => {
-            expect(message).to.equal(errorMessage);
+        }).then(({ key, url, result, error }) => {
+            expect(key).to.equal(errorKey);
             expect(url).to.be.a('string');
             validateXHR(result);
             expect(result).to.have.property('status').which.equals(0);
-            expect(error).to.have.property('key').which.equals(errors.MSG_CANT_LOAD_PLAYER);
+            expect(error).to.have.property('key').which.equals(errorKey);
             expect(error).to.have.property('code').which.equals(1);
             expect(error).to.have.property('sourceError').which.equals(null);
         });
@@ -174,22 +174,22 @@ describe('utils.ajax', function() {
     });
 
     it('handles bad request exceptions', function () {
-        const errorMessage = 'Error loading file';
+        const errorKey = errors.MSG_CANT_PLAY_VIDEO;
 
         return expectError({}, success => {
             return new Error(`Expected bad request to fail with "Error loading file". Got ${success.status}`);
-        }).then(({ message, url, result, error }) => {
-            expect(message).to.equal(errorMessage);
+        }).then(({ key, url, result, error }) => {
+            expect(key).to.equal(errorKey);
             expect(url).to.equal(undefined);
             expect(result.status).to.equal(0);
-            expect(error).to.have.property('key').which.equals(errors.MSG_CANT_LOAD_PLAYER);
+            expect(error).to.have.property('key').which.equals(errorKey);
             expect(error).to.have.property('code').which.equals(3);
             expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
     });
 
     it('handles requestFilter exceptions', function () {
-        const errorMessage = 'Error loading file';
+        const errorKey = errors.MSG_CANT_PLAY_VIDEO;
         const url = '/base/test/files/playlist.json';
 
         return expectError({
@@ -199,18 +199,18 @@ describe('utils.ajax', function() {
             url
         }, success => {
             return new Error(`Expected bad filter to fail with "Error loading file". Got ${success.status}`);
-        }).then(({ message, url: u, result, error }) => {
-            expect(message).to.equal(errorMessage);
+        }).then(({ key, url: u, result, error }) => {
+            expect(key).to.equal(errorKey);
             expect(u).to.equal(url);
             expect(result.status).to.equal(0);
-            expect(error).to.have.property('key').which.equals(errors.MSG_CANT_LOAD_PLAYER);
+            expect(error).to.have.property('key').which.equals(errorKey);
             expect(error).to.have.property('code').which.equals(5);
             expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
     });
 
     it('error "Invalid XML"', function () {
-        const errorMessage = 'Invalid XML';
+        const errorKey = errors.MSG_CANT_PLAY_VIDEO;
         const url = '/base/test/files/invalid.xml';
 
         return expectError({
@@ -218,18 +218,18 @@ describe('utils.ajax', function() {
             requireValidXML: true
         }, success => {
             return new Error(`Expected bad request to fail with "Invalid XML". Got ${success.status}`);
-        }).then(({ message, url: u, result, error }) => {
-            expect(message).to.equal(errorMessage);
+        }).then(({ key, url: u, result, error }) => {
+            expect(key).to.equal(errorKey);
             expect(u).to.equal(url);
             expect(result.status).to.equal(200);
-            expect(error).to.have.property('key').which.equals(errors.MSG_CANT_LOAD_PLAYER);
+            expect(error).to.have.property('key').which.equals(errorKey);
             expect(error).to.have.property('code').which.equals(602);
             expect(error).to.have.property('sourceError').which.equals(null);
         });
     });
 
     it('error "Invalid JSON"', function () {
-        const errorMessage = 'Invalid JSON';
+        const errorKey = errors.MSG_CANT_PLAY_VIDEO;
         const url = '/base/test/files/invalid.xml';
 
         return expectError({
@@ -237,29 +237,29 @@ describe('utils.ajax', function() {
             responseType: 'json'
         }, success => {
             return new Error(`Expected bad request to fail with "Invalid JSON". Got ${success.status}`);
-        }).then(({ message, url: u, result, error }) => {
-            expect(message).to.equal(errorMessage);
+        }).then(({ key, url: u, result, error }) => {
+            expect(key).to.equal(errorKey);
             expect(u).to.equal(url);
             expect(result.status).to.equal(200);
-            expect(error).to.have.property('key').which.equals(errors.MSG_CANT_LOAD_PLAYER);
+            expect(error).to.have.property('key').which.equals(errorKey);
             expect(error).to.have.property('code').which.equals(611);
             expect(error).to.have.property('sourceError').which.does.not.equal(null);
         });
     });
 
     it('error "File not found" (404) - Integration Test', function () {
-        const errorMessage = 'File not found';
+        const errorKey = errors.MSG_CANT_PLAY_VIDEO;
         const url = 'foobar';
 
         return expectError({
             url
         }, success => {
             return new Error(`Expected bad request to fail with "File not found". Got ${success.status}`);
-        }).then(({ message, url: u, result, error }) => {
-            expect(message).to.equal(errorMessage);
+        }).then(({ key, url: u, result, error }) => {
+            expect(key).to.equal(errorKey);
             expect(u).to.equal(url);
             expect(result.status).to.equal(404);
-            expect(error).to.have.property('key').which.equals(errors.MSG_CANT_LOAD_PLAYER);
+            expect(error).to.have.property('key').which.equals(errorKey);
             expect(error).to.have.property('code').which.equals(404);
             expect(error).to.have.property('sourceError').which.equals(null);
         });
