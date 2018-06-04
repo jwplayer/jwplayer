@@ -100,6 +100,7 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             document.addEventListener('click', documentClickHandler);
 
             if (isDefault && event && event.type === 'enter') {
+                // Focus on menu icon on enter to make the menu the active element and tababble
                 active.categoryButtonElement.focus();
                 return;
             }
