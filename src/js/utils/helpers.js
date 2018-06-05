@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import * as playerutils from 'utils/playerutils';
 import * as validator from 'utils/validator';
 import * as parser from 'utils/parser';
