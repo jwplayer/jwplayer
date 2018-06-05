@@ -12,9 +12,8 @@ const Setup = function(_model) {
 
     this.start = function (api) {
 
-        const setup = Promise.all([
+        const setup = startSetup(_model, api, [
             loadCoreBundle(_model),
-            startSetup(_model),
             loadPlugins(_model, api)
         ]);
 
