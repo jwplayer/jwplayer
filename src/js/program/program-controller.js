@@ -202,6 +202,8 @@ class ProgramController extends Eventable {
         const playlistItem = Object.assign({}, item);
         playlistItem.starttime = model.mediaModel.get('position');
 
+        this._destroyActiveMedia();
+
         const castMediaController = new MediaController(castProvider, model);
         castMediaController.activeItem = playlistItem;
         this._setActiveMedia(castMediaController);
