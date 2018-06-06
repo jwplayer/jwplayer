@@ -250,8 +250,9 @@ function setupError(core, error) {
             // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
             errorEvent = new PlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         }
-        errorEvent.message = model.get('localization').errors[errorEvent.key];
-        delete errorEvent.key;
+        // The message may have already been created (eg. multiple players on a page where a plugin fails to load)
+        errorEvent.message = errorEvent.message || model.get('localization').errors[errorEvent.key];
+        errorEvent.key = null;
 
         const errorContainer = ErrorContainer(core, errorEvent);
         if (ErrorContainer.cloneIcon) {
