@@ -12,7 +12,7 @@ import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
-import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN } from 'api/errors';
+import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, MSG_TECHNICAL_ERROR } from 'api/errors';
 import { isValidNumber } from 'utils/underscore';
 
 const ModelShim = function() {};
@@ -244,10 +244,15 @@ Object.assign(CoreShim.prototype, {
 function setupError(core, error) {
     resolved.then(() => {
         let errorEvent = error;
+        const model = core._model || core.modelShim;
+
         if (!isValidNumber(error.code)) {
             // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
-            errorEvent = new PlayerError(error.message, SETUP_ERROR_UNKNOWN, error);
+            errorEvent = new PlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         }
+        // The message may have already been created (eg. multiple players on a page where a plugin fails to load)
+        errorEvent.message = errorEvent.message || model.get('localization').errors[errorEvent.key];
+        errorEvent.key = null;
 
         const errorContainer = ErrorContainer(core, errorEvent);
         if (ErrorContainer.cloneIcon) {
@@ -255,7 +260,6 @@ function setupError(core, error) {
         }
         showView(core, errorContainer);
 
-        const model = core._model || core.modelShim;
         model.set('errorEvent', errorEvent);
         model.set('state', STATE_ERROR);
 

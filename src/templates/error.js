@@ -1,5 +1,5 @@
-export default (id, message, code) => {
-    const detail = code ? `(Error code: ${code})` : '';
+export default (id, message, errorCode, code) => {
+    const detail = code ? `(${errorCode}: ${code})` : '';
     return (
         `<div id="${id}" class="jw-error jw-reset">` +
             `<div class="jw-error-msg jw-reset">` +
