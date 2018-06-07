@@ -57,6 +57,7 @@ Object.assign(MockModel.prototype, SimpleModel, {
             buffer: 0,
             duration: 0,
             minDvrWindow: 60,
+            seekRange: { start: 0, end: 0 },
             scrubbing: false,
             playlistItem: playlistItem,
             logo: {

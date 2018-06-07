@@ -1030,7 +1030,7 @@ Object.assign(Controller.prototype, {
     triggerError(evt) {
         const model = this._model;
         evt.message = model.get('localization').errors[evt.key];
-        evt.key = null;
+        delete evt.key;
         model.set('errorEvent', evt);
         model.set('state', STATE_ERROR);
         model.once('change:state', function() {
