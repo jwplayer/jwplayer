@@ -353,11 +353,7 @@ Object.assign(Controller.prototype, {
                             return _this.updatePlaylist(Playlist(data.playlist), data);
                         }
                     });
-                    loadPromise = _loadPlaylist(item)
-                        .catch(e => {
-                            _this.triggerError(e);
-                        })
-                        .then(updatePlaylistCancelable.async);
+                    loadPromise = _loadPlaylist(item).then(updatePlaylistCancelable.async);
                     break;
                 }
                 case 'object':
@@ -388,10 +384,7 @@ Object.assign(Controller.prototype, {
                 loader.on(PLAYLIST_LOADED, function(data) {
                     resolve(data);
                 });
-                loader.on(ERROR, function(error) {
-                    error.code = PlayerError.compose(error.code, ERROR_LOADING_PROVIDER);
-                    reject(error);
-                }, this);
+                loader.on(ERROR, reject, this);
                 loader.load(toLoad);
             });
         }
