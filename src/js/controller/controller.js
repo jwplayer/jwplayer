@@ -384,10 +384,7 @@ Object.assign(Controller.prototype, {
                 loader.on(PLAYLIST_LOADED, function(data) {
                     resolve(data);
                 });
-                loader.on(ERROR, function(error) {
-                    error.code = PlayerError.compose(error.code, ERROR_LOADING_PROVIDER);
-                    reject(error);
-                }, this);
+                loader.on(ERROR, reject, this);
                 loader.load(toLoad);
             });
         }
