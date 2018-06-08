@@ -353,7 +353,11 @@ Object.assign(Controller.prototype, {
                             return _this.updatePlaylist(Playlist(data.playlist), data);
                         }
                     });
-                    loadPromise = _loadPlaylist(item).then(updatePlaylistCancelable.async);
+                    loadPromise = _loadPlaylist(item)
+                        .catch(e => {
+                            _this.triggerError(e);
+                        })
+                        .then(updatePlaylistCancelable.async);
                     break;
                 }
                 case 'object':
