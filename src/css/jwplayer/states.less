@@ -11,6 +11,10 @@
     }
 }
 
+span.jw-break {
+    display: block;
+}
+
 // errors
 body .jw-error,
 body .jwplayer.jw-state-error {
@@ -20,7 +24,6 @@ body .jwplayer.jw-state-error {
     font-size: @default-em-size;
     display: table;
     opacity: 1;
-    overflow: hidden;
     position: relative;
 
     .jw-display {
@@ -36,39 +39,61 @@ body .jwplayer.jw-state-error {
     }
 
     .jw-error-msg {
-        .topleft(50%, 50%);
-        align-items: center;
         background-color: @black;
         border-radius: 2px;
         display: flex;
+        flex-direction: row;
+        align-items: stretch;
         padding: 20px;
-        transform: translate(-50%, -50%);
 
         .jw-icon {
             .square(30px);
             margin-right: 20px;
             flex: 0 0 auto;
+            align-self: center;
 
             &:empty {
                 display: none;
             }
         }
 
-        .jw-title {
-            display: block;
-            position: static;
+        .jw-info-container {
+            margin: 0;
+            padding: 0;
+        }
+    }
 
-            &,
-            &-primary,
-            &-secondary {
-                font-size: 14px;
-                line-height: 1.35;
-                padding: 0;
+    &:not(.jw-flag-audio-player) {
+        &.jw-flag-small-player,
+        &.jw-breakpoint-2 {
+            .jw-error-msg {
+                flex-direction: column;
+
+                .jw-error-text {
+                    text-align: center;
+                }
+
+                .jw-icon {
+                    flex: 0.5 0 auto;
+                    margin-right: 0;
+                    margin-bottom: 20px;
+                }
             }
+        }
+    }
+}
 
-            &-primary {
-                font-weight: 600;
-                white-space: normal;
+.jwplayer.jw-state-error {
+    &.jw-flag-audio-player,
+    &.jw-flag-small-player,
+    &.jw-breakpoint-2 {
+        .jw-error-msg {
+            .jw-break {
+                display: inline;
+
+                &:before {
+                    content: " ";
+                }
             }
         }
     }
@@ -80,14 +105,18 @@ body .jwplayer.jw-state-error {
         .topleft();
         background: @black;
         transform: none;
-        padding: 0 16px;
+        padding: 4px 16px;
         z-index: 1;
+
+        &.jw-info-overlay {
+            max-width: none;
+            max-height: none;
+        }
     }
 }
 
 // Show preview
 body .jwplayer.jw-state-error,
-body .jw-error,
 .jw-state-idle,
 .jwplayer.jw-state-complete:not(.jw-flag-casting):not(.jw-flag-audio-player):not(.jw-flag-overlay-open-related) {
     // Show the title

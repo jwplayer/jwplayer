@@ -118,9 +118,8 @@ function View(_api, _model) {
         const containerWidth = _model.get('containerWidth');
         const containerHeight = _model.get('containerHeight');
 
-        if (_model.get('controls')) {
-            updateContainerStyles(containerWidth, containerHeight);
-        }
+
+        updateContainerStyles(containerWidth, containerHeight);
 
         if (_controls) {
             _controls.resize(containerWidth, containerHeight);
@@ -165,8 +164,7 @@ function View(_api, _model) {
     }
 
     function updateContainerStyles(width, height) {
-        const audioMode = isAudioMode(_model);
-        // Set timeslider flags
+        // Set responsive player classes
         if (isNumber(width) && isNumber(height)) {
             const breakpoint = getBreakpoint(width);
             setBreakpoint(_playerElement, breakpoint);
@@ -175,8 +173,12 @@ function View(_api, _model) {
             toggleClass(_playerElement, 'jw-flag-small-player', smallPlayer);
             toggleClass(_playerElement, 'jw-orientation-portrait', (height > width));
         }
-        toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
-        _model.set('audioMode', audioMode);
+        // Only change audio player mode when controls are enabled
+        if (_model.get('controls')) {
+            const audioMode = isAudioMode(_model);
+            toggleClass(_playerElement, 'jw-flag-audio-player', audioMode);
+            _model.set('audioMode', audioMode);
+        }
     }
 
     this.setup = function () {
@@ -226,9 +228,8 @@ function View(_api, _model) {
         const height = _model.get('height');
         _resizePlayer(width, height);
         _model.change('aspectratio', onAspectRatioChange);
-        if (_model.get('controls')) {
-            updateContainerStyles(width, height);
-        } else {
+        updateContainerStyles(width, height);
+        if (!_model.get('controls')) {
             addClass(_playerElement, 'jw-flag-controls-hidden');
         }
 
