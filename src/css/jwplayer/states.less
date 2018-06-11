@@ -60,7 +60,6 @@ body .jwplayer.jw-state-error {
         .jw-info-container {
             margin: 0;
             padding: 0;
-            justify-content: center;
         }
     }
 
@@ -71,6 +70,7 @@ body .jwplayer.jw-state-error {
                 flex-direction: column;
 
                 .jw-icon {
+                    margin-right: 0;
                     margin-bottom: 20px;
                 }
             }
@@ -86,6 +86,10 @@ body .jwplayer.jw-state-error {
         transform: none;
         padding: 4px 16px;
         z-index: 1;
+
+        .jw-info-container {
+            justify-content: center;
+        }
     }
 }
 
