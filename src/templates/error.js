@@ -1,5 +1,5 @@
 export default (id, message, errorCode, code) => {
-    const detail = code ? ` (${errorCode}: ${code})` : '';
+    const detail = code ? (`(${errorCode}: ${code})`).replace(/\s+/g, '&nbsp;') : '';
     return (
         `<div id="${id}" class="jw-error jw-reset">` +
             `<div class="jw-error-msg jw-info-overlay jw-reset">` +
@@ -11,7 +11,7 @@ export default (id, message, errorCode, code) => {
                 `</style>` +
                 `<div class="jw-icon jw-reset"></div>` +
                 `<div class="jw-info-container jw-reset">` +
-                    `<div class="jw-error-text jw-reset">${(message || '') + detail}</div>` +
+                    `<div class="jw-error-text jw-reset">${(message || '')}<span class="jw-break jw-reset"></span>${detail}</div>` +
                 `</div>` +
         `</div>` +
         `</div>`

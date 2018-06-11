@@ -11,6 +11,10 @@
     }
 }
 
+span.jw-break {
+    display: block;
+}
+
 // errors
 body .jw-error,
 body .jwplayer.jw-state-error {
@@ -53,10 +57,6 @@ body .jwplayer.jw-state-error {
             }
         }
 
-        .jw-error-text {
-            align-self: center;
-        }
-
         .jw-info-container {
             margin: 0;
             padding: 0;
@@ -69,9 +69,30 @@ body .jwplayer.jw-state-error {
             .jw-error-msg {
                 flex-direction: column;
 
+                .jw-error-text {
+                    text-align: center;
+                }
+
                 .jw-icon {
+                    flex: 0.5 0 auto;
                     margin-right: 0;
                     margin-bottom: 20px;
+                }
+            }
+        }
+    }
+}
+
+.jwplayer.jw-state-error {
+    &.jw-flag-audio-player,
+    &.jw-flag-small-player,
+    &.jw-breakpoint-2 {
+        .jw-error-msg {
+            .jw-break {
+                display: inline;
+
+                &:before {
+                    content: " ";
                 }
             }
         }
@@ -87,8 +108,9 @@ body .jwplayer.jw-state-error {
         padding: 4px 16px;
         z-index: 1;
 
-        .jw-info-container {
-            justify-content: center;
+        &.jw-info-overlay {
+            max-width: none;
+            max-height: none;
         }
     }
 }
