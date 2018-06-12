@@ -1,9 +1,10 @@
 import nextUpTemplate from 'view/controls/templates/nextup';
-import { toggleClass } from 'utils/dom';
+import { style } from 'utils/css';
+import { createElement, toggleClass } from 'utils/dom';
 import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
-import utils from 'utils/helpers';
 import { cloneIcon } from 'view/controls/icons';
+import { seconds } from 'utils/strings';
 
 export default class NextUpTooltip {
     constructor(_model, _api, playerElement) {
@@ -22,7 +23,7 @@ export default class NextUpTooltip {
     setup(context) {
         this.container = context.createElement('div');
         this.container.className = 'jw-nextup-container jw-reset';
-        const element = utils.createElement(nextUpTemplate());
+        const element = createElement(nextUpTemplate());
         element.querySelector('.jw-nextup-close').appendChild(cloneIcon('close'));
         this.addContent(element);
 
@@ -109,7 +110,7 @@ export default class NextUpTooltip {
             toggleClass(this.content, 'jw-nextup-thumbnail-visible', !!nextUpItem.image);
             if (nextUpItem.image) {
                 const thumbnailStyle = this.loadThumbnail(nextUpItem.image);
-                utils.style(this.thumbnail, thumbnailStyle);
+                style(this.thumbnail, thumbnailStyle);
             }
 
             // Set header
@@ -119,13 +120,13 @@ export default class NextUpTooltip {
             // Set title
             this.title = this.content.querySelector('.jw-nextup-title');
             const title = nextUpItem.title;
-            this.title.innerText = title ? utils.createElement(title).textContent : '';
+            this.title.innerText = title ? createElement(title).textContent : '';
 
             // Set duration
             if (nextUpItem.duration) {
                 this.duration = this.content.querySelector('.jw-nextup-duration');
                 const duration = nextUpItem.duration;
-                this.duration.innerText = duration ? utils.createElement(duration).textContent : '';
+                this.duration.innerText = duration ? createElement(duration).textContent : '';
             }
 
         }, 500);
@@ -155,7 +156,7 @@ export default class NextUpTooltip {
         }
 
         // Use nextupoffset if set or default to 10 seconds from the end of playback
-        let offset = utils.seconds(model.get('nextupoffset') || -10);
+        let offset = seconds(model.get('nextupoffset') || -10);
         if (offset < 0) {
             // Determine offset from the end. Duration may change.
             offset += duration;

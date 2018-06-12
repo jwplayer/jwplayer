@@ -17,7 +17,7 @@ describe('network error parser', function () {
     });
 
     it('appends a code of 10 if the status code is < 400 or > 600', function () {
-        expect(parseNetworkError(900000, 601).code).to.equal(901010);
-        expect(parseNetworkError(900000, 399).code).to.equal(901010);
+        expect(parseNetworkError(900000, 601).code).to.equal(901006);
+        expect(parseNetworkError(900000, 399).code).to.equal(901006);
     })
 });

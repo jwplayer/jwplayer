@@ -1,5 +1,5 @@
 import { throttle, each } from 'utils/underscore';
-import { between } from 'utils/helpers';
+import { between } from 'utils/math';
 import { style } from 'utils/css';
 import { timeFormat } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
@@ -114,7 +114,7 @@ class TimeSlider extends Slider {
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
         this.elementUI = new UI(this.el, { useHover: true, useMove: true })
             .on('drag move over', this.showTimeTooltip, this)
-            .on('out', this.hideTimeTooltip, this)
+            .on('dragEnd out', this.hideTimeTooltip, this)
             .on('click', () => this.el.focus());
 
         this.el.addEventListener('focus', () => this.updateAriaText());

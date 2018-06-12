@@ -44,13 +44,14 @@ const DefaultProvider = {
     setVisibility: noop,
     setFullscreen: noop,
     getFullscreen: returnFalse,
+    supportsFullscreen: returnFalse,
 
     // If setContainer has been set, this returns the element.
     //  It's value is used to determine if we should remove the <video> element when setting a new provider.
     getContainer: noop,
 
     // Sets the parent element, causing provider to append <video> into it
-    setContainer: returnFalse,
+    setContainer: noop,
 
     getName: returnName,
 
@@ -78,25 +79,26 @@ const DefaultProvider = {
         return null;
     },
 
-    // TODO :: The following are targets for removal after refactoring
-    checkComplete: noop,
+    // TODO: Deprecate provider.setControls(bool) with Flash. It's used to toggle the cursor when the swf is in focus.
     setControls: noop,
+
     attachMedia: noop,
     detachMedia: noop,
     init: noop,
 
-    setState: function(state) {
-        this.state = state;
+    setState: function(newstate) {
+        this.state = newstate;
 
         this.trigger(PLAYER_STATE, {
-            newstate: state
+            newstate
         });
     },
 
-    sendMediaType: function(levels) {
-        const { type, mimeType } = levels[0];
-        const isAudioFile = (type === 'oga' || type === 'aac' || type === 'mp3' ||
-            type === 'mpeg' || type === 'vorbis' || (mimeType && mimeType.indexOf('audio/') === 0));
+    sendMediaType: function(sources) {
+        const { type, mimeType } = sources[0];
+
+        const isAudioFile = (type === 'aac' || type === 'mp3' || type === 'mpeg' ||
+            (mimeType && mimeType.indexOf('audio/') === 0));
 
         this.trigger(MEDIA_TYPE, {
             mediaType: isAudioFile ? 'audio' : 'video'

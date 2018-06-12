@@ -4,7 +4,7 @@ import { style } from 'utils/css';
 
 export default function ErrorContainer(model, error) {
     const { message, code } = error;
-    const html = errorContainerTemplate(model.get('id'), message, code);
+    const html = errorContainerTemplate(model.get('id'), message, model.get('localization').errors.errorCode, code);
     const width = model.get('width');
     const height = model.get('height');
     const element = createElement(html);

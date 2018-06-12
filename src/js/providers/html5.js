@@ -7,7 +7,7 @@ import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
 import { style } from 'utils/css';
-import utils from 'utils/helpers';
+import { tryCatch, JwError } from 'utils/trycatch';
 import { emptyElement } from 'utils/dom';
 import DefaultProvider from 'providers/default';
 import Events from 'utils/backbone.events';
@@ -15,11 +15,12 @@ import Tracks from 'providers/tracks-mixin';
 import endOfRange from 'utils/time-ranges';
 import createPlayPromise from 'providers/utils/play-promise';
 import { map } from 'utils/underscore';
-import { PlayerError } from 'api/errors';
+import { PlayerError, MSG_LIVE_STREAM_DOWN } from 'api/errors';
 
 const clearTimeout = window.clearTimeout;
 const MIN_DVR_DURATION = 120;
 const _name = 'html5';
+const noop = function () {};
 
 function _setupListeners(eventsHash, videoTag) {
     Object.keys(eventsHash).forEach(eventName => {
@@ -221,7 +222,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     let _levels;
     let _currentQuality = -1;
     let _fullscreenState = false;
-    let _beforeResumeHandler = utils.noop;
+    let _beforeResumeHandler = noop;
     let _audioTracks = null;
     let _currentAudioTrackIndex = -1;
     let _staleStreamTimeout = -1;
@@ -310,7 +311,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     function _getPublicLevels(levels) {
         let publicLevels;
-        if (utils.typeOf(levels) === 'array' && levels.length > 0) {
+        if (Array.isArray(levels) && levels.length > 0) {
             publicLevels = levels.map(function(level, i) {
                 return {
                     label: level.label || i
@@ -461,7 +462,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
     };
 
     this.destroy = function() {
-        _beforeResumeHandler = utils.noop;
+        _beforeResumeHandler = noop;
         _removeListeners(MediaEvents, _videotag);
         this.removeTracksListener(_videotag.audioTracks, 'change', _audioTrackChangeHandler);
         this.removeTracksListener(_videotag.textTracks, 'change', _this.textTrackChangeHandler);
@@ -476,7 +477,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
             // Playback rate is broken on Android HLS
             _this.supportsPlaybackRate = false;
             // Android HLS doesnt update its times correctly so it always falls in here.  Do not allow it to stall.
-            MediaEvents.waiting = utils.noop;
+            MediaEvents.waiting = noop;
         }
         _this.eventsOn_();
         // the loadeddata event determines the mediaType for HLS sources
@@ -600,7 +601,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         // This implementation is for iOS and Android WebKit only
         // This won't get called if the player container can go fullscreen
         if (state) {
-            const status = utils.tryCatch(function() {
+            const status = tryCatch(function() {
                 const enterFullscreen =
                     _videotag.webkitEnterFullscreen ||
                     _videotag.webkitEnterFullScreen;
@@ -610,7 +611,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
             });
 
-            if (status instanceof utils.Error) {
+            if (status instanceof JwError) {
                 // object can't go fullscreen
                 return false;
             }
@@ -777,7 +778,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         if (_stale && _this.atEdgeOfLiveStream()) {
             _this.trigger(
                 MEDIA_ERROR,
-                new PlayerError('The live stream is either down or has ended', HTML5_ERROR_LIVE_STREAM_DOWN_OR_ENDED)
+                new PlayerError(MSG_LIVE_STREAM_DOWN, HTML5_ERROR_LIVE_STREAM_DOWN_OR_ENDED)
             );
             return true;
         }

@@ -2,8 +2,8 @@ import { STATE_IDLE, STATE_COMPLETE, STATE_STALLED, STATE_LOADING, STATE_PLAYING
     PROVIDER_FIRST_FRAME, CLICK, MEDIA_BUFFER_FULL, MEDIA_RATE_CHANGE, MEDIA_ERROR,
     MEDIA_BUFFER, MEDIA_META, MEDIA_TIME, MEDIA_SEEKED, MEDIA_VOLUME, MEDIA_MUTE, MEDIA_COMPLETE
 } from 'events/events';
-import utils from 'utils/helpers';
-import { PlayerError } from 'api/errors';
+import { between } from 'utils/math';
+import { PlayerError, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR, MSG_BAD_CONNECTION } from 'api/errors';
 
 // This will trigger the events required by jwplayer model to
 //  properly follow the state of the video tag
@@ -11,6 +11,18 @@ import { PlayerError } from 'api/errors';
 // Assumptions
 //  1. All functions are bound to the "this" of the provider
 //  2. The provider has an attribute "video" which is the video tag
+
+/**
+ *
+ @enum {ErrorCode} - The HTML5 media element encountered an error.
+ */
+const HTML5_BASE_MEDIA_ERROR = 224000;
+
+/**
+ *
+ @enum {ErrorCode} - The HTML5 media element encountered a network error.
+ */
+const HTML5_NETWORK_ERROR = 221000;
 
 const VideoListenerMixin = {
     canplay() {
@@ -136,7 +148,7 @@ const VideoListenerMixin = {
             return;
         }
 
-        const buffered = utils.between(buf.end(buf.length - 1) / dur, 0, 1);
+        const buffered = between(buf.end(buf.length - 1) / dur, 0, 1);
         this.trigger(MEDIA_BUFFER, {
             bufferPercent: buffered * 100,
             position: this.getCurrentTime(),
@@ -165,33 +177,26 @@ const VideoListenerMixin = {
     },
     error() {
         const errorCode = (this.video.error && this.video.error.code) || -1;
-        const errorData = [
-            ['Unknown', 0],
-            ['Unknown operation aborted', 1],
-            ['Unknown network error', 0],
-            ['Unknown decode error', 2],
-            ['File could not be played', 3]
-        ][errorCode] || ['Unknown', 0];
         // Error code 2 from the video element is a network error
-        const code = errorData[1] += (errorCode === 2 ? HTML5_NETWORK_ERROR : HTML5_BASE_MEDIA_ERROR);
+        let code = HTML5_BASE_MEDIA_ERROR;
+        let key = MSG_CANT_PLAY_VIDEO;
+
+        if (errorCode === 1) {
+            code += errorCode;
+        } else if (errorCode === 2) {
+            key = MSG_BAD_CONNECTION;
+            code = HTML5_NETWORK_ERROR;
+        } else if (errorCode === 3 || errorCode === 4) {
+            code += errorCode - 1;
+        } else {
+            key = MSG_TECHNICAL_ERROR;
+        }
 
         this.trigger(
             MEDIA_ERROR,
-            new PlayerError(`Error loading media ${errorData[0]}`, code, this.video.error)
+            new PlayerError(key, code, this.video.error)
         );
     }
 };
 
 export default VideoListenerMixin;
-
-/**
- *
- @enum {ErrorCode} - The HTML5 media element encountered an error.
- */
-const HTML5_BASE_MEDIA_ERROR = 224000;
-
-/**
- *
- @enum {ErrorCode} - The HTML5 media element encountered a network error.
- */
-const HTML5_NETWORK_ERROR = 221000;

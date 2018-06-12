@@ -1,15 +1,15 @@
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
 import { localName } from 'parsers/parsers';
 import parseRss from 'parsers/rssparser';
-import utils from 'utils/helpers';
+import { ajax } from 'utils/ajax';
 import Events from 'utils/backbone.events';
-import { PlayerError } from 'api/errors';
+import { PlayerError, MSG_CANT_PLAY_VIDEO } from 'api/errors';
 
 const PlaylistLoader = function() {
     const _this = Object.assign(this, Events);
 
     this.load = function(playlistfile) {
-        utils.ajax(playlistfile, playlistLoaded, (message, file, url, error) => {
+        ajax(playlistfile, playlistLoaded, (message, file, url, error) => {
             playlistError(error);
         });
     };
@@ -53,7 +53,7 @@ const PlaylistLoader = function() {
                         throw Error('Playlist is not an array');
                     }
                 } catch (e) {
-                    throw new PlayerError('Not a valid RSS/JSON feed', 621, e);
+                    throw new PlayerError(MSG_CANT_PLAY_VIDEO, 621, e);
                 }
             }
 
@@ -65,9 +65,8 @@ const PlaylistLoader = function() {
 
     function playlistError(error) {
         if (!error.code) {
-            error = new PlayerError(error ? error : 'Error loading file', 0);
+            error = new PlayerError(MSG_CANT_PLAY_VIDEO, 0);
         }
-        error.message = `Error loading playlist: ${error.message}`;
         _this.trigger(ERROR, error);
     }
 };

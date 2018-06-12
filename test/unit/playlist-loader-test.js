@@ -1,5 +1,6 @@
 import PlaylistLoader from 'playlist/loader';
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
+import { MSG_CANT_PLAY_VIDEO } from 'api/errors';
 
 describe('playlist/loader', function() {
     this.timeout(5000);
@@ -32,7 +33,7 @@ describe('playlist/loader', function() {
         return expectLoaderError('/base/test/files/invalid.json')
             .then(e => {
                 expect(e.code).to.equal(621);
-                expect(e.message).to.equal('Error loading playlist: Not a valid RSS/JSON feed');
+                expect(e.key).to.equal(MSG_CANT_PLAY_VIDEO);
             });
     });
 
@@ -40,7 +41,7 @@ describe('playlist/loader', function() {
         return expectLoaderError('/base/test/files/invalid.xml')
             .then(e => {
                 expect(e.code).to.equal(621);
-                expect(e.message).to.equal('Error loading playlist: Not a valid RSS/JSON feed');
+                expect(e.key).to.equal(MSG_CANT_PLAY_VIDEO);
             });
     });
 });

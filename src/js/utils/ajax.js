@@ -1,5 +1,5 @@
 import { parseXML } from 'utils/parser';
-import { PlayerError } from 'api/errors';
+import { PlayerError, MSG_TECHNICAL_ERROR, MSG_CANT_PLAY_VIDEO } from 'api/errors';
 
 // XHR Request Errors
 const ERROR_TIMEOUT = 1;
@@ -47,7 +47,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
         xhr = options.xhr = options.xhr || new window.XMLHttpRequest();
     } else {
         // browser cannot make xhr requests
-        _error(options, '', ERROR_XHR_UNDEFINED);
+        _error(options, MSG_TECHNICAL_ERROR, ERROR_XHR_UNDEFINED);
         return;
     }
     if (typeof options.requestFilter === 'function') {
@@ -95,7 +95,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
     if (options.timeout) {
         options.timeoutId = setTimeout(function() {
             abortAjax(xhr);
-            _error(options, 'Timeout', ERROR_TIMEOUT);
+            _error(options, MSG_TECHNICAL_ERROR, ERROR_TIMEOUT);
         }, options.timeout);
         xhr.onabort = function() {
             clearTimeout(options.timeoutId);
@@ -145,12 +145,12 @@ function _requestError(message, options) {
             code = xhr.status;
         }
 
-        _error(options, message, code || ERROR_XHR_UNKNOWN, errorOrEvent);
+        _error(options, code ? MSG_CANT_PLAY_VIDEO : MSG_TECHNICAL_ERROR, code || ERROR_XHR_UNKNOWN, errorOrEvent);
     };
 }
 
-function _error(options, message, code, error) {
-    options.onerror(message, options.url, options.xhr, new PlayerError(message, code, error));
+function _error(options, key, code, error) {
+    options.onerror(key, options.url, options.xhr, new PlayerError(key, code, error));
 }
 
 function _readyStateChangeHandler(options) {
@@ -159,13 +159,7 @@ function _readyStateChangeHandler(options) {
         if (xhr.readyState === 4) {
             clearTimeout(options.timeoutId);
             if (xhr.status >= 400) {
-                let message;
-                if (xhr.status === 404) {
-                    message = 'File not found';
-                } else {
-                    message = '' + xhr.status + '(' + xhr.statusText + ')';
-                }
-                _error(options, message, (xhr.status < 600) ? xhr.status : ERROR_XHR_UNKNOWN);
+                _error(options, MSG_CANT_PLAY_VIDEO, (xhr.status < 600) ? xhr.status : ERROR_XHR_UNKNOWN);
                 return;
             }
             if (xhr.status === 200) {
@@ -206,7 +200,7 @@ function _ajaxComplete(options) {
                 }
             }
             if (options.requireValidXML) {
-                _error(options, 'Invalid XML', ERROR_NO_XML);
+                _error(options, MSG_CANT_PLAY_VIDEO, ERROR_NO_XML);
                 return;
             }
         }
@@ -223,7 +217,7 @@ function _jsonResponse(xhr, options) {
                 response: JSON.parse(xhr.responseText)
             });
         } catch (err) {
-            _error(options, 'Invalid JSON', ERROR_JSON_PARSE, err);
+            _error(options, MSG_CANT_PLAY_VIDEO, ERROR_JSON_PARSE, err);
             return;
         }
     }
@@ -236,7 +230,7 @@ function _xmlResponse(xhr, xml, options) {
     const doc = xml.documentElement;
     if (options.requireValidXML &&
             (doc.nodeName === 'parsererror' || doc.getElementsByTagName('parsererror').length)) {
-        _error(options, 'Invalid XML', ERROR_DOM_PARSER);
+        _error(options, MSG_CANT_PLAY_VIDEO, ERROR_DOM_PARSER);
         return;
     }
     if (!xhr.responseXML) {

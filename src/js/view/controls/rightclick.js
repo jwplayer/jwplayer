@@ -207,10 +207,14 @@ export default class RightClick {
         }
 
         if (this.playerElement) {
-            this.playerElement.removeEventListener('touchstart', this.startLongPressHandler);
-            this.playerElement.removeEventListener('touchmove', this.cancelLongPressHandler);
-            this.playerElement.removeEventListener('touchend', this.cancelLongPressHandler);
-            this.playerElement.removeEventListener('touchcancel', this.cancelLongPressHandler);
+            if (this.startLongPressHandler) {
+                this.playerElement.removeEventListener('touchstart', this.startLongPressHandler);
+            }
+            if (this.cancelLongPressHandler) {
+                this.playerElement.removeEventListener('touchmove', this.cancelLongPressHandler);
+                this.playerElement.removeEventListener('touchend', this.cancelLongPressHandler);
+                this.playerElement.removeEventListener('touchcancel', this.cancelLongPressHandler);
+            }
             this.playerElement.oncontextmenu = null;
             this.playerElement = null;
         }

@@ -98,6 +98,13 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
             onVisibility(visible, event);
             settingsMenuElement.setAttribute('aria-expanded', 'true');
             document.addEventListener('click', documentClickHandler);
+
+            // menu icon should be in focus on enter, but we should focus on the first item within the menu if the interaction is with the up/down arrow
+            if (isDefault && event && event.type === 'enter') {
+                active.categoryButtonElement.focus();
+                return;
+            }
+
             active.element().firstChild.focus();
         },
         close(event) {
@@ -165,18 +172,18 @@ export function SettingsMenu(onVisibility, onSubmenuAdded, onMenuEmpty) {
         },
         activateSubmenu(name, focusOnLast) {
             const submenu = submenus[name];
-            if (!submenu || submenu.active) {
-                return;
-            }
+            if (submenu) {
+                if (!submenu.active) {
+                    deactivateAllSubmenus(submenus);
+                    submenu.activate();
+                    active = submenu;
+                }
 
-            deactivateAllSubmenus(submenus);
-            submenu.activate();
-            active = submenu;
-
-            if (focusOnLast) {
-                active.element().lastChild.focus();
-            } else {
-                active.element().firstChild.focus();
+                if (focusOnLast) {
+                    submenu.element().lastChild.focus();
+                } else {
+                    submenu.element().firstChild.focus();
+                }
             }
         },
         activateFirstSubmenu() {

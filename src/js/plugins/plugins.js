@@ -1,6 +1,6 @@
 import PluginsLoader from 'plugins/loader';
 import PluginsModel from 'plugins/model';
-import { log } from 'utils/helpers';
+import { log } from 'utils/log';
 
 const pluginsModel = new PluginsModel();
 

@@ -128,7 +128,7 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             settingsMenu,
             playbackRates,
             (playbackRate) => api.setPlaybackRate(playbackRate),
-            model.get('playbackRate'),
+            playbackRates.indexOf(model.get('playbackRate')),
             model.get('localization').playbackRates
         );
     };

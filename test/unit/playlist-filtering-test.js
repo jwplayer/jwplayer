@@ -184,14 +184,13 @@ describe('playlist.validatePlaylist', function() {
         const validateEmptyPlaylist = function() {
             validatePlaylist([]);
         };
-
-        expect(validateEmptyPlaylist).to.throw('Playlist error: No playable sources found');
+        expect(validateEmptyPlaylist).to.throw();
 
         const validateInvalidPlaylist = function() {
             validatePlaylist(null);
         };
 
-        expect(validateInvalidPlaylist).to.throw('Playlist error: No playable sources found');
+        expect(validateInvalidPlaylist).to.throw();
     });
 
 

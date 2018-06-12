@@ -69,6 +69,40 @@ export const FLASH_ERROR = 210000;
  */
 export const FLASH_MEDIA_ERROR = 214000;
 
+/**
+ * @enum {ErrorKey}
+ */
+export const MSG_CANT_PLAY_VIDEO = 'cantPlayVideo';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const MSG_BAD_CONNECTION = 'badConnection';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const MSG_CANT_LOAD_PLAYER = 'cantLoadPlayer';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const MSG_CANT_PLAY_IN_BROWSER = 'cantPlayInBrowser';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const MSG_LIVE_STREAM_DOWN = 'liveStreamDown';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const MSG_PROTECTED_CONTENT = 'protectedContent';
+
+/**
+ * @enum {ErrorKey}
+ */
+export const MSG_TECHNICAL_ERROR = 'technicalError';
 
 /**
  * Class used to create "setupError" and "error" event instances.
@@ -78,9 +112,9 @@ export const FLASH_MEDIA_ERROR = 214000;
  * @param {sourceError} [Error] - The lower level error, caught by the player, which resulted in this error.
  */
 export class PlayerError {
-    constructor(message, code, sourceError = null) {
+    constructor(key, code, sourceError = null) {
         this.code = isValidNumber(code) ? code : 0;
-        this.message = message;
+        this.key = key;
         this.sourceError = sourceError;
     }
 
