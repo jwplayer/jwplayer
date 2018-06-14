@@ -89,9 +89,12 @@ const Model = function() {
     };
 
     this.setVolume = function(volume) {
-        volume = Math.round(volume);
-        this.set('volume', volume);
-        const mute = (volume === 0);
+        if (!isValidNumber(volume)) {
+            return;
+        }
+        const vol = Math.max(Math.min(volume, 100), 0);
+        this.set('volume', vol);
+        const mute = (vol === 0);
         if (mute !== (this.getMute())) {
             this.setMute(mute);
         }
@@ -105,7 +108,7 @@ const Model = function() {
         if (mute === undefined) {
             mute = !(this.getMute());
         }
-        this.set('mute', mute);
+        this.set('mute', !!mute);
         if (!mute) {
             const volume = Math.max(10, this.get('volume'));
             this.set('autostartMuted', false);

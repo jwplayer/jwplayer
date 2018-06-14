@@ -113,8 +113,9 @@ const Config = function(options, persisted) {
     __webpack_public_path__ = config.base;
     config.width = _normalizeSize(config.width);
     config.height = _normalizeSize(config.height);
-
     config.aspectratio = _evaluateAspectRatio(config.aspectratio, config.width);
+    config.volume = isValidNumber(config.volume) ? config.volume : Defaults.volume;
+    config.mute = !!config.mute;
 
     let rateControls = config.playbackRateControls;
 

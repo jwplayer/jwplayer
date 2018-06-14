@@ -34,6 +34,13 @@ describe('Media Element Pool', function () {
         }
     });
 
+    it('handles invalid volume values', function () {
+        mediaPool.syncVolume(-50000);
+        for (let i = 0; i < numTags; i++) {
+            expect(mediaPool.getPrimedElement().volume).to.equal(0);
+        }
+    });
+
     it('provides an exclusive element to ad pools', function () {
         const adElement = mediaPool.getAdElement();
         expect(adElement).to.not.equal(null);
