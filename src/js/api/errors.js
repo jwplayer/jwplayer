@@ -45,12 +45,17 @@ export const ERROR_LOADING_PLAYLIST = 202000;
 export const SETUP_ERROR_LOADING_PROVIDER = 104000;
 
 /**
- * @enum {ErrorCode} Between playlist items, the required provider could not be loaded be.
+ * @enum {ErrorCode} An error occurred when switching playlist items.
  */
 export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
 
 /**
- * @enum {ErrorCode} Using the load API, the required provider could not be loaded.
+ * @enum {ErrorCode} The current playlist item has no source media.
+ */
+export const ERROR_PLAYLIST_ITEM_MISSING_SOURCE = 203640;
+
+/**
+ * @enum {ErrorCode} Between playlist items, the required provider could not be loaded.
  */
 export const ERROR_LOADING_PROVIDER = 204000;
 
@@ -128,8 +133,18 @@ export class PlayerError {
         }
         return `JW Player Error ${code}. For more information see https://developer.jwplayer.com/jw-player/docs/developer-guide/api/errors-reference#${codeStr}`;
     }
+}
 
-    static compose(code, superCode) {
-        return (code || 0) + superCode;
+export function convertToPlayerError(key, code, error) {
+    if (!(error instanceof PlayerError) || !error.code) {
+        // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
+        return new PlayerError(key, code, error);
     }
+    return error;
+}
+
+export function composePlayerError(error, superCode) {
+    const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, superCode, error);
+    playerError.code = (error.code || 0) + superCode;
+    return playerError;
 }

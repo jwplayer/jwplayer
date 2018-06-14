@@ -4,7 +4,8 @@ import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
-import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
+import { composePlayerError,
+    SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -19,8 +20,7 @@ export function loadPlaylist(_model) {
             });
             playlistLoader.on(ERROR, e => {
                 setPlaylistAttributes(_model, [], {});
-                e.code = PlayerError.compose(e.code, SETUP_ERROR_LOADING_PLAYLIST);
-                reject(e);
+                reject(composePlayerError(e, SETUP_ERROR_LOADING_PLAYLIST));
             });
             playlistLoader.load(playlist);
         });
@@ -68,8 +68,7 @@ function loadProvider(_model) {
         }
         return providersManager.load(name)
             .catch(e => {
-                e.code = PlayerError.compose(e.code, SETUP_ERROR_LOADING_PROVIDER);
-                throw e;
+                throw composePlayerError(e, SETUP_ERROR_LOADING_PROVIDER);
             });
     });
 }

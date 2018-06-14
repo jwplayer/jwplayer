@@ -1,6 +1,7 @@
 import sinon from 'sinon';
 import CoreShim from 'api/core-shim';
-import { SETUP_ERROR } from 'events/events';
+import { PlayerError } from 'api/errors';
+import { SETUP_ERROR, READY } from 'events/events';
 
 describe('CoreShim', function() {
     let core;
@@ -10,17 +11,33 @@ describe('CoreShim', function() {
     });
 
     function expectError(expectedCode) {
-        sandbox.stub(core.setup, 'start').callsFake(() => Promise.reject({ message: 'foo', code: expectedCode }));
-        const expectError =
-            new Promise((resolve, reject) => {
-                core.on(SETUP_ERROR, e => resolve(e));
-            })
-                .then(e => {
-                    expect(e.code).to.equal(expectedCode);
-                })
+        sandbox.stub(core.setup, 'start').callsFake(() => Promise.reject(new PlayerError('', expectedCode)));
 
-        core.init({}, {});
-        return expectError;
+        return new Promise((resolve, reject) => {
+            core.on(SETUP_ERROR, e => resolve(e));
+            core.on(READY, e => reject(e));
+            core.init({}, {}).catch(reject);
+        }).then(e => {
+            expect(e.code).to.equal(expectedCode);
+        });
+    }
+
+    function getReadOnlyError() {
+        // This creates an error object with read-only message and code properties
+        // This is to mock DOMException which can occur during setup and must be replaced
+        // with a player error
+        return Object.create(Error.prototype, {
+            code: {
+                writable: false,
+                configurable: false,
+                value: 1
+            },
+            message: {
+                writable: false,
+                configurable: false,
+                value: 'Read-only Error object'
+            },
+        });
     }
 
     it('is a constructor', function() {
@@ -42,5 +59,21 @@ describe('CoreShim', function() {
 
     it('passes through a valid error code', function () {
         return expectError(424242);
+    });
+
+    it('handles DOMExceptions with setupError code 100000', function () {
+        sandbox.stub(core.setup, 'start').callsFake(() => Promise.reject(getReadOnlyError()));
+
+        return new Promise((resolve, reject) => {
+            core.on(SETUP_ERROR, e => resolve(e));
+            core.on(READY, e => reject(e));
+            core.init({}, {}).catch(reject);
+        }).then(e => {
+            expect(() => {
+                getReadOnlyError().message = 'New error message.';
+            }).to.throw();
+            expect(e).instanceof(PlayerError);
+            expect(e.code).to.equal(100000);
+        });
     });
 });

@@ -27,7 +27,8 @@ import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
 import Item from 'playlist/item';
-import { PlayerError, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
+import { composePlayerError, convertToPlayerError, MSG_CANT_PLAY_VIDEO,
+    ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -38,6 +39,7 @@ function normalizeState(newstate) {
 }
 
 const Controller = function() {};
+const noop = function() {};
 
 Object.assign(Controller.prototype, {
     setup(config, _api, originalContainer, eventListeners, commandQueue, mediaPool) {
@@ -51,7 +53,7 @@ Object.assign(Controller.prototype, {
         let _stopPlaylist = false;
         let _interruptPlay;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
-        let updatePlaylistCancelable = cancelable(function() {});
+        let updatePlaylistCancelable = cancelable(noop);
         let primeBeforePlay = true;
 
         _this.originalContainer = _this.currentContainer = originalContainer;
@@ -308,7 +310,7 @@ Object.assign(Controller.prototype, {
                         if (_model.get('state') === 'idle') {
                             _programController.preloadVideo();
                         }
-                    }).catch(() => {});
+                    }).catch(noop);
                 } else {
                     _programController.preloadVideo();
                 }
@@ -366,16 +368,12 @@ Object.assign(Controller.prototype, {
                 default:
                     return;
             }
-            loadPromise.catch(e => {
-                if (e.code >= 151 && e.code <= 162) {
-                    e.code = PlayerError.compose(e.code, ERROR_LOADING_PROVIDER);
-                } else {
-                    e.code = PlayerError.compose(e.code, ERROR_LOADING_PLAYLIST);
-                }
-                _this.triggerError(e);
+            // Catch playlist exceptions. Item exceptions are caught first from setActiveItem.
+            loadPromise.catch(error => {
+                _this.triggerError(composePlayerError(error, ERROR_LOADING_PLAYLIST));
             });
 
-            loadPromise.then(checkAutoStartCancelable.async).catch(function() {});
+            loadPromise.then(checkAutoStartCancelable.async).catch(noop);
         }
 
         function _loadPlaylist(toLoad) {
@@ -601,14 +599,9 @@ Object.assign(Controller.prototype, {
 
         function _item(index, meta) {
             _stop(true);
-            _setItem(index)
-                .catch(e => {
-                    e.code = PlayerError.compose(e.code, ERROR_LOADING_PLAYLIST_ITEM);
-                    throw e;
-                });
-            _play(meta).catch(() => {
-                // Suppress "Uncaught (in promise) Error"
-            });
+            _setItem(index);
+            // Suppress "Uncaught (in promise) Error"
+            _play(meta).catch(noop);
         }
 
         function _setItem(index) {
@@ -623,7 +616,12 @@ Object.assign(Controller.prototype, {
                 index += length;
             }
 
-            return _programController.setActiveItem(index);
+            return _programController.setActiveItem(index).catch(error => {
+                if (error.code >= 151 && error.code <= 162) {
+                    error = composePlayerError(error, ERROR_LOADING_PROVIDER);
+                }
+                _this.triggerError(convertToPlayerError(MSG_CANT_PLAY_VIDEO, ERROR_LOADING_PLAYLIST_ITEM, error));
+            });
         }
 
         function _prev(meta) {

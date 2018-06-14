@@ -1,4 +1,3 @@
-import sinon from 'sinon';
 import { chunkLoadErrorHandler } from 'api/core-loader';
 
 describe('core-loader errors', function () {

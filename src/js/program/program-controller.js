@@ -5,8 +5,8 @@ import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
 import BackgroundMedia from 'program/background-media';
-import { ERROR, PLAYER_STATE, STATE_BUFFERING } from 'events/events';
-import { PlayerError, MSG_CANT_PLAY_VIDEO } from 'api/errors';
+import { PLAYER_STATE, STATE_BUFFERING } from 'events/events';
+import { PlayerError, MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE } from 'api/errors';
 
 /** @private Do not include in JSDocs */
 
@@ -50,7 +50,7 @@ class ProgramController extends Eventable {
         model.setActiveItem(index);
         const source = getSource(item);
         if (!source) {
-            return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, 640));
+            return Promise.reject(new PlayerError(MSG_CANT_PLAY_VIDEO, ERROR_PLAYLIST_ITEM_MISSING_SOURCE));
         }
 
         // Activate the background media if it's loading the item we want to play
@@ -135,9 +135,6 @@ class ProgramController extends Eventable {
             playPromise = this.loadPromise
                 .catch(error => {
                     thenPlayPromise.cancel();
-                    // Required provider was not loaded
-                    error.message = `Could not play video: ${error.message}`;
-                    model.trigger(ERROR, error);
                     // Fail the playPromise to trigger "playAttemptFailed"
                     throw error;
                 })
