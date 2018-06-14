@@ -12,7 +12,8 @@ import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
-import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, MSG_TECHNICAL_ERROR } from 'api/errors';
+import { PlayerError, composePlayerError, convertToPlayerError,
+    SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, MSG_TECHNICAL_ERROR } from 'api/errors';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -125,9 +126,8 @@ Object.assign(CoreShim.prototype, {
 
             // Set the active playlist item after plugins are loaded and the view is setup
             return this.updatePlaylist(coreModel.get('playlist'), coreModel.get('feedData'))
-                .catch(e => {
-                    e.code = PlayerError.compose(e.code, SETUP_ERROR_LOADING_PLAYLIST);
-                    throw e;
+                .catch(error => {
+                    throw composePlayerError(error, SETUP_ERROR_LOADING_PLAYLIST);
                 });
         }).then(() => {
             if (!this.setup) {
@@ -242,27 +242,23 @@ Object.assign(CoreShim.prototype, {
 
 function setupError(core, error) {
     resolved.then(() => {
-        let errorEvent = error;
+        const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         const model = core._model || core.modelShim;
 
-        if (!(error instanceof PlayerError) || !error.code) {
-            // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
-            errorEvent = new PlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
-        }
         // The message may have already been created (eg. multiple players on a page where a plugin fails to load)
-        errorEvent.message = errorEvent.message || model.get('localization').errors[errorEvent.key];
-        errorEvent.key = null;
+        playerError.message = playerError.message || model.get('localization').errors[playerError.key];
+        delete playerError.key;
 
-        const errorContainer = ErrorContainer(core, errorEvent);
+        const errorContainer = ErrorContainer(core, playerError);
         if (ErrorContainer.cloneIcon) {
             errorContainer.querySelector('.jw-icon').appendChild(ErrorContainer.cloneIcon('error'));
         }
         showView(core, errorContainer);
 
-        model.set('errorEvent', errorEvent);
+        model.set('errorEvent', playerError);
         model.set('state', STATE_ERROR);
 
-        core.trigger(SETUP_ERROR, errorEvent);
+        core.trigger(SETUP_ERROR, playerError);
     });
 }
 

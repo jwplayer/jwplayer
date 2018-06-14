@@ -4,8 +4,11 @@ import MediaElementPool from 'program/media-element-pool';
 import { Features } from 'environment/environment';
 import MockProvider, { MockVideolessProvider } from 'mock/mock-provider';
 import sinon from 'sinon';
-import Config from 'api/config';
-import { MSG_CANT_PLAY_VIDEO } from 'api/errors';
+import {
+    PlayerError,
+    MSG_CANT_PLAY_VIDEO,
+    ERROR_PLAYLIST_ITEM_MISSING_SOURCE
+} from 'api/errors';
 
 const defaultConfig = {
     playlist: null,
@@ -71,6 +74,24 @@ const providerPlayerModelEvents = [
         data: 'metadata'
     }
 ];
+
+function getReadOnlyError() {
+    // This creates an error object with read-only message and code properties
+    // This is to mock DOMException which can occur during setup and must be replaced
+    // with a player error
+    return Object.create(Error.prototype, {
+        code: {
+            writable: false,
+            configurable: false,
+            value: 123
+        },
+        message: {
+            writable: false,
+            configurable: false,
+            value: 'Read-only Error object'
+        },
+    });
+}
 
 describe('ProgramController', function () {
     const sandbox = sinon.sandbox.create();
@@ -365,7 +386,9 @@ describe('ProgramController', function () {
     });
 
     it('videoless providers are detached instead of backgrounded', function() {
-        programController.providers.choose = () => ({ name: 'mockVideoless', provider: MockVideolessProvider });
+        sandbox.stub(programController.providers,
+            'choose').callsFake(() => ({ name: 'mockVideoless', provider: MockVideolessProvider }));
+
         return programController.setActiveItem(0)
             .then(function () {
                 const provider = programController.mediaController.provider;
@@ -427,10 +450,9 @@ describe('ProgramController', function () {
                     .then(() => {
                         reject(new Error('Should have thrown an error'));
                     })
-                    .catch(e => {
-                        expect(e.code).to.equal(153);
-                        resolve();
-                    });
+                    .catch(resolve);
+            }).then(e => {
+                expect(e.code).to.equal(153);
             });
         });
 
@@ -441,13 +463,33 @@ describe('ProgramController', function () {
                     .then(() => {
                         reject(new Error('Should have thrown an error'));
                     })
-                    .catch(e => {
-                        expect(e.code).to.equal(640);
-                        expect(e.key).to.equal(MSG_CANT_PLAY_VIDEO);
-                        resolve();
-                    });
+                    .catch(resolve);
+            }).then(e => {
+                expect(e).instanceof(PlayerError);
+                expect(e.code).to.equal(ERROR_PLAYLIST_ITEM_MISSING_SOURCE);
+                expect(e.key).to.equal(MSG_CANT_PLAY_VIDEO);
             });
         });
+
+        it('forwards exceptions thrown in setActiveItem', function() {
+            sandbox.stub(programController,
+                '_setupMediaController').callsFake(() => Promise.reject(getReadOnlyError()));
+            return new Promise((resolve, reject) => {
+                programController.setActiveItem(0)
+                    .then(() => {
+                        reject(new Error('Should have thrown an error'));
+                    })
+                    .catch(resolve);
+            }).then(e => {
+                expect(() => {
+                    e.message = 'New error message.';
+                }).to.throw();
+                expect(e.code).to.equal(123);
+                expect(e.message).to.equal('Read-only Error object');
+            });
+        });
+
+        //
     });
 });
 
