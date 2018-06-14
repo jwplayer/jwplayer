@@ -45,7 +45,7 @@ export const ERROR_LOADING_PLAYLIST = 202000;
 export const SETUP_ERROR_LOADING_PROVIDER = 104000;
 
 /**
- * @enum {ErrorCode} An error occurred setting up the current playlist item.
+ * @enum {ErrorCode} An error occurred when switching playlist items.
  */
 export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
 
