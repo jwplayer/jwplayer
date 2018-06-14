@@ -13,7 +13,6 @@ import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
 import { PlayerError, SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, MSG_TECHNICAL_ERROR } from 'api/errors';
-import { isValidNumber } from 'utils/underscore';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -246,7 +245,7 @@ function setupError(core, error) {
         let errorEvent = error;
         const model = core._model || core.modelShim;
 
-        if (!isValidNumber(error.code)) {
+        if (!(error instanceof PlayerError) || !error.code) {
             // Transform any unhandled error into a PlayerError so emitted events adhere to a uniform structure
             errorEvent = new PlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         }
@@ -270,6 +269,9 @@ function setupError(core, error) {
 function logError(model, error) {
     if (!error || !error.code) {
         return;
+    }
+    if (error.sourceError) {
+        console.error(error.sourceError);
     }
     console.error(PlayerError.logMessage(error.code));
 }
