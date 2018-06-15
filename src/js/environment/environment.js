@@ -53,8 +53,8 @@ function supportsPassive() {
  * @property {boolean} edge - Is the browser Edge?
  * @property {boolean} facebook - Is the browser a Facebook webview?
  * @property {boolean} firefox - Is the browser Firefox?
- * @property {boolean} ie - Is the browser Internet Explorer?
- * @property {boolean} msie - Is the browser MSIE?
+ * @property {boolean} ie - Is the browser IE or Edge?
+ * @property {boolean} msie - Is the browser Internet Explorer?
  * @property {boolean} safari - Is the browser Safari?
  * @property {EnvironmentVersion} version - The browser version.
  */
