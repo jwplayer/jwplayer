@@ -306,7 +306,7 @@ Object.assign(Controller.prototype, {
                 if (primeBeforePlay && OS.android) {
                     const video = mediaPool.getTestElement();
                     const muted = _this.getMute();
-                    startPlayback(video, { muted }).then(() => {
+                    resolved.then(() => startPlayback(video, { muted })).then(() => {
                         if (_model.get('state') === 'idle') {
                             _programController.preloadVideo();
                         }
