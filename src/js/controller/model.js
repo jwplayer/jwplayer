@@ -92,7 +92,7 @@ const Model = function() {
         if (!isValidNumber(volume)) {
             return;
         }
-        const vol = Math.max(Math.min(volume, 100), 0);
+        const vol = Math.min(Math.max(0, volume), 100);
         this.set('volume', vol);
         const mute = (vol === 0);
         if (mute !== (this.getMute())) {
