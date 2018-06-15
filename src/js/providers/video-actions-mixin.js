@@ -6,7 +6,7 @@ const VideoActionsMixin = {
     container: null,
 
     volume(vol) {
-        this.video.volume = Math.max(Math.min(vol / 100, 1), 0);
+        this.video.volume = Math.min(Math.max(0, vol / 100), 1);
     },
 
     mute(state) {

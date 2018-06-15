@@ -54,7 +54,7 @@ export default function MediaElementPool() {
             }
         },
         syncVolume: function (volume) {
-            const vol = Math.max(Math.min(volume / 100, 1), 0);
+            const vol = Math.min(Math.max(0, volume / 100), 1);
             elements.forEach(e => {
                 e.volume = vol;
             });
