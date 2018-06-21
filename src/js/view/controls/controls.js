@@ -11,7 +11,7 @@ import NextUpToolTip from 'view/controls/nextuptooltip';
 import RightClick from 'view/controls/rightclick';
 import { createSettingsMenu, setupSubmenuListeners } from 'view/controls/settings-menu';
 import { getBreakpoint } from 'view/utils/breakpoint';
-import { cloneIcon } from 'view/controls/icons';
+import { getCollection, cloneIcon } from 'view/controls/icons';
 import ErrorContainer from 'view/error-container';
 import instances from 'api/players';
 import InfoOverlay from 'view/controls/info-overlay';
@@ -81,6 +81,13 @@ export default class Controls {
         const backdrop = this.context.createElement('div');
         backdrop.className = 'jw-controls-backdrop jw-reset';
         this.backdrop = backdrop;
+
+        if (!document.getElementById('jw-icons')) {
+            this.spritesheet = getCollection();
+            this.playerContainer.appendChild(this.spritesheet);
+        } else {
+            this.spritesheet = document.getElementById('jw-icons');
+        }
 
         this.logo = this.playerContainer.querySelector('.jw-logo');
 
