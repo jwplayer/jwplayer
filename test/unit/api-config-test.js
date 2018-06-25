@@ -136,12 +136,13 @@ describe('API Config', function() {
     describe('playbackRates', function() {
 
         it('should round custom playback rates to nearest hundredth', function() {
-            let rates = [ 0.5, 0.6512, 1 ];
+            let rates = [ 0.999, 0.6512, 0.667, 0.664 ];
             rates = rates.filter(rate => rate >= 0.25 && rate <= 4)
                 .map(rate => Math.round(rate * 100) / 100);
-            expect(rates[0]).to.equal(0.50);
+            expect(rates[0]).to.equal(1);
             expect(rates[1]).to.equal(0.65);
-            expect(rates[2]).to.equal(1.00);
+            expect(rates[2]).to.equal(0.67);
+            expect(rates[3]).to.equal(0.66);
         });
     });
 
