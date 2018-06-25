@@ -92,6 +92,7 @@ export function configurePlugin(pluginObj, pluginConfig, api) {
     const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
     api.addPlugin(pluginName, pluginInstance);
+    return pluginInstance;
 }
 
 export default Plugin;
