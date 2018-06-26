@@ -56,7 +56,7 @@ function createCastButton(castToggle, localization) {
     }
 
 
-    const castButton = document.createElement('button', 'google-cast-button');
+    const castButton = document.createElement('google-cast-launcher');
     setAttribute(castButton, 'type', 'button');
     setAttribute(castButton, 'tabindex', '-1');
 
