@@ -99,14 +99,14 @@ function destroyed(_model) {
     return _model.attributes._destroyed;
 }
 
-const startSetup = function(_model) {
-    if (destroyed(_model)) {
+const startSetup = function(model, api, promises) {
+    if (destroyed(model)) {
         return Promise.reject();
     }
-    return Promise.all([
-        loadProvider(_model),
-        loadSkin(_model)
-    ]);
+    return Promise.all(promises.concat([
+        loadProvider(model),
+        loadSkin(model)
+    ]));
 };
 
 export default startSetup;
