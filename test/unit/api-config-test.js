@@ -133,6 +133,20 @@ describe('API Config', function() {
         });
     });
 
+    describe('playbackRates', function() {
+
+        it('should round custom playback rates to nearest hundredth', function() {
+            let x = new Config({
+                playbackRateControls: true,
+                playbackRates: [ 0.999, 0.6512, 0.667, 0.664 ]
+            });
+            expect(x.playbackRates[0]).to.equal(0.65);
+            expect(x.playbackRates[1]).to.equal(0.66);
+            expect(x.playbackRates[2]).to.equal(0.67);
+            expect(x.playbackRates[3]).to.equal(1);
+        });
+    });
+
     describe('base url', function() {
 
         it('should update base to cdn or script location', function() {
