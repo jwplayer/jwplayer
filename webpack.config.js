@@ -48,8 +48,8 @@ const multiConfig = [
         output: {
             path: `${__dirname}/bin-debug/`,
             filename: '[name].js',
-            chunkFilename:'[name].js',
-            sourceMapFilename : '[name].[hash].map',
+            chunkFilename: '[name].js',
+            sourceMapFilename: '[name].[hash].map',
             library: 'jwplayer',
             libraryExport: 'default',
             libraryTarget: 'window',
