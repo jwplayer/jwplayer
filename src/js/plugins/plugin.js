@@ -37,8 +37,9 @@ function getJSPath(url) {
 
 const Plugin = function(url) {
     this.url = url;
-    this.promise = new Promise((resolve) => {
+    this.promise = new Promise((resolve, reject) => {
         this.resolve = resolve;
+        this.reject = reject;
     });
 };
 
@@ -49,7 +50,10 @@ Object.assign(Plugin.prototype, {
         }
         const loader = new ScriptLoader(getJSPath(this.url));
         this.loader = loader;
-        return loader.load();
+        return loader.load().catch(error => {
+            this.reject(error);
+            throw error;
+        });
     },
 
     registerPlugin(name, minimumVersion, pluginClass) {

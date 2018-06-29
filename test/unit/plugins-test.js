@@ -247,6 +247,28 @@ describe('loadPlugins()', function() {
         });
     });
 
+    it('handles request failure across multiple instances', function() {
+        const api = mockApi();
+        const model = new MockModel({
+            plugins: {
+                '/base/test/plugin1.js': {}
+            }
+        });
+        const scripts = getDocumentHeadScripts();
+        return Promise.all([
+            loadPlugins(model, api),
+            loadPlugins(model, api),
+            loadPlugins(model, api),
+            loadPlugins(model, api),
+            loadPlugins(model, api)
+        ]).then(() => {
+            const registeredPlugins = globalPluginsModel.getPlugins();
+            expect(Object.keys(registeredPlugins), 'registeredPlugins').to.have.lengthOf(0);
+            expect(getDocumentHeadScripts(), 'script loader does not remove tags that failed to load').to.have.lengthOf(scripts.length + 1);
+            expect(api.addPlugin).to.have.callCount(0);
+        });
+    });
+
     it('registers loaded plugin, but does not instantiate them when player is destroyed', function() {
         const pluginList = [
             '/base/test/files/plugin1.js',
