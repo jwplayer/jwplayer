@@ -6,79 +6,25 @@ import { now } from 'utils/date';
 const TouchEvent = window.TouchEvent;
 const PointerEvent = window.PointerEvent;
 const _supportsPointerEvents = ('PointerEvent' in window) && !OS.android;
-const _supportsTouchEvents = ('ontouchstart' in window);
+const _supportsTouchEvents = ('ontouchstart' in window); // TODO: Use createEvent() try catch test
 const _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
 const _isOSXFirefox = Browser.firefox && OS.mac;
 
-function getCoord(e, c) {
-    return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
-}
+let unique = 0;
 
-function isRightClick(evt) {
-    const e = evt || window.event;
+// ui-test.js: Test number of event listeners added
+// https://gist.github.com/robwalch/7d2165353e2621bb7b21e29863b7ba5e
+// Research: listener total is 154 with 3IkpdgrX-rcY6EcsD setup
+//   36 UI instances listen with 'interactStartHandler'
+//   11 buttons with preventDefault
 
-    if (!(evt instanceof MouseEvent)) {
-        return false;
-    }
-
-    if ('which' in e) {
-        // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-        return (e.which === 3);
-    } else if ('button' in e) {
-        // IE and Opera
-        return (e.button === 2);
-    }
-
-    return false;
-}
-
-function isEnterKey(evt) {
-    const e = evt || window.event;
-
-    if ((e instanceof KeyboardEvent) && e.keyCode === 13) {
-        evt.stopPropagation();
-        return true;
-    }
-
-    return false;
-}
-
-function normalizeUIEvent(type, srcEvent, target) {
-    let source;
-
-    if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
-        source = srcEvent;
-    } else if (srcEvent.touches && srcEvent.touches.length) {
-        source = srcEvent.touches[0];
-    } else {
-        source = srcEvent.changedTouches[0];
-    }
-
-    return {
-        type: type,
-        sourceEvent: srcEvent,
-        target: srcEvent.target,
-        currentTarget: target,
-        pageX: source.pageX,
-        pageY: source.pageY
-    };
-}
-
-// Preventdefault to prevent click events
-function preventDefault(evt) {
-    // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
-    //  we cannot call evt.preventDefault() on them
-    if (!(evt instanceof MouseEvent) && !(evt instanceof TouchEvent)) {
-        return;
-    }
-    if (evt.preventManipulation) {
-        evt.preventManipulation();
-    }
-    // prevent scrolling
-    if (evt.preventDefault) {
-        evt.preventDefault();
-    }
-}
+// TODO: Only add event listeners when on('event') requires it
+// TODO: remove need for `useHover`, `useFocus`*, `useMove` and `enableDoubleTap`
+// TODO: Always make 'focus' and 'blur' map to 'over' and 'out'
+// TODO: Optimize on('click tap') to register a single listener
+// TODO: Replace `directSelect` with useCapture (addEventListener(name, callback, true || { useCapture: true }))
+// TODO: Investigate alternative solutions to `preventDefault` (button.js)
+// TODO: Cleanup usage of UI instances (reference and destroy to cleanup listeners)
 
 const UI = function (elem, options) {
     const _elem = elem;
@@ -91,6 +37,11 @@ const UI = function (elem, options) {
     let _pointerId;
     let longPressTimeout;
     let longPressDelay = 500;
+
+    this.id = ++unique;
+    this.elem = elem;
+
+    console.log(`${this.id}. (${elem.className})`, options);
 
     options = options || {};
 
@@ -266,7 +217,10 @@ const UI = function (elem, options) {
 
         if (_hasMoved) {
             triggerEvent(DRAG_END, evt);
-        } else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
+
+        }
+        // KA: dded 'directSelect' parameter to UI for interactions where the event should only be fired if the target is the listened element and not its children
+        else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
             if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
                 triggerEvent(CLICK, evt);
             } else {
@@ -282,23 +236,22 @@ const UI = function (elem, options) {
         _hasMoved = false;
     }
 
-    const self = this;
-    function triggerEvent(type, srcEvent) {
+    const triggerEvent = (type, srcEvent) => {
         let evt;
         if (options.enableDoubleTap && (type === CLICK || type === TAP)) {
             if (now() - _lastClickTime < _doubleClickDelay) {
                 const doubleType = (type === CLICK) ?
                     DOUBLE_CLICK : DOUBLE_TAP;
                 evt = normalizeUIEvent(doubleType, srcEvent, _elem);
-                self.trigger(doubleType, evt);
+                this.trigger(doubleType, evt);
                 _lastClickTime = 0;
             } else {
                 _lastClickTime = now();
             }
         }
         evt = normalizeUIEvent(type, srcEvent, _elem);
-        self.trigger(type, evt);
-    }
+        this.trigger(type, evt);
+    };
 
     this.triggerEvent = triggerEvent;
 
@@ -344,6 +297,97 @@ const UI = function (elem, options) {
     return this;
 };
 
+const eventSplitter = /\s+/;
+
+function eventsApi(name) {
+    return !(eventSplitter.test(name) || typeof name === 'object');
+}
+
+Object.assign(UI.prototype, Events, {
+    on(name, callback, context) {
+        if (eventsApi(name)) {
+            console.log(`${this.id}. (${this.elem.className}).on`, name, callback);
+        }
+        return Events.on.call(this, name, callback, context);
+    },
+    off(name, callback, context) {
+        if (eventsApi(name)) {
+            console.log(`${this.id}. (${this.elem.className}).off`, name, callback);
+        }
+        return Events.on.call(this, name, callback, context);
+    },
+    trigger(name, event) {
+        if (!this._events) {
+            return this;
+        }
+        if (eventsApi(name)) {
+            console.log(`${this.id}. (${this.elem.className}).trigger`, name, event);
+        }
+        return Events.trigger.call(this, name, event);
+    }
+});
+
+
+const eventListeners = {
+    blur: null,
+    click: null,
+    focus: null,
+    keydown: null,
+    mousedown: null,
+    mousemove: null,
+    mouseout: null,
+    mouseover: null,
+    mouseup: null,
+    pointercancel: null,
+    pointerdown: null,
+    pointermove: null,
+    pointerout: null,
+    pointerover: null,
+    pointerup: null,
+    touchcancel: null,
+    touchend: null,
+    touchmove: null,
+    touchstart: null
+};
+
+const eventRegisters = {
+    click() {
+
+    },
+    tap() {
+
+    },
+    doubleClick() {
+
+    },
+    doubleTap() {
+
+    },
+    drag() {
+
+    },
+    dragStart() {
+
+    },
+    dragEnd() {
+
+    },
+    over() {
+
+    },
+    out() {
+
+    },
+    move() {
+
+    },
+    enter() {
+
+    }
+};
+
+export default UI;
+
 // Expose what the source of the event is so that we can ensure it's handled correctly.
 // This returns only 'touch' or 'mouse'. 'pen' will be treated as a mouse.
 export function getPointerType(evt) {
@@ -355,6 +399,72 @@ export function getPointerType(evt) {
     return 'mouse';
 }
 
-Object.assign(UI.prototype, Events);
+function getCoord(e, c) {
+    return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
+}
 
-export default UI;
+function isRightClick(evt) {
+    const e = evt || window.event;
+
+    if (!(evt instanceof MouseEvent)) {
+        return false;
+    }
+
+    if ('which' in e) {
+        // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+        return (e.which === 3);
+    } else if ('button' in e) {
+        // IE and Opera
+        return (e.button === 2);
+    }
+
+    return false;
+}
+
+function isEnterKey(evt) {
+    const e = evt || window.event;
+
+    if ((e instanceof KeyboardEvent) && e.keyCode === 13) {
+        evt.stopPropagation();
+        return true;
+    }
+
+    return false;
+}
+
+function normalizeUIEvent(type, srcEvent, target) {
+    let source;
+
+    if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
+        source = srcEvent;
+    } else if (srcEvent.touches && srcEvent.touches.length) {
+        source = srcEvent.touches[0];
+    } else {
+        source = srcEvent.changedTouches[0];
+    }
+
+    return {
+        type: type,
+        sourceEvent: srcEvent,
+        target: srcEvent.target,
+        currentTarget: target,
+        pageX: source.pageX,
+        pageY: source.pageY
+    };
+}
+
+// Preventdefault to prevent click events
+function preventDefault(evt) {
+    // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
+    //  we cannot call evt.preventDefault() on them
+    if (!(evt instanceof MouseEvent) && !(evt instanceof TouchEvent)) {
+        return;
+    }
+    if (evt.preventManipulation) {
+        evt.preventManipulation();
+    }
+    // prevent scrolling
+    if (evt.preventDefault) {
+        evt.preventDefault();
+    }
+}

@@ -10,16 +10,14 @@ export default class ClickHandler {
         this.domElement = element;
         this.model = model;
 
-        this.ui = new UI(element, { enableDoubleTap: true, useMove: true }).on({
-            'click tap': this.clickHandler,
-            'doubleClick doubleTap': function() {
+        this.ui = new UI(element, { enableDoubleTap: true }).on('click tap', this.clickHandler, this)
+            .on('doubleClick doubleTap', function() {
                 if (this.alternateDoubleClickHandler) {
                     this.alternateDoubleClickHandler();
                     return;
                 }
                 this.trigger('doubleClick');
-            }
-        }, this);
+            }, this);
     }
 
     destroy() {

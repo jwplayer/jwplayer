@@ -39,13 +39,11 @@ export default class Slider {
         this.elementProgress = this.el.getElementsByClassName('jw-progress')[0];
         this.elementThumb = this.el.getElementsByClassName('jw-knob')[0];
 
-        this.userInteract = new UI(this.element(), { preventScrolling: true });
-
-        this.userInteract.on('dragStart', this.dragStartListener);
-        this.userInteract.on('drag', this.dragMoveListener);
-        this.userInteract.on('dragEnd', this.dragEndListener);
-
-        this.userInteract.on('tap click', this.tapListener);
+        this.userInteract = new UI(this.element(), { preventScrolling: true })
+            .on('dragStart', this.dragStartListener)
+            .on('drag', this.dragMoveListener)
+            .on('dragEnd', this.dragEndListener)
+            .on('tap click', this.tapListener);
     }
 
     dragStart() {
