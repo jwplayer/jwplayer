@@ -8,7 +8,8 @@ describe('api.setup', function() {
      * It verifies "setupError" and "ready" events for config.playlist values.
     */
 
-    this.timeout(3000);
+    this.timeout(6000);
+
     const errorMessage = 'This video file cannot be played.';
 
     beforeEach(() => {

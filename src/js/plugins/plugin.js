@@ -1,4 +1,4 @@
-import { resolved } from 'polyfills/promise';
+import Promise, { resolved } from 'polyfills/promise';
 import ScriptLoader from 'utils/scriptloader';
 import { getAbsolutePath } from 'utils/parser';
 import { extension } from 'utils/strings';
@@ -37,6 +37,10 @@ function getJSPath(url) {
 
 const Plugin = function(url) {
     this.url = url;
+    this.promise = new Promise((resolve, reject) => {
+        this.resolve = resolve;
+        this.reject = reject;
+    });
 };
 
 Object.assign(Plugin.prototype, {
@@ -46,13 +50,17 @@ Object.assign(Plugin.prototype, {
         }
         const loader = new ScriptLoader(getJSPath(this.url));
         this.loader = loader;
-        return loader.load();
+        return loader.load().catch(error => {
+            this.reject(error);
+            throw error;
+        });
     },
 
     registerPlugin(name, minimumVersion, pluginClass) {
         this.name = name;
         this.target = minimumVersion;
         this.js = pluginClass;
+        this.resolve(this);
     },
 
     getNewInstance(api, config, div) {
