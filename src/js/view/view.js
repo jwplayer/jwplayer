@@ -424,7 +424,9 @@ function View(_api, _model) {
     }
 
     function outHandler(event) {
-        if (_controls && _controls.showing && event.relatedTarget && !_playerElement.contains(event.relatedTarget)) {
+        // If controls are showing and mouse moves out to relatedTarget not within playerElement, call userActive().
+        // Also call userActive() if event does not contain relatedTarget if player is in iFrame. (relatedTarget = null)
+        if (_controls && _controls.showing && ((event.relatedTarget && !_playerElement.contains(event.relatedTarget)) || (!event.relatedTarget && Features.iframe))) {
             _controls.userActive();
         }
     }
