@@ -15,6 +15,7 @@ import Events from 'utils/backbone.events';
 import { AUTOPLAY_DISABLED, AUTOPLAY_MUTED, canAutoplay, startPlayback } from 'utils/can-autoplay';
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
+import { seconds } from 'utils/strings';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import { isUndefined, isBoolean } from 'utils/underscore';
@@ -169,7 +170,8 @@ Object.assign(Controller.prototype, {
                     // Do not background load DAI items because that item will be dynamically replaced before play
                     const allowPreload = (item && !item.daiSetting);
                     const duration = mediaModel.get('duration');
-                    if (allowPreload && position && duration > 0 && position >= duration - BACKGROUND_LOAD_OFFSET) {
+                    const bglOffset = (seconds(model.get('nextupoffset')) || duration) - BACKGROUND_LOAD_OFFSET;
+                    if (allowPreload && position && duration > 0 && position >= bglOffset) {
                         mediaModel.off('change:position', onPosition, this);
                         _programController.backgroundLoad(item);
                     } else if (recsAuto) {
@@ -236,7 +238,7 @@ Object.assign(Controller.prototype, {
 
             _model.change('playlistItem', function(model, playlistItem) {
                 if (playlistItem) {
-                    const { title, image } = playlistItem;
+                    const { title, image, nextup_offset } = playlistItem;
                     if ('mediaSession' in navigator && window.MediaMetadata && (title || image)) {
                         try {
                             navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -249,6 +251,10 @@ Object.assign(Controller.prototype, {
                         } catch (error) {
                             // catch error that occurs when mediaSession fails to setup
                         }
+                    }
+
+                    if (nextup_offset) {
+                        _model.set('nextupoffset', nextup_offset);
                     }
                     _this.trigger(PLAYLIST_ITEM, {
                         index: _model.get('item'),
