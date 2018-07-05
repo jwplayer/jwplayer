@@ -6,6 +6,7 @@ describe('PlayDisplayIcon', function() {
     let displayIcon;
     let element;
     let icon;
+    let svg;
     const localization = {
         playback: 'Start Playback',
         replay: 'Replay',
@@ -16,8 +17,12 @@ describe('PlayDisplayIcon', function() {
     beforeEach(function() {
         model = Object.assign({}, SimpleModel);
         model.set('localization', localization);
+        model.set('state', 'idle');
+        svg = document.createElement('svg');
+        svg.className = 'jw-svg-icon jw-svg-icon-pause';
         icon = document.createElement('div');
         icon.className = 'jw-icon-display';
+        icon.appendChild(svg);
         element = document.createElement('div');
         element.appendChild(icon);
     });
@@ -28,7 +33,8 @@ describe('PlayDisplayIcon', function() {
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
             expect(displayIcon.icon.className).to.not.include('jw-ab-idle-label');
-            expect(displayIcon.icon.lastChild).to.equal(null);
+            expect(displayIcon.icon.lastChild.className).to.not.include('jw-idle-icon-text');
+
         });
 
         it('should not add class if config is invalid', function() {
@@ -37,7 +43,7 @@ describe('PlayDisplayIcon', function() {
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
             expect(displayIcon.icon.className).to.not.include('jw-ab-idle-label');
-            expect(displayIcon.icon.lastChild).to.equal(null);
+            expect(displayIcon.icon.lastChild.className).to.not.include('jw-idle-icon-text');
         });
 
         it('should add class and text if config is "Watch Now"', function() {
@@ -86,7 +92,6 @@ describe('PlayDisplayIcon', function() {
         });
 
         it('should remove class and text if old state is idle (start playback)', function() {
-            model.set('state', 'idle');
             model.set('idleButtonText', 'Watch Now');
 
             displayIcon = new PlayDisplayIcon(model, {}, element);
@@ -101,6 +106,7 @@ describe('PlayDisplayIcon', function() {
         it('should add playback aria label if new state is idle (stop playback)', function() {
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
+            model.set('state', 'complete');
             model.set('state', 'idle');
 
             expect(displayIcon.icon.getAttribute('aria-label')).to.equal(localization.playback);
