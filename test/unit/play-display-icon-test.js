@@ -28,6 +28,7 @@ describe('PlayDisplayIcon', function() {
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
             expect(displayIcon.icon.className).to.not.include('jw-ab-idle-label');
+            expect(displayIcon.icon.lastChild).to.equal(null);
         });
 
         it('should not add class if config is invalid', function() {
@@ -36,6 +37,7 @@ describe('PlayDisplayIcon', function() {
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
             expect(displayIcon.icon.className).to.not.include('jw-ab-idle-label');
+            expect(displayIcon.icon.lastChild).to.equal(null);
         });
 
         it('should add class and text if config is "Watch Now"', function() {
