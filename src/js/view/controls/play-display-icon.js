@@ -17,7 +17,7 @@ export default class PlayDisplayIcon {
             this.trigger(evt.type);
         });
 
-        _model.on('change:state', (model, newState, oldState) => {
+        _model.on('change:state', (model, newState) => {
             let newStateLabel;
             switch (newState) {
                 case 'buffering':
@@ -43,17 +43,17 @@ export default class PlayDisplayIcon {
                 iconDisplay.removeAttribute('aria-label');
             }
 
-            this.toggleIdleClass(oldState, newState, idleButtonText);
+            this.toggleIdleClass(newState, idleButtonText);
         });
 
-        this.toggleIdleClass('', 'idle', idleButtonText);
+        this.toggleIdleClass(_model.get('state'), idleButtonText);
     }
 
     element() {
         return this.el;
     }
 
-    toggleIdleClass(oldState, newState, idleButtonText) {
+    toggleIdleClass(state, idleButtonText) {
         if (!/^(click to play|play|watch now)$/i.test(idleButtonText)) {
             return;
         }
@@ -64,12 +64,12 @@ export default class PlayDisplayIcon {
             this.icon.appendChild(element);
         }
 
-        if (oldState === 'idle') {
-            removeClass(this.icon, 'jw-ab-idle-label');
-            element.textContent = '';
-        } else if (newState === 'idle') {
+        if (state === 'idle') {
             addClass(this.icon, 'jw-ab-idle-label');
             element.textContent = idleButtonText;
+        } else {
+            removeClass(this.icon, 'jw-ab-idle-label');
+            element.textContent = '';
         }
     }
 }
