@@ -54,7 +54,7 @@ export default class PlayDisplayIcon {
     }
 
     toggleIdleClass(oldState, newState, idleButtonText) {
-        if (idleButtonText !== 'Click to Play' && idleButtonText !== 'Play' && idleButtonText !== 'Watch Now') {
+        if (!/^(click to play|play|watch now)$/i.test(idleButtonText)) {
             return;
         }
 
