@@ -126,7 +126,7 @@ const Config = function(options, persisted) {
             rates = rateControls;
         }
         rates = rates.filter(rate => isNumber(rate) && rate >= 0.25 && rate <= 4)
-            .map(rate => Math.round(rate * 4) / 4);
+            .map(rate => Math.round(rate * 100) / 100);
 
         if (rates.indexOf(1) < 0) {
             rates.push(1);
