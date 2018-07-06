@@ -254,6 +254,10 @@ function View(_api, _model) {
 
         viewsManager.add(this);
 
+        if (_model.get('enableGradient') && !_isIE) {
+            addClass(_playerElement, 'jw-ab-drop-shadow');
+        }
+
         this.isSetup = true;
         _model.trigger('viewSetup', _playerElement);
 
