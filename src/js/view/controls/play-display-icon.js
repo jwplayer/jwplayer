@@ -1,6 +1,6 @@
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
-import { addClass, removeClass } from 'utils/dom';
+import { addClass, removeClass, createElement } from 'utils/dom';
 
 export default class PlayDisplayIcon {
     constructor(_model, api, element) {
@@ -8,7 +8,7 @@ export default class PlayDisplayIcon {
 
         const localization = _model.get('localization');
         const iconDisplay = element.getElementsByClassName('jw-icon-display')[0];
-        const idleButton = _model.get('idleButton');
+        const idleButtonText = _model.get('idleButtonText');
         element.style.cursor = 'pointer';
         this.icon = iconDisplay;
         this.el = element;
@@ -17,7 +17,7 @@ export default class PlayDisplayIcon {
             this.trigger(evt.type);
         });
 
-        _model.on('change:state', (model, newState, oldState) => {
+        _model.on('change:state', (model, newState) => {
             let newStateLabel;
             switch (newState) {
                 case 'buffering':
@@ -43,25 +43,33 @@ export default class PlayDisplayIcon {
                 iconDisplay.removeAttribute('aria-label');
             }
 
-            this.toggleIdleClass(oldState, newState, idleButton);
+            this.toggleIdleClass(newState, idleButtonText);
         });
 
-        this.toggleIdleClass('', 'idle', idleButton);
+        this.toggleIdleClass(_model.get('state'), idleButtonText);
     }
 
     element() {
         return this.el;
     }
 
-    toggleIdleClass(oldState, newState, idleButton) {
-        if (!(idleButton === 'stroke' || idleButton === 'fill' || idleButton === 'label')) {
+    toggleIdleClass(state, idleButtonText) {
+        if (!/^(click to play|play|watch now)$/i.test(idleButtonText)) {
             return;
         }
 
-        if (oldState === 'idle') {
-            removeClass(this.icon, 'jw-ab-idle-' + idleButton);
-        } else if (newState === 'idle') {
-            addClass(this.icon, 'jw-ab-idle-' + idleButton);
+        let element = this.icon.getElementsByClassName('jw-idle-icon-text')[0];
+        if (!element) {
+            element = createElement(`<span class="jw-idle-icon-text"></span>`);
+            this.icon.appendChild(element);
+        }
+
+        if (state === 'idle') {
+            addClass(this.icon, 'jw-ab-idle-label');
+            element.textContent = idleButtonText;
+        } else {
+            removeClass(this.icon, 'jw-ab-idle-label');
+            element.textContent = '';
         }
     }
 }
