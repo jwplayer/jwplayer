@@ -301,4 +301,44 @@ describe('loadPlugins()', function() {
         });
     });
 
+    it('resolves immediately for inline plugin configs', function() {
+        const PluginClassSpy = sinon.spy();
+        registerPlugin('plugin1', '8.0', PluginClassSpy);
+
+        const pluginConfig = { options: true };
+        const api = mockApi();
+        const model = new MockModel({
+            plugins: {
+                plugin1: pluginConfig
+            }
+        });
+
+        return loadPlugins(model, api).then((results) => {
+            const registeredPlugins = globalPluginsModel.getPlugins();
+            expect(Object.keys(registeredPlugins), 'one plugin was registered').to.have.lengthOf(1);
+            expect(registeredPlugins).to.have.property('plugin1');
+
+            expect(PluginClassSpy, 'plugin was instantiated').to.have.callCount(1).calledWith(api, pluginConfig);
+            expect(results[0]).instanceof(PluginClassSpy);
+
+            expect(api.addPlugin, 'one instance was added').to.have.callCount(1);
+        });
+    });
+
+
+    it('resolves immediately, removing unregistered inline plugin configs from the registry', function() {
+        const api = mockApi();
+        const model = new MockModel({
+            plugins: {
+                plugin1: {}
+            }
+        });
+        return loadPlugins(model, api).then((results) => {
+            const registeredPlugins = globalPluginsModel.getPlugins();
+            expect(Object.keys(registeredPlugins), 'registry is empty').to.have.lengthOf(0);
+            expect(api.addPlugin, 'no instance was added').to.have.callCount(0);
+            expect(results[0]).instanceof(Error);
+        });
+    });
+
 });
