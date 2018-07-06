@@ -76,9 +76,28 @@ module.exports = function(config) {
         'mocha',
         'coverage-istanbul'
     ];
+    let browsers = [
+        'ChromeHeadless',
+        'Chrome',
+        'Safari',
+        'Firefox',
+        'edge',
+        'ie11',
+        'iphone',
+        'android'
+    ];
     if (isJenkins) {
         testReporters.push('junit');
         process.env.CHROME_BIN = puppeteer.executablePath();
+        browsers = [
+            'ChromeHeadless',
+            'chrome',
+            'firefox',
+            'edge',
+            'ie11',
+            'iphone',
+            'android'
+        ];
     }
     const packageInfo = JSON.parse(require('fs').readFileSync('package.json', 'utf8'));
 
@@ -98,23 +117,18 @@ module.exports = function(config) {
         // LOG_DEBUG (useful for writing karma server network status messages to stdio)
         logLevel: config.LOG_INFO,
 
-        browsers: [
-            'ChromeHeadless',
-            'Chrome',
-            // 'Safari', // experiencing issues with safari-launcher@1.0.0 and Safari 9.1.1
-            'Firefox'
-        ],
+        browsers,
 
         customLaunchers: require('./test/karma/browserstack-launchers'),
 
         browserStack: {
-            username: env.BS_USERNAME,
-            accessKey: env.BS_AUTHKEY,
+            username: env.BS_USERNAME || env.BROWSERSTACK_USERNAME,
+            accessKey: env.BS_AUTHKEY || env.BROWSERSTACK_ACCESS_KEY,
             name: 'Unit Tests',
             project: 'jwplayer',
-            build: '' + (env.JOB_NAME || 'local') + ' ' +
-            (env.BUILD_NUMBER || env.USER) + ' ' +
-            (env.GIT_BRANCH || '') + ' ' + packageInfo.version,
+            build: env.BROWSERSTACK_BUILD || ('' + (env.JOB_NAME || 'local') + ' ' +
+            (env.BUILD_NUMBER || env.USER || env.GITHUB_USER) + ' ' +
+            (env.GIT_BRANCH || 'jwplayer') + ' ' + packageInfo.version),
             timeout: 300 // 5 minutes
         },
 

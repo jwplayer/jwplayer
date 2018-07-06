@@ -2,7 +2,7 @@ import { ajax } from 'utils/ajax';
 import * as errors from 'api/errors';
 
 describe('utils.ajax', function() {
-    this.timeout(5000);
+    this.timeout(8000);
 
     function validateXHR(xhr) {
         expect(xhr).to.be.instanceOf(window.XMLHttpRequest);

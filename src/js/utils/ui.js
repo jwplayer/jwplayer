@@ -3,11 +3,15 @@ import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
-const TouchEvent = window.TouchEvent;
-const PointerEvent = window.PointerEvent;
-const _supportsPointerEvents = ('PointerEvent' in window) && !OS.android;
-const _supportsTouchEvents = ('ontouchstart' in window); // TODO: Use createEvent() try catch test
-const _useMouseEvents = !_supportsPointerEvents && !(_supportsTouchEvents && OS.mobile);
+const noop = function() {};
+const KeyboardEvent = window.KeyboardEvent || noop;
+const MouseEvent = window.MouseEvent || noop;
+const PointerEvent = window.PointerEvent || noop;
+const TouchEvent = window.TouchEvent || noop;
+
+const TOUCH_SUPPORT = ('ontouchstart' in window);
+const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
+const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
 const _isOSXFirefox = Browser.firefox && OS.mac;
 
 let unique = 0;
@@ -17,6 +21,7 @@ let unique = 0;
 // Research: listener total is 154 with 3IkpdgrX-rcY6EcsD setup
 //   36 UI instances listen with 'interactStartHandler'
 //   11 buttons with preventDefault
+// TODO: unit tests
 
 // TODO: Only add event listeners when on('event') requires it
 // TODO: remove need for `useHover`, `useFocus`*, `useMove` and `enableDoubleTap`
@@ -51,7 +56,7 @@ const UI = function (elem, options) {
 
     // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
     // (windows phones) still get listeners just in case they want to use them.
-    if (_supportsPointerEvents) {
+    if (USE_POINTER_EVENTS) {
         elem.addEventListener('pointerdown', interactStartHandler, listenerOptions);
         if (options.useHover) {
             elem.addEventListener('pointerover', overHandler);
@@ -61,7 +66,7 @@ const UI = function (elem, options) {
             elem.addEventListener('pointermove', moveHandler);
         }
     } else {
-        if (_useMouseEvents) {
+        if (USE_MOUSE_EVENTS) {
             elem.addEventListener('mousedown', interactStartHandler, listenerOptions);
             if (options.useHover) {
                 elem.addEventListener('mouseover', overHandler);
@@ -122,7 +127,7 @@ const UI = function (elem, options) {
     }
 
     function interactStartHandler(evt) {
-        _touchListenerTarget = evt.target;
+        const target = evt.target;
         _startX = getCoord(evt, 'X');
         _startY = getCoord(evt, 'Y');
 
@@ -137,7 +142,7 @@ const UI = function (elem, options) {
                 setEventListener(elem, 'pointercancel', interactEndHandler);
 
                 // Listen for mouseup after mouse pointer down because pointerup doesn't fire on swf objects
-                if (evt.pointerType === 'mouse' && _touchListenerTarget.nodeName === 'OBJECT') {
+                if (evt.pointerType === 'mouse' && target.nodeName === 'OBJECT') {
                     setEventListener(document, 'mouseup', interactEndDelegate);
                 } else {
                     setEventListener(elem, 'pointerup', interactEndHandler);
@@ -152,6 +157,7 @@ const UI = function (elem, options) {
                     setEventListener(document, 'mouseup', interactEndDelegate);
                 }
             } else if (evt.type === 'touchstart') {
+                _touchListenerTarget = target;
                 longPressTimeout = setTimeout(() => {
                     if (_touchListenerTarget) {
                         _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
@@ -253,8 +259,6 @@ const UI = function (elem, options) {
         this.trigger(type, evt);
     };
 
-    this.triggerEvent = triggerEvent;
-
     this.destroy = function() {
         this.off();
         elem.removeEventListener('touchstart', interactStartHandler);
@@ -268,7 +272,7 @@ const UI = function (elem, options) {
             _touchListenerTarget = null;
         }
 
-        if (_supportsPointerEvents) {
+        if (USE_POINTER_EVENTS) {
             if (options.preventScrolling) {
                 elem.releasePointerCapture(_pointerId);
             }
@@ -391,8 +395,8 @@ export default UI;
 // Expose what the source of the event is so that we can ensure it's handled correctly.
 // This returns only 'touch' or 'mouse'. 'pen' will be treated as a mouse.
 export function getPointerType(evt) {
-    if ((_supportsTouchEvents && evt instanceof TouchEvent) ||
-        (_supportsPointerEvents && evt instanceof PointerEvent && evt.pointerType === 'touch')) {
+    if ((TOUCH_SUPPORT && evt instanceof TouchEvent) ||
+        (USE_POINTER_EVENTS && evt instanceof PointerEvent && evt.pointerType === 'touch')) {
         return 'touch';
     }
 
@@ -400,7 +404,7 @@ export function getPointerType(evt) {
 }
 
 function getCoord(e, c) {
-    return /touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
+    return /^touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
 }
 
 function isRightClick(evt) {
