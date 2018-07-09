@@ -6701,7 +6701,7 @@ postcss-discard-unused@^2.2.1:
     postcss "^5.0.14"
     uniqs "^2.0.0"
 
-postcss-easing-gradients@^3.0.0:
+postcss-easing-gradients@3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/postcss-easing-gradients/-/postcss-easing-gradients-3.0.0.tgz#d8eee30ae3335200ed214dff5fd3bf9d910b497e"
   dependencies:
