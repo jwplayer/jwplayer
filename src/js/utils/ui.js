@@ -71,11 +71,12 @@ const UI = function (elem, options) {
     }
 
     function interactStartHandler(evt) {
+        if (isRightClick(evt)) {
+            return;
+        }
         const target = evt.target;
         _startX = getCoord(evt, 'X');
         _startY = getCoord(evt, 'Y');
-
-        if (!isRightClick(evt)) {
 
             if (evt.type === 'pointerdown' && evt.isPrimary) {
                 if (options.preventScrolling) {
@@ -102,7 +103,6 @@ const UI = function (elem, options) {
                 setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler, listenerOptions);
                 setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
                 setEventListener(_touchListenerTarget, 'touchend', interactEndHandler);
-            }
 
             // Prevent scrolling the screen while dragging on mobile.
             if (options.preventScrolling) {
@@ -152,7 +152,6 @@ const UI = function (elem, options) {
             _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
             _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
         }
-
         if (_hasMoved) {
             triggerEvent(_this, DRAG_END, evt);
         }
@@ -178,7 +177,6 @@ const UI = function (elem, options) {
                 }
             }
         }
-
         _touchListenerTarget = null;
         _hasMoved = false;
     }
@@ -404,13 +402,7 @@ function getCoord(e, c) {
     return /^touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
 }
 
-function isRightClick(evt) {
-    const e = evt || window.event;
-
-    if (!(evt instanceof MouseEvent)) {
-        return false;
-    }
-
+function isRightClick(e) {
     if ('which' in e) {
         // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
         return (e.which === 3);
@@ -418,7 +410,6 @@ function isRightClick(evt) {
         // IE and Opera
         return (e.button === 2);
     }
-
     return false;
 }
 

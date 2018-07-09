@@ -22,7 +22,7 @@ describe('UI', function() {
                 bubbles: true,
                 cancelable: true
             });
-            return !(new TouchEvent('touchstart', touchOptions));
+            return !createTouchEvent('touchstart', touchOptions);
         } catch (error) {
             return true;
         }
@@ -579,19 +579,21 @@ describe('UI', function() {
         let result;
         let event;
         if (USE_POINTER_EVENTS) {
-            event = new PointerEvent('pointerdown', {
+            const pointerMouseOptions = xyCoords(0, 0, {
                 isPrimary: true,
                 pointerType: 'mouse',
-                pointerId: 1,
                 view: window,
                 bubbles: true,
                 cancelable: true
             });
+            event = new PointerEvent('pointerdown', pointerMouseOptions);
             sandbox.stub(button, 'setPointerCapture').callsFake(sinon.spy());
             sandbox.stub(button, 'releasePointerCapture').callsFake(sinon.spy());
             sandbox.spy(event, 'preventDefault');
             result = button.dispatchEvent(event);
+            button.dispatchEvent(new PointerEvent('pointerup', pointerMouseOptions));
             expect(button.setPointerCapture).to.have.callCount(1);
+            expect(button.releasePointerCapture).to.have.callCount(1);
         } else if (USE_MOUSE_EVENTS) {
             event = new MouseEvent('mousedown', {
                 view: window,
@@ -614,7 +616,10 @@ describe('UI', function() {
             sandbox.spy(event, 'preventDefault');
             result = button.dispatchEvent(event);
         }
-        if (!Browser.ie && !OS.android) {
+        if (USE_POINTER_EVENTS || USE_MOUSE_EVENTS) {
+            expect(result, 'preventDefault not called').to.equal(true);
+            expect(event.preventDefault).to.have.callCount(0);
+        } else {
             expect(result, 'preventDefault called').to.equal(false);
             expect(event.preventDefault).to.have.callCount(1);
         }
