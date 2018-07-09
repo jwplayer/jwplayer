@@ -127,6 +127,7 @@ describe('UI', function() {
         expect(clickSpy).to.have.callCount(1);
         expect(clickSpy).calledWith({
             type: 'click',
+            pointerType: 'mouse',
             pageX: 0,
             pageY: 0,
             sourceEvent,
@@ -152,7 +153,7 @@ describe('UI', function() {
             });
             startResult = button.dispatchEvent(new PointerEvent('pointerdown', pointerTouchOptions));
             sourceEvent = new PointerEvent('pointerup', pointerTouchOptions);
-        } else if (TouchEvent) {
+        } else if (TOUCH_SUPPORT) {
             const touch = new Touch({
                 identifier: 1,
                 target: button
@@ -176,6 +177,7 @@ describe('UI', function() {
         expect(tapSpy).to.have.callCount(1);
         expect(tapSpy).calledWith({
             type: 'tap',
+            pointerType: 'touch',
             pageX: 0,
             pageY: 0,
             sourceEvent,
@@ -225,6 +227,7 @@ describe('UI', function() {
         expect(doubleClickSpy).to.have.callCount(1);
         expect(doubleClickSpy).calledWith({
             type: 'doubleClick',
+            pointerType: 'mouse',
             pageX: 0,
             pageY: 0,
             sourceEvent,
@@ -255,7 +258,7 @@ describe('UI', function() {
             button.dispatchEvent(new PointerEvent('pointerdown', pointerTouchOptions));
             sourceEvent = new PointerEvent('pointerup', pointerTouchOptions);
             button.dispatchEvent(sourceEvent);
-        } else if (TouchEvent) {
+        } else if (TOUCH_SUPPORT) {
             const touch = new Touch({
                 identifier: 1,
                 target: button
@@ -280,6 +283,7 @@ describe('UI', function() {
         expect(doubleTapSpy).to.have.callCount(1);
         expect(doubleTapSpy).calledWith({
             type: 'doubleTap',
+            pointerType: 'touch',
             pageX: 0,
             pageY: 0,
             sourceEvent,
@@ -310,7 +314,7 @@ describe('UI', function() {
             moveSourceEvent = new PointerEvent('pointermove', xyCoords(5, 5, pointerOptions));
             upSourceEvent = new PointerEvent('pointerup', pointerOptions);
             // TODO: cover 'pointercancel'
-        } else if (TouchEvent) {
+        } else if (TOUCH_SUPPORT) {
             const touch = new Touch(xyCoords(0, 0, {
                 identifier: 1,
                 target: button
@@ -347,8 +351,10 @@ describe('UI', function() {
 
         expect(startResult, 'preventDefault not called').to.equal(true);
         expect(dragStartSpy, 'dragStart listener').to.have.callCount(1);
+        const pointerType = (USE_POINTER_EVENTS || !TOUCH_SUPPORT) ? 'mouse': 'touch';
         expect(dragStartSpy).calledWith({
             type: 'dragStart',
+            pointerType,
             pageX: 5,
             pageY: 5,
             sourceEvent: moveSourceEvent,
@@ -358,6 +364,7 @@ describe('UI', function() {
         expect(dragSpy, 'drag listener').to.have.callCount(1);
         expect(dragSpy).calledWith({
             type: 'drag',
+            pointerType,
             pageX: 5,
             pageY: 5,
             sourceEvent: moveSourceEvent,
@@ -367,6 +374,7 @@ describe('UI', function() {
         expect(dragEndSpy, 'dragEnd listener').to.have.callCount(1);
         expect(dragEndSpy).calledWith({
             type: 'dragEnd',
+            pointerType,
             pageX: 5,
             pageY: 5,
             sourceEvent: upSourceEvent,
@@ -417,6 +425,7 @@ describe('UI', function() {
         expect(overSpy, 'over listener').to.have.callCount(1);
         expect(overSpy).calledWith({
             type: 'over',
+            pointerType: 'mouse',
             pageX: 0,
             pageY: 0,
             sourceEvent: overSourceEvent,
@@ -426,6 +435,7 @@ describe('UI', function() {
         expect(outSpy, 'out listener').to.have.callCount(1);
         expect(outSpy).calledWith({
             type: 'out',
+            pointerType: 'mouse',
             pageX: 0,
             pageY: 0,
             sourceEvent: outSourceEvent,
@@ -435,6 +445,7 @@ describe('UI', function() {
         expect(moveSpy, 'move listener').to.have.callCount(1);
         expect(moveSpy).calledWith({
             type: 'move',
+            pointerType: 'mouse',
             pageX: 0,
             pageY: 0,
             sourceEvent: moveSourceEvent,

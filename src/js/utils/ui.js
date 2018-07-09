@@ -364,17 +364,6 @@ function triggerEvent(ui, type, srcEvent) {
 
 export default UI;
 
-// Expose what the source of the event is so that we can ensure it's handled correctly.
-// This returns only 'touch' or 'mouse'. 'pen' will be treated as a mouse.
-export function getPointerType(evt) {
-    if ((TOUCH_SUPPORT && evt instanceof TouchEvent) ||
-        (USE_POINTER_EVENTS && evt instanceof PointerEvent && evt.pointerType === 'touch')) {
-        return 'touch';
-    }
-
-    return 'mouse';
-}
-
 function getCoord(e, c) {
     return /^touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
 }
@@ -408,24 +397,29 @@ function isEnterKey(evt) {
     return false;
 }
 
-function normalizeUIEvent(type, srcEvent, target) {
+function normalizeUIEvent(type, sourceEvent, currentTarget) {
+    const { target, touches, changedTouches } = sourceEvent;
+    let { pointerType } = sourceEvent;
     let source;
 
-    if (srcEvent instanceof MouseEvent || (!srcEvent.touches && !srcEvent.changedTouches)) {
-        source = srcEvent;
-    } else if (srcEvent.touches && srcEvent.touches.length) {
-        source = srcEvent.touches[0];
+    if (sourceEvent instanceof MouseEvent || !(touches || changedTouches)) {
+        source = sourceEvent;
+        pointerType = pointerType || 'mouse';
     } else {
-        source = srcEvent.changedTouches[0];
+        source = (touches && touches.length) ? touches[0] : changedTouches[0];
+        pointerType = pointerType || 'touch';
     }
 
+    const { pageX, pageY } = source;
+
     return {
-        type: type,
-        sourceEvent: srcEvent,
-        target: srcEvent.target,
-        currentTarget: target,
-        pageX: source.pageX,
-        pageY: source.pageY
+        type,
+        pointerType,
+        pageX,
+        pageY,
+        sourceEvent,
+        currentTarget,
+        target
     };
 }
 
