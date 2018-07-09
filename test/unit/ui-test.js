@@ -309,6 +309,7 @@ describe('UI', function() {
             downSourceEvent = new PointerEvent('pointerdown', pointerOptions);
             moveSourceEvent = new PointerEvent('pointermove', xyCoords(5, 5, pointerOptions));
             upSourceEvent = new PointerEvent('pointerup', pointerOptions);
+            // TODO: cover 'pointercancel'
         } else if (TouchEvent) {
             const touch = new Touch(xyCoords(0, 0, {
                 identifier: 1,
@@ -383,10 +384,7 @@ describe('UI', function() {
         const overSpy = sandbox.spy();
         const outSpy = sandbox.spy();
         const moveSpy = sandbox.spy();
-        const ui = new UI(button, {
-            useHover: true,
-            useMove: true
-        }).on('over', overSpy).on('out', outSpy).on('move', moveSpy);
+        const ui = new UI(button).on('over', overSpy).on('out', outSpy).on('move', moveSpy);
         let overSourceEvent;
         let outSourceEvent;
         let moveSourceEvent;
@@ -447,12 +445,10 @@ describe('UI', function() {
         ui.destroy();
     });
 
-    it('triggers over and out events with focus and blur input', function() {
+    it('triggers focus and blur events with focus and blur input', function() {
         const overSpy = sandbox.spy();
         const outSpy = sandbox.spy();
-        const ui = new UI(button, {
-            useFocus: true
-        }).on('over', overSpy).on('out', outSpy);
+        const ui = new UI(button).on('focus', overSpy).on('blur', outSpy);
         const eventOptions = xyCoords(0, 0, {
             view: window,
             bubbles: true,
@@ -466,14 +462,14 @@ describe('UI', function() {
         expect(startResult, 'preventDefault not called').to.equal(true);
         expect(overSpy, 'over listener').to.have.callCount(1);
         expect(overSpy).calledWithMatch({
-            type: 'over',
+            type: 'focus',
             sourceEvent: overSourceEvent,
             target: button,
             currentTarget: button
         });
         expect(outSpy, 'out listener').to.have.callCount(1);
         expect(outSpy).calledWithMatch({
-            type: 'out',
+            type: 'blur',
             sourceEvent: outSourceEvent,
             target: button,
             currentTarget: button
@@ -489,10 +485,7 @@ describe('UI', function() {
         const overSpy = sandbox.spy();
         const outSpy = sandbox.spy();
         const moveSpy = sandbox.spy();
-        const ui = new UI(button, {
-            useHover: true,
-            useMove: true
-        }).on('over', overSpy).on('out', outSpy);
+        const ui = new UI(button).on('over', overSpy).on('out', outSpy);
         const pointerOptions = {
             isPrimary: true,
             pointerType: 'touch',
@@ -595,11 +588,7 @@ describe('UI', function() {
             button
         ]);
 
-        const ui = new UI(button, {
-            useFocus: true,
-            useHover: true,
-            useMove: true
-        });
+        const ui = new UI(button).on('enter over out focus blur move', () => {});
         expect(window.addEventListener, 'window').to.have.callCount(0);
         expect(window.removeEventListener, 'window').to.have.callCount(0);
         expect(document.addEventListener, 'document').to.have.callCount(0);
@@ -610,24 +599,20 @@ describe('UI', function() {
         ui.destroy();
     });
 
-    it('constructor adds event listeners based on options', function() {
+    it('adds event listeners based on listeners', function() {
         let ui;
 
         spyOnDomEventListenerMethods([ button ]);
         ui = new UI(button);
         if (USE_POINTER_EVENTS || !USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button without options').to.have.callCount(2);
+            expect(button.addEventListener, 'button without options').to.have.callCount(1);
         } else {
-            expect(button.addEventListener, 'button without options').to.have.callCount(3);
+            expect(button.addEventListener, 'button without options').to.have.callCount(2);
         }
         ui.destroy();
 
         spyOnDomEventListenerMethods([ button ]);
-        ui = new UI(button, {
-            useFocus: true,
-            useHover: true,
-            useMove: true
-        });
+        ui = new UI(button).on('enter over out focus blur move', () => {});
         if (USE_POINTER_EVENTS) {
             expect(button.addEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(7);
         } else if (!USE_MOUSE_EVENTS) {
@@ -638,19 +623,32 @@ describe('UI', function() {
         ui.destroy();
     });
 
+    it('remove event listeners with off()', function() {
+        spyOnDomEventListenerMethods([ button ]);
+        const ui = new UI(button)
+            .on('enter over out focus blur move', () => {})
+            .off();
+        if (USE_POINTER_EVENTS) {
+            expect(button.removeEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(6);
+        } else if (!USE_MOUSE_EVENTS) {
+            expect(button.removeEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(3);
+        } else {
+            expect(button.removeEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(6);
+        }
+        ui.destroy();
+    });
+
     it('removes all event listeners on destroy', function() {
         spyOnDomEventListenerMethods([ button ]);
 
-        const ui = new UI(button, {
-            useFocus: true,
-            useHover: true,
-            useMove: true
-        });
+        const ui = new UI(button).on('enter over out focus blur move', () => {});
         ui.destroy();
         if (USE_POINTER_EVENTS) {
-            expect(button.removeEventListener, 'button').to.have.callCount(16);
+            expect(button.removeEventListener, 'button').to.have.callCount(12);
+        } else if (!USE_MOUSE_EVENTS) {
+            expect(button.removeEventListener, 'button').to.have.callCount(5);
         } else {
-            expect(button.removeEventListener, 'button').to.have.callCount(9);
+            expect(button.removeEventListener, 'button').to.have.callCount(8);
         }
     });
 

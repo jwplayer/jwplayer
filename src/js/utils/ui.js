@@ -1,9 +1,10 @@
-import { Browser, OS, Features } from 'environment/environment';
+import { OS, Features } from 'environment/environment';
 import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
 import Events from 'utils/backbone.events';
 import { now } from 'utils/date';
 
 const noop = function() {};
+const document = window.document;
 const KeyboardEvent = window.KeyboardEvent || noop;
 const MouseEvent = window.MouseEvent || noop;
 const PointerEvent = window.PointerEvent || noop;
@@ -12,7 +13,6 @@ const TouchEvent = window.TouchEvent || noop;
 const TOUCH_SUPPORT = ('ontouchstart' in window);
 const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
 const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
-const _isOSXFirefox = Browser.firefox && OS.mac;
 
 let unique = 0;
 
@@ -24,15 +24,16 @@ let unique = 0;
 // TODO: unit tests
 
 // TODO: Only add event listeners when on('event') requires it
-// TODO: remove need for `useHover`, `useFocus`*, `useMove` and `enableDoubleTap`
-// TODO: Always make 'focus' and 'blur' map to 'over' and 'out'
+// DONE: remove need for `useHover`, `useFocus`, `useMove`
+// TODO: remove need for `enableDoubleTap`
+// DONE: Always make 'focus' and 'blur' trigger 'focus' and 'blur' instead of 'over' and 'out'
 // TODO: Optimize on('click tap') to register a single listener
 // TODO: Replace `directSelect` with useCapture (addEventListener(name, callback, true || { useCapture: true }))
 // TODO: Investigate alternative solutions to `preventDefault` (button.js)
 // TODO: Cleanup usage of UI instances (reference and destroy to cleanup listeners)
 
 const UI = function (elem, options) {
-    const _elem = elem;
+    const _this = this;
     let _hasMoved = false;
     let _startX = 0;
     let _startY = 0;
@@ -45,80 +46,25 @@ const UI = function (elem, options) {
 
     this.id = ++unique;
     this.elem = elem;
+    this.handlers = {};
 
-    console.log(`${this.id}. (${elem.className})`, options);
+    // console.log(`${this.id}. (${elem.className})`, options);
 
     options = options || {};
 
     const listenerOptions = Features.passiveEvents ? { passive: !options.preventScrolling } : false;
-
-    const interactEndDelegate = (event) => interactEndHandler(event);
-
+    
     // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
     // (windows phones) still get listeners just in case they want to use them.
     if (USE_POINTER_EVENTS) {
         elem.addEventListener('pointerdown', interactStartHandler, listenerOptions);
-        if (options.useHover) {
-            elem.addEventListener('pointerover', overHandler);
-            elem.addEventListener('pointerout', pointerOutHandler);
-        }
-        if (options.useMove) {
-            elem.addEventListener('pointermove', moveHandler);
-        }
     } else {
         if (USE_MOUSE_EVENTS) {
             elem.addEventListener('mousedown', interactStartHandler, listenerOptions);
-            if (options.useHover) {
-                elem.addEventListener('mouseover', overHandler);
-                elem.addEventListener('mouseout', outHandler);
-            }
-            if (options.useMove) {
-                elem.addEventListener('mousemove', moveHandler);
-            }
         }
 
         // Always add this, in case we don't properly identify the device as mobile
         elem.addEventListener('touchstart', interactStartHandler, listenerOptions);
-    }
-
-    elem.addEventListener('keydown', keyHandler);
-    if (options.useFocus) {
-        elem.addEventListener('focus', overHandler);
-        elem.addEventListener('blur', outHandler);
-    }
-
-    // overHandler and outHandler not assigned in touch situations
-    function overHandler(evt) {
-        if (evt.pointerType !== 'touch') {
-            triggerEvent(OVER, evt);
-        }
-    }
-
-    function moveHandler(evt) {
-        if (evt.pointerType !== 'touch') {
-            triggerEvent(MOVE, evt);
-        }
-    }
-
-    function pointerOutHandler(evt) {
-        if (evt.pointerType !== 'touch' && 'x' in evt) {
-            // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
-            const { x, y } = evt;
-            const overElement = document.elementFromPoint(x, y);
-            if (!elem.contains(overElement)) {
-                triggerEvent(OUT, evt);
-            }
-        }
-    }
-
-    function outHandler(evt) {
-        triggerEvent(OUT, evt);
-    }
-
-    function keyHandler(evt) {
-        if (isEnterKey(evt)) {
-            triggerEvent(ENTER, evt);
-        }
     }
 
     function setEventListener(element, eventName, callback) {
@@ -140,22 +86,10 @@ const UI = function (elem, options) {
                 }
                 setEventListener(elem, 'pointermove', interactDragHandler, listenerOptions);
                 setEventListener(elem, 'pointercancel', interactEndHandler);
-
-                // Listen for mouseup after mouse pointer down because pointerup doesn't fire on swf objects
-                if (evt.pointerType === 'mouse' && target.nodeName === 'OBJECT') {
-                    setEventListener(document, 'mouseup', interactEndDelegate);
-                } else {
-                    setEventListener(elem, 'pointerup', interactEndHandler);
-                }
+                setEventListener(elem, 'pointerup', interactEndHandler);
             } else if (evt.type === 'mousedown') {
                 setEventListener(document, 'mousemove', interactDragHandler, listenerOptions);
-
-                // Handle clicks in OSX Firefox over Flash 'object'
-                if (_isOSXFirefox && evt.target.nodeName.toLowerCase() === 'object') {
-                    setEventListener(elem, 'click', interactEndHandler);
-                } else {
-                    setEventListener(document, 'mouseup', interactEndDelegate);
-                }
+                setEventListener(document, 'mouseup', interactEndHandler);
             } else if (evt.type === 'touchstart') {
                 _touchListenerTarget = target;
                 longPressTimeout = setTimeout(() => {
@@ -184,16 +118,16 @@ const UI = function (elem, options) {
 
         const movementThreshold = 6;
         if (_hasMoved) {
-            triggerEvent(DRAG, evt);
+            triggerEvent(_this, DRAG, evt);
         } else {
             const endX = getCoord(evt, 'X');
             const endY = getCoord(evt, 'Y');
             const moveX = endX - _startX;
             const moveY = endY - _startY;
             if (moveX * moveX + moveY * moveY > movementThreshold * movementThreshold) {
-                triggerEvent(DRAG_START, evt);
+                triggerEvent(_this, DRAG_START, evt);
                 _hasMoved = true;
-                triggerEvent(DRAG, evt);
+                triggerEvent(_this, DRAG, evt);
             }
         }
 
@@ -214,7 +148,7 @@ const UI = function (elem, options) {
         elem.removeEventListener('pointercancel', interactEndHandler);
         elem.removeEventListener('pointerup', interactEndHandler);
         document.removeEventListener('mousemove', interactDragHandler);
-        document.removeEventListener('mouseup', interactEndDelegate);
+        document.removeEventListener('mouseup', interactEndHandler);
         if (_touchListenerTarget) {
             _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
             _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
@@ -222,15 +156,24 @@ const UI = function (elem, options) {
         }
 
         if (_hasMoved) {
-            triggerEvent(DRAG_END, evt);
-
+            triggerEvent(_this, DRAG_END, evt);
         }
         // KA: dded 'directSelect' parameter to UI for interactions where the event should only be fired if the target is the listened element and not its children
         else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
-            if (evt.type === 'mouseup' || evt.type === 'click' || isPointerEvent && evt.pointerType === 'mouse') {
-                triggerEvent(CLICK, evt);
+            const click = evt.type === 'mouseup' || isPointerEvent && evt.pointerType === 'mouse';
+            if (options.enableDoubleTap) {
+                if (now() - _lastClickTime < _doubleClickDelay) {
+                    const doubleType = (click) ? DOUBLE_CLICK : DOUBLE_TAP;
+                    triggerEvent(_this, doubleType, evt);
+                    _lastClickTime = 0;
+                } else {
+                    _lastClickTime = now();
+                }
+            }
+            if (click) {
+                triggerEvent(_this, CLICK, evt);
             } else {
-                triggerEvent(TAP, evt);
+                triggerEvent(_this, TAP, evt);
                 if (evt.type === 'touchend') {
                     // preventDefault to not dispatch the 300ms delayed click after a tap
                     preventDefault(evt);
@@ -242,28 +185,11 @@ const UI = function (elem, options) {
         _hasMoved = false;
     }
 
-    const triggerEvent = (type, srcEvent) => {
-        let evt;
-        if (options.enableDoubleTap && (type === CLICK || type === TAP)) {
-            if (now() - _lastClickTime < _doubleClickDelay) {
-                const doubleType = (type === CLICK) ?
-                    DOUBLE_CLICK : DOUBLE_TAP;
-                evt = normalizeUIEvent(doubleType, srcEvent, _elem);
-                this.trigger(doubleType, evt);
-                _lastClickTime = 0;
-            } else {
-                _lastClickTime = now();
-            }
-        }
-        evt = normalizeUIEvent(type, srcEvent, _elem);
-        this.trigger(type, evt);
-    };
-
     this.destroy = function() {
         this.off();
+
         elem.removeEventListener('touchstart', interactStartHandler);
         elem.removeEventListener('mousedown', interactStartHandler);
-        elem.removeEventListener('keydown', keyHandler);
 
         if (_touchListenerTarget) {
             _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
@@ -276,26 +202,14 @@ const UI = function (elem, options) {
             if (options.preventScrolling) {
                 elem.releasePointerCapture(_pointerId);
             }
-            elem.removeEventListener('pointerover', overHandler);
             elem.removeEventListener('pointerdown', interactStartHandler);
             elem.removeEventListener('pointermove', interactDragHandler);
-            elem.removeEventListener('pointermove', moveHandler);
             elem.removeEventListener('pointercancel', interactEndHandler);
-            elem.removeEventListener('pointerout', pointerOutHandler);
             elem.removeEventListener('pointerup', interactEndHandler);
         }
 
-        elem.removeEventListener('click', interactEndHandler);
-        elem.removeEventListener('mouseover', overHandler);
-        elem.removeEventListener('mousemove', moveHandler);
-        elem.removeEventListener('mouseout', outHandler);
         document.removeEventListener('mousemove', interactDragHandler);
-        document.removeEventListener('mouseup', interactEndDelegate);
-
-        if (options.useFocus) {
-            elem.removeEventListener('focus', overHandler);
-            elem.removeEventListener('blur', outHandler);
-        }
+        document.removeEventListener('mouseup', interactEndHandler);
     };
 
     return this;
@@ -304,55 +218,41 @@ const UI = function (elem, options) {
 const eventSplitter = /\s+/;
 
 function eventsApi(name) {
-    return !(eventSplitter.test(name) || typeof name === 'object');
+    return name && !(eventSplitter.test(name) || typeof name === 'object');
 }
 
 Object.assign(UI.prototype, Events, {
     on(name, callback, context) {
         if (eventsApi(name)) {
-            console.log(`${this.id}. (${this.elem.className}).on`, name, callback);
+            // console.log(`${this.id}. (${this.elem.className}).on`, name, callback);
+            if (!this.handlers[name]) {
+                eventRegisters[name](this);
+            }
         }
         return Events.on.call(this, name, callback, context);
     },
     off(name, callback, context) {
         if (eventsApi(name)) {
-            console.log(`${this.id}. (${this.elem.className}).off`, name, callback);
+            // console.log(`${this.id}. (${this.elem.className}).off`, name, callback);
+            removeEventListeners(this, name);
+        } else if (!name) {
+            const { handlers } = this;
+            Object.keys(handlers).forEach(triggerName => {
+                removeEventListeners(this, triggerName);
+            });
         }
-        return Events.on.call(this, name, callback, context);
+        return Events.off.call(this, name, callback, context);
     },
-    trigger(name, event) {
-        if (!this._events) {
-            return this;
-        }
-        if (eventsApi(name)) {
-            console.log(`${this.id}. (${this.elem.className}).trigger`, name, event);
-        }
-        return Events.trigger.call(this, name, event);
-    }
+    // trigger(name, event) {
+    //     if (!this._events) {
+    //         return this;
+    //     }
+    //     if (eventsApi(name)) {
+    //         console.log(`${this.id}. (${this.elem.className}).trigger`, name, event);
+    //     }
+    //     return Events.trigger.call(this, name, event);
+    // }
 });
-
-
-const eventListeners = {
-    blur: null,
-    click: null,
-    focus: null,
-    keydown: null,
-    mousedown: null,
-    mousemove: null,
-    mouseout: null,
-    mouseover: null,
-    mouseup: null,
-    pointercancel: null,
-    pointerdown: null,
-    pointermove: null,
-    pointerout: null,
-    pointerover: null,
-    pointerup: null,
-    touchcancel: null,
-    touchend: null,
-    touchmove: null,
-    touchstart: null
-};
 
 const eventRegisters = {
     click() {
@@ -376,19 +276,91 @@ const eventRegisters = {
     dragEnd() {
 
     },
-    over() {
-
+    focus(ui) {
+        const focus = 'focus';
+        addEventListener(ui, focus, focus, (e) => {
+            triggerEvent(ui, focus, e);
+        });
     },
-    out() {
-
+    blur(ui) {
+        const blur = 'blur';
+        addEventListener(ui, blur, blur, (e) => {
+            triggerEvent(ui, blur, e);
+        });
     },
-    move() {
-
+    over(ui) {
+        if (USE_POINTER_EVENTS || USE_MOUSE_EVENTS) {
+            addEventListener(ui, OVER, USE_POINTER_EVENTS ? 'pointerover' : 'mouseover', (e) => {
+                if (e.pointerType !== 'touch') {
+                    triggerEvent(ui, OVER, e);
+                }
+            });
+        }
     },
-    enter() {
-
+    out(ui) {
+        if (USE_POINTER_EVENTS) {
+            addEventListener(ui, OUT, 'pointerout', (e) => {
+                if (e.pointerType !== 'touch' && 'x' in e) {
+                    // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
+                    const overElement = document.elementFromPoint(e.x, e.y);
+                    if (!ui.elem.contains(overElement)) {
+                        triggerEvent(ui, OUT, e);
+                    }
+                }
+            });
+        } else if (USE_MOUSE_EVENTS) {
+            addEventListener(ui, OUT, 'mouseout', (e) => {
+                triggerEvent(ui, OUT, e);
+            });
+        }
+    },
+    move(ui) {
+        if (USE_POINTER_EVENTS || USE_MOUSE_EVENTS) {
+            addEventListener(ui, MOVE, USE_POINTER_EVENTS ? 'pointermove' : 'mousemove', (e) => {
+                if (e.pointerType !== 'touch') {
+                    triggerEvent(ui, MOVE, e);
+                }
+            });
+        }
+    },
+    enter(ui) {
+        addEventListener(ui, ENTER, 'keydown', (e) => {
+            if (isEnterKey(e)) {
+                triggerEvent(ui, ENTER, e);
+            }
+        });
     }
 };
+
+function addEventListener(ui, triggerName, domEventName, handler, options) {
+    const { elem } = ui;
+
+    let listeners = ui.handlers[triggerName];
+    if (!listeners) {
+        listeners = ui.handlers[triggerName] = {};
+    }
+    if (listeners[domEventName]) {
+        throw new Error('Only one listener per event is allowed in ui.js');
+    }
+    listeners[domEventName] = handler;
+    elem.addEventListener(domEventName, handler, options || false);
+}
+
+function removeEventListeners(ui, triggerName) {
+    const listeners = ui.handlers[triggerName];
+    if (listeners) {
+        Object.keys(listeners).forEach(domEventName => {
+            ui.elem.removeEventListener(domEventName, listeners[domEventName]);
+        });
+    }
+}
+
+function triggerEvent(ui, type, srcEvent) {
+    const { elem } = ui;
+    const event = normalizeUIEvent(type, srcEvent, elem);
+    ui.trigger(type, event);
+}
+
 
 export default UI;
 

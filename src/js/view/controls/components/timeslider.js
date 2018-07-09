@@ -112,7 +112,7 @@ class TimeSlider extends Slider {
         this.elementRail.appendChild(this.timeTip.element());
 
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
-        this.elementUI = new UI(this.el, { useHover: true, useMove: true })
+        this.elementUI = new UI(this.el)
             .on('drag move over', this.showTimeTooltip, this)
             .on('dragEnd out', this.hideTimeTooltip, this)
             .on('click', () => this.el.focus());

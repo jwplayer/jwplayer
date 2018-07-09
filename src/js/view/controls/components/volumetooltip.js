@@ -18,11 +18,11 @@ export default class VolumeTooltip extends Tooltip {
             this.el.focus();
         }, this);
 
-        new UI(this.el, { useHover: true, directSelect: true, useFocus: true })
+        new UI(this.el, { directSelect: true })
             .on('click enter', this.toggleValue, this)
             .on('tap', this.toggleOpenState, this)
-            .on('over', this.openTooltip, this)
-            .on('out', this.closeTooltip, this);
+            .on('over focus', this.openTooltip, this)
+            .on('out blur', this.closeTooltip, this);
 
         this._model.on('change:volume', this.onVolume, this);
     }
