@@ -10,6 +10,23 @@ describe('UI', function() {
     const TOUCH_SUPPORT = ('ontouchstart' in window);
     const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
     const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
+    const CREATE_TOUCH_THROWS = (function() {
+        try {
+            const touch = new Touch({
+                identifier: 1,
+                target: document.createElement('div')
+            });
+            const touchOptions = xyCoords(0, 0, {
+                changedTouches: [ touch ],
+                view: window,
+                bubbles: true,
+                cancelable: true
+            });
+            return !(new TouchEvent('touchstart', touchOptions));
+        } catch (error) {
+            return true;
+        }
+    }());
 
     let sandbox;
     let button;
@@ -58,6 +75,38 @@ describe('UI', function() {
             sandbox.spy(element, 'addEventListener');
             sandbox.spy(element, 'removeEventListener');
         });
+    }
+
+    function createTouch(touchOptions) {
+        const params = touchOptions || xyCoords(0, 0, {
+            identifier: 1,
+            view: window,
+            target: button
+        });
+        if (CREATE_TOUCH_THROWS) {
+            return document.createTouch(window, button, 1,
+                params.pageX || 0, params.pageY || 0, params.screenX || 0, params.screenY || 0);
+        }
+        return new Touch(params);
+    }
+    function createTouchEvent(type, touchOptions) {
+        const params = touchOptions || xyCoords(0, 0, {
+            changedTouches: [ createTouch(touchOptions) ],
+            view: window,
+            bubbles: true,
+            cancelable: true
+        });
+        if (CREATE_TOUCH_THROWS) {
+            const e = document.createEvent('TouchEvent');
+            e.initTouchEvent(type, Boolean(params.bubbles), Boolean(params.cancelable), params.view, params.detail,
+                params.screenX || 0, params.screenY || 0, params.clientX || 0, params.clientY || 0,
+                false, false, false, false,
+                document.createTouchList.apply(document, params.changedTouches),
+                document.createTouchList.apply(document, params.changedTouches),
+                document.createTouchList.apply(document, params.changedTouches));
+            return e;
+        }
+        return new TouchEvent(type, params);
     }
 
     function xyCoords(x, y, obj) {
@@ -139,6 +188,10 @@ describe('UI', function() {
     });
 
     it('triggers tap events with pointer and touch input', function() {
+        if (!USE_POINTER_EVENTS && !TOUCH_SUPPORT) {
+            // Touch not supported in this browser
+            return;
+        }
         const tapSpy = sandbox.spy();
         const ui = new UI(button).on('click tap', tapSpy);
         let startResult;
@@ -154,22 +207,9 @@ describe('UI', function() {
             startResult = button.dispatchEvent(new PointerEvent('pointerdown', pointerTouchOptions));
             sourceEvent = new PointerEvent('pointerup', pointerTouchOptions);
         } else if (TOUCH_SUPPORT) {
-            const touch = new Touch({
-                identifier: 1,
-                target: button
-            });
-            const touchOptions = {
-                changedTouches: [ touch ],
-                view: window,
-                bubbles: true,
-                cancelable: true
-            };
-            startResult = button.dispatchEvent(new TouchEvent('touchstart', touchOptions));
-            sourceEvent = new TouchEvent('touchend', touchOptions);
-        } else {
-            // Touch not supported in this browser
-            ui.destroy();
-            return;
+            const touchEvent = createTouchEvent('touchstart');
+            startResult = button.dispatchEvent(touchEvent);
+            sourceEvent = createTouchEvent('touchend');
         }
         button.dispatchEvent(sourceEvent);
 
@@ -259,20 +299,11 @@ describe('UI', function() {
             sourceEvent = new PointerEvent('pointerup', pointerTouchOptions);
             button.dispatchEvent(sourceEvent);
         } else if (TOUCH_SUPPORT) {
-            const touch = new Touch({
-                identifier: 1,
-                target: button
-            });
-            const touchOptions = {
-                changedTouches: [ touch ],
-                view: window,
-                bubbles: true,
-                cancelable: true
-            };
-            startResult = button.dispatchEvent(new TouchEvent('touchstart', touchOptions));
-            button.dispatchEvent(new TouchEvent('touchend', touchOptions));
-            button.dispatchEvent(new TouchEvent('touchstart', touchOptions));
-            sourceEvent = new TouchEvent('touchend', touchOptions);
+            const touchEvent = createTouchEvent('touchstart');
+            startResult = button.dispatchEvent(touchEvent);
+            button.dispatchEvent(createTouchEvent('touchend'));
+            button.dispatchEvent(createTouchEvent('touchstart'));
+            sourceEvent = createTouchEvent('touchend');
             button.dispatchEvent(sourceEvent);
         } else {
             // Touch not supported in this browser
@@ -315,11 +346,11 @@ describe('UI', function() {
             upSourceEvent = new PointerEvent('pointerup', pointerOptions);
             // TODO: cover 'pointercancel'
         } else if (TOUCH_SUPPORT) {
-            const touch = new Touch(xyCoords(0, 0, {
+            const touch = createTouch(xyCoords(0, 0, {
                 identifier: 1,
                 target: button
             }));
-            const touchMoved = new Touch(xyCoords(5, 5, {
+            const touchMoved = createTouch(xyCoords(5, 5, {
                 identifier: 1,
                 target: button
             }));
@@ -332,9 +363,9 @@ describe('UI', function() {
             const touchMovedOptions = Object.assign({}, touchOptions, {
                 changedTouches: [ touchMoved ]
             });
-            downSourceEvent = new TouchEvent('touchstart', touchOptions);
-            moveSourceEvent = new TouchEvent('touchmove', touchMovedOptions);
-            upSourceEvent = new TouchEvent('touchend', touchMovedOptions);
+            downSourceEvent = createTouchEvent('touchstart', touchOptions);
+            moveSourceEvent = createTouchEvent('touchmove', touchMovedOptions);
+            upSourceEvent = createTouchEvent('touchend', touchMovedOptions);
         } else {
             const mouseOptions = xyCoords(0, 0, {
                 view: window,
@@ -517,14 +548,14 @@ describe('UI', function() {
     });
 
     it('triggers enter events with keyboard input', function() {
-        if (OS.android) {
-            // 'keydown' listeners are not invoked on android
-            return;
-        }
         const enterSpy = sandbox.spy();
         const ui = new UI(button).on('enter', enterSpy);
         const sourceEvent = new KeyboardEvent('keydown', {
-            keyCode: 13
+            key: 'Enter',
+            keyCode: 13,
+            view: window,
+            bubbles: true,
+            cancelable: true
         });
         sandbox.spy(sourceEvent, 'stopPropagation');
         const result = button.dispatchEvent(sourceEvent);
@@ -570,11 +601,11 @@ describe('UI', function() {
             sandbox.spy(event, 'preventDefault');
             result = button.dispatchEvent(event);
         } else {
-            const touch = new Touch({
+            const touch = createTouch({
                 identifier: 1,
                 target: button
             });
-            event = new TouchEvent('touchstart', {
+            event = createTouchEvent('touchstart', {
                 changedTouches: [ touch ],
                 view: window,
                 bubbles: true,
