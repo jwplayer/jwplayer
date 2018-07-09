@@ -19,18 +19,19 @@ export default function loadPlugins(model, api) {
     const pluginLoader = model.pluginLoader =
         model.pluginLoader || new PluginsLoader();
 
-    return pluginLoader.load(api, pluginsModel, pluginsConfig, model).then(events => {
+    return pluginLoader.load(api, pluginsModel, pluginsConfig, model).then(results => {
         if (model.attributes._destroyed) {
             // Player and plugin loader was replaced
             return;
         }
-        if (events) {
-            events.forEach(object => {
+        if (results) {
+            results.forEach(object => {
                 if (object instanceof Error) {
                     log(object.message);
                 }
             });
         }
         delete window.jwplayerPluginJsonp;
+        return results;
     });
 }

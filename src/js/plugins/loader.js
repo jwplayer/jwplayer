@@ -11,6 +11,7 @@ function configurePlugin(pluginObj, pluginConfig, api) {
     const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
 
     api.addPlugin(pluginName, pluginInstance);
+    return pluginInstance;
 }
 
 const PluginLoader = function() {
@@ -27,7 +28,7 @@ const PluginLoader = function() {
                     if (model.attributes._destroyed) {
                         return;
                     }
-                    configurePlugin(plugin, pluginConfig, api);
+                    return configurePlugin(plugin, pluginConfig, api);
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
                     if (!(error instanceof Error)) {
