@@ -128,7 +128,8 @@ module.exports = function(config) {
             project: 'jwplayer',
             build: env.BROWSERSTACK_BUILD || ('' + (env.JOB_NAME || 'local') + ' ' +
             (env.BUILD_NUMBER || env.USER || env.GITHUB_USER) + ' ' +
-            (env.GIT_BRANCH || 'jwplayer') + ' ' + packageInfo.version),
+            (env.GIT_BRANCH || 'jwplayer') + ' ' + packageInfo.version) + ' ' +
+            (new Date()).toISOString(),
             timeout: 300 // 5 minutes
         },
 

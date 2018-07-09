@@ -5,9 +5,7 @@ import { now } from 'utils/date';
 
 const noop = function() {};
 const document = window.document;
-const KeyboardEvent = window.KeyboardEvent || noop;
 const MouseEvent = window.MouseEvent || noop;
-const PointerEvent = window.PointerEvent || noop;
 const TouchEvent = window.TouchEvent || noop;
 
 const TOUCH_SUPPORT = ('ontouchstart' in window);
@@ -158,7 +156,7 @@ const UI = function (elem, options) {
         if (_hasMoved) {
             triggerEvent(_this, DRAG_END, evt);
         }
-        // KA: dded 'directSelect' parameter to UI for interactions where the event should only be fired if the target is the listened element and not its children
+        // KA: Added 'directSelect' parameter to UI for interactions where the event should only be fired if the target is the listened element and not its children
         else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
             const click = evt.type === 'mouseup' || isPointerEvent && evt.pointerType === 'mouse';
             if (options.enableDoubleTap) {
@@ -279,13 +277,13 @@ const eventRegisters = {
     focus(ui) {
         const focus = 'focus';
         addEventListener(ui, focus, focus, (e) => {
-            triggerEvent(ui, focus, e);
+            triggerSimpleEvent(ui, focus, e);
         });
     },
     blur(ui) {
         const blur = 'blur';
         addEventListener(ui, blur, blur, (e) => {
-            triggerEvent(ui, blur, e);
+            triggerSimpleEvent(ui, blur, e);
         });
     },
     over(ui) {
@@ -325,8 +323,9 @@ const eventRegisters = {
     },
     enter(ui) {
         addEventListener(ui, ENTER, 'keydown', (e) => {
-            if (isEnterKey(e)) {
-                triggerEvent(ui, ENTER, e);
+            if (e.key === 'Enter' || e.keyCode === 13) {
+                e.stopPropagation();
+                triggerSimpleEvent(ui, ENTER, e);
             }
         });
     }
@@ -355,12 +354,49 @@ function removeEventListeners(ui, triggerName) {
     }
 }
 
-function triggerEvent(ui, type, srcEvent) {
+function triggerSimpleEvent(ui, type, sourceEvent) {
     const { elem } = ui;
-    const event = normalizeUIEvent(type, srcEvent, elem);
+    const { target } = sourceEvent;
+    ui.trigger(type, {
+        type,
+        sourceEvent,
+        currentTarget: elem,
+        target
+    });
+}
+
+function triggerEvent(ui, type, sourceEvent) {
+    const { elem } = ui;
+    const event = normalizeUIEvent(type, sourceEvent, elem);
     ui.trigger(type, event);
 }
 
+function normalizeUIEvent(type, sourceEvent, currentTarget) {
+    const { target, touches, changedTouches } = sourceEvent;
+    const sourceType = sourceEvent.type;
+    let { pointerType } = sourceEvent;
+    let source;
+
+    if (sourceEvent instanceof MouseEvent || !(touches || changedTouches)) {
+        source = sourceEvent;
+        pointerType = pointerType || 'mouse';
+    } else {
+        source = (touches && touches.length) ? touches[0] : changedTouches[0];
+        pointerType = pointerType || 'touch';
+    }
+
+    const { pageX, pageY } = source;
+
+    return {
+        type,
+        pointerType,
+        pageX,
+        pageY,
+        sourceEvent,
+        currentTarget,
+        target
+    };
+}
 
 export default UI;
 
@@ -384,43 +420,6 @@ function isRightClick(evt) {
     }
 
     return false;
-}
-
-function isEnterKey(evt) {
-    const e = evt || window.event;
-
-    if ((e instanceof KeyboardEvent) && e.keyCode === 13) {
-        evt.stopPropagation();
-        return true;
-    }
-
-    return false;
-}
-
-function normalizeUIEvent(type, sourceEvent, currentTarget) {
-    const { target, touches, changedTouches } = sourceEvent;
-    let { pointerType } = sourceEvent;
-    let source;
-
-    if (sourceEvent instanceof MouseEvent || !(touches || changedTouches)) {
-        source = sourceEvent;
-        pointerType = pointerType || 'mouse';
-    } else {
-        source = (touches && touches.length) ? touches[0] : changedTouches[0];
-        pointerType = pointerType || 'touch';
-    }
-
-    const { pageX, pageY } = source;
-
-    return {
-        type,
-        pointerType,
-        pageX,
-        pageY,
-        sourceEvent,
-        currentTarget,
-        target
-    };
 }
 
 // Preventdefault to prevent click events

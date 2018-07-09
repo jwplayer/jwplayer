@@ -472,14 +472,14 @@ describe('UI', function() {
 
         expect(startResult, 'preventDefault not called').to.equal(true);
         expect(overSpy, 'over listener').to.have.callCount(1);
-        expect(overSpy).calledWithMatch({
+        expect(overSpy).calledWith({
             type: 'focus',
             sourceEvent: overSourceEvent,
             target: button,
             currentTarget: button
         });
         expect(outSpy, 'out listener').to.have.callCount(1);
-        expect(outSpy).calledWithMatch({
+        expect(outSpy).calledWith({
             type: 'blur',
             sourceEvent: outSourceEvent,
             target: button,
@@ -530,7 +530,7 @@ describe('UI', function() {
         const result = button.dispatchEvent(sourceEvent);
         expect(result, 'preventDefault not called').to.equal(true);
         expect(enterSpy).to.have.callCount(1);
-        expect(enterSpy).calledWithMatch({
+        expect(enterSpy).calledWith({
             type: 'enter',
             sourceEvent,
             target: button,
