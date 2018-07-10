@@ -575,7 +575,7 @@ describe('UI', function() {
     it('preventScrolling uses setPointerCapture and preventDefault', function() {
         const ui = new UI(button, {
             preventScrolling: true
-        });
+        }).on('drag');
         let result;
         let event;
         if (USE_POINTER_EVENTS) {
@@ -651,21 +651,18 @@ describe('UI', function() {
 
         spyOnDomEventListenerMethods([ button ]);
         ui = new UI(button);
-        if (USE_POINTER_EVENTS || !USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button without options').to.have.callCount(1);
-        } else {
-            expect(button.addEventListener, 'button without options').to.have.callCount(2);
-        }
+        expect(button.addEventListener, 'button without options').to.have.callCount(0);
         ui.destroy();
 
         spyOnDomEventListenerMethods([ button ]);
-        ui = new UI(button).on('enter over out focus blur move', () => {});
+        ui = new UI(button)
+            .on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {});
         if (USE_POINTER_EVENTS) {
-            expect(button.addEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(7);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(7);
         } else if (!USE_MOUSE_EVENTS) {
-            expect(button.addEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(4);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(4);
         } else {
-            expect(button.addEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(8);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(8);
         }
         ui.destroy();
     });
@@ -673,14 +670,17 @@ describe('UI', function() {
     it('remove event listeners with off()', function() {
         spyOnDomEventListenerMethods([ button ]);
         const ui = new UI(button)
-            .on('enter over out focus blur move', () => {})
+            .on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {})
             .off();
         if (USE_POINTER_EVENTS) {
-            expect(button.removeEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(6);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(7);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(7);
         } else if (!USE_MOUSE_EVENTS) {
-            expect(button.removeEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(3);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(4);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(4);
         } else {
-            expect(button.removeEventListener, 'button with useFocus, useHover, useMove').to.have.callCount(6);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(8);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(8);
         }
         ui.destroy();
     });
@@ -688,14 +688,17 @@ describe('UI', function() {
     it('removes all event listeners on destroy', function() {
         spyOnDomEventListenerMethods([ button ]);
 
-        const ui = new UI(button).on('enter over out focus blur move', () => {});
+        const ui = new UI(button).on('click tap doubleClick doubleTap dragStart drag dragEnd enter over out focus blur move', () => {});
         ui.destroy();
         if (USE_POINTER_EVENTS) {
-            expect(button.removeEventListener, 'button').to.have.callCount(12);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(7);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(7);
         } else if (!USE_MOUSE_EVENTS) {
-            expect(button.removeEventListener, 'button').to.have.callCount(5);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(4);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(4);
         } else {
-            expect(button.removeEventListener, 'button').to.have.callCount(8);
+            expect(button.addEventListener, 'button with all listeners').to.have.callCount(8);
+            expect(button.removeEventListener, 'button with all listeners').to.have.callCount(8);
         }
     });
 

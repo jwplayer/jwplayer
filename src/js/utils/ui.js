@@ -3,39 +3,20 @@ import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE
 import Eventable from 'utils/eventable';
 import { now } from 'utils/date';
 
-const noop = function() {};
-const document = window.document;
-const MouseEvent = window.MouseEvent || noop;
-const TouchEvent = window.TouchEvent || noop;
-
 const TOUCH_SUPPORT = ('ontouchstart' in window);
 const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
 const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
 
+const WINDOW_GROUP = 'window';
+
 const { passiveEvents } = Features;
 const DEFAULT_LISTENER_OPTIONS = passiveEvents ? { passive: true } : false;
 
+const MOVEMENT_THRESHOLD = 6;
 const DOUBLE_CLICK_DELAY = 300;
 const LONG_PRESS_DELAY = 500;
 
 let longPressTimeout;
-
-// ui-test.js: Test number of event listeners added
-// https://gist.github.com/robwalch/7d2165353e2621bb7b21e29863b7ba5e
-// Research: listener total is 154 with 3IkpdgrX-rcY6EcsD setup
-//   36 UI instances listen with 'interactStartHandler'
-//   11 buttons with preventDefault
-// DONE: unit tests
-
-// TODO: Only add event listeners when on('event') requires it
-// DONE: remove need for `useHover`, `useFocus`, `useMove`
-// DONE: remove need for `enableDoubleTap`
-// DONE: Always make 'focus' and 'blur' trigger 'focus' and 'blur' instead of 'over' and 'out'
-// TODO: Optimize on('click tap') to register a single listener
-// DONE: Use `directSelect` on start rather than end interaction
-// TODO: Investigate alternative solutions to `preventDefault` (button.js)
-// TODO: Cleanup usage of UI instances (reference and destroy to cleanup listeners)
-// TODO: Add 'rightclick' / longpress support to replace code duplication in rightclick
 
 export default class UI extends Eventable {
 
@@ -47,14 +28,15 @@ export default class UI extends Eventable {
 
         this.directSelect = !!options.directSelect;
         this.dragged = false;
+        this.enableDoubleTap = false;
         this.el = element;
         this.handlers = {};
         this.lastClick = 0;
+        this.lastStart = 0;
         this.passive = passive;
-        this.pointerId;
+        this.pointerId = null;
         this.startX = 0;
         this.startY = 0;
-        this.touchTarget;
     }
 
     on(name, callback, context) {
@@ -68,11 +50,11 @@ export default class UI extends Eventable {
 
     off(name, callback, context) {
         if (eventsApi(name)) {
-            removeEventListeners(this, name);
+            removeHandlers(this, name);
         } else if (!name) {
             const { handlers } = this;
             Object.keys(handlers).forEach(triggerName => {
-                removeEventListeners(this, triggerName);
+                removeHandlers(this, triggerName);
             });
         }
         return super.off(name, callback, context);
@@ -80,23 +62,10 @@ export default class UI extends Eventable {
 
     destroy() {
         this.off();
-        const { el, touchTarget } = this;
-
-        if (touchTarget) {
-            // touchTarget.removeEventListener('touchmove', interactDragHandler);
-            // touchTarget.removeEventListener('touchcancel', interactEndHandler);
-            // touchTarget.removeEventListener('touchend', interactEndHandler);
-            this.touchTarget = null;
-        }
-
         if (USE_POINTER_EVENTS) {
-            if (this.pointerId) {
-                el.releasePointerCapture(this.pointerId);
-            }
+            releasePointerCapture(this);
         }
-
-        // document.removeEventListener('mousemove', interactDragHandler);
-        // document.removeEventListener('mouseup', interactEndHandler);
+        this.el = null;
     }
 }
 
@@ -111,7 +80,6 @@ function initInteractionListeners(ui) {
     if (ui.handlers[initGroup]) {
         return;
     }
-    const startGroup = 'start';
     const { el, passive } = ui;
     const listenerOptions = passiveEvents ? { passive } : false;
 
@@ -127,10 +95,12 @@ function initInteractionListeners(ui) {
 
         const { pageX, pageY } = getCoords(e);
 
+        ui.dragged = false;
+        ui.lastStart = now();
         ui.startX = pageX;
         ui.startY = pageY;
 
-        removeEventListeners(ui, startGroup);
+        removeHandlers(ui, WINDOW_GROUP);
         if (type === 'pointerdown' && e.isPrimary) {
             if (!passive) {
                 const { pointerId } = e;
@@ -138,47 +108,32 @@ function initInteractionListeners(ui) {
                 el.setPointerCapture(pointerId);
             }
 
-            addEventListener(ui, startGroup, 'pointermove', interactDragHandler, listenerOptions);
-            addEventListener(ui, startGroup, 'pointercancel', interactEndHandler);
-            addEventListener(ui, startGroup, 'pointerup', interactEndHandler);
+            addEventListener(ui, WINDOW_GROUP, 'pointermove', interactDragHandler, listenerOptions);
+            addEventListener(ui, WINDOW_GROUP, 'pointercancel', interactEndHandler);
+            addEventListener(ui, WINDOW_GROUP, 'pointerup', interactEndHandler);
         } else if (type === 'mousedown') {
-            document.addEventListener('mousemove', interactDragHandler, listenerOptions);
-            document.addEventListener('mouseup', interactEndHandler);
+            addEventListener(ui, WINDOW_GROUP, 'mousemove', interactDragHandler, listenerOptions);
+            addEventListener(ui, WINDOW_GROUP, 'mouseup', interactEndHandler);
         } else if (type === 'touchstart') {
-            ui.touchTarget = target;
-            target.addEventListener('touchmove', interactDragHandler, listenerOptions);
-            target.addEventListener('touchcancel', interactEndHandler);
-            target.addEventListener('touchend', interactEndHandler);
-
-            clearTimeout(longPressTimeout);
-            longPressTimeout = setTimeout(() => {
-                const { touchTarget } = ui;
-                if (touchTarget) {
-                    ui.touchTarget = null;
-                    touchTarget.removeEventListener('touchmove', interactDragHandler);
-                    touchTarget.removeEventListener('touchcancel', interactEndHandler);
-                    touchTarget.removeEventListener('touchend', interactEndHandler);
-                }
-            }, LONG_PRESS_DELAY);
+            addEventListener(ui, WINDOW_GROUP, 'touchmove', interactDragHandler, listenerOptions);
+            addEventListener(ui, WINDOW_GROUP, 'touchcancel', interactEndHandler);
+            addEventListener(ui, WINDOW_GROUP, 'touchend', interactEndHandler);
 
             // Prevent scrolling the screen while dragging on mobile.
             if (!passive) {
                 preventDefault(e);
             }
         }
-    }
+    };
 
     const interactDragHandler = (e) => {
-        clearTimeout(longPressTimeout);
-
-        const movementThreshold = 6;
         if (ui.dragged) {
             triggerEvent(ui, DRAG, e);
         } else {
             const { pageX, pageY } = getCoords(e);
             const moveX = pageX - ui.startX;
             const moveY = pageY - ui.startY;
-            if (moveX * moveX + moveY * moveY > movementThreshold * movementThreshold) {
+            if (moveX * moveX + moveY * moveY > MOVEMENT_THRESHOLD * MOVEMENT_THRESHOLD) {
                 triggerEvent(ui, DRAG_START, e);
                 ui.dragged = true;
                 triggerEvent(ui, DRAG, e);
@@ -189,39 +144,22 @@ function initInteractionListeners(ui) {
         if (!passive && e.type === 'touchmove') {
             preventDefault(e);
         }
-    }
+    };
 
     const interactEndHandler = (e) => {
         clearTimeout(longPressTimeout);
-
-        if (ui.pointerId) {
-            el.releasePointerCapture(ui.pointerId);
-        }
-        removeEventListeners(ui, startGroup);
-        document.removeEventListener('mousemove', interactDragHandler);
-        document.removeEventListener('mouseup', interactEndHandler);
-        const { touchTarget } = ui;
-        if (touchTarget) {
-            ui.touchTarget = null;
-            touchTarget.removeEventListener('touchmove', interactDragHandler);
-            touchTarget.removeEventListener('touchcancel', interactEndHandler);
-            touchTarget.removeEventListener('touchend', interactEndHandler);
-        }
+        releasePointerCapture(ui);
+        removeHandlers(ui, WINDOW_GROUP);
         if (ui.dragged) {
             ui.dragged = false;
             triggerEvent(ui, DRAG_END, e);
-        } else if (e.type.indexOf('cancel') === -1) {
+        } else if (e.type.indexOf('cancel') === -1 && el.contains(e.target)) {
+            if (now() - ui.lastStart > LONG_PRESS_DELAY) {
+                return;
+            }
             const isPointerEvent = (e.type === 'pointerup' || e.type === 'pointercancel');
             const click = e.type === 'mouseup' || isPointerEvent && e.pointerType === 'mouse';
-            if (ui.enableDoubleTap) {
-                if (now() - ui.lastClick < DOUBLE_CLICK_DELAY) {
-                    const doubleType = (click) ? DOUBLE_CLICK : DOUBLE_TAP;
-                    triggerEvent(ui, doubleType, e);
-                    ui.lastClick = 0;
-                } else {
-                    ui.lastClick = now();
-                }
-            }
+            checkDoubleTap(ui, e, click);
             if (click) {
                 triggerEvent(ui, CLICK, e);
             } else {
@@ -233,7 +171,7 @@ function initInteractionListeners(ui) {
                 }
             }
         }
-    }
+    };
 
     // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
     // (windows phones) still get listeners just in case they want to use them.
@@ -245,6 +183,18 @@ function initInteractionListeners(ui) {
         }
         // Always add this, in case we don't properly identify the device as mobile
         addEventListener(ui, initGroup, 'touchstart', interactStartHandler, listenerOptions);
+    }
+}
+
+function checkDoubleTap(ui, e, click) {
+    if (ui.enableDoubleTap) {
+        if (now() - ui.lastClick < DOUBLE_CLICK_DELAY) {
+            const doubleType = (click) ? DOUBLE_CLICK : DOUBLE_TAP;
+            triggerEvent(ui, doubleType, e);
+            ui.lastClick = 0;
+        } else {
+            ui.lastClick = now();
+        }
     }
 }
 
@@ -260,18 +210,6 @@ const eventRegisters = {
     },
     click(ui) {
         initInteractionListeners(ui);
-        // const { directSelect, el } = ui;
-        // addEventListener(ui, CLICK, 'click', (e) => {
-        //     if (directSelect && e.target !== el) {
-        //         // The 'directSelect' parameter only allows interactions on the element and not children
-        //         return;
-        //     }
-        //     if (!USE_POINTER_EVENTS && !USE_MOUSE_EVENTS) {
-        //         triggerEvent(ui, TAP, e);
-        //     } else {
-        //         triggerEvent(ui, CLICK, e);
-        //     }
-        // });
     },
     tap(ui) {
         initInteractionListeners(ui);
@@ -281,13 +219,29 @@ const eventRegisters = {
         initInteractionListeners(ui);
     },
     doubleClick(ui) {
+        ui.enableDoubleTap = true;
         initInteractionListeners(ui);
-        // if (USE_POINTER_EVENTS || USE_MOUSE_EVENTS) {
-        //     addEventListener(ui, DOUBLE_CLICK, 'dblclick', (e) => {
-        //         e.stopPropagation();
-        //         triggerEvent(ui, DOUBLE_CLICK, e);
-        //     });
-        // }
+    },
+    longPress(ui) {
+        const longPress = 'longPress';
+        if (OS.iOS) {
+            const cancel = () => {
+                clearTimeout(longPressTimeout);
+            };
+            addEventListener(ui, longPress, 'touchstart', (e) => {
+                cancel();
+                longPressTimeout = setTimeout(() => {
+                    triggerEvent(ui, longPress, e);
+                }, LONG_PRESS_DELAY);
+            });
+            addEventListener(ui, longPress, 'touchmove', cancel);
+            addEventListener(ui, longPress, 'touchcancel', cancel);
+        } else {
+            ui.el.oncontextmenu = (e) => {
+                triggerEvent(ui, longPress, e);
+                return false;
+            };
+        }
     },
     focus(ui) {
         const focus = 'focus';
@@ -347,9 +301,12 @@ const eventRegisters = {
     }
 };
 
-function addEventListener(ui, triggerName, domEventName, handler, options) {
-    const { el } = ui;
+function getElementWindow(element) {
+    const document = element.ownerDocument || element;
+    return (document.defaultView || document.parentWindow || window);
+}
 
+function addEventListener(ui, triggerName, domEventName, handler, options) {
     let listeners = ui.handlers[triggerName];
     if (!listeners) {
         listeners = ui.handlers[triggerName] = {};
@@ -358,16 +315,30 @@ function addEventListener(ui, triggerName, domEventName, handler, options) {
         throw new Error('Only one listener per event is allowed in ui.js');
     }
     listeners[domEventName] = handler;
-    el.addEventListener(domEventName, handler, options || DEFAULT_LISTENER_OPTIONS);
+
+    const { el } = ui;
+    const element = triggerName === WINDOW_GROUP ? getElementWindow(el) : el;
+
+    element.addEventListener(domEventName, handler, options || DEFAULT_LISTENER_OPTIONS);
 }
 
-function removeEventListeners(ui, triggerName) {
-    const listeners = ui.handlers[triggerName];
+function removeHandlers(ui, triggerName) {
+    const { el, handlers } = ui;
+    const element = triggerName === WINDOW_GROUP ? getElementWindow(el) : el;
+    const listeners = handlers[triggerName];
     if (listeners) {
         Object.keys(listeners).forEach(domEventName => {
-            ui.el.removeEventListener(domEventName, listeners[domEventName]);
+            element.removeEventListener(domEventName, listeners[domEventName]);
         });
-        ui.handlers[triggerName] = null;
+        handlers[triggerName] = null;
+    }
+}
+
+function releasePointerCapture(ui) {
+    const { el } = ui;
+    if (ui.pointerId !== null) {
+        el.releasePointerCapture(ui.pointerId);
+        ui.pointerId = null;
     }
 }
 
@@ -390,16 +361,15 @@ function triggerEvent(ui, type, sourceEvent) {
 
 function normalizeUIEvent(type, sourceEvent, currentTarget) {
     const { target, touches, changedTouches } = sourceEvent;
-    const sourceType = sourceEvent.type;
     let { pointerType } = sourceEvent;
     let source;
 
-    if (sourceEvent instanceof MouseEvent || !(touches || changedTouches)) {
-        source = sourceEvent;
-        pointerType = pointerType || 'mouse';
-    } else {
+    if (touches || changedTouches) {
         source = (touches && touches.length) ? touches[0] : changedTouches[0];
         pointerType = pointerType || 'touch';
+    } else {
+        source = sourceEvent;
+        pointerType = pointerType || 'mouse';
     }
 
     const { pageX, pageY } = source;
@@ -415,7 +385,7 @@ function normalizeUIEvent(type, sourceEvent, currentTarget) {
     };
 }
 
-function getCoords(e, c) {
+function getCoords(e) {
     return ((e.type.indexOf('touch') === 0) ? (e.originalEvent || e).changedTouches[0] : e);
 }
 
