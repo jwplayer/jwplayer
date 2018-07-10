@@ -59,7 +59,7 @@ function createCastButton(castToggle, localization) {
     const castButton = document.createElement('button', 'google-cast-button');
     setAttribute(castButton, 'type', 'button');
     setAttribute(castButton, 'tabindex', '-1');
-    castButton.className += " jw-reset";
+    castButton.className += ' jw-reset';
 
     const element = document.createElement('div');
     element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
