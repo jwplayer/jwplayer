@@ -1,6 +1,6 @@
 import { OS, Features } from 'environment/environment';
 import { DRAG, DRAG_START, DRAG_END, CLICK, DOUBLE_CLICK, MOVE, OUT, TAP, DOUBLE_TAP, OVER, ENTER } from 'events/events';
-import Events from 'utils/backbone.events';
+import Eventable from 'utils/eventable';
 import { now } from 'utils/date';
 
 const noop = function() {};
@@ -12,224 +12,62 @@ const TOUCH_SUPPORT = ('ontouchstart' in window);
 const USE_POINTER_EVENTS = ('PointerEvent' in window) && !OS.android;
 const USE_MOUSE_EVENTS = !USE_POINTER_EVENTS && !(TOUCH_SUPPORT && OS.mobile);
 
-let unique = 0;
+const { passiveEvents } = Features;
+const DEFAULT_LISTENER_OPTIONS = passiveEvents ? { passive: true } : false;
+
+const DOUBLE_CLICK_DELAY = 300;
+const LONG_PRESS_DELAY = 500;
+
+let longPressTimeout;
 
 // ui-test.js: Test number of event listeners added
 // https://gist.github.com/robwalch/7d2165353e2621bb7b21e29863b7ba5e
 // Research: listener total is 154 with 3IkpdgrX-rcY6EcsD setup
 //   36 UI instances listen with 'interactStartHandler'
 //   11 buttons with preventDefault
-// TODO: unit tests
+// DONE: unit tests
 
 // TODO: Only add event listeners when on('event') requires it
 // DONE: remove need for `useHover`, `useFocus`, `useMove`
-// TODO: remove need for `enableDoubleTap`
+// DONE: remove need for `enableDoubleTap`
 // DONE: Always make 'focus' and 'blur' trigger 'focus' and 'blur' instead of 'over' and 'out'
 // TODO: Optimize on('click tap') to register a single listener
-// TODO: Replace `directSelect` with useCapture (addEventListener(name, callback, true || { useCapture: true }))
+// DONE: Use `directSelect` on start rather than end interaction
 // TODO: Investigate alternative solutions to `preventDefault` (button.js)
 // TODO: Cleanup usage of UI instances (reference and destroy to cleanup listeners)
+// TODO: Add 'rightclick' / longpress support to replace code duplication in rightclick
 
-const UI = function (elem, options) {
-    const _this = this;
-    let _hasMoved = false;
-    let _startX = 0;
-    let _startY = 0;
-    let _lastClickTime = 0;
-    let _doubleClickDelay = 300;
-    let _touchListenerTarget;
-    let _pointerId;
-    let longPressTimeout;
-    let longPressDelay = 500;
+export default class UI extends Eventable {
 
-    this.id = ++unique;
-    this.elem = elem;
-    this.handlers = {};
+    constructor(element, options) {
+        super();
 
-    // console.log(`${this.id}. (${elem.className})`, options);
+        options = options || {};
+        const passive = !options.preventScrolling;
 
-    options = options || {};
-
-    const listenerOptions = Features.passiveEvents ? { passive: !options.preventScrolling } : false;
-    
-    // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
-    // (windows phones) still get listeners just in case they want to use them.
-    if (USE_POINTER_EVENTS) {
-        elem.addEventListener('pointerdown', interactStartHandler, listenerOptions);
-    } else {
-        if (USE_MOUSE_EVENTS) {
-            elem.addEventListener('mousedown', interactStartHandler, listenerOptions);
-        }
-
-        // Always add this, in case we don't properly identify the device as mobile
-        elem.addEventListener('touchstart', interactStartHandler, listenerOptions);
+        this.directSelect = !!options.directSelect;
+        this.dragged = false;
+        this.el = element;
+        this.handlers = {};
+        this.lastClick = 0;
+        this.passive = passive;
+        this.pointerId;
+        this.startX = 0;
+        this.startY = 0;
+        this.touchTarget;
     }
 
-    function setEventListener(element, eventName, callback) {
-        element.removeEventListener(eventName, callback);
-        element.addEventListener(eventName, callback);
-    }
-
-    function interactStartHandler(evt) {
-        if (isRightClick(evt)) {
-            return;
-        }
-        const target = evt.target;
-        _startX = getCoord(evt, 'X');
-        _startY = getCoord(evt, 'Y');
-
-            if (evt.type === 'pointerdown' && evt.isPrimary) {
-                if (options.preventScrolling) {
-                    _pointerId = evt.pointerId;
-                    elem.setPointerCapture(_pointerId);
-                }
-                setEventListener(elem, 'pointermove', interactDragHandler, listenerOptions);
-                setEventListener(elem, 'pointercancel', interactEndHandler);
-                setEventListener(elem, 'pointerup', interactEndHandler);
-            } else if (evt.type === 'mousedown') {
-                setEventListener(document, 'mousemove', interactDragHandler, listenerOptions);
-                setEventListener(document, 'mouseup', interactEndHandler);
-            } else if (evt.type === 'touchstart') {
-                _touchListenerTarget = target;
-                longPressTimeout = setTimeout(() => {
-                    if (_touchListenerTarget) {
-                        _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
-                        _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
-                        _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
-                        _touchListenerTarget = null;
-                    }
-                }, longPressDelay);
-
-                setEventListener(_touchListenerTarget, 'touchmove', interactDragHandler, listenerOptions);
-                setEventListener(_touchListenerTarget, 'touchcancel', interactEndHandler);
-                setEventListener(_touchListenerTarget, 'touchend', interactEndHandler);
-
-            // Prevent scrolling the screen while dragging on mobile.
-            if (options.preventScrolling) {
-                preventDefault(evt);
-            }
-        }
-    }
-
-    function interactDragHandler(evt) {
-        clearTimeout(longPressTimeout);
-
-        const movementThreshold = 6;
-        if (_hasMoved) {
-            triggerEvent(_this, DRAG, evt);
-        } else {
-            const endX = getCoord(evt, 'X');
-            const endY = getCoord(evt, 'Y');
-            const moveX = endX - _startX;
-            const moveY = endY - _startY;
-            if (moveX * moveX + moveY * moveY > movementThreshold * movementThreshold) {
-                triggerEvent(_this, DRAG_START, evt);
-                _hasMoved = true;
-                triggerEvent(_this, DRAG, evt);
-            }
-        }
-
-        // Prevent scrolling the screen dragging while dragging on mobile.
-        if (options.preventScrolling) {
-            preventDefault(evt);
-        }
-    }
-
-    function interactEndHandler(evt) {
-        clearTimeout(longPressTimeout);
-
-        const isPointerEvent = (evt.type === 'pointerup' || evt.type === 'pointercancel');
-        if (isPointerEvent && options.preventScrolling) {
-            elem.releasePointerCapture(_pointerId);
-        }
-        elem.removeEventListener('pointermove', interactDragHandler);
-        elem.removeEventListener('pointercancel', interactEndHandler);
-        elem.removeEventListener('pointerup', interactEndHandler);
-        document.removeEventListener('mousemove', interactDragHandler);
-        document.removeEventListener('mouseup', interactEndHandler);
-        if (_touchListenerTarget) {
-            _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
-            _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
-            _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
-        }
-        if (_hasMoved) {
-            triggerEvent(_this, DRAG_END, evt);
-        }
-        // KA: Added 'directSelect' parameter to UI for interactions where the event should only be fired if the target is the listened element and not its children
-        else if ((!options.directSelect || evt.target === elem) && evt.type.indexOf('cancel') === -1) {
-            const click = evt.type === 'mouseup' || isPointerEvent && evt.pointerType === 'mouse';
-            if (options.enableDoubleTap) {
-                if (now() - _lastClickTime < _doubleClickDelay) {
-                    const doubleType = (click) ? DOUBLE_CLICK : DOUBLE_TAP;
-                    triggerEvent(_this, doubleType, evt);
-                    _lastClickTime = 0;
-                } else {
-                    _lastClickTime = now();
-                }
-            }
-            if (click) {
-                triggerEvent(_this, CLICK, evt);
-            } else {
-                triggerEvent(_this, TAP, evt);
-                if (evt.type === 'touchend') {
-                    // preventDefault to not dispatch the 300ms delayed click after a tap
-                    preventDefault(evt);
-                }
-            }
-        }
-        _touchListenerTarget = null;
-        _hasMoved = false;
-    }
-
-    this.destroy = function() {
-        this.off();
-
-        elem.removeEventListener('touchstart', interactStartHandler);
-        elem.removeEventListener('mousedown', interactStartHandler);
-
-        if (_touchListenerTarget) {
-            _touchListenerTarget.removeEventListener('touchmove', interactDragHandler);
-            _touchListenerTarget.removeEventListener('touchcancel', interactEndHandler);
-            _touchListenerTarget.removeEventListener('touchend', interactEndHandler);
-            _touchListenerTarget = null;
-        }
-
-        if (USE_POINTER_EVENTS) {
-            if (options.preventScrolling) {
-                elem.releasePointerCapture(_pointerId);
-            }
-            elem.removeEventListener('pointerdown', interactStartHandler);
-            elem.removeEventListener('pointermove', interactDragHandler);
-            elem.removeEventListener('pointercancel', interactEndHandler);
-            elem.removeEventListener('pointerup', interactEndHandler);
-        }
-
-        document.removeEventListener('mousemove', interactDragHandler);
-        document.removeEventListener('mouseup', interactEndHandler);
-    };
-
-    return this;
-};
-
-const eventSplitter = /\s+/;
-
-function eventsApi(name) {
-    return name && !(eventSplitter.test(name) || typeof name === 'object');
-}
-
-Object.assign(UI.prototype, Events, {
     on(name, callback, context) {
         if (eventsApi(name)) {
-            // console.log(`${this.id}. (${this.elem.className}).on`, name, callback);
             if (!this.handlers[name]) {
                 eventRegisters[name](this);
             }
         }
-        return Events.on.call(this, name, callback, context);
-    },
+        return super.on(name, callback, context);
+    }
+
     off(name, callback, context) {
         if (eventsApi(name)) {
-            // console.log(`${this.id}. (${this.elem.className}).off`, name, callback);
             removeEventListeners(this, name);
         } else if (!name) {
             const { handlers } = this;
@@ -237,40 +75,219 @@ Object.assign(UI.prototype, Events, {
                 removeEventListeners(this, triggerName);
             });
         }
-        return Events.off.call(this, name, callback, context);
-    },
-    // trigger(name, event) {
-    //     if (!this._events) {
-    //         return this;
-    //     }
-    //     if (eventsApi(name)) {
-    //         console.log(`${this.id}. (${this.elem.className}).trigger`, name, event);
-    //     }
-    //     return Events.trigger.call(this, name, event);
-    // }
-});
+        return super.off(name, callback, context);
+    }
+
+    destroy() {
+        this.off();
+        const { el, touchTarget } = this;
+
+        if (touchTarget) {
+            // touchTarget.removeEventListener('touchmove', interactDragHandler);
+            // touchTarget.removeEventListener('touchcancel', interactEndHandler);
+            // touchTarget.removeEventListener('touchend', interactEndHandler);
+            this.touchTarget = null;
+        }
+
+        if (USE_POINTER_EVENTS) {
+            if (this.pointerId) {
+                el.releasePointerCapture(this.pointerId);
+            }
+        }
+
+        // document.removeEventListener('mousemove', interactDragHandler);
+        // document.removeEventListener('mouseup', interactEndHandler);
+    }
+}
+
+const eventSplitter = /\s+/;
+
+function eventsApi(name) {
+    return name && !(eventSplitter.test(name) || typeof name === 'object');
+}
+
+function initInteractionListeners(ui) {
+    const initGroup = 'init';
+    if (ui.handlers[initGroup]) {
+        return;
+    }
+    const startGroup = 'start';
+    const { el, passive } = ui;
+    const listenerOptions = passiveEvents ? { passive } : false;
+
+    const interactStartHandler = (e) => {
+        if (isRightClick(e)) {
+            return;
+        }
+        const { target, type } = e;
+        if (ui.directSelect && target !== el) {
+            // The 'directSelect' parameter only allows interactions on the element and not children
+            return;
+        }
+
+        const { pageX, pageY } = getCoords(e);
+
+        ui.startX = pageX;
+        ui.startY = pageY;
+
+        removeEventListeners(ui, startGroup);
+        if (type === 'pointerdown' && e.isPrimary) {
+            if (!passive) {
+                const { pointerId } = e;
+                ui.pointerId = pointerId;
+                el.setPointerCapture(pointerId);
+            }
+
+            addEventListener(ui, startGroup, 'pointermove', interactDragHandler, listenerOptions);
+            addEventListener(ui, startGroup, 'pointercancel', interactEndHandler);
+            addEventListener(ui, startGroup, 'pointerup', interactEndHandler);
+        } else if (type === 'mousedown') {
+            document.addEventListener('mousemove', interactDragHandler, listenerOptions);
+            document.addEventListener('mouseup', interactEndHandler);
+        } else if (type === 'touchstart') {
+            ui.touchTarget = target;
+            target.addEventListener('touchmove', interactDragHandler, listenerOptions);
+            target.addEventListener('touchcancel', interactEndHandler);
+            target.addEventListener('touchend', interactEndHandler);
+
+            clearTimeout(longPressTimeout);
+            longPressTimeout = setTimeout(() => {
+                const { touchTarget } = ui;
+                if (touchTarget) {
+                    ui.touchTarget = null;
+                    touchTarget.removeEventListener('touchmove', interactDragHandler);
+                    touchTarget.removeEventListener('touchcancel', interactEndHandler);
+                    touchTarget.removeEventListener('touchend', interactEndHandler);
+                }
+            }, LONG_PRESS_DELAY);
+
+            // Prevent scrolling the screen while dragging on mobile.
+            if (!passive) {
+                preventDefault(e);
+            }
+        }
+    }
+
+    const interactDragHandler = (e) => {
+        clearTimeout(longPressTimeout);
+
+        const movementThreshold = 6;
+        if (ui.dragged) {
+            triggerEvent(ui, DRAG, e);
+        } else {
+            const { pageX, pageY } = getCoords(e);
+            const moveX = pageX - ui.startX;
+            const moveY = pageY - ui.startY;
+            if (moveX * moveX + moveY * moveY > movementThreshold * movementThreshold) {
+                triggerEvent(ui, DRAG_START, e);
+                ui.dragged = true;
+                triggerEvent(ui, DRAG, e);
+            }
+        }
+
+        // Prevent scrolling the screen dragging while dragging on mobile.
+        if (!passive && e.type === 'touchmove') {
+            preventDefault(e);
+        }
+    }
+
+    const interactEndHandler = (e) => {
+        clearTimeout(longPressTimeout);
+
+        if (ui.pointerId) {
+            el.releasePointerCapture(ui.pointerId);
+        }
+        removeEventListeners(ui, startGroup);
+        document.removeEventListener('mousemove', interactDragHandler);
+        document.removeEventListener('mouseup', interactEndHandler);
+        const { touchTarget } = ui;
+        if (touchTarget) {
+            ui.touchTarget = null;
+            touchTarget.removeEventListener('touchmove', interactDragHandler);
+            touchTarget.removeEventListener('touchcancel', interactEndHandler);
+            touchTarget.removeEventListener('touchend', interactEndHandler);
+        }
+        if (ui.dragged) {
+            ui.dragged = false;
+            triggerEvent(ui, DRAG_END, e);
+        } else if (e.type.indexOf('cancel') === -1) {
+            const isPointerEvent = (e.type === 'pointerup' || e.type === 'pointercancel');
+            const click = e.type === 'mouseup' || isPointerEvent && e.pointerType === 'mouse';
+            if (ui.enableDoubleTap) {
+                if (now() - ui.lastClick < DOUBLE_CLICK_DELAY) {
+                    const doubleType = (click) ? DOUBLE_CLICK : DOUBLE_TAP;
+                    triggerEvent(ui, doubleType, e);
+                    ui.lastClick = 0;
+                } else {
+                    ui.lastClick = now();
+                }
+            }
+            if (click) {
+                triggerEvent(ui, CLICK, e);
+            } else {
+                triggerEvent(ui, TAP, e);
+
+                // preventDefault to not dispatch the 300ms delayed click after a tap
+                if (e.type === 'touchend' && !passiveEvents) {
+                    preventDefault(e);
+                }
+            }
+        }
+    }
+
+    // If its not mobile, add mouse listener.  Add touch listeners so touch devices that aren't Android or iOS
+    // (windows phones) still get listeners just in case they want to use them.
+    if (USE_POINTER_EVENTS) {
+        addEventListener(ui, initGroup, 'pointerdown', interactStartHandler, listenerOptions);
+    } else {
+        if (USE_MOUSE_EVENTS) {
+            addEventListener(ui, initGroup, 'mousedown', interactStartHandler, listenerOptions);
+        }
+        // Always add this, in case we don't properly identify the device as mobile
+        addEventListener(ui, initGroup, 'touchstart', interactStartHandler, listenerOptions);
+    }
+}
 
 const eventRegisters = {
-    click() {
-
+    drag(ui) {
+        initInteractionListeners(ui);
     },
-    tap() {
-
+    dragStart(ui) {
+        initInteractionListeners(ui);
     },
-    doubleClick() {
-
+    dragEnd(ui) {
+        initInteractionListeners(ui);
     },
-    doubleTap() {
-
+    click(ui) {
+        initInteractionListeners(ui);
+        // const { directSelect, el } = ui;
+        // addEventListener(ui, CLICK, 'click', (e) => {
+        //     if (directSelect && e.target !== el) {
+        //         // The 'directSelect' parameter only allows interactions on the element and not children
+        //         return;
+        //     }
+        //     if (!USE_POINTER_EVENTS && !USE_MOUSE_EVENTS) {
+        //         triggerEvent(ui, TAP, e);
+        //     } else {
+        //         triggerEvent(ui, CLICK, e);
+        //     }
+        // });
     },
-    drag() {
-
+    tap(ui) {
+        initInteractionListeners(ui);
     },
-    dragStart() {
-
+    doubleTap(ui) {
+        ui.enableDoubleTap = true;
+        initInteractionListeners(ui);
     },
-    dragEnd() {
-
+    doubleClick(ui) {
+        initInteractionListeners(ui);
+        // if (USE_POINTER_EVENTS || USE_MOUSE_EVENTS) {
+        //     addEventListener(ui, DOUBLE_CLICK, 'dblclick', (e) => {
+        //         e.stopPropagation();
+        //         triggerEvent(ui, DOUBLE_CLICK, e);
+        //     });
+        // }
     },
     focus(ui) {
         const focus = 'focus';
@@ -295,11 +312,12 @@ const eventRegisters = {
     },
     out(ui) {
         if (USE_POINTER_EVENTS) {
+            const { el } = ui;
             addEventListener(ui, OUT, 'pointerout', (e) => {
                 if (e.pointerType !== 'touch' && 'x' in e) {
                     // elementFromPoint to handle an issue where setPointerCapture is causing a pointerout event
                     const overElement = document.elementFromPoint(e.x, e.y);
-                    if (!ui.elem.contains(overElement)) {
+                    if (!el.contains(overElement)) {
                         triggerEvent(ui, OUT, e);
                     }
                 }
@@ -330,7 +348,7 @@ const eventRegisters = {
 };
 
 function addEventListener(ui, triggerName, domEventName, handler, options) {
-    const { elem } = ui;
+    const { el } = ui;
 
     let listeners = ui.handlers[triggerName];
     if (!listeners) {
@@ -340,32 +358,33 @@ function addEventListener(ui, triggerName, domEventName, handler, options) {
         throw new Error('Only one listener per event is allowed in ui.js');
     }
     listeners[domEventName] = handler;
-    elem.addEventListener(domEventName, handler, options || false);
+    el.addEventListener(domEventName, handler, options || DEFAULT_LISTENER_OPTIONS);
 }
 
 function removeEventListeners(ui, triggerName) {
     const listeners = ui.handlers[triggerName];
     if (listeners) {
         Object.keys(listeners).forEach(domEventName => {
-            ui.elem.removeEventListener(domEventName, listeners[domEventName]);
+            ui.el.removeEventListener(domEventName, listeners[domEventName]);
         });
+        ui.handlers[triggerName] = null;
     }
 }
 
 function triggerSimpleEvent(ui, type, sourceEvent) {
-    const { elem } = ui;
+    const { el: currentTarget } = ui;
     const { target } = sourceEvent;
     ui.trigger(type, {
         type,
         sourceEvent,
-        currentTarget: elem,
+        currentTarget,
         target
     });
 }
 
 function triggerEvent(ui, type, sourceEvent) {
-    const { elem } = ui;
-    const event = normalizeUIEvent(type, sourceEvent, elem);
+    const { el } = ui;
+    const event = normalizeUIEvent(type, sourceEvent, el);
     ui.trigger(type, event);
 }
 
@@ -396,10 +415,8 @@ function normalizeUIEvent(type, sourceEvent, currentTarget) {
     };
 }
 
-export default UI;
-
-function getCoord(e, c) {
-    return /^touch/.test(e.type) ? (e.originalEvent || e).changedTouches[0]['page' + c] : e['page' + c];
+function getCoords(e, c) {
+    return ((e.type.indexOf('touch') === 0) ? (e.originalEvent || e).changedTouches[0] : e);
 }
 
 function isRightClick(e) {
@@ -413,17 +430,7 @@ function isRightClick(e) {
     return false;
 }
 
-// Preventdefault to prevent click events
 function preventDefault(evt) {
-    // Because sendEvent from utils.eventdispatcher clones evt objects instead of passing them
-    //  we cannot call evt.preventDefault() on them
-    if (!(evt instanceof MouseEvent) && !(evt instanceof TouchEvent)) {
-        return;
-    }
-    if (evt.preventManipulation) {
-        evt.preventManipulation();
-    }
-    // prevent scrolling
     if (evt.preventDefault) {
         evt.preventDefault();
     }
