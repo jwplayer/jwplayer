@@ -23,12 +23,6 @@ export default class Slider {
 
         this.className = className + ' jw-background-color jw-reset';
         this.orientation = orientation;
-
-        this.dragStartListener = this.dragStart.bind(this);
-        this.dragMoveListener = this.dragMove.bind(this);
-        this.dragEndListener = this.dragEnd.bind(this);
-
-        this.tapListener = this.tap.bind(this);
     }
 
     setup() {
@@ -39,11 +33,11 @@ export default class Slider {
         this.elementProgress = this.el.getElementsByClassName('jw-progress')[0];
         this.elementThumb = this.el.getElementsByClassName('jw-knob')[0];
 
-        this.userInteract = new UI(this.element(), { preventScrolling: true })
-            .on('dragStart', this.dragStartListener)
-            .on('drag', this.dragMoveListener)
-            .on('dragEnd', this.dragEndListener)
-            .on('tap click', this.tapListener);
+        this.ui = new UI(this.element(), { preventScrolling: true })
+            .on('dragStart', this.dragStart, this)
+            .on('drag', this.dragMove, this)
+            .on('dragEnd', this.dragEnd, this)
+            .on('click tap', this.tap, this);
     }
 
     dragStart() {

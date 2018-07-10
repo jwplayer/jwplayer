@@ -312,7 +312,7 @@ function addEventListener(ui, triggerName, domEventName, handler, options) {
         listeners = ui.handlers[triggerName] = {};
     }
     if (listeners[domEventName]) {
-        throw new Error('Only one listener per event is allowed in ui.js');
+        throw new Error(`${triggerName} ${domEventName} already registered`);
     }
     listeners[domEventName] = handler;
 
