@@ -445,7 +445,7 @@ class ProgramController extends Eventable {
      * @memberOf ProgramController
      */
     _activateBackgroundMedia() {
-        const { background, background: { nextLoadPromise } } = this;
+        const { background, background: { nextLoadPromise }, model } = this;
         // Activating this item means that any media already loaded in the background will no longer be needed
         this._destroyMediaController(background.currentMedia);
         background.currentMedia = null;
@@ -455,6 +455,7 @@ class ProgramController extends Eventable {
             }
             background.clearNext();
             if (this.adPlaying) {
+                model.attributes.itemReady = true;
                 background.currentMedia = nextMediaController;
             } else {
                 this._setActiveMedia(nextMediaController);

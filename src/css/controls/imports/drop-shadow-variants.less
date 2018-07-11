@@ -1,0 +1,44 @@
+@supports (filter: drop-shadow(0 0 3px #000)) {
+    .jwplayer.jw-ab-drop-shadow {
+        .jw-controls .jw-svg-icon,
+        .jw-controls .jw-icon.jw-text,
+        .jw-slider-container .jw-rail,
+        .jw-title {
+            text-shadow: none;
+            box-shadow: none;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+        }
+
+        .jw-button-color {
+            opacity: 0.8;
+            transition-property: color, opacity;
+
+            &:not(:hover) {
+                color: #fff;
+                opacity: 0.8;
+            }
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+
+        .jw-controls-backdrop {
+            background-image: ~"linear-gradient(to bottom, rgba(0, 0, 0, 0), ease-in, rgba(0, 0, 0, 0.4))";
+            mix-blend-mode: multiply;
+            transition-property: opacity;
+
+            .jw-state-idle& {
+                background-image: ~"linear-gradient(to bottom, rgba(0, 0, 0, 0.2), ease-out, rgba(0, 0, 0, 0))";
+                background-size: 100% 7rem;
+                background-position: 50% 0;
+            }
+        }
+
+        &.jw-state-idle {
+            .jw-controls {
+                background-color: transparent;
+            }
+        }
+    }
+}
