@@ -70,6 +70,9 @@ export function replaceClass(element, pattern, replaceWith) {
 }
 
 export function toggleClass(element, c, toggleTo) {
+    if (!element) {
+        return;
+    }
     const hasIt = hasClass(element, c);
     toggleTo = isBoolean(toggleTo) ? toggleTo : !hasIt;
 
