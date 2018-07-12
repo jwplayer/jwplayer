@@ -10,14 +10,14 @@ const PluginLoader = function () {
 
         return Promise.all(Object.keys(pluginsConfig).filter(pluginUrl => pluginUrl)
             .map(pluginUrl => {
-                const plugin = pluginsModel.addPlugin(pluginUrl, true);
                 const pluginConfig = pluginsConfig[pluginUrl];
-                return plugin.load().then(() => {
+                return pluginsModel.setupPlugin(pluginUrl).then((plugin) => {
                     if (model.attributes._destroyed) {
                         return;
                     }
-                    configurePlugin(plugin, pluginConfig, api);
+                    return configurePlugin(plugin, pluginConfig, api);
                 }).catch(error => {
+                    pluginsModel.removePlugin(pluginUrl);
                     if (!(error instanceof Error)) {
                         return new Error(`Error in ${pluginUrl} "${error}"`);
                     }

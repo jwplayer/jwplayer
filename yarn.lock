@@ -134,6 +134,10 @@
   dependencies:
     samsam "1.3.0"
 
+"@types/bezier-js@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@types/bezier-js/-/bezier-js-0.0.7.tgz#5c0e570d8494cae3ed1cde5764a1145c1e9a31b7"
+
 JSONStream@^1.0.3:
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.2.tgz#c102371b6ec3a7cf3b847ca00c20bb0fce4c6dea"
@@ -1248,6 +1252,10 @@ better-assert@~1.0.0:
   dependencies:
     callsite "1.0.0"
 
+bezier-js@^2.2.5:
+  version "2.2.9"
+  resolved "https://registry.yarnpkg.com/bezier-js/-/bezier-js-2.2.9.tgz#86c31727f9f1c04b0d338999fa2cbb40f2b3465a"
+
 big.js@^3.1.3:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-3.2.0.tgz#a5fc298b81b9e0dca2e458824784b65c52ba588e"
@@ -1847,6 +1855,10 @@ chokidar@^2.0.2:
 chownr@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.0.1.tgz#e2a75042a9551908bebd25b8523d5f9769d79181"
+
+chroma-js@^1.3.7:
+  version "1.3.7"
+  resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-1.3.7.tgz#38db1b46c99b002b77aa5e6b6744589388f28425"
 
 chrome-trace-event@^0.1.1:
   version "0.1.2"
@@ -2725,6 +2737,13 @@ duplexify@^3.4.2, duplexify@^3.5.3:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
     stream-shift "^1.0.0"
+
+easing-coordinates@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/easing-coordinates/-/easing-coordinates-2.0.0.tgz#800a0eef364f875bced8d35399afd19cbfec3027"
+  dependencies:
+    "@types/bezier-js" "0.0.7"
+    bezier-js "^2.2.5"
 
 ecc-jsbn@~0.1.1:
   version "0.1.1"
@@ -6681,6 +6700,15 @@ postcss-discard-unused@^2.2.1:
   dependencies:
     postcss "^5.0.14"
     uniqs "^2.0.0"
+
+postcss-easing-gradients@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/postcss-easing-gradients/-/postcss-easing-gradients-3.0.0.tgz#d8eee30ae3335200ed214dff5fd3bf9d910b497e"
+  dependencies:
+    chroma-js "^1.3.7"
+    easing-coordinates "^2.0.0"
+    postcss "^6.0.21"
+    postcss-value-parser "^3.3.0"
 
 postcss-filter-plugins@^2.0.0:
   version "2.0.2"
