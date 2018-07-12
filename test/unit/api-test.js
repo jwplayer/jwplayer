@@ -25,6 +25,7 @@ describe('Api', function() {
 
     beforeEach(function() {
         utils.log = sinon.stub();
+        console.error = sinon.stub();
     });
 
     afterEach(function() {
@@ -37,6 +38,7 @@ describe('Api', function() {
             instances[i].remove();
         }
         utils.log.reset();
+        console.error.reset();
     });
 
     it('instances has a uniqueIds greater than 0', function() {
@@ -116,33 +118,37 @@ describe('Api', function() {
         jwplayer.debug = false;
     });
 
-    it('can be removed and reused', function(done) {
-        const api = createApi('player');
+    it('can be removed and reused', function() {
+        return new Promise((resolve, reject) => {
+            const api = createApi('player');
 
-        let removeCount = 0;
-        api.on('remove', function (event) {
-            expect(++removeCount, 'first remove event callback is triggered first once').to.equal(1);
-            expect(event.type, 'event type is "remove"').to.equal('remove');
-            expect(this, 'callback context is the removed api instance').to.equal(api);
+            let removeCount = 0;
+            api.on('remove', (event) => {
+                expect(++removeCount, 'first remove event callback is triggered first once').to.equal(1);
+                expect(event.type, 'event type is "remove"').to.equal('remove');
+                expect(this, 'callback context is the removed api instance').to.equal(api);
+            });
+
+            api.remove();
+
+            api.setup({}).on('remove', () => {
+                expect(++removeCount, 'second remove event callback is triggered second').to.equal(2);
+                resolve();
+            }).on('ready setupError', reject).remove();
         });
-
-        api.remove();
-
-        api.setup({}).on('remove', function() {
-            expect(++removeCount, 'second remove event callback is triggered second').to.equal(2);
-            done();
-        }).remove();
     });
 
     it('resets plugins on setup', function() {
-        const api = createApi('player');
-        const plugin = { addToPlayer: () => {} };
+        return new Promise((resolve) => {
+            const api = createApi('player');
+            const plugin = { addToPlayer: () => {} };
 
-        api.addPlugin('testPlugin', plugin);
-        expect(api.getPlugin('testPlugin')).to.equal(plugin);
+            api.addPlugin('testPlugin', plugin);
+            expect(api.getPlugin('testPlugin')).to.equal(plugin);
 
-        api.setup({});
-        expect(api.getPlugin('testPlugin')).to.equal(undefined);
+            api.setup({}).on('ready setupError', resolve);
+            expect(api.getPlugin('testPlugin')).to.equal(undefined);
+        });
     });
 
     it('event dispatching', function() {
@@ -286,50 +292,52 @@ describe('Api', function() {
     });
 
     it('has getters that return values after setup, before ready', function() {
-        const container = createContainer('player');
-        const api = new Api(container);
+        return new Promise((resolve) => {
+            const container = createContainer('player');
+            const api = new Api(container);
 
-        api.setup({});
+            api.setup({}).on('ready setupError', resolve);
 
-        expect(api.qoe(), '.qoe()').to.have.keys(['setupTime', 'firstFrame', 'player', 'item']);
-        expect(api.getEnvironment(), '.getEnvironment()').to.have.keys(['Browser', 'OS', 'Features']);
-        expect(api.getContainer(), '.getContainer()').to.equal(container, 'returns the player DOM element before setup');
-        expect(api.getConfig(), '.getConfig()').to.not.be.empty;
-        expect(api.getAudioTracks(), '.getAudioTracks()').to.equal(null);
-        expect(api.getCaptionsList(), '.getCaptionsList()').to.equal(null);
-        expect(api.getQualityLevels(), '.getQualityLevels()').to.equal(null);
-        expect(api.getVisualQuality(), '.getVisualQuality()').to.equal(null);
-        expect(api.getCurrentAudioTrack(), '.getCurrentAudioTrack()').to.equal(-1);
-        expect(api.getCurrentQuality(), '.getCurrentQuality()').to.equal(-1);
-        expect(api.isBeforePlay(), '.isBeforePlay()').to.be.false;
-        expect(api.isBeforeComplete(), '.isBeforeComplete()').to.be.false;
-        expect(api.getSafeRegion(), '.getSafeRegion()').to.eql({
-            x: 0,
-            y: 0,
-            width: 0,
-            height: 0
+            expect(api.qoe(), '.qoe()').to.have.keys(['setupTime', 'firstFrame', 'player', 'item']);
+            expect(api.getEnvironment(), '.getEnvironment()').to.have.keys(['Browser', 'OS', 'Features']);
+            expect(api.getContainer(), '.getContainer()').to.equal(container, 'returns the player DOM element before setup');
+            expect(api.getConfig(), '.getConfig()').to.not.be.empty;
+            expect(api.getAudioTracks(), '.getAudioTracks()').to.equal(null);
+            expect(api.getCaptionsList(), '.getCaptionsList()').to.equal(null);
+            expect(api.getQualityLevels(), '.getQualityLevels()').to.equal(null);
+            expect(api.getVisualQuality(), '.getVisualQuality()').to.equal(null);
+            expect(api.getCurrentAudioTrack(), '.getCurrentAudioTrack()').to.equal(-1);
+            expect(api.getCurrentQuality(), '.getCurrentQuality()').to.equal(-1);
+            expect(api.isBeforePlay(), '.isBeforePlay()').to.be.false;
+            expect(api.isBeforeComplete(), '.isBeforeComplete()').to.be.false;
+            expect(api.getSafeRegion(), '.getSafeRegion()').to.eql({
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0
+            });
+            expect(api.getBuffer(), '.getBuffer()').to.equal(0);
+            expect(api.getDuration(), '.getDuration()').to.equal(0);
+            expect(api.getCaptions(), '.getCaptions()').to.equal(undefined);
+            expect(api.getControls(), '.getControls()').to.equal(true);
+            expect(api.getCurrentCaptions(), '.getCurrentCaptions()').to.equal(undefined);
+            expect(api.getFullscreen(), '.getFullscreen()').to.equal(undefined);
+            expect(api.getHeight(), '.getHeight()').to.equal(undefined);
+            expect(api.getWidth(), '.getWidth()').to.equal(undefined);
+            expect(api.getItemMeta(), '.getItemMeta()').to.eql({});
+            expect(api.getMute(), '.getMute()').to.be.a('boolean');
+            expect(api.getVolume(), '.getVolume()').to.be.a('number');
+            expect(api.getPlaybackRate(), '.getPlaybackRate()').to.equal(1);
+            expect(api.getPlaylist(), '.getPlaylist()').to.be.an('array');
+            expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.equal(0);
+            expect(api.getPlaylistItem(), '.getPlaylistItem()').to.equal(undefined, 'getPlaylistItem() returns undefined');
+            expect(api.getPlaylistItem(0)).to.be.an('object', 'getPlaylistItem(0) returns an object');
+            expect(api.getPosition(), '.getPosition()').to.equal(0);
+            expect(api.getProvider(), '.getProvider()').to.equal(undefined);
+            expect(api.getState(), '.getState()').to.equal('idle');
+            expect(api.getStretching(), '.getStretching()').to.equal('uniform');
+            expect(api.getViewable(), '.getViewable()').to.equal(undefined);
         });
-        expect(api.getBuffer(), '.getBuffer()').to.equal(0);
-        expect(api.getDuration(), '.getDuration()').to.equal(0);
-        expect(api.getCaptions(), '.getCaptions()').to.equal(undefined);
-        expect(api.getControls(), '.getControls()').to.equal(true);
-        expect(api.getCurrentCaptions(), '.getCurrentCaptions()').to.equal(undefined);
-        expect(api.getFullscreen(), '.getFullscreen()').to.equal(undefined);
-        expect(api.getHeight(), '.getHeight()').to.equal(undefined);
-        expect(api.getWidth(), '.getWidth()').to.equal(undefined);
-        expect(api.getItemMeta(), '.getItemMeta()').to.eql({});
-        expect(api.getMute(), '.getMute()').to.be.a('boolean');
-        expect(api.getVolume(), '.getVolume()').to.be.a('number');
-        expect(api.getPlaybackRate(), '.getPlaybackRate()').to.equal(1);
-        expect(api.getPlaylist(), '.getPlaylist()').to.be.an('array');
-        expect(api.getPlaylistIndex(), '.getPlaylistIndex()').to.equal(0);
-        expect(api.getPlaylistItem(), '.getPlaylistItem()').to.equal(undefined, 'getPlaylistItem() returns undefined');
-        expect(api.getPlaylistItem(0)).to.be.an('object', 'getPlaylistItem(0) returns an object');
-        expect(api.getPosition(), '.getPosition()').to.equal(0);
-        expect(api.getProvider(), '.getProvider()').to.equal(undefined);
-        expect(api.getState(), '.getState()').to.equal('idle');
-        expect(api.getStretching(), '.getStretching()').to.equal('uniform');
-        expect(api.getViewable(), '.getViewable()').to.equal(undefined);
     });
 
     it('has underscore', function() {
