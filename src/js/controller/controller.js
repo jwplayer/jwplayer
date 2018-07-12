@@ -54,7 +54,6 @@ Object.assign(Controller.prototype, {
         let _interruptPlay;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
         let updatePlaylistCancelable = cancelable(noop);
-        let primeBeforePlay = true;
 
         _this.originalContainer = _this.currentContainer = originalContainer;
         _this._events = eventListeners;
@@ -303,7 +302,7 @@ Object.assign(Controller.prototype, {
             if (_model.get('state') === 'idle' && _model.get('autostart') === false) {
                 // If video has not been primed on Android, test that video will play before preloading
                 // This ensures we always prime the tag on play when necessary
-                if (primeBeforePlay && OS.android) {
+                if (!mediaPool.primed() && OS.android) {
                     const video = mediaPool.getTestElement();
                     const muted = _this.getMute();
                     resolved.then(() => startPlayback(video, { muted })).then(() => {
@@ -341,7 +340,7 @@ Object.assign(Controller.prototype, {
             updatePlaylistCancelable.cancel();
 
             if (_inInteraction(window.event)) {
-                _programController.primeMediaElements();
+                mediaPool.prime();
             }
 
             let loadPromise;
@@ -438,9 +437,8 @@ Object.assign(Controller.prototype, {
                 });
                 _beforePlay = false;
 
-                if (_inInteraction(window.event) && primeBeforePlay) {
-                    _programController.primeMediaElements();
-                    primeBeforePlay = false;
+                if (_inInteraction(window.event) && !mediaPool.primed()) {
+                    mediaPool.prime();
                 }
 
                 if (_interruptPlay) {
@@ -456,11 +454,9 @@ Object.assign(Controller.prototype, {
             }
 
             return _programController.playVideo(playReason)
-                .then(() => {
-                    // If playback succeeded that means we captured a gesture (and used it to prime the pool)
-                    // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
-                    primeBeforePlay = false;
-                });
+                // If playback succeeded that means we captured a gesture (and used it to prime the pool)
+                // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
+                .then(mediaPool.played);
         }
 
         function _getReason(meta) {
@@ -814,7 +810,7 @@ Object.assign(Controller.prototype, {
 
         /** Controller API / public methods **/
         this.load = _load;
-        this.play = _play;
+        this.play = (meta) => _play(meta).catch(noop);
         this.pause = _pause;
         this.seek = _seek;
         this.stop = _stop;

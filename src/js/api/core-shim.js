@@ -12,6 +12,7 @@ import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
+import UI, { getElementWindow } from 'utils/ui';
 import { PlayerError, composePlayerError, convertToPlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, MSG_TECHNICAL_ERROR } from 'api/errors';
 
@@ -95,7 +96,12 @@ Object.assign(CoreShim.prototype, {
         if (!model.get('backgroundLoading')) {
             mediaPool = SharedMediaPool(mediaPool.getPrimedElement(), mediaPool);
         }
-        mediaPool.prime();
+
+        const primeUi = new UI(getElementWindow(this.originalContainer)).once('gesture', () => {
+            mediaPool.prime();
+            primeUi.destroy();
+        });
+
 
         model.on('change:errorEvent', logError);
 

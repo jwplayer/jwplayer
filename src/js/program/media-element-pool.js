@@ -8,6 +8,7 @@ export default function MediaElementPool() {
         const mediaElement = createMediaElement();
         elements.push(mediaElement);
         pool.push(mediaElement);
+        primeMediaElementForPlayback(mediaElement);
     }
 
     // Reserve an element exclusively for ads
@@ -16,9 +17,18 @@ export default function MediaElementPool() {
     // Reserve an element exclusively for feature testing.
     const testElement = pool.shift();
 
+    let primed = false;
+
     return {
+        primed() {
+            return primed;
+        },
         prime() {
             elements.forEach(primeMediaElementForPlayback);
+            primed = true;
+        },
+        played() {
+            primed = true;
         },
         getPrimedElement() {
             if (pool.length) {
