@@ -279,18 +279,18 @@ export function handleColorOverrides(playerId, skin) {
 }
 
 function isTransparent(color) {
-if (color.toLowerCase() === 'transparent') {
-    return true;
-}
+    if (color.toLowerCase() === 'transparent') {
+        return true;
+    }
 
-let channels;
-if (color.indexOf('(') > -1) {
-    channels = color.match(/(0\.\d+)|\d+/g);
-}
+    let channels;
+    if (color.indexOf('(') > -1) {
+        channels = color.match(/(0\.\d+)|\d+/g);
+    }
 
-if (color.indexOf('#') > -1) {
-    channels = color.match(/([0-9A-F]{2})+?/gi);
-}
+    if (color.indexOf('#') > -1) {
+        channels = color.match(/([0-9A-F]{2})+?/gi);
+    }
 
-return channels && channels.length > 3 && parseFloat(channels.splice(3, 1)[0]) === 0 || false;
+    return channels && channels.length > 3 && parseFloat(channels.splice(3, 1)[0]) === 0 || false;
 }
