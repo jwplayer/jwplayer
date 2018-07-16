@@ -298,10 +298,16 @@ const eventRegisters = {
                 triggerSimpleEvent(ui, ENTER, e);
             }
         });
+    },
+    gesture(ui) {
+        const gesture = 'gesture';
+        const triggerGesture = (e) => triggerEvent(ui, gesture, e);
+        addEventListener(ui, gesture, 'click', triggerGesture);
+        addEventListener(ui, gesture, 'keydown', triggerGesture);
     }
 };
 
-function getElementWindow(element) {
+export function getElementWindow(element) {
     const document = element.ownerDocument || element;
     return (document.defaultView || document.parentWindow || window);
 }
