@@ -169,7 +169,7 @@ export function handleColorOverrides(playerId, skin) {
 
         // A space is purposefully left before '.jw-settings-topbar' since extendParent is set to true in order to append ':not(.jw-state-idle)'
         // Prevent assigning if transparent, as this negatively impacts sub menu
-        if (!isTransparent(config.background)) {
+        if (config.background && !isTransparent(config.background)) {
             addStyle([
                 ' .jw-settings-topbar',
                 ':not(.jw-state-idle) .jw-controlbar',
