@@ -5,8 +5,7 @@ import UI from 'utils/ui';
 export default function SettingsContentItem(name, content, action) {
     let active;
     const contentItemElement = createElement(ContentItemTemplate(content));
-    const contentItemUI = new UI(contentItemElement);
-    contentItemUI.on('click tap enter', (evt) => {
+    const contentItemUI = new UI(contentItemElement).on('click tap enter', (evt) => {
         action(evt);
     });
 

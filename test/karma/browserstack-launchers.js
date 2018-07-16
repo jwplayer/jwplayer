@@ -2,18 +2,18 @@ module.exports = {
     firefox: {
         base: 'BrowserStack',
         browser: 'firefox',
-        os: 'OS X',
-        os_version: 'Yosemite'
+        os: 'Windows',
+        os_version: '10'
     },
 
     chrome: {
         base: 'BrowserStack',
         browser: 'chrome',
-        os: 'OS X',
-        os_version: 'Yosemite'
+        os: 'Windows',
+        os_version: '10'
     },
 
-    ie11_windows: {
+    ie11: {
         base: 'BrowserStack',
         browser: 'ie',
         browser_version: '11.0',
@@ -26,5 +26,23 @@ module.exports = {
         browser: 'edge',
         os: 'Windows',
         os_version: '10'
+    },
+
+    iphone: {
+        base: 'BrowserStack',
+        device: 'iPhone 7',
+        device_browser: 'safari',
+        os: 'iOS',
+        os_version: '10.0',
+        real_mobile: true
+    },
+
+    android: {
+        base: 'BrowserStack',
+        device: 'Samsung Galaxy S8',
+        device_browser: 'chrome',
+        os: 'android',
+        os_version: '7.0',
+        real_mobile: true
     }
 };

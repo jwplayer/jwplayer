@@ -53,14 +53,12 @@ export default class NextUpTooltip {
         }, this);
 
         // Close button
-        new UI(this.closeButton, { directSelect: true })
-            .on('click tap enter', function() {
-                this.nextUpSticky = false;
-                this.toggle(false);
-            }, this);
+        new UI(this.closeButton, { directSelect: true }).on('click tap enter', function() {
+            this.nextUpSticky = false;
+            this.toggle(false);
+        }, this);
         // Tooltip
-        new UI(this.tooltip)
-            .on('click tap', this.click, this);
+        new UI(this.tooltip).on('click tap', this.click, this);
     }
 
     loadThumbnail(url) {

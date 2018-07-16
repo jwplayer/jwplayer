@@ -1,5 +1,4 @@
 import _ from 'test/underscore';
-import $ from 'jquery';
 import jwplayer from 'jwplayer';
 
 function testInstanceOfApi(api) {
@@ -11,8 +10,13 @@ function testInstanceOfApi(api) {
 describe('jwplayer function', function() {
 
     beforeEach(function() {
-        // remove fixture
-        $('body').append('<div id="test-container"><div id="player"></div></div>');
+        // add fixture
+        const fixture = document.createElement('div');
+        fixture.id = 'test-container';
+        const playerContainer = document.createElement('div');
+        playerContainer.id = 'player';
+        fixture.appendChild(playerContainer);
+        document.body.appendChild(fixture);
     });
 
     afterEach(function() {
@@ -24,7 +28,8 @@ describe('jwplayer function', function() {
             }
         }
         // remove fixture
-        $('#test-container').remove();
+        const fixture = document.querySelector('#test-container');
+        document.body.removeChild(fixture);
     });
 
     it('is defined', function() {
@@ -60,12 +65,12 @@ describe('jwplayer function', function() {
     });
 
     it('returns a new api instance when given an element with an id', function() {
-        const element = $('#player')[0];
+        const element = document.querySelector('#player');
         testInstanceOfApi(jwplayer(element));
     });
 
     it('returns a new api instance when given an element with no id not in the DOM', function() {
-        const element = $('<div></div>')[0];
+        const element = document.createElement('div');
         const x = testInstanceOfApi(jwplayer(element));
 
         // FIXME: this only works with one player whose id is empty ""
@@ -74,10 +79,10 @@ describe('jwplayer function', function() {
     });
 
     it('returns the same api instance for matching queries', function() {
-        const element = $('#player')[0];
+        const element = document.querySelector('#player');
 
         const x = jwplayer('player');
-        const y = jwplayer($('<div></div>')[0]);
+        const y = jwplayer(document.createElement('div'));
 
         const uniquePlayers = _.uniq([
             x,
