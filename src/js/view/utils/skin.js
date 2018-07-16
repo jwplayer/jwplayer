@@ -97,7 +97,7 @@ export function handleColorOverrides(playerId, skin) {
     // Using background instead of background-color so we don't have to clear gradients with background-image
 
     if (skin.controlbar) {
-        styleControlbar(skin.controlbar);
+        styleControlbar(skin.controlbar);   
     }
     if (skin.timeslider) {
         styleTimeslider(skin.timeslider);
@@ -168,11 +168,14 @@ export function handleColorOverrides(playerId, skin) {
         }
 
         // A space is purposefully left before '.jw-settings-topbar' since extendParent is set to true in order to append ':not(.jw-state-idle)'
-        addStyle([
-            ' .jw-settings-topbar',
-            ':not(.jw-state-idle) .jw-controlbar',
-            '.jw-flag-audio-player .jw-controlbar'
-        ], 'background', config.background, true);
+        // Prevent assigning if transparent, as this negatively impacts sub menu
+        if (config.background !== 'transparent' || getRgba(config.background) !== 'rgb(0, 0, 0)') {
+            addStyle([
+                ' .jw-settings-topbar',
+                ':not(.jw-state-idle) .jw-controlbar',
+                '.jw-flag-audio-player .jw-controlbar'
+            ], 'background', config.background, true);
+        }
     }
 
     function styleTimeslider(config) {
