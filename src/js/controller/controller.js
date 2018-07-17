@@ -3,7 +3,7 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist, fixSources } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -26,7 +26,6 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
-import Item from 'playlist/item';
 import { composePlayerError, convertToPlayerError, MSG_CANT_PLAY_VIDEO,
     ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
 
@@ -188,18 +187,6 @@ Object.assign(Controller.prototype, {
         });
 
         this.playerReady = function() {
-            const related = _api.getPlugin('related');
-            if (related) {
-                related.on('nextUp', (nextUp) => {
-                    let item = null;
-                    if (nextUp === Object(nextUp)) {
-                        // Format the item from the nextUp feed into a valid PlaylistItem
-                        item = Item(nextUp);
-                        item.sources = fixSources(item, _model);
-                    }
-                    _model.set('nextUp', item);
-                });
-            }
 
             // Fire 'ready' once the view has resized so that player width and height are available
             // (requires the container to be in the DOM)
@@ -659,11 +646,7 @@ Object.assign(Controller.prototype, {
                 return;
             }
 
-            // It wasn't the last item in the playlist,
-            //  so go to the next one and trigger an autoadvance event
-            const related = _api.getPlugin('related');
-            triggerAdvanceEvent(related, 'nextAutoAdvance');
-            _next({ reason: 'playlist' });
+            _this.nextItem();
         }
 
         function _setCurrentQuality(index) {
@@ -760,30 +743,6 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        function _nextUp() {
-            const related = _api.getPlugin('related');
-            triggerAdvanceEvent(related, 'nextClick', () => related.next());
-        }
-
-        function triggerAdvanceEvent(related, evt, cb) {
-            if (!related) {
-                return;
-            }
-            const nextUp = _model.get('nextUp');
-            if (nextUp) {
-                _this.trigger(evt, {
-                    mode: nextUp.mode,
-                    ui: 'nextup',
-                    target: nextUp,
-                    itemsShown: [ nextUp ],
-                    feedData: nextUp.feedData,
-                });
-            }
-            if (typeof cb === 'function') {
-                cb();
-            }
-        }
-
         function addProgramControllerListeners() {
             _programController
                 .on('all', _trigger, _this)
@@ -830,7 +789,10 @@ Object.assign(Controller.prototype, {
         this.getVisualQuality = _getVisualQuality;
         this.getConfig = _getConfig;
         this.getState = _getState;
-        this.next = _nextUp;
+        this.next = noop;
+        this.nextItem = () => {
+            _next({ reason: 'playlist' });
+        };
         this.setConfig = (newConfig) => {
             setConfig(_this, newConfig);
         };
