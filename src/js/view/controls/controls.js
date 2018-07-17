@@ -338,6 +338,8 @@ export default class Controls {
         this.playerContainer.appendChild(this.div);
 
         this.addBackdrop();
+
+        model.set('controlsEnabled', true);
     }
 
     disable(model) {
@@ -350,6 +352,8 @@ export default class Controls {
 
         clearTimeout(this.activeTimeout);
         this.activeTimeout = -1;
+
+        model.set('controlsEnabled', false);
 
         if (this.div.parentNode) {
             removeClass(this.playerContainer, 'jw-flag-touch');

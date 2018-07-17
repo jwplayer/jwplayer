@@ -72,6 +72,7 @@ export default {
     autostart: false,
     base: '',
     controls: true,
+    controlsEnabled: true,
     stretching: 'uniform',
     defaultPlaybackRate: 1.0,
     displaytitle: true,
