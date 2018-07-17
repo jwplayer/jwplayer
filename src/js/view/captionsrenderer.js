@@ -1,4 +1,4 @@
-import { Browser } from 'environment/environment';
+import { Browser, OS } from 'environment/environment';
 import { chunkLoadErrorHandler } from '../api/core-loader';
 import Events from 'utils/backbone.events';
 import { ERROR } from 'events/events';
@@ -213,7 +213,7 @@ const CaptionsRenderer = function (viewModel) {
 
         const fontSize = Math.round(height * _fontScale);
 
-        if (_model.get('renderCaptionsNatively')) {
+        if (_model.get('renderCaptionsNatively') && (!OS.iOS && !Browser.safari)) {
             _setShadowDOMFontSize(_model.get('id'), fontSize);
         } else {
             style(_display, {
