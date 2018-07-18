@@ -907,7 +907,6 @@ Object.assign(Controller.prototype, {
         };
 
         this.playerDestroy = function () {
-            this.trigger('destroyPlugin', {});
             this.off();
             this.stop();
             showView(this, this.originalContainer);

@@ -46,6 +46,7 @@ function resetPlayer(api, core) {
     Object.keys(plugins).forEach(key => {
         delete plugins[key];
     });
+    api.trigger('remove');
     api.off();
     core.playerDestroy();
     core.getContainer().removeAttribute('data-jwplayer-id');
@@ -215,10 +216,6 @@ export default function Api(element) {
         remove() {
             // Remove from array of players
             removePlayer(this);
-
-            // TODO: [EDIT] This should be fired after `resetPlayer`. Why is it fired before?
-            // terminate state
-            this.trigger('remove');
 
             // Unbind listeners and destroy controller/model/...
             resetPlayer(this, core);
