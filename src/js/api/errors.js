@@ -35,6 +35,11 @@ export const SETUP_ERROR_LOADING_CORE_JS = 101000;
 export const SETUP_ERROR_LOADING_PLAYLIST = 102000;
 
 /**
+ * @enum {ErrorCode} An exception occured while completing player setup.
+ */
+export const ERROR_COMPLETING_SETUP = 200001;
+
+/**
  * @enum {ErrorCode} Playback stopped because the playlist failed to load.
  */
 export const ERROR_LOADING_PLAYLIST = 202000;
