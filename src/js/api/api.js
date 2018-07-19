@@ -46,7 +46,9 @@ function resetPlayer(api, core) {
     Object.keys(plugins).forEach(key => {
         delete plugins[key];
     });
-    api.trigger('remove');
+    if (core.get('setupConfig')) {
+        api.trigger('remove');
+    }
     api.off();
     core.playerDestroy();
     core.getContainer().removeAttribute('data-jwplayer-id');
