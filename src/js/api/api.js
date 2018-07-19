@@ -649,6 +649,24 @@ export default function Api(element) {
         },
 
         /**
+         * Sets playlist item specified by `index`.
+         * @param {number} [index] A 0-based index of the desired playlist item.
+         * @param {PlaylistItem} item The new playlist item.
+         * @returns {Api} The Player API instance.
+         */
+
+        setPlaylistItem(index, item) {
+            let playlist = this.getPlaylist();
+
+            if (playlist) {
+                playlist = playlist.slice();
+                playlist[index] = item;
+                core.updatePlaylist(playlist, core.get('feedData'));
+            }
+
+        },
+
+        /**
          * @typedef {object} SliderCue
          * @property {number} begin - The time at which the cue should be placed in seconds.
          * @property {string} text - The text label of the cue.
