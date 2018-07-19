@@ -1,6 +1,7 @@
 import instances from 'api/players';
 import Api from 'api/api';
 import ApiSettings from 'api/api-settings';
+import sinon from 'sinon';
 
 describe('api.setup', function() {
     /*
@@ -12,7 +13,7 @@ describe('api.setup', function() {
 
     const errorMessage = 'This video file cannot be played.';
 
-    beforeEach(() => {
+    beforeEach(function () {
         ApiSettings.debug = true;
         // add fixture
         const fixture = document.createElement('div');
@@ -21,9 +22,10 @@ describe('api.setup', function() {
         container.id = 'player';
         fixture.appendChild(container);
         document.body.appendChild(fixture);
+        console.error = sinon.stub();
     });
 
-    afterEach(() => {
+    afterEach(function() {
         ApiSettings.debug = false;
         // remove fixture and player instances
         const fixture = document.querySelector('#test-fixture');
@@ -33,6 +35,7 @@ describe('api.setup', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
+        console.error.reset();
     });
 
     function expectReady(model) {

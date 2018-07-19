@@ -1,7 +1,7 @@
 import instances from 'api/players';
 import Api from 'api/api';
 import modelProperties from 'data/model-properties';
-import _ from 'underscore';
+import sinon from 'sinon';
 
 describe('Api.getConfig', function() {
 
@@ -9,6 +9,7 @@ describe('Api.getConfig', function() {
         const container = document.createElement('div');
         container.id = 'player';
         document.body.appendChild(container);
+        console.error = sinon.stub();
     });
 
     afterEach(() => {
@@ -20,27 +21,32 @@ describe('Api.getConfig', function() {
         for (let i = instances.length; i--;) {
             instances[i].remove();
         }
+        console.error.reset();
     });
 
     it('has expected model members', function() {
         const container = document.querySelector('#player');
         const api = new Api(container);
-        api.setup({});
 
-        const config = api.getConfig();
+        return new Promise((resolve) => {
+            api.setup({}).on('ready setupError', resolve);
 
-        _.each(modelProperties, (value, property) => {
-            expect(config).to.have.property(property);
-        });
+            const config = api.getConfig();
 
-        _.each(config, (value, property) => {
-            const sampleValue = modelProperties[property];
-            const type = getTypeOf(sampleValue);
-            if (sampleValue && sampleValue.tagName) {
-                expect(value.tagName).to.equal(sampleValue.tagName, `getConfig().${property} = ${value}`);
-            } else {
-                expect(value).to.be.a(type, `getConfig().${property} = ${value}`);
-            }
+            Object.keys(modelProperties).forEach((property) => {
+                expect(config).to.have.property(property);
+            });
+
+            Object.keys(config).forEach((property) => {
+                const value = config[property];
+                const sampleValue = modelProperties[property];
+                const type = getTypeOf(sampleValue);
+                if (sampleValue && sampleValue.tagName) {
+                    expect(value.tagName).to.equal(sampleValue.tagName, `getConfig().${property} = ${value}`);
+                } else {
+                    expect(value).to.be.a(type, `getConfig().${property} = ${value}`);
+                }
+            });
         });
     });
 });
