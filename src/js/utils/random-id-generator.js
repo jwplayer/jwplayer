@@ -18,7 +18,3 @@ export function genId(length) {
     }
     return str.slice(0, length);
 }
-
-export function generateFeedShownId() {
-    return generateRandomAlphaNumeric(12);
-}
