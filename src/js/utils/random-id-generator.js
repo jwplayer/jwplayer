@@ -1,3 +1,5 @@
+export const feedShownIdLength = 12;
+
 // Taken from the Analytics repo (src/js/utils/general_utils.ts)
 function randomAlphaNumericString() {
     try {
@@ -9,7 +11,7 @@ function randomAlphaNumericString() {
     return Math.random().toString(36).slice(2, 9);
 }
 
-function generateRandomAlphaNumeric(length) {
+export function genId(length) {
     let str = '';
     while (str.length < length) {
         str += randomAlphaNumericString();

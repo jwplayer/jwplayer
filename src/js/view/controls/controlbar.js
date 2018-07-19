@@ -12,7 +12,7 @@ import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { each } from 'utils/underscore';
-import { generateFeedShownId } from "utils/random-id-generator";
+import { genId, feedShownIdLength } from "utils/random-id-generator";
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -116,11 +116,11 @@ export default class Controlbar {
         this._api = _api;
         this._model = _model;
         this._isMobile = OS.mobile;
-        this._feedShownId = '';
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api);
         let volumeTooltip;
         let muteButton;
+        let feedShownId = '';
 
         const vol = localization.volume;
 
@@ -145,7 +145,7 @@ export default class Controlbar {
         }
 
         const nextButton = button('jw-icon-next', () => {
-            _model.set('feedShownId', this._feedShownId);
+            _model.set('feedShownId', feedShownId);
             _api.next();
         }, localization.next, cloneIcons('next'));
 
@@ -205,7 +205,7 @@ export default class Controlbar {
 
         const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp, () => {
             const nextUp = _model.get('nextUp');
-            this._feedShownId = generateFeedShownId();
+            feedShownId = genId(feedShownIdLength);
 
             this.trigger('nextShown', {
                 mode: nextUp.mode,
@@ -213,7 +213,7 @@ export default class Controlbar {
                 itemsShown: [nextUp],
                 feedData: nextUp.feedData,
                 reason: 'hover',
-                feedShownId: this._feedShownId
+                feedShownId
             });
         });
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);

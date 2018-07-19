@@ -5,7 +5,7 @@ import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import { cloneIcon } from 'view/controls/icons';
 import { seconds } from 'utils/strings';
-import { generateFeedShownId } from "utils/random-id-generator";
+import { genId, feedShownIdLength } from "utils/random-id-generator";
 
 export default class NextUpTooltip {
     constructor(_model, _api, playerElement) {
@@ -92,7 +92,7 @@ export default class NextUpTooltip {
             toggleClass(this._playerElement, 'jw-flag-nextup', show);
             const nextUp = this._model.get('nextUp');
             if (show && nextUp) {
-                this.feedShownId = generateFeedShownId();
+                this.feedShownId = genId(feedShownIdLength);
                 this.trigger('nextShown', {
                     mode: nextUp.mode,
                     ui: 'nextup',
