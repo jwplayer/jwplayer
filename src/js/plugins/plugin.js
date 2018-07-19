@@ -37,7 +37,7 @@ function getJSPath(url) {
 
 const Plugin = function(url) {
     this.url = url;
-    this.promise_;
+    this.promise_ = null;
 };
 
 Object.defineProperties(Plugin.prototype, {
