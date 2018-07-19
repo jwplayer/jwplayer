@@ -116,6 +116,7 @@ export default class Controlbar {
         this._api = _api;
         this._model = _model;
         this._isMobile = OS.mobile;
+        this._feedShownId = '';
         const localization = _model.get('localization');
         const timeSlider = new TimeSlider(_model, _api);
         let volumeTooltip;
@@ -144,6 +145,7 @@ export default class Controlbar {
         }
 
         const nextButton = button('jw-icon-next', () => {
+            _model.set('feedShownId', this._feedShownId);
             _api.next();
         }, localization.next, cloneIcons('next'));
 
@@ -203,6 +205,7 @@ export default class Controlbar {
 
         const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp, () => {
             const nextUp = _model.get('nextUp');
+            this._feedShownId = generateFeedShownId();
 
             this.trigger('nextShown', {
                 mode: nextUp.mode,
@@ -210,7 +213,7 @@ export default class Controlbar {
                 itemsShown: [nextUp],
                 feedData: nextUp.feedData,
                 reason: 'hover',
-                feedShownId: generateFeedShownId()
+                feedShownId: this._feedShownId
             });
         });
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);

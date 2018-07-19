@@ -18,6 +18,7 @@ export default class NextUpTooltip {
         this.state = 'tooltip';
         this.enabled = false;
         this.shown = false;
+        this.feedShownId = '';
         this.reset();
     }
 
@@ -76,6 +77,7 @@ export default class NextUpTooltip {
 
     click() {
         this.reset();
+        this._model.set('feedShownId', this.feedShownId);
         this._api.next();
     }
 
@@ -90,13 +92,14 @@ export default class NextUpTooltip {
             toggleClass(this._playerElement, 'jw-flag-nextup', show);
             const nextUp = this._model.get('nextUp');
             if (show && nextUp) {
+                this.feedShownId = generateFeedShownId();
                 this.trigger('nextShown', {
                     mode: nextUp.mode,
                     ui: 'nextup',
                     itemsShown: [ nextUp ],
                     feedData: nextUp.feedData,
                     reason: reason,
-                    feedShownId: generateFeedShownId()
+                    feedShownId: this.feedShownId
                 });
             }
         }
