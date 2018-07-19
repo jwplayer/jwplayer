@@ -23,6 +23,8 @@ function createApi(id) {
 
 describe('Api', function() {
 
+    this.timeout(6000);
+
     beforeEach(function() {
         utils.log = sinon.stub();
         console.error = sinon.stub();
@@ -130,7 +132,7 @@ describe('Api', function() {
             expect(removeSpy0, 'remove is not called if api was never setup').to.have.callCount(0);
 
             api.setup({}).on('remove', removeSpy1).remove();
-            
+
             api.setup({}).on('remove', () => {
                 expect(removeSpy1, 'remove callback is triggered once').to.have.callCount(1);
                 expect(removeSpy1, 'event type is "remove"').to.be.calledWithMatch({
