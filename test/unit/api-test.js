@@ -120,19 +120,23 @@ describe('Api', function() {
 
     it('can be removed and reused', function() {
         return new Promise((resolve, reject) => {
-            const api = createApi('player');
+            const removeSpy0 = sinon.spy();
+            const removeSpy1 = sinon.spy();
 
-            let removeCount = 0;
-            api.on('remove', (event) => {
-                expect(++removeCount, 'first remove event callback is triggered first once').to.equal(1);
-                expect(event.type, 'event type is "remove"').to.equal('remove');
-                expect(this, 'callback context is the removed api instance').to.equal(api);
-            });
+            const api = createApi('player').on('remove', removeSpy0);
 
             api.remove();
 
+            expect(removeSpy0, 'remove is not called if api was never setup').to.have.callCount(0);
+
+            api.setup({}).on('remove', removeSpy1).remove();
+            
             api.setup({}).on('remove', () => {
-                expect(++removeCount, 'second remove event callback is triggered second').to.equal(2);
+                expect(removeSpy1, 'remove callback is triggered once').to.have.callCount(1);
+                expect(removeSpy1, 'event type is "remove"').to.be.calledWithMatch({
+                    type: 'remove'
+                });
+                expect(removeSpy1, 'callback context is the removed api instance').to.be.be.calledOn(api);
                 resolve();
             }).on('ready setupError', reject).remove();
         });
