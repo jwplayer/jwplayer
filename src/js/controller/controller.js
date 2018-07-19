@@ -191,15 +191,17 @@ Object.assign(Controller.prototype, {
             // Fire 'ready' once the view has resized so that player width and height are available
             // (requires the container to be in the DOM)
             _view.once(RESIZE, () => {
-                resolved.then(_playerReadyNotify).catch((error) => {
+                try {
+                    playerReadyNotify();
+                } catch (error) {
                     _this.triggerError(convertToPlayerError(MSG_TECHNICAL_ERROR, ERROR_COMPLETING_SETUP, error));
-                });
+                }
             });
 
             _view.init();
         };
 
-        function _playerReadyNotify() {
+        function playerReadyNotify() {
             _model.change('visibility', _updateViewable);
             eventsReadyQueue.off();
 
