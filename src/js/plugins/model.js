@@ -21,7 +21,7 @@ prototype.setupPlugin = function(url) {
         return registeredPlugin.promise;
     }
     const plugin = this.addPlugin(url);
-    return plugin.load().then(() => plugin.promise);
+    return plugin.load();
 };
 
 prototype.addPlugin = function(url) {

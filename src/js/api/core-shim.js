@@ -169,6 +169,9 @@ Object.assign(CoreShim.prototype, {
 
     // These methods read from the model
     get(property) {
+        if (!this.modelShim) {
+            return;
+        }
         if (property in this.mediaShim) {
             return this.mediaShim[property];
         }

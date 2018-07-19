@@ -8,11 +8,11 @@ describe('SettingsMenu', function() {
     let controlbar;
     let settingsMenu;
 
-    before(function() {
-        sinon.stub(menu, 'SettingsMenu');
-    });
+    const sandbox = sinon.sandbox.create();
 
     beforeEach(function() {
+        sandbox.stub(menu, 'SettingsMenu');
+
         controlbar = {};
         controlbar.on = sinon.stub();
         controlbar.elements = {
@@ -27,11 +27,16 @@ describe('SettingsMenu', function() {
             removeSubmenu: sinon.spy(),
             getSubmenu: sinon.spy(),
             activateFirstSubmenu: sinon.spy(),
-            activateSubmenu: sinon.spy()
+            activateSubmenu: sinon.spy(),
+            destroy: sinon.spy()
         };
         settingsMenu.element.returns(document.createElement('div'));
 
         menu.SettingsMenu.returns(settingsMenu);
+    });
+
+    afterEach(function() {
+        sandbox.restore();
     });
 
     describe('createSettingsMenu', function() {

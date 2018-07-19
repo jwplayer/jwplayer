@@ -37,35 +37,47 @@ function getJSPath(url) {
 
 const Plugin = function(url) {
     this.url = url;
-    this.promise = new Promise((resolve, reject) => {
-        this.resolve = resolve;
-        this.reject = reject;
-    });
+    this.promise_ = null;
 };
 
+Object.defineProperties(Plugin.prototype, {
+    promise: {
+        get() {
+            return this.promise_ || this.load();
+        },
+        set() {}
+    }
+});
+
 Object.assign(Plugin.prototype, {
+
     load() {
-        if (getPluginPathType(this.url) === PLUGIN_PATH_TYPE_CDN) {
-            this.resolve(this);
-            return this.promise;
+        let promise = this.promise_;
+        if (!promise) {
+            if (getPluginPathType(this.url) === PLUGIN_PATH_TYPE_CDN) {
+                promise = Promise.resolve(this);
+            } else {
+                const loader = new ScriptLoader(getJSPath(this.url));
+                this.loader = loader;
+                promise = loader.load().then(() => this);
+            }
+            this.promise_ = promise;
         }
-        const loader = new ScriptLoader(getJSPath(this.url));
-        this.loader = loader;
-        return loader.load().catch(error => {
-            this.reject(error);
-            throw error;
-        });
+
+        return promise;
     },
 
     registerPlugin(name, minimumVersion, pluginClass) {
         this.name = name;
         this.target = minimumVersion;
         this.js = pluginClass;
-        this.resolve(this);
     },
 
     getNewInstance(api, config, div) {
         const PluginClass = this.js;
+        if (typeof PluginClass !== 'function') {
+            throw new Error(`"${this.url}" did not call registerPlugin`);
+        }
         const pluginInstance = new PluginClass(api, config, div);
 
         pluginInstance.addToPlayer = function() {
