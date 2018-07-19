@@ -26,8 +26,8 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
-import { composePlayerError, convertToPlayerError, MSG_CANT_PLAY_VIDEO,
-    ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
+import { composePlayerError, convertToPlayerError, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
+    ERROR_COMPLETING_SETUP, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -190,12 +190,18 @@ Object.assign(Controller.prototype, {
 
             // Fire 'ready' once the view has resized so that player width and height are available
             // (requires the container to be in the DOM)
-            _view.once(RESIZE, _playerReadyNotify);
+            _view.once(RESIZE, () => {
+                try {
+                    playerReadyNotify();
+                } catch (error) {
+                    _this.triggerError(convertToPlayerError(MSG_TECHNICAL_ERROR, ERROR_COMPLETING_SETUP, error));
+                }
+            });
 
             _view.init();
         };
 
-        function _playerReadyNotify() {
+        function playerReadyNotify() {
             _model.change('visibility', _updateViewable);
             eventsReadyQueue.off();
 
