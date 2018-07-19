@@ -12,6 +12,7 @@ import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { each } from 'utils/underscore';
+import { generateFeedShownId } from "utils/random-id-generator";
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -208,7 +209,8 @@ export default class Controlbar {
                 ui: 'nextup',
                 itemsShown: [nextUp],
                 feedData: nextUp.feedData,
-                reason: 'hover'
+                reason: 'hover',
+                feedShownId: generateFeedShownId()
             });
         });
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
