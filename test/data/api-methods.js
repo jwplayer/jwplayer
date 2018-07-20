@@ -73,6 +73,7 @@ export default {
     setFullscreen: null,
     setMute: null,
     setPlaybackRate: null,
+    setPlaylistItem: null,
     setVolume: null,
     setup: null,
     stop: null,
