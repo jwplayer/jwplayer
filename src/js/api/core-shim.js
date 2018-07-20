@@ -38,6 +38,7 @@ const CoreShim = function(originalContainer) {
         'playlistNext',
         'playlistPrev',
         'next',
+        'preload',
 
         // These should just update state that could be acted on later, but need to be queued given v7 model
         'setConfig',
@@ -99,9 +100,9 @@ Object.assign(CoreShim.prototype, {
 
         const primeUi = new UI(getElementWindow(this.originalContainer)).once('gesture', () => {
             mediaPool.prime();
+            this.preload();
             primeUi.destroy();
         });
-
 
         model.on('change:errorEvent', logError);
 
