@@ -76,8 +76,9 @@ export default class NextUpTooltip {
     }
 
     click() {
+        const { feedShownId: fsiBeforeClose } = this;
         this.reset();
-        this._api.next({ feedShownId: this.feedShownId, reason: 'interaction' });
+        this._api.next({ feedShownId: fsiBeforeClose, reason: 'interaction' });
     }
 
     toggle(show, reason) {
@@ -100,6 +101,8 @@ export default class NextUpTooltip {
                     reason: reason,
                     feedShownId: this.feedShownId
                 });
+            } else {
+                this.feedShownId = '';
             }
         }
     }
@@ -136,6 +139,7 @@ export default class NextUpTooltip {
 
     onNextUp(model, nextUp) {
         this.reset();
+        this.feedShownId = '';
         if (!nextUp) {
             return;
         }
