@@ -1,4 +1,4 @@
-import { Browser } from 'environment/environment';
+import { Browser, OS } from 'environment/environment';
 import { chunkLoadErrorHandler } from '../api/core-loader';
 import Events from 'utils/backbone.events';
 import { ERROR } from 'events/events';
@@ -214,7 +214,16 @@ const CaptionsRenderer = function (viewModel) {
         const fontSize = Math.round(height * _fontScale);
 
         if (_model.get('renderCaptionsNatively')) {
-            _setShadowDOMFontSize(_model.get('id'), fontSize);
+            let fullscreenScale = 1;
+
+            // Scale captions correctly when in fullscreen on iOS devices
+            if (OS.iOS && _model.get('fullscreen')) {
+                // iOS device is in portrait mode when window.orientation = 0 || 180
+                const portraitMode = !(window.orientation % 180);
+                const fullscreenWidth = portraitMode ? window.screen.availWidth : window.screen.availHeight;
+                fullscreenScale = fullscreenWidth / _model.get('containerWidth');
+            }
+            _setShadowDOMFontSize(_model.get('id'), Math.ceil(fontSize * fullscreenScale));
         } else {
             style(_display, {
                 fontSize: fontSize + 'px'
