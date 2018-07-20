@@ -1,15 +1,15 @@
-import { genId, feedShownIdLength } from 'utils/random-id-generator';
+import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 
 describe('Random id generation', () => {
     describe('feed shown id generation', () => {
         const ids = [];
         for (let i = 0; i < 10; i++) {
-            ids.push(genId(feedShownIdLength));
+            ids.push(genId(FEED_SHOWN_ID_LENGTH));
         }
 
         it('should always be 12 characters long', () => {
             ids.forEach((id) => {
-                expect(id.length).to.equal(feedShownIdLength);
+                expect(id.length).to.equal(FEED_SHOWN_ID_LENGTH);
             });
         });
 

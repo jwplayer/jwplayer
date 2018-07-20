@@ -1,4 +1,4 @@
-export const feedShownIdLength = 12;
+export const FEED_SHOWN_ID_LENGTH = 12;
 
 // Taken from the Analytics repo (src/js/utils/general_utils.ts)
 function randomAlphaNumericString() {
