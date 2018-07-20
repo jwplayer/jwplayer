@@ -664,6 +664,7 @@ export default function Api(element) {
                 core.updatePlaylist(playlist, core.get('feedData'));
             }
 
+            return this;
         },
 
         /**
