@@ -97,7 +97,7 @@ export function handleColorOverrides(playerId, skin) {
     // Using background instead of background-color so we don't have to clear gradients with background-image
 
     if (skin.controlbar) {
-        styleControlbar(skin.controlbar);
+        styleControlbar(skin.controlbar);   
     }
     if (skin.timeslider) {
         styleTimeslider(skin.timeslider);
@@ -168,11 +168,14 @@ export function handleColorOverrides(playerId, skin) {
         }
 
         // A space is purposefully left before '.jw-settings-topbar' since extendParent is set to true in order to append ':not(.jw-state-idle)'
-        addStyle([
-            ' .jw-settings-topbar',
-            ':not(.jw-state-idle) .jw-controlbar',
-            '.jw-flag-audio-player .jw-controlbar'
-        ], 'background', config.background, true);
+        // Prevent assigning if transparent, as this negatively impacts sub menu
+        if (config.background && !isTransparent(config.background)) {
+            addStyle([
+                ' .jw-settings-topbar',
+                ':not(.jw-state-idle) .jw-controlbar',
+                '.jw-flag-audio-player .jw-controlbar'
+            ], 'background', config.background, true);
+        }
     }
 
     function styleTimeslider(config) {
@@ -273,4 +276,21 @@ export function handleColorOverrides(playerId, skin) {
             css(`#${playerId} .jw-color-inactive-hover:hover`, inactiveColorSet, playerId);
         }
     }
+}
+
+function isTransparent(color) {
+    if (color.toLowerCase() === 'transparent') {
+        return true;
+    }
+
+    let channels;
+    if (color.indexOf('(') > -1) {
+        channels = color.match(/(0\.\d+)|\d+/g);
+    }
+
+    if (color.indexOf('#') > -1) {
+        channels = color.match(/([0-9A-F]{2})+?/gi);
+    }
+
+    return channels && channels.length > 3 && parseFloat(channels.splice(3, 1)[0]) === 0 || false;
 }
