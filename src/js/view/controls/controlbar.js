@@ -205,7 +205,6 @@ export default class Controlbar {
         const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp, () => {
             const nextUp = _model.get('nextUp');
             feedShownId = genId(FEED_SHOWN_ID_LENGTH);
-
             this.trigger('nextShown', {
                 mode: nextUp.mode,
                 ui: 'nextup',
@@ -214,6 +213,8 @@ export default class Controlbar {
                 reason: 'hover',
                 feedShownId
             });
+        }, () => {
+            feedShownId = '';
         });
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
@@ -281,6 +282,7 @@ export default class Controlbar {
         _model.on('change:captionsIndex', onCaptionsChanged, this);
         _model.on('change:captionsList', onCaptionsChanged, this);
         _model.change('nextUp', (model, nextUp) => {
+            feedShownId = genId(FEED_SHOWN_ID_LENGTH);
             let tipText = localization.nextUp;
             if (nextUp && nextUp.title) {
                 tipText += (`: ${nextUp.title}`);
