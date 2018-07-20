@@ -139,7 +139,6 @@ export default class NextUpTooltip {
 
     onNextUp(model, nextUp) {
         this.reset();
-        this.feedShownId = '';
         if (!nextUp) {
             return;
         }
