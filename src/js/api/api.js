@@ -656,12 +656,14 @@ export default function Api(element) {
          */
 
         setPlaylistItem(index, item) {
-            let playlist = this.getPlaylist();
+            if (this.getState() !== 'playing') {
+                let playlist = this.getPlaylist();
 
-            if (playlist) {
-                playlist = playlist.slice();
-                playlist[index] = item;
-                core.updatePlaylist(playlist, core.get('feedData'));
+                if (playlist) {
+                    playlist = playlist.slice();
+                    playlist[index] = item;
+                    core.updatePlaylist(playlist, core.get('feedData'));
+                }
             }
 
             return this;
