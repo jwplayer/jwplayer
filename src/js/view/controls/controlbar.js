@@ -145,8 +145,7 @@ export default class Controlbar {
         }
 
         const nextButton = button('jw-icon-next', () => {
-            _model.set('feedShownId', feedShownId);
-            _api.next();
+            _api.next({ feedShownId, reason: 'interaction' });
         }, localization.next, cloneIcons('next'));
 
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', (event) => {

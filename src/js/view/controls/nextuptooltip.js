@@ -77,8 +77,7 @@ export default class NextUpTooltip {
 
     click() {
         this.reset();
-        this._model.set('feedShownId', this.feedShownId);
-        this._api.next();
+        this._api.next({ feedShownId: this.feedShownId, reason: 'interaction' });
     }
 
     toggle(show, reason) {
