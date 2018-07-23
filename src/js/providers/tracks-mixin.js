@@ -460,12 +460,10 @@ function addTextTracks(tracksArray) {
                     this.addVTTCuesToTrack(textTrackAny, vttCues);
                 },
                 (key, url, xhr, error) => {
-                    if (error.code === 404) {
-                        this.trigger(ERROR, {
-                            message: 'Captions failed to load',
-                            reason: 'File not found'
-                        });
-                    }
+                    this.trigger(ERROR, {
+                        message: 'Captions failed to load',
+                        reason: error.code === 404 ? 'File not found' : key
+                    });
                 });
         }
     });
