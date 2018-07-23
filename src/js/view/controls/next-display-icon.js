@@ -4,7 +4,7 @@ export default class NextDisplayIcon {
     constructor(model, api, element) {
 
         this.ui = new UI(element).on('click tap enter', function() {
-            api.next();
+            api.next({ reason: 'interaction' });
         });
 
         model.change('nextUp', function(nextUpChangeModel, nextUp) {
