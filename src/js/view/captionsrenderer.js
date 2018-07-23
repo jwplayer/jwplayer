@@ -214,21 +214,32 @@ const CaptionsRenderer = function (viewModel) {
         const fontSize = Math.round(height * _fontScale);
 
         if (_model.get('renderCaptionsNatively')) {
-            let fullscreenScale = 1;
-
-            // Scale captions correctly when in fullscreen on iOS devices
-            if (OS.iOS && _model.get('fullscreen')) {
-                // iOS device is in portrait mode when window.orientation = 0 || 180
-                const portraitMode = !(window.orientation % 180);
-                const fullscreenWidth = portraitMode ? window.screen.availWidth : window.screen.availHeight;
-                fullscreenScale = fullscreenWidth / _model.get('containerWidth');
-            }
-            _setShadowDOMFontSize(_model.get('id'), Math.ceil(fontSize * fullscreenScale));
+            _setShadowDOMFontSize(_model.get('id'), getFontSizeNative(fontSize));
         } else {
             style(_display, {
                 fontSize: fontSize + 'px'
             });
         }
+    }
+
+    function getFontSizeNative(fontSize) {
+        // Scale captions correctly when in fullscreen on iOS devices
+        const video = _model.get('mediaElement');
+        if (video && OS.iOS && _model.get('fullscreen')) {
+            const { videoWidth, videoHeight } = video;
+            // iOS device is in portrait mode when window.orientation = 0 || 180
+            const portraitMode = !(window.orientation % 180);
+            const { screen } = window;
+            const screenWidth = portraitMode ? screen.availWidth : screen.availHeight;
+            const screenHeight = portraitMode ? screen.availHeight : screen.availWidth;
+            if (screenWidth && screenHeight && videoWidth && videoHeight) {
+                const aspectScreen = screenWidth / screenHeight;
+                const aspectVideo = videoWidth / videoHeight;
+                const height = (aspectScreen > aspectVideo) ? screenHeight : videoHeight * screenWidth / videoWidth;
+                return Math.round(height * _fontScale);
+            }
+        }
+        return fontSize;
     }
 
     function _setupCaptionStyles(playerId, textStyle) {
