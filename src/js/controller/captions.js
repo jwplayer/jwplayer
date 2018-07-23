@@ -37,7 +37,7 @@ const Captions = function(_model) {
                     _addTrack(track);
                     loadFile(track, (vttCues) => {
                         _addVTTCuesToTrack(track, vttCues);
-                    }, (key, file, url, error) => {
+                    }, (key, url, xhr, error) => {
                         if (error.code === 404) {
                             this.trigger(ERROR, {
                                 message: 'Captions failed to load',
