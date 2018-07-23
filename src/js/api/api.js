@@ -656,7 +656,9 @@ export default function Api(element) {
          */
 
         setPlaylistItem(index, item) {
-            if (this.getState() !== 'playing') {
+            const state = this.getState();
+
+            if (state === 'idle' || state === 'complete') {
                 let playlist = this.getPlaylist();
 
                 if (playlist) {
