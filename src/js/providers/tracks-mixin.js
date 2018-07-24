@@ -462,7 +462,7 @@ function addTextTracks(tracksArray) {
                 (key, url, xhr, error) => {
                     this.trigger(ERROR, {
                         message: 'Captions failed to load',
-                        reason: error.code === 404 ? 'File not found' : key
+                        sourceError: error
                     });
                 });
         }
