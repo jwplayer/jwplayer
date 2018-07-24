@@ -12,6 +12,7 @@ import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { each } from 'utils/underscore';
+import { genId, FEED_SHOWN_ID_LENGTH } from "utils/random-id-generator";
 
 function text(name, role) {
     const element = document.createElement('span');
@@ -59,6 +60,7 @@ function createCastButton(castToggle, localization) {
     const castButton = document.createElement('button', 'google-cast-button');
     setAttribute(castButton, 'type', 'button');
     setAttribute(castButton, 'tabindex', '-1');
+    castButton.className += ' jw-reset';
 
     const element = document.createElement('div');
     element.className = 'jw-reset jw-icon jw-icon-inline jw-icon-cast jw-button-color';
@@ -118,6 +120,7 @@ export default class Controlbar {
         const timeSlider = new TimeSlider(_model, _api);
         let volumeTooltip;
         let muteButton;
+        let feedShownId = '';
 
         const vol = localization.volume;
 
@@ -142,7 +145,7 @@ export default class Controlbar {
         }
 
         const nextButton = button('jw-icon-next', () => {
-            _api.next();
+            _api.next({ feedShownId, reason: 'interaction' });
         }, localization.next, cloneIcons('next'));
 
         const settingsButton = button('jw-icon-settings jw-settings-submenu-button', (event) => {
@@ -201,14 +204,17 @@ export default class Controlbar {
 
         const nextUpTip = SimpleTooltip(elements.next.element(), 'next', localization.nextUp, () => {
             const nextUp = _model.get('nextUp');
-
+            feedShownId = genId(FEED_SHOWN_ID_LENGTH);
             this.trigger('nextShown', {
                 mode: nextUp.mode,
                 ui: 'nextup',
                 itemsShown: [nextUp],
                 feedData: nextUp.feedData,
-                reason: 'hover'
+                reason: 'hover',
+                feedShownId
             });
+        }, () => {
+            feedShownId = '';
         });
         SimpleTooltip(elements.rewind.element(), 'rewind', localization.rewind);
         SimpleTooltip(elements.settingsButton.element(), 'settings', localization.settings);
@@ -276,6 +282,7 @@ export default class Controlbar {
         _model.on('change:captionsIndex', onCaptionsChanged, this);
         _model.on('change:captionsList', onCaptionsChanged, this);
         _model.change('nextUp', (model, nextUp) => {
+            feedShownId = genId(FEED_SHOWN_ID_LENGTH);
             let tipText = localization.nextUp;
             if (nextUp && nextUp.title) {
                 tipText += (`: ${nextUp.title}`);

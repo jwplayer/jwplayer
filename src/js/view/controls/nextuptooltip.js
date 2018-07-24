@@ -5,6 +5,7 @@ import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import { cloneIcon } from 'view/controls/icons';
 import { seconds } from 'utils/strings';
+import { genId, FEED_SHOWN_ID_LENGTH } from "utils/random-id-generator";
 
 export default class NextUpTooltip {
     constructor(_model, _api, playerElement) {
@@ -17,6 +18,7 @@ export default class NextUpTooltip {
         this.state = 'tooltip';
         this.enabled = false;
         this.shown = false;
+        this.feedShownId = '';
         this.reset();
     }
 
@@ -53,14 +55,12 @@ export default class NextUpTooltip {
         }, this);
 
         // Close button
-        new UI(this.closeButton, { directSelect: true })
-            .on('click tap enter', function() {
-                this.nextUpSticky = false;
-                this.toggle(false);
-            }, this);
+        new UI(this.closeButton, { directSelect: true }).on('click tap enter', function() {
+            this.nextUpSticky = false;
+            this.toggle(false);
+        }, this);
         // Tooltip
-        new UI(this.tooltip)
-            .on('click tap', this.click, this);
+        new UI(this.tooltip).on('click tap', this.click, this);
     }
 
     loadThumbnail(url) {
@@ -76,8 +76,9 @@ export default class NextUpTooltip {
     }
 
     click() {
+        const { feedShownId: fsiBeforeClose } = this;
         this.reset();
-        this._api.next();
+        this._api.next({ feedShownId: fsiBeforeClose, reason: 'interaction' });
     }
 
     toggle(show, reason) {
@@ -91,13 +92,17 @@ export default class NextUpTooltip {
             toggleClass(this._playerElement, 'jw-flag-nextup', show);
             const nextUp = this._model.get('nextUp');
             if (show && nextUp) {
+                this.feedShownId = genId(FEED_SHOWN_ID_LENGTH);
                 this.trigger('nextShown', {
                     mode: nextUp.mode,
                     ui: 'nextup',
                     itemsShown: [ nextUp ],
                     feedData: nextUp.feedData,
                     reason: reason,
+                    feedShownId: this.feedShownId
                 });
+            } else {
+                this.feedShownId = '';
             }
         }
     }

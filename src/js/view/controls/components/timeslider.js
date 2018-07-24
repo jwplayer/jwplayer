@@ -3,7 +3,7 @@ import { between } from 'utils/math';
 import { style } from 'utils/css';
 import { timeFormat } from 'utils/parser';
 import { addClass, removeClass, setAttribute, bounds } from 'utils/dom';
-import UI, { getPointerType } from 'utils/ui';
+import UI from 'utils/ui';
 import Slider from 'view/controls/components/slider';
 import Tooltip from 'view/controls/components/tooltip';
 import ChaptersMixin from 'view/controls/components/chapters.mixin';
@@ -112,8 +112,8 @@ class TimeSlider extends Slider {
         this.elementRail.appendChild(this.timeTip.element());
 
         // Show the tooltip on while dragging (touch) moving(mouse), or moving over(mouse)
-        this.elementUI = new UI(this.el, { useHover: true, useMove: true })
-            .on('drag move over', this.showTimeTooltip, this)
+        this.ui = (this.ui || new UI(this.el))
+            .on('move', this.showTimeTooltip, this)
             .on('dragEnd out', this.hideTimeTooltip, this)
             .on('click', () => this.el.focus());
 
@@ -230,7 +230,7 @@ class TimeSlider extends Slider {
 
         // With touch events, we never will get the hover events on the cues that cause cues to be active.
         // Therefore use the info we about the scroll position to detect if there is a nearby cue to be active.
-        if (getPointerType(evt.sourceEvent) === 'touch') {
+        if (evt.pointerType === 'touch') {
             this.activeCue = this.cues.reduce((closeCue, cue) => {
                 if (Math.abs(position - (parseInt(cue.pct) / 100 * railBounds.width)) < this.mobileHoverDistance) {
                     return cue;

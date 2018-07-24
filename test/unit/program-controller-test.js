@@ -418,15 +418,16 @@ describe('ProgramController', function () {
 
     it('fires itemReady for background loaded items', function() {
         sandbox.spy(model, 'trigger');
+        const changeMediaElement = model.get('backgroundLoading') ? 1 : 0;
         return programController.setActiveItem(0)
             .then(function () {
-                expect(model.trigger).to.have.callCount(6);
+                expect(model.trigger).to.have.callCount(5 + changeMediaElement);
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
                 programController.backgroundLoad(mp4Item);
             })
             .then(() => programController.setActiveItem(1))
             .then(function () {
-                expect(model.trigger).to.have.callCount(13);
+                expect(model.trigger).to.have.callCount(11 + changeMediaElement * 2);
                 expect(model.trigger.lastCall).to.have.been.calledWith('change:itemReady', model, true);
             });
     });

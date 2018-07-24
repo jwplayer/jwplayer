@@ -3,7 +3,7 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist, fixSources } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -26,9 +26,8 @@ import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED
 import ProgramController from 'program/program-controller';
 import initQoe from 'controller/qoe';
 import { BACKGROUND_LOAD_OFFSET } from 'program/program-constants';
-import Item from 'playlist/item';
-import { composePlayerError, convertToPlayerError, MSG_CANT_PLAY_VIDEO,
-    ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
+import { composePlayerError, convertToPlayerError, MSG_CANT_PLAY_VIDEO, MSG_TECHNICAL_ERROR,
+    ERROR_COMPLETING_SETUP, ERROR_LOADING_PLAYLIST, ERROR_LOADING_PROVIDER, ERROR_LOADING_PLAYLIST_ITEM } from 'api/errors';
 
 // The model stores a different state than the provider
 function normalizeState(newstate) {
@@ -54,7 +53,6 @@ Object.assign(Controller.prototype, {
         let _interruptPlay;
         let checkAutoStartCancelable = cancelable(_checkAutoStart);
         let updatePlaylistCancelable = cancelable(noop);
-        let primeBeforePlay = true;
 
         _this.originalContainer = _this.currentContainer = originalContainer;
         _this._events = eventListeners;
@@ -189,27 +187,21 @@ Object.assign(Controller.prototype, {
         });
 
         this.playerReady = function() {
-            const related = _api.getPlugin('related');
-            if (related) {
-                related.on('nextUp', (nextUp) => {
-                    let item = null;
-                    if (nextUp === Object(nextUp)) {
-                        // Format the item from the nextUp feed into a valid PlaylistItem
-                        item = Item(nextUp);
-                        item.sources = fixSources(item, _model);
-                    }
-                    _model.set('nextUp', item);
-                });
-            }
 
             // Fire 'ready' once the view has resized so that player width and height are available
             // (requires the container to be in the DOM)
-            _view.once(RESIZE, _playerReadyNotify);
+            _view.once(RESIZE, () => {
+                try {
+                    playerReadyNotify();
+                } catch (error) {
+                    _this.triggerError(convertToPlayerError(MSG_TECHNICAL_ERROR, ERROR_COMPLETING_SETUP, error));
+                }
+            });
 
             _view.init();
         };
 
-        function _playerReadyNotify() {
+        function playerReadyNotify() {
             _model.change('visibility', _updateViewable);
             eventsReadyQueue.off();
 
@@ -296,14 +288,18 @@ Object.assign(Controller.prototype, {
                 viewable: viewable
             });
 
+            preload();
+        }
+
+        function preload() {
             // Only attempt to preload if this is the first player on the page or viewable
-            if (instances[0] !== _api && viewable !== 1) {
+            if (instances[0] !== _api && _model.get('viewable') !== 1) {
                 return;
             }
             if (_model.get('state') === 'idle' && _model.get('autostart') === false) {
                 // If video has not been primed on Android, test that video will play before preloading
                 // This ensures we always prime the tag on play when necessary
-                if (primeBeforePlay && OS.android) {
+                if (!mediaPool.primed() && OS.android) {
                     const video = mediaPool.getTestElement();
                     const muted = _this.getMute();
                     resolved.then(() => startPlayback(video, { muted })).then(() => {
@@ -341,7 +337,7 @@ Object.assign(Controller.prototype, {
             updatePlaylistCancelable.cancel();
 
             if (_inInteraction(window.event)) {
-                _programController.primeMediaElements();
+                mediaPool.prime();
             }
 
             let loadPromise;
@@ -438,9 +434,8 @@ Object.assign(Controller.prototype, {
                 });
                 _beforePlay = false;
 
-                if (_inInteraction(window.event) && primeBeforePlay) {
-                    _programController.primeMediaElements();
-                    primeBeforePlay = false;
+                if (_inInteraction(window.event) && !mediaPool.primed()) {
+                    mediaPool.prime();
                 }
 
                 if (_interruptPlay) {
@@ -456,11 +451,9 @@ Object.assign(Controller.prototype, {
             }
 
             return _programController.playVideo(playReason)
-                .then(() => {
-                    // If playback succeeded that means we captured a gesture (and used it to prime the pool)
-                    // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
-                    primeBeforePlay = false;
-                });
+                // If playback succeeded that means we captured a gesture (and used it to prime the pool)
+                // Avoid priming again in beforePlay because it could cause BGL'd media to be source reset
+                .then(mediaPool.played);
         }
 
         function _getReason(meta) {
@@ -663,11 +656,7 @@ Object.assign(Controller.prototype, {
                 return;
             }
 
-            // It wasn't the last item in the playlist,
-            //  so go to the next one and trigger an autoadvance event
-            const related = _api.getPlugin('related');
-            triggerAdvanceEvent(related, 'nextAutoAdvance');
-            _next({ reason: 'playlist' });
+            _this.nextItem();
         }
 
         function _setCurrentQuality(index) {
@@ -764,30 +753,6 @@ Object.assign(Controller.prototype, {
             }
         }
 
-        function _nextUp() {
-            const related = _api.getPlugin('related');
-            triggerAdvanceEvent(related, 'nextClick', () => related.next());
-        }
-
-        function triggerAdvanceEvent(related, evt, cb) {
-            if (!related) {
-                return;
-            }
-            const nextUp = _model.get('nextUp');
-            if (nextUp) {
-                _this.trigger(evt, {
-                    mode: nextUp.mode,
-                    ui: 'nextup',
-                    target: nextUp,
-                    itemsShown: [ nextUp ],
-                    feedData: nextUp.feedData,
-                });
-            }
-            if (typeof cb === 'function') {
-                cb();
-            }
-        }
-
         function addProgramControllerListeners() {
             _programController
                 .on('all', _trigger, _this)
@@ -812,9 +777,11 @@ Object.assign(Controller.prototype, {
             _programController.volume = _model.get('volume');
         }
 
+        this.preload = preload;
+
         /** Controller API / public methods **/
         this.load = _load;
-        this.play = _play;
+        this.play = (meta) => _play(meta).catch(noop);
         this.pause = _pause;
         this.seek = _seek;
         this.stop = _stop;
@@ -834,7 +801,10 @@ Object.assign(Controller.prototype, {
         this.getVisualQuality = _getVisualQuality;
         this.getConfig = _getConfig;
         this.getState = _getState;
-        this.next = _nextUp;
+        this.next = noop;
+        this.nextItem = () => {
+            _next({ reason: 'playlist' });
+        };
         this.setConfig = (newConfig) => {
             setConfig(_this, newConfig);
         };
@@ -949,7 +919,6 @@ Object.assign(Controller.prototype, {
         };
 
         this.playerDestroy = function () {
-            this.trigger('destroyPlugin', {});
             this.off();
             this.stop();
             showView(this, this.originalContainer);

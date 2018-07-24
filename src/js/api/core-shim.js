@@ -12,6 +12,7 @@ import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
+import UI, { getElementWindow } from 'utils/ui';
 import { PlayerError, composePlayerError, convertToPlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, MSG_TECHNICAL_ERROR } from 'api/errors';
 
@@ -37,6 +38,7 @@ const CoreShim = function(originalContainer) {
         'playlistNext',
         'playlistPrev',
         'next',
+        'preload',
 
         // These should just update state that could be acted on later, but need to be queued given v7 model
         'setConfig',
@@ -95,7 +97,12 @@ Object.assign(CoreShim.prototype, {
         if (!model.get('backgroundLoading')) {
             mediaPool = SharedMediaPool(mediaPool.getPrimedElement(), mediaPool);
         }
-        mediaPool.prime();
+
+        const primeUi = new UI(getElementWindow(this.originalContainer)).once('gesture', () => {
+            mediaPool.prime();
+            this.preload();
+            primeUi.destroy();
+        });
 
         model.on('change:errorEvent', logError);
 
@@ -163,6 +170,9 @@ Object.assign(CoreShim.prototype, {
 
     // These methods read from the model
     get(property) {
+        if (!this.modelShim) {
+            return;
+        }
         if (property in this.mediaShim) {
             return this.mediaShim[property];
         }

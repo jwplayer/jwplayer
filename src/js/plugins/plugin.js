@@ -37,7 +37,7 @@ function getJSPath(url) {
 
 const Plugin = function(url) {
     this.url = url;
-    this.promise_;
+    this.promise_ = null;
 };
 
 Object.defineProperties(Plugin.prototype, {
@@ -101,5 +101,19 @@ Object.assign(Plugin.prototype, {
         return pluginInstance;
     }
 });
+
+export function configurePlugin(pluginObj, pluginConfig, api) {
+    const pluginName = pluginObj.name;
+
+    const div = document.createElement('div');
+    div.id = api.id + '_' + pluginName;
+    div.className = 'jw-plugin jw-reset';
+
+    const pluginOptions = Object.assign({}, pluginConfig);
+    const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
+
+    api.addPlugin(pluginName, pluginInstance);
+    return pluginInstance;
+}
 
 export default Plugin;

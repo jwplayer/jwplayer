@@ -46,6 +46,9 @@ function resetPlayer(api, core) {
     Object.keys(plugins).forEach(key => {
         delete plugins[key];
     });
+    if (core.get('setupConfig')) {
+        api.trigger('remove');
+    }
     api.off();
     core.playerDestroy();
     core.getContainer().removeAttribute('data-jwplayer-id');
@@ -215,10 +218,6 @@ export default function Api(element) {
         remove() {
             // Remove from array of players
             removePlayer(this);
-
-            // TODO: [EDIT] This should be fired after `resetPlayer`. Why is it fired before?
-            // terminate state
-            this.trigger('remove');
 
             // Unbind listeners and destroy controller/model/...
             resetPlayer(this, core);
@@ -773,11 +772,12 @@ export default function Api(element) {
         /**
          * Stops any active playback, and plays the next up item specified by the related plugin.
          * The next up item is the next playlist item, or the first recommended video when at the end of the playlist.
+         * @param {object} [meta] - An optional argument used to specify cause.
          * @returns {Api} The Player API instance.
          * @since v7.7.0
          */
-        next() {
-            core.next();
+        next(meta) {
+            core.next(meta);
             return this;
         },
 

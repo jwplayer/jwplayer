@@ -1,6 +1,6 @@
 import { addClass, removeClass } from 'utils/dom';
 
-export function SimpleTooltip(attachToElement, name, text, openCallback) {
+export function SimpleTooltip(attachToElement, name, text, openCallback, closeCallback) {
     const tooltipElement = document.createElement('div');
     tooltipElement.className = `jw-reset jw-tooltip jw-tooltip-${name}`;
 
@@ -31,6 +31,10 @@ export function SimpleTooltip(attachToElement, name, text, openCallback) {
 
             tooltipElement.setAttribute('aria-expanded', 'false');
             removeClass(tooltipElement, 'jw-open');
+
+            if (closeCallback) {
+                closeCallback();
+            }
         },
         setText(newText) {
             tooltipElement.querySelector('.jw-text').textContent = newText;

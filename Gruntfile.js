@@ -149,7 +149,7 @@ module.exports = function(grunt) {
                 browsers: ['Safari']
             },
             browserstack: {
-                browsers: ['chrome', 'firefox', 'edge', 'ie11_windows']
+                browsers: ['chrome', 'firefox', 'edge', 'ie11']
             },
             browserstack_chrome: {
                 browsers: ['chrome']
@@ -161,7 +161,13 @@ module.exports = function(grunt) {
                 browsers: ['edge']
             },
             browserstack_ie11: {
-                browsers: ['ie11_windows']
+                browsers: ['ie11']
+            },
+            browserstack_iphone: {
+                browsers: ['iphone']
+            },
+            browserstack_android: {
+                browsers: ['android']
             }
         },
 

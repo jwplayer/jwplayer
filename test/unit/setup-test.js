@@ -170,4 +170,47 @@ describe('api.setup', function() {
             expect(event.type).to.equal('ready');
         });
     });
+
+    it('triggers "remove" if the api has been previously setup', function() {
+        const removeSpy1 = sinon.spy();
+        const removeSpy2 = sinon.spy();
+
+        const container = document.querySelector('#player');
+        const api = new Api(container);
+
+        return new Promise((resolve, reject) => {
+            api.setup({
+                events: {
+                    remove: removeSpy1
+                },
+                preload: 'none',
+                file: 'http://playertest.longtailvideo.com/mp4.mp4'
+            }).on('ready', function(event) {
+                resolve({ api, event });
+            }).on('setupError', function(event) {
+                reject(new Error('Expected "ready" after setup. Got "setupError" with:' +
+                    JSON.stringify(event)));
+            });
+        }).then(() => {
+            expect(removeSpy1, 'first setup').to.have.callCount(0);
+
+            return new Promise((resolve, reject) => {
+                api.setup({
+                    events: {
+                        remove: removeSpy2
+                    },
+                    preload: 'none',
+                    file: 'http://playertest.longtailvideo.com/mp4.mp4'
+                }).on('ready', function(event) {
+                    resolve({ api, event });
+                }).on('setupError', function(event) {
+                    reject(new Error('Expected "ready" after setup. Got "setupError" with:' +
+                        JSON.stringify(event)));
+                });
+            });
+        }).then(() => {
+            expect(removeSpy1, 'second setup: first listener').to.have.callCount(1);
+            expect(removeSpy2, 'second setup: second listener').to.have.callCount(0);
+        });
+    });
 });

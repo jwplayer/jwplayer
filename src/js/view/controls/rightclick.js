@@ -4,6 +4,7 @@ import { version } from 'version';
 import { flashVersion } from 'utils/browser';
 import { createElement, emptyElement, addClass, removeClass, bounds } from 'utils/dom';
 import { OS } from 'environment/environment';
+import UI from 'utils/ui';
 
 function createDomElement(html) {
     const element = createElement(html);
@@ -55,8 +56,6 @@ export default class RightClick {
         this.hideMenu();
         this.showMenu(evt);
         this.addHideMenuHandlers();
-
-        return false;
     }
 
     getOffset(evt) {
@@ -140,31 +139,7 @@ export default class RightClick {
         this.mouseOverContext = false;
         this.layer = layer;
 
-        if (OS.iOS) {
-            // oncontextmenu is not supported on iOS
-            this.startLongPressHandler = this.startLongPress.bind(this);
-            this.cancelLongPressHandler = this.cancelLongPress.bind(this);
-
-            _playerElement.addEventListener('touchstart', this.startLongPressHandler);
-            _playerElement.addEventListener('touchmove', this.cancelLongPressHandler);
-            _playerElement.addEventListener('touchend', this.cancelLongPressHandler);
-            _playerElement.addEventListener('touchcancel', this.cancelLongPressHandler);
-        } else {
-            // Defer the rest of setup until the first click
-            _playerElement.oncontextmenu = this.rightClick.bind(this);
-        }
-    }
-
-    startLongPress(evt) {
-        this.cancelLongPress();
-        this.longPressTimeout = setTimeout(() => {
-            this.rightClick(evt);
-            this.longPressTimeout = null;
-        }, 500);
-    }
-
-    cancelLongPress() {
-        clearTimeout(this.longPressTimeout);
+        this.ui = new UI(_playerElement).on('longPress', this.rightClick, this);
     }
 
     addHideMenuHandlers() {
@@ -207,20 +182,17 @@ export default class RightClick {
         }
 
         if (this.playerElement) {
-            if (this.startLongPressHandler) {
-                this.playerElement.removeEventListener('touchstart', this.startLongPressHandler);
-            }
-            if (this.cancelLongPressHandler) {
-                this.playerElement.removeEventListener('touchmove', this.cancelLongPressHandler);
-                this.playerElement.removeEventListener('touchend', this.cancelLongPressHandler);
-                this.playerElement.removeEventListener('touchcancel', this.cancelLongPressHandler);
-            }
             this.playerElement.oncontextmenu = null;
             this.playerElement = null;
         }
 
         if (this.model) {
             this.model = null;
+        }
+
+        if (this.ui) {
+            this.ui.destroy();
+            this.ui = null;
         }
     }
 }
