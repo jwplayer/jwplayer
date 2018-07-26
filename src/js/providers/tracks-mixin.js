@@ -459,10 +459,10 @@ function addTextTracks(tracksArray) {
                 (vttCues) => {
                     this.addVTTCuesToTrack(textTrackAny, vttCues);
                 },
-                (error) => {
+                (key, url, xhr, error) => {
                     this.trigger(ERROR, {
                         message: 'Captions failed to load',
-                        reason: error
+                        sourceError: error
                     });
                 });
         }
