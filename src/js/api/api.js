@@ -656,18 +656,7 @@ export default function Api(element) {
          */
 
         setPlaylistItem(index, item) {
-            const state = this.getState();
-
-            if (state === 'idle' || state === 'complete') {
-                let playlist = this.getPlaylist();
-
-                if (playlist) {
-                    playlist = playlist.slice();
-                    playlist[index] = item;
-                    core.updatePlaylist(playlist, core.get('feedData'));
-                }
-            }
-
+            core.setPlaylistItem(index, item);
             return this;
         },
 
