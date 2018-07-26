@@ -12,7 +12,7 @@ import { prependChild, setAttribute, toggleClass } from 'utils/dom';
 import { timeFormat } from 'utils/parser';
 import UI from 'utils/ui';
 import { each } from 'utils/underscore';
-import { genId, FEED_SHOWN_ID_LENGTH } from "utils/random-id-generator";
+import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 
 function text(name, role) {
     const element = document.createElement('span');
