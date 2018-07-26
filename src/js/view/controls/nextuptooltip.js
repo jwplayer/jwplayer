@@ -140,7 +140,9 @@ export default class NextUpTooltip {
     onNextUp(model, nextUp) {
         this.reset();
         if (!nextUp) {
-            return;
+            nextUp = {
+                showNextUp: false
+            };
         }
 
         this.enabled = !!(nextUp.title || nextUp.image);
