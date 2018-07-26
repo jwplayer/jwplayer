@@ -3,7 +3,7 @@ import { showView } from 'api/core-shim';
 import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
-import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
+import Playlist, { filterPlaylist, validatePlaylist, normalizePlaylistItem } from 'playlist/playlist';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -916,6 +916,15 @@ Object.assign(Controller.prototype, {
                 return Promise.reject(error);
             }
             return _setItem(_model.get('item'));
+        };
+
+        this.setPlaylistem = function (index, item) {
+            item = normalizePlaylistItem(_model, item, {});
+
+            if (item) {
+                const playlist = _model.get('playlist');
+                playlist[index] = item;
+            }
         };
 
         this.playerDestroy = function () {

@@ -53,6 +53,7 @@ const CoreShim = function(originalContainer) {
         'setVolume',
         'setPlaybackRate',
         'setCues',
+        'setPlaylistItem',
 
         // These commands require the view instance to be available
         'resize',
