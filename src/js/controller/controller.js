@@ -919,11 +919,17 @@ Object.assign(Controller.prototype, {
         };
 
         this.setPlaylistem = function (index, item) {
-            item = normalizePlaylistItem(_model, item, {});
+            const state = _model.get('state');
+            const selectedItemPlaying = index === _model.get('item') && state === 'playing';
 
-            if (item) {
-                const playlist = _model.get('playlist');
-                playlist[index] = item;
+            if (!selectedItemPlaying) {
+                // Dont set if the item selected is the current item and playback has started
+                item = normalizePlaylistItem(_model, item, {});
+
+                if (item) {
+                    const playlist = _model.get('playlist');
+                    playlist[index] = item;
+                }
             }
         };
 
