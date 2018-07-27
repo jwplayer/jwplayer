@@ -12,32 +12,13 @@ const Playlist = function(playlist) {
 // Go through the playlist and choose a single playable type to play; remove sources of a different type
 export function filterPlaylist(playlist, model, feedData) {
     const list = [];
-    const providers = model.getProviders();
-    const preload = model.get('preload');
-    const itemFeedData = Object.assign({}, feedData);
-    delete itemFeedData.playlist;
 
     playlist.forEach(function(item) {
-        item = Object.assign({}, item);
+        item = normalizePlaylistItem(model, item, feedData);
 
-        item.preload = getPreload(item.preload, preload);
-
-        item.allSources = formatSources(item, model);
-
-        item.sources = filterSources(item.allSources, providers);
-
-        if (!item.sources.length) {
-            return;
+        if (item) {
+            list.push(item);
         }
-
-        // include selected file in item for backwards compatibility
-        item.file = item.sources[0].file;
-
-        if (feedData) {
-            item.feedData = itemFeedData;
-        }
-
-        list.push(item);
     });
 
     return list;
@@ -49,6 +30,33 @@ export function validatePlaylist(playlist) {
         throw new PlayerError(MSG_CANT_PLAY_VIDEO, 630);
     }
 }
+
+export function normalizePlaylistItem(model, item, feedData) {
+    const providers = model.getProviders();
+    const preload = model.get('preload');
+    const itemFeedData = Object.assign({}, feedData);
+    delete itemFeedData.playlist;
+
+    item = Object.assign({}, item);
+
+    item.preload = getPreload(item.preload, preload);
+
+    item.allSources = formatSources(item, model);
+
+    item.sources = filterSources(item.allSources, providers);
+
+    if (!item.sources.length) {
+        return;
+    }
+
+    // include selected file in item for backwards compatibility
+    item.file = item.sources[0].file;
+
+    if (feedData) {
+        item.feedData = itemFeedData;
+    }
+}
+
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
 
 function formatSources(item, model) {
