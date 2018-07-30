@@ -55,6 +55,8 @@ export function normalizePlaylistItem(model, item, feedData) {
     if (feedData) {
         item.feedData = itemFeedData;
     }
+
+    return item;
 }
 
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
