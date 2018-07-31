@@ -29,27 +29,24 @@ export function validatePlaylist(playlist) {
 export function normalizePlaylistItem(model, item, feedData) {
     const providers = model.getProviders();
     const preload = model.get('preload');
-    const itemFeedData = Object.assign({}, feedData);
-    delete itemFeedData.playlist;
-
-    item = Object.assign({}, item);
+    const playlistItem = Object.assign({}, item);
 
     item.preload = getPreload(item.preload, preload);
 
-    item.allSources = formatSources(item, model);
+    playlistItem.allSources = formatSources(playlistItem, model);
 
-    item.sources = filterSources(item.allSources, providers);
+    playlistItem.sources = filterSources(playlistItem.allSources, providers);
 
-    if (!item.sources.length) {
+    playlistItem.feedData = feedData;
+
+    if (!playlistItem.sources.length) {
         return;
     }
 
     // include selected file in item for backwards compatibility
-    item.file = item.sources[0].file;
-
-    if (feedData) {
-        item.feedData = itemFeedData;
-    }
+    playlistItem.file = item.sources[0].file;
+    
+    playlistItem.feedData = feedData;
 
     return item;
 }
