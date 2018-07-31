@@ -919,7 +919,7 @@ Object.assign(Controller.prototype, {
         };
 
         this.setPlaylistItem = function (index, item) {
-            item = normalizePlaylistItem(_model, item, {});
+            item = normalizePlaylistItem(_model, item, item.feedData || {});
 
             if (item) {
                 const playlist = _model.get('playlist');
