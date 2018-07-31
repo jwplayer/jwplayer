@@ -11,17 +11,9 @@ const Playlist = function(playlist) {
 
 // Go through the playlist and choose a single playable type to play; remove sources of a different type
 export function filterPlaylist(playlist, model, feedData) {
-    const list = [];
-
-    playlist.forEach(function(item) {
-        item = normalizePlaylistItem(model, item, feedData);
-
-        if (item) {
-            list.push(item);
-        }
+    return playlist.filter(function (item) {
+        return normalizePlaylistItem(model, item, feedData);
     });
-
-    return list;
 }
 
 
