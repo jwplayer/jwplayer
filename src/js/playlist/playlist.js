@@ -14,9 +14,8 @@ export function filterPlaylist(playlist, model, feedData) {
     const itemFeedData = Object.assign({}, feedData);
     delete itemFeedData.playlist;
 
-    return playlist.filter(function (item) {
-        return normalizePlaylistItem(model, item, itemFeedData);
-    });
+    return playlist.map((item) => normalizePlaylistItem(model, item, feedData)).filter((item) => !!item);
+
 }
 
 
@@ -33,7 +32,7 @@ export function normalizePlaylistItem(model, item, feedData) {
 
     item.preload = getPreload(item.preload, preload);
 
-    playlistItem.allSources = formatSources(playlistItem, model);
+    playlistItem.allSources = formatSources(item, model);
 
     playlistItem.sources = filterSources(playlistItem.allSources, providers);
 
@@ -43,12 +42,12 @@ export function normalizePlaylistItem(model, item, feedData) {
         return;
     }
 
-    // include selected file in item for backwards compatibility
-    playlistItem.file = item.sources[0].file;
+    // include selected file in playlistItem for backwards compatibility
+    playlistItem.file = playlistItem.sources[0].file;
     
     playlistItem.feedData = feedData;
 
-    return item;
+    return playlistItem;
 }
 
 export const fixSources = (item, model) => filterSources(formatSources(item, model), model.getProviders());
