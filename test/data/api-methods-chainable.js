@@ -21,6 +21,7 @@ export default {
     setVolume: [100],
     setMute: [false],
     setCues: [[]],
+    setPlaylistItem: [0, {}],
     resize: [100, 75],
     on: ['', function() {}],
     once: ['', function() {}],

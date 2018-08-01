@@ -5,7 +5,7 @@ import UI from 'utils/ui';
 import Events from 'utils/backbone.events';
 import { cloneIcon } from 'view/controls/icons';
 import { seconds } from 'utils/strings';
-import { genId, FEED_SHOWN_ID_LENGTH } from "utils/random-id-generator";
+import { genId, FEED_SHOWN_ID_LENGTH } from 'utils/random-id-generator';
 
 export default class NextUpTooltip {
     constructor(_model, _api, playerElement) {
