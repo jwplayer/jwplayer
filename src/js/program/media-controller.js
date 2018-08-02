@@ -117,10 +117,17 @@ export default class MediaController extends Eventable {
     // Executes the playPromise
     _playAttempt(playPromise, playReason) {
         const { item, mediaModel, model, provider } = this;
+        const { variations } = item;
+        let posterThumbnailId = null;
+
+        if (variations && variations.selected) {
+            posterThumbnailId = variations.selected.id;
+        }
 
         this.trigger(MEDIA_PLAY_ATTEMPT, {
             item,
-            playReason
+            playReason,
+            posterThumbnailId
         });
         // Immediately set player state to buffering if these conditions are met
         if (provider && provider.video && !provider.video.paused) {

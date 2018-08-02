@@ -228,7 +228,7 @@ Object.assign(Controller.prototype, {
 
             _model.change('playlistItem', function(model, playlistItem) {
                 if (playlistItem) {
-                    const { title, image } = playlistItem;
+                    const { title, image, variations } = playlistItem;
                     if ('mediaSession' in navigator && window.MediaMetadata && (title || image)) {
                         try {
                             navigator.mediaSession.metadata = new window.MediaMetadata({
@@ -242,9 +242,15 @@ Object.assign(Controller.prototype, {
                             // catch error that occurs when mediaSession fails to setup
                         }
                     }
+                    let posterThumbnailId = null;
+
+                    if (variations && variations.selected) {
+                        posterThumbnailId = variations.selected.id;
+                    }
                     _this.trigger(PLAYLIST_ITEM, {
                         index: _model.get('item'),
-                        item: playlistItem
+                        item: playlistItem,
+                        posterThumbnailId
                     });
                 }
             });
