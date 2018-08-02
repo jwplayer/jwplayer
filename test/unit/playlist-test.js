@@ -1,10 +1,11 @@
-import Playlist, { validatePlaylist } from 'playlist/playlist';
+import Playlist, { validatePlaylist, normalizePlaylistItem } from 'playlist/playlist';
 import Item from 'playlist/item';
 import Source from 'playlist/source';
 import _ from 'test/underscore';
 import mp4 from 'data/mp4';
 import track from 'playlist/track';
 import { MSG_CANT_PLAY_VIDEO } from 'api/errors';
+import MockModel from 'mock/mock-model'
 
 function isValidPlaylistItem(playlistItem) {
     return _.isObject(playlistItem) && _.isArray(playlistItem.sources) && _.isArray(playlistItem.tracks);
@@ -56,6 +57,32 @@ describe('playlist', function() {
                 expect(e.code).to.equal(630);
                 expect(e.sourceError).to.not.exist;
             }
+        });
+    });
+
+    describe.only('normalizePlaylistItem', function () {
+        let item;
+        let model;
+        beforeEach(function () {
+            model = new MockModel();
+            model.setup({});
+            item = new Item({
+                sources: [
+                    {
+                        file: 'foo.mp4'
+                    }
+                ]
+            });
+        });
+
+        it('returns a different object', function () {
+           const actual = normalizePlaylistItem(model, item);
+           expect(Object.is(item, actual)).to.be.false;
+        });
+
+        it('assigns preload to the item', function () {
+            const actual = normalizePlaylistItem(model, item);
+            expect(actual.preload).to.equal('auto');
         });
     });
 });
