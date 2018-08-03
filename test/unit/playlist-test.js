@@ -82,19 +82,19 @@ describe('playlist', function() {
 
         it('assigns preload to the item', function () {
             const actual = normalizePlaylistItem(model, item, {});
-            expect(actual.preload).to.equal('metadata');
+            expect(actual).to.have.property('preload').to.equal('metadata');
         });
 
         it('doesnt assign preload to the item if its already on the item', function () {
             item.preload = 'auto';
             const actual = normalizePlaylistItem(model, item, {});
-            expect(actual.preload).to.equal('auto');
+            expect(actual).to.have.property('preload').to.equal('auto');
         });
 
         it('assigns preload to the item from the model if not defined', function () {
             model.attributes.preload = 'none';
             const actual = normalizePlaylistItem(model, item, {});
-            expect(actual.preload).to.equal('none');
+            expect(actual).to.have.property('preload').to.equal('none');
         });
 
         it('returns undefined if sources arent available', function() {
@@ -102,5 +102,28 @@ describe('playlist', function() {
             const actual = normalizePlaylistItem(model, item, {});
             expect(actual).to.equal(undefined);
         });
+
+        it('assigns feed data on the item to an empty object', function () {
+            const feedData = {};
+            const actual = normalizePlaylistItem(model, item, feedData);
+            expect(_.isEqual(feedData, actual.feedData)).to.be.true;
+
+        });
+
+        it('assigns feed data on the item to a feed', function () {
+            const feedData = {
+                playlist: [mp4.starscape, mp4.starscape, mp4.starscape]
+            };
+            const actual = normalizePlaylistItem(model, item, feedData);
+            expect(actual).to.have.property('feedData');
+            expect(_.isEqual(actual.feedData, feedData)).to.be.true;
+        });
+
+        it('assigns file property to item', function() {
+            const actual = normalizePlaylistItem(model, item, {});
+            expect(actual).to.have.property('file');
+            expect(_.isEqual(item.sources[0].file, actual.file)).to.be.true;
+        });
+
     });
 });
