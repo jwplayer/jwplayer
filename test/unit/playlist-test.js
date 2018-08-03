@@ -5,7 +5,7 @@ import _ from 'test/underscore';
 import mp4 from 'data/mp4';
 import track from 'playlist/track';
 import { MSG_CANT_PLAY_VIDEO } from 'api/errors';
-import MockModel from 'mock/mock-model'
+import MockModel from 'mock/mock-model';
 
 function isValidPlaylistItem(playlistItem) {
     return _.isObject(playlistItem) && _.isArray(playlistItem.sources) && _.isArray(playlistItem.tracks);
@@ -60,7 +60,7 @@ describe('playlist', function() {
         });
     });
 
-    describe.only('normalizePlaylistItem', function () {
+    describe('normalizePlaylistItem', function () {
         let item;
         let model;
         beforeEach(function () {
@@ -76,13 +76,31 @@ describe('playlist', function() {
         });
 
         it('returns a different object', function () {
-           const actual = normalizePlaylistItem(model, item);
-           expect(Object.is(item, actual)).to.be.false;
+            const actual = normalizePlaylistItem(model, item, {});
+            expect(Object.is(item, actual)).to.be.false;
         });
 
         it('assigns preload to the item', function () {
-            const actual = normalizePlaylistItem(model, item);
+            const actual = normalizePlaylistItem(model, item, {});
+            expect(actual.preload).to.equal('metadata');
+        });
+
+        it('doesnt assign preload to the item if its already on the item', function () {
+            item.preload = 'auto';
+            const actual = normalizePlaylistItem(model, item, {});
             expect(actual.preload).to.equal('auto');
+        });
+
+        it('assigns preload to the item from the model if not defined', function () {
+            model.attributes.preload = 'none';
+            const actual = normalizePlaylistItem(model, item, {});
+            expect(actual.preload).to.equal('none');
+        });
+
+        it('returns undefined if sources arent available', function() {
+            item.sources = [];
+            const actual = normalizePlaylistItem(model, item, {});
+            expect(actual).to.equal(undefined);
         });
     });
 });
