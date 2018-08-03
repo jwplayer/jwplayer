@@ -3,6 +3,7 @@ import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-anima
 import { Browser, OS } from 'environment/environment';
 
 const views = [];
+const widgets = [];
 const observed = {};
 const hasOrientation = 'screen' in window && 'orientation' in window.screen;
 const isAndroidChrome = OS.android && Browser.chrome;
@@ -21,7 +22,14 @@ function lazyInitIntersectionObserver() {
                     for (let j = views.length; j--;) {
                         let view = views[j];
                         if (entry.target === view.getContainer()) {
-                            view.setIntersectionRatio(entry.intersectionRatio);
+                            view.setIntersection(entry);
+                            break;
+                        }
+                    }
+                    for (let k = widgets.length; k--;) {
+                        let widget = widgets[k];
+                        if (entry.target === widget.getContainer()) {
+                            widget.setIntersection(entry);
                             break;
                         }
                     }
@@ -101,6 +109,15 @@ export default {
         const index = views.indexOf(view);
         if (index !== -1) {
             views.splice(index, 1);
+        }
+    },
+    addWidget: function(widget) {
+        widgets.push(widget);
+    },
+    removeWidget: function(widget) {
+        const index = widgets.indexOf(widget);
+        if (index !== -1) {
+            widgets.splice(index, 1);
         }
     },
     size: function() {
