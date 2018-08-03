@@ -1,4 +1,4 @@
-export default function getVisibility(model, element) {
+export default function getVisibility(model, element, intersectionRatio) {
     // Set visibility to 1 if we're in fullscreen
     if (model.get('fullscreen')) {
         return 1;
@@ -8,8 +8,6 @@ export default function getVisibility(model, element) {
     if (!model.get('activeTab')) {
         return 0;
     }
-    // Otherwise, set it to the intersection ratio reported from the intersection observer
-    let intersectionRatio = model.get('intersectionRatio');
 
     if (intersectionRatio === undefined) {
         // Get intersectionRatio through brute force

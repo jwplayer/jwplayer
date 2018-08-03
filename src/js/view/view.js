@@ -73,6 +73,7 @@ function View(_api, _model) {
 
     let _breakpoint = null;
     let _controls;
+    let _intersectionRatio;
 
     function reasonInteraction() {
         return { reason: 'interaction' };
@@ -269,7 +270,7 @@ function View(_api, _model) {
     };
 
     function updateVisibility() {
-        _model.set('visibility', getVisibility(_model, _playerElement));
+        _model.set('visibility', getVisibility(_model, _playerElement, _intersectionRatio));
     }
 
     this.init = function() {
@@ -278,7 +279,6 @@ function View(_api, _model) {
         _model.on('change:fullscreen', _fullscreen);
         _model.on('change:activeTab', updateVisibility);
         _model.on('change:fullscreen', updateVisibility);
-        _model.on('change:intersectionRatio', updateVisibility);
         _model.on('change:visibility', redraw);
         _model.on('instreamMode', (instreamMode) => {
             if (instreamMode) {
@@ -803,6 +803,11 @@ function View(_api, _model) {
         _captionsRenderer.clear();
         _captionsRenderer.setup(_model.get('id'), captionsStyle);
         _captionsRenderer.resize();
+    };
+
+    this.setIntersectionRatio = function (intersectionRatio) {
+        _intersectionRatio = intersectionRatio;
+        updateVisibility();
     };
 
     this.destroy = function () {

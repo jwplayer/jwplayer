@@ -21,7 +21,7 @@ function lazyInitIntersectionObserver() {
                     for (let j = views.length; j--;) {
                         let view = views[j];
                         if (entry.target === view.getContainer()) {
-                            view.model.set('intersectionRatio', entry.intersectionRatio);
+                            view.setIntersectionRatio(entry.intersectionRatio);
                             break;
                         }
                     }
