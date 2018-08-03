@@ -77,7 +77,7 @@ describe('playlist', function() {
 
         it('returns a different object', function () {
             const actual = normalizePlaylistItem(model, item, {});
-            expect(Object.is(item, actual)).to.be.false;
+            expect(_.isEqual(item, actual)).to.be.false;
         });
 
         it('assigns preload to the item', function () {
