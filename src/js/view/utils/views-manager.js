@@ -3,6 +3,7 @@ import { requestAnimationFrame, cancelAnimationFrame } from 'utils/request-anima
 import { Browser, OS } from 'environment/environment';
 
 const views = [];
+const widgets = [];
 const observed = {};
 const hasOrientation = 'screen' in window && 'orientation' in window.screen;
 const isAndroidChrome = OS.android && Browser.chrome;
@@ -18,16 +19,21 @@ function lazyInitIntersectionObserver() {
             if (entries && entries.length) {
                 for (let i = entries.length; i--;) {
                     const entry = entries[i];
-                    for (let j = views.length; j--;) {
-                        let view = views[j];
-                        if (entry.target === view.getContainer()) {
-                            view.model.set('intersectionRatio', entry.intersectionRatio);
-                            break;
-                        }
-                    }
+                    matchIntersection(entry, views);
+                    matchIntersection(entry, widgets);
                 }
             }
         }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+    }
+}
+
+function matchIntersection(entry, group) {
+    for (let i = group.length; i--;) {
+        const view = group[i];
+        if (entry.target === view.getContainer()) {
+            view.setIntersection(entry);
+            break;
+        }
     }
 }
 
@@ -73,6 +79,13 @@ function onVisibilityChange() {
     });
 }
 
+function removeFromGroup(view, group) {
+    const index = group.indexOf(view);
+    if (index !== -1) {
+        group.splice(index, 1);
+    }
+}
+
 document.addEventListener('visibilitychange', onVisibilityChange);
 document.addEventListener('webkitvisibilitychange', onVisibilityChange);
 window.addEventListener('resize', scheduleResponsiveRedraw);
@@ -98,10 +111,13 @@ export default {
         views.push(view);
     },
     remove: function(view) {
-        const index = views.indexOf(view);
-        if (index !== -1) {
-            views.splice(index, 1);
-        }
+        removeFromGroup(view, views);
+    },
+    addWidget: function(widget) {
+        widgets.push(widget);
+    },
+    removeWidget: function(widget) {
+        removeFromGroup(widget, widgets);
     },
     size: function() {
         return views.length;

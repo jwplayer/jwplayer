@@ -805,6 +805,10 @@ function View(_api, _model) {
         _captionsRenderer.resize();
     };
 
+    this.setIntersection = function (entry) {
+        _model.set('intersectionRatio', entry.intersectionRatio);
+    };
+
     this.destroy = function () {
         _model.destroy();
         viewsManager.unobserve(_playerElement);
