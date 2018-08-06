@@ -211,10 +211,12 @@ const CaptionsRenderer = function (viewModel) {
             return;
         }
 
-        const fontSize = Math.round(height * _fontScale);
+        const containerFontSize = height * _fontScale;
+        // round to 1dp to match browser precision
+        const fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
 
         if (_model.get('renderCaptionsNatively')) {
-            _setShadowDOMFontSize(_model.get('id'), getFontSizeNative(fontSize));
+            _setShadowDOMFontSize(_model.get('id'), fontSize);
         } else {
             style(_display, {
                 fontSize: fontSize + 'px'
@@ -222,23 +224,33 @@ const CaptionsRenderer = function (viewModel) {
         }
     }
 
-    function getFontSizeNative(fontSize) {
-        // Scale captions correctly when in fullscreen on iOS devices
+    function getScaledFontSize(fontSize) {
         const video = _model.get('mediaElement');
-        if (video && OS.iOS && _model.get('fullscreen')) {
+
+        if (video && video.videoHeight) {
             const { videoWidth, videoHeight } = video;
-            // iOS device is in portrait mode when window.orientation = 0 || 180
-            const portraitMode = !(window.orientation % 180);
-            const { screen } = window;
-            const screenWidth = portraitMode ? screen.availWidth : screen.availHeight;
-            const screenHeight = portraitMode ? screen.availHeight : screen.availWidth;
-            if (screenWidth && screenHeight && videoWidth && videoHeight) {
-                const aspectScreen = screenWidth / screenHeight;
-                const aspectVideo = videoWidth / videoHeight;
-                const height = (aspectScreen > aspectVideo) ? screenHeight : videoHeight * screenWidth / videoWidth;
-                return Math.round(height * _fontScale);
+            const aspectVideo = videoWidth / videoHeight;
+
+            // default to container dimensions for determining font size
+            let containerHeight = _model.get('containerHeight');
+            let containerWidth = _model.get('containerWidth');
+
+            // Use screen dimensions when in fullscreen on mobile devices
+            if (_model.get('fullscreen') && OS.mobile) {
+                // device is in portrait mode when window.orientation = 0 || 180
+                const portraitMode = !(window.orientation % 180);
+                const { screen } = window;
+                containerHeight = portraitMode ? screen.availHeight : screen.availWidth;
+                containerWidth = portraitMode ? screen.availWidth : screen.availHeight;
+            }
+
+            if (containerWidth && containerHeight && videoWidth && videoHeight) {
+                const aspectContainer = containerWidth / containerHeight;
+                const height = (aspectContainer > aspectVideo) ? containerHeight : videoHeight * containerWidth / videoWidth;
+                return height * _fontScale;
             }
         }
+
         return fontSize;
     }
 
