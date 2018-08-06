@@ -27,8 +27,9 @@ function lazyInitIntersectionObserver() {
     }
 }
 
-function matchIntersection(entry, group) {
-    for (const view in group) {
+function matchIntersection(entry, views) {
+    for (let i = views.length; i--;) {
+        const view = views[i];
         if (entry.target === view.getContainer()) {
             view.setIntersection(entry);
             break;
