@@ -30,13 +30,11 @@ export function normalizePlaylistItem(model, item, feedData) {
     const preload = model.get('preload');
     const playlistItem = Object.assign({}, item);
 
-    item.preload = getPreload(item.preload, preload);
+    playlistItem.preload = getPreload(item.preload, preload);
 
     playlistItem.allSources = formatSources(item, model);
 
     playlistItem.sources = filterSources(playlistItem.allSources, providers);
-
-    playlistItem.feedData = feedData;
 
     if (!playlistItem.sources.length) {
         return;

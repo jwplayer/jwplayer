@@ -144,6 +144,8 @@ Object.assign(MockModel.prototype, SimpleModel, {
         this.set('defaultPlaybackRate', rate);
         this.set('playbackRate', rate);
     },
+    getProviders() {
+    },
 });
 
 // Represents the state of the provider/media element

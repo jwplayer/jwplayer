@@ -4,6 +4,7 @@ import setConfig from 'api/set-config';
 import ApiQueueDecorator from 'api/api-queue';
 import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist, normalizePlaylistItem } from 'playlist/playlist';
+import Item from 'playlist/item';
 import InstreamAdapter from 'controller/instream-adapter';
 import Captions from 'controller/captions';
 import Model from 'controller/model';
@@ -919,7 +920,7 @@ Object.assign(Controller.prototype, {
         };
 
         this.setPlaylistItem = function (index, item) {
-            item = normalizePlaylistItem(_model, item, item.feedData || {});
+            item = normalizePlaylistItem(_model, new Item(item), item.feedData || {});
 
             if (item) {
                 const playlist = _model.get('playlist');
