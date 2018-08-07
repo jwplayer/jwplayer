@@ -434,7 +434,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         _adProgram = null;
 
-        if (!_inited || _model.attributes._destroyed || _model.get('outstream')) {
+        if (!_inited || _model.attributes._destroyed) {
             return;
         }
 
@@ -442,6 +442,10 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // when instream was inited and the player was not destroyed\
         _controller.attachMedia();
 
+        if (_model.get('outstream')) {
+            _model.set('state', 'complete');
+            return;
+        }
         if (this.noResume) {
             return;
         }

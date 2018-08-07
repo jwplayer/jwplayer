@@ -84,7 +84,7 @@ const ThumbnailsMixin = {
 
     showThumbnail: function(seconds) {
         // Don't attempt to set thumbnail for small players or when a thumbnail doesn't exist
-        if (this._model.get('containerWidth') <= 420 || this.thumbnails.length < 1) {
+        if (this._model.get('containerWidth') <= 420 || (this.thumbnails && this.thumbnails.length < 1)) {
             return;
         }
         this.timeTip.image(this.loadThumbnail(seconds));

@@ -422,7 +422,10 @@ Object.assign(Controller.prototype, {
                 return resolved;
             }
 
-            if (_model.get('state') === STATE_COMPLETE) {
+            if (_model.get('outstream')) {
+                _stop(true);
+                _this.trigger('playlistItem', {});
+            } else if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
                 _setItem(0);
             }
