@@ -63,7 +63,7 @@ export function ProviderListener(mediaController) {
                 if (isValidNumber(duration)) {
                     mediaModel.set('duration', duration);
                 }
-                if (isNumber(mediaController.item.starttime)) {
+                if (type === MEDIA_TIME && isNumber(mediaController.item.starttime)) {
                     delete mediaController.item.starttime;
                 }
                 break;
