@@ -26,6 +26,9 @@ const Captions = function(_model) {
     // Update tracks once we know "renderCaptionsNatively" based on provider
     _model.on('change:itemReady', () => {
         // Sideload tracks when not rendering natively
+        if (_model.get('outstream')) {
+            return;
+        }
         const item = _model.get('playlistItem');
         const tracks = item.tracks;
         const len = tracks && tracks.length;

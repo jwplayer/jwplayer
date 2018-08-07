@@ -434,7 +434,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
 
         _adProgram = null;
 
-        if (!_inited || _model.attributes._destroyed) {
+        if (!_inited || _model.attributes._destroyed || _model.get('outstream')) {
             return;
         }
 

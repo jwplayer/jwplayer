@@ -103,10 +103,8 @@ const startSetup = function(model, api, promises) {
     if (destroyed(model)) {
         return Promise.reject();
     }
-    return Promise.all(promises.concat([
-        loadProvider(model),
-        loadSkin(model)
-    ]));
+    const loadProviderPromise = model.get('outstream') ? [] : [ loadProvider(model) ];
+    return Promise.all(promises.concat(loadProviderPromise, [ loadSkin(model) ]));
 };
 
 export default startSetup;

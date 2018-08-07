@@ -8,7 +8,7 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import { resolved } from 'polyfills/promise';
+import Promise, { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
@@ -132,6 +132,11 @@ Object.assign(CoreShim.prototype, {
             coreModel.on('change:errorEvent', logError);
             storage.track(coreModel);
 
+            if (coreModel.get('outstream')) {
+                this.trigger('playlistItem', { });
+                coreModel.set('itemReady', true);
+                return Promise.resolve();
+            }
             // Set the active playlist item after plugins are loaded and the view is setup
             return this.updatePlaylist(coreModel.get('playlist'), coreModel.get('feedData'))
                 .catch(error => {
