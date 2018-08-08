@@ -1,4 +1,3 @@
-import _ from 'test/underscore';
 import middleware from 'controller/events-middleware';
 
 describe('events-middleware', function() {
