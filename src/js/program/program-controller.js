@@ -573,6 +573,15 @@ class ProgramController extends Eventable {
             mediaController.attach();
         } else {
             mediaController.detach();
+
+            const { item, mediaModel } = mediaController;
+
+            // If detaching to play a midroll (pos > 0), ensure that the player resumes at the detached time by setting starttime
+            // We don't need to do this for prerolls because the player re-attaches at time 0 by default
+            const pos = mediaModel.get('position');
+            if (pos) {
+                item.starttime = pos;
+            }
         }
     }
 
