@@ -217,6 +217,7 @@ function View(_api, _model) {
 
         _model.on(`change:${MEDIA_VISUAL_QUALITY}`, () => {
             _resizeMedia();
+            _captionsRenderer.resize();
         });
 
         const playerViewModel = _model.player;
