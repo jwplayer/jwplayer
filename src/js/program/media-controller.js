@@ -101,7 +101,7 @@ export default class MediaController extends Eventable {
     }
 
     detach() {
-        const { item, mediaModel, provider } = this;
+        const { provider } = this;
         this.thenPlayPromise.cancel();
         provider.detachMedia();
         this.attached = false;
