@@ -237,11 +237,18 @@ const CaptionsRenderer = function (viewModel) {
 
             // Use screen dimensions when in fullscreen on mobile devices
             if (_model.get('fullscreen') && OS.mobile) {
-                // device is in portrait mode when window.orientation = 0 || 180
-                const portraitMode = !(window.orientation % 180);
                 const { screen } = window;
-                containerHeight = portraitMode ? screen.availHeight : screen.availWidth;
-                containerWidth = portraitMode ? screen.availWidth : screen.availHeight;
+                if (screen.orientation) {
+                    containerHeight = screen.availHeight;
+                    containerWidth = screen.availWidth;
+                } else {
+                    // availHeight and availWidth don't change in iOS when the orientation changes
+                    // iOS device is in portrait mode when window.orientation = 0 || 180
+                    const portraitMode = !(window.orientation % 180);
+                    containerHeight = portraitMode ? screen.availHeight : screen.availWidth;
+                    containerWidth = portraitMode ? screen.availWidth : screen.availHeight;
+                }
+
             }
 
             if (containerWidth && containerHeight && videoWidth && videoHeight) {
