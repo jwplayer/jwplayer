@@ -77,6 +77,7 @@ export default {
     defaultPlaybackRate: 1.0,
     displaytitle: true,
     displaydescription: true,
+    displayPlaybackLabel: false,
     playbackRateControls: true,
     playbackRates: [1.0],
     playbackRate: 1,

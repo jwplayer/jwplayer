@@ -16,6 +16,7 @@ const Defaults = {
     defaultPlaybackRate: 1,
     displaydescription: true,
     displaytitle: true,
+    displayPlaybackLabel: false,
     height: 360,
     liveTimeout: null,
     localization: {
@@ -47,7 +48,7 @@ const Defaults = {
         pause: 'Pause',
         player: 'Video Player',
         play: 'Play',
-        playback: 'Start Playback',
+        playback: 'Play',
         playbackRates: 'Playback Rates',
         playlist: 'Playlist',
         prev: 'Previous',

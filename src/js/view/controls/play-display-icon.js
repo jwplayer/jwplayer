@@ -1,6 +1,6 @@
 import Events from 'utils/backbone.events';
 import UI from 'utils/ui';
-import { addClass, removeClass, createElement } from 'utils/dom';
+import { addClass, createElement } from 'utils/dom';
 
 export default class PlayDisplayIcon {
     constructor(_model, api, element) {
@@ -8,7 +8,6 @@ export default class PlayDisplayIcon {
 
         const localization = _model.get('localization');
         const iconDisplay = element.getElementsByClassName('jw-icon-display')[0];
-        const idleButtonText = _model.get('idleButtonText');
         element.style.cursor = 'pointer';
         this.icon = iconDisplay;
         this.el = element;
@@ -42,34 +41,20 @@ export default class PlayDisplayIcon {
             } else {
                 iconDisplay.removeAttribute('aria-label');
             }
-
-            this.toggleIdleClass(newState, idleButtonText);
         });
 
-        this.toggleIdleClass(_model.get('state'), idleButtonText);
+        if (_model.get('displayPlaybackLabel')) {
+            let iconText = this.icon.getElementsByClassName('jw-idle-icon-text')[0];
+            if (!iconText) {
+                iconText = createElement(`<div class="jw-idle-icon-text"></div>`);
+                this.icon.appendChild(iconText);
+                addClass(this.icon, 'jw-idle-label');
+                iconText.textContent = localization.playback;
+            }
+        }
     }
 
     element() {
         return this.el;
-    }
-
-    toggleIdleClass(state, idleButtonText) {
-        if (!/^(click to play|play|watch now)$/i.test(idleButtonText)) {
-            return;
-        }
-
-        let element = this.icon.getElementsByClassName('jw-idle-icon-text')[0];
-        if (!element) {
-            element = createElement(`<span class="jw-idle-icon-text"></span>`);
-            this.icon.appendChild(element);
-        }
-
-        if (state === 'idle') {
-            addClass(this.icon, 'jw-ab-idle-label');
-            element.textContent = idleButtonText;
-        } else {
-            removeClass(this.icon, 'jw-ab-idle-label');
-            element.textContent = '';
-        }
     }
 }

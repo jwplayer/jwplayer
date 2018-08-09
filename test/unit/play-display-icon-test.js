@@ -8,7 +8,7 @@ describe('PlayDisplayIcon', function() {
     let icon;
     let svg;
     const localization = {
-        playback: 'Start Playback',
+        playback: 'Play',
         replay: 'Replay',
         pause: 'Pause',
         buffer: 'Buffering'
@@ -25,6 +25,7 @@ describe('PlayDisplayIcon', function() {
         icon.appendChild(svg);
         element = document.createElement('div');
         element.appendChild(icon);
+
     });
 
     describe('on init', function() {
@@ -32,77 +33,39 @@ describe('PlayDisplayIcon', function() {
         it('should not add class if config is not set', function() {
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
-            expect(displayIcon.icon.className).to.not.include('jw-ab-idle-label');
-            expect(displayIcon.icon.lastChild.className).to.not.include('jw-idle-icon-text');
-
-        });
-
-        it('should not add class if config is invalid', function() {
-            model.set('idleButtonText', 'invalid text');
-
-            displayIcon = new PlayDisplayIcon(model, {}, element);
-
-            expect(displayIcon.icon.className).to.not.include('jw-ab-idle-label');
+            expect(displayIcon.icon.className).to.not.include('jw-idle-label');
             expect(displayIcon.icon.lastChild.className).to.not.include('jw-idle-icon-text');
         });
 
-        it('should add class and text if config is "Watch Now"', function() {
-            model.set('idleButtonText', 'Watch Now');
-
+        it('should not create element if displayPlaybackLabel is false', function () {
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
-            expect(displayIcon.icon.className).to.include('jw-ab-idle-label');
-            expect(displayIcon.icon.lastChild.className).to.include('jw-idle-icon-text');
-            expect(displayIcon.icon.lastChild.textContent).to.equal('Watch Now');
+            expect(displayIcon.icon.className).to.not.include('jw-idle-label');
+            expect(displayIcon.icon.lastChild.className).to.not.include('jw-idle-icon-text');
         });
 
-        it('should add class and text if config is "Click to Play"', function () {
-            model.set('idleButtonText', 'Click to Play');
-
+        it('should create element when displayPlaybackLabel is true', function () {
+            model.set('displayPlaybackLabel', true);
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
-            expect(displayIcon.icon.className).to.include('jw-ab-idle-label');
+            expect(displayIcon.icon.className).to.include('jw-idle-label');
             expect(displayIcon.icon.lastChild.className).to.include('jw-idle-icon-text');
-            expect(displayIcon.icon.lastChild.textContent).to.equal('Click to Play');
+            expect(displayIcon.icon.textContent).to.equal(localization.playback);
         });
 
-        it('should add class and text if config is "Play"', function () {
-            model.set('idleButtonText', 'Play');
-
+        it('should set playback label to the value of localization.playback', function() {
+            model.set('displayPlaybackLabel', true);
+            localization.playback = 'Jugar';
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
-            expect(displayIcon.icon.className).to.include('jw-ab-idle-label');
+            expect(displayIcon.icon.className).to.include('jw-idle-label');
             expect(displayIcon.icon.lastChild.className).to.include('jw-idle-icon-text');
-            expect(displayIcon.icon.lastChild.textContent).to.equal('Play');
+            expect(displayIcon.icon.textContent).to.not.equal('Play');
+            expect(displayIcon.icon.textContent).to.equal(localization.playback);
         });
     });
 
     describe('on state change', function() {
-
-        it('should add class and text if new state is idle (stop playback)', function() {
-            model.set('state', 'playing');
-            model.set('idleButtonText', 'Watch Now');
-
-            displayIcon = new PlayDisplayIcon(model, {}, element);
-
-            model.set('state', 'idle');
-            expect(displayIcon.icon.className).to.include('jw-ab-idle-label');
-            expect(displayIcon.icon.lastChild.className).to.include('jw-idle-icon-text');
-            expect(displayIcon.icon.lastChild.textContent).to.equal('Watch Now');
-        });
-
-        it('should remove class and text if old state is idle (start playback)', function() {
-            model.set('idleButtonText', 'Watch Now');
-
-            displayIcon = new PlayDisplayIcon(model, {}, element);
-
-            model.set('state', 'playing');
-
-            expect(displayIcon.icon.className).to.not.include('jw-ab-idle-label');
-            expect(displayIcon.icon.lastChild.className).to.include('jw-idle-icon-text');
-            expect(displayIcon.icon.lastChild.textContent).to.equal('');
-        });
-
         it('should add playback aria label if new state is idle (stop playback)', function() {
             displayIcon = new PlayDisplayIcon(model, {}, element);
 

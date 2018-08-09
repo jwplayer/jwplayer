@@ -1,8 +1,12 @@
 @import "../../shared-imports/vars.less";
 
+.jw-idle-icon-text {
+    display: none;
+}
+
 .jw-state-idle {
     .jw-icon-display {
-        &.jw-ab-idle-label {
+        &.jw-idle-label {
             border-radius: 50%;
             color: @white;
             filter: drop-shadow(1px 1px 5px rgba(12, 26, 71, 0.25));
@@ -13,6 +17,7 @@
             -webkit-font-smoothing: antialiased;
 
             .jw-idle-icon-text {
+                display: block;
                 line-height: 1;
                 position: absolute;
                 text-align: center;
