@@ -121,6 +121,7 @@ export default class Controlbar {
         let volumeTooltip;
         let muteButton;
         let feedShownId = '';
+        let volumeOrientation = _model.get('audioMode') ? 'horizontal' : 'vertical';
 
         const vol = localization.volume;
 
@@ -133,16 +134,13 @@ export default class Controlbar {
             }, vol, svgIcons);
         }
 
-        // Do not initialize volume slider or tooltip on mobile
-        if (!this._isMobile) {
-            volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
-                cloneIcons('volume-0,volume-50,volume-100'));
+        volumeTooltip = new VolumeTooltip(_model, 'jw-icon-volume', vol,
+            cloneIcons('volume-0,volume-50,volume-100'), volumeOrientation);
 
-            const volumeTooltipEl = volumeTooltip.element();
-            setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
-            setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
-            setAttribute(volumeTooltipEl, 'role', 'slider');
-        }
+        const volumeTooltipEl = volumeTooltip.element();
+        setAttribute(volumeTooltipEl, 'aria-valuemin', 0);
+        setAttribute(volumeTooltipEl, 'aria-valuemax', 100);
+        setAttribute(volumeTooltipEl, 'role', 'slider');
 
         const nextButton = button('jw-icon-next', () => {
             _api.next({ feedShownId, reason: 'interaction' });

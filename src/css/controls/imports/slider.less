@@ -78,6 +78,23 @@
     .jw-rail {
         width: 100%;
     }
+
+    &:hover,
+    &:focus,
+    .jw-flag-dragging &,
+    .jw-flag-touch &,
+    .jw-flag-audio-player &.jw-slider-volume {
+        .jw-rail,
+        .jw-buffer,
+        .jw-progress,
+        .jw-cue {
+            transform: translate(0, -50%) scale(1, 1);
+        }
+
+        .jw-knob {
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
 }
 
 .jw-slider-vertical {
@@ -133,22 +150,6 @@
         cursor: pointer;
         position: absolute;
         width: 6px;
-    }
-
-    &:hover,
-    &:focus,
-    .jw-flag-dragging &,
-    .jw-flag-touch & {
-        .jw-rail,
-        .jw-buffer,
-        .jw-progress,
-        .jw-cue {
-            transform: translate(0, -50%) scale(1, 1);
-        }
-
-        .jw-knob {
-            transform: translate(-50%, -50%) scale(1);
-        }
     }
 
     .jw-rail {
