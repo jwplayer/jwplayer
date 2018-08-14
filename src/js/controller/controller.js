@@ -430,7 +430,7 @@ Object.assign(Controller.prototype, {
                 _beforePlay = true;
                 _this.trigger(MEDIA_BEFOREPLAY, {
                     playReason,
-                    startTime: meta && meta.startTime ? meta.startTime : _model.get('playlistItem').starttime
+                    startTime: meta && meta.startTime ? (meta.startTime || 0) : _model.get('playlistItem').starttime
                 });
                 _beforePlay = false;
 
