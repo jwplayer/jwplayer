@@ -410,7 +410,7 @@ Object.assign(Controller.prototype, {
             const playReason = _getReason(meta);
             let startTime;
             
-            if (meta) {
+            if (meta && meta === Object(meta)) {
                 startTime = meta.startTime = isValidNumber(meta.startTime) ? meta.startTime : _model.get('playlistItem').starttime;
             } else {
                 startTime = null;
