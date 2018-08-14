@@ -408,8 +408,13 @@ Object.assign(Controller.prototype, {
             }
 
             const playReason = _getReason(meta);
-
-            const startTime = meta.startTime = isValidNumber(meta.startTime) ? meta.startTime : _model.get('playlistItem').starttime;
+            let startTime;
+            
+            if (meta) {
+                startTime = meta.startTime = isValidNumber(meta.startTime) ? meta.startTime : _model.get('playlistItem').starttime;
+            } else {
+                startTime = null;
+            }
 
             _model.set('playReason', playReason);
             // Stop autoplay behavior if the video is started by the user or an api call
