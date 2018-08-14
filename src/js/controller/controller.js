@@ -18,7 +18,7 @@ import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
 import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
-import { isUndefined, isBoolean } from 'utils/underscore';
+import { isUndefined, isBoolean, isValidNumber } from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
 import { PLAYER_STATE, STATE_BUFFERING, STATE_IDLE, STATE_COMPLETE, STATE_PAUSED, STATE_PLAYING, STATE_ERROR, STATE_LOADING,
     STATE_STALLED, AUTOSTART_NOT_ALLOWED, MEDIA_BEFOREPLAY, PLAYLIST_LOADED, ERROR, PLAYLIST_COMPLETE, CAPTIONS_CHANGED, READY,
@@ -408,7 +408,9 @@ Object.assign(Controller.prototype, {
             }
 
             const playReason = _getReason(meta);
-            const startTime = meta ? meta.startTime : null;
+
+            const startTime = meta.startTime = isValidNumber(meta.startTime) ? meta.startTime : _model.get('playlistItem').starttime;
+
             _model.set('playReason', playReason);
             // Stop autoplay behavior if the video is started by the user or an api call
             if (playReason === 'interaction' || playReason === 'external') {
