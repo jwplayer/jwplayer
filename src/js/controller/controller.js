@@ -487,8 +487,6 @@ Object.assign(Controller.prototype, {
                 // Only apply autostartMuted on un-muted autostart attempt.
                 if (result === AUTOPLAY_MUTED && !_this.getMute()) {
                     _model.set('autostartMuted', true);
-                    updateProgramSoundSettings();
-
                     _model.once('change:autostartMuted', function(model) {
                         model.off('change:viewable', _checkPlayOnViewable);
                         _this.trigger(MEDIA_MUTE, { mute: _model.getMute() });
