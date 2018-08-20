@@ -22,6 +22,12 @@ export function ProviderListener(mediaController) {
             case MEDIA_VISUAL_QUALITY:
                 mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
                 return;
+            case MEDIA_MUTE:
+                // Only forward and queue mute changes
+                if (data[type] === mediaController.model.getMute()) {
+                    return;
+                }
+                break;
             case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
                     mediaController.thenPlayPromise.cancel();
