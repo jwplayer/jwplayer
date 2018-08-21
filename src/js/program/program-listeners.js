@@ -119,10 +119,7 @@ export function MediaControllerListener(model, programController) {
                 model.set(type, data[type]);
                 return;
             case MEDIA_MUTE:
-                if (!model.get('autostartMuted')) {
-                    // Don't persist mute state with muted autostart
-                    model.set(type, data[type]);
-                }
+                model.set(type, data[type]);
                 return;
             case MEDIA_RATE_CHANGE:
                 model.set('playbackRate', data.playbackRate);
