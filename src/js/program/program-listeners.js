@@ -22,6 +22,12 @@ export function ProviderListener(mediaController) {
             case MEDIA_VISUAL_QUALITY:
                 mediaModel.set(MEDIA_VISUAL_QUALITY, Object.assign({}, data));
                 return;
+            case MEDIA_MUTE:
+                // Only forward and queue mute changes
+                if (data[type] === mediaController.model.getMute()) {
+                    return;
+                }
+                break;
             case PLAYER_STATE: {
                 if (data.newstate === STATE_IDLE) {
                     mediaController.thenPlayPromise.cancel();
@@ -113,10 +119,7 @@ export function MediaControllerListener(model, programController) {
                 model.set(type, data[type]);
                 return;
             case MEDIA_MUTE:
-                if (!model.get('autostartMuted')) {
-                    // Don't persist mute state with muted autostart
-                    model.set(type, data[type]);
-                }
+                model.set(type, data[type]);
                 return;
             case MEDIA_RATE_CHANGE:
                 model.set('playbackRate', data.playbackRate);

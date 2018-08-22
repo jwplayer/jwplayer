@@ -408,7 +408,6 @@ Object.assign(Controller.prototype, {
             }
 
             const playReason = _getReason(meta);
-            const startTime = meta ? meta.startTime : null;
             _model.set('playReason', playReason);
             // Stop autoplay behavior if the video is started by the user or an api call
             if (playReason === 'interaction' || playReason === 'external') {
@@ -431,7 +430,7 @@ Object.assign(Controller.prototype, {
                 _beforePlay = true;
                 _this.trigger(MEDIA_BEFOREPLAY, {
                     playReason,
-                    startTime
+                    startTime: meta && meta.startTime ? meta.startTime : _model.get('playlistItem').starttime
                 });
                 _beforePlay = false;
 
