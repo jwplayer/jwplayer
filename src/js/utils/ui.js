@@ -236,6 +236,7 @@ const eventRegisters = {
             });
             addEventListener(ui, longPress, 'touchmove', cancel);
             addEventListener(ui, longPress, 'touchcancel', cancel);
+            addEventListener(ui, longPress, 'touchend', cancel);
         } else {
             ui.el.oncontextmenu = (e) => {
                 triggerEvent(ui, longPress, e);
