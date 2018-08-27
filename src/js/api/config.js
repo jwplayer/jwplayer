@@ -56,6 +56,7 @@ const Defaults = {
         rewind: 'Rewind 10 Seconds',
         settings: 'Settings',
         stop: 'Stop',
+        share: 'Share',
         unmute: 'Unmute',
         videoInfo: 'About This Video',
         volume: 'Volume'

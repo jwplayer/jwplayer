@@ -16,8 +16,9 @@ function createDomElement(html) {
 }
 
 export default class RightClick {
-    constructor(infoOverlay) {
+    constructor(infoOverlay, controlbar) {
         this.infoOverlay = infoOverlay;
+        this.controlbar = controlbar;
     }
 
     buildArray() {
@@ -98,7 +99,7 @@ export default class RightClick {
     }
 
     lazySetup() {
-        const html = rightclickTemplate(this.buildArray(), this.model.get('localization'));
+        const html = rightclickTemplate(this.buildArray(), this.model.get('localization'), this.shareOnRightClick);
         if (this.el) {
             if (this.html !== html) {
                 this.html = html;
@@ -138,6 +139,7 @@ export default class RightClick {
         this.model = _model;
         this.mouseOverContext = false;
         this.layer = layer;
+        this.shareOnRightClick = (this.model.get('sharing') && this.model.get('sharing').shareOnRightClick);
 
         this.ui = new UI(_playerElement).on('longPress', this.rightClick, this);
     }

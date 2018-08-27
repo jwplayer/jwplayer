@@ -86,6 +86,8 @@ export default class Controls {
 
         const touchMode = model.get('touchMode');
 
+        const controlbar = this.controlbar = new Controlbar(api, model);
+
         // Display Buttons
         if (!this.displayContainer) {
             const displayContainer = new DisplayContainer(model, api);
@@ -104,7 +106,7 @@ export default class Controls {
         this.infoOverlay = new InfoOverlay(element, model, api, visible => {
             toggleClass(this.div, 'jw-info-open', visible);
         });
-        this.rightClickMenu = new RightClick(this.infoOverlay);
+        this.rightClickMenu = new RightClick(this.infoOverlay, this.controlbar);
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
             this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
@@ -119,7 +121,6 @@ export default class Controls {
         }
 
         // Controlbar
-        const controlbar = this.controlbar = new Controlbar(api, model);
         controlbar.on(USER_ACTION, () => this.userActive());
         controlbar.on('nextShown', function (data) {
             this.trigger('nextShown', data);

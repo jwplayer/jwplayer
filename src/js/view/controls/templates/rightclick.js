@@ -1,10 +1,14 @@
-export default (menu, localization) => {
+export default (menu, localization, shareOnRightClick) => {
     const { items = [] } = menu;
     const menuItems = items
         .map(item => {
             return rightClickItem(item.link, item.title, item.featured, item.showLogo);
         });
     menuItems.unshift(infoOverlayItem(localization.videoInfo));
+
+    if (shareOnRightClick) {
+        menuItems.unshift(shareItem(localization.share));
+    }
 
     return (
         `<div class="jw-rightclick jw-reset">` +
@@ -30,4 +34,11 @@ const infoOverlayItem = (videoInfoLocalization) => {
     );
 };
 
+const shareItem = (sharingLocalization) => {
+    return (
+        `<li class="jw-reset jw-rightclick-item">` +
+            `<button type="button" class="jw-reset jw-rightclick-link jw-share-item">${sharingLocalization}</button>` +
+        `</li>`
+    );
+};
 
