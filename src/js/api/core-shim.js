@@ -138,6 +138,7 @@ Object.assign(CoreShim.prototype, {
             // Outstream players do not require a playlist item.
             const adConfig = model.get('advertising');
             if (adConfig && adConfig.outstream) {
+                coreModel.set('playlist', [{ sources: [{}] }]); // sources required by analytics.
                 coreModel.attributes.itemReady = true; // Silent change.
                 return resolved;
             }
