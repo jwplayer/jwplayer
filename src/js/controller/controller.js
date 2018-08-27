@@ -421,7 +421,11 @@ Object.assign(Controller.prototype, {
                 return resolved;
             }
 
-            if (_model.get('state') === STATE_COMPLETE) {
+            const adConfig = _model.get('advertising');
+            if (adConfig && adConfig.outstream) {
+                _stop(true);
+                _model.setActiveItem(0);
+            } else if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
                 _setItem(0);
             }
@@ -730,6 +734,10 @@ Object.assign(Controller.prototype, {
 
         function _attachMedia() {
             // Called after instream ends
+            const adConfig = _model.get('advertising');
+            if (adConfig && adConfig.outstream) {
+                _programController.trigger(MEDIA_COMPLETE, {});
+            }
 
             if (_backgroundLoading) {
                 _programController.restoreBackgroundMedia();

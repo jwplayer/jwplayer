@@ -38,7 +38,8 @@ function setPlaylistAttributes(model, playlist, feedData) {
 
 function loadProvider(_model) {
     return loadPlaylist(_model).then(() => {
-        if (destroyed(_model)) {
+        const adConfig = _model.get('advertising');
+        if (destroyed(_model) || (adConfig && adConfig.outstream)) {
             return;
         }
 

@@ -429,6 +429,11 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
             _model.attributes.state = STATE_PAUSED;
         }
 
+        const adConfig = _model.get('advertising');
+        if (adConfig && adConfig.outstream) {
+            _model.set('state', STATE_COMPLETE);
+        }
+
         _controller.forwardEvents();
         _model.set('instream', null);
 
@@ -442,7 +447,7 @@ const InstreamAdapter = function(_controller, _model, _view, _mediaPool) {
         // when instream was inited and the player was not destroyed\
         _controller.attachMedia();
 
-        if (this.noResume) {
+        if (this.noResume || (adConfig && adConfig.outstream)) {
             return;
         }
 
