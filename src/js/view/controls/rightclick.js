@@ -16,9 +16,9 @@ function createDomElement(html) {
 }
 
 export default class RightClick {
-    constructor(infoOverlay, controlbar) {
+    constructor(infoOverlay, api) {
         this.infoOverlay = infoOverlay;
-        this.controlbar = controlbar;
+        this.api = api;
     }
 
     buildArray() {
@@ -132,6 +132,13 @@ export default class RightClick {
             this.hideMenu();
             this.infoOverlay.open();
         };
+        if (this.shareOnRightClick) {
+            this.shareHandler = () => {
+                this.mouseOverContext = false;
+                this.hideMenu();
+                this.api.getPlugin('sharing').open();
+            };
+        }
     }
 
     setup(_model, _playerElement, layer) {
@@ -158,6 +165,9 @@ export default class RightClick {
             this.el.addEventListener('mouseout', this.outHandler);
         }
         this.el.querySelector('.jw-info-overlay-item').addEventListener('click', this.infoOverlayHandler);
+        if (this.shareOnRightClick) {
+            this.el.querySelector('.jw-share-item').addEventListener('click', this.shareHandler);
+        }
     }
 
     removeHideMenuHandlers() {
@@ -168,6 +178,9 @@ export default class RightClick {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
             this.el.removeEventListener('mouseover', this.overHandler);
             this.el.removeEventListener('mouseout', this.outHandler);
+            if (this.shareOnRightClick) {
+                this.el.querySelector('.jw-share-item').removeEventListener('click', this.shareHandler);
+            }
         }
         document.removeEventListener('click', this.hideMenuHandler);
         document.removeEventListener('touchstart', this.hideMenuHandler);
