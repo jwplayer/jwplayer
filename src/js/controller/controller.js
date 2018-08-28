@@ -442,7 +442,7 @@ Object.assign(Controller.prototype, {
                     mediaPool.prime();
                 }
 
-                if (_interruptPlay) {
+                if (_interruptPlay || (adConfig && adConfig.outstream)) {
                     // Force tags to prime if we're about to play an ad
                     // Resetting the source in order to prime is OK since we'll be switching it anyway
                     if (_inInteraction(window.event) && !_backgroundLoading) {
