@@ -12,9 +12,10 @@ const Setup = function(_model) {
 
     this.start = function (api) {
 
-        const setup = startSetup(_model, api, [
+        const setup = Promise.all([
             loadCoreBundle(_model),
-            loadPlugins(_model, api)
+            loadPlugins(_model, api),
+            startSetup(_model, api, [])
         ]);
 
         const timeout = new Promise((resolve, reject) => {
