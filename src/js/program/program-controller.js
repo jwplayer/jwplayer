@@ -1,6 +1,5 @@
 import Providers from 'providers/providers';
 import MediaController from 'program/media-controller';
-import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import { MediaControllerListener } from 'program/program-listeners';
 import Eventable from 'utils/eventable';
@@ -26,7 +25,7 @@ class ProgramController extends Eventable {
         this.mediaControllerListener = MediaControllerListener(model, this);
         this.model = model;
         this.providers = new Providers(model.getConfiguration());
-        this.loadPromise = resolved;
+        this.loadPromise = Promise.resolve();
         this.backgroundLoading = model.get('backgroundLoading');
 
         if (!this.backgroundLoading) {

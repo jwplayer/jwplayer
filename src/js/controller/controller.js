@@ -16,7 +16,6 @@ import Events from 'utils/backbone.events';
 import { AUTOPLAY_DISABLED, AUTOPLAY_MUTED, canAutoplay, startPlayback } from 'utils/can-autoplay';
 import { OS } from 'environment/environment';
 import { streamType } from 'providers/utils/stream-type';
-import Promise, { resolved } from 'polyfills/promise';
 import cancelable from 'utils/cancelable';
 import { isUndefined, isBoolean } from 'utils/underscore';
 import { INITIAL_MEDIA_STATE } from 'model/player-model';
@@ -303,7 +302,7 @@ Object.assign(Controller.prototype, {
                 if (!mediaPool.primed() && OS.android) {
                     const video = mediaPool.getTestElement();
                     const muted = _this.getMute();
-                    resolved.then(() => startPlayback(video, { muted })).then(() => {
+                    Promise.resolve().then(() => startPlayback(video, { muted })).then(() => {
                         if (_model.get('state') === 'idle') {
                             _programController.preloadVideo();
                         }
@@ -404,7 +403,7 @@ Object.assign(Controller.prototype, {
             checkAutoStartCancelable.cancel();
 
             if (_model.get('state') === STATE_ERROR) {
-                return resolved;
+                return Promise.resolve();
             }
 
             const playReason = _getReason(meta);
@@ -418,7 +417,7 @@ Object.assign(Controller.prototype, {
             if (adState) {
                 // this will resume the ad. _api.playAd would load a new ad
                 _api.pauseAd(false, meta);
-                return resolved;
+                return Promise.resolve();
             }
 
             if (_model.get('state') === STATE_COMPLETE) {
@@ -446,7 +445,7 @@ Object.assign(Controller.prototype, {
                     }
                     _interruptPlay = false;
                     _actionOnAttach = null;
-                    return resolved;
+                    return Promise.resolve();
                 }
             }
 
@@ -767,7 +766,7 @@ Object.assign(Controller.prototype, {
                 }, _this)
                 .on(MEDIA_COMPLETE, () => {
                     // Insert a small delay here so that other complete handlers can execute
-                    resolved.then(_completeHandler);
+                    Promise.resolve().then(_completeHandler);
                 }, _this)
                 .on(MEDIA_ERROR, _this.triggerError, _this);
         }
