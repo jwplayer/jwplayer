@@ -136,14 +136,6 @@ Object.assign(CoreShim.prototype, {
             coreModel.on('change:errorEvent', logError);
             storage.track(coreModel);
 
-            // Outstream players do not require a playlist item.
-            const adConfig = model.get('advertising');
-            if (adConfig && adConfig.outstream) {
-                coreModel.set('playlist', [{ sources: [{}] }]); // sources required by analytics.
-                coreModel.attributes.itemReady = true; // Silent change.
-                return resolved;
-            }
-
             // Set the active playlist item after plugins are loaded and the view is setup
             return this.updatePlaylist(coreModel.get('playlist'), coreModel.get('feedData'))
                 .catch(error => {
