@@ -194,7 +194,7 @@ function View(_api, _model) {
         _captionsRenderer.setup(_playerElement.id, _model.get('captions'));
 
         // captions should be placed behind controls, and not hidden when controls are hidden
-        _playerElement.insertBefore(_captionsRenderer.element(), _title.element());
+        _title.element().parentNode.insertBefore(_captionsRenderer.element(), _title.element());
 
         // Display Click and Double Click Handling
         displayClickHandler = clickHandlerHelper(_api, _model, _videoLayer);
@@ -637,7 +637,7 @@ function View(_api, _model) {
         const element = (isAudioFile && !isFlash) ? _videoLayer : _videoLayer.nextSibling;
         // Put the preview element before the media element in order to display browser captions
         // otherwise keep it on top of the media element to display captions with the captions renderer
-        _playerElement.insertBefore(_preview.el, element);
+        _preview.el.parentNode.insertBefore(_preview.el, element);
     }
 
     function _errorHandler(model, errorEvent) {
