@@ -348,11 +348,16 @@ export default class Controls {
         // Show controls when enabled
         this.userActive();
 
-        this.playerContainer.appendChild(this.div);
-
+        this.addControls();
         this.addBackdrop();
 
         model.set('controlsEnabled', true);
+    }
+
+    addControls() {
+        // Put the controls element inside the wrapper
+        const element = this.playerContainer.querySelector('.jw-wrapper');
+        element.appendChild(this.div);
     }
 
     disable(model) {
@@ -370,7 +375,7 @@ export default class Controls {
 
         if (this.div.parentNode) {
             removeClass(this.playerContainer, 'jw-flag-touch');
-            this.playerContainer.removeChild(this.div);
+            this.div.parentNode.removeChild(this.div);
         }
         if (this.rightClickMenu) {
             this.rightClickMenu.destroy();
@@ -492,7 +497,7 @@ export default class Controls {
         // Put the backdrop element on top of overlays during instream mode
         // otherwise keep it behind captions and on top of preview poster
         const element = this.instreamState ? this.div : this.playerContainer.querySelector('.jw-captions');
-        this.playerContainer.insertBefore(this.backdrop, element);
+        element.parentNode.insertBefore(this.backdrop, element);
     }
 
     removeBackdrop() {
