@@ -42,7 +42,7 @@ export default class MediaController extends Eventable {
             mediaModel.set('setup', true);
             playPromise = this._loadAndPlay(item, provider);
             if (!mediaModel.get('started')) {
-                this._playAttempt(playPromise, playReason);
+                playPromise = this._playAttempt(playPromise, playReason);
             }
         }
         return playPromise;
@@ -107,20 +107,21 @@ export default class MediaController extends Eventable {
         this.attached = false;
     }
 
-    // Executes the playPromise
+    // Extends the playPromise
     _playAttempt(playPromise, playReason) {
         const { item, mediaModel, model, provider } = this;
+        const video = provider ? provider.video : null;
 
         this.trigger(MEDIA_PLAY_ATTEMPT, {
             item,
             playReason
         });
         // Immediately set player state to buffering if these conditions are met
-        if (provider && provider.video && !provider.video.paused) {
+        if (video && !video.paused) {
             model.set(PLAYER_STATE, STATE_BUFFERING);
         }
 
-        playPromise.then(() => {
+        return playPromise.then(() => {
             if (!mediaModel.get('setup')) {
                 // Exit if model state was reset
                 return;
@@ -140,8 +141,14 @@ export default class MediaController extends Eventable {
         }).catch(error => {
             if (this.item && mediaModel === model.mediaModel) {
                 model.set('playRejected', true);
-                const videoTagPaused = provider && provider.video && provider.video.paused;
+                const videoTagPaused = video && video.paused;
                 if (videoTagPaused) {
+                    // Check if the video.src was set to empty, resolving to location.href and loaded.
+                    // This can be caused by 3rd party ads libraries after an ad break.
+                    if (video.src === location.href) {
+                        // Attempt to reload the video once within the play promise chain.
+                        return this._loadAndPlay(item, provider);
+                    }
                     mediaModel.set('mediaState', STATE_PAUSED);
                 }
                 this.trigger(MEDIA_PLAY_ATTEMPT_FAILED, {
@@ -149,6 +156,7 @@ export default class MediaController extends Eventable {
                     item,
                     playReason
                 });
+                throw error;
             }
         });
     }
