@@ -7,7 +7,6 @@ import VideoEvents from 'providers/video-listener-mixin';
 import VideoAction from 'providers/video-actions-mixin';
 import VideoAttached from 'providers/video-attached-mixin';
 import { style } from 'utils/css';
-import { tryCatch, JwError } from 'utils/trycatch';
 import { emptyElement } from 'utils/dom';
 import DefaultProvider from 'providers/default';
 import Events from 'utils/backbone.events';
@@ -499,7 +498,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
 
     this.load = function(item) {
         _setLevels(item.sources);
-        _completeLoad(item.starttime, item.duration || 0);
+        _completeLoad(item.starttime);
         this.setupSideloadedTracks(item.tracks);
     };
 
@@ -601,7 +600,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
         // This implementation is for iOS and Android WebKit only
         // This won't get called if the player container can go fullscreen
         if (state) {
-            const status = tryCatch(function() {
+            try {
                 const enterFullscreen =
                     _videotag.webkitEnterFullscreen ||
                     _videotag.webkitEnterFullScreen;
@@ -609,9 +608,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                     enterFullscreen.apply(_videotag);
                 }
 
-            });
-
-            if (status instanceof JwError) {
+            } catch (error) {
                 // object can't go fullscreen
                 return false;
             }
@@ -650,9 +647,7 @@ function VideoProvider(_playerId, _playerConfig, mediaElement) {
                 // from when the provider was first initialized
                 _playerConfig.qualityLabel = _levels[quality].label;
 
-                const time = _videotag.currentTime || 0;
-                const duration = _this.getDuration();
-                _completeLoad(time, duration);
+                _completeLoad(_videotag.currentTime || 0);
                 _play();
             }
         }

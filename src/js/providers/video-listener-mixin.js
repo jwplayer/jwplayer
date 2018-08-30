@@ -20,6 +20,12 @@ const HTML5_BASE_MEDIA_ERROR = 224000;
 
 /**
  *
+ @enum {ErrorCode} - The HTML5 media element's src was emptied or set to the page's location.
+ */
+const HTML5_SRC_RESET = 224005;
+
+/**
+ *
  @enum {ErrorCode} - The HTML5 media element encountered a network error.
  */
 const HTML5_NETWORK_ERROR = 221000;
@@ -169,14 +175,17 @@ const VideoListenerMixin = {
             this.trigger(MEDIA_COMPLETE);
         }
     },
+
     loadeddata () {
         // If we're not rendering natively text tracks will be provided from another source - don't duplicate them here
         if (this.renderNatively) {
             this.setTextTracks(this.video.textTracks);
         }
     },
+
     error() {
-        const errorCode = (this.video.error && this.video.error.code) || -1;
+        const { video } = this;
+        const errorCode = (video.error && video.error.code) || -1;
         // Error code 2 from the video element is a network error
         let code = HTML5_BASE_MEDIA_ERROR;
         let key = MSG_CANT_PLAY_VIDEO;
@@ -188,6 +197,9 @@ const VideoListenerMixin = {
             code = HTML5_NETWORK_ERROR;
         } else if (errorCode === 3 || errorCode === 4) {
             code += errorCode - 1;
+            if (errorCode === 4 && video.src === location.href) {
+                code = HTML5_SRC_RESET;
+            }
         } else {
             key = MSG_TECHNICAL_ERROR;
         }
