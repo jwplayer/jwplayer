@@ -80,7 +80,7 @@ Object.assign(Controller.prototype, {
         _view = this._view = new View(_api, viewModel);
         _view.on('all', _trigger, _this);
 
-        const _programController = new ProgramController(_model, mediaPool);
+        const _programController = this._programController = new ProgramController(_model, mediaPool);
         updateProgramSoundSettings();
         addProgramControllerListeners();
         initQoe(_model, _programController);
@@ -420,13 +420,9 @@ Object.assign(Controller.prototype, {
                 return Promise.resolve();
             }
 
-            const adConfig = _model.get('advertising');
-            if (adConfig && adConfig.outstream) {
+            if (_model.get('state') === STATE_COMPLETE) {
                 _stop(true);
-                _model.setActiveItem(0);
-            } else if (_model.get('state') === STATE_COMPLETE) {
-                _stop(true);
-                _setItem(0);
+                _this.setItemIndex(0);
             }
 
             if (!_beforePlay) {
@@ -441,7 +437,7 @@ Object.assign(Controller.prototype, {
                     mediaPool.prime();
                 }
 
-                if (_interruptPlay || (adConfig && adConfig.outstream)) {
+                if (_interruptPlay) {
                     // Force tags to prime if we're about to play an ad
                     // Resetting the source in order to prime is OK since we'll be switching it anyway
                     if (_inInteraction(window.event) && !_backgroundLoading) {
@@ -733,10 +729,6 @@ Object.assign(Controller.prototype, {
 
         function _attachMedia() {
             // Called after instream ends
-            const adConfig = _model.get('advertising');
-            if (adConfig && adConfig.outstream) {
-                _programController.trigger(MEDIA_COMPLETE, {});
-            }
 
             if (_backgroundLoading) {
                 _programController.restoreBackgroundMedia();
