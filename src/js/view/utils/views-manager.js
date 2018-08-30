@@ -56,8 +56,9 @@ function scheduleResponsiveRedraw() {
 
 function onOrientationChange() {
     views.forEach(view => {
-        if (!view.model.get('audioMode') && view.model.get('controls') && view.model.get('visibility') >= 0.75) {
-            const state = view.model.get('state');
+        const model = view.model;
+        if (!model.get('audioMode') && model.get('controls') && model.get('visibility') >= 0.75) {
+            const state = model.get('state');
             const orientation = window.screen.orientation.type;
             const isLandscape = orientation === 'landscape-primary' || orientation === 'landscape-secondary';
 
