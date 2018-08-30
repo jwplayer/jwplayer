@@ -1,14 +1,6 @@
-export default (menu, localization, shareOnRightClick) => {
+export default (menu, localization) => {
     const { items = [] } = menu;
-    const menuItems = items
-        .map(item => {
-            return rightClickItem(item.link, item.title, item.featured, item.showLogo);
-        });
-    menuItems.unshift(infoOverlayItem(localization.videoInfo));
-
-    if (shareOnRightClick) {
-        menuItems.unshift(shareItem(localization.share));
-    }
+    const menuItems = items.map(item => rightClickItem(item, localization));
 
     return (
         `<div class="jw-rightclick jw-reset">` +
@@ -17,28 +9,16 @@ export default (menu, localization, shareOnRightClick) => {
     );
 };
 
-const rightClickItem = (link = '', title = '', featured, showLogo) => {
-    const logo = showLogo ? `<span class="jw-rightclick-logo jw-reset"></span>` : '';
-    return (
-        `<li class="jw-reset jw-rightclick-item ${featured ? 'jw-featured' : ''}">` +
-            `<a href="${link}" class="jw-rightclick-link jw-reset" target="_blank">${logo}${title}</a>` +
-        `</li>`
-    );
+const rightClickItem = (item, localization) => {
+    const { featured, showLogo, type } = item;
+    item.logo = showLogo ? `<span class="jw-rightclick-logo jw-reset"></span>` : '';
+    return `<li class="jw-reset jw-rightclick-item ${featured ? 'jw-featured' : ''}">${itemContentTypes[type](item, localization)}</li>`;
 };
 
-const infoOverlayItem = (videoInfoLocalization) => {
-    return (
-        `<li class="jw-reset jw-rightclick-item">` +
-            `<button type="button" class="jw-reset jw-rightclick-link jw-info-overlay-item">${videoInfoLocalization}</button>` +
-        `</li>`
-    );
+const itemContentTypes = {
+    link: ({ link = '', title = '', logo }) => `<a href="${link}" class="jw-rightclick-link jw-reset" target="_blank">${logo}${title}</a>`,
+    info: (item, localization) => `<button type="button" class="jw-reset jw-rightclick-link jw-info-overlay-item">${localization.videoInfo}</button>`,
+    share: (item, localization) => `<button type="button" class="jw-reset jw-rightclick-link jw-share-item">${localization.share}</button>`
 };
 
-const shareItem = (sharingLocalization) => {
-    return (
-        `<li class="jw-reset jw-rightclick-item">` +
-            `<button type="button" class="jw-reset jw-rightclick-link jw-share-item">${sharingLocalization}</button>` +
-        `</li>`
-    );
-};
 

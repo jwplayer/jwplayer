@@ -86,7 +86,6 @@ export default class Controls {
 
         const touchMode = model.get('touchMode');
 
-
         // Display Buttons
         if (!this.displayContainer) {
             const displayContainer = new DisplayContainer(model, api);
@@ -105,16 +104,25 @@ export default class Controls {
         this.infoOverlay = new InfoOverlay(element, model, api, visible => {
             toggleClass(this.div, 'jw-info-open', visible);
         });
-        this.rightClickMenu = new RightClick(this.infoOverlay, api);
+        this.rightClickMenu = new RightClick(this.infoOverlay);
+
+        const sharing = model.get('sharing');
+        let openShareMenu;
+        if (sharing && sharing.shareOnRightClick) {
+            openShareMenu = () => {
+                api.getPlugin('sharing').open();
+            };
+        }
+
         if (touchMode) {
             addClass(this.playerContainer, 'jw-flag-touch');
-            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer);
+            this.rightClickMenu.setup(model, this.playerContainer, this.playerContainer, openShareMenu);
         } else {
             model.change('flashBlocked', (modelChanged, isBlocked) => {
                 if (isBlocked) {
                     this.rightClickMenu.destroy();
                 } else {
-                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer);
+                    this.rightClickMenu.setup(modelChanged, this.playerContainer, this.playerContainer, openShareMenu);
                 }
             }, this);
         }
