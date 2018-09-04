@@ -29,23 +29,3 @@ describe('CaptionsRenderer.getCurrentCues', function() {
     });
 });
 
-describe('CaptionsRenderer.updateCurrentCues', function() {
-
-    it('should set current cues ', function() {
-        let cues = [
-            new VTTCue(0, 3, 'HG: Morning, Rob.')
-        ];
-        expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(1);
-
-        cues = [
-            new VTTCue(12, 15, 'EG: Hey, Jo...'),
-            new VTTCue(13, 14, 'JB: Yeah?'),
-            new VTTCue(13, 14, 'JP: Yeah?')
-        ];
-        expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(3);
-
-        cues = [];
-        expect(captionsRenderer.updateCurrentCues(cues).length, '').to.equal(0);
-    });
-});
-
