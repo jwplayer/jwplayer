@@ -175,8 +175,9 @@ export default class RightClick {
             this.el.addEventListener('mouseout', this.outHandler);
         }
         this.el.querySelector('.jw-info-overlay-item').addEventListener('click', this.infoOverlayHandler);
-        if (this.shareHandler) {
-            this.el.querySelector('.jw-share-item').addEventListener('click', this.shareHandler);
+        const shareItemElement = this.el.querySelector('.jw-share-item');
+        if (shareItemElement) {
+            shareItemElement.addEventListener('click', this.shareHandler);
         }
     }
 
@@ -188,8 +189,10 @@ export default class RightClick {
             this.el.querySelector('.jw-info-overlay-item').removeEventListener('click', this.infoOverlayHandler);
             this.el.removeEventListener('mouseover', this.overHandler);
             this.el.removeEventListener('mouseout', this.outHandler);
-            if (this.shareHandler) {
-                this.el.querySelector('.jw-share-item').removeEventListener('click', this.shareHandler);
+            
+            const shareItemElement = this.el.querySelector('.jw-share-item');
+            if (shareItemElement) {
+                shareItemElement.addEventListener('click', this.shareHandler);
             }
         }
         document.removeEventListener('click', this.hideMenuHandler);
