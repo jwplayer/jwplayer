@@ -57,19 +57,19 @@ function scheduleResponsiveRedraw() {
 function onOrientationChange() {
     views.forEach(view => {
         const model = view.model;
-        if (!model.get('audioMode') && model.get('controls') && model.get('visibility') >= 0.75) {
-            const state = model.get('state');
-            const orientation = window.screen.orientation.type;
-            const isLandscape = orientation === 'landscape-primary' || orientation === 'landscape-secondary';
+        if (model.get('audioMode') || !model.get('controls') || model.get('visibility') < 0.75) {
+            // return early if chromless player/audio only mode and player is less than 75% visible
+            return;
+        }
 
-            if (!isLandscape && state === 'paused' && view.api.getFullscreen()) {
-                // Set fullscreen to false when going back to portrait while paused and return early
-                view.api.setFullscreen(false);
-                return;
-            } else if (state === 'playing') {
-                view.api.setFullscreen(isLandscape);
-                return;
-            }
+        const state = model.get('state');
+        const orientation = window.screen.orientation.type;
+        const isLandscape = orientation === 'landscape-primary' || orientation === 'landscape-secondary';
+
+        if (!isLandscape && state === 'paused' && view.api.getFullscreen()) {
+            view.api.setFullscreen(false);
+        } else if (state === 'playing') {
+            view.api.setFullscreen(isLandscape);
         }
     });
 }
