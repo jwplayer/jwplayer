@@ -4,7 +4,7 @@ import Events from 'utils/backbone.events';
 import { ERROR } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
 import { addClass, removeClass, empty } from 'utils/dom';
-import { identity, difference, isNumber, isFinite, filter } from 'utils/underscore';
+import { identity, isNumber, isFinite, filter } from 'utils/underscore';
 import { MEDIA_SEEK, MEDIA_TIME } from 'events/events';
 
 let _WebVTT;
@@ -87,9 +87,7 @@ const CaptionsRenderer = function (viewModel) {
             return;
         }
 
-        const cues = this.getCurrentCues(track.data, pos);
-
-        this.updateCurrentCues(cues);
+        _currentCues = this.getCurrentCues(track.data, pos);
         this.renderCues(true);
     };
 
@@ -97,18 +95,6 @@ const CaptionsRenderer = function (viewModel) {
         return filter(allCues, function (cue) {
             return pos >= (cue.startTime) && (!cue.endTime || pos <= cue.endTime);
         });
-    };
-
-    this.updateCurrentCues = function (cues) {
-        // Render with vtt.js if there are cues, clear if there are none
-        if (!cues.length) {
-            _currentCues = [];
-        } else if (difference(cues, _currentCues).length) {
-            addClass(_captionsWindow, 'jw-captions-window-active');
-            _currentCues = cues;
-        }
-
-        return _currentCues;
     };
 
     this.getAlignmentPosition = function (track, timeEvent) {
