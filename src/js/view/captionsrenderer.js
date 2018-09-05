@@ -206,26 +206,27 @@ const CaptionsRenderer = function (viewModel) {
 
     function _setFontSize() {
         const height = _model.get('containerHeight');
+
         if (!height) {
             return;
         }
 
+        let fontSize;
         if (_model.get('fullscreen') && OS.iOS) {
-            style(_display, {
-                fontSize: 'initial'
-            });
+            fontSize = 'inherit';
         } else {
-            const containerFontSize = height * _fontScale;
             // round to 1dp to match browser precision
-            const fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
+            const containerFontSize = height * _fontScale;
+            fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
+        }
 
-            if (_model.get('renderCaptionsNatively')) {
-                _setShadowDOMFontSize(_model.get('id'), fontSize);
-            } else {
-                style(_display, {
-                    fontSize: fontSize + 'px'
-                });
-            }
+        if (_model.get('renderCaptionsNatively')) {
+            _setShadowDOMFontSize(_model.get('id'), fontSize);
+        } else {
+            // 'px' will automatically be appended if fontSize is a number
+            style(_display, {
+                fontSize
+            });
         }
     }
 
