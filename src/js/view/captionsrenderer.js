@@ -206,21 +206,26 @@ const CaptionsRenderer = function (viewModel) {
 
     function _setFontSize() {
         const height = _model.get('containerHeight');
-
         if (!height) {
             return;
         }
 
-        const containerFontSize = height * _fontScale;
-        // round to 1dp to match browser precision
-        const fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
-
-        if (_model.get('renderCaptionsNatively')) {
-            _setShadowDOMFontSize(_model.get('id'), fontSize);
-        } else {
+        if (_model.get('fullscreen') && OS.iOS) {
             style(_display, {
-                fontSize: fontSize + 'px'
+                fontSize: 'initial'
             });
+        } else {
+            const containerFontSize = height * _fontScale;
+            // round to 1dp to match browser precision
+            const fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
+
+            if (_model.get('renderCaptionsNatively')) {
+                _setShadowDOMFontSize(_model.get('id'), fontSize);
+            } else {
+                style(_display, {
+                    fontSize: fontSize + 'px'
+                });
+            }
         }
     }
 
@@ -241,14 +246,7 @@ const CaptionsRenderer = function (viewModel) {
                 if (screen.orientation) {
                     containerHeight = screen.availHeight;
                     containerWidth = screen.availWidth;
-                } else {
-                    // availHeight and availWidth don't change in iOS when the orientation changes
-                    // iOS device is in portrait mode when window.orientation = 0 || 180
-                    const portraitMode = !(window.orientation % 180);
-                    containerHeight = portraitMode ? screen.availHeight : screen.availWidth;
-                    containerWidth = portraitMode ? screen.availWidth : screen.availHeight;
                 }
-
             }
 
             if (containerWidth && containerHeight && videoWidth && videoHeight) {
