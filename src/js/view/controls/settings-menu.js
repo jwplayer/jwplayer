@@ -171,8 +171,14 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             controlbar.toggleCaptionsButtonState(!!index);
         }
     }, settingsMenu);
+    model.on('change:playlistItem', () => {
+        // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
+        // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
+        removeCaptionsSubmenu(settingsMenu);
+        controlbar.elements.captionsButton.hide();
+    });
 
-    // Playback Rates
+        // Playback Rates
     model.change('playbackRates', setupPlaybackRatesMenu, settingsMenu);
     model.change('playbackRate', (changedModel, playbackRate) => {
         const rates = model.get('playbackRates');
