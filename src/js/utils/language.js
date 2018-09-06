@@ -35,3 +35,9 @@ export function getLabel(language) {
 export function getCode(language) {
     return langToCode[language] || '';
 }
+
+export function getPlayerLanguage() {
+    const htmlTag = document.querySelector('html');
+    let language = htmlTag ? htmlTag.getAttribute('lang') : null;
+    return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage;
+}
