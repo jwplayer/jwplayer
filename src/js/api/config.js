@@ -29,6 +29,7 @@ const Defaults = {
         errors: {
             badConnection: 'This video cannot be played because of a problem with your internet connection.',
             cantLoadPlayer: 'Sorry, the video player failed to load.',
+            cantPlayAdvertisement: 'This advertisement could not be loaded.',
             cantPlayInBrowser: 'The video cannot be played in this browser.',
             cantPlayVideo: 'This video file cannot be played.',
             errorCode: 'Error Code',
