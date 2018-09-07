@@ -317,7 +317,7 @@ Object.assign(Controller.prototype, {
             if (model.get('playOnViewable')) {
                 if (viewable) {
                     _autoStart();
-                } else if (OS.mobile) {
+                } else if (OS.mobile || (model.get('autoPause') && model.get('autoPause').viewability)) {
                     _this.pause({ reason: 'autostart' });
                 }
             }
