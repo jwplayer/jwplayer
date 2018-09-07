@@ -163,6 +163,12 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
     }, settingsMenu);
 
     // Captions
+    model.on('change:playlistItem', () => {
+        // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
+        // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
+        removeCaptionsSubmenu(settingsMenu);
+        controlbar.elements.captionsButton.hide();
+    });
     model.change('captionsList', onCaptionsChanged, settingsMenu);
     model.change('captionsIndex', (changedModel, index) => {
         const captionsSubmenu = settingsMenu.getSubmenu('captions');
@@ -171,12 +177,6 @@ export function setupSubmenuListeners(settingsMenu, controlbar, viewModel, api) 
             controlbar.toggleCaptionsButtonState(!!index);
         }
     }, settingsMenu);
-    model.on('change:playlistItem', () => {
-        // captions.js silently clears captions when the playlist item changes. The reason it silently clear captions
-        // instead of dispatching an event is because we don't want to emit 'captionsList' if the new list is empty.
-        removeCaptionsSubmenu(settingsMenu);
-        controlbar.elements.captionsButton.hide();
-    });
 
     // Playback Rates
     model.change('playbackRates', setupPlaybackRatesMenu, settingsMenu);
