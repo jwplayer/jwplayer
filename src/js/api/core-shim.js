@@ -14,7 +14,8 @@ import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
 import UI, { getElementWindow } from 'utils/ui';
 import { PlayerError, composePlayerError, convertToPlayerError,
-    SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_UNKNOWN, MSG_TECHNICAL_ERROR } from 'api/errors';
+    SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_PROMISE_API_CONFLICT, SETUP_ERROR_UNKNOWN,
+    MSG_TECHNICAL_ERROR } from 'api/errors';
 
 const ModelShim = function() {};
 Object.assign(ModelShim.prototype, SimpleModel);
@@ -108,6 +109,9 @@ Object.assign(CoreShim.prototype, {
         model.on('change:errorEvent', logError);
 
         return this.setup.start(api).then(allPromises => {
+            if (!allPromises) {
+                throw composePlayerError(null, SETUP_ERROR_PROMISE_API_CONFLICT);
+            }
             const CoreMixin = allPromises[0];
             if (!this.setup) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config

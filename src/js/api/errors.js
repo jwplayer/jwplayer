@@ -10,6 +10,12 @@ export const SETUP_ERROR_UNKNOWN = 100000;
 export const SETUP_ERROR_TIMEOUT = 100001;
 
 /**
+ * @type {ErrorCode} Setup failed because the setup promise result was undefined.
+ * This could be caused by 3rd party JavaScript interfering with native promises or an incomplete promise polyfill.
+ */
+export const SETUP_ERROR_PROMISE_API_CONFLICT = 100002;
+
+/**
  * @enum {ErrorCode} Setup failed because no license key was found.
  */
 export const SETUP_ERROR_LICENSE_MISSING = 100011;
@@ -150,6 +156,6 @@ export function convertToPlayerError(key, code, error) {
 
 export function composePlayerError(error, superCode) {
     const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, superCode, error);
-    playerError.code = (error.code || 0) + superCode;
+    playerError.code = (error && error.code || 0) + superCode;
     return playerError;
 }
