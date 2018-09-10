@@ -22,7 +22,7 @@ The example below will render a video player into the div with the `player` id, 
 <!DOCTYPE html>
 <html>
 <head>
-    <script src='LINK_TO_YOUR_PLAYER'></script>
+    <script src=' LINK_TO_YOUR_PLAYER'></script>
     <script>jwplayer.key='YOUR_KEY';</script>
 </head>
 <body>
@@ -117,6 +117,16 @@ This will add a `pre-push` script to the project's .git/hooks folder that will l
 ````bash
 grunt hooks
 ```` 
+
+## Framework Integration
+
+While the JW team does not maintain any framework integrations of our own, there are developers in our community who do. We recommend the following libraries:
+
+| Framework | Link |
+| --------- | ---- |
+| React |  https://github.com/micnews/react-jw-player |
+
+If you have a library which you believe is good enough to meet the needs of other developers using a certain framework, please open a pull request modifying the above table.
 
 ## Software License
 
