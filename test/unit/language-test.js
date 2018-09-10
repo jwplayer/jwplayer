@@ -1,8 +1,9 @@
 import { getLabel, getCode, getPlayerLanguage } from 'utils/language';
 import { createElement } from 'utils/dom';
+import * as Browser from 'utils/browser';
 import sinon from 'sinon';
 
-describe.only('languageUtils', function() {
+describe('languageUtils', function() {
 
     describe('getLabel from unsupported codes', function() {
 
@@ -202,27 +203,35 @@ describe.only('languageUtils', function() {
             }
         }
 
-        function stubHtmlLanguage(value) {
-            const htmlTag = document.querySelector('html');
+        function stubHtmlLanguage(doc, value) {
+            const htmlTag = doc.querySelector('html');
             sandbox.stub(htmlTag, 'getAttribute').withArgs('lang').returns(value);
         }
 
         it('should return the htlm lang attribute', () => {
             const htmlLanguage = 'htmlLanguage';
-            stubHtmlLanguage(htmlLanguage);
+            stubHtmlLanguage(document, htmlLanguage);
             expect(getPlayerLanguage()).to.equal(htmlLanguage);
+        });
+
+        it('should return the top htlm lang attribute when iframe has no lang attribute', () => {
+            const topHtmlLanguage = 'topHtmlLanguage';
+            stubHtmlLanguage(document, null);
+            stubHtmlLanguage(window.top.document, topHtmlLanguage);
+            sandbox.stub(Browser, 'isIframe').returns(true);
+            expect(getPlayerLanguage()).to.equal(topHtmlLanguage);
         });
 
         it('should fallback to navigator.language when html lang attribute is absent', () => {
             const language = 'language';
-            stubHtmlLanguage(null);
+            stubHtmlLanguage(document, null);
             stubNavigatorProperty('language', language);
             expect(getPlayerLanguage()).to.equal(language);
         });
 
         it('should fallback to navigator.browserLanguage when navigator.language is undefined', () => {
             const browserLanguage = 'browserLanguage';
-            stubHtmlLanguage(null);
+            stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
             stubNavigatorProperty('browserLanguage', browserLanguage);
             expect(getPlayerLanguage()).to.equal(browserLanguage);
@@ -231,7 +240,7 @@ describe.only('languageUtils', function() {
 
         it('should fallback to navigator.userLanguage when navigator.browserLanguage is undefined', () => {
             const userLanguage = 'userLanguage';
-            stubHtmlLanguage(null);
+            stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
             nullifyNavigatorProperty('browserLanguage');
             stubNavigatorProperty('userLanguage', userLanguage);
@@ -240,7 +249,7 @@ describe.only('languageUtils', function() {
 
         it('should fallback to navigator.systemLanguage when navigator.userLanguage is undefined', () => {
             const systemLanguage = 'systemLanguage';
-            stubHtmlLanguage(null);
+            stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
             nullifyNavigatorProperty('browserLanguage');
             nullifyNavigatorProperty('userLanguage');

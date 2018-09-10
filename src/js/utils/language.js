@@ -1,4 +1,5 @@
 import { invert } from 'utils/underscore';
+import { isIframe } from 'utils/browser';
 
 /**
  * A map of 2-letter language codes (ISO 639-1) to language name in English
@@ -37,7 +38,14 @@ export function getCode(language) {
 }
 
 export function getPlayerLanguage() {
-    const htmlTag = document.querySelector('html');
-    let language = htmlTag ? htmlTag.getAttribute('lang') : null;
+    let language = extractLanguage(document);
+    if (!language && isIframe) {
+        language = extractLanguage(window.top.document);
+    }
     return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage;
+}
+
+function extractLanguage(doc) {
+    const htmlTag = doc.querySelector('html');
+    return htmlTag ? htmlTag.getAttribute('lang') : null;
 }
