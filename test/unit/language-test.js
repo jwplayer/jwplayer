@@ -203,6 +203,7 @@ describe.only('languageUtils', function() {
 
         // check language is taken from html
         it('should return the htlm lang attribute', () => {
+            
 
         });
 
@@ -217,12 +218,7 @@ describe.only('languageUtils', function() {
         it('should fallback to navigator.browserLanguage when navigator.language is undefined', () => {
             const browserLanguage = 'browserLanguage';
             nullifyNavigatorProperty('language');
-
-            if (navigator.browserLanguage) {
-                sandbox.stub(navigator, 'browserLanguage').value(browserLanguage);
-            } else {
-                navigator.browserLanguage = browserLanguage;
-            }
+            stubNavigatorProperty('browserLanguage', browserLanguage);
             expect(getPlayerLanguage()).to.equal(browserLanguage);
 
         });
@@ -231,12 +227,7 @@ describe.only('languageUtils', function() {
             const userLanguage = 'userLanguage';
             nullifyNavigatorProperty('language');
             nullifyNavigatorProperty('browserLanguage');
-
-            if (navigator.userLanguage) {
-                sandbox.stub(navigator, 'userLanguage').value(userLanguage);
-            } else {
-                navigator.userLanguage = userLanguage;
-            }
+            stubNavigatorProperty('userLanguage', userLanguage);
             expect(getPlayerLanguage()).to.equal(userLanguage);
         });
 
@@ -245,52 +236,8 @@ describe.only('languageUtils', function() {
             nullifyNavigatorProperty('language');
             nullifyNavigatorProperty('browserLanguage');
             nullifyNavigatorProperty('userLanguage');
-
-            if (navigator.systemLanguage) {
-                sandbox.stub(navigator, 'systemLanguage').value(systemLanguage);
-            } else {
-                navigator.systemLanguage = systemLanguage;
-            }
+            stubNavigatorProperty('systemLanguage', systemLanguage);
             expect(getPlayerLanguage()).to.equal(systemLanguage);
-        });
-
-        // check cascade
-        it('should follow the fallback hierarchy', () => {
-            if (navigator.language === undefined) {
-                navigator.language = null;
-            }
-            const languageSpy = sinon.spy(navigator, 'language', ['get']);
-            const languageStub = sandbox.stub(navigator, 'language').value(null);
-
-            const fn=Object.getOwnPropertyDescriptor(navigator, 'language').get;
-            const spyFn =sinon.spy(fn);
-            Object.defineProperty(navigator, 'language', { get: spyFn });
-            getPlayerLanguage();
-            expect(spyFn.called()).to.be.true;
-
-            // if (navigator.browserLanguage === undefined) {
-            //     navigator.browserLanguage = null;
-            // }
-            // const browserLanguageStub = sandbox.stub(navigator, 'browserLanguage').value(null);
-            // const browserLanguageSpy = sinon.spy(navigator, 'browserLanguage', ['get']);
-            //
-            // if (navigator.userLanguage === undefined) {
-            //     navigator.userLanguage = null;
-            // }
-            // const userLanguageStub = sandbox.stub(navigator, 'userLanguage').value(null);
-            // const userLanguageSpy = sinon.spy(navigator, 'userLanguage', ['get']);
-            //
-            // if (navigator.systemLanguage === undefined) {
-            //     navigator.systemLanguage = null;
-            // }
-            // const systemLanguageStub = sandbox.stub(navigator, 'systemLanguage').value(null);
-            // const systemLanguageSpy = sinon.spy(navigator, 'systemLanguage', ['get']);
-            //
-            // getPlayerLanguage();
-            //
-            // expect(languageSpy.calledBefore(browserLanguageSpy)).to.be.true;
-            // expect(browserLanguageSpy.calledBefore(userLanguageSpy)).to.be.true;
-            // expect(userLanguageSpy.calledBefore(systemLanguageSpy)).to.be.true;
         });
     });
 });
