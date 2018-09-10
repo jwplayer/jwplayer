@@ -1,4 +1,5 @@
 import { getLabel, getCode, getPlayerLanguage } from 'utils/language';
+import { createElement } from 'utils/dom';
 import sinon from 'sinon';
 
 describe.only('languageUtils', function() {
@@ -201,22 +202,27 @@ describe.only('languageUtils', function() {
             }
         }
 
-        // check language is taken from html
-        it('should return the htlm lang attribute', () => {
-            
+        function stubHtmlLanguage(value) {
+            const htmlTag = document.querySelector('html');
+            sandbox.stub(htmlTag, 'getAttribute').withArgs('lang').returns(value);
+        }
 
+        it('should return the htlm lang attribute', () => {
+            const htmlLanguage = 'htmlLanguage';
+            stubHtmlLanguage(htmlLanguage);
+            expect(getPlayerLanguage()).to.equal(htmlLanguage);
         });
 
-        // check lang fallsback to navigator.api
         it('should fallback to navigator.language when html lang attribute is absent', () => {
-
-
-
-
+            const language = 'language';
+            stubHtmlLanguage(null);
+            stubNavigatorProperty('language', language);
+            expect(getPlayerLanguage()).to.equal(language);
         });
 
         it('should fallback to navigator.browserLanguage when navigator.language is undefined', () => {
             const browserLanguage = 'browserLanguage';
+            stubHtmlLanguage(null);
             nullifyNavigatorProperty('language');
             stubNavigatorProperty('browserLanguage', browserLanguage);
             expect(getPlayerLanguage()).to.equal(browserLanguage);
@@ -225,6 +231,7 @@ describe.only('languageUtils', function() {
 
         it('should fallback to navigator.userLanguage when navigator.browserLanguage is undefined', () => {
             const userLanguage = 'userLanguage';
+            stubHtmlLanguage(null);
             nullifyNavigatorProperty('language');
             nullifyNavigatorProperty('browserLanguage');
             stubNavigatorProperty('userLanguage', userLanguage);
@@ -233,6 +240,7 @@ describe.only('languageUtils', function() {
 
         it('should fallback to navigator.systemLanguage when navigator.userLanguage is undefined', () => {
             const systemLanguage = 'systemLanguage';
+            stubHtmlLanguage(null);
             nullifyNavigatorProperty('language');
             nullifyNavigatorProperty('browserLanguage');
             nullifyNavigatorProperty('userLanguage');
