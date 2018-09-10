@@ -61,11 +61,6 @@ export const SETUP_ERROR_LOADING_PROVIDER = 104000;
 export const ERROR_LOADING_PLAYLIST_ITEM = 203000;
 
 /**
- * @enum {ErrorCode} The required advertisement could not be loaded.
- */
-export const ERROR_LOADING_ADVERTISEMENT = 203600;
-
-/**
  * @enum {ErrorCode} The current playlist item has no source media.
  */
 export const ERROR_PLAYLIST_ITEM_MISSING_SOURCE = 203640;
@@ -89,11 +84,6 @@ export const FLASH_ERROR = 210000;
  * @enum {ErrorCode} A media error occurred during Flash playback.
  */
 export const FLASH_MEDIA_ERROR = 214000;
-
-/**
- * @enum {ErrorKey}
- */
-export const MSG_CANT_PLAY_ADVERTISEMENT = 'cantPlayAdvertisement';
 
 /**
  * @enum {ErrorKey}
