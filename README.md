@@ -22,7 +22,7 @@ The example below will render a video player into the div with the `player` id, 
 <!DOCTYPE html>
 <html>
 <head>
-    <script src=' LINK_TO_YOUR_PLAYER'></script>
+    <script src='LINK_TO_YOUR_PLAYER'></script>
     <script>jwplayer.key='YOUR_KEY';</script>
 </head>
 <body>
