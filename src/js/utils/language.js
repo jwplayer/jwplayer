@@ -37,6 +37,11 @@ export function getCode(language) {
     return langToCode[language] || '';
 }
 
+function extractLanguage(doc) {
+    const htmlTag = doc.querySelector('html');
+    return htmlTag ? htmlTag.getAttribute('lang') : null;
+}
+
 export function getLanguage() {
     let language = extractLanguage(document);
     if (!language && isIframe()) {
@@ -45,7 +50,6 @@ export function getLanguage() {
     return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage;
 }
 
-function extractLanguage(doc) {
-    const htmlTag = doc.querySelector('html');
-    return htmlTag ? htmlTag.getAttribute('lang') : null;
+export function translationAvailable(language) {
+    return ['la'].indexOf(language.substring(0,2).toLowerCase()) >= 0;
 }

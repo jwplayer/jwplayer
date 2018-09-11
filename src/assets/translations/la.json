@@ -1,0 +1,13 @@
+{
+  "airplay": "XXAirPlay",
+  "audioTracks": "XXAudio Tracks",
+  "buffer": "XXLoading",
+  "cast": "XXChromecast",
+  "cc": "XXClosed Captions",
+  "close": "XXClose",
+  "copied": "XXCopied",
+  "pause": "XXPause",
+  "player": "XXVideo Player",
+  "play": "XXPlay",
+  "playback": "XXStart Playback"
+}
