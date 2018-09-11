@@ -1,4 +1,4 @@
-import { getLabel, getCode, getLanguage, availableTranslations, translationAvailable } from 'utils/language';
+import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationAvailable } from 'utils/language';
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import sinon from 'sinon';
@@ -263,7 +263,21 @@ describe('languageUtils', function() {
 
     describe('Supported translations are up to date', () => {
         it('should match all translation json files to the list of available translations', () => {
-            expect(jsonTranslations).to.have.all.keys(availableTranslations);
+            expect(jsonTranslations).to.have.all.keys(translatedLanguageCodes);
+        });
+    });
+
+    describe('translationAvailable', () => {
+        it('should be country code agnostic', () => {
+            expect(isTranslationAvailable('la-US')).to.be.true;
+        });
+
+        it('should be caps agnostic', () => {
+            expect(isTranslationAvailable('LA')).to.be.true;
+        });
+
+        it('should fail for codes that are not in translatedLanguageCodes', () => {
+            expect(isTranslationAvailable('zz')).to.be.false;
         });
     });
 });
