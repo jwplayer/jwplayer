@@ -197,15 +197,21 @@ const CaptionsRenderer = function (viewModel) {
             return;
         }
 
-        const containerFontSize = height * _fontScale;
-        // round to 1dp to match browser precision
-        const fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
+        let fontSize;
+        if (_model.get('fullscreen') && OS.iOS) {
+            fontSize = 'inherit';
+        } else {
+            // round to 1dp to match browser precision
+            const containerFontSize = height * _fontScale;
+            fontSize = Math.round(getScaledFontSize(containerFontSize) * 10) / 10;
+        }
 
         if (_model.get('renderCaptionsNatively')) {
             _setShadowDOMFontSize(_model.get('id'), fontSize);
         } else {
+            // 'px' will automatically be appended if fontSize is a number
             style(_display, {
-                fontSize: fontSize + 'px'
+                fontSize
             });
         }
     }
@@ -227,14 +233,7 @@ const CaptionsRenderer = function (viewModel) {
                 if (screen.orientation) {
                     containerHeight = screen.availHeight;
                     containerWidth = screen.availWidth;
-                } else {
-                    // availHeight and availWidth don't change in iOS when the orientation changes
-                    // iOS device is in portrait mode when window.orientation = 0 || 180
-                    const portraitMode = !(window.orientation % 180);
-                    containerHeight = portraitMode ? screen.availHeight : screen.availWidth;
-                    containerWidth = portraitMode ? screen.availWidth : screen.availHeight;
                 }
-
             }
 
             if (containerWidth && containerHeight && videoWidth && videoHeight) {
