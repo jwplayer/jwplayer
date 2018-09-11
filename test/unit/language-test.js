@@ -1,4 +1,4 @@
-import { getLabel, getCode, getPlayerLanguage } from 'utils/language';
+import { getLabel, getCode, getLanguage } from 'utils/language';
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import sinon from 'sinon';
@@ -178,12 +178,8 @@ describe('languageUtils', function() {
         });
     });
 
-    describe('getPlayerLanguage', () => {
-        let sandbox;
-
-        beforeEach(() => {
-            sandbox = sinon.sandbox.create();
-        });
+    describe('getLanguage', () => {
+        const sandbox = sinon.sandbox.create();
 
         afterEach(() => {
             sandbox.restore();
@@ -211,7 +207,7 @@ describe('languageUtils', function() {
         it('should return the htlm lang attribute', () => {
             const htmlLanguage = 'htmlLanguage';
             stubHtmlLanguage(document, htmlLanguage);
-            expect(getPlayerLanguage()).to.equal(htmlLanguage);
+            expect(getLanguage()).to.equal(htmlLanguage);
         });
 
         it('should return the top htlm lang attribute when iframe has no lang attribute', () => {
@@ -219,14 +215,14 @@ describe('languageUtils', function() {
             stubHtmlLanguage(document, null);
             stubHtmlLanguage(window.top.document, topHtmlLanguage);
             sandbox.stub(Browser, 'isIframe').returns(true);
-            expect(getPlayerLanguage()).to.equal(topHtmlLanguage);
+            expect(getLanguage()).to.equal(topHtmlLanguage);
         });
 
         it('should fallback to navigator.language when html lang attribute is absent', () => {
             const language = 'language';
             stubHtmlLanguage(document, null);
             stubNavigatorProperty('language', language);
-            expect(getPlayerLanguage()).to.equal(language);
+            expect(getLanguage()).to.equal(language);
         });
 
         it('should fallback to navigator.browserLanguage when navigator.language is undefined', () => {
@@ -234,7 +230,7 @@ describe('languageUtils', function() {
             stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
             stubNavigatorProperty('browserLanguage', browserLanguage);
-            expect(getPlayerLanguage()).to.equal(browserLanguage);
+            expect(getLanguage()).to.equal(browserLanguage);
 
         });
 
@@ -244,7 +240,7 @@ describe('languageUtils', function() {
             nullifyNavigatorProperty('language');
             nullifyNavigatorProperty('browserLanguage');
             stubNavigatorProperty('userLanguage', userLanguage);
-            expect(getPlayerLanguage()).to.equal(userLanguage);
+            expect(getLanguage()).to.equal(userLanguage);
         });
 
         it('should fallback to navigator.systemLanguage when navigator.userLanguage is undefined', () => {
@@ -254,7 +250,7 @@ describe('languageUtils', function() {
             nullifyNavigatorProperty('browserLanguage');
             nullifyNavigatorProperty('userLanguage');
             stubNavigatorProperty('systemLanguage', systemLanguage);
-            expect(getPlayerLanguage()).to.equal(systemLanguage);
+            expect(getLanguage()).to.equal(systemLanguage);
         });
     });
 });

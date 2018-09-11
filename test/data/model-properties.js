@@ -1,5 +1,4 @@
 import { Features } from 'environment/environment';
-import { getPlayerLanguage } from 'utils/language';
 
 export const optionalProperties = {
     aspectratio: 1.0,
@@ -108,6 +107,5 @@ export default {
     setupConfig: {},
     bandwidthEstimate: null,
     bitrateSelection: null,
-    backgroundLoading: Features.backgroundLoading,
-    language: getPlayerLanguage(),
+    backgroundLoading: Features.backgroundLoading
 };

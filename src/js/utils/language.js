@@ -37,7 +37,7 @@ export function getCode(language) {
     return langToCode[language] || '';
 }
 
-export function getPlayerLanguage() {
+export function getLanguage() {
     let language = extractLanguage(document);
     if (!language && isIframe) {
         language = extractLanguage(window.top.document);
