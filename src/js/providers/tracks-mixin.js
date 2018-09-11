@@ -2,7 +2,7 @@ import { loadFile, cancelXhr, convertToVTTCues } from 'controller/tracks-loader'
 import { createId, createLabel } from 'controller/tracks-helper';
 import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
-import { ERROR } from 'events/events';
+import { WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
 
 // Used across all providers for loading tracks and handling browser track-related events
@@ -460,7 +460,7 @@ function addTextTracks(tracksArray) {
                     this.addVTTCuesToTrack(textTrackAny, vttCues);
                 },
                 (key, url, xhr, error) => {
-                    this.trigger(ERROR, {
+                    this.trigger(WARNING, {
                         message: 'Captions failed to load',
                         sourceError: error
                     });

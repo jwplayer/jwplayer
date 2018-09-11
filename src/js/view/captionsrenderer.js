@@ -1,7 +1,7 @@
 import { Browser, OS } from 'environment/environment';
 import { chunkLoadErrorHandler } from '../api/core-loader';
 import Events from 'utils/backbone.events';
-import { ERROR } from 'events/events';
+import { WARNING } from 'events/events';
 import { css, style, getRgba } from 'utils/css';
 import { addClass, removeClass, empty } from 'utils/dom';
 import { identity, isNumber, isFinite, filter } from 'utils/underscore';
@@ -339,8 +339,8 @@ const CaptionsRenderer = function (viewModel) {
 
         // don't load the polyfill or do unnecessary work if rendering natively
         if (!model.get('renderCaptionsNatively') && !_WebVTT) {
-            loadWebVttPolyfill().catch((error) => {
-                this.trigger(ERROR, {
+            loadWebVttPolyfill().catch(error => {
+                this.trigger(WARNING, {
                     message: 'Captions renderer failed to load',
                     reason: error
                 });

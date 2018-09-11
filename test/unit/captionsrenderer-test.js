@@ -2,7 +2,7 @@ import MockModel from 'mock/mock-model';
 import ViewModel from 'view/view-model';
 import CaptionsRenderer from 'view/captionsrenderer';
 import VTTCue from 'parsers/captions/vttcue';
-import { ERROR } from 'events/events';
+import { WARNING } from 'events/events';
 import { MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
 describe('CaptionsRenderer.getCurrentCues', function() {
@@ -35,7 +35,7 @@ describe('CaptionsRenderer.getCurrentCues', function() {
 
     it('triggers a standardized warning if the WebVTT polyfill fails to load', function () {
         return new Promise((resolve, reject) => {
-            captionsRenderer.on(ERROR, e => {
+            captionsRenderer.on(WARNING, e => {
                 const { code, key } = e.reason;
                 if (code !== 300121) {
                     reject(`Expected code 300121, got ${code}`);

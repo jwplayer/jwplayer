@@ -1,7 +1,7 @@
 import { loadFile } from 'controller/tracks-loader';
 import { createId, createLabel } from 'controller/tracks-helper';
 import Events from 'utils/backbone.events';
-import { ERROR } from 'events/events';
+import { WARNING } from 'events/events';
 
 /* Displays closed captions or subtitles on top of the video */
 const Captions = function(_model) {
@@ -38,7 +38,7 @@ const Captions = function(_model) {
                     loadFile(track, (vttCues) => {
                         _addVTTCuesToTrack(track, vttCues);
                     }, (key, url, xhr, error) => {
-                        this.trigger(ERROR, {
+                        this.trigger(WARNING, {
                             message: 'Captions failed to load',
                             sourceError: error
                         });
