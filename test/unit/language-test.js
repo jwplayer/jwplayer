@@ -1,7 +1,8 @@
-import { getLabel, getCode, getLanguage } from 'utils/language';
+import { getLabel, getCode, getLanguage, availableTranslations, translationAvailable } from 'utils/language';
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import sinon from 'sinon';
+import jsonTranslations from '../../src/assets/translations'
 
 describe('languageUtils', function() {
 
@@ -257,6 +258,12 @@ describe('languageUtils', function() {
             nullifyNavigatorProperty('userLanguage');
             stubNavigatorProperty('systemLanguage', systemLanguage);
             expect(getLanguage()).to.equal(systemLanguage);
+        });
+    });
+
+    describe('Supported translations are up to date', () => {
+        it('should match all translation json files to the list of available translations', () => {
+            expect(jsonTranslations).to.have.all.keys(availableTranslations);
         });
     });
 });
