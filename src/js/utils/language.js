@@ -1,5 +1,6 @@
 import { invert } from 'utils/underscore';
 import { isIframe } from 'utils/browser';
+import { ajax } from 'utils/ajax';
 
 /**
  * A map of 2-letter language codes (ISO 639-1) to language name in English
@@ -54,4 +55,23 @@ export const translatedLanguageCodes = ['la'];
 
 export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(language.substring(0,2).toLowerCase()) >= 0;
+}
+
+// export function loadJsonTranslation(languageCode) {
+//     const translation = languageCode + '.json';
+//     const loadPromise = require.ensure([
+//         /* webpackInclude: /\.json$/ */
+//         'assets/translations/la.json'
+//     ], (require) => {
+//         console.log('loadJsonTranslation success');
+//         return require('assets/translations/la.json').default;
+//     }, (e) => {
+//         console.log('loadJsonTranslation failed: ', e);
+//     }, 'la');
+//     return loadPromise;
+// }
+
+export function loadJsonTranslation(languageCode, successHandler, errorHandler) {
+    const translation = languageCode + '.json';
+    ajax(translation, successHandler, errorHandler);
 }
