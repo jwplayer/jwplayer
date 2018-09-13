@@ -57,21 +57,7 @@ export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(language.substring(0, 2).toLowerCase()) >= 0;
 }
 
-// export function loadJsonTranslation(languageCode) {
-//     const translation = languageCode + '.json';
-//     const loadPromise = require.ensure([
-//         /* webpackInclude: /\.json$/ */
-//         'assets/translations/la.json'
-//     ], (require) => {
-//         console.log('loadJsonTranslation success');
-//         return require('assets/translations/la.json').default;
-//     }, (e) => {
-//         console.log('loadJsonTranslation failed: ', e);
-//     }, 'la');
-//     return loadPromise;
-// }
-
-export function loadJsonTranslation(base, languageCode, successHandler, errorHandler) {
-    const path = base + 'translations/' + languageCode + '.json';
-    ajax(path, successHandler, errorHandler, { responseType: 'json' });
+export function loadJsonTranslation(base, languageCode, oncomplete, onerror) {
+    const url = base + 'translations/' + languageCode + '.json';
+    ajax({ url, oncomplete, onerror, otherOptions: { responseType: 'json' } });
 }

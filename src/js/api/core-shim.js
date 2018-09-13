@@ -12,7 +12,6 @@ import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
 import UI, { getElementWindow } from 'utils/ui';
-import { loadJsonTranslation } from 'utils/language';
 import { PlayerError, composePlayerError, convertToPlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_PROMISE_API_CONFLICT, SETUP_ERROR_UNKNOWN,
     MSG_TECHNICAL_ERROR } from 'api/errors';
@@ -87,11 +86,6 @@ Object.assign(CoreShim.prototype, {
         const setupConfig = options;
         const configuration = Config(Object.assign({}, options), persisted);
         configuration.id = api.id;
-        loadJsonTranslation(configuration.base, 'la', (result) => {
-            console.log('result: ', result);
-        }, (error) => {
-            console.log('fallaste: ', error);
-        });
         configuration.setupConfig = setupConfig;
         Object.assign(model.attributes, configuration, INITIAL_PLAYER_STATE);
         model.getProviders = function() {
