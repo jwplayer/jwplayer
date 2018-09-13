@@ -59,5 +59,5 @@ export function isTranslationAvailable(language) {
 
 export function loadJsonTranslation(base, languageCode, oncomplete, onerror) {
     const url = base + 'translations/' + languageCode + '.json';
-    ajax({ url, oncomplete, onerror, otherOptions: { responseType: 'json' } });
+    ajax({ url, oncomplete, onerror, responseType: 'json' });
 }
