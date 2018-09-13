@@ -43,7 +43,7 @@ const Setup = function(_model) {
                 throw error;
             };
             return pluginsPromise.then(throwError).catch(throwError);
-        });
+        }).then(allPromises => setupResult(allPromises));
     };
 
     this.destroy = function() {
@@ -51,7 +51,35 @@ const Setup = function(_model) {
         _model.set('_destroyed', true);
         _model = null;
     };
-
 };
+
+/**
+ * @typedef { object } SetupResult
+ * @property { object } core
+ * @property {Array<PlayerError>} warnings
+ */
+
+/**
+ *
+ * @param {Array<Promise>} allPromises - An array of promise resolutions or rejections
+ * @returns {SetupResult} setupResult
+ */
+export function setupResult(allPromises) {
+    if (!allPromises || !allPromises.length) {
+        return {
+            core: null,
+            warnings: []
+        };
+    }
+
+    const warnings = allPromises
+        .reduce((acc, val) => acc.concat(val), []) // Flattens the sub-arrays of allPromises into a single array
+        .filter(p => p && p.code);
+
+    return {
+        core: allPromises[0],
+        warnings
+    };
+}
 
 export default Setup;

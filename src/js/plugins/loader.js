@@ -1,4 +1,5 @@
-import { configurePlugin } from 'plugins/plugin';
+import { PlayerError, MSG_PLUGIN_LOAD_FAILED } from 'api/errors';
+import { configurePlugin, mapPluginToCode } from 'plugins/utils';
 
 const PluginLoader = function () {
     this.load = function (api, pluginsModel, pluginsConfig, model) {
@@ -17,10 +18,7 @@ const PluginLoader = function () {
                     return configurePlugin(plugin, pluginConfig, api);
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
-                    if (!(error instanceof Error)) {
-                        return new Error(`Error in ${pluginUrl} "${error}"`);
-                    }
-                    return error;
+                    return new PlayerError(MSG_PLUGIN_LOAD_FAILED, mapPluginToCode(pluginUrl), error);
                 });
             }));
     };

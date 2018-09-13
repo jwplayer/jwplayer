@@ -6,7 +6,7 @@ import Timer from 'api/timer';
 import Storage from 'model/storage';
 import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
-import { SETUP_ERROR, STATE_ERROR } from 'events/events';
+import { SETUP_ERROR, STATE_ERROR, WARNING } from 'events/events';
 import Events from 'utils/backbone.events';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
@@ -107,11 +107,16 @@ Object.assign(CoreShim.prototype, {
 
         model.on('change:errorEvent', logError);
 
-        return this.setup.start(api).then(allPromises => {
-            if (!allPromises) {
+        return this.setup.start(api).then(setupResult => {
+            if (!setupResult) {
                 throw composePlayerError(null, SETUP_ERROR_PROMISE_API_CONFLICT);
             }
-            const CoreMixin = allPromises[0];
+
+            setupResult.warnings.forEach(w => {
+                this.trigger(WARNING, w);
+            });
+
+            const CoreMixin = setupResult.core;
             if (!this.setup) {
                 // Exit if `playerDestroy` was called on CoreLoader clearing the config
                 return;

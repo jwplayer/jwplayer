@@ -101,18 +101,4 @@ Object.assign(Plugin.prototype, {
     }
 });
 
-export function configurePlugin(pluginObj, pluginConfig, api) {
-    const pluginName = pluginObj.name;
-
-    const div = document.createElement('div');
-    div.id = api.id + '_' + pluginName;
-    div.className = 'jw-plugin jw-reset';
-
-    const pluginOptions = Object.assign({}, pluginConfig);
-    const pluginInstance = pluginObj.getNewInstance(api, pluginOptions, div);
-
-    api.addPlugin(pluginName, pluginInstance);
-    return pluginInstance;
-}
-
 export default Plugin;
