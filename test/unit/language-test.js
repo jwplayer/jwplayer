@@ -2,7 +2,6 @@ import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationA
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import sinon from 'sinon';
-import jsonTranslations from '../../src/assets/translations'
 
 describe('languageUtils', function() {
 
@@ -263,7 +262,9 @@ describe('languageUtils', function() {
 
     describe('Supported translations are up to date', () => {
         it('should match all translation json files to the list of available translations', () => {
-            expect(jsonTranslations).to.have.all.keys(translatedLanguageCodes);
+            var context = require.context("../../src/assets/translations", true, /\.json$/);
+            const languageCodes = context.keys().map(key => key.substring(key.lastIndexOf('/') + 1, key.lastIndexOf('.')));
+            expect(languageCodes).to.deep.equal(translatedLanguageCodes);
         });
     });
 

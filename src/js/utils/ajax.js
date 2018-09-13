@@ -36,7 +36,7 @@ export function ajax(url, completeCallback, errorCallback, args) {
         onerror: errorCallback || noop,
         mimeType: (args && !args.responseType) ? 'text/xml' : '',
         requireValidXML: false, /* Require responseXML */
-        responseType: args && args.responseType || (args && args.plainText) ? 'text' : '', /* xhr.responseType ex: "json" or "text" */
+        responseType: (args && args.plainText) ? 'text' : '', /* xhr.responseType ex: "json" or "text" */
         useDomParser: false,
         requestFilter: null
     }, args);
