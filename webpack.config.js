@@ -157,6 +157,11 @@ const multiConfig = [
                 {
                     test: /\.svg$/,
                     loader: 'svg-inline-loader'
+                },
+                {
+                    type: 'javascript/auto',
+                    test: /\.json$/,
+                    loader: 'file-loader'
                 }
             ]
         }

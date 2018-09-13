@@ -87,7 +87,7 @@ Object.assign(CoreShim.prototype, {
         const setupConfig = options;
         const configuration = Config(Object.assign({}, options), persisted);
         configuration.id = api.id;
-        loadJsonTranslation('la', (result) => {
+        loadJsonTranslation(configuration.base, 'la', (result) => {
             console.log('result: ', result);
         }, (error) => {
             console.log('fallaste: ', error);

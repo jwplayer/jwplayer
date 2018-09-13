@@ -71,7 +71,7 @@ export function isTranslationAvailable(language) {
 //     return loadPromise;
 // }
 
-export function loadJsonTranslation(languageCode, successHandler, errorHandler) {
-    const translation = languageCode + '.json';
-    ajax(translation, successHandler, errorHandler);
+export function loadJsonTranslation(base, languageCode, successHandler, errorHandler) {
+    const path = base + 'translations/' + languageCode + '.json';
+    ajax(path, successHandler, errorHandler, { responseType: 'json' });
 }
