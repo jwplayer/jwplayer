@@ -54,7 +54,7 @@ export function getLanguage() {
 export const translatedLanguageCodes = ['la'];
 
 export function isTranslationAvailable(language) {
-    return translatedLanguageCodes.indexOf(language.substring(0,2).toLowerCase()) >= 0;
+    return translatedLanguageCodes.indexOf(language.substring(0, 2).toLowerCase()) >= 0;
 }
 
 // export function loadJsonTranslation(languageCode) {
