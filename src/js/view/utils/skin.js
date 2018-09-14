@@ -212,9 +212,7 @@ export function handleColorOverrides(playerId, skin) {
             '.jw-option.jw-active-option',
             '.jw-option:not(.jw-active-option):hover',
             '.jw-option:not(.jw-active-option):focus',
-            '.jw-settings-item-active',
             '.jw-settings-content-item:hover',
-            '.jw-settings-content-item:focus',
             '.jw-nextup-tooltip:hover',
             '.jw-nextup-tooltip:focus',
             '.jw-nextup-close:hover'
