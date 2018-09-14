@@ -39,7 +39,7 @@ export function getCode(language) {
 
 export function getLanguage() {
     let language = extractLanguage(document);
-    if (!language && isIframe) {
+    if (!language && isIframe()) {
         language = extractLanguage(window.top.document);
     }
     return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage;

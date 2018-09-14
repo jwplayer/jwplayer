@@ -204,6 +204,12 @@ describe('languageUtils', function() {
             sandbox.stub(htmlTag, 'getAttribute').withArgs('lang').returns(value);
         }
 
+        function skipOnIe() {
+            if (Browser.isIE()) {
+                this.skip();
+            }
+        }
+
         it('should return the htlm lang attribute', () => {
             const htmlLanguage = 'htmlLanguage';
             stubHtmlLanguage(document, htmlLanguage);
@@ -219,6 +225,7 @@ describe('languageUtils', function() {
         });
 
         it('should fallback to navigator.language when html lang attribute is absent', () => {
+            skipOnIe();
             const language = 'language';
             stubHtmlLanguage(document, null);
             stubNavigatorProperty('language', language);
@@ -226,6 +233,7 @@ describe('languageUtils', function() {
         });
 
         it('should fallback to navigator.browserLanguage when navigator.language is undefined', () => {
+            skipOnIe();
             const browserLanguage = 'browserLanguage';
             stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
@@ -235,6 +243,7 @@ describe('languageUtils', function() {
         });
 
         it('should fallback to navigator.userLanguage when navigator.browserLanguage is undefined', () => {
+            skipOnIe();
             const userLanguage = 'userLanguage';
             stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
@@ -244,6 +253,7 @@ describe('languageUtils', function() {
         });
 
         it('should fallback to navigator.systemLanguage when navigator.userLanguage is undefined', () => {
+            skipOnIe();
             const systemLanguage = 'systemLanguage';
             stubHtmlLanguage(document, null);
             nullifyNavigatorProperty('language');
