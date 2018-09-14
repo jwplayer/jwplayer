@@ -1,7 +1,6 @@
 import loadCoreBundle from 'api/core-loader';
 import startSetup from 'api/setup-steps';
 import loadPlugins from 'plugins/plugins';
-import loadTranslations from 'api/translation-loader';
 import { PlayerError, SETUP_ERROR_TIMEOUT, MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
 const SETUP_TIMEOUT_SECONDS = 30;
@@ -15,7 +14,6 @@ const Setup = function(_model) {
         const setup = Promise.all([
             loadCoreBundle(_model),
             loadPlugins(_model, api),
-            loadTranslations(_model),
             startSetup(_model, api, [])
         ]);
 
