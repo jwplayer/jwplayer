@@ -156,6 +156,18 @@ export const MSG_TECHNICAL_ERROR = 'technicalError';
 export const MSG_PLUGIN_LOAD_FAILED = 'pluginLoadFailed';
 
 /**
+ * @enum {ErrorKey}
+ */
+export const MSG_PLUGIN_NOT_REGISTERED = 'pluginNotRegistered';
+
+/**
+ * @enum {ErrorKey}
+ */
+
+export const MSG_CAPTIONS_LOAD_FAILED = 'captionsLoadFailed';
+
+
+/**
  * Class used to create "setupError" and "error" event instances.
  * @class PlayerError
  * @param {message} string - The error message.

@@ -108,11 +108,12 @@ Object.assign(CoreShim.prototype, {
         model.on('change:errorEvent', logError);
 
         return this.setup.start(api).then(setupResult => {
-            if (!setupResult) {
+            if (!setupResult.core) {
                 throw composePlayerError(null, SETUP_ERROR_PROMISE_API_CONFLICT);
             }
 
             setupResult.warnings.forEach(w => {
+                console.warn(PlayerError.logMessage(w.code));
                 this.trigger(WARNING, w);
             });
 

@@ -1,14 +1,40 @@
 import dfxp from 'parsers/captions/dfxp';
+import { MSG_CAPTIONS_LOAD_FAILED } from 'api/errors';
 
 describe('dfxp', function() {
 
-    it('exceptions', function() {
+    it('is a function', function () {
         expect(typeof dfxp, 'dfxp is a function').to.equal('function');
+    });
 
-        expect(function() {
+    it('throws an error if the xml document is null', function () {
+        try {
             dfxp(null);
-        }).to.throw(Error, 'Invalid DFXP file');
+        } catch (e) {
+            expect(e.code).to.equal(306103);
+            expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
+        }
+    });
 
+    it('throws an error if the xml doc has no paragraphs', function () {
+        try {
+            parseDFXP('<?xml version="1.0" encoding="UTF-8"?><tt xmlns="http://www.w3.org/2006/10/ttaf1"><head></head><body><div></div></body></tt>');
+        } catch (e) {
+            expect(e.code).to.equal(306101);
+            expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
+        }
+    });
+
+    it('throws an error if the xml doc has no valid cues', function () {
+        try {
+            parseDFXP('<?xml version="1.0" encoding="UTF-8"?><tt xmlns="http://www.w3.org/2006/10/ttaf1"><head></head><body><div><p begin="00:00:31" end="00:00:33"></p></div></body></tt>');
+        } catch (e) {
+            expect(e.code).to.equal(306101);
+            expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
+        }
+    });
+
+    it('parses a valid xml doc', function() {
         const DFXP = '<?xml version="1.0" encoding="UTF-8"?><tt xmlns="http://www.w3.org/2006/10/ttaf1"><head></head><body><div><p begin="00:00:00.5" end="00:00:04">The Peach Open Movie Project presents</p><p begin="00:00:06.5" end="00:00:09">One big rabbit</p><p begin="00:00:11" end="00:00:13">Three rodents</p><p begin="00:00:16.5" end="00:00:19">And one giant payback</p><p begin="00:00:23" end="00:00:25">Get ready</p><p begin="00:00:27" end="00:00:30">Big Buck Bunny</p><p begin="00:00:30" end="00:00:31">Coming soon</p><p begin="00:00:31" end="00:00:33">www.bigbuckbunny.org<br/>Licensed as Creative Commons 3.0 attribution</p></div></body></tt>';
 
         // Do not run the test if inner HTML does not exist, as it will fail in phantomjs

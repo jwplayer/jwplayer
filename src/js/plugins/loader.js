@@ -18,7 +18,10 @@ const PluginLoader = function () {
                     return configurePlugin(plugin, pluginConfig, api);
                 }).catch(error => {
                     pluginsModel.removePlugin(pluginUrl);
-                    return new PlayerError(MSG_PLUGIN_LOAD_FAILED, mapPluginToCode(pluginUrl), error);
+                    if (!error.code) {
+                        return new PlayerError(MSG_PLUGIN_LOAD_FAILED, mapPluginToCode(pluginUrl), error);
+                    }
+                    return error;
                 });
             }));
     };
