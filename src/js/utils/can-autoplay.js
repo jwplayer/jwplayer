@@ -23,7 +23,6 @@
 // SOFTWARE.
 
 import createPlayPromise from '../providers/utils/play-promise';
-import Promise from '../polyfills/promise';
 
 // Use webkitURL or mozURL as a backup if URL was overwritten
 const URL = (global => global.URL && global.URL.createObjectURL ?

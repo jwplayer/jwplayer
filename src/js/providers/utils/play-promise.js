@@ -1,5 +1,3 @@
-import Promise from 'polyfills/promise';
-
 export default function createPlayPromise(video) {
     return new Promise(function(resolve, reject) {
         if (video.paused) {

@@ -1,6 +1,5 @@
 import Events from 'utils/backbone.events';
 import { ERROR, STATE_COMPLETE } from 'events/events';
-import Promise from 'polyfills/promise';
 
 const ScriptPromises = {};
 

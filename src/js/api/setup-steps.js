@@ -1,5 +1,4 @@
 import { PLAYLIST_LOADED, ERROR } from 'events/events';
-import Promise, { resolved } from 'polyfills/promise';
 import PlaylistLoader from 'playlist/loader';
 import Playlist, { filterPlaylist, validatePlaylist } from 'playlist/playlist';
 import ScriptLoader from 'utils/scriptloader';
@@ -9,25 +8,25 @@ import { composePlayerError,
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
-    if (typeof playlist === 'string') {
-        return new Promise((resolve, reject) => {
-            const playlistLoader = new PlaylistLoader();
-            playlistLoader.on(PLAYLIST_LOADED, function(data) {
-                const loadedPlaylist = data.playlist;
-                delete data.playlist;
-                setPlaylistAttributes(_model, loadedPlaylist, data);
-                resolve();
-            });
-            playlistLoader.on(ERROR, e => {
-                setPlaylistAttributes(_model, [], {});
-                reject(composePlayerError(e, SETUP_ERROR_LOADING_PLAYLIST));
-            });
-            playlistLoader.load(playlist);
+    return new Promise((resolve, reject) => {
+        if (typeof playlist !== 'string') {
+            const feedData = _model.get('feedData') || {};
+            setPlaylistAttributes(_model, playlist, feedData);
+            return resolve();
+        }
+        const playlistLoader = new PlaylistLoader();
+        playlistLoader.on(PLAYLIST_LOADED, function(data) {
+            const loadedPlaylist = data.playlist;
+            delete data.playlist;
+            setPlaylistAttributes(_model, loadedPlaylist, data);
+            resolve();
         });
-    }
-    const feedData = _model.get('feedData') || {};
-    setPlaylistAttributes(_model, playlist, feedData);
-    return resolved;
+        playlistLoader.on(ERROR, e => {
+            setPlaylistAttributes(_model, [], {});
+            reject(composePlayerError(e, SETUP_ERROR_LOADING_PLAYLIST));
+        });
+        playlistLoader.load(playlist);
+    });
 }
 
 function setPlaylistAttributes(model, playlist, feedData) {
@@ -92,7 +91,7 @@ function loadSkin(_model) {
             return error;
         });
     }
-    return resolved;
+    return Promise.resolve();
 }
 
 function destroyed(_model) {

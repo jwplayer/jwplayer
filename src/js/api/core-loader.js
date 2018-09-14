@@ -3,7 +3,6 @@ import { fixSources } from 'playlist/playlist';
 import ProvidersSupported from 'providers/providers-supported';
 import registerProvider from 'providers/providers-register';
 import { ControlsLoader } from 'controller/controls-loader';
-import { resolved } from 'polyfills/promise';
 import { PlayerError, SETUP_ERROR_LOADING_CORE_JS, MSG_CANT_LOAD_PLAYER } from 'api/errors';
 
 let bundlePromise = null;
@@ -144,5 +143,5 @@ function loadIntersectionObserverIfNeeded() {
             return require('intersection-observer');
         }, chunkLoadErrorHandler(SETUP_ERROR_LOADING_CORE_JS + 120), 'polyfills.intersection-observer');
     }
-    return resolved;
+    return Promise.resolve();
 }
