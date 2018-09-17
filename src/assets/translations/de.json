@@ -1,0 +1,62 @@
+{
+    "advertising": {
+        "admessage": "Diese Werbung endet in xx",
+        "cuetext": "Werbung",
+        "loadingAd": "Werbung lädt",
+        "podmessage": "Werbung xx von yy",
+        "skipmessage": "Überspringe Werbung in xx",
+        "skiptext": "Überspringe"
+    },
+    "airplay": "AirPlay",
+    "audioTracks": "Audiospur",
+    "auto": "Auto",
+    "buffer": "Lädt",
+    "cast": "Chromecast",
+    "cc": "Untertitel",
+    "close": "Schließen",
+    "errors": {
+        "badConnection": "Dieses Video kann nicht abgespielt werden, weil es ein Problem mit der Internetverbindung gibt.",
+        "cantLoadPlayer": "Entschuldingung, der Videoplayer konnte es nicht Laden.",
+        "cantPlayInBrowser": "Das Video kann in diesem Browser nicht abgespielt werden.",
+        "cantPlayVideo": "Diese Videodatei kann nicht abgespielt werden.",
+        "errorCode": "Fehlercode",
+        "liveStreamEnded": "Dieser Livestream ist entweder abgestürzt oder beendet.",
+        "protectedContent": "Es gab ein Problem Zugang zu dem geschützten Inhalt herzustellen.",
+        "technicalError": "Das Video kann durch einen technischen Fehler nicht abgespielt werden."
+    },
+    "fullscreen": "Vollbild",
+    "hd": "Qualität",
+    "liveBroadcast": "Live",
+    "logo": "Logo",
+    "next": "Weiter",
+    "nextUp": "Als Nächstes",
+    "notLive": "Nicht Live",
+    "off": "Aus",
+    "pause": "Pause",
+    "play": "Spielen",
+    "playbackRates": "Abspielrate",
+    "player": "Videoplayer",
+    "playlist": "Playlist",
+    "poweredBy": "Unterstützt von",
+    "prev": "Zurück",
+    "quality": "Qualität",
+    "related": {
+        "autoplaymessage": "Als Nächstes in xx",
+        "heading": "Weitere Videos"
+    },
+    "replay": "Wiederholen",
+    "rewind": "10 Sekunden Zurückspulen",
+    "settings": "Einstellungen",
+    "sharing": {
+        "copied": "Kopiert",
+        "email": "E-Mail",
+        "embed": "Einbinden",
+        "heading": "Teilen",
+        "link": "Link"
+    },
+    "slider": "Positionsanzeige",
+    "stop": "Stopp",
+    "videoInfo": "Über Dieses Video",
+    "volume": "Lautstärke",
+    "volumeSlider": "Lautstärkeregler"
+}
