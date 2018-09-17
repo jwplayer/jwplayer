@@ -1,4 +1,7 @@
-import { getLabel, getCode } from 'utils/language';
+import { getLabel, getCode, getLanguage } from 'utils/language';
+import { createElement } from 'utils/dom';
+import * as Browser from 'utils/browser';
+import sinon from 'sinon';
 
 describe('languageUtils', function() {
 
@@ -172,6 +175,88 @@ describe('languageUtils', function() {
             it('should be Greek for its codes', function() {
                 expect(getCode('Greek')).to.equal('el');
             });
+        });
+    });
+
+    describe('getLanguage', () => {
+        const sandbox = sinon.sandbox.create();
+
+        before(function() {
+            if (Browser.isIE()) {
+                this.skip();
+            }
+        });
+
+        afterEach(() => {
+            sandbox.restore();
+        });
+
+        function nullifyNavigatorProperty(property) {
+            if (navigator[property]) {
+                sandbox.stub(navigator, property).value(null);
+            }
+        }
+
+        function stubNavigatorProperty(property, value) {
+            if (navigator[property]) {
+                sandbox.stub(navigator, property).value(value);
+            } else {
+                navigator[property] = value;
+            }
+        }
+
+        function stubHtmlLanguage(doc, value) {
+            const htmlTag = doc.querySelector('html');
+            sandbox.stub(htmlTag, 'getAttribute').withArgs('lang').returns(value);
+        }
+
+        it('should return the htlm lang attribute', () => {
+            const htmlLanguage = 'htmlLanguage';
+            stubHtmlLanguage(document, htmlLanguage);
+            expect(getLanguage()).to.equal(htmlLanguage);
+        });
+
+        it('should return the top htlm lang attribute when iframe has no lang attribute', () => {
+            const topHtmlLanguage = 'topHtmlLanguage';
+            stubHtmlLanguage(document, null);
+            stubHtmlLanguage(window.top.document, topHtmlLanguage);
+            sandbox.stub(Browser, 'isIframe').returns(true);
+            expect(getLanguage()).to.equal(topHtmlLanguage);
+        });
+
+        it('should fallback to navigator.language when html lang attribute is absent', () => {
+            const language = 'language';
+            stubHtmlLanguage(document, null);
+            stubNavigatorProperty('language', language);
+            expect(getLanguage()).to.equal(language);
+        });
+
+        it('should fallback to navigator.browserLanguage when navigator.language is undefined', () => {
+            const browserLanguage = 'browserLanguage';
+            stubHtmlLanguage(document, null);
+            nullifyNavigatorProperty('language');
+            stubNavigatorProperty('browserLanguage', browserLanguage);
+            expect(getLanguage()).to.equal(browserLanguage);
+
+        });
+
+        it('should fallback to navigator.userLanguage when navigator.browserLanguage is undefined', () => {
+            const userLanguage = 'userLanguage';
+            stubHtmlLanguage(document, null);
+            nullifyNavigatorProperty('language');
+            nullifyNavigatorProperty('browserLanguage');
+            stubNavigatorProperty('userLanguage', userLanguage);
+            expect(getLanguage()).to.equal(userLanguage);
+        });
+
+        it('should fallback to navigator.systemLanguage when navigator.userLanguage is undefined', () => {
+            const systemLanguage = 'systemLanguage';
+            stubHtmlLanguage(document, null);
+            nullifyNavigatorProperty('language');
+            nullifyNavigatorProperty('browserLanguage');
+            nullifyNavigatorProperty('userLanguage');
+            stubNavigatorProperty('systemLanguage', systemLanguage);
+            expect(getLanguage()).to.equal(systemLanguage);
         });
     });
 });
