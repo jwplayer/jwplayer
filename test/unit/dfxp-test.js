@@ -11,7 +11,7 @@ describe('dfxp', function() {
         try {
             dfxp(null);
         } catch (e) {
-            expect(e.code).to.equal(306103);
+            expect(e.code).to.equal(306007);
             expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
         }
     });
@@ -20,7 +20,7 @@ describe('dfxp', function() {
         try {
             parseDFXP('<?xml version="1.0" encoding="UTF-8"?><tt xmlns="http://www.w3.org/2006/10/ttaf1"><head></head><body><div></div></body></tt>');
         } catch (e) {
-            expect(e.code).to.equal(306101);
+            expect(e.code).to.equal(306005);
             expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
         }
     });
@@ -29,7 +29,7 @@ describe('dfxp', function() {
         try {
             parseDFXP('<?xml version="1.0" encoding="UTF-8"?><tt xmlns="http://www.w3.org/2006/10/ttaf1"><head></head><body><div><p begin="00:00:31" end="00:00:33"></p></div></body></tt>');
         } catch (e) {
-            expect(e.code).to.equal(306101);
+            expect(e.code).to.equal(306005);
             expect(e.key).to.equal(MSG_CAPTIONS_LOAD_FAILED);
         }
     });

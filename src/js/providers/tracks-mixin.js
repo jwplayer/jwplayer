@@ -4,6 +4,7 @@ import { parseID3 } from 'providers/utils/id3Parser';
 import { Browser } from 'environment/environment';
 import { WARNING } from 'events/events';
 import { findWhere, each, filter } from 'utils/underscore';
+import { PlayerError, MSG_CAPTIONS_LOAD_FAILED } from 'api/errors';
 
 // Used across all providers for loading tracks and handling browser track-related events
 const Tracks = {
@@ -460,10 +461,7 @@ function addTextTracks(tracksArray) {
                     this.addVTTCuesToTrack(textTrackAny, vttCues);
                 },
                 (key, url, xhr, error) => {
-                    this.trigger(WARNING, {
-                        message: 'Captions failed to load',
-                        sourceError: error
-                    });
+                    this.trigger(WARNING, new PlayerError(MSG_CAPTIONS_LOAD_FAILED, 306000 + error.code, error));
                 });
         }
     });

@@ -5,7 +5,7 @@ import { PlayerError, MSG_CAPTIONS_LOAD_FAILED } from 'api/errors';
 
 export default function Dfxp(xmlDoc) {
     if (!xmlDoc) {
-        parseError(306103);
+        parseError(306007);
     }
 
     const _captions = [];
@@ -21,7 +21,7 @@ export default function Dfxp(xmlDoc) {
     }
 
     if (!paragraphs) {
-        parseError(306101);
+        parseError(306005);
     }
     if (!paragraphs.length) {
         paragraphs = xmlDoc.getElementsByTagName('tt:p');
@@ -59,7 +59,7 @@ export default function Dfxp(xmlDoc) {
         }
     }
     if (!_captions.length) {
-        parseError(306101);
+        parseError(306005);
     }
     return _captions;
 }
