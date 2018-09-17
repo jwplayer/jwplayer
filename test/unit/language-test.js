@@ -2,6 +2,7 @@ import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationA
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import sinon from 'sinon';
+// import frJson from '../../src/assets/translations/fr.json';
 
 describe('languageUtils', function() {
 
@@ -260,21 +261,31 @@ describe('languageUtils', function() {
         });
     });
 
-    describe('Supported translations are up to date', () => {
-        it('should match all translation json files to the list of available translations', () => {
-            var context = require.context("../../src/assets/translations", true, /\.json$/);
-            const languageCodes = context.keys().map(key => key.substring(key.lastIndexOf('/') + 1, key.lastIndexOf('.')));
+    describe('JSON Translations', () => {
+        const context = require.context("../../src/assets/translations", true, /\.json$/);
+        const languageCodes = context.keys().map(key => key.substring(key.lastIndexOf('/') + 1, key.lastIndexOf('.')));
+
+        it('should match the list of supported translations', () => {
             expect(languageCodes).to.deep.equal(translatedLanguageCodes);
+        });
+
+        it('should have same structure as localization default', () => {
+            // const langCode = 'fr';
+            // const fr = require(`../../src/assets/translations/${langCode}.json`);
+            // const fr = require('../../src/assets/translations/fr.json');
+            // returns '264cfd10c44360a54a0772a576aa3dfd.json'
         });
     });
 
     describe('translationAvailable', () => {
         it('should be country code agnostic', () => {
-            expect(isTranslationAvailable('la-US')).to.be.true;
+            const regionalLanguageCode = translatedLanguageCodes[0] + '-HT';
+            expect(isTranslationAvailable(regionalLanguageCode)).to.be.true;
         });
 
         it('should be caps agnostic', () => {
-            expect(isTranslationAvailable('LA')).to.be.true;
+            const capitalizedLanguageCode = translatedLanguageCodes[0].toUpperCase();
+            expect(isTranslationAvailable(capitalizedLanguageCode)).to.be.true;
         });
 
         it('should fail for codes that are not in translatedLanguageCodes', () => {

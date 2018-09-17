@@ -96,17 +96,17 @@ function loadSkin(_model) {
 }
 
 function loadTranslations(_model) {
-    const language = '';//getLanguage();
+    const language = '';// getLanguage();
     if (language && isTranslationAvailable(language)) {
-        return new Promise(resolve => {
-            loadJsonTranslation(_model.attributes.base, language, result => {
-                //TODO: update localization with translations (JW8-1346)
+        return new Promise((resolve, reject) => {
+            loadJsonTranslation(_model.attributes.base, language, () => {
+                // TODO: update localization with translations (JW8-1346)
                 if (destroyed(_model)) {
                     reject();
                 }
                 resolve();
-            }, error => {
-                //TODO: trigger warning
+            }, () => {
+                // TODO: trigger warning
                 resolve();
             });
         });
