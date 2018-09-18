@@ -5,7 +5,8 @@ import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
-import { getLanguage, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
+import { getLanguage, formatLanguageCode, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
+import en from 'assets/translations/en.js';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -95,23 +96,55 @@ export function loadSkin(_model) {
     return Promise.resolve();
 }
 
-export function loadTranslations(_model) {
+// function fetchTranslations(_model) {
+//     return loadTranslations(_model).then( ({ customizedLocalization, translation }) => {
+//         console.log('assign results');
+//         _model.attributes.localization = Object.assign({}, en, translation, customizedLocalization);
+//     });
+// }
+
+function loadTranslations(_model) {
     const language = getLanguage();
-    if (language && isTranslationAvailable(language)) {
-        return new Promise((resolve, reject) => {
-            loadJsonTranslation(_model.attributes.base, language, ({ response }) => {
-                // TODO: update localization with translations (JW8-1346)
-                if (destroyed(_model)) {
-                    reject();
-                }
-                resolve(response);
-            }, () => {
-                // TODO: trigger warning
-                resolve();
-            });
-        });
+    const customizedLocalization = getCustomizedLocalization(_model, language);
+    if (!isTranslationAvailable(language) || customizationIsComplete(customizedLocalization)) {
+        console.log('not fetching');
+        setupLocalization(_model, customizedLocalization);
+        return Promise.resolve();
     }
-    return Promise.resolve();
+    return new Promise((resolve, reject) => {
+        loadJsonTranslation(_model.attributes.base, language, ({ response }) => {
+            if (destroyed(_model)) {
+                reject();
+            }
+            console.log('json fetch successful');
+            setupLocalization(_model, customizedLocalization, response);
+            resolve();
+        }, () => {
+            // TODO: trigger warning
+            console.log('failed to fetch json');
+            setupLocalization(_model, customizedLocalization);
+            resolve();
+        });
+    });
+}
+/*
+function isTranslationRequired(language, customizedLocalization) {
+    return isTranslationAvailable(language) && !Object.keys(customizedLocalization).every(key => en[key]);
+}
+*/
+
+function customizationIsComplete(customizedLocalization) {
+    const customizationFields = Object.keys(customizedLocalization);
+    return customizationFields.length > 0 && customizationFields.every(key => en[key]);
+}
+
+function getCustomizedLocalization({ attributes }, languageAndCountryCode) {
+    const formattedLanguageCode = formatLanguageCode(languageAndCountryCode);
+    return Object.assign({}, attributes.localization, attributes.intl[formattedLanguageCode], attributes.intl[languageAndCountryCode]);
+}
+//
+function setupLocalization(_model, customizedLocalization, translation) {
+    _model.attributes.localization = Object.assign({}, en, translation, customizedLocalization);
 }
 
 export function loadModules(/* model, api */) {
@@ -121,3 +154,17 @@ export function loadModules(/* model, api */) {
 function destroyed(_model) {
     return _model.attributes._destroyed;
 }
+
+const startSetup = function(model, api, promises) {
+    if (destroyed(model)) {
+        return Promise.reject();
+    }
+    return Promise.all(promises.concat([
+        loadProvider(model),
+        loadSkin(model),
+        // fetchTranslations(model)
+        loadTranslations(model)
+    ]));
+};
+
+export default startSetup;

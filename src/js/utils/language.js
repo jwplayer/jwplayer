@@ -21,7 +21,7 @@ const codeToLang = {
 
 const langToCode = invert(codeToLang);
 
-function formatLanguageCode(language) {
+export function formatLanguageCode(language) {
     return language.substring(0, 2).toLowerCase();
 }
 
