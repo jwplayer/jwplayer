@@ -53,7 +53,7 @@ const webpackKarmaConfig = Object.assign({}, webpackConfig, {
             if (rule.options && rule.options.presets) {
                 rule.options.presets = rule.options.presets.map(preset => {
                     if (Array.isArray(preset) && preset[0] === 'env' && preset[1]) {
-                        // karma-webpack failes if modules are not converted to commonjs by default
+                        // karma-webpack fails if modules are not converted to commonjs by default
                         delete preset[1].modules;
                     }
                     return preset;
