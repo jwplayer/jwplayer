@@ -45,7 +45,7 @@ function crossdomain(uri) {
     a.href = location.href;
     try {
         b.href = uri;
-        b.href = b.href; /* IE fix for relative urls */
+        b.href = b.href; /* IE fix for relative urls */ // eslint-disable-line no-self-assign
         return a.protocol + '//' + a.host !== b.protocol + '//' + b.host;
     } catch (e) {/* swallow */}
     return true;

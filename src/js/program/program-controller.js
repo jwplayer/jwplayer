@@ -497,7 +497,7 @@ class ProgramController extends Eventable {
     get audioTracks() {
         const { mediaController } = this;
         if (!mediaController) {
-            return;
+            return undefined;
         }
 
         return mediaController.audioTracks;
