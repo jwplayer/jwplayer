@@ -2,7 +2,6 @@ import { getLabel, getCode, getLanguage, translatedLanguageCodes, isTranslationA
 import { createElement } from 'utils/dom';
 import * as Browser from 'utils/browser';
 import sinon from 'sinon';
-// import frJson from '../../src/assets/translations/fr.json';
 
 describe('languageUtils', function() {
 
@@ -270,10 +269,8 @@ describe('languageUtils', function() {
         });
 
         it('should have same structure as localization default', () => {
-            // const langCode = 'fr';
-            // const fr = require(`../../src/assets/translations/${langCode}.json`);
-            // const fr = require('../../src/assets/translations/fr.json');
-            // returns '264cfd10c44360a54a0772a576aa3dfd.json'
+            // TODO: add test that compares the structure of all the translation jsons to that of the default localization block to ensure consistency.
+            // Limitation: require('../../src/assets/translations/fr.json') returns '264cfd10c44360a54a0772a576aa3dfd.json'
         });
     });
 

@@ -5,7 +5,7 @@ import ScriptLoader from 'utils/scriptloader';
 import { bundleContainsProviders } from 'api/core-loader';
 import { composePlayerError,
     SETUP_ERROR_LOADING_PLAYLIST, SETUP_ERROR_LOADING_PROVIDER } from 'api/errors';
-import { loadJsonTranslation, isTranslationAvailable } from 'utils/language';
+import { getLanguage, loadJsonTranslation, isTranslationAvailable } from 'utils/language';
 
 export function loadPlaylist(_model) {
     const playlist = _model.get('playlist');
@@ -96,15 +96,15 @@ function loadSkin(_model) {
 }
 
 function loadTranslations(_model) {
-    const language = '';// getLanguage();
+    const language = getLanguage();
     if (language && isTranslationAvailable(language)) {
         return new Promise((resolve, reject) => {
-            loadJsonTranslation(_model.attributes.base, language, () => {
+            loadJsonTranslation(_model.attributes.base, language, ({ response }) => {
                 // TODO: update localization with translations (JW8-1346)
                 if (destroyed(_model)) {
                     reject();
                 }
-                resolve();
+                resolve(response);
             }, () => {
                 // TODO: trigger warning
                 resolve();
