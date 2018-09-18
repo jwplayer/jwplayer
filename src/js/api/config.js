@@ -18,52 +18,8 @@ const Defaults = {
     displaytitle: true,
     displayPlaybackLabel: false,
     height: 360,
+    intl: {},
     liveTimeout: null,
-    localization: {
-        airplay: 'AirPlay',
-        audioTracks: 'Audio Tracks',
-        buffer: 'Loading',
-        cast: 'Chromecast',
-        cc: 'Closed Captions',
-        close: 'Close',
-        copied: 'Copied',
-        errors: {
-            badConnection: 'This video cannot be played because of a problem with your internet connection.',
-            cantLoadPlayer: 'Sorry, the video player failed to load.',
-            cantPlayInBrowser: 'The video cannot be played in this browser.',
-            cantPlayVideo: 'This video file cannot be played.',
-            errorCode: 'Error Code',
-            liveStreamDown: 'The live stream is either down or has ended.',
-            protectedContent: 'There was a problem providing access to protected content.',
-            technicalError: 'This video cannot be played because of a technical error.'
-        },
-        fullscreen: 'Fullscreen',
-        hd: 'Quality',
-        liveBroadcast: 'Live',
-        loadingAd: 'Loading ad',
-        more: 'More',
-        next: 'Next',
-        nextUp: 'Next Up',
-        nextUpClose: 'Next Up Close',
-        pause: 'Pause',
-        player: 'Video Player',
-        play: 'Play',
-        playback: 'Play',
-        playbackRates: 'Playback Rates',
-        playlist: 'Playlist',
-        prev: 'Previous',
-        related: 'More Videos',
-        replay: 'Replay',
-        rewind: 'Rewind 10 Seconds',
-        settings: 'Settings',
-        stop: 'Stop',
-        sharing: {
-            share: 'Share'
-        },
-        unmute: 'Unmute',
-        videoInfo: 'About This Video',
-        volume: 'Volume'
-    },
     mute: false,
     nextUpDisplay: true,
     playbackRateControls: false,
@@ -105,9 +61,6 @@ const Config = function(options, persisted) {
     let allOptions = Object.assign({}, (window.jwplayer || {}).defaults, persisted, options);
 
     _deserialize(allOptions);
-
-    allOptions.localization = Object.assign({}, Defaults.localization, allOptions.localization);
-    allOptions.localization.errors = Object.assign({}, Defaults.localization.errors, allOptions.localization.errors);
 
     let config = Object.assign({}, Defaults, allOptions);
     if (config.base === '.') {
