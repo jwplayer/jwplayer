@@ -111,7 +111,7 @@ function loadTranslations(_model) {
             });
         });
     }
-    return resolved;
+    return Promise.resolve();
 }
 
 function destroyed(_model) {

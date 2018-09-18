@@ -38,7 +38,6 @@ export function getCode(language) {
     return langToCode[language] || '';
 }
 
-<<<<<<< HEAD
 function extractLanguage(doc) {
     const htmlTag = doc.querySelector('html');
     return htmlTag ? htmlTag.getAttribute('lang') : null;
@@ -52,10 +51,7 @@ export function getLanguage() {
     return language || navigator.language || navigator.browserLanguage || navigator.userLanguage || navigator.systemLanguage;
 }
 
-export const translatedLanguageCodes = ['la'];
-=======
 export const translatedLanguageCodes = ['ar', 'da', 'de', 'es', 'fr', 'it', 'ja', 'nb', 'nl', 'pt', 'ro', 'sv', 'tr', 'zh'];
->>>>>>> 00c6c55e... update support langugages array
 
 export function isTranslationAvailable(language) {
     return translatedLanguageCodes.indexOf(language.substring(0, 2).toLowerCase()) >= 0;
