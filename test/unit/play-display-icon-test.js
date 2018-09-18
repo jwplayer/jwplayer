@@ -25,7 +25,6 @@ describe('PlayDisplayIcon', function() {
         icon.appendChild(svg);
         element = document.createElement('div');
         element.appendChild(icon);
-
     });
 
     describe('on init', function() {
@@ -54,14 +53,17 @@ describe('PlayDisplayIcon', function() {
         });
 
         it('should set playback label to the value of localization.playback', function() {
-            model.set('displayPlaybackLabel', true);
+            const defaultPlaybackLocalization = localization.playback;
             localization.playback = 'Jugar';
+            model.set('displayPlaybackLabel', true);
             displayIcon = new PlayDisplayIcon(model, {}, element);
 
             expect(displayIcon.icon.className).to.include('jw-idle-label');
             expect(displayIcon.icon.lastChild.className).to.include('jw-idle-icon-text');
-            expect(displayIcon.icon.textContent).to.not.equal('Play');
             expect(displayIcon.icon.textContent).to.equal(localization.playback);
+            expect(displayIcon.icon.textContent).to.not.equal('Play');
+            expect(displayIcon.icon.textContent).to.not.equal(defaultPlaybackLocalization);
+
         });
     });
 
