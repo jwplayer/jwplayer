@@ -25,10 +25,6 @@
         "no-restricted-globals": [
             "error",
             {
-                "name": "Promise",
-                "message": "import Promise from 'polyfills/promise'"
-            },
-            {
                 "name": "VTTCue",
                 "message": "import VTTCue from 'parsers/captions/vttcue'"
             }

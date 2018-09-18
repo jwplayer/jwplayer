@@ -1,4 +1,3 @@
-import Promise from 'polyfills/promise';
 import ScriptLoader from 'utils/scriptloader';
 import { getAbsolutePath } from 'utils/parser';
 import { extension } from 'utils/strings';

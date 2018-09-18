@@ -1,11 +1,10 @@
-import Promise, { resolved } from 'polyfills/promise';
 import { configurePlugin } from 'plugins/plugin';
 
 const PluginLoader = function () {
     this.load = function (api, pluginsModel, pluginsConfig, model) {
         // Must be a hash map
         if (!pluginsConfig || typeof pluginsConfig !== 'object') {
-            return resolved;
+            return Promise.resolve();
         }
 
         return Promise.all(Object.keys(pluginsConfig).filter(pluginUrl => pluginUrl)

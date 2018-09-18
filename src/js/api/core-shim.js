@@ -8,7 +8,6 @@ import SimpleModel from 'model/simplemodel';
 import { INITIAL_PLAYER_STATE, INITIAL_MEDIA_STATE } from 'model/player-model';
 import { SETUP_ERROR, STATE_ERROR } from 'events/events';
 import Events from 'utils/backbone.events';
-import { resolved } from 'polyfills/promise';
 import ErrorContainer from 'view/error-container';
 import MediaElementPool from 'program/media-element-pool';
 import SharedMediaPool from 'program/shared-media-pool';
@@ -256,7 +255,7 @@ Object.assign(CoreShim.prototype, {
 });
 
 function setupError(core, api, error) {
-    resolved.then(() => {
+    Promise.resolve().then(() => {
         const playerError = convertToPlayerError(MSG_TECHNICAL_ERROR, SETUP_ERROR_UNKNOWN, error);
         const model = core._model || core.modelShim;
 

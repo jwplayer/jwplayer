@@ -2,7 +2,6 @@ import loadCoreBundle from 'api/core-loader';
 import startSetup from 'api/setup-steps';
 import loadPlugins from 'plugins/plugins';
 import { PlayerError, SETUP_ERROR_TIMEOUT, MSG_CANT_LOAD_PLAYER } from 'api/errors';
-import Promise from 'polyfills/promise';
 
 const SETUP_TIMEOUT_SECONDS = 30;
 
@@ -25,7 +24,6 @@ const Setup = function(_model) {
             }, SETUP_TIMEOUT_SECONDS * 1000);
             const timeoutCancelled = () => {
                 clearTimeout(_setupFailureTimeout);
-                resolve();
             };
             setup.then(timeoutCancelled).catch(timeoutCancelled);
         });
