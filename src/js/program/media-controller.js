@@ -37,7 +37,7 @@ export default class MediaController extends Eventable {
 
         // If play has already been called, then only return provider.play
         if (mediaModel.get('setup')) {
-            return provider.play() || Promise.resolved();
+            return provider.play() || Promise.resolve();
         }
         mediaModel.set('setup', true);
 
