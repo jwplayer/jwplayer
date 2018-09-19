@@ -47,9 +47,9 @@ export default class PlayDisplayIcon {
             let iconText = this.icon.getElementsByClassName('jw-idle-icon-text')[0];
             if (!iconText) {
                 iconText = createElement(`<div class="jw-idle-icon-text"></div>`);
-                this.icon.appendChild(iconText);
                 addClass(this.icon, 'jw-idle-label');
                 iconText.textContent = localization.playback;
+                this.icon.appendChild(iconText);
             }
         }
     }
